@@ -188,6 +188,7 @@ const Case = () => {
         .get(`case/${caseId}`)
         .then((res) => {
           const { data } = res;
+          console.log("CASE DATA", data);
           setCurrentCase(data);
           setCaseTitle(data.name);
           // set other commodities type

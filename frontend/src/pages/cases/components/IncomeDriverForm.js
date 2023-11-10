@@ -9,8 +9,8 @@ const IncomeDriverForm = ({
   group,
   groupIndex,
   commodity,
-  formValues,
-  setFormValues,
+  segmentFormValues,
+  setSegmentFormValues,
   segmentItem,
   currentCaseId,
   totalDiversifiedIncome,
@@ -21,7 +21,9 @@ const IncomeDriverForm = ({
   useEffect(() => {
     // set current feasible initial value
     if (currentCaseId) {
-      const findValue = formValues.find((fv) => fv.key === segmentItem.key);
+      const findValue = segmentFormValues.find(
+        (fv) => fv.key === segmentItem.key
+      );
       if (!findValue && isEmpty(findValue)) {
         return;
       }
@@ -46,14 +48,16 @@ const IncomeDriverForm = ({
       case_commodity: commodity.case_commodity,
       answers: {},
     };
-    const filteredFormValues = formValues.filter(
+    const filteredFormValues = segmentFormValues.filter(
       (x) => x.key !== segmentItem.key
     );
-    let currentFormValue = formValues.find((x) => x.key === segmentItem.key);
+    let currentFormValue = segmentFormValues.find(
+      (x) => x.key === segmentItem.key
+    );
     currentFormValue = isEmpty(currentFormValue)
       ? defaultFormValue
       : currentFormValue;
-    setFormValues([
+    setSegmentFormValues([
       ...filteredFormValues,
       {
         ...currentFormValue,
@@ -109,7 +113,7 @@ const IncomeDriverForm = ({
     const parentQuestionId = `${dataType}-${question.parent}`;
     if (parentQuestion) {
       // handle form values
-      setFormValues([
+      setSegmentFormValues([
         ...filteredFormValues,
         {
           ...currentFormValue,

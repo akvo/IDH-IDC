@@ -31,8 +31,8 @@ const DataFields = ({
   totalIncomeQuestion,
   commodityList,
   renameItem,
-  formValues,
-  setFormValues,
+  segmentFormValues,
+  setSegmentFormValues,
   segmentItem,
   handleSave,
   isSaving,
@@ -54,7 +54,9 @@ const DataFields = ({
   };
 
   const totalIncome = useMemo(() => {
-    const currentFormValue = formValues.find((x) => x.key === segmentItem.key);
+    const currentFormValue = segmentFormValues.find(
+      (x) => x.key === segmentItem.key
+    );
     const current = totalIncomeQuestion
       .map((qs) => currentFormValue?.answers[`current-${qs}`])
       .filter((a) => a)
@@ -80,12 +82,12 @@ const DataFields = ({
           : 0,
       },
     };
-  }, [formValues, segmentItem, dashboardData, totalIncomeQuestion]);
+  }, [segmentFormValues, segmentItem, dashboardData, totalIncomeQuestion]);
 
-  const segmentValues = formValues.find((v) => v.key === segment);
+  const segmentValues = segmentFormValues.find((v) => v.key === segment);
 
   const chartData = useMemo(() => {
-    if (!formValues.length || !segmentValues) {
+    if (!segmentFormValues.length || !segmentValues) {
       return [];
     }
     const chartQuestion = totalIncomeQuestion.map((qid) => {
@@ -161,7 +163,7 @@ const DataFields = ({
     return [...commodityGroup, totalIncomeCommodityGroup];
   }, [
     totalIncomeQuestion,
-    formValues,
+    segmentFormValues,
     questionGroups,
     commodityList,
     totalIncome,
@@ -283,8 +285,8 @@ const DataFields = ({
             <IncomeDriverTarget
               segment={segment}
               currentCase={currentCase}
-              formValues={formValues}
-              setFormValues={setFormValues}
+              segmentFormValues={segmentFormValues}
+              setSegmentFormValues={setSegmentFormValues}
               segmentItem={segmentItem}
               totalIncome={totalIncome}
             />
@@ -360,8 +362,8 @@ const DataFields = ({
                 groupIndex={groupIndex}
                 commodity={commodityList[groupIndex]}
                 key={groupIndex}
-                formValues={formValues}
-                setFormValues={setFormValues}
+                segmentFormValues={segmentFormValues}
+                setSegmentFormValues={setSegmentFormValues}
                 segmentItem={segmentItem}
                 currentCaseId={currentCaseId}
                 totalDiversifiedIncome={totalIncome.diversified}

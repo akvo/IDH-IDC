@@ -19,12 +19,12 @@ const IncomeDriverDataEntry = ({
 }) => {
   const [activeKey, setActiveKey] = useState("1");
   const [items, setItems] = useState([]);
-  const [formValues, setFormValues] = useState([]);
+  const [segmentFormValues, setSegmentFormValues] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const formValeusWithTotalCurrentIncomeAnswer = formValues.map(
+    const formValuesWithTotalCurrentIncomeAnswer = segmentFormValues.map(
       (currentFormValue) => {
         const totalCurrentIncomeAnswer = totalIncomeQuestion
           .map((qs) => currentFormValue?.answers[`current-${qs}`])
@@ -41,8 +41,8 @@ const IncomeDriverDataEntry = ({
         };
       }
     );
-    setCaseData(formValeusWithTotalCurrentIncomeAnswer);
-  }, [formValues, setCaseData, totalIncomeQuestion]);
+    setCaseData(formValuesWithTotalCurrentIncomeAnswer);
+  }, [segmentFormValues, setCaseData, totalIncomeQuestion]);
 
   // handle save here
   const handleSave = () => {
@@ -51,8 +51,10 @@ const IncomeDriverDataEntry = ({
       (item) => item !== "Income Driver Data Entry"
     );
     const apiCalls = [];
-    const postFormValues = formValues.filter((fv) => !fv.currentSegmentId);
-    const putFormValues = formValues.filter((fv) => fv.currentSegmentId);
+    const postFormValues = segmentFormValues.filter(
+      (fv) => !fv.currentSegmentId
+    );
+    const putFormValues = segmentFormValues.filter((fv) => fv.currentSegmentId);
     if (postFormValues.length) {
       const postPayloads = generateSegmentPayloads(
         postFormValues,
@@ -88,7 +90,7 @@ const IncomeDriverDataEntry = ({
         // eol set currentSegmentId to items state
 
         // update form values
-        const transformFormValues = formValues.map((fv) => {
+        const transformFormValues = segmentFormValues.map((fv) => {
           const findItem = transformItems.find((it) => it.key === fv.key);
           if (!findItem) {
             return fv;
@@ -98,7 +100,7 @@ const IncomeDriverDataEntry = ({
             ...fv,
           };
         });
-        setFormValues(transformFormValues);
+        setSegmentFormValues(transformFormValues);
         messageApi.open({
           type: "success",
           content: "Segments saved successfully.",
@@ -152,18 +154,20 @@ const IncomeDriverDataEntry = ({
             currentSegmentId: it.id,
             ...it,
           }));
-          const formValuesTmp = orderBy(data, "id").map((it, itIndex) => ({
-            key: String(itIndex + 1),
-            label: it.name,
-            currentSegmentId: it.id,
-            answers: it.answers,
-            ...it,
-          }));
+          const segmentFormValuesTmp = orderBy(data, "id").map(
+            (it, itIndex) => ({
+              key: String(itIndex + 1),
+              label: it.name,
+              currentSegmentId: it.id,
+              answers: it.answers,
+              ...it,
+            })
+          );
           if (itemsTmp.length !== 5) {
             itemsTmp = [...itemsTmp, ...defaultItems];
           }
           setItems(itemsTmp);
-          setFormValues(formValuesTmp);
+          setSegmentFormValues(segmentFormValuesTmp);
         })
         .catch(() => {
           // default items if no segments in database
@@ -175,7 +179,7 @@ const IncomeDriverDataEntry = ({
             },
             ...defaultItems,
           ]);
-          setFormValues([
+          setSegmentFormValues([
             {
               key: "1",
               label: "Segment 1",
@@ -189,8 +193,10 @@ const IncomeDriverDataEntry = ({
 
   const handleRemoveSegmentFromItems = (segmentKey) => {
     // handle form values
-    const filteredFormValues = formValues.filter((x) => x.key !== segmentKey);
-    setFormValues(filteredFormValues);
+    const filteredFormValues = segmentFormValues.filter(
+      (x) => x.key !== segmentKey
+    );
+    setSegmentFormValues(filteredFormValues);
     // eol handle form values
     const newItems = items.filter((item) => item.key !== segmentKey);
     setItems(newItems);
@@ -234,8 +240,8 @@ const IncomeDriverDataEntry = ({
             onDelete={itemIndex ? () => onDelete(activeKey) : false}
             commodityList={commodityList}
             renameItem={renameItem}
-            formValues={formValues}
-            setFormValues={setFormValues}
+            segmentFormValues={segmentFormValues}
+            setSegmentFormValues={setSegmentFormValues}
             segmentItem={{ ...item, label: newLabel }}
             handleSave={handleSave}
             isSaving={isSaving}
@@ -244,12 +250,16 @@ const IncomeDriverDataEntry = ({
           />
         );
         // handle form values
-        const filteredFormValues = formValues.filter((x) => x.key !== item.key);
-        const currentFormValue = formValues.find((x) => x.key === item.key) || {
+        const filteredFormValues = segmentFormValues.filter(
+          (x) => x.key !== item.key
+        );
+        const currentFormValue = segmentFormValues.find(
+          (x) => x.key === item.key
+        ) || {
           ...item,
           answers: {},
         };
-        setFormValues([
+        setSegmentFormValues([
           ...filteredFormValues,
           {
             ...currentFormValue,
@@ -280,8 +290,8 @@ const IncomeDriverDataEntry = ({
         newItems.splice(newItems.length - 1, 1);
         setItems(newItems);
       }
-      setFormValues([
-        ...formValues,
+      setSegmentFormValues([
+        ...segmentFormValues,
         {
           key: newKey.toString(),
           label: `Segment ${newKey}`,
@@ -314,8 +324,8 @@ const IncomeDriverDataEntry = ({
                   totalIncomeQuestion={totalIncomeQuestion}
                   commodityList={commodityList}
                   renameItem={renameItem}
-                  formValues={formValues}
-                  setFormValues={setFormValues}
+                  segmentFormValues={segmentFormValues}
+                  setSegmentFormValues={setSegmentFormValues}
                   segmentItem={item}
                   handleSave={handleSave}
                   isSaving={isSaving}
