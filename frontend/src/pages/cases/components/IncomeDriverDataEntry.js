@@ -5,44 +5,76 @@ import { DataFields, generateSegmentPayloads } from "./";
 import { api } from "../../../lib";
 import { orderBy } from "lodash";
 
+const defaultItems = {
+  key: "add",
+  label: (
+    <span>
+      <PlusCircleFilled /> Add Segment
+    </span>
+  ),
+  currentSegmentId: null,
+};
+
 const IncomeDriverDataEntry = ({
   commodityList,
   currentCaseId,
   currentCase,
-  setCaseData,
+  // setCaseData,
   questionGroups,
   setQuestionGroups,
   totalIncomeQuestion,
   dashboardData,
   finished,
   setFinished,
+  segmentFormValues,
+  setSegmentFormValues,
 }) => {
   const [activeKey, setActiveKey] = useState("1");
   const [items, setItems] = useState([]);
-  const [segmentFormValues, setSegmentFormValues] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const formValuesWithTotalCurrentIncomeAnswer = segmentFormValues.map(
-      (currentFormValue) => {
-        const totalCurrentIncomeAnswer = totalIncomeQuestion
-          .map((qs) => currentFormValue?.answers[`current-${qs}`])
-          .filter((a) => a)
-          .reduce((acc, a) => acc + a, 0);
-        const totalFeasibleIncomeAnswer = totalIncomeQuestion
-          .map((qs) => currentFormValue?.answers[`feasible-${qs}`])
-          .filter((a) => a)
-          .reduce((acc, a) => acc + a, 0);
-        return {
-          ...currentFormValue,
-          total_current_income: totalCurrentIncomeAnswer,
-          total_feasible_income: totalFeasibleIncomeAnswer,
-        };
-      }
-    );
-    setCaseData(formValuesWithTotalCurrentIncomeAnswer);
-  }, [segmentFormValues, setCaseData, totalIncomeQuestion]);
+    let itemsTmp = segmentFormValues;
+    if (itemsTmp.length !== 5) {
+      itemsTmp = [...itemsTmp, defaultItems];
+    }
+    setItems(itemsTmp);
+  }, [segmentFormValues]);
+
+  useEffect(() => {
+    if (commodityList.length === 0 && !currentCaseId) {
+      return;
+    }
+    api.get(`/questions/${currentCaseId}`).then((res) => {
+      // reorder question to match commodity list order (CORRECT ORDER)
+      const dataTmp = commodityList.map((cl) =>
+        res.data.find((d) => d.commodity_id === cl.commodity)
+      );
+      setQuestionGroups(dataTmp);
+    });
+  }, [commodityList, setQuestionGroups, currentCaseId]);
+
+  // useEffect(() => {
+  //   const formValuesWithTotalCurrentIncomeAnswer = segmentFormValues.map(
+  //     (currentFormValue) => {
+  //       const totalCurrentIncomeAnswer = totalIncomeQuestion
+  //         .map((qs) => currentFormValue?.answers[`current-${qs}`])
+  //         .filter((a) => a)
+  //         .reduce((acc, a) => acc + a, 0);
+  //       const totalFeasibleIncomeAnswer = totalIncomeQuestion
+  //         .map((qs) => currentFormValue?.answers[`feasible-${qs}`])
+  //         .filter((a) => a)
+  //         .reduce((acc, a) => acc + a, 0);
+  //       return {
+  //         ...currentFormValue,
+  //         total_current_income: totalCurrentIncomeAnswer,
+  //         total_feasible_income: totalFeasibleIncomeAnswer,
+  //       };
+  //     }
+  //   );
+  //   setCaseData(formValuesWithTotalCurrentIncomeAnswer);
+  // }, [segmentFormValues, setCaseData, totalIncomeQuestion]);
 
   // handle save here
   const handleSave = () => {
@@ -122,74 +154,74 @@ const IncomeDriverDataEntry = ({
       });
   };
 
-  useEffect(() => {
-    if (commodityList.length === 0 && !currentCaseId) {
-      return;
-    }
-    api.get(`/questions/${currentCaseId}`).then((res) => {
-      const defaultItems = [
-        {
-          key: "add",
-          label: (
-            <span>
-              <PlusCircleFilled /> Add Segment
-            </span>
-          ),
-          currentSegmentId: null,
-        },
-      ];
-      // reorder question to match commodity list order (CORRECT ORDER)
-      const dataTmp = commodityList.map((cl) =>
-        res.data.find((d) => d.commodity_id === cl.commodity)
-      );
-      setQuestionGroups(dataTmp);
-      // load segment from database
-      api
-        .get(`segment/case/${currentCaseId}`)
-        .then((res) => {
-          const { data } = res;
-          let itemsTmp = orderBy(data, "id").map((it, itIndex) => ({
-            key: String(itIndex + 1),
-            label: it.name,
-            currentSegmentId: it.id,
-            ...it,
-          }));
-          const segmentFormValuesTmp = orderBy(data, "id").map(
-            (it, itIndex) => ({
-              key: String(itIndex + 1),
-              label: it.name,
-              currentSegmentId: it.id,
-              answers: it.answers,
-              ...it,
-            })
-          );
-          if (itemsTmp.length !== 5) {
-            itemsTmp = [...itemsTmp, ...defaultItems];
-          }
-          setItems(itemsTmp);
-          setSegmentFormValues(segmentFormValuesTmp);
-        })
-        .catch(() => {
-          // default items if no segments in database
-          setItems([
-            {
-              key: "1",
-              label: "Segment 1",
-              currentSegmentId: null,
-            },
-            ...defaultItems,
-          ]);
-          setSegmentFormValues([
-            {
-              key: "1",
-              label: "Segment 1",
-              currentSegmentId: null,
-              answers: {},
-            },
-          ]);
-        });
-    });
-  }, [commodityList, setQuestionGroups, currentCaseId]);
+  // useEffect(() => {
+  //   if (commodityList.length === 0 && !currentCaseId) {
+  //     return;
+  //   }
+  //   api.get(`/questions/${currentCaseId}`).then((res) => {
+  //     const defaultItems = [
+  //       {
+  //         key: "add",
+  //         label: (
+  //           <span>
+  //             <PlusCircleFilled /> Add Segment
+  //           </span>
+  //         ),
+  //         currentSegmentId: null,
+  //       },
+  //     ];
+  //     // reorder question to match commodity list order (CORRECT ORDER)
+  //     const dataTmp = commodityList.map((cl) =>
+  //       res.data.find((d) => d.commodity_id === cl.commodity)
+  //     );
+  //     setQuestionGroups(dataTmp);
+  //     // load segment from database
+  //     api
+  //       .get(`segment/case/${currentCaseId}`)
+  //       .then((res) => {
+  //         const { data } = res;
+  //         let itemsTmp = orderBy(data, "id").map((it, itIndex) => ({
+  //           key: String(itIndex + 1),
+  //           label: it.name,
+  //           currentSegmentId: it.id,
+  //           ...it,
+  //         }));
+  //         const segmentFormValuesTmp = orderBy(data, "id").map(
+  //           (it, itIndex) => ({
+  //             key: String(itIndex + 1),
+  //             label: it.name,
+  //             currentSegmentId: it.id,
+  //             answers: it.answers,
+  //             ...it,
+  //           })
+  //         );
+  //         if (itemsTmp.length !== 5) {
+  //           itemsTmp = [...itemsTmp, ...defaultItems];
+  //         }
+  //         setItems(itemsTmp);
+  //         setSegmentFormValues(segmentFormValuesTmp);
+  //       })
+  //       .catch(() => {
+  //         // default items if no segments in database
+  //         setItems([
+  //           {
+  //             key: "1",
+  //             label: "Segment 1",
+  //             currentSegmentId: null,
+  //           },
+  //           ...defaultItems,
+  //         ]);
+  //         setSegmentFormValues([
+  //           {
+  //             key: "1",
+  //             label: "Segment 1",
+  //             currentSegmentId: null,
+  //             answers: {},
+  //           },
+  //         ]);
+  //       });
+  //   });
+  // }, [commodityList, setQuestionGroups, currentCaseId]);
 
   const handleRemoveSegmentFromItems = (segmentKey) => {
     // handle form values

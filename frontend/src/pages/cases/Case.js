@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
 import {
@@ -21,6 +21,13 @@ const pageDependencies = {
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 
+const defaultSegmentFormValues = {
+  key: "1",
+  label: "Segment 1",
+  currentSegmentId: null,
+  answers: {},
+};
+
 const masterCommodityCategories = window.master?.commodity_categories || [];
 const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   const commodities = curr.commodities.reduce((a, c) => {
@@ -42,12 +49,16 @@ const Case = () => {
   const [loading, setLoading] = useState(false);
   const [initialOtherCommodityTypes, setInitialCommodityTypes] = useState([]);
   const [currentCase, setCurrentCase] = useState({});
+  const [segmentFormValues, setSegmentFormValues] = useState([
+    defaultSegmentFormValues,
+  ]);
 
   useEffect(() => {
-    if (caseId && caseData.length) {
+    const check = segmentFormValues.filter((x) => x.currentSegmentId);
+    if (caseId && check.length) {
       setFinished(["Case Profile", "Income Driver Data Entry"]);
     }
-  }, [caseData, caseId]);
+  }, [segmentFormValues, caseId]);
 
   const totalIncomeQuestion = useMemo(() => {
     const qs = questionGroups.map((group) => {
@@ -76,7 +87,28 @@ const Case = () => {
   }, [questionGroups]);
 
   const dashboardData = useMemo(() => {
-    const mappedData = caseData.map((d) => {
+    const check = segmentFormValues.filter((x) => x.currentSegmentId);
+    if (!check.length || !questionGroups.length) {
+      return [];
+    }
+    const formValuesWithTotalCurrentIncomeAnswer = segmentFormValues.map(
+      (currentFormValue) => {
+        const totalCurrentIncomeAnswer = totalIncomeQuestion
+          .map((qs) => currentFormValue?.answers[`current-${qs}`])
+          .filter((a) => a)
+          .reduce((acc, a) => acc + a, 0);
+        const totalFeasibleIncomeAnswer = totalIncomeQuestion
+          .map((qs) => currentFormValue?.answers[`feasible-${qs}`])
+          .filter((a) => a)
+          .reduce((acc, a) => acc + a, 0);
+        return {
+          ...currentFormValue,
+          total_current_income: totalCurrentIncomeAnswer,
+          total_feasible_income: totalFeasibleIncomeAnswer,
+        };
+      }
+    );
+    const mappedData = formValuesWithTotalCurrentIncomeAnswer.map((d) => {
       const answers = Object.keys(d.answers).map((k) => {
         const [dataType, caseCommodityId, questionId] = k.split("-");
         const commodity = commodityList.find(
@@ -173,11 +205,12 @@ const Case = () => {
     });
     return orderBy(mappedData, ["id", "key"]);
   }, [
-    caseData,
     commodityList,
     costQuestions,
     questionGroups,
     flattenedQuestionGroups,
+    segmentFormValues,
+    totalIncomeQuestion,
   ]);
 
   useEffect(() => {
@@ -187,9 +220,10 @@ const Case = () => {
       api
         .get(`case/${caseId}`)
         .then((res) => {
+          // load case data
           const { data } = res;
-          console.log("CASE DATA", data);
           setCurrentCase(data);
+          setFinished(["Case Profile"]);
           setCaseTitle(data.name);
           // set other commodities type
           setInitialCommodityTypes(
@@ -266,18 +300,41 @@ const Case = () => {
             ...secondaryCommodityValue,
             ...tertiaryCommodityValue,
           });
+          // set segment initial value
+          const segmentFormValuesTmp = orderBy(data.segments, "id").map(
+            (it, itIndex) => ({
+              ...it,
+              key: String(itIndex + 1),
+              label: it.name,
+              currentSegmentId: it.id,
+              answers: it.answers,
+            })
+          );
+          setSegmentFormValues(segmentFormValuesTmp);
+          // fetch questions
+          api
+            .get(`/questions/${caseId}`)
+            .then((res) => {
+              // reorder question to match commodity list order (CORRECT ORDER)
+              const dataTmp = commodities.map((cl) =>
+                res.data.find((d) => d.commodity_id === cl.commodity)
+              );
+              setQuestionGroups(dataTmp);
+            })
+            .finally(() => {
+              setTimeout(() => {
+                setLoading(false);
+              }, 200);
+            });
         })
         .catch((e) => {
           console.error("Error fetching case profile data", e);
-        })
-        .finally(() => {
-          setTimeout(() => {
-            setLoading(false);
-            setFinished(["Case Profile"]);
-          }, 100);
+          setSegmentFormValues([defaultSegmentFormValues]);
+          setLoading(false);
         });
     }
   }, [caseId, formData, loading]);
+  console.log(segmentFormValues, questionGroups);
 
   const setActive = (selected) => {
     if (finished.includes(selected)) {
@@ -331,13 +388,15 @@ const Case = () => {
                 commodityList={commodityList}
                 currentCaseId={currentCaseId}
                 currentCase={currentCase}
-                setCaseData={setCaseData}
+                // setCaseData={setCaseData}
                 totalIncomeQuestion={totalIncomeQuestion}
                 questionGroups={questionGroups}
                 setQuestionGroups={setQuestionGroups}
                 dashboardData={dashboardData}
                 finished={finished}
                 setFinished={setFinished}
+                segmentFormValues={segmentFormValues}
+                setSegmentFormValues={setSegmentFormValues}
               />
             )}
             {page === "Income Driver Dashboard" && (
