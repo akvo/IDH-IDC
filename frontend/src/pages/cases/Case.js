@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
 import {
@@ -43,7 +43,6 @@ const Case = () => {
   const [formData, setFormData] = useState({});
   const [finished, setFinished] = useState([]);
   const [commodityList, setCommodityList] = useState([]);
-  const [caseData, setCaseData] = useState([]);
   const [questionGroups, setQuestionGroups] = useState([]);
   const [currentCaseId, setCurrentCaseId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -335,7 +334,6 @@ const Case = () => {
         });
     }
   }, [caseId, formData, loading]);
-  console.log(segmentFormValues, questionGroups);
 
   const setActive = (selected) => {
     if (finished.includes(selected)) {

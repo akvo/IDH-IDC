@@ -3,7 +3,6 @@ import { Row, Col, Tabs, message } from "antd";
 import { PlusCircleFilled } from "@ant-design/icons";
 import { DataFields, generateSegmentPayloads } from "./";
 import { api } from "../../../lib";
-import { orderBy } from "lodash";
 
 const defaultItems = {
   key: "add",
