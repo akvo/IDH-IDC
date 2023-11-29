@@ -86,7 +86,7 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
       grid: {
         show: true,
         containLabel: true,
-        left: 55,
+        left: 80,
         right: 50,
         label: {
           color: "#222",

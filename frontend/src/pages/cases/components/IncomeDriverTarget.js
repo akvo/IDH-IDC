@@ -194,6 +194,7 @@ const IncomeDriverTarget = ({
       layout="vertical"
       form={form}
       onValuesChange={onValuesChange}
+      style={{ width: "100%" }}
     >
       <Row gutter={[8, 8]}>
         <Col span={12}>

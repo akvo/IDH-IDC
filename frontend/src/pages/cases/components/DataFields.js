@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   Row,
   Col,
@@ -29,6 +29,7 @@ import {
 } from "./";
 import Chart from "../../../components/chart";
 import { incomeTargetChartOption } from "../../../components/chart/options/common";
+import { SaveAsImageButton } from "../../../components/utils";
 
 const DataFields = ({
   segment,
@@ -51,6 +52,7 @@ const DataFields = ({
   const [confimationModal, setConfimationModal] = useState(false);
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState(segmentLabel);
+  const elDriverChart = useRef(null);
 
   const finishEditing = () => {
     renameItem(segment, newName);
@@ -281,107 +283,140 @@ const DataFields = ({
           <Card.Grid
             style={{
               width: "100%",
+              paddingRight: 0,
             }}
             hoverable={false}
           >
-            <h2 className="section-title">
-              Income Target
-              <small>
-                <InfoCircleFilled />
-              </small>
-            </h2>
-            <IncomeDriverTarget
-              segment={segment}
-              currentCase={currentCase}
-              segmentFormValues={segmentFormValues}
-              setSegmentFormValues={setSegmentFormValues}
-              segmentItem={segmentItem}
-              totalIncome={totalIncome}
-            />
-            <h2 className="section-title">
-              Income Drivers
-              <small>
-                <InfoCircleFilled />
-              </small>
-            </h2>
-            <Row gutter={[8, 8]} align="middle">
-              <Col span={14}></Col>
-              <Col span={4}>
-                <h4>Current</h4>
-              </Col>
-              <Col span={4}>
-                <h4>Feasible</h4>
-              </Col>
-              <Col span={2}></Col>
-            </Row>
-            <Row
-              gutter={[8, 8]}
-              style={{
-                borderBottom: "1px solid #f0f0f0",
-                padding: "8px 0",
-              }}
-              align="middle"
-            >
-              <Col span={13}>
-                <h2>Total Income</h2>
-              </Col>
-              <Col span={4}>
-                <InputNumber
-                  value={totalIncome.current}
-                  disabled
-                  style={{ width: "100%" }}
-                  {...InputNumberThousandFormatter}
-                />
-              </Col>
-              <Col span={4}>
-                <InputNumber
-                  value={totalIncome.feasible}
-                  disabled
-                  style={{ width: "100%" }}
-                  {...InputNumberThousandFormatter}
-                />
-              </Col>
-              <Col span={3}>
-                <Space className="percentage-wrapper">
-                  {totalIncome.percent === 0 ? null : totalIncome.percent >
-                    0 ? (
-                    <CaretUpFilled className="ceret-up" />
-                  ) : (
-                    <CaretDownFilled className="ceret-down" />
-                  )}
-                  <div
-                    className={
-                      totalIncome.percent === 0
-                        ? ""
-                        : totalIncome.percent > 0
-                        ? "ceret-up"
-                        : "ceret-down"
-                    }
+            <Row gutter={[16, 16]}>
+              <Col span={24}>
+                <Card
+                  title={
+                    <h2 className="section-title">
+                      Income Target
+                      <small>
+                        <InfoCircleFilled />
+                      </small>
+                    </h2>
+                  }
+                  className="segment-child-wrapper"
+                >
+                  <Card.Grid
+                    style={{
+                      width: "100%",
+                    }}
+                    hoverable={false}
                   >
-                    {totalIncome.feasible < totalIncome.current
-                      ? -totalIncome.percent.toFixed(2)
-                      : totalIncome.percent.toFixed(2)}
-                    %
-                  </div>
-                </Space>
+                    <IncomeDriverTarget
+                      segment={segment}
+                      currentCase={currentCase}
+                      segmentFormValues={segmentFormValues}
+                      setSegmentFormValues={setSegmentFormValues}
+                      segmentItem={segmentItem}
+                      totalIncome={totalIncome}
+                    />
+                  </Card.Grid>
+                </Card>
+              </Col>
+              <Col span={24}>
+                <Card
+                  title={
+                    <h2 className="section-title">
+                      Income Drivers
+                      <small>
+                        <InfoCircleFilled />
+                      </small>
+                    </h2>
+                  }
+                  className="segment-child-wrapper"
+                >
+                  <Card.Grid
+                    style={{
+                      width: "100%",
+                    }}
+                    hoverable={false}
+                  >
+                    <Row gutter={[8, 8]} align="middle">
+                      <Col span={14}></Col>
+                      <Col span={4}>
+                        <h4>Current</h4>
+                      </Col>
+                      <Col span={4}>
+                        <h4>Feasible</h4>
+                      </Col>
+                      <Col span={2}></Col>
+                    </Row>
+                    <Row
+                      gutter={[8, 8]}
+                      style={{
+                        borderBottom: "1px solid #f0f0f0",
+                        padding: "8px 0",
+                      }}
+                      align="middle"
+                    >
+                      <Col span={13}>
+                        <h2>Total Income</h2>
+                      </Col>
+                      <Col span={4}>
+                        <InputNumber
+                          value={totalIncome.current}
+                          disabled
+                          style={{ width: "100%" }}
+                          {...InputNumberThousandFormatter}
+                        />
+                      </Col>
+                      <Col span={4}>
+                        <InputNumber
+                          value={totalIncome.feasible}
+                          disabled
+                          style={{ width: "100%" }}
+                          {...InputNumberThousandFormatter}
+                        />
+                      </Col>
+                      <Col span={3}>
+                        <Space className="percentage-wrapper">
+                          {totalIncome.percent ===
+                          0 ? null : totalIncome.percent > 0 ? (
+                            <CaretUpFilled className="ceret-up" />
+                          ) : (
+                            <CaretDownFilled className="ceret-down" />
+                          )}
+                          <div
+                            className={
+                              totalIncome.percent === 0
+                                ? ""
+                                : totalIncome.percent > 0
+                                ? "ceret-up"
+                                : "ceret-down"
+                            }
+                          >
+                            {totalIncome.feasible < totalIncome.current
+                              ? -totalIncome.percent.toFixed(2)
+                              : totalIncome.percent.toFixed(2)}
+                            %
+                          </div>
+                        </Space>
+                      </Col>
+                    </Row>
+                    {questionGroups.map((group, groupIndex) => (
+                      <IncomeDriverForm
+                        group={group}
+                        groupIndex={groupIndex}
+                        commodity={commodityList[groupIndex]}
+                        key={groupIndex}
+                        segmentFormValues={segmentFormValues}
+                        setSegmentFormValues={setSegmentFormValues}
+                        segmentItem={segmentItem}
+                        currentCaseId={currentCaseId}
+                        totalDiversifiedIncome={totalIncome.diversified}
+                      />
+                    ))}
+                  </Card.Grid>
+                </Card>
               </Col>
             </Row>
-            {questionGroups.map((group, groupIndex) => (
-              <IncomeDriverForm
-                group={group}
-                groupIndex={groupIndex}
-                commodity={commodityList[groupIndex]}
-                key={groupIndex}
-                segmentFormValues={segmentFormValues}
-                setSegmentFormValues={setSegmentFormValues}
-                segmentItem={segmentItem}
-                currentCaseId={currentCaseId}
-                totalDiversifiedIncome={totalIncome.diversified}
-              />
-            ))}
           </Card.Grid>
         </Card>
-        <Row>
+        <Row style={{ paddingLeft: "20px" }}>
           <Col span={12}>
             <Button
               className="button button-submit button-secondary"
@@ -422,19 +457,42 @@ const DataFields = ({
           </Col>
         </Row>
       </Col>
-      <Chart
-        title="Calculated Household Income"
+      <Col
         span={10}
-        type="BARSTACK"
-        data={chartData}
-        affix={true}
-        targetData={targetChartData}
-        loading={!chartData.length || !targetChartData.length}
-        height={window.innerHeight * 0.45}
-        extra={{
-          axisTitle: { y: `Income (${currentCase.currency})` },
+        ref={elDriverChart}
+        style={{
+          position: "fixed",
+          right: 0,
+          width: "100%",
+          paddingRight: "6.4rem",
         }}
-      />
+      >
+        <Card
+          title="Calculated Household Income"
+          className="chart-card-wrapper"
+          extra={
+            <SaveAsImageButton
+              elementRef={elDriverChart}
+              filename="Calculated Household Income"
+            />
+          }
+        >
+          <Chart
+            // title="Calculated Household Income"
+            // span={10}
+            type="BARSTACK"
+            data={chartData}
+            affix={true}
+            targetData={targetChartData}
+            loading={!chartData.length || !targetChartData.length}
+            height={window.innerHeight * 0.45}
+            extra={{
+              axisTitle: { y: `Income (${currentCase.currency})` },
+            }}
+            wrapper={false}
+          />
+        </Card>
+      </Col>
     </Row>
   );
 };
