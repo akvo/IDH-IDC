@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Col, Steps } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 
@@ -19,9 +19,17 @@ const menuList = [
 ];
 
 const SideMenu = ({ active, setActive, finished }) => {
+  const sideMenuTop = useMemo(() => {
+    const contentLayoutHeight =
+      document.getElementById("content-layout")?.offsetHeight || 0;
+    const pageHeaderHeight =
+      document.getElementById("page-layout-header")?.offsetHeight || 0;
+    return contentLayoutHeight + pageHeaderHeight;
+  }, []);
+
   return (
     <Col span={24} style={{ marginTop: 40 }}>
-      <div className="timeline-container">
+      <div className="timeline-container" style={{ top: sideMenuTop }}>
         <Steps
           current={active}
           size="small"

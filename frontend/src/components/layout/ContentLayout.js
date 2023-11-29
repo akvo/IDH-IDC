@@ -50,7 +50,7 @@ const ContentLayout = ({
 
   return (
     <div>
-      <Affix offsetTop={80}>
+      <Affix offsetTop={80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
           {hasBreadcrumb ? (
             <Breadcrumb

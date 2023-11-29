@@ -46,6 +46,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         zIndex: 10,
         width: "100%",
       }}
+      id="page-layout-header"
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
         <Col span={6} align="start" style={{ width: "100%" }}>

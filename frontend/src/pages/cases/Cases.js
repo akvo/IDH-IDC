@@ -229,7 +229,7 @@ const Cases = () => {
         {...filterProps}
         key="1"
         options={countryOptions}
-        placeholder="Filter by Country"
+        placeholder="Country"
         value={country}
         onChange={setCountry}
       />
@@ -237,7 +237,7 @@ const Cases = () => {
         {...filterProps}
         key="2"
         options={commodityOptios}
-        placeholder="Filter by Focus Commodity"
+        placeholder="Focus Commodity"
         value={commodity}
         onChange={setCommodity}
       />
@@ -245,7 +245,7 @@ const Cases = () => {
         {...filterProps}
         key="3"
         options={tagOptions}
-        placeholder="Filter by Tags"
+        placeholder="Tags"
         mode="multiple"
         value={tags}
         onChange={setTags}
@@ -285,7 +285,7 @@ const Cases = () => {
           total: data.total,
           onChange: (page) => setCurrentPage(page),
         }}
-        tableHeaderFilterComponent={otherFilters}
+        otherFilters={otherFilters}
       />
     </ContentLayout>
   );
