@@ -59,6 +59,7 @@ class UserInfo(TypedDict):
     organisation_detail: OrganisationDict
     tags_count: int
     cases_count: int
+    case_access: Optional[List[UserCasePermissionDict]]
 
 
 class UserDetailDict(TypedDict):
@@ -192,10 +193,13 @@ class User(Base):
 
     @property
     def to_user_info(self) -> UserInfo:
+        case_access = []
         business_unit_detail = [
             bu.to_business_unit_detail for bu in self.user_business_units
         ]
         business_unit_detail = business_unit_detail if business_unit_detail else None
+        if self.user_case_access:
+            case_access = [c.to_case_permission for c in self.user_case_access]
         return {
             "id": self.id,
             "fullname": self.fullname,
@@ -207,6 +211,7 @@ class User(Base):
             "organisation_detail": self.user_organisation.serialize,
             "tags_count": len(self.user_tags),
             "cases_count": len(self.user_case_access),
+            "case_access": case_access,
         }
 
     @property

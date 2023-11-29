@@ -14,6 +14,7 @@ describe("UserState", () => {
       business_unit_detail,
       tags_count,
       cases_count,
+      case_access,
     } = result.current;
 
     expect(id).toBe(0);
@@ -34,6 +35,7 @@ describe("UserState", () => {
     ]);
     expect(tags_count).toBe(0);
     expect(cases_count).toBe(0);
+    expect(case_access).toEqual([]);
   });
 
   it("should updating the state correctly", () => {
@@ -58,6 +60,7 @@ describe("UserState", () => {
         ];
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
     const {
@@ -70,6 +73,7 @@ describe("UserState", () => {
       business_unit_detail,
       tags_count,
       cases_count,
+      case_access,
     } = result.current;
 
     expect(id).toBe(1);
@@ -90,5 +94,6 @@ describe("UserState", () => {
     ]);
     expect(tags_count).toBe(2);
     expect(cases_count).toBe(1);
+    expect(case_access).toEqual([{ case: 1, permission: "edit" }]);
   });
 });

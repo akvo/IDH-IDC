@@ -7,24 +7,24 @@ const { Search } = Input;
 
 const TableContent = ({
   title = "Data",
-  filterComponent = null,
+  tableHeaderFilterComponent = null,
   dataSource = [],
   columns = [],
   loading = true,
   searchProps = {},
   buttonProps = {},
   paginationProps = {},
-  otherFilters = [],
+  otherFilters = null,
 }) => {
   return (
-    <Row data-testid="table-content">
+    <Row data-testid="table-content" className="table-content-container">
       <Col span={24}>
         <Card className="search-and-add">
           <Row align="middle">
             <Col span={20}>
               <Space size={[8, 16]} wrap>
                 <Search className="search" allowClear {...searchProps} />
-                {otherFilters.map((comp) => comp)}
+                {otherFilters ? otherFilters : null}
               </Space>
             </Col>
             <Col span={4} align="right">
@@ -38,20 +38,23 @@ const TableContent = ({
         </Card>
       </Col>
       <Col span={24}>
-        <Row align="middle" style={{ background: "#fff", padding: "6px 24px" }}>
-          <Col span={4}>
-            <h4>{title}</h4>
-          </Col>
-          <Col span={20} align="end">
-            {filterComponent ? (
-              <div style={{ float: "right" }}>{filterComponent}</div>
-            ) : (
-              ""
-            )}
-          </Col>
-        </Row>
         <Table
           rowKey="id"
+          title={() => (
+            <Row align="middle" gutter={[8, 8]}>
+              <Col span={4}>
+                <h4>{title}</h4>
+              </Col>
+              <Col span={20} align="end">
+                {tableHeaderFilterComponent ? (
+                  <div style={{ float: "right" }}>
+                    {tableHeaderFilterComponent}
+                  </div>
+                ) : null}
+              </Col>
+            </Row>
+          )}
+          className="table-content-wrapper"
           dataSource={dataSource}
           columns={columns}
           loading={loading}

@@ -43,6 +43,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 
@@ -71,6 +72,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 
@@ -111,6 +113,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 
@@ -151,6 +154,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 
@@ -195,6 +199,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 
@@ -223,6 +228,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 
@@ -253,6 +259,7 @@ describe("Welcome page", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [{ case: 1, permission: "edit" }];
       });
     });
 

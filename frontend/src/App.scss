@@ -42,10 +42,11 @@
 
   header {
     height: 5rem;
-    background: $primary-color;
+    background: $bg-color-white;
     padding: 0.5rem $default-padding-size;
     display: flex;
     align-items: center;
+    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
 
     .title {
       margin-left: $default-padding-size;
@@ -59,13 +60,13 @@
       align-self: flex-end;
       float: right;
       a {
-        color: #ffffff;
+        color: $primary-color;
         font-weight: 700;
         font-size: 0.95rem;
       }
       .nav-sign-in {
-        background-color: $yellow-color;
-        color: $primary-color;
+        background-color: $primary-color;
+        color: #ffffff;
         padding: 12px 18px;
         border-radius: 20px;
       }
@@ -93,15 +94,54 @@
     padding: 0px $default-padding-size;
   }
 
-  .search-and-add {
-    margin: 1rem 0px;
-    .search {
-      width: 30vw;
-      button {
-        border-color: $primary-color;
-        background-color: $primary-color;
-        color: #ffffff;
+  .table-content-container {
+    .search-and-add {
+      margin: 1rem 0px;
+      background: $bg-color-grey;
+
+      .ant-card-body {
+        padding: 10px 0 20px 0;
       }
+
+      .search {
+        width: 30vw;
+        button {
+          // border-color: $bg-color-grey;
+          // background-color: $bg-color-grey;
+          color: #000;
+        }
+      }
+    }
+
+    .table-content-wrapper {
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+
+      .ant-table-title {
+        padding: 0 16px;
+        background: $primary-color;
+        color: #fff;
+
+        h4 {
+          font-weight: 700;
+        }
+
+        label {
+          color: #fff;
+        }
+
+        .ant-select-selection-placeholder {
+          font-weight: 500;
+          color: #000;
+        }
+      }
+    }
+
+    .ant-table-pagination {
+      background: #fff;
+      margin: 0;
+      padding: 10px 15px;
+      border-radius: 0 0 8px 8px;
     }
   }
 
@@ -122,7 +162,8 @@
     background: $bg-color-grey;
 
     .content-card-container {
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+      background-color: $bg-color-grey;
+
       .ant-card-body {
         padding: 1.5rem 0px 0px;
 
@@ -161,22 +202,23 @@
 
     .admin-tab-menu-container {
       padding: 0 $default-padding-size;
-      background: #ffffff;
+      background: $bg-color-grey;
       .ant-tabs-nav {
         margin: 0;
       }
       .ant-tabs-nav-wrap {
-        background: #fff;
+        background: $bg-color-grey;
         // padding: 10px 1.5rem 0px;
         .ant-tabs-tab-btn {
           font-family: "RocGrotesk";
           font-size: 1rem;
           font-weight: 700;
-          background: #fff;
+          background: $bg-color-grey;
         }
       }
     }
   }
+
   .ant-card {
     box-shadow: none;
     border: none;
@@ -199,6 +241,7 @@
     height: 100%;
     width: 100%;
   }
+
   .ant-timeline {
     font-family: "RocGrotesk";
     font-weight: bold;
@@ -218,6 +261,7 @@
       inset-inline-start: 7.5px;
     }
   }
+
   .ant-form {
     input {
       font-family: "TabletGothic";
@@ -229,8 +273,10 @@
     }
   }
   .ant-select-selection-placeholder,
+  .ant-select-selection-item,
   .ant-form-item-label {
     font-family: "TabletGothic";
+    text-align: left;
   }
   .chart-container {
     padding: 24px;
@@ -253,5 +299,14 @@
       font-family: "TabletGothic" !important;
       font-size: 12px;
     }
+  }
+}
+
+.ant-picker-dropdown {
+  .ant-picker-cell {
+    color: #000;
+  }
+  .ant-picker-cell-disabled {
+    color: rgba(0, 0, 0, 0.25);
   }
 }

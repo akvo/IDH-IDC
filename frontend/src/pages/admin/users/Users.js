@@ -98,7 +98,7 @@ const Users = () => {
     >
       <TableContent
         title="All Users"
-        filterComponent={
+        tableHeaderFilterComponent={
           <>
             <Checkbox
               checked={showApprovedUser}
@@ -113,7 +113,7 @@ const Users = () => {
         columns={columns}
         searchProps={{
           placeholder: "Find User",
-          style: { width: 200 },
+          style: { width: 350 },
           onSearch: onSearch,
         }}
         buttonProps={{

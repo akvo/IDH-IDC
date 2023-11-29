@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Breadcrumb, Card, Tabs, Affix } from "antd";
+import { HomeOutlined, RightOutlined } from "@ant-design/icons";
 import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
 import { useNavigate, Link } from "react-router-dom";
@@ -53,9 +54,18 @@ const ContentLayout = ({
         <Card className="content-card-container" bordered={false}>
           {hasBreadcrumb ? (
             <Breadcrumb
+              separator={<RightOutlined />}
               items={breadcrumbItems.map((x, bi) => ({
                 key: bi,
-                title: <Link to={x.href}>{x.title}</Link>,
+                title: (
+                  <Link to={x.href}>
+                    {x.title.toLowerCase() === "home" ? (
+                      <HomeOutlined style={{ fontSize: "16px" }} />
+                    ) : (
+                      x.title
+                    )}
+                  </Link>
+                ),
               }))}
             />
           ) : (

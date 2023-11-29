@@ -4,7 +4,7 @@ import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LoadingOutlined } from "@ant-design/icons";
-import LogoWhite from "../../assets/images/logo-white.png";
+import Logo from "../../assets/images/logo.png";
 import { adminRole, allUserRole } from "../../store/static";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
@@ -51,7 +51,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         <Col span={6} align="start" style={{ width: "100%" }}>
           <Link to="/">
             <Image
-              src={LogoWhite}
+              src={Logo}
               height={65}
               preview={false}
               data-testid="logo-image"

@@ -223,33 +223,35 @@ const Cases = () => {
     .flatMap((c) => c.commodities)
     .map((c) => ({ label: c.name, value: c.id }));
 
-  const otherFilters = [
-    <Select
-      {...filterProps}
-      key="1"
-      options={countryOptions}
-      placeholder="Filter by Country"
-      value={country}
-      onChange={setCountry}
-    />,
-    <Select
-      {...filterProps}
-      key="2"
-      options={commodityOptios}
-      placeholder="Filter by Focus Commodity"
-      value={commodity}
-      onChange={setCommodity}
-    />,
-    <Select
-      {...filterProps}
-      key="3"
-      options={tagOptions}
-      placeholder="Filter by Tags"
-      mode="multiple"
-      value={tags}
-      onChange={setTags}
-    />,
-  ];
+  const otherFilters = (
+    <Space>
+      <Select
+        {...filterProps}
+        key="1"
+        options={countryOptions}
+        placeholder="Filter by Country"
+        value={country}
+        onChange={setCountry}
+      />
+      <Select
+        {...filterProps}
+        key="2"
+        options={commodityOptios}
+        placeholder="Filter by Focus Commodity"
+        value={commodity}
+        onChange={setCommodity}
+      />
+      <Select
+        {...filterProps}
+        key="3"
+        options={tagOptions}
+        placeholder="Filter by Tags"
+        mode="multiple"
+        value={tags}
+        onChange={setTags}
+      />
+    </Space>
+  );
 
   return (
     <ContentLayout
@@ -265,7 +267,7 @@ const Cases = () => {
         columns={columns}
         searchProps={{
           placeholder: "Find Case",
-          style: { width: 300 },
+          style: { width: 375 },
           onSearch: onSearch,
         }}
         buttonProps={
@@ -283,7 +285,7 @@ const Cases = () => {
           total: data.total,
           onChange: (page) => setCurrentPage(page),
         }}
-        otherFilters={otherFilters}
+        tableHeaderFilterComponent={otherFilters}
       />
     </ContentLayout>
   );

@@ -17,14 +17,15 @@ CLIENT_ID = os.environ.get("CLIENT_ID", None)
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET", None)
 
 
-class TestUserAuthentication():
+class TestUserAuthentication:
     @pytest.mark.asyncio
     async def test_get_all_user_expect_401(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
         res = await client.get(
             app.url_path_for("user:get_all"),
-            headers={"Authorization": f"Bearer {account.token}"})
+            headers={"Authorization": f"Bearer {account.token}"},
+        )
         assert res.status_code == 401
 
     def test_token_verification(self):
@@ -32,14 +33,13 @@ class TestUserAuthentication():
         assert account.token != ""
         assert account.decoded == account.data
         verify = verify_token(account.decoded)
-        assert verify['exp'] > 0
+        assert verify["exp"] > 0
 
     @pytest.mark.asyncio
     async def test_add_organisation(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
-        org = crud_organisation.add_organisation(
-            session=session, name="Akvo")
+        org = crud_organisation.add_organisation(session=session, name="Akvo")
         assert org.name == "Akvo"
 
     @pytest.mark.asyncio
@@ -69,8 +69,8 @@ class TestUserAuthentication():
             data=user_payload,
             headers={
                 "content-type": "application/x-www-form-urlencoded",
-                "Authorization": f"Bearer {account.token}"
-            }
+                "Authorization": f"Bearer {account.token}",
+            },
         )
         assert res.status_code == 200
         res = res.json()
@@ -80,7 +80,7 @@ class TestUserAuthentication():
             "fullname": "John Doe",
             "organisation": 1,
             "active": False,
-            "role": UserRole.user.value
+            "role": UserRole.user.value,
         }
 
     @pytest.mark.asyncio
@@ -98,8 +98,8 @@ class TestUserAuthentication():
             data=user_payload,
             headers={
                 "content-type": "application/x-www-form-urlencoded",
-                "Authorization": f"Bearer {account.token}"
-            }
+                "Authorization": f"Bearer {account.token}",
+            },
         )
         assert res.status_code == 409
 
@@ -117,11 +117,12 @@ class TestUserAuthentication():
                 "grant_type": "password",
                 "scopes": ["openid", "email"],
                 "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET
-            })
+                "client_secret": CLIENT_SECRET,
+            },
+        )
         assert res.status_code == 401
         res = res.json()
-        assert res == {'detail': 'Incorrect email or password.'}
+        assert res == {"detail": "Incorrect email or password."}
         # test invalid login with wrong email
         res = await client.post(
             app.url_path_for("user:login"),
@@ -132,11 +133,12 @@ class TestUserAuthentication():
                 "grant_type": "password",
                 "scopes": ["openid", "email"],
                 "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET
-            })
+                "client_secret": CLIENT_SECRET,
+            },
+        )
         assert res.status_code == 401
         res = res.json()
-        assert res == {'detail': 'Incorrect email or password.'}
+        assert res == {"detail": "Incorrect email or password."}
         # test invalid login grant type
         res = await client.post(
             app.url_path_for("user:login"),
@@ -147,8 +149,9 @@ class TestUserAuthentication():
                 "grant_type": "email",
                 "scopes": ["openid", "email"],
                 "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET
-            })
+                "client_secret": CLIENT_SECRET,
+            },
+        )
         assert res.status_code == 422
         # test invalid login client_id
         res = await client.post(
@@ -160,8 +163,9 @@ class TestUserAuthentication():
                 "grant_type": "password",
                 "scopes": ["openid", "email"],
                 "client_id": 123456789,
-                "client_secret": 987654321
-            })
+                "client_secret": 987654321,
+            },
+        )
         assert res.status_code == 404
         # test invalid login client_secret
         res = await client.post(
@@ -173,8 +177,9 @@ class TestUserAuthentication():
                 "grant_type": "password",
                 "scopes": ["openid", "email"],
                 "client_id": CLIENT_ID,
-                "client_secret": 987654321
-            })
+                "client_secret": 987654321,
+            },
+        )
         assert res.status_code == 404
 
     @pytest.mark.asyncio
@@ -191,13 +196,12 @@ class TestUserAuthentication():
                 "grant_type": "password",
                 "scopes": ["openid", "email"],
                 "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET
-            })
+                "client_secret": CLIENT_SECRET,
+            },
+        )
         assert res.status_code == 401
         res = res.json()
-        assert res == {
-            'detail': "You can't login until your account is approved."
-        }
+        assert res == {"detail": "You can't login until your account is approved."}
 
     @pytest.mark.asyncio
     async def test_get_user_me(
@@ -206,7 +210,8 @@ class TestUserAuthentication():
         account = Acc(email="super_admin@akvo.org", token=None)
         res = await client.get(
             app.url_path_for("user:me"),
-            headers={"Authorization": f"Bearer {account.token}"})
+            headers={"Authorization": f"Bearer {account.token}"},
+        )
         assert res.status_code == 200
         res = res.json()
         assert res == {
@@ -217,10 +222,8 @@ class TestUserAuthentication():
             "role": UserRole.user.value,
             "all_cases": False,
             "business_unit_detail": None,
-            "organisation_detail": {
-                "id": 1,
-                "name": "Akvo"
-            },
+            "organisation_detail": {"id": 1, "name": "Akvo"},
             "tags_count": 0,
-            "cases_count": 0
+            "cases_count": 0,
+            "case_access": [],
         }

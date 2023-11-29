@@ -386,6 +386,7 @@ class TestUserEndpoint:
                 "organisation_detail": {"id": 1, "name": "Akvo"},
                 "tags_count": 0,
                 "cases_count": 0,
+                "case_access": [],
             },
         }
 

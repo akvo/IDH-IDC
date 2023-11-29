@@ -19,6 +19,7 @@ const defaultUserState = {
   },
   tags_count: 0,
   cases_count: 0,
+  case_access: [],
 };
 
 const UserState = new Store(defaultUserState);

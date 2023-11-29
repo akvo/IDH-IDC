@@ -67,6 +67,7 @@ const App = () => {
       ];
       s.tags_count = 0;
       s.cases_count = 0;
+      s.case_access = [];
     });
   }, [removeCookie]);
 
@@ -86,6 +87,7 @@ const App = () => {
             s.business_unit_detail = data.business_unit_detail;
             s.tags_count = data.tags_count;
             s.cases_count = data.cases_count;
+            s.case_access = data.case_access;
           });
         })
         .catch(() => {
