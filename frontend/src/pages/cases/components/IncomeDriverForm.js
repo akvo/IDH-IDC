@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col, Space, Form, InputNumber } from "antd";
-import { Questions, indentSize, getFunctionDefaultValue } from "./";
+import {
+  Questions,
+  indentSize,
+  getFunctionDefaultValue,
+  InputNumberThousandFormatter,
+} from "./";
 import { flatten } from "../../../lib";
 import isEmpty from "lodash/isEmpty";
 import { CaretDownFilled, CaretUpFilled } from "@ant-design/icons";
@@ -39,7 +44,9 @@ const IncomeDriverForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCaseId]);
 
-  const flattenQuestionList = flatten(group.questions);
+  const flattenQuestionList = useMemo(() => {
+    return flatten(group.questions);
+  }, [group]);
 
   const onValuesChange = (value, currentValues) => {
     // handle form values
@@ -154,7 +161,7 @@ const IncomeDriverForm = ({
           className="total-diversified-income"
           style={{ marginLeft: "-4px", marginRight: "-4px" }}
         >
-          <Col span={14}>
+          <Col span={13}>
             <h3 className="diversified-income-title">Diversified Income</h3>
           </Col>
           <Col span={4}>
@@ -162,6 +169,7 @@ const IncomeDriverForm = ({
               style={{ width: "100%" }}
               value={totalDiversifiedIncome.current}
               disabled
+              {...InputNumberThousandFormatter}
             />
           </Col>
           <Col span={4}>
@@ -169,9 +177,10 @@ const IncomeDriverForm = ({
               value={totalDiversifiedIncome.feasible}
               style={{ width: "100%" }}
               disabled
+              {...InputNumberThousandFormatter}
             />
           </Col>
-          <Col span={2}>
+          <Col span={3}>
             <Space className="percentage-wrapper">
               {totalDiversifiedIncome.percent ===
               0 ? null : totalDiversifiedIncome.percent > 0 ? (

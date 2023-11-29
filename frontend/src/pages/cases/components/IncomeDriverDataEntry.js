@@ -28,6 +28,7 @@ const IncomeDriverDataEntry = ({
   setFinished,
   segmentFormValues,
   setSegmentFormValues,
+  setPage,
 }) => {
   const [activeKey, setActiveKey] = useState("1");
   const [items, setItems] = useState([]);
@@ -77,7 +78,7 @@ const IncomeDriverDataEntry = ({
   // }, [segmentFormValues, setCaseData, totalIncomeQuestion]);
 
   // handle save here
-  const handleSave = () => {
+  const handleSave = ({ isNextButton = false }) => {
     setIsSaving(true);
     const completed = finished.filter(
       (item) => item !== "Income Driver Data Entry"
@@ -130,6 +131,7 @@ const IncomeDriverDataEntry = ({
           return {
             ...findItem,
             ...fv,
+            currentSegmentId: findItem?.currentSegmentId || fv.currentSegmentId,
           };
         });
         setSegmentFormValues(transformFormValues);
@@ -139,13 +141,26 @@ const IncomeDriverDataEntry = ({
         });
         setTimeout(() => {
           setFinished([...completed, "Income Driver Data Entry"]);
+          // move to next page
+          if (isNextButton) {
+            setPage("Income Driver Dashboard");
+          }
         }, 100);
       })
       .catch((e) => {
         console.error(e);
+        const { status, data } = e.response;
+        let errorText = "Failed to save case profile.";
+        if (status === 403) {
+          errorText = data.detail;
+          if (isNextButton) {
+            setFinished([...completed, "Income Driver Data Entry"]);
+            setPage("Income Driver Dashboard");
+          }
+        }
         messageApi.open({
           type: "error",
-          content: "Failed to save segments.",
+          content: errorText,
         });
         setFinished(completed);
       })
@@ -279,6 +294,7 @@ const IncomeDriverDataEntry = ({
             isSaving={isSaving}
             currentCaseId={currentCaseId}
             currentCase={currentCase}
+            setPage={setPage}
           />
         );
         // handle form values
@@ -363,6 +379,7 @@ const IncomeDriverDataEntry = ({
                   isSaving={isSaving}
                   currentCaseId={currentCaseId}
                   currentCase={currentCase}
+                  setPage={setPage}
                 />
               ),
           }))}

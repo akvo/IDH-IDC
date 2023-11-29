@@ -8,7 +8,7 @@ import Chart from "../../../components/chart";
 const otherCommodities = ["secondary", "tertiary"];
 const colors = ["#0098FF", "#FFC505", "#47D985", "#FF5D00", "#00625F"];
 
-const ChartExploreBreakdownDrivers = ({ dashboardData }) => {
+const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
 
@@ -86,6 +86,12 @@ const ChartExploreBreakdownDrivers = ({ dashboardData }) => {
     ];
     return [...focusRes, ...diversifiedRes];
   }, [currentSegmentData]);
+
+  useEffect(() => {
+    if (driverOptionsDropdown.length > 0) {
+      setSelectedDriver("diversified");
+    }
+  }, [driverOptionsDropdown]);
 
   const chartData = useMemo(() => {
     if (!currentSegmentData || !driverOptionsDropdown.length) {
@@ -228,6 +234,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData }) => {
             type={"BARSTACK"}
             data={chartData}
             affix={true}
+            extra={{ axisTitle: { y: `Income (${currentCase.currency})` } }}
           />
         </Col>
       </Row>

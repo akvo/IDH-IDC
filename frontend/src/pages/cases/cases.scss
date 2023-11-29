@@ -9,6 +9,12 @@
     }
 
     .chart-container {
+      padding: 10px 20px 10px 20px;
+
+      .ant-card-head {
+        padding: 0;
+      }
+
       .ant-card-body {
         padding: 0px;
       }
@@ -45,9 +51,27 @@
             cursor: pointer;
           }
         }
+        // handle scenario modeling page
+        .scenario-header-wrapper {
+          padding: 10px 24px;
+          h3 {
+            padding: 0;
+          }
+        }
+        p {
+          font-size: 14px;
+          font-weight: normal;
+        }
+        // handle scenario modeling page
         margin-bottom: 0px;
         .ant-card-extra {
           padding: 10px 24px;
+        }
+        .ant-card-head-wrapper {
+          align-items: start;
+        }
+        .card-extra-wrapper {
+          margin-top: 15px;
         }
       }
       .ant-card-body {
@@ -118,13 +142,22 @@
       padding-bottom: 0px;
     }
     .timeline-container {
-      padding: 1.5rem 0px;
+      padding: 2rem 7rem;
+      margin-left: -$default-padding-size;
+      position: fixed;
+      top: 171px;
+      width: 100%;
+      z-index: 100;
+      background-color: $bg-color-grey;
     }
   }
   h3 {
     margin: 0px -24px 10px;
     padding: 0px 24px 10px;
     font-weight: normal;
+  }
+  h4 {
+    margin: 10px 0px;
   }
   .ant-timeline-item {
     cursor: pointer;
@@ -141,8 +174,8 @@
   }
   .anticon {
     &.finished-dot {
+      // position: absolute;
       font-size: 20px;
-      position: absolute;
       width: 20px;
       height: 20px;
       left: 1px;
@@ -188,6 +221,27 @@
   #sensitivity-analysis {
     .ant-form-item {
       margin-bottom: 0px;
+    }
+  }
+
+  .ant-steps-item-title {
+    cursor: pointer;
+  }
+  #scenario-modeling {
+    font-family: "TabletGothic";
+    .scenario-field-item {
+      margin-bottom: 0px;
+    }
+  }
+
+  .chart-title {
+    margin: 0px 0px -10px 0px;
+    padding: 0px 24px 10px 0;
+  }
+
+  #income-overview-chart {
+    .income-overview-chart-wrapper {
+      padding: 0 20px;
     }
   }
 }

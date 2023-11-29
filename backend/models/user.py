@@ -36,9 +36,7 @@ def json_load(value: Optional[str] = None):
     return value
 
 
-def validate_business_units(
-    info: ValidationInfo, value: Optional[str] = None
-):
+def validate_business_units(info: ValidationInfo, value: Optional[str] = None):
     business_units_required = [UserRole.admin]
     role = info.data.get("role", None)
     # business unit required for admin role
@@ -102,6 +100,11 @@ class UserInvitation(TypedDict):
     email: str
     role: UserRole
     invitation_id: str
+
+
+class UserSearchDict(TypedDict):
+    value: int
+    label: str
 
 
 class EmailRecipient(TypedDict):
@@ -256,15 +259,20 @@ class User(Base):
         }
 
     @property
+    def to_search_dropdown(self) -> UserSearchDict:
+        label = f"{self.fullname} <{self.email}>"
+        return {"value": self.id, "label": label}
+
+    @property
     def recipient(self) -> EmailRecipient:
         return {"Email": self.email, "Name": self.fullname}
 
 
 class UserBase(BaseModel):
     id: Optional[int] = None
-    organisation: int
     email: str
     fullname: str
+    organisation: Optional[int] = None
     role: Optional[UserRole] = UserRole.user
     password: Optional[SecretStr] = None
     all_cases: Optional[bool] = False
@@ -291,9 +299,9 @@ class UserBase(BaseModel):
     @classmethod
     def as_form(
         cls,
-        organisation: int = Form(...),
         fullname: str = Form(...),
         email: str = Form(...),
+        organisation: int = Form(None),
         password: SecretStr = Form(None),
         role: UserRole = Form(None),
         all_cases: bool = Form(False),
@@ -323,7 +331,7 @@ class UserResponse(BaseModel):
 
 class UserUpdateBase(BaseModel):
     fullname: str
-    organisation: int
+    organisation: Optional[int] = None
     role: Optional[UserRole] = None
     all_cases: Optional[bool] = False
     is_active: Optional[bool] = False
@@ -352,7 +360,7 @@ class UserUpdateBase(BaseModel):
     def as_form(
         cls,
         fullname: str = Form(...),
-        organisation: int = Form(...),
+        organisation: int = Form(None),
         password: SecretStr = Form(None),
         role: UserRole = Form(None),
         all_cases: bool = Form(False),

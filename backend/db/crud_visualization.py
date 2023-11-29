@@ -6,38 +6,40 @@ from models.visualization import Visualization, VisualizationBase, Visualization
 
 
 def create_or_update_visualization(
-    session: Session, payload: VisualizationBase
+    session: Session, payloads: List[VisualizationBase]
 ) -> VisualizationDict:
-    prev_data = (
-        session.query(Visualization)
-        .filter(
-            and_(
-                Visualization.case == payload.case,
-                Visualization.segment == payload.segment,
-                Visualization.tab == payload.tab,
+    res = []
+    for payload in payloads:
+        prev_data = (
+            session.query(Visualization)
+            .filter(
+                and_(
+                    Visualization.case == payload.case,
+                    Visualization.tab == payload.tab,
+                )
             )
+            .first()
         )
-        .first()
-    )
-    if prev_data:
-        # update
-        prev_data.config = payload.config
-        session.commit()
-        session.flush()
-        session.refresh(prev_data)
-        return prev_data
-    # add
-    data = Visualization(
-        case=payload.case,
-        segment=payload.segment,
-        tab=payload.tab,
-        config=payload.config,
-    )
-    session.add(data)
-    session.commit()
-    session.flush()
-    session.refresh(data)
-    return data
+        if prev_data:
+            # update
+            prev_data.config = payload.config
+            session.commit()
+            session.flush()
+            session.refresh(prev_data)
+            res.append(prev_data)
+        else:
+            # add
+            data = Visualization(
+                case=payload.case,
+                tab=payload.tab,
+                config=payload.config,
+            )
+            session.add(data)
+            session.commit()
+            session.flush()
+            session.refresh(data)
+            res.append(data)
+    return res
 
 
 def get_by_case_id(session: Session, case_id: int) -> List[VisualizationDict]:

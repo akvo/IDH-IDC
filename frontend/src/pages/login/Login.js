@@ -8,7 +8,6 @@ import {
   Button,
   Form,
   Input,
-  Divider,
   Typography,
   Image,
   message,
@@ -16,6 +15,7 @@ import {
 import { useCookies } from "react-cookie";
 import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
+import LogoWhite from "../../assets/images/logo-white.png";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
@@ -69,79 +69,89 @@ const Login = () => {
     <ContentLayout wrapperId="login">
       {contextHolder}
       <Row align="middle" className="login-container">
-        <Col span={10} align="start" className="login-form-wrapper">
-          <div className="page-title-container">
-            <Typography.Title>Income Driver Calculator</Typography.Title>
-            <Typography.Title level={3}>
-              Welcome to the income driver calculator version 2.0
-            </Typography.Title>
-          </div>
-          <h4>Get Started</h4>
-          <Divider />
-          <Form
-            name="form-login"
-            className="form-login"
-            layout="vertical"
-            onFinish={onFinish}
-            autoComplete="off"
-          >
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  type: "email",
-                  message: "The input is not valid Email",
-                },
-                {
-                  required: true,
-                  message: "Please input your email!",
-                },
-              ]}
+        <Col span={12} className="login-form-wrapper">
+          <Image
+            src={LogoWhite}
+            height={55}
+            preview={false}
+            data-testid="logo-image"
+          />
+          <Col span={24} align="center" className="login-form">
+            <div className="page-title-container">
+              <Typography.Title>
+                Income Driver <br />
+                <span style={{ color: "#47d985" }}>Calculator</span>
+              </Typography.Title>
+              <Typography.Title level={3}>
+                Welcome to the income driver calculator version 2.0
+              </Typography.Title>
+            </div>
+            <h2>Sign In</h2>
+            <Form
+              name="form-login"
+              className="form-login"
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
             >
-              <Input
-                size="large"
-                data-testid="input-email"
-                placeholder="Email"
-              />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-            >
-              <Input.Password
-                size="large"
-                data-testid="input-password"
-                placeholder="Password (6 digits at least, case sensitive)"
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                data-testid="button-login"
-                className="button-login"
-                size="large"
-                type="primary"
-                htmlType="submit"
-                block
-                loading={loading}
+              <Form.Item
+                name="email"
+                rules={[
+                  {
+                    type: "email",
+                    message: "The input is not valid Email",
+                  },
+                  {
+                    required: true,
+                    message: "Please input your email!",
+                  },
+                ]}
               >
-                Sign in
-              </Button>
-            </Form.Item>
-            <Form.Item noStyle>
-              <p>
-                Don&apos;t have an account?{" "}
-                <Link to="/register">Register here.</Link>
-              </p>
-            </Form.Item>
-          </Form>
+                <Input
+                  size="large"
+                  data-testid="input-email"
+                  placeholder="Email"
+                />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  size="large"
+                  data-testid="input-password"
+                  placeholder="Password"
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  data-testid="button-login"
+                  className="button-login"
+                  size="large"
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  loading={loading}
+                >
+                  Sign in
+                </Button>
+              </Form.Item>
+              <Form.Item noStyle>
+                <p>
+                  Don&apos;t have an account?{" "}
+                  <Link to="/register">Register here.</Link>
+                </p>
+              </Form.Item>
+            </Form>
+          </Col>
         </Col>
         <Col
-          span={14}
+          span={12}
           align="end"
           data-testid="login-image-wrapper"
           className="login-image-wrapper"

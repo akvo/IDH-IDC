@@ -2,12 +2,20 @@ import React from "react";
 import { Form, Select, Row, Col } from "antd";
 import { selectProps } from "./";
 
+const responsiveCol = {
+  xs: { span: 24 },
+  sm: { span: 24 },
+  md: { span: 24 },
+  lg: { span: 12 },
+  xl: { span: 12 },
+};
+
 const AreaUnitFields = ({ disabled = true, index = 0 }) => {
   return (
     <Row gutter={[12, 12]}>
-      <Col span={12}>
+      <Col {...responsiveCol}>
         <Form.Item
-          label="Select Area Unit"
+          label="Area Unit"
           name={index ? `${index}-area_size_unit` : "area_size_unit"}
           rules={[
             {
@@ -45,9 +53,9 @@ const AreaUnitFields = ({ disabled = true, index = 0 }) => {
           />
         </Form.Item>
       </Col>
-      <Col span={12}>
+      <Col {...responsiveCol}>
         <Form.Item
-          label="Select Weight Measurement Unit"
+          label="Weight Measurement Unit"
           name={
             index
               ? `${index}-volume_measurement_unit`

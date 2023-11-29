@@ -35,9 +35,10 @@ from models.user import (
     UserInvitation,
     UserDetailDict,
     UserRole,
+    UserSearchDict,
 )
 from models.user_business_unit import UserBusinessUnitRole
-from typing import Optional
+from typing import Optional, List
 from pydantic import SecretStr
 from http import HTTPStatus
 from utils.mailer import Email, MailTypeEnum
@@ -228,11 +229,20 @@ def register(
         url = f"{webdomain}/invitation/{res_invitation_id}"
         email = Email(recipients=recipients, email=MailTypeEnum.INVITATION, url=url)
         email.send
-    if not invitation_id:
-        # send registration email
+    # regular / internal user registration
+    if not invitation_id and payload.business_units:
+        # send email to business unit admin
         admins = crud_user.find_business_unit_admin(session=session, user_id=user["id"])
         email = Email(
             recipients=[a.recipient for a in admins], email=MailTypeEnum.REG_NEW
+        )
+        email.send
+    # external user registration
+    if not invitation_id and not payload.business_units:
+        # send email to super admin
+        super_admins = crud_user.find_super_admin(session=session)
+        email = Email(
+            recipients=[a.recipient for a in super_admins], email=MailTypeEnum.REG_NEW
         )
         email.send
     return user
@@ -282,6 +292,29 @@ def change_password(
         "token_type": "bearer",
         "user": user.to_user_info,
     }
+
+
+@user_route.get(
+    "/user/search_dropdown",
+    response_model=List[UserSearchDict],
+    summary="get users by search value",
+    name="user:search_user_dropdown",
+    tags=["User"],
+)
+def search_user(
+    req: Request,
+    search: str,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_user(session=session, authenticated=req.state.authenticated)
+    user = crud_user.search_user(
+        session=session,
+        search=search,
+    )
+    if not user:
+        return []
+    return [u.to_search_dropdown for u in user]
 
 
 @user_route.get(

@@ -8,7 +8,6 @@ import {
   Button,
   Form,
   Input,
-  Divider,
   Typography,
   Image,
   message,
@@ -16,6 +15,7 @@ import {
 import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
 import isEmpty from "lodash/isEmpty";
+import LogoWhite from "../../assets/images/logo-white.png";
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
@@ -88,79 +88,89 @@ const ResetPassword = () => {
     <ContentLayout wrapperId="login">
       {contextHolder}
       <Row align="middle" className="login-container">
-        <Col span={10} align="start" className="login-form-wrapper">
-          <div className="page-title-container">
-            <Typography.Title>Income Driver Calculator</Typography.Title>
-          </div>
-          <h3>Set Password</h3>
-          <Divider />
-          <Form
-            form={form}
-            name="form-reset-password"
-            className="form-login"
-            layout="vertical"
-            onFinish={onFinish}
-            autoComplete="off"
-          >
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
+        <Col span={12} align="start" className="login-form-wrapper">
+          <Image
+            src={LogoWhite}
+            height={55}
+            preview={false}
+            data-testid="logo-image"
+          />
+          <Col span={24} align="center" className="login-form">
+            <div className="page-title-container">
+              <Typography.Title>
+                Income Driver <br />
+                <span style={{ color: "#47d985" }}>Calculator</span>
+              </Typography.Title>
+            </div>
+            <h2>Set Password</h2>
+            <Form
+              form={form}
+              name="form-reset-password"
+              className="form-login"
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
             >
-              <Input.Password
-                data-testid="input-password"
-                placeholder="Password (6 digits at least, case sensitive)"
-                disabled={fetchingUser}
-              />
-            </Form.Item>
-            <Form.Item
-              name="confirm"
-              dependencies={["password"]}
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "Confirm Password that you entered do not match!"
-                      )
-                    );
+              <Form.Item
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
                   },
-                }),
-              ]}
-            >
-              <Input.Password
-                data-testid="input-confirm-password"
-                placeholder="Confirm Password"
-                disabled={fetchingUser}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                data-testid="button-login"
-                className="button-login"
-                type="primary"
-                htmlType="submit"
-                block
-                loading={loading || fetchingUser}
+                ]}
               >
-                {fetchingUser ? "Load user detail..." : "Save Password"}
-              </Button>
-            </Form.Item>
-          </Form>
+                <Input.Password
+                  data-testid="input-password"
+                  placeholder="Password"
+                  disabled={fetchingUser}
+                />
+              </Form.Item>
+              <Form.Item
+                name="confirm"
+                dependencies={["password"]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please confirm your password!",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          "Confirm Password that you entered do not match!"
+                        )
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password
+                  data-testid="input-confirm-password"
+                  placeholder="Confirm Password"
+                  disabled={fetchingUser}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  data-testid="button-login"
+                  className="button-login"
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  loading={loading || fetchingUser}
+                >
+                  {fetchingUser ? "Load user detail..." : "Save Password"}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Col>
         </Col>
         <Col
-          span={14}
+          span={12}
           align="end"
           data-testid="login-image-wrapper"
           className="login-image-wrapper"

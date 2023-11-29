@@ -81,20 +81,19 @@ def get_all_case(
     session: Session,
     skip: int = 0,
     limit: int = 10,
-    show_private: Optional[bool] = 0,
+    show_private: Optional[bool] = False,
     search: Optional[str] = None,
     tags: Optional[int] = None,
     focus_commodities: Optional[int] = None,
     business_unit_users: Optional[List[int]] = None,
     user_cases: Optional[List[int]] = None,
+    country: Optional[int] = None,
 ) -> List[CaseListDict]:
     case = session.query(Case)
     if not show_private:
         case = case.filter(Case.private == 0)
     if search:
-        case = case.filter(
-            Case.name.ilike("%{}%".format(search.lower().strip()))
-        )
+        case = case.filter(Case.name.ilike("%{}%".format(search.lower().strip())))
     if focus_commodities:
         case = case.filter(Case.focus_commodity.in_(focus_commodities))
     if tags:
@@ -105,6 +104,8 @@ def get_all_case(
         case = case.filter(Case.created_by.in_(business_unit_users))
     if user_cases:
         case = case.filter(Case.id.in_(user_cases))
+    if country:
+        case = case.filter(Case.country == country)
     count = case.count()
     case = case.order_by(Case.id.desc()).offset(skip).limit(limit).all()
     return PaginatedCaseData(count=count, data=case)
@@ -114,8 +115,7 @@ def get_case_by_id(session: Session, id: int) -> CaseDict:
     case = session.query(Case).filter(Case.id == id).first()
     if not case:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Case {id} not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Case {id} not found"
         )
     return case
 
@@ -141,10 +141,7 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
     case.private = 1 if payload.private else 0
     # handle tag
     if payload.tags:
-        prev_tags = (
-            session.query(CaseTag)
-            .filter(CaseTag.case == case.id).all()
-        )
+        prev_tags = session.query(CaseTag).filter(CaseTag.case == case.id).all()
         for ct in prev_tags:
             session.delete(ct)
             session.commit()
@@ -166,10 +163,8 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
     if prev_focus_commodity:
         # update value
         prev_focus_commodity.commodity = payload.focus_commodity
-        prev_focus_commodity.area_size_unit = payload.area_size_unit,
-        prev_focus_commodity.volume_measurement_unit = (
-            payload.volume_measurement_unit
-        )
+        prev_focus_commodity.area_size_unit = (payload.area_size_unit,)
+        prev_focus_commodity.volume_measurement_unit = payload.volume_measurement_unit
     # handle update other commodities
     if payload.other_commodities:
         for val in payload.other_commodities:
@@ -188,7 +183,7 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
                 # update value
                 prev_case_commodity.commodity = val.commodity
                 prev_case_commodity.breakdown = breakdown
-                prev_case_commodity.area_size_unit = val.area_size_unit,
+                prev_case_commodity.area_size_unit = (val.area_size_unit,)
                 prev_case_commodity.volume_measurement_unit = (
                     val.volume_measurement_unit
                 )
@@ -221,3 +216,27 @@ def get_case_options(
     if user_cases:
         case = case.filter(Case.id.in_(user_cases))
     return case.all()
+
+
+def check_case_owner(session: Session, case_id: int, user_id: int):
+    case = get_case_by_id(session=session, id=case_id)
+    return case.created_by == user_id
+
+
+def get_case_by_created_by(session: Session, created_by: int):
+    case = session.query(Case).filter(Case.created_by == created_by).all()
+    return case
+
+
+def update_case_owner(session: Session, case_id: int, user_id: int) -> CaseDict:
+    case = get_case_by_id(session=session, id=case_id)
+    case.created_by = user_id
+    session.commit()
+    session.flush()
+    session.refresh(case)
+    return case
+
+
+def get_case_by_private(session: Session, private: Optional[bool] = False):
+    private_param = 1 if private else 0
+    return session.query(Case).filter(Case.private == private_param).all()

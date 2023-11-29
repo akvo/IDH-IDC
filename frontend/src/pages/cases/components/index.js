@@ -161,6 +161,11 @@ export const generateSegmentPayloads = (
   return segmentPayloads;
 };
 
+export const InputNumberThousandFormatter = {
+  formatter: (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+  parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
+};
+
 export { default as AreaUnitFields } from "./AreaUnitFields";
 export { default as SideMenu } from "./SideMenu";
 export { default as CaseProfile } from "./CaseProfile";
@@ -173,3 +178,5 @@ export { default as DashboardIncomeOverview } from "./DashboardIncomeOverview";
 export { default as DashboardSensitivityAnalysis } from "./DashboardSensitivityAnalysis";
 export { default as DashboardScenarioModeling } from "./DashboardScenarioModeling";
 export { default as Questions } from "./Questions";
+export { default as Scenario } from "./Scenario";
+export { default as DebounceSelect } from "./DebounceSelect";

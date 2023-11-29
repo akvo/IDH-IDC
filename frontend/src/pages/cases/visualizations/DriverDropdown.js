@@ -10,6 +10,7 @@ const DriverDropdown = ({ options = [], value, onChange }) => {
       value={value}
       onChange={onChange}
       {...selectProps}
+      allowClear={false}
     />
   );
 };

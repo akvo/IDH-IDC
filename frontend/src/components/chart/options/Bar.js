@@ -8,6 +8,7 @@ import {
   Title,
   axisTitle,
   NoData,
+  thousandFormatter,
 } from "./common";
 import { sortBy, isEmpty, sumBy } from "lodash";
 
@@ -42,7 +43,7 @@ const Bar = ({
     grid: {
       top: grid?.top ? grid.top : horizontal ? 80 : 58,
       bottom: grid?.bottom ? grid.bottom : horizontal ? 80 : 58,
-      left: grid?.left ? grid.left : horizontal ? 100 : 75,
+      left: grid?.left ? grid.left : horizontal ? 100 : 100,
       right: grid?.right ? grid.right : horizontal ? 58 : 58,
       show: true,
       label: {
@@ -63,7 +64,7 @@ const Bar = ({
       name: yAxisTitle || "",
       nameTextStyle: { ...TextStyle },
       nameLocation: "middle",
-      nameGap: 50,
+      nameGap: 75,
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",
@@ -109,7 +110,10 @@ const Bar = ({
           ...TextStyle,
           color: "#fff",
           formatter: (s) => {
-            return `${s.value}${percentage ? " %" : ""}`;
+            if (percentage) {
+              return `${s.value}%`;
+            }
+            return thousandFormatter(s.value);
           },
         },
       },

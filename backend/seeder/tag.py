@@ -4,22 +4,27 @@ import pandas as pd
 from core.config import generate_config_file
 from db.connection import Base, engine, SessionLocal
 from utils.truncator import truncatedb
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from models.tag import Tag
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MASTER_DIR = BASE_DIR + "/source/master/"
 sys.path.append(BASE_DIR)
 
 
-def seeder_tag(session: Session, engine: create_engine):
-
+def seeder_tag(session: Session):
     ## tags
     truncatedb(session=session, table="tag")
     tags = pd.read_csv(MASTER_DIR + "tags.csv")
     tags = tags[["id", "name", "description"]]
-    tags.to_sql("tag", con=engine, if_exists="append", index=False)
+    for index, row in tags.iterrows():
+        tag = Tag(id=row["id"], name=row["name"], description=row["description"])
+        session.add(tag)
+        session.commit()
+        session.flush()
+        session.refresh(tag)
     print("[DATABASE UPDATED]: Tag")
+    session.close()
 
     generate_config_file()
 
@@ -27,4 +32,4 @@ def seeder_tag(session: Session, engine: create_engine):
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()
-    seeder_tag(session=session, engine=engine)
+    seeder_tag(session=session)

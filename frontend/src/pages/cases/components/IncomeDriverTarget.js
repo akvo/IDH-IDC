@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Form, InputNumber, Select, Switch } from "antd";
-import { selectProps } from "./";
+import { InputNumberThousandFormatter, selectProps } from "./";
 import { api } from "../../../lib";
 import isEmpty from "lodash/isEmpty";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const formStyle = { width: "100%" };
 
@@ -12,7 +13,7 @@ const IncomeDriverTarget = ({
   segmentFormValues,
   setSegmentFormValues,
   segmentItem,
-  totalIncome,
+  // totalIncome,
 }) => {
   const [form] = Form.useForm();
   const [householdSize, setHouseholdSize] = useState(0);
@@ -50,7 +51,7 @@ const IncomeDriverTarget = ({
     setSegmentFormValues(updatedFv);
   };
 
-  // load initial target& hh size
+  // load initial target & hh size
   useEffect(() => {
     if (!isEmpty(segmentItem) && currentSegmentId) {
       setIncomeTarget(segmentItem?.target || 0);
@@ -77,12 +78,23 @@ const IncomeDriverTarget = ({
   }, [segmentItem, currentSegmentId, form]);
 
   useEffect(() => {
+    // handle income target value when householdSize updated
     if (benchmark && !isEmpty(benchmark)) {
       const targetValue =
         benchmark.value?.[currentCase.currency.toLowerCase()] ||
         benchmark.value.lcu;
-      const targetHH = (householdSize / benchmark.household_size) * targetValue;
-      setIncomeTarget(targetHH);
+      // with CPI calculation
+      // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+      if (benchmark?.cpi_factor) {
+        const caseYearLIB = targetValue * (1 - benchmark.cpi_factor);
+        const LITarget =
+          (householdSize / benchmark.household_size) * caseYearLIB;
+        setIncomeTarget(LITarget);
+      } else {
+        const LITarget =
+          (householdSize / benchmark.household_size) * targetValue;
+        setIncomeTarget(LITarget);
+      }
     }
   }, [benchmark, householdSize, currentCase]);
 
@@ -145,24 +157,29 @@ const IncomeDriverTarget = ({
         let url = `country_region_benchmark?country_id=${currentCase.country}`;
         url = `${url}&region_id=${region}&year=${currentCase.year}`;
         api.get(url).then((res) => {
+          // data represent LI Benchmark value
           const { data } = res;
-          const targetHH = data.household_size;
           setBenchmark(data);
-          if (data?.cpi) {
-            setIncomeTarget(data.cpi);
+          const targetHH = data.household_size;
+          const targetValue =
+            data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
+          // with CPI calculation
+          // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+          if (data?.cpi_factor) {
+            const caseYearLIB = targetValue * (1 - data.cpi_factor);
+            const LITarget = (HHSize / targetHH) * caseYearLIB;
+            setIncomeTarget(LITarget);
             updateFormValues({
               ...regionData,
-              target: data.cpi,
+              target: LITarget,
               benchmark: data,
             });
           } else {
-            const targetValue =
-              data.value?.[currentCase.currency.toLowerCase()] ||
-              data.value.lcu;
-            setIncomeTarget((HHSize / targetHH) * targetValue);
+            const LITarget = (HHSize / targetHH) * targetValue;
+            setIncomeTarget(LITarget);
             updateFormValues({
               ...regionData,
-              target: (HHSize / targetHH) * targetValue,
+              target: LITarget,
               benchmark: data,
             });
           }
@@ -180,7 +197,7 @@ const IncomeDriverTarget = ({
     >
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item label="Manual Target" name="manual_target">
+          <Form.Item label="Better income target" name="manual_target">
             <Switch checked={!disableTarget} />
           </Form.Item>
         </Col>
@@ -190,9 +207,20 @@ const IncomeDriverTarget = ({
             display: disableTarget ? "none" : "",
           }}
         >
-          <Form.Item label="Target" name="target">
-            <InputNumber style={formStyle} disabled={disableTarget} />
-          </Form.Item>
+          <Row align="middle" gutter={[16, 16]}>
+            <Col span={21}>
+              <Form.Item label="Target" name="target">
+                <InputNumber
+                  style={formStyle}
+                  disabled={disableTarget}
+                  {...InputNumberThousandFormatter}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={3}>
+              <b>{currentCase.currency}</b>
+            </Col>
+          </Row>
         </Col>
       </Row>
       {/* region options notif */}
@@ -228,10 +256,7 @@ const IncomeDriverTarget = ({
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item
-            label="Number of Average Adult in Household"
-            name="household_adult"
-          >
+          <Form.Item label="Avg # of adults in HH" name="household_adult">
             <InputNumber
               style={formStyle}
               onChange={handleOnChangeHouseholdAdult}
@@ -239,10 +264,7 @@ const IncomeDriverTarget = ({
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item
-            label="Number of Average Children in Household"
-            name="household_children"
-          >
+          <Form.Item label="Avg # of children in HH" name="household_children">
             <InputNumber
               style={formStyle}
               onChange={handleOnChangeHouseholdChild}
@@ -260,15 +282,16 @@ const IncomeDriverTarget = ({
         <Col span={8}>
           <p>Living Income Target</p>
           <h2>
-            {incomeTarget.toFixed(2)} {currentCase.currency}
+            {thousandFormatter(incomeTarget.toFixed(2))} {currentCase.currency}
           </h2>
         </Col>
-        <Col span={16}>
-          <p>Calculated Living Income</p>
+        {/* <Col span={16}>
+          <p>Current HH Living Income</p>
           <h2>
-            {totalIncome.current} {currentCase.currency}
+            {thousandFormatter(totalIncome.current.toFixed(2))}{" "}
+            {currentCase.currency}
           </h2>
-        </Col>
+        </Col> */}
       </Row>
     </Form>
   );

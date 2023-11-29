@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Chart from "../../../components/chart";
-import { LabelStyle } from "../../../components/chart/options/common";
+import {
+  LabelStyle,
+  thousandFormatter,
+} from "../../../components/chart/options/common";
 import { SegmentSelector } from "./";
 import { getFunctionDefaultValue } from "../components";
 import {
@@ -8,7 +11,7 @@ import {
   AxisLabelFormatter,
 } from "../../../components/chart/options/common";
 
-const ChartMonetaryContribution = ({ dashboardData }) => {
+const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
 
   useEffect(() => {
@@ -71,13 +74,19 @@ const ChartMonetaryContribution = ({ dashboardData }) => {
         ...TextStyle,
         formatter: function (params) {
           var tar = params[1];
-          return tar.name + "<br/>" + tar.seriesName + " : " + tar.value;
+          return (
+            tar.name +
+            "<br/>" +
+            tar.seriesName +
+            " : " +
+            thousandFormatter(tar.value)
+          );
         },
       },
       grid: {
         show: true,
         containLabel: true,
-        left: 30,
+        left: 55,
         right: 50,
         label: {
           color: "#222",
@@ -107,6 +116,10 @@ const ChartMonetaryContribution = ({ dashboardData }) => {
       },
       yAxis: {
         type: "value",
+        name: `Income (${currentCase.currency})`,
+        nameTextStyle: { ...TextStyle },
+        nameLocation: "middle",
+        nameGap: 75,
         axisLabel: {
           ...TextStyle,
           color: "#9292ab",
@@ -150,7 +163,7 @@ const ChartMonetaryContribution = ({ dashboardData }) => {
         },
       ],
     };
-  }, [dashboardData, selectedSegment]);
+  }, [dashboardData, selectedSegment, currentCase.currency]);
 
   return (
     <div>

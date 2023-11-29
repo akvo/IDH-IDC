@@ -142,7 +142,7 @@ const ChartBigImpact = ({ dashboardData }) => {
       grid: {
         show: true,
         containLabel: true,
-        left: 30,
+        left: 55,
         right: 50,
         label: {
           color: "#222",
@@ -151,6 +151,10 @@ const ChartBigImpact = ({ dashboardData }) => {
       },
       xAxis: {
         type: "value",
+        name: "Impact (%)",
+        nameTextStyle: { ...TextStyle },
+        nameLocation: "middle",
+        nameGap: 50,
         axisLabel: {
           ...TextStyle,
           color: "#9292ab",

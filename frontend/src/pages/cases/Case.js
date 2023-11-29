@@ -251,6 +251,7 @@ const Case = () => {
           const focusCommodityValue = {
             name: data.name,
             description: data.description,
+            private: data?.private || false,
             tags: data?.tags || [],
             country: data.country,
             focus_commodity: data.focus_commodity,
@@ -366,7 +367,7 @@ const Case = () => {
       ) : (
         <Row gutter={[16, 16]} className="case-content">
           <SideMenu active={page} setActive={setActive} finished={finished} />
-          <Col span={20}>
+          <Col span={24}>
             {page === "Case Profile" && (
               <CaseProfile
                 setCaseTitle={setCaseTitle}
@@ -381,6 +382,7 @@ const Case = () => {
                 setCurrentCaseId={setCurrentCaseId}
                 initialOtherCommodityTypes={initialOtherCommodityTypes}
                 setCurrentCase={setCurrentCase}
+                currentCase={currentCase}
               />
             )}
             {page === "Income Driver Data Entry" && (
@@ -397,13 +399,17 @@ const Case = () => {
                 setFinished={setFinished}
                 segmentFormValues={segmentFormValues}
                 setSegmentFormValues={setSegmentFormValues}
+                setPage={setPage}
               />
             )}
             {page === "Income Driver Dashboard" && (
               <IncomeDriverDashboard
+                questionGroups={questionGroups}
                 commodityList={commodityList}
                 currentCaseId={currentCaseId}
+                currentCase={currentCase}
                 dashboardData={dashboardData}
+                setPage={setPage}
               />
             )}
           </Col>

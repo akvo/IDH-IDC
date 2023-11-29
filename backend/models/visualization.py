@@ -16,7 +16,6 @@ class VisualizationTab(enum.Enum):
 class VisualizationDict(TypedDict):
     id: int
     case: int
-    segment: int
     tab: VisualizationTab
     config: dict
 
@@ -26,7 +25,6 @@ class Visualization(Base):
 
     id = Column(Integer, primary_key=True, index=True, nullable=True)
     case = Column(Integer, ForeignKey("case.id"))
-    segment = Column(Integer, ForeignKey("segment.id"))
     tab = Column(
         Enum(VisualizationTab, name="visualization_tab"),
         default=VisualizationTab.sensitivity_analysis,
@@ -39,24 +37,16 @@ class Visualization(Base):
         passive_deletes=True,
         backref="case_visualization",
     )
-    segment_detail = relationship(
-        "Segment",
-        cascade="all, delete",
-        passive_deletes=True,
-        backref="segment_visualization",
-    )
 
     def __init__(
         self,
         case: int,
-        segment: int,
         tab: VisualizationTab,
         config: dict,
         id: Optional[int] = None,
     ):
         self.id = id
         self.case = case
-        self.segment = segment
         self.tab = tab
         self.config = config
 
@@ -68,7 +58,6 @@ class Visualization(Base):
         return {
             "id": self.id,
             "case": self.case,
-            "segment": self.segment,
             "tab": self.tab,
             "config": self.config,
         }
@@ -76,7 +65,6 @@ class Visualization(Base):
 
 class VisualizationBase(BaseModel):
     case: int
-    segment: int
     tab: VisualizationTab
     config: dict
     id: Optional[int] = None

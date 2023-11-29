@@ -27,6 +27,7 @@ def get_by_country_region_year(
         .first()
     )
     if not lib:
+        # get LI benchmark from lastest year
         lib = (
             session.query(LivingIncomeBenchmark)
             .filter(
@@ -35,27 +36,42 @@ def get_by_country_region_year(
                     LivingIncomeBenchmark.region == region,
                 )
             )
+            .order_by(LivingIncomeBenchmark.year.desc())
             .first()
         )
         if not lib:
             return None
-        cpi = (
-            session.query(Cpi)
-            .filter(
-                and_(
-                    Cpi.country == country,
-                    Cpi.year == year,
-                )
-            )
-            .first()
+        # get CPI by country
+        cpi = session.query(Cpi).filter(
+            Cpi.country == country,
         )
-        if cpi:
+        # get CPI by case year
+        case_year_cpi = cpi.filter(
+            Cpi.year == year,
+        ).first()
+        # get CPI from lastest year
+        last_year_cpi = cpi.order_by(Cpi.year.desc()).first()
+        # add CPI value
+        if case_year_cpi:
+            # Calculate CPI factor
+            # CPI Factor logic
+            case_year_cpi_value = case_year_cpi.value if case_year_cpi else 0
+            last_year_cpi_value = last_year_cpi.value if last_year_cpi else 0
+            # (Latest  Year CPI - Case year CPI)/(Case Year CPI) = CPI factor
+            cpi_factor = (
+                last_year_cpi_value - case_year_cpi_value
+            ) / case_year_cpi_value
+            #
             lib = lib.serialize
             lib["year"] = year
-            lib["cpi"] = cpi.value
+            lib["case_year_cpi"] = case_year_cpi_value
+            lib["last_year_cpi"] = last_year_cpi_value
+            lib["cpi_factor"] = cpi_factor
             return lib
     else:
         lib = lib.serialize
-        lib["cpi"] = None
+        lib["case_year_cpi"] = None
+        lib["last_year_cpi"] = None
+        lib["cpi_factor"] = None
         return lib
     return None

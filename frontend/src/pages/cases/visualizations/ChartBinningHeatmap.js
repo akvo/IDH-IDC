@@ -1,7 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import Chart from "../../../components/chart";
 import { range } from "lodash";
 import { getFunctionDefaultValue } from "../components";
+import { Row, Col, Space } from "antd";
+import { SaveAsImageButton } from "../../../components/utils";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -13,6 +16,7 @@ const getOptions = ({
   min = 0,
   max = 0,
   diversified = 0,
+  // diversified_feasible = 0,
   target = 0,
   origin = [],
 }) => {
@@ -54,7 +58,19 @@ const getOptions = ({
           "c",
           newValues
         );
-        return [h, d, (newTotalValue + diversified).toFixed(2)];
+        // calculate diversified value
+        let diversifiedValue = diversified;
+        if (binName === "Diversified Income") {
+          diversifiedValue = binValue;
+        }
+        if (yAxis.name === "Diversified Income") {
+          diversifiedValue = parseFloat(d);
+        }
+        if (xAxis.name === "Diversified Income") {
+          diversifiedValue = parseFloat(h);
+        }
+        // EOL calculate diversified value
+        return [h, d, (newTotalValue + diversifiedValue).toFixed(2)];
       });
     })
     .flatMap((x) => x);
@@ -77,19 +93,27 @@ const getOptions = ({
       top: "10%",
     },
     xAxis: {
-      name: xAxis.name,
+      name: `${xAxis.name} (${xAxis.unitName})`,
+      nameLocation: "middle",
+      nameGap: 40,
       type: "category",
       data: xAxisData,
       splitArea: {
         show: true,
       },
+      axisLabel: {
+        formatter: (e) => thousandFormatter(e),
+      },
     },
     yAxis: {
-      name: yAxis.name,
+      name: `${yAxis.name} (${yAxis?.unitName})`,
       type: "category",
       data: yAxisData,
       splitArea: {
         show: true,
+      },
+      axisLabel: {
+        formatter: (e) => thousandFormatter(e),
       },
     },
     visualMap: {
@@ -130,7 +154,7 @@ const getOptions = ({
                 ? binValue > binRange.current || binValue < binRange.feasible
                 : binValue < binRange.current || binValue > binRange.feasible;
             if (isOutRange) {
-              return `{out|${params.value[2]}}`;
+              return `{out|${thousandFormatter(params.value[2])}}`;
             }
             const value = params.value[2];
             const xAxisRange = origin.find((x) => x.name === xAxis.name);
@@ -147,10 +171,13 @@ const getOptions = ({
                   params.value[1] <= yAxisRange?.feasible
                 : params.value[1] <= yAxisRange?.current &&
                   params.value[1] >= yAxisRange?.feasible;
+            const formattedValue = thousandFormatter(value);
             if (!inX || !inY) {
-              return `{out|${value}}`;
+              return `{out|${formattedValue}}`;
             }
-            return value >= target ? `{up|${value}}` : `{down|${value}}`;
+            return value >= target
+              ? `{up|${formattedValue}}`
+              : `{down|${formattedValue}}`;
           },
           rich: {
             up: {
@@ -182,7 +209,25 @@ const getOptions = ({
   return options;
 };
 
+const legends = [
+  {
+    color: "#F50902",
+    text: "Income target not reached",
+  },
+  {
+    color: "#808080",
+    text: "Income target reached outside feasible values",
+  },
+  {
+    color: "#218400",
+    text: "Income target reached within feasible values",
+  },
+];
+
 const ChartBinningHeatmap = ({ segment, data, origin }) => {
+  const [label, setLabel] = useState(null);
+  const elSensitivityAnalysis = useRef(null);
+
   const binningData = useMemo(() => {
     if (!segment?.id) {
       return {};
@@ -202,22 +247,32 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
     const binName =
       bins.find((b) => b.name === "binning-driver-name")?.value || false;
 
+    const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
+    const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
+    // label
+    const label = `The following tables represent income levels for levels of ${xAxisName}
+      and ${yAxisName}, for a each ${binName ? binName : ""} bin.`;
+    setLabel(label);
+
     return {
       binCharts: binName
         ? binCharts.map((b) => ({
             binName: binName,
             binValue: b.value,
+            unitName: origin.find((or) => or.name === binName)?.unitName,
           }))
         : [],
       xAxis: {
-        name: bins.find((b) => b.name === "x-axis-driver")?.value || "",
+        name: xAxisName,
         min: bins.find((b) => b.name === "x-axis-min-value")?.value || 0,
         max: bins.find((b) => b.name === "x-axis-max-value")?.value || 0,
+        unitName: origin.find((or) => or.name === xAxisName)?.unitName,
       },
       yAxis: {
-        name: bins.find((b) => b.name === "y-axis-driver")?.value || "",
+        name: yAxisName,
         min: bins.find((b) => b.name === "y-axis-min-value")?.value || 0,
         max: bins.find((b) => b.name === "y-axis-max-value")?.value || 0,
+        unitName: origin.find((or) => or.name === yAxisName)?.unitName,
       },
       answers: answers.map((s) => ({
         qid: s.question.id,
@@ -231,24 +286,56 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
       min: segment.total_current_income,
       max: segment.total_feasible_income,
       diversified: segment.total_current_diversified_income,
+      diversified_feasible: segment.total_feasible_diversified_income,
       target: segment.target,
     };
-  }, [data, segment]);
+  }, [data, segment, origin]);
 
   return (
-    <div>
+    <div ref={elSensitivityAnalysis}>
       {binningData.binCharts?.length ? (
-        <div>
-          The following tables represent income levels for levels of land area
-          and volume, for a each price bin.
-        </div>
+        <Space direction="vertical">
+          <div>
+            <b>{segment.name}</b>
+          </div>
+          <div>{label}</div>
+          <Row gutter={[8, 16]} style={{ minHeight: 95 }}>
+            <Col span={6}>
+              <SaveAsImageButton
+                elementRef={elSensitivityAnalysis}
+                filename={label}
+              />
+            </Col>
+            <Col
+              span={18}
+              align="end"
+              style={{ position: "absolute", right: 24 }}
+            >
+              <Space direction="vertical">
+                {legends.map((l, li) => (
+                  <Space key={li}>
+                    <div
+                      style={{
+                        backgroundColor: l.color,
+                        width: 16,
+                        height: 16,
+                      }}
+                    />
+                    <div>{l.text}</div>
+                  </Space>
+                ))}
+              </Space>
+            </Col>
+          </Row>
+        </Space>
       ) : (
         ""
       )}
       {binningData.binCharts.map((b, key) => (
         <div key={key}>
           <h3>
-            Income Levels for {b.binName} : {b.binValue}
+            Income Levels for {b.binName} : {b.binValue.toFixed(2)}{" "}
+            <small>({b.unitName})</small>
           </h3>
           <Chart
             height={350}

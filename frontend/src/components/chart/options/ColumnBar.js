@@ -9,20 +9,22 @@ import {
   axisTitle,
   NoData,
   Legend,
+  thousandFormatter,
+  LabelStyle,
 } from "./common";
 import { sortBy, isEmpty, groupBy, orderBy } from "lodash";
 
 const customFormatter = {
   formatter: function (params) {
     if (!params?.data?.stack?.length) {
-      return `<b>${params.name}</b>: ${params.value}`;
+      return `<b>${params.name}</b>: ${thousandFormatter(params.value)}`;
     }
     let customTooltip = "<div>";
     customTooltip += `<p><b>${params.name}</b></p>`;
     customTooltip += "<ul'>";
     orderBy(params.data.stack, "order").forEach((it) => {
       customTooltip += `<li key=${it.order}>
-        <b>${it.name}</b>: ${it.value}
+        <b>${it.name}</b>: ${thousandFormatter(it.value)}
       </li>`;
     });
     customTooltip += "</ul></div>";
@@ -64,6 +66,7 @@ const ColumnBar = ({
       type: "bar",
       barMaxWidth: 50,
       label: {
+        ...LabelStyle.label,
         colorBy: "data",
         position: horizontal ? "insideLeft" : "top",
         show: true,
@@ -118,7 +121,7 @@ const ColumnBar = ({
       name: yAxisTitle || "",
       nameTextStyle: { ...TextStyle },
       nameLocation: "middle",
-      nameGap: 50,
+      nameGap: 75,
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",

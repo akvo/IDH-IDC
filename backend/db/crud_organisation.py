@@ -29,10 +29,22 @@ def get_organisation_by_id(session: Session, id: int) -> OrganisationDict:
     org = session.query(Organisation).filter(Organisation.id == id).first()
     if not org:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"organisation {id} not found")
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"organisation {id} not found"
+        )
     return org
 
 
 def get_all_organisation(session: Session) -> List[OrganisationDict]:
     return session.query(Organisation).all()
+
+
+def defaul_organisation(session: Session, name: str) -> Organisation:
+    org = get_organisation_by_name(session=session, name=name)
+    if not org:
+        # add organisation
+        organisation = add_organisation(
+            session=session,
+            name=name,
+        )
+        return organisation
+    return org

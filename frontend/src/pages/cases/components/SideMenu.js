@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Timeline } from "antd";
+import { Col, Steps } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 
 const activeStyle = {
@@ -20,14 +20,18 @@ const menuList = [
 
 const SideMenu = ({ active, setActive, finished }) => {
   return (
-    <Col span={4}>
+    <Col span={24} style={{ marginTop: 40 }}>
       <div className="timeline-container">
-        <Timeline
+        <Steps
+          current={active}
+          size="small"
           items={menuList.map((item) => {
             const isFinished = finished.includes(item.name);
             const result = {
+              className: isFinished ? "finished-dot" : "",
               color: active === item.name ? activeStyle.color : "gray",
-              children: (
+              status: isFinished ? "finish" : "wait",
+              title: (
                 <span
                   style={active === item.name || isFinished ? activeStyle : {}}
                   onClick={() => setActive(item.name)}
@@ -36,8 +40,8 @@ const SideMenu = ({ active, setActive, finished }) => {
                 </span>
               ),
             };
-            if (finished.includes(item.name)) {
-              result.dot = (
+            if (isFinished) {
+              result.icon = (
                 <CheckCircleFilled
                   color={activeStyle.color}
                   className="finished-dot"

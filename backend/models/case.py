@@ -284,8 +284,8 @@ class OtherCommoditysBase(BaseModel):
     commodity: int
     breakdown: bool
     commodity_type: CaseCommodityType
-    area_size_unit: str
-    volume_measurement_unit: str
+    area_size_unit: Optional[str] = None
+    volume_measurement_unit: Optional[str] = None
 
 
 class CaseBase(BaseModel):

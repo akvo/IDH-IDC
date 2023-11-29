@@ -19,8 +19,8 @@ class SimplifiedCaseCommodityDict(TypedDict):
     commodity: Optional[int]
     breakdown: bool
     commodity_type: CaseCommodityType
-    area_size_unit: str
-    volume_measurement_unit: str
+    area_size_unit: Optional[str] = None
+    volume_measurement_unit: Optional[str] = None
 
 
 class CaseCommodity(Base):
@@ -34,8 +34,8 @@ class CaseCommodity(Base):
         Enum(CaseCommodityType, name="case_commodity_type"),
         nullable=False,
     )
-    area_size_unit = Column(String, nullable=False)
-    volume_measurement_unit = Column(String, nullable=False)
+    area_size_unit = Column(String, nullable=True)
+    volume_measurement_unit = Column(String, nullable=True)
 
     case_detail = relationship(
         "Case",
@@ -46,11 +46,11 @@ class CaseCommodity(Base):
 
     def __init__(
         self,
-        area_size_unit: str,
-        volume_measurement_unit: str,
         commodity_type: CaseCommodityType,
         case: Optional[int] = None,
         id: Optional[int] = None,
+        area_size_unit: Optional[str] = None,
+        volume_measurement_unit: Optional[str] = None,
         commodity: Optional[int] = None,
         breakdown: Optional[int] = 0,
     ):
@@ -83,5 +83,5 @@ class CaseCommodityBase(BaseModel):
     commodity: Optional[int]
     commodity_type: CaseCommodityType
     breakdown: Optional[int] = 0
-    area_size_unit: str
-    volume_measurement_unit: str
+    area_size_unit: Optional[str] = None
+    volume_measurement_unit: Optional[str] = None

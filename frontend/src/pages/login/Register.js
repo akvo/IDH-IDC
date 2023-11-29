@@ -8,22 +8,23 @@ import {
   Button,
   Form,
   Input,
-  Divider,
   Typography,
   Image,
   Select,
+  Checkbox,
   message,
 } from "antd";
 import { api } from "../../lib";
-import { UIState } from "../../store";
 import ImageRight from "../../assets/images/login-right-img.png";
+import LogoWhite from "../../assets/images/logo-white.png";
 
 const Register = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [showBusinessUnit, setShowBusinessUnit] = useState(false);
 
-  const organisationOptions = UIState.useState((s) => s.organisationOptions);
+  // const organisationOptions = UIState.useState((s) => s.organisationOptions);
   const businessUnitOptions = window.master.business_units?.map((x) => ({
     label: x.name,
     value: x.id,
@@ -34,18 +35,31 @@ const Register = () => {
 
   const onFinish = (values) => {
     setLoading(true);
-    const { fullname, email, password, organisation, business_units } = values;
-    const businessUnitValues = business_units.map((x) => ({
-      business_unit: x,
-      role: "member",
-    }));
+    const { fullname, email, password, business_units } = values;
 
     const payload = new FormData();
     payload.append("fullname", fullname);
     payload.append("email", email);
     payload.append("password", password);
-    payload.append("organisation", organisation);
-    payload.append("business_units", JSON.stringify(businessUnitValues));
+    // payload.append("organisation", organisation);
+
+    if (business_units) {
+      let businessUnitValues = [];
+      if (Array.isArray(business_units)) {
+        businessUnitValues = business_units.map((x) => ({
+          business_unit: x,
+          role: "member",
+        }));
+      } else {
+        businessUnitValues = [
+          {
+            business_unit: business_units,
+            role: "member",
+          },
+        ];
+      }
+      payload.append("business_units", JSON.stringify(businessUnitValues));
+    }
 
     api
       .post("user/register", payload)
@@ -72,147 +86,170 @@ const Register = () => {
     <ContentLayout wrapperId="login">
       {contextHolder}
       <Row align="middle" className="login-container">
-        <Col span={10} align="start" className="login-form-wrapper">
-          <div className="page-title-container">
-            <Typography.Title>Income Driver Calculator</Typography.Title>
-          </div>
-          <h3>Registration</h3>
-          <Divider />
-          <Form
-            form={form}
-            name="form-registration"
-            className="form-login"
-            layout="vertical"
-            onFinish={onFinish}
-            autoComplete="off"
-          >
-            <Form.Item
-              name="fullname"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your fullname!",
-                },
-              ]}
+        <Col span={12} align="start" className="login-form-wrapper">
+          <Image
+            src={LogoWhite}
+            height={55}
+            preview={false}
+            data-testid="logo-image"
+          />
+          <Col span={24} align="center" className="login-form">
+            <div className="page-title-container">
+              <Typography.Title>
+                Income Driver <br />
+                <span style={{ color: "#47d985" }}>Calculator</span>
+              </Typography.Title>
+            </div>
+            <h2>Registration</h2>
+            <Form
+              form={form}
+              name="form-registration"
+              className="form-login"
+              layout="vertical"
+              onFinish={onFinish}
+              autoComplete="off"
             >
-              <Input data-testid="input-fullname" placeholder="Fullname" />
-            </Form.Item>
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  type: "email",
-                  message: "The input is not valid Email",
-                },
-                {
-                  required: true,
-                  message: "Please input your email!",
-                },
-              ]}
-            >
-              <Input data-testid="input-email" placeholder="Email" />
-            </Form.Item>
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-              ]}
-            >
-              <Input.Password
-                data-testid="input-password"
-                placeholder="Password (6 digits at least, case sensitive)"
-              />
-            </Form.Item>
-            <Form.Item
-              name="confirm"
-              dependencies={["password"]}
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(
-                        "Confirm Password that you entered do not match!"
-                      )
-                    );
+              <Form.Item
+                name="fullname"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your fullname!",
                   },
-                }),
-              ]}
-            >
-              <Input.Password
-                data-testid="input-confirm-password"
-                placeholder="Confirm Password"
-              />
-            </Form.Item>
-            <Form.Item
-              name="organisation"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select your Organisation!",
-                },
-              ]}
-            >
-              <Select
-                data-testid="input-organisation"
-                placeholder="Organisation"
-                showSearch
-                allowClear
-                optionFilterProp="children"
-                filterOption={filterOption}
-                options={organisationOptions}
-              />
-            </Form.Item>
-            <Form.Item
-              name="business_units"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select your Business Unit!",
-                },
-              ]}
-            >
-              <Select
-                data-testid="input-business-unit"
-                placeholder="Business Units"
-                showSearch
-                allowClear
-                mode="multiple"
-                optionFilterProp="children"
-                filterOption={filterOption}
-                options={businessUnitOptions}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button
-                data-testid="button-login"
-                className="button-login"
-                type="primary"
-                htmlType="submit"
-                block
-                loading={loading}
+                ]}
               >
-                Register
-              </Button>
-            </Form.Item>
-            <Form.Item noStyle>
-              <p>
-                Already have an account? <Link to="/login">Login here.</Link>
-              </p>
-            </Form.Item>
-          </Form>
+                <Input data-testid="input-fullname" placeholder="Fullname" />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                rules={[
+                  {
+                    type: "email",
+                    message: "The input is not valid Email",
+                  },
+                  {
+                    required: true,
+                    message: "Please input your email!",
+                  },
+                ]}
+              >
+                <Input data-testid="input-email" placeholder="Email" />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  data-testid="input-password"
+                  placeholder="Password (6 digits at least, case sensitive)"
+                />
+              </Form.Item>
+              <Form.Item
+                name="confirm"
+                dependencies={["password"]}
+                rules={[
+                  {
+                    required: true,
+                    message: "Please confirm your password!",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          "Confirm Password that you entered do not match!"
+                        )
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password
+                  data-testid="input-confirm-password"
+                  placeholder="Confirm Password"
+                />
+              </Form.Item>
+              {/* Hide organisation for now */}
+              {/* <Form.Item
+                name="organisation"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please select your Organisation!",
+                  },
+                ]}
+              >
+                <Select
+                  data-testid="input-organisation"
+                  placeholder="Organisation"
+                  showSearch
+                  allowClear
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={organisationOptions}
+                />
+              </Form.Item> */}
+
+              <Form.Item>
+                <Checkbox
+                  style={{ width: "100%", color: "#fff" }}
+                  checked={showBusinessUnit}
+                  onChange={() => setShowBusinessUnit(!showBusinessUnit)}
+                >
+                  I&apos;m internal IDH user
+                </Checkbox>
+              </Form.Item>
+
+              {showBusinessUnit && (
+                <Form.Item
+                  name="business_units"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your Business Unit!",
+                    },
+                  ]}
+                >
+                  <Select
+                    data-testid="input-business-unit"
+                    placeholder="Business Units"
+                    showSearch
+                    allowClear
+                    optionFilterProp="children"
+                    filterOption={filterOption}
+                    options={businessUnitOptions}
+                  />
+                </Form.Item>
+              )}
+              <Form.Item>
+                <Button
+                  data-testid="button-login"
+                  className="button-login"
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  loading={loading}
+                >
+                  Register
+                </Button>
+              </Form.Item>
+              <Form.Item noStyle>
+                <p>
+                  Already have an account? <Link to="/login">Login here.</Link>
+                </p>
+              </Form.Item>
+            </Form>
+          </Col>
         </Col>
         <Col
-          span={14}
+          span={12}
           align="end"
           data-testid="login-image-wrapper"
           className="login-image-wrapper"

@@ -17,9 +17,16 @@ import {
   CloseCircleTwoTone,
   CaretDownFilled,
   CaretUpFilled,
+  StepForwardOutlined,
+  StepBackwardOutlined,
 } from "@ant-design/icons";
 import { map, groupBy } from "lodash";
-import { IncomeDriverForm, IncomeDriverTarget, commodityOptions } from "./";
+import {
+  IncomeDriverForm,
+  IncomeDriverTarget,
+  InputNumberThousandFormatter,
+  commodityOptions,
+} from "./";
 import Chart from "../../../components/chart";
 import { incomeTargetChartOption } from "../../../components/chart/options/common";
 
@@ -39,6 +46,7 @@ const DataFields = ({
   currentCaseId,
   currentCase,
   dashboardData,
+  setPage,
 }) => {
   const [confimationModal, setConfimationModal] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -121,7 +129,7 @@ const DataFields = ({
         stack: [
           {
             name: "Current",
-            title: "Current",
+            title: "Current Income",
             value: g.reduce((a, b) => a + b.currentValue, 0),
             total: g.reduce((a, b) => a + b.currentValue, 0),
             order: 2,
@@ -129,7 +137,7 @@ const DataFields = ({
           },
           {
             name: "Feasible",
-            title: "Additional income if feasible values are reached",
+            title: "Feasible additional income ",
             value: additionalIncome < 0 ? 0 : additionalIncome,
             total: additionalIncome < 0 ? 0 : additionalIncome,
             order: 1,
@@ -144,7 +152,7 @@ const DataFields = ({
       stack: [
         {
           name: "Current",
-          title: "Current",
+          title: "Current Income",
           value: totalIncome.current,
           total: totalIncome.current,
           order: 2,
@@ -152,7 +160,7 @@ const DataFields = ({
         },
         {
           name: "Feasible",
-          title: "Additional income if feasible values are reached",
+          title: "Feasible additional income",
           value: totalIncome.feasible - totalIncome.current,
           total: totalIncome.feasible,
           order: 1,
@@ -180,7 +188,7 @@ const DataFields = ({
         data: chartData.map((x) => ({
           name: "Income Target",
           symbol: x.name === "Total\nIncome" ? "diamond" : "none",
-          value: segmentValues.target.toFixed(2),
+          value: segmentValues?.target ? segmentValues.target.toFixed(2) : 0,
         })),
       },
     ];
@@ -253,7 +261,7 @@ const DataFields = ({
 
   return (
     <Row gutter={[16, 16]}>
-      <Col span={16}>
+      <Col span={14}>
         <Card
           title={
             <h3>
@@ -314,7 +322,7 @@ const DataFields = ({
               }}
               align="middle"
             >
-              <Col span={14}>
+              <Col span={13}>
                 <h2>Total Income</h2>
               </Col>
               <Col span={4}>
@@ -322,6 +330,7 @@ const DataFields = ({
                   value={totalIncome.current}
                   disabled
                   style={{ width: "100%" }}
+                  {...InputNumberThousandFormatter}
                 />
               </Col>
               <Col span={4}>
@@ -329,9 +338,10 @@ const DataFields = ({
                   value={totalIncome.feasible}
                   disabled
                   style={{ width: "100%" }}
+                  {...InputNumberThousandFormatter}
                 />
               </Col>
-              <Col span={2}>
+              <Col span={3}>
                 <Space className="percentage-wrapper">
                   {totalIncome.percent === 0 ? null : totalIncome.percent >
                     0 ? (
@@ -371,24 +381,59 @@ const DataFields = ({
             ))}
           </Card.Grid>
         </Card>
-        <Button
-          htmlType="submit"
-          className="button button-submit button-secondary"
-          style={{ float: "right" }}
-          loading={isSaving}
-          onClick={handleSave}
-        >
-          Save
-        </Button>
+        <Row>
+          <Col span={12}>
+            <Button
+              className="button button-submit button-secondary"
+              onClick={() => setPage("Case Profile")}
+            >
+              <StepBackwardOutlined />
+              Previous
+            </Button>
+          </Col>
+          <Col
+            span={12}
+            style={{
+              justifyContent: "flex-end",
+              display: "grid",
+            }}
+          >
+            <Space size={[8, 16]} wrap>
+              <Button
+                htmlType="submit"
+                className="button button-submit button-secondary"
+                loading={isSaving}
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+              <Button
+                htmlType="submit"
+                className="button button-submit button-secondary"
+                loading={isSaving}
+                onClick={() => {
+                  handleSave({ isNextButton: true });
+                }}
+              >
+                Next
+                <StepForwardOutlined />
+              </Button>
+            </Space>
+          </Col>
+        </Row>
       </Col>
       <Chart
         title="Calculated Household Income"
-        span={8}
+        span={10}
         type="BARSTACK"
         data={chartData}
         affix={true}
         targetData={targetChartData}
         loading={!chartData.length || !targetChartData.length}
+        height={window.innerHeight * 0.45}
+        extra={{
+          axisTitle: { y: `Income (${currentCase.currency})` },
+        }}
       />
     </Row>
   );

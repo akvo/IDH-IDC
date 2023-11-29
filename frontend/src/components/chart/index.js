@@ -1,8 +1,9 @@
-import React from "react";
-import { Col, Card } from "antd";
+import React, { useRef } from "react";
+import { Col, Card, Row } from "antd";
 import ReactECharts from "echarts-for-react";
 import { Bar, BarStack, ColumnBar } from "./options";
 import { Easing } from "./options/common";
+import { SaveAsImageButton } from "../utils";
 
 export const generateOptions = (
   { type, data, chartTitle, percentage, extra, targetData },
@@ -81,8 +82,11 @@ const Chart = ({
   loadingOption = loadingStyle,
   grid = {},
   override = false,
+  affix = false,
   targetData = [], // to show income target symbol
 }) => {
+  const elementRef = useRef(null);
+
   const chartTitle = wrapper ? {} : { title: title, subTitle: subTitle };
   const option = generateOptions(
     {
@@ -121,16 +125,34 @@ const Chart = ({
       option: { ...override, ...Easing },
     };
   }
+  const affixStyle = affix
+    ? {
+        position: "fixed",
+        right: 0,
+        width: "100%",
+        paddingRight: "5rem",
+      }
+    : {};
   if (wrapper) {
     return (
       <Col
         sm={24}
         md={span * 2}
         lg={span}
-        style={{ height: height, ...styles }}
+        style={{ height: height, ...styles, ...affixStyle }}
       >
         <Card
-          title={<h3 className="segment-group">{title}</h3>}
+          ref={elementRef}
+          title={
+            <Row style={{ width: "100%" }} align="middle">
+              <Col span={14}>
+                <h3 className="segment-group chart-title">{title}</h3>
+              </Col>
+              <Col span={10} align="end" style={{ float: "right" }}>
+                <SaveAsImageButton elementRef={elementRef} filename={title} />
+              </Col>
+            </Row>
+          }
           className="chart-container"
         >
           <ReactECharts {...chartOptions} />

@@ -1,13 +1,16 @@
 import db.crud_case as crud_case
 import db.crud_user_business_unit as crud_bu
 import db.crud_living_income_benchmark as crud_lib
+import db.crud_user_case_access as crud_uca
 
 from math import ceil
-from fastapi import APIRouter, Request, Depends, HTTPException, Query
+from fastapi import APIRouter, Request, Depends, HTTPException, Query, Response
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from db.connection import get_session
+from http import HTTPStatus
+
 from models.case import (
     CaseBase,
     CaseDict,
@@ -16,7 +19,15 @@ from models.case import (
     CaseDropdown,
 )
 from models.user import UserRole
-from middleware import verify_admin, verify_user
+from models.user_case_access import UserCaseAccessPayload, UserCaseAccessDict
+from middleware import (
+    verify_admin,
+    verify_user,
+    verify_case_owner,
+    verify_case_creator,
+    verify_case_editor,
+    verify_case_viewer,
+)
 
 security = HTTPBearer()
 case_route = APIRouter()
@@ -35,7 +46,7 @@ def create_case(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    user = verify_admin(session=session, authenticated=req.state.authenticated)
+    user = verify_case_creator(session=session, authenticated=req.state.authenticated)
     case = crud_case.add_case(session=session, payload=payload, user=user)
     return case.serialize
 
@@ -52,27 +63,47 @@ def get_all_case(
     page: int = 1,
     limit: int = 10,
     search: Optional[str] = None,
+    country: Optional[int] = Query(None),
     tags: Optional[List[int]] = Query(None),
     focus_commodity: Optional[List[int]] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    # verify by user then filter cases in same business unit
-    # if all_cases false and role not super_admin
     user = verify_user(session=session, authenticated=req.state.authenticated)
-    business_unit_users = []
-    if user.role != UserRole.super_admin and user.all_cases:
-        business_unit_users = crud_bu.find_users_in_same_business_unit(
-            session=session,
-            business_units=[bu.business_unit for bu in user.user_business_units],
-        )
-        if not business_unit_users:
-            raise HTTPException(status_code=404, detail="Not found")
-    # if role = user we should check for user tags or user cases
-    # (also if editor / viewer and all_cases false)
+
+    # prevent external user which doesn't have access to cases
+    user_permission = crud_uca.find_user_case_access_viewer(
+        session=session, user_id=user.id
+    )
+    if (
+        user.role == UserRole.user
+        and not len(user.user_business_units)
+        and not user_permission
+    ):
+        raise HTTPException(status_code=404, detail="Not found")
+
+    # handle show/hide private case
     user_cases = []
-    if user.role == UserRole.user or not user.all_cases:
-        user_cases = [uc.case for uc in user.user_case_access]
+    show_private = False
+    if user.role in [UserRole.super_admin, UserRole.admin]:
+        show_private = True
+    if user.role == UserRole.user and user_permission:
+        show_private = True
+        user_cases = [d.case for d in user_permission]
+
+    # handle regular/internal user
+    if user.role == UserRole.user and len(user.user_business_units):
+        # all public cases
+        show_private = True
+        all_public_cases = crud_case.get_case_by_private(session=session, private=False)
+        user_cases = user_cases + [c.id for c in all_public_cases]
+
+    # handle case owner
+    if user.role == UserRole.user:
+        show_private = True
+        cases = crud_case.get_case_by_created_by(session=session, created_by=user.id)
+        user_cases = user_cases + [c.id for c in cases]
+
     cases = crud_case.get_all_case(
         session=session,
         search=search,
@@ -80,8 +111,9 @@ def get_all_case(
         focus_commodities=focus_commodity,
         skip=(limit * (page - 1)),
         limit=limit,
-        business_unit_users=business_unit_users,
         user_cases=user_cases,
+        country=country,
+        show_private=show_private,
     )
     if not cases:
         raise HTTPException(status_code=404, detail="Not found")
@@ -139,8 +171,9 @@ def update_Case(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    # TODO :: verify by user, then check user role and access
-    verify_admin(session=session, authenticated=req.state.authenticated)
+    verify_case_editor(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
     case = crud_case.update_case(session=session, id=case_id, payload=payload)
     return case.serialize
 
@@ -158,8 +191,9 @@ def get_case_by_id(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    # TODO :: verify by user, then check user role and access
-    verify_admin(session=session, authenticated=req.state.authenticated)
+    verify_case_viewer(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
     case = crud_case.get_case_by_id(session=session, id=case_id)
     case = case.to_case_detail
     for segment in case["segments"]:
@@ -171,3 +205,87 @@ def get_case_by_id(
         )
         segment["benchmark"] = benchmark
     return case
+
+
+@case_route.get(
+    "/case_access/{case_id:path}",
+    response_model=List[UserCaseAccessDict],
+    summary="get user access by case id",
+    name="case:get_user_case_access",
+    tags=["Case"],
+)
+def get_user_case_access(
+    req: Request,
+    case_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_owner(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
+    res = crud_uca.get_case_access(session=session, case_id=case_id)
+    return [r.serialize for r in res]
+
+
+@case_route.post(
+    "/case_access/{case_id:path}",
+    response_model=UserCaseAccessDict,
+    summary="give a user access to a case",
+    name="case:add_user_case_access",
+    tags=["Case"],
+)
+def add_user_case_access(
+    req: Request,
+    case_id: int,
+    payload: UserCaseAccessPayload,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_owner(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
+    res = crud_uca.add_case_access(session=session, payload=payload, case_id=case_id)
+    return res.serialize
+
+
+@case_route.delete(
+    "/case_access/{case_id:path}",
+    responses={204: {"model": None}},
+    status_code=HTTPStatus.NO_CONTENT,
+    summary="delete user case access by access id",
+    name="case:delete_user_case_access",
+    tags=["Case"],
+)
+def delete_user_case_access(
+    req: Request,
+    case_id: int,
+    access_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_owner(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
+    crud_uca.delete_case_access(session=session, access_id=access_id)
+    return Response(status_code=HTTPStatus.NO_CONTENT.value)
+
+
+@case_route.put(
+    "/update_case_owner/{case_id:path}",
+    response_model=CaseDict,
+    summary="update case owner",
+    name="case:update_case_owner",
+    tags=["Case"],
+)
+def update_case_owner(
+    req: Request,
+    case_id: int,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_owner(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
+    res = crud_case.update_case_owner(session=session, case_id=case_id, user_id=user_id)
+    return res.serialize

@@ -223,20 +223,22 @@ class TestCaseRoute:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            'current': 1,
-            'data': [{
-                'id': 1,
-                'name': 'Bali Rice and Corn Production Comparison',
-                'country': 'Bali',
-                'focus_commodity': 2,
-                'diversified_commodities_count': 2,
-                'year': 2023,
-                "created_at": res["data"][0]["created_at"],
-                'created_by': 'super_admin@akvo.org',
-                'tags': [1]
-            }],
-            'total': 1,
-            'total_page': 1
+            "current": 1,
+            "data": [
+                {
+                    "id": 1,
+                    "name": "Bali Rice and Corn Production Comparison",
+                    "country": "Bali",
+                    "focus_commodity": 2,
+                    "diversified_commodities_count": 2,
+                    "year": 2023,
+                    "created_at": res["data"][0]["created_at"],
+                    "created_by": "super_admin@akvo.org",
+                    "tags": [1],
+                }
+            ],
+            "total": 1,
+            "total_page": 1,
         }
         # with admin user cred
         res = await client.get(
@@ -249,18 +251,29 @@ class TestCaseRoute:
             "current": 1,
             "data": [
                 {
+                    "id": 2,
+                    "name": "Bali Coffee Production (Private)",
+                    "country": "Bali",
+                    "focus_commodity": 1,
+                    "diversified_commodities_count": 1,
+                    "year": 2023,
+                    "created_at": res["data"][0]["created_at"],
+                    "created_by": "super_admin@akvo.org",
+                    "tags": [],
+                },
+                {
                     "id": 1,
                     "name": "Bali Rice and Corn Production Comparison",
                     "country": "Bali",
                     "focus_commodity": 2,
-                    "year": 2023,
                     "diversified_commodities_count": 2,
-                    "created_at": res["data"][0]["created_at"],
+                    "year": 2023,
+                    "created_at": res["data"][1]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [1],
-                }
+                },
             ],
-            "total": 1,
+            "total": 2,
             "total_page": 1,
         }
 

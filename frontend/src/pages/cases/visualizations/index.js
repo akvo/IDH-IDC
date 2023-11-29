@@ -7,3 +7,4 @@ export { default as SegmentSelector } from "./SegmentSelector";
 export { default as ChartExploreBreakdownDrivers } from "./ChartExploreBreakdownDrivers";
 export { default as DriverDropdown } from "./DriverDropdown";
 export { default as ChartIncomeLevelPerCommodities } from "./ChartIncomeLevelPerCommodities";
+export { default as ChartScenarioModeling } from "./ChartScenarioModeling";

@@ -1,20 +1,23 @@
 import os
 import sys
 import pandas as pd
+import numpy as np
 from db.connection import Base, engine, SessionLocal
 from utils.truncator import truncatedb
-from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from models.question import Question
+from models.commodity_category_question import CommodityCategoryQuestion
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MASTER_DIR = BASE_DIR + "/source/master/"
 sys.path.append(BASE_DIR)
 
 
-def seeder_question(session: Session, engine: create_engine):
+def seeder_question(session: Session):
     truncatedb(session=session, table="commodity_category_question")
     truncatedb(session=session, table="question")
     data = pd.read_csv(MASTER_DIR + "question.csv")
+    data.replace({np.nan: None}, inplace=True)
     question = data[
         [
             "id",
@@ -26,7 +29,21 @@ def seeder_question(session: Session, engine: create_engine):
             "default_value",
         ]
     ]
-    question.to_sql("question", con=engine, if_exists="append", index=False)
+    for index, row in question.iterrows():
+        question = Question(
+            id=row["id"],
+            parent=row["parent"],
+            text=row["text"],
+            unit=row["unit"],
+            description=row["description"],
+            question_type=row["question_type"],
+            default_value=row["default_value"],
+            created_by=None,
+        )
+        session.add(question)
+        session.commit()
+        session.flush()
+        session.refresh(question)
     print("[DATABASE UPDATED]: Question")
 
     ## Commodity Categories Questions
@@ -48,13 +65,20 @@ def seeder_question(session: Session, engine: create_engine):
         columns={"id": "question"}
     )
     group_question = group_question[["commodity_category", "question"]]
-    group_question.to_sql(
-        "commodity_category_question", con=engine, if_exists="append", index=False
-    )
+    for index, row in group_question.iterrows():
+        gp = CommodityCategoryQuestion(
+            commodity_category=int(row["commodity_category"]),
+            question=int(row["question"]),
+        )
+        session.add(gp)
+        session.commit()
+        session.flush()
+        session.refresh(gp)
     print("[DATABASE UPDATED]: Question Category")
+    session.close()
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()
-    seeder_question(session=session, engine=engine)
+    seeder_question(session=session)

@@ -15,6 +15,7 @@ from models.user_case_access import UserCaseAccess
 from models.user_tag import UserTag
 from models.user_business_unit import UserBusinessUnit, UserBusinessUnitRole
 from db.crud_user_business_unit import find_users_in_same_business_unit
+from db.crud_organisation import defaul_organisation
 
 
 def add_user(
@@ -27,14 +28,20 @@ def add_user(
     except AttributeError:
         password = payload.password
     role = payload.role if invitation_id or payload.role else UserRole.user
-    all_cases = 1 if payload.all_cases else 0
+    # all cases TRUE for Regular/Internal user (user with BU)
+    all_cases = 1 if payload.all_cases or payload.business_units else 0
     if role in [UserRole.super_admin, UserRole.admin]:
         all_cases = 1
+    # default organisation for now
+    organisation = payload.organisation
+    if not organisation:
+        def_org = defaul_organisation(session=session, name="IDH")
+        organisation = def_org.id
     user = User(
         fullname=payload.fullname,
         email=payload.email,
         password=password if not invitation_id else None,
-        organisation=payload.organisation,
+        organisation=organisation,
         role=role,
         all_cases=all_cases,
         is_active=1 if invitation_id else 0,
@@ -71,14 +78,17 @@ def add_user(
 def update_user(session: Session, id: int, payload: UserUpdateBase) -> UserDict:
     user = get_user_by_id(session=session, id=id)
     user.fullname = payload.fullname
-    user.organisation = payload.organisation
+    user.organisation = (
+        payload.organisation if payload.organisation else user.organisation
+    )
     user.is_active = 1 if payload.is_active else user.is_active
     role = payload.role if payload.role else user.role
     user.role = role
     all_cases = 0
     if role in [UserRole.super_admin, UserRole.admin]:
         all_cases = 1
-    user.all_cases = 1 if payload.all_cases else all_cases
+    # all cases TRUE for Regular/Internal user (user with BU)
+    user.all_cases = 1 if payload.all_cases or payload.business_units else all_cases
     if payload.password:
         try:
             password = payload.password.get_secret_value()
@@ -262,3 +272,13 @@ def find_business_unit_admin(session: Session, user_id: int):
         .all()
     )
     return admins
+
+
+def find_super_admin(session: Session):
+    super_admins = session.query(User).filter(User.role == UserRole.super_admin).all()
+    return super_admins
+
+
+def search_user(session: Session, search: str):
+    user = filter_user(session=session, search=search, approved=True)
+    return user.all()

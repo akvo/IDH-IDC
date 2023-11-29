@@ -7,6 +7,7 @@ from typing_extensions import TypedDict
 from pydantic import BaseModel
 from models.commodity_category_question import CommodityCategoryQuestion
 from models.commodity_category import CommodityCategory
+from models.user import User
 
 
 class QuestionType(enum.Enum):
@@ -52,12 +53,12 @@ class Question(Base):
     text = Column(String, nullable=False)
     description = Column(String, nullable=True)
     default_value = Column(String, nullable=True)
-    created_by = Column(Integer, ForeignKey("user.id"), nullable=True)
+    created_by = Column(Integer, ForeignKey("user.id"), nullable=True, default=None)
 
     children = relationship("Question")
     parent_detail = relationship("Question", remote_side=[id], overlaps="children")
     created_by_user = relationship(
-        "User", cascade="all, delete", passive_deletes=True, backref="questions"
+        User, cascade="all, delete", passive_deletes=True, backref="questions"
     )
     question_commodity_category_detail = relationship(
         CommodityCategory,
@@ -70,13 +71,13 @@ class Question(Base):
     def __init__(
         self,
         text: str,
-        created_by: int,
         id: Optional[int] = None,
         parent: Optional[int] = None,
         unit: Optional[str] = None,
         question_type: Optional[QuestionType] = QuestionType.question,
         description: Optional[str] = None,
         default_value: Optional[str] = None,
+        created_by: Optional[int] = None,
     ):
         self.id = id
         self.parent = parent

@@ -20,7 +20,9 @@ class LivingIncomeBenchmarkDict(TypedDict):
     household_size: float
     year: int
     value: LivingIncomeBenchmarkValue
-    cpi: Optional[float]
+    case_year_cpi: Optional[float]
+    last_year_cpi: Optional[float]
+    cpi_factor: Optional[float]
 
 
 class LivingIncomeBenchmark(Base):
@@ -74,7 +76,8 @@ class LivingIncomeBenchmark(Base):
                 "usd": self.usd,
                 "eur": self.eur,
             },
-            "cpi": None,
+            "case_year_cpi": None,
+            "last_year_cpi": None,
         }
 
 

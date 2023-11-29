@@ -3,31 +3,74 @@
 #login {
   &.content-wrapper {
     padding: 0px !important;
-    background-image: url("/assets/images/login-clip-path.svg") !important;
+    // background-image: url("/assets/images/login-clip-path.svg") !important;
     background-repeat: no-repeat;
     background-position: top right;
   }
   .login-container {
-    background-image: url("/assets/images/bg-login.png") !important;
+    // background-image: url("/assets/images/bg-login.png") !important;
     background-size: contain;
     background-repeat: no-repeat;
-    height: 100vh;
 
     .login-form-wrapper {
-      padding: 0 0 0 8% !important;
+      min-height: 100vh;
+      padding: 35px 50px !important;
+      background-color: $primary-color;
+
+      .login-form {
+        padding: 7%;
+        padding-left: 64px;
+        padding-right: 64px;
+      }
 
       .page-title-container {
         h1 {
-          color: $primary-color !important;
+          font-weight: 800;
+          font-size: 2.5rem;
+          color: #fff;
         }
         h3 {
-          color: rgba(0, 0, 0, 0.45);
+          color: #fff;
+          font-size: 1rem;
+        }
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        color: #fff;
+        font-weight: 800;
+      }
+
+      p {
+        color: #fff;
+        a {
+          color: $light-green;
         }
       }
 
       .form-login {
         .ant-form-item {
-          margin-bottom: 24px;
+          margin-bottom: 28px;
+          .ant-form-item-explain-error {
+            color: red;
+          }
+        }
+        .ant-input,
+        .ant-input-password,
+        .ant-select-selector {
+          border-radius: 20px;
+        }
+        input::placeholder {
+          padding-left: 5px;
+        }
+        .ant-select {
+          text-align: left;
+          padding-left: 5px;
+        }
+        label.ant-checkbox-wrapper {
+          width: 100%;
+          color: #fff;
+          padding: 0 0 0 12px;
         }
         .button-login {
           border: none;

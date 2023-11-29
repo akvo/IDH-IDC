@@ -7,6 +7,7 @@ from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import List
 from http import HTTPStatus
+from middleware import verify_case_editor, verify_case_viewer
 
 from db.connection import get_session
 from models.segment import (
@@ -34,6 +35,10 @@ def create_segment(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    case_id = payload[0].case
+    verify_case_editor(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
     segments = crud_segment.add_segment(session=session, payloads=payload)
     return [s.serialize for s in segments]
 
@@ -51,6 +56,10 @@ def update_segment(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    case_id = payload[0].case
+    verify_case_editor(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
     segments = crud_segment.update_segment(session=session, payloads=payload)
     return [s.serialize for s in segments]
 
@@ -69,6 +78,11 @@ def delete_segment(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    segment = crud_segment.get_segment_by_id(session=session, id=segment_id)
+    case_id = segment.case
+    verify_case_editor(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
     crud_segment.delete_segment(session=session, id=segment_id)
     return Response(status_code=HTTPStatus.NO_CONTENT.value)
 
@@ -86,6 +100,9 @@ def get_segments_by_case_id(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    verify_case_viewer(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
     case = crud_case.get_case_by_id(session=session, id=case_id)
     segments = crud_segment.get_segments_by_case_id(session=session, case_id=case_id)
     segments = [s.serialize_with_answers for s in segments]

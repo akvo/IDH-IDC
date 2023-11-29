@@ -3,12 +3,11 @@ import { Row, Col } from "antd";
 import { SegmentSelector } from ".";
 import { uniqBy, capitalize, sum } from "lodash";
 import Chart from "../../../components/chart";
-import { getFunctionDefaultValue } from "../components";
 
 const colors = ["#0098FF", "#FFC505", "#47D985", "#FF5D00", "#00625F"];
 const legendColors = ["#47D985", "#00625F"];
 
-const ChartIncomeLevelPerCommodities = ({ dashboardData }) => {
+const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
 
   useEffect(() => {
@@ -63,19 +62,14 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData }) => {
         const title = `${capitalize(x)}\n${currentSegmentData.name}`;
         // recalculate total value
         const incomeQuestion = currentSegmentData.answers.find(
-          (a) => a.name === x && !a.question.parent
-        ).question;
-        const allAnswers = currentSegmentData.answers
-          .filter((a) => a.name === x)
-          .map((a) => ({
-            id: `${a.name}-${a.commodityId}-${a.questionId}`,
-            value: a.value,
-          }));
-        const newTotalValue = getFunctionDefaultValue(
-          incomeQuestion,
-          `${x}-${cm.commodityId}`,
-          allAnswers
+          (a) =>
+            a.name === x &&
+            a.commodityId === cm.commodityId &&
+            !a.question.parent &&
+            a.question.question_type !== "diversified"
         );
+        const newTotalValue =
+          incomeQuestion && incomeQuestion?.value ? incomeQuestion.value : 0;
         // add newTotalValue to temp variable for diversified value calculation
         if (x === "current" && !cm.commodityFocus) {
           currentCommodityValuesExceptFocus.push(newTotalValue);
@@ -196,6 +190,9 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData }) => {
             type="COLUMN-BAR"
             data={chartData}
             affix={true}
+            extra={{
+              axisTitle: { y: `Income  Levels (${currentCase.currency})` },
+            }}
           />
         </Col>
       </Row>
