@@ -8,6 +8,7 @@ import {
   Popover,
   Input,
   InputNumber,
+  Divider,
 } from "antd";
 import {
   DeleteTwoTone,
@@ -19,6 +20,9 @@ import {
   CaretUpFilled,
   StepForwardOutlined,
   StepBackwardOutlined,
+  CalendarOutlined,
+  HomeOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { map, groupBy } from "lodash";
 import {
@@ -95,6 +99,33 @@ const DataFields = ({
   }, [segmentFormValues, segmentItem, dashboardData, totalIncomeQuestion]);
 
   const segmentValues = segmentFormValues.find((v) => v.key === segment);
+
+  const benchmarkInfo = useMemo(() => {
+    const findSegmentBenchmark =
+      dashboardData.find((d) => d.key === segment)?.benchmark || null;
+    return {
+      label: "Source",
+      value: findSegmentBenchmark ? "Living Income Benchmark" : "NA",
+      link: findSegmentBenchmark?.source || null,
+      childs: [
+        {
+          label: "Year of Study",
+          value: findSegmentBenchmark?.year || "NA",
+          icon: <CalendarOutlined />,
+        },
+        {
+          label: "Household Size",
+          value: findSegmentBenchmark?.household_size || "NA",
+          icon: <HomeOutlined />,
+        },
+        {
+          label: "Adults",
+          value: findSegmentBenchmark?.adults || "NA",
+          icon: <UserOutlined />,
+        },
+      ],
+    };
+  }, [dashboardData, segment]);
 
   const chartData = useMemo(() => {
     if (!segmentFormValues.length || !segmentValues) {
@@ -457,41 +488,68 @@ const DataFields = ({
           </Col>
         </Row>
       </Col>
-      <Col
-        span={10}
-        ref={elDriverChart}
-        style={{
-          position: "fixed",
-          right: 0,
-          width: "100%",
-          paddingRight: "6.4rem",
-        }}
-      >
-        <Card
-          title="Calculated Household Income"
-          className="chart-card-wrapper"
-          extra={
-            <SaveAsImageButton
-              elementRef={elDriverChart}
-              filename="Calculated Household Income"
-            />
-          }
-        >
-          <Chart
-            // title="Calculated Household Income"
-            // span={10}
-            type="BARSTACK"
-            data={chartData}
-            affix={true}
-            targetData={targetChartData}
-            loading={!chartData.length || !targetChartData.length}
-            height={window.innerHeight * 0.45}
-            extra={{
-              axisTitle: { y: `Income (${currentCase.currency})` },
-            }}
-            wrapper={false}
-          />
-        </Card>
+      <Col span={10} style={{ paddingRight: "24px" }}>
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <Card
+              title="Information about Living Income Benchmark"
+              className="info-card-wrapper"
+            >
+              <div className="benchmark-info-title-wrapper">
+                <b>{benchmarkInfo?.label}</b> :{" "}
+                {benchmarkInfo?.link ? (
+                  <a href={benchmarkInfo.link}>{benchmarkInfo?.value}</a>
+                ) : (
+                  benchmarkInfo?.value
+                )}
+              </div>
+              <Divider style={{ margin: "10px" }} />
+              <Space
+                direction="vertical"
+                className="benchmark-info-child-wrapper"
+              >
+                {benchmarkInfo?.childs.map((bi, i) => (
+                  <div key={i}>
+                    <Space>
+                      <div>{bi.icon}</div>
+                      <div>
+                        <b>{bi.label}</b> : {bi.value}
+                      </div>
+                    </Space>
+                  </div>
+                ))}
+              </Space>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card
+              ref={elDriverChart}
+              title="Calculated Household Income"
+              className="chart-card-wrapper"
+              extra={
+                <SaveAsImageButton
+                  elementRef={elDriverChart}
+                  filename="Calculated Household Income"
+                />
+              }
+            >
+              <Chart
+                // title="Calculated Household Income"
+                // span={10}
+                // affix={true}
+                wrapper={false}
+                type="BARSTACK"
+                data={chartData}
+                targetData={targetChartData}
+                loading={!chartData.length || !targetChartData.length}
+                height={window.innerHeight * 0.45}
+                extra={{
+                  axisTitle: { y: `Income (${currentCase.currency})` },
+                }}
+              />
+            </Card>
+          </Col>
+        </Row>
       </Col>
     </Row>
   );
