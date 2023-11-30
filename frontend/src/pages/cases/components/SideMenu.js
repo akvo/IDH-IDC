@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Steps } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 
@@ -19,12 +19,14 @@ const menuList = [
 ];
 
 const SideMenu = ({ active, setActive, finished }) => {
-  const sideMenuTop = useMemo(() => {
+  const [sideMenuTop, setSideMenuTop] = useState(129);
+
+  useEffect(() => {
     const contentLayoutHeight =
       document.getElementById("content-layout")?.offsetHeight || 0;
     const pageHeaderHeight =
       document.getElementById("page-layout-header")?.offsetHeight || 0;
-    return contentLayoutHeight + pageHeaderHeight;
+    setSideMenuTop(contentLayoutHeight + pageHeaderHeight);
   }, []);
 
   return (

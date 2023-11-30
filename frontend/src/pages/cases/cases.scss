@@ -45,6 +45,14 @@
           .ant-card-head-title {
             font-size: 0.95rem;
           }
+
+          .ant-switch {
+            background: $muted-color;
+          }
+
+          .ant-switch-checked {
+            background: $yellow-color;
+          }
         }
       }
     }
@@ -202,7 +210,8 @@
       padding: 2rem 5.5rem;
       margin-left: -$default-padding-size;
       position: fixed;
-      top: 171px;
+      // top: 171px;
+      top: 129px;
       width: 100%;
       z-index: 100;
       background-color: $bg-color-grey;

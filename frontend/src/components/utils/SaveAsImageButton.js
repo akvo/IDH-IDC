@@ -3,6 +3,19 @@ import { Button } from "antd";
 import { DownloadOutlined } from "@ant-design/icons";
 import { toPng } from "html-to-image";
 
+const defaultStyle = {
+  borderRadius: "20px",
+  padding: "0 10px",
+};
+
+const buttonTypeStyle = {
+  "ghost-white": {
+    backgroundColor: "transparent",
+    color: "#fff",
+    fontWeight: 600,
+  },
+};
+
 const htmlToImageConvert = (elementRef, filename, setLoading) => {
   if (!elementRef) {
     console.error("Please provide you element ref using react useRef");
@@ -45,8 +58,11 @@ const SaveAsImageButton = ({
   elementRef,
   filename = "Undefined",
   style = {},
+  type = null,
 }) => {
   const [loading, setLoading] = useState(false);
+
+  const typeStyle = buttonTypeStyle?.[type] || {};
 
   const handleOnClickSaveAsImage = () => {
     setLoading(true);
@@ -60,7 +76,7 @@ const SaveAsImageButton = ({
       icon={<DownloadOutlined />}
       size="small"
       onClick={handleOnClickSaveAsImage}
-      style={{ fontSize: 12, ...style }}
+      style={{ fontSize: 12, ...defaultStyle, ...typeStyle, ...style }}
       loading={loading}
     >
       Download chart
