@@ -20,6 +20,7 @@ const defaultUserState = {
   tags_count: 0,
   cases_count: 0,
   case_access: [],
+  internal_user: false,
 };
 
 const UserState = new Store(defaultUserState);

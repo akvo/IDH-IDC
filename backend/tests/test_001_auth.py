@@ -226,4 +226,5 @@ class TestUserAuthentication:
             "tags_count": 0,
             "cases_count": 0,
             "case_access": [],
+            "internal_user": False,
         }

@@ -48,7 +48,13 @@ const generateDriverOptions = (drivers, selected, excludes) => {
   }));
 };
 
-const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
+const BinningForm = ({
+  selected = [],
+  segment,
+  drivers = [],
+  hidden,
+  enableEditCase,
+}) => {
   const options = useMemo(() => {
     if (!selected.length) {
       return {
@@ -102,6 +108,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             className="binning-input"
             options={options["binning-driver-name"]}
             allowClear
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -112,6 +119,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -121,6 +129,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -130,6 +139,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -147,6 +157,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             className="binning-input"
             options={options["x-axis-driver"]}
             allowClear
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -157,6 +168,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -167,6 +179,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -184,6 +197,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             className="binning-input"
             options={options["y-axis-driver"]}
             allowClear
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -194,6 +208,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -204,6 +219,7 @@ const BinningForm = ({ selected = [], segment, drivers = [], hidden }) => {
             size="small"
             className="binning-input"
             {...InputNumberThousandFormatter}
+            disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
@@ -216,6 +232,7 @@ const DashboardSensitivityAnalysis = ({
   binningData,
   setBinningData,
   commodityList,
+  enableEditCase,
 }) => {
   const [currentSegment, setCurrentSegment] = useState(null);
   const [form] = Form.useForm();
@@ -488,6 +505,7 @@ const DashboardSensitivityAnalysis = ({
                             ?.selected
                         }
                         hidden={currentSegment !== segment.id}
+                        enableEditCase={enableEditCase}
                       />
                     ))}
                   </Form>

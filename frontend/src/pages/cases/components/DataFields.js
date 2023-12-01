@@ -52,6 +52,7 @@ const DataFields = ({
   currentCase,
   dashboardData,
   setPage,
+  enableEditCase,
 }) => {
   const [confimationModal, setConfimationModal] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -308,7 +309,7 @@ const DataFields = ({
               )}
             </h3>
           }
-          extra={extra}
+          extra={enableEditCase ? extra : null}
           className="segment-group"
         >
           <Card.Grid
@@ -344,6 +345,7 @@ const DataFields = ({
                       setSegmentFormValues={setSegmentFormValues}
                       segmentItem={segmentItem}
                       totalIncome={totalIncome}
+                      enableEditCase={enableEditCase}
                     />
                   </Card.Grid>
                 </Card>
@@ -439,6 +441,7 @@ const DataFields = ({
                         segmentItem={segmentItem}
                         currentCaseId={currentCaseId}
                         totalDiversifiedIncome={totalIncome.diversified}
+                        enableEditCase={enableEditCase}
                       />
                     ))}
                   </Card.Grid>
@@ -465,14 +468,16 @@ const DataFields = ({
             }}
           >
             <Space size={[8, 16]} wrap>
-              <Button
-                htmlType="submit"
-                className="button button-submit button-secondary"
-                loading={isSaving}
-                onClick={handleSave}
-              >
-                Save
-              </Button>
+              {enableEditCase && (
+                <Button
+                  htmlType="submit"
+                  className="button button-submit button-secondary"
+                  loading={isSaving}
+                  onClick={handleSave}
+                >
+                  Save
+                </Button>
+              )}
               <Button
                 htmlType="submit"
                 className="button button-submit button-secondary"

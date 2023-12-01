@@ -44,6 +44,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = true;
       });
     });
 
@@ -73,6 +74,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 
@@ -114,6 +116,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = true;
       });
     });
 
@@ -155,6 +158,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 
@@ -200,6 +204,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 
@@ -229,6 +234,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 
@@ -260,6 +266,7 @@ describe("Welcome page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 

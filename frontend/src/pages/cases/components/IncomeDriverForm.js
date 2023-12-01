@@ -19,6 +19,7 @@ const IncomeDriverForm = ({
   segmentItem,
   currentCaseId,
   totalDiversifiedIncome,
+  enableEditCase,
 }) => {
   const [form] = Form.useForm();
   const [refresh, setRefresh] = useState(false);
@@ -241,6 +242,7 @@ const IncomeDriverForm = ({
               question.question_type === "aggregator"
             }
             {...question}
+            enableEditCase={enableEditCase}
           />
         ))}
       </Form>

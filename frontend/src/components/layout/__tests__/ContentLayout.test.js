@@ -137,6 +137,8 @@ describe("ContentLayout component", () => {
         s.business_unit_detail = business_unit_detail;
         s.tags_count = 2;
         s.cases_count = 1;
+        s.case_access = [];
+        s.internal_user = false;
       });
     });
 

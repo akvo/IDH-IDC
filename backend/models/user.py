@@ -60,6 +60,7 @@ class UserInfo(TypedDict):
     tags_count: int
     cases_count: int
     case_access: Optional[List[UserCasePermissionDict]]
+    internal_user: bool  # UserRole == user has business unit
 
 
 class UserDetailDict(TypedDict):
@@ -193,13 +194,15 @@ class User(Base):
 
     @property
     def to_user_info(self) -> UserInfo:
-        case_access = []
         business_unit_detail = [
             bu.to_business_unit_detail for bu in self.user_business_units
         ]
         business_unit_detail = business_unit_detail if business_unit_detail else None
+
+        case_access = []
         if self.user_case_access:
             case_access = [c.to_case_permission for c in self.user_case_access]
+
         return {
             "id": self.id,
             "fullname": self.fullname,
@@ -212,6 +215,9 @@ class User(Base):
             "tags_count": len(self.user_tags),
             "cases_count": len(self.user_case_access),
             "case_access": case_access,
+            "internal_user": True
+            if business_unit_detail and self.role == UserRole.user
+            else False,
         }
 
     @property

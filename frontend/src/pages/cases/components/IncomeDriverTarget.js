@@ -13,6 +13,7 @@ const IncomeDriverTarget = ({
   segmentFormValues,
   setSegmentFormValues,
   segmentItem,
+  enableEditCase,
   // totalIncome,
 }) => {
   const [form] = Form.useForm();
@@ -199,7 +200,7 @@ const IncomeDriverTarget = ({
       <Row gutter={[8, 8]}>
         <Col span={12}>
           <Form.Item label="Better income target" name="manual_target">
-            <Switch checked={!disableTarget} />
+            <Switch checked={!disableTarget} disabled={!enableEditCase} />
           </Form.Item>
         </Col>
         <Col
@@ -213,7 +214,7 @@ const IncomeDriverTarget = ({
               <Form.Item label="Target" name="target">
                 <InputNumber
                   style={formStyle}
-                  disabled={disableTarget}
+                  disabled={disableTarget || !enableEditCase}
                   {...InputNumberThousandFormatter}
                 />
               </Form.Item>
@@ -245,7 +246,7 @@ const IncomeDriverTarget = ({
             <Select
               style={formStyle}
               options={regionOptions}
-              disabled={!disableTarget}
+              disabled={!disableTarget || !enableEditCase}
               loading={loadingRegionOptions}
               placeholder={
                 regionOptionStatus === 404
@@ -261,6 +262,7 @@ const IncomeDriverTarget = ({
             <InputNumber
               style={formStyle}
               onChange={handleOnChangeHouseholdAdult}
+              disabled={!enableEditCase}
             />
           </Form.Item>
         </Col>
@@ -269,6 +271,7 @@ const IncomeDriverTarget = ({
             <InputNumber
               style={formStyle}
               onChange={handleOnChangeHouseholdChild}
+              disabled={!enableEditCase}
             />
           </Form.Item>
         </Col>

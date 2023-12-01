@@ -35,6 +35,7 @@ const Question = ({
   percentage,
   unit,
   form,
+  enableEditCase,
 }) => {
   const { commodity_name, commodity_type, case_commodity, currency } =
     commodity;
@@ -66,8 +67,9 @@ const Question = ({
     return !isNaN(value) ? value : 0;
   }, [form, case_commodity, id, percentage]);
 
-  const disableTotalIncomeFocusCommodityField =
-    !parent && question_type === "aggregator" && commodity_type === "focus";
+  const disableTotalIncomeFocusCommodityField = !enableEditCase
+    ? true
+    : !parent && question_type === "aggregator" && commodity_type === "focus";
 
   return (
     <>
@@ -106,7 +108,7 @@ const Question = ({
                     ? "none"
                     : "",
               }}
-              disabled={disableTotalIncomeFocusCommodityField}
+              // disabled={disableTotalIncomeFocusCommodityField}
             >
               <InputNumber
                 style={{
@@ -137,6 +139,7 @@ const Question = ({
               segment={segment}
               form={form}
               {...child}
+              enableEditCase={enableEditCase}
             />
           ))
         : null}
@@ -153,6 +156,7 @@ const ScenarioInput = ({
   scenarioItem,
   setScenarioData,
   currencyUnitName,
+  enableEditCase,
 }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
@@ -347,6 +351,7 @@ const ScenarioInput = ({
               commodity={c}
               percentage={percentage}
               {...question}
+              enableEditCase={enableEditCase}
             />
           ))}
         </div>
@@ -367,6 +372,7 @@ const Scenario = ({
   percentage,
   setScenarioData,
   currentScenarioValues = {},
+  enableEditCase,
 }) => {
   const [editing, setEditing] = useState(false);
   const [activeTab, setActiveTab] = useState(dashboardData[0].id);
@@ -592,7 +598,7 @@ const Scenario = ({
         title={renderScenarioCardHeader()}
         extra={
           <Space className="card-extra-wrapper">
-            {extra}
+            {enableEditCase ? extra : null}
             <SaveAsImageButton
               elementRef={elScenarioModeling}
               filename={scenarioItem.name}
@@ -635,6 +641,7 @@ const Scenario = ({
                   scenarioItem={scenarioItem}
                   setScenarioData={setScenarioData}
                   currencyUnitName={currencyUnitName}
+                  enableEditCase={enableEditCase}
                 />
               </Col>
             ))}

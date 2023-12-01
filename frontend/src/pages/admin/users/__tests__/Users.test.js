@@ -73,6 +73,7 @@ describe("Users page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 
@@ -105,6 +106,7 @@ describe("Users page", () => {
         s.tags_count = 2;
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
+        s.internal_user = false;
       });
     });
 

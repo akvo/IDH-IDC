@@ -118,4 +118,5 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "tags_count": 1,
             "cases_count": 1,
             "case_access": [{"case": 1, "permission": "view"}],
+            "internal_user": False,
         }

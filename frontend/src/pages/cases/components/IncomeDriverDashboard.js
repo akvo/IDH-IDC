@@ -16,6 +16,7 @@ const IncomeDriverDashboard = ({
   dashboardData,
   questionGroups,
   setPage,
+  enableEditCase,
 }) => {
   const [activeKey, setActiveKey] = useState("income-overview");
   const [messageApi, contextHolder] = message.useMessage();
@@ -161,6 +162,7 @@ const IncomeDriverDashboard = ({
                   dashboardData={dashboardData}
                   binningData={binningData}
                   setBinningData={setBinningData}
+                  enableEditCase={enableEditCase}
                 />
               ),
             },
@@ -177,6 +179,7 @@ const IncomeDriverDashboard = ({
                   setPercentage={setPercentage}
                   scenarioData={scenarioData}
                   setScenarioData={setScenarioData}
+                  enableEditCase={enableEditCase}
                 />
               ),
             },
@@ -195,7 +198,7 @@ const IncomeDriverDashboard = ({
               Previous
             </Button>
           </Col>
-          {activeKey !== "income-overview" ? (
+          {activeKey !== "income-overview" && enableEditCase ? (
             <Col
               span={12}
               style={{

@@ -59,6 +59,7 @@ const Questions = ({
   refresh,
   childrens,
   indent = 0,
+  enableEditCase,
 }) => {
   const [infoText, setInfoText] = useState("");
   const [currentValue, setCurrentValue] = useState(0);
@@ -78,7 +79,9 @@ const Questions = ({
     (question_type === "aggregator" && checkFocus) ||
     (question_type === "aggregator" && checkBreakdownValue);
 
-  const disableInput = checkFocus
+  const disableInput = !enableEditCase
+    ? true
+    : checkFocus
     ? disabled
     : checkBreakdownValue
     ? disabled
@@ -162,7 +165,11 @@ const Questions = ({
         <Col span={2}>
           {(childrens.length > 0 && !hidden && checkFocus) ||
           (!hidden && checkBreakdownValue) ? (
-            <Switch size="small" onChange={() => setDisabled(!disabled)} />
+            <Switch
+              size="small"
+              onChange={() => setDisabled(!disabled)}
+              disabled={!enableEditCase}
+            />
           ) : null}
         </Col>
         <Col span={4}>
@@ -224,6 +231,7 @@ const Questions = ({
               allQuestions={allQuestions}
               {...child}
               indent={indent + indentSize}
+              enableEditCase={enableEditCase}
             />
           ))
         : null}

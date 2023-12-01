@@ -57,6 +57,7 @@ const CaseForm = ({
   filteredCurrencyOptions,
   privateCase,
   setPrivateCase,
+  enableEditCase,
 }) => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
 
@@ -78,7 +79,7 @@ const CaseForm = ({
             ]}
             onChange={(e) => setCaseTitle(e.target.value)}
           >
-            <Input />
+            <Input disabled={!enableEditCase} />
           </Form.Item>
           <Form.Item
             label="Case Description"
@@ -93,6 +94,7 @@ const CaseForm = ({
             <Input.TextArea
               onChange={(e) => setCaseDescription(e.target.value)}
               rows={4}
+              disabled={!enableEditCase}
             />
           </Form.Item>
 
@@ -100,6 +102,7 @@ const CaseForm = ({
             <Checkbox
               checked={privateCase}
               onChange={() => setPrivateCase(!privateCase)}
+              disabled={!enableEditCase}
             >
               Private Case
             </Checkbox>
@@ -120,6 +123,7 @@ const CaseForm = ({
               disabledDate={(current) => {
                 return current && dayjs(current).year() > dayjs().year();
               }}
+              disabled={!enableEditCase}
             />
           </Form.Item>
 
@@ -138,6 +142,7 @@ const CaseForm = ({
               placeholder="Add Tags"
               options={tagOptions}
               {...selectProps}
+              disabled={!enableEditCase}
             />
           </Form.Item>
         </Card>
@@ -164,6 +169,7 @@ const CaseForm = ({
                   options={countryOptions}
                   {...selectProps}
                   onChange={setSelectedCountry}
+                  disabled={!enableEditCase}
                 />
               </Form.Item>
             </Col>
@@ -182,7 +188,7 @@ const CaseForm = ({
                   placeholder="Select Currency"
                   options={filteredCurrencyOptions}
                   {...selectProps}
-                  disabled={!selectedCountry}
+                  disabled={!selectedCountry || !enableEditCase}
                 />
               </Form.Item>
             </Col>
@@ -203,11 +209,12 @@ const CaseForm = ({
                   placeholder="Select Focus Commodity"
                   options={commodityOptions}
                   {...selectProps}
+                  disabled={!enableEditCase}
                 />
               </Form.Item>
             </Col>
             <Col {...responsiveCol}>
-              <AreaUnitFields form={form} disabled={false} />
+              <AreaUnitFields form={form} disabled={!enableEditCase} />
             </Col>
           </Row>
           <Form.Item
@@ -224,6 +231,7 @@ const CaseForm = ({
               options={reportingPeriod}
               optionType="button"
               buttonStyle="solid"
+              disabled={!enableEditCase}
             />
           </Form.Item>
         </Card>
@@ -292,6 +300,7 @@ const CaseProfile = ({
   initialOtherCommodityTypes,
   setCurrentCase,
   currentCase,
+  enableEditCase,
 }) => {
   const [form] = Form.useForm();
   const [secondary, setSecondary] = useState(commodityList.length > 2);
@@ -636,12 +645,19 @@ const CaseProfile = ({
                 filteredCurrencyOptions={filteredCurrencyOptions}
                 privateCase={privateCase}
                 setPrivateCase={setPrivateCase}
+                enableEditCase={enableEditCase}
               />
             </Col>
             <Col span={24}>
               <Card
                 title="Secondary Commodity"
-                extra={<Switch checked={secondary} onChange={setSecondary} />}
+                extra={
+                  <Switch
+                    checked={secondary}
+                    onChange={setSecondary}
+                    disabled={!enableEditCase}
+                  />
+                }
                 style={{
                   backgroundColor: !secondary ? "#f5f5f5" : "white",
                 }}
@@ -650,7 +666,7 @@ const CaseProfile = ({
                 <SecondaryForm
                   index={1}
                   indexLabel="Secondary"
-                  disabled={!secondary}
+                  disabled={!secondary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeSecondaryField}
                 />
               </Card>
@@ -662,7 +678,7 @@ const CaseProfile = ({
                   <Switch
                     checked={tertiary}
                     onChange={setTertiary}
-                    disabled={!secondary}
+                    disabled={!secondary || !enableEditCase}
                   />
                 }
                 style={{
@@ -673,7 +689,7 @@ const CaseProfile = ({
                 <SecondaryForm
                   index={2}
                   indexLabel="Teritary"
-                  disabled={!tertiary}
+                  disabled={!tertiary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeTertiaryField}
                 />
               </Card>
@@ -696,14 +712,16 @@ const CaseProfile = ({
                   }}
                 >
                   <Space size={[8, 16]} wrap>
-                    <Button
-                      htmlType="submit"
-                      className="button button-submit button-secondary"
-                      loading={isSaving}
-                      onClick={() => setIsNextButton(false)}
-                    >
-                      Save
-                    </Button>
+                    {enableEditCase && (
+                      <Button
+                        htmlType="submit"
+                        className="button button-submit button-secondary"
+                        loading={isSaving}
+                        onClick={() => setIsNextButton(false)}
+                      >
+                        Save
+                      </Button>
+                    )}
                     <Button
                       htmlType="submit"
                       className="button button-submit button-secondary"

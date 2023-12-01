@@ -11,6 +11,7 @@ const DashboardScenarioModeling = ({
   setPercentage,
   scenarioData,
   setScenarioData,
+  enableEditCase,
 }) => {
   const segmentTabs = useMemo(
     () =>
@@ -101,29 +102,32 @@ const DashboardScenarioModeling = ({
             scenarioData.find((d) => d.key === scenarioItem.key)
               ?.scenarioValues || {}
           }
+          enableEditCase={enableEditCase}
         />
       ))}
-      <Col span={24}>
-        <Button
-          onClick={() =>
-            setScenarioData((prev) => {
-              return [
-                ...prev,
-                {
-                  key: prev.length + 1,
-                  name: `Scenario ${prev.length + 1}`,
-                  description: null,
-                  scenarioValues: [],
-                },
-              ];
-            })
-          }
-          type="primary"
-          style={{ width: "100%" }}
-        >
-          Add New Scenario
-        </Button>
-      </Col>
+      {enableEditCase && (
+        <Col span={24}>
+          <Button
+            onClick={() =>
+              setScenarioData((prev) => {
+                return [
+                  ...prev,
+                  {
+                    key: prev.length + 1,
+                    name: `Scenario ${prev.length + 1}`,
+                    description: null,
+                    scenarioValues: [],
+                  },
+                ];
+              })
+            }
+            type="primary"
+            style={{ width: "100%" }}
+          >
+            Add New Scenario
+          </Button>
+        </Col>
+      )}
     </Row>
   );
 };
