@@ -63,3 +63,39 @@
     }
   }
 }
+
+#faq {
+  padding: 3rem $default-padding-size;
+  background: #fff;
+
+  h2 {
+    color: #00403e;
+    font-family: "RocGrotesk";
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 52px;
+  }
+
+  .item-wrapper {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #d6d6d6;
+
+    .title {
+      color: #00625f;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    .description {
+      color: #00625f;
+      font-family: "TabletGothic";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+    }
+  }
+}

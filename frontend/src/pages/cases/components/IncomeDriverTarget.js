@@ -120,11 +120,11 @@ const IncomeDriverTarget = ({
   }, [currentCase?.country]);
 
   const handleOnChangeHouseholdAdult = (value) => {
-    updateFormValues({ adult: value });
+    updateFormValues({ adult: value >= 0 ? value : null });
   };
 
   const handleOnChangeHouseholdChild = (value) => {
-    updateFormValues({ child: value });
+    updateFormValues({ child: value >= 0 ? value : null });
   };
 
   const onValuesChange = (changedValues, allValues) => {
@@ -188,6 +188,23 @@ const IncomeDriverTarget = ({
       }
     }
   };
+
+  const preventNegativeValue = (fieldName) => [
+    () => ({
+      validator(_, value) {
+        if (value >= 0) {
+          return Promise.resolve();
+        }
+        const allValues = form.getFieldsValue();
+        form.setFieldValue(fieldName, null);
+        onValuesChange(
+          { [fieldName]: null },
+          { ...allValues, [fieldName]: null }
+        );
+        return Promise.reject(new Error("Negative value not allowed"));
+      },
+    }),
+  ];
 
   return (
     <Form
@@ -258,7 +275,11 @@ const IncomeDriverTarget = ({
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="Avg # of adults in HH" name="household_adult">
+          <Form.Item
+            label="Avg # of adults in HH"
+            name="household_adult"
+            rules={preventNegativeValue("household_adult")}
+          >
             <InputNumber
               style={formStyle}
               onChange={handleOnChangeHouseholdAdult}
@@ -267,7 +288,11 @@ const IncomeDriverTarget = ({
           </Form.Item>
         </Col>
         <Col span={8}>
-          <Form.Item label="Avg # of children in HH" name="household_children">
+          <Form.Item
+            label="Avg # of children in HH"
+            name="household_children"
+            rules={preventNegativeValue("household_children")}
+          >
             <InputNumber
               style={formStyle}
               onChange={handleOnChangeHouseholdChild}

@@ -673,7 +673,7 @@ const CaseProfile = ({
             </Col>
             <Col span={24}>
               <Card
-                title="Teritary Commodity"
+                title="Tertiary Commodity"
                 extra={
                   <Switch
                     checked={tertiary}
@@ -688,7 +688,7 @@ const CaseProfile = ({
               >
                 <SecondaryForm
                   index={2}
-                  indexLabel="Teritary"
+                  indexLabel="Tertiary"
                   disabled={!tertiary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeTertiaryField}
                 />

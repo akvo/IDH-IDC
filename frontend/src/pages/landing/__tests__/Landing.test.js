@@ -42,9 +42,15 @@ describe("Landing page", () => {
       </Router>
     );
 
-    expect(wrapper.getByTestId("first-section-wrapper")).toBeInTheDocument();
-    expect(wrapper.getByTestId("first-section-left-text")).toBeInTheDocument();
-    expect(wrapper.getByTestId("first-section-right-text")).toBeInTheDocument();
+    expect(
+      wrapper.getByTestId("income-driver-framework-wrapper")
+    ).toBeInTheDocument();
+    expect(
+      wrapper.getByTestId("income-driver-framework-left-text")
+    ).toBeInTheDocument();
+    expect(
+      wrapper.getByTestId("income-driver-framework-right-text")
+    ).toBeInTheDocument();
     expect(wrapper.getByTestId("button-learn-more-2")).toBeInTheDocument();
   });
 
@@ -57,19 +63,11 @@ describe("Landing page", () => {
       </Router>
     );
 
-    expect(wrapper.getByTestId("second-section-wrapper")).toBeInTheDocument();
-    expect(wrapper.getByTestId("second-section-title")).toBeInTheDocument();
     expect(
-      wrapper.getByTestId("second-section-description")
+      wrapper.getByTestId("framework-drivers-wrapper")
     ).toBeInTheDocument();
-    expect(wrapper.getByText("Qualitative data")).toBeInTheDocument();
-    expect(
-      wrapper.getByText("Report generation and visualizations")
-    ).toBeInTheDocument();
-    expect(
-      wrapper.getByTestId("button-use-the-calculator")
-    ).toBeInTheDocument();
-    expect(wrapper.getByTestId("second-section-image")).toBeInTheDocument();
+    expect(wrapper.getByTestId("framework-drivers-title")).toBeInTheDocument();
+    expect(wrapper.getByTestId("framework-drivers-image")).toBeInTheDocument();
   });
 
   it("should render third section", () => {
@@ -81,9 +79,9 @@ describe("Landing page", () => {
       </Router>
     );
 
-    expect(wrapper.getByTestId("third-section-wrapper")).toBeInTheDocument();
-    expect(wrapper.getByTestId("third-section-title")).toBeInTheDocument();
-    expect(wrapper.getByTestId("third-section-subtitle")).toBeInTheDocument();
+    expect(wrapper.getByTestId("explore-studies-wrapper")).toBeInTheDocument();
+    expect(wrapper.getByTestId("explore-studies-title")).toBeInTheDocument();
+    expect(wrapper.getByTestId("explore-studies-subtitle")).toBeInTheDocument();
     expect(wrapper.getByTestId("map")).toBeInTheDocument();
   });
 

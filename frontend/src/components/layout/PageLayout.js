@@ -18,8 +18,14 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
 
   const menus = [
     {
+      testid: "nav-menu-calculator",
+      name: "Use the Calculator",
+      path: "use-calculator",
+      role: allUserRole,
+    },
+    {
       testid: "nav-menu-cases",
-      name: "Cases",
+      name: "Cases Overview",
       path: "/cases",
       role: allUserRole,
     },

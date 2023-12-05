@@ -1,111 +1,62 @@
 import React from "react";
 import "./welcome.scss";
-import { Row, Col, Card, Button, Image } from "antd";
-import IconCases from "../../assets/icons/icon-cases.svg";
-import IconExploreStudies from "../../assets/icons/icon-explore-studies.svg";
-import IconAdmin from "../../assets/icons/icon-admin.svg";
-import { UserState } from "../../store";
-import { useNavigate } from "react-router-dom";
-import { adminRole, allUserRole } from "../../store/static";
+import { Row, Col } from "antd";
+import {
+  Jumbotron,
+  GetStarted,
+  FrameworkDrivers,
+  CompareIncomeTarget,
+  ExploreStudies,
+  FooterDisclaimer,
+} from "../landing/components";
 
-const cardMenus = [
-  {
-    testid: "card-menu-cases",
-    name: "Cases",
-    description:
-      "Data Entry is an important interactive way to retrieve information of objects since users will frequently add, change or delete information.",
-    icon: IconCases,
-    path: "/cases",
-    role: allUserRole,
-  },
-  {
-    testid: "card-menu-explore-studies",
-    name: "Explore Studies",
-    description:
-      "Data Entry is an important interactive way to retrieve information of objects since users will frequently add, change or delete information.",
-    icon: IconExploreStudies,
-    path: "/explore",
-    role: allUserRole,
-  },
-  {
-    testid: "card-menu-admin",
-    name: "Admin",
-    description:
-      "Data Entry is an important interactive way to retrieve information of objects since users will frequently add, change or delete information.",
-    icon: IconAdmin,
-    path: "/admin/users",
-    role: adminRole,
-  },
-];
-
-const Welcome = () => {
-  const navigate = useNavigate();
-  const userRole = UserState.useState((s) => s.role);
-
-  const handleOnClickButtonExplore = (val) => {
-    navigate(val.path);
-  };
+const FAQ = () => {
+  const items = [
+    {
+      title: "What is Driver Calculator?",
+      description:
+        "Please provide comprehensive answers to those questions. You will save lots of time and money by eliminating the necessity to give constant support. You also will keep your clients' time cause they will quickly find the answers to all their questions.",
+    },
+    {
+      title: "How should I find out my cases?",
+      description:
+        "Please provide comprehensive answers to those questions. You will save lots of time and money.",
+    },
+    {
+      title: "How to get started?",
+      description:
+        "Please provide comprehensive answers to those questions. You will save lots of time and money by eliminating the necessity to give constant support. You also will keep your clients' time cause they will quickly find the answers to all their questions.",
+    },
+  ];
 
   return (
-    <Row className="welcome-container" id="welcome">
-      <div className="right-clip-path-wrapper" />
-      <Col span={24} className="welcome-content-wrapper">
-        {/* Page Title */}
-        <h1 data-testid="page-title" className="page-title">
-          Welcome to the IDC
-        </h1>
-        <h3 data-testid="page-subtitle" className="page-subtitle">
-          The income driver calculator version 2.0 is an analytics tool that
-          uses both Living Income and Better Income to generate scenarios based
-          off changes in different income drivers.
-        </h3>
-        {/* EOL Page Title */}
-
-        {/* Card Menu */}
-        <Row className="card-menu-wrapper" gutter={[14, 14]}>
-          {cardMenus
-            .filter((cm) => cm.role.includes(userRole))
-            .map((cm, cmi) => {
-              return (
-                <Col key={`card-menu-${cmi}`} span={24} data-testid={cm.testid}>
-                  <Card className="card-container">
-                    <Row
-                      justify="center"
-                      align="middle"
-                      className="card-content-wrapper"
-                    >
-                      <Col span={2} align="center" className="icon-wrapper">
-                        <Image
-                          src={cm.icon}
-                          preview={false}
-                          data-testid={`${cm.testid}-icon`}
-                        />
-                      </Col>
-                      <Col span={16} className="text-wrapper">
-                        <h4 data-testid={`${cm.testid}-name`}>{cm.name}</h4>
-                        <p data-testid={`${cm.testid}-description`}>
-                          {cm.description}
-                        </p>
-                      </Col>
-                      <Col span={6} className="button-wrapper" align="end">
-                        <Button
-                          data-testid={`${cm.testid}-button`}
-                          className="button-green"
-                          style={{ float: "right", marginRight: 20 }}
-                          onClick={() => handleOnClickButtonExplore(cm)}
-                        >
-                          Explore
-                        </Button>
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              );
-            })}
+    <div id="faq">
+      <h2>Frequently asked questions</h2>
+      {items.map((it, i) => (
+        <Row key={i} className="item-wrapper">
+          <Col span={12} className="title">
+            {it.title}
+          </Col>
+          <Col span={12} className="description">
+            {it.description}
+          </Col>
         </Row>
-        {/* EOL Card Menu */}
-      </Col>
-    </Row>
+      ))}
+    </div>
+  );
+};
+
+const Welcome = ({ signOut }) => {
+  return (
+    <div>
+      <Jumbotron signOut={signOut} />
+      <GetStarted />
+      <FrameworkDrivers />
+      <CompareIncomeTarget />
+      <ExploreStudies />
+      <FAQ />
+      <FooterDisclaimer />
+    </div>
   );
 };
 

@@ -38,6 +38,13 @@
     color: $primary-color;
     font-weight: 700;
   }
+
+  .button-green-fill {
+    background: $primary-color;
+    border-radius: 20px;
+    color: #ffffff !important;
+    font-weight: 700;
+  }
   // EOL global css setting
 
   header {

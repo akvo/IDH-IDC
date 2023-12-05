@@ -1,0 +1,299 @@
+@import "../../../variables.scss";
+
+#jumbotron {
+  background-image: url("/assets/images/jumbotron.jpeg") !important;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center -7rem;
+  width: 100%;
+  height: 43rem;
+  padding: 4rem $default-padding-size $default-padding-size
+    $default-padding-size;
+
+  h1 {
+    font-family: "TabletGothicBold" !important;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 3.4rem !important;
+    width: 606px;
+    line-height: 70px;
+  }
+
+  h3 {
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 1.9rem;
+    line-height: 45px;
+    width: 426px;
+  }
+}
+
+#framework-drivers {
+  background-color: #ffffff;
+  width: 100%;
+
+  .ant-collapse > .ant-collapse-item > .ant-collapse-header {
+    padding: 24px 0 16px 0;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 28px;
+    letter-spacing: -0.28px;
+    font-family: "TabletGothic";
+    border-bottom: 1px solid $muted-color;
+  }
+
+  .text-wrapper {
+    padding: 3rem 2rem 3rem $default-padding-size;
+    h2 {
+      color: #00403e;
+      font-family: Roc Grotesk;
+      font-size: 30px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 52px;
+    }
+  }
+
+  .image-wrapper {
+    padding: 3rem $default-padding-size 3rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .image {
+      border: 12px solid $bg-color-grey;
+      border-radius: 22px;
+    }
+  }
+
+  .framework-drivers-calculation-wrapper {
+    padding: 24px;
+    height: 275px;
+
+    .driver-label {
+      color: #000;
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 24px;
+    }
+
+    .driver-icon-wrapper {
+      border-radius: 100px 0px 100px 100px;
+      background: #01605f;
+      width: 100px;
+      height: 100px;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &.price-icon {
+        background: #6de19e;
+      }
+    }
+
+    .math-symbol {
+      color: #45d884;
+      font-family: "TabletGothic";
+      font-size: 52px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 24px;
+    }
+
+    .driver-calculation-stroke {
+      margin-top: 16px;
+    }
+  }
+}
+
+#get-started {
+  padding: 3rem $default-padding-size;
+  background: #fcf9f4;
+
+  h2 {
+    color: #00403e;
+    font-family: "RocGrotesk";
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 48px;
+    letter-spacing: -0.8px;
+  }
+
+  .get-started-info-wrapper {
+    .number {
+      color: #00625f;
+      text-align: center;
+      font-family: "RocGrotesk";
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 28px;
+      letter-spacing: -0.28px;
+
+      padding: 4px 8px;
+      background: $yellow-color;
+      border-radius: 100px 70px 100px 70px;
+    }
+
+    .title {
+      color: #00625f;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 28px;
+      letter-spacing: -0.336px;
+    }
+
+    .description {
+      color: #000;
+      font-family: "TabletGothic";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+      padding-left: 36px;
+    }
+  }
+
+  .button-wrapper {
+    padding-left: 36px;
+    margin-top: 48px;
+  }
+
+  .image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 0 0 3rem;
+
+    img {
+      border-radius: 20px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+#explore-studies {
+  background-color: #ffffff;
+  width: 100%;
+  padding: 3rem $default-padding-size;
+
+  h2 {
+    color: #00403e;
+    text-align: center;
+    font-family: "RocGrotesk";
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 52px;
+  }
+
+  p {
+    color: #005855;
+    text-align: center;
+    font-family: "TabletGothic";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 32px;
+  }
+
+  .map-container {
+    background-image: url("/assets/images/explore-studies.svg") !important;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 35rem;
+    margin-top: 50px;
+  }
+}
+
+#footer-disclaimer {
+  background-color: #00625f;
+  color: #ffffff;
+  width: 100%;
+  padding: 1.5rem $default-padding-size;
+
+  h2 {
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  p {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7rem;
+  }
+
+  .footer-wrapper {
+    padding: 1rem 0;
+
+    .copyright-text {
+      font-size: 14px;
+    }
+  }
+}
+
+#compare-income-target {
+  background: #ffffff;
+
+  h2 {
+    color: #00403e;
+    font-family: "RocGrotesk";
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    // line-height: 52px;
+  }
+
+  p {
+    color: #005855;
+    font-family: "TabletGothic";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 32px;
+  }
+
+  .compare-income-target-info-card-wrapper {
+    padding: 3rem;
+
+    h3 {
+      color: #00302e;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+      text-transform: capitalize;
+    }
+
+    p {
+      color: #00302e;
+      font-family: "TabletGothic";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+    }
+
+    .compare-income-target-card {
+      border-radius: 20px;
+      min-height: 235px;
+
+      &.info-first {
+        background: #47d985;
+      }
+
+      &.info-second {
+        background: #76c8ff;
+      }
+    }
+  }
+}
