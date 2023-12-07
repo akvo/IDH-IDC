@@ -39,11 +39,13 @@
         border: 1px solid #e9e9e9;
 
         .ant-card-head {
+          padding: 10px 20px;
           background: $primary-color;
           color: #fff;
+          min-height: 42px;
 
           .ant-card-head-title {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
           }
 
           .ant-switch {
@@ -100,10 +102,13 @@
           background: $primary-color;
           color: #fff;
           padding: 10px 20px 0 20px;
+          min-height: 42px;
         }
       }
       .ant-card-head {
         padding: 0px;
+        padding-left: 16px;
+
         h3 {
           font-size: 24px;
           margin: -1px;
@@ -131,9 +136,6 @@
         .ant-card-extra {
           padding: 10px 24px;
         }
-        .ant-card-head-wrapper {
-          align-items: start;
-        }
         .card-extra-wrapper {
           margin-top: 15px;
         }
@@ -154,7 +156,7 @@
           h2 {
             &.section-title {
               // background: #e6f7ff;
-              font-size: 0.95rem;
+              font-size: 0.9rem;
               margin: -10px -24px 0 -24px;
               padding: 10px 24px;
               position: relative;
@@ -200,6 +202,7 @@
         }
       }
     }
+
     .card-subtitle {
       padding: 10px 0;
     }
@@ -268,50 +271,144 @@
   .binning-input {
     width: 100% !important;
   }
-  .income-driver-table {
-    table {
-      border-radius: 5px;
-      th,
-      td {
-        font-family: "TabletGothic";
-        background: $secondary-color;
-        border: none;
-      }
-      th {
-        border-bottom: solid $primary-color 1px;
-        &::before {
-          display: none;
-        }
-      }
-      tfoot.ant-table-summary {
-        background: $secondary-color;
-        td {
-          background: $secondary-color;
-          border-top: solid $primary-color 1px;
-          font-family: "TabletGothic";
-        }
-      }
+
+  #income-driver-dashboard {
+    .ant-tabs {
+      background: none;
+    }
+    .ant-tabs-nav-wrap {
+      background: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+    .ant-tabs-tab-btn {
+      background: none !important;
     }
   }
+
   #sensitivity-analysis {
     .ant-form-item {
       margin-bottom: 0px;
+    }
+
+    .settings-wrapper {
+      h2 {
+        color: #00403e;
+        font-family: "RocGrotesk";
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 48px;
+        letter-spacing: -0.8px;
+      }
+
+      p {
+        color: #000;
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 28px; /* 175% */
+      }
+
+      .settings-info-wrapper {
+        .number {
+          color: #00625f;
+          text-align: center;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 28px;
+          letter-spacing: -0.28px;
+
+          padding: 4px 8px;
+          background: $yellow-color;
+          border-radius: 100px 70px 100px 70px;
+        }
+
+        .title {
+          color: #00625f;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 28px;
+          letter-spacing: -0.336px;
+        }
+
+        .description {
+          color: #000;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 24px;
+          padding-left: 36px;
+        }
+      }
+    }
+
+    .income-driver-table {
+      table {
+        border-radius: 20px;
+
+        th,
+        td {
+          font-family: "TabletGothic";
+          // background: $secondary-color;
+          border: none;
+          padding: 8px 20px;
+        }
+        th {
+          border-bottom: solid $primary-color 1px;
+          &::before {
+            display: none;
+          }
+        }
+        tfoot.ant-table-summary {
+          // background: $secondary-color;
+          td {
+            // background: $secondary-color;
+            border-top: solid $primary-color 1px;
+            font-family: "TabletGothic";
+
+            &:first-child {
+              border-bottom-left-radius: 20px;
+            }
+            &:last-child {
+              border-bottom-right-radius: 20px;
+            }
+          }
+        }
+      }
+    }
+
+    .binning-chart-info-wrapper {
+      color: #000;
+      padding-top: 20px;
+
+      .segment {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .label {
+        font-size: 18px;
+        font-weight: 700;
+      }
     }
   }
 
   .ant-steps-item-title {
     cursor: pointer;
   }
+
   #scenario-modeling {
     font-family: "TabletGothic";
     .scenario-field-item {
       margin-bottom: 0px;
     }
-  }
-
-  .chart-title {
-    margin: 0px 0px -10px 0px;
-    padding: 0px 24px 10px 0;
   }
 
   #income-overview-chart {
@@ -320,21 +417,40 @@
     }
   }
 
+  .chart-title {
+    margin: 0px 0px -10px 0px;
+    padding: 0px 24px 10px 0;
+  }
+
   .chart-card-wrapper {
     border-radius: 20px;
     border: 1px solid #e9e9e9;
 
     .ant-card-head {
+      padding: 10px 20px;
       background: $primary-color;
       color: #fff;
+      min-height: 42px;
     }
 
     .ant-card-head-title {
-      font-size: 0.95rem;
+      font-size: 0.9rem !important;
     }
 
     .ant-card-body {
       padding: 0 20px !important;
+    }
+
+    &.with-padding {
+      .ant-card-body {
+        padding: 20px !important;
+      }
+    }
+
+    &.has-segments-button {
+      .ant-card-body {
+        padding: 20px !important;
+      }
     }
   }
 
@@ -343,16 +459,34 @@
     border: 1px solid #e9e9e9;
 
     .ant-card-head {
+      padding: 10px 20px;
       background: $primary-color;
       color: #fff;
+      min-height: 42px;
     }
 
     .ant-card-head-title {
-      font-size: 0.95rem;
+      font-size: 0.9rem !important;
     }
 
     .ant-card-body {
       padding: 20px !important;
+    }
+
+    &.no-padding {
+      .ant-card-body {
+        padding: 10px 0 !important;
+      }
+    }
+
+    &.head-only {
+      .ant-card-body {
+        padding: 0 !important;
+      }
+
+      .ant-card-head {
+        border-radius: 20px;
+      }
     }
   }
 }

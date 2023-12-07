@@ -17,17 +17,17 @@ const FrameworkDrivers = () => {
     {
       key: "1",
       label: "Land Area",
-      children: (
-        <p>
-          Each of these drivers may have a significant influence on household
-          income, and they are often interconnected.
-        </p>
-      ),
+      children: <p>The size of the area used to grow the focus commodity.</p>,
     },
     {
       key: "2",
       label: "Volume",
-      children: <p>Lorem</p>,
+      children: (
+        <p>
+          The quantity per unit area, taking into account both yield and
+          potential loss.
+        </p>
+      ),
     },
     {
       key: "3",
@@ -42,7 +42,12 @@ const FrameworkDrivers = () => {
     {
       key: "4",
       label: "Cost of Production",
-      children: <p>Lorem</p>,
+      children: (
+        <p>
+          The costs of production for growing the focus commodity can cover
+          several types of costs, such as costs for labour, inputs or equipment.
+        </p>
+      ),
     },
     {
       key: "5",
