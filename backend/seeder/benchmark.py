@@ -40,6 +40,9 @@ def seeder_benchmark(session: Session):
             lcu=row["lcu"],
             usd=row["usd"],
             eur=row["eur"],
+            nr_adults=row["nr_adults"],
+            household_equiv=row["household_equiv"],
+            links=row["links"],
         )
         session.add(lib)
         session.commit()

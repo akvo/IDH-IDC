@@ -89,11 +89,11 @@ const IncomeDriverTarget = ({
       if (benchmark?.cpi_factor) {
         const caseYearLIB = targetValue * (1 - benchmark.cpi_factor);
         const LITarget =
-          (householdSize / benchmark.household_size) * caseYearLIB;
+          (householdSize / benchmark.household_equiv) * caseYearLIB;
         setIncomeTarget(LITarget);
       } else {
         const LITarget =
-          (householdSize / benchmark.household_size) * targetValue;
+          (householdSize / benchmark.household_equiv) * targetValue;
         setIncomeTarget(LITarget);
       }
     }
@@ -161,7 +161,13 @@ const IncomeDriverTarget = ({
           // data represent LI Benchmark value
           const { data } = res;
           setBenchmark(data);
-          const targetHH = data.household_size;
+          // set hh adult and children default value
+          form.setFieldsValue({
+            household_adult: data.nr_adults,
+            household_children: data.household_size - data.nr_adults,
+          });
+          //
+          const targetHH = data.household_equiv;
           const targetValue =
             data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
           // with CPI calculation
@@ -174,6 +180,8 @@ const IncomeDriverTarget = ({
               ...regionData,
               target: LITarget,
               benchmark: data,
+              adult: data.nr_adults,
+              child: data.household_size - data.nr_adults,
             });
           } else {
             const LITarget = (HHSize / targetHH) * targetValue;
@@ -182,6 +190,8 @@ const IncomeDriverTarget = ({
               ...regionData,
               target: LITarget,
               benchmark: data,
+              adult: data.nr_adults,
+              child: data.household_size - data.nr_adults,
             });
           }
         });

@@ -39,6 +39,10 @@ class TestBenchmarkRoute:
             "case_year_cpi": None,
             "last_year_cpi": None,
             "cpi_factor": None,
+            "household_equiv": None,
+            "links": None,
+            "nr_adults": None,
+            "source": "www.akvo.org",
         }
 
     @pytest.mark.asyncio
@@ -68,6 +72,10 @@ class TestBenchmarkRoute:
             "case_year_cpi": 6000.0,
             "last_year_cpi": 7000.0,
             "cpi_factor": 0.16666666666666666,
+            "household_equiv": None,
+            "links": None,
+            "nr_adults": None,
+            "source": "www.akvo.org",
         }
 
     @pytest.mark.asyncio

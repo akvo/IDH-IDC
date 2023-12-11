@@ -106,8 +106,8 @@ const DataFields = ({
       dashboardData.find((d) => d.key === segment)?.benchmark || null;
     return {
       label: "Source",
-      value: findSegmentBenchmark ? "Living Income Benchmark" : "NA",
-      link: findSegmentBenchmark?.source || null,
+      value: findSegmentBenchmark ? findSegmentBenchmark.source : "NA",
+      link: findSegmentBenchmark?.links || null,
       childs: [
         {
           label: "Year of Study",
@@ -121,7 +121,7 @@ const DataFields = ({
         },
         {
           label: "Adults",
-          value: findSegmentBenchmark?.adults || "NA",
+          value: findSegmentBenchmark?.nr_adults || "NA",
           icon: <UserOutlined />,
         },
       ],
@@ -503,7 +503,9 @@ const DataFields = ({
               <div className="benchmark-info-title-wrapper">
                 <b>{benchmarkInfo?.label}</b> :{" "}
                 {benchmarkInfo?.link ? (
-                  <a href={benchmarkInfo.link}>{benchmarkInfo?.value}</a>
+                  <a href={benchmarkInfo.link} target="_blank" rel="noreferrer">
+                    {benchmarkInfo?.value}
+                  </a>
                 ) : (
                   benchmarkInfo?.value
                 )}
@@ -518,7 +520,7 @@ const DataFields = ({
                     <Space>
                       <div>{bi.icon}</div>
                       <div>
-                        <b>{bi.label}</b> : {bi.value}
+                        <b>{bi.label}</b> : <span>{bi.value}</span>
                       </div>
                     </Space>
                   </div>

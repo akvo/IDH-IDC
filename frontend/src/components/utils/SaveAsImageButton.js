@@ -25,7 +25,7 @@ const htmlToImageConvert = (elementRef, filename, setLoading) => {
     return;
   }
   // add custom padding
-  elementRef.current.style.padding = "32px";
+  elementRef.current.style.padding = "10px";
   //
   toPng(elementRef.current, {
     filter: (node) => {
@@ -51,6 +51,9 @@ const htmlToImageConvert = (elementRef, filename, setLoading) => {
       console.error("Error while downloading content", err);
     })
     .finally(() => {
+      // remove custom padding
+      elementRef.current.style.padding = "0px";
+      //
       setTimeout(() => {
         setLoading(false);
       }, 100);
