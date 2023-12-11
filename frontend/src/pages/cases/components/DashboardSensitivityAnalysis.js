@@ -1,7 +1,10 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Row, Col, Card, Select, InputNumber, Table, Form, Space } from "antd";
 import { groupBy, map, isEmpty, uniq } from "lodash";
-import { ChartBinningHeatmap } from "../visualizations";
+import {
+  ChartBinningHeatmap,
+  ChartSensitivityAnalysisLine,
+} from "../visualizations";
 import { InputNumberThousandFormatter } from ".";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { SaveAsImageButton } from "../../../components/utils";
@@ -581,6 +584,19 @@ const DashboardSensitivityAnalysis = ({
             </Form>
           </Col>
         </Row>
+      </Col>
+
+      <Col span={24} className="income-driver-dashboard">
+        {dashboardData.map((segment) =>
+          currentSegment === segment.id ? (
+            <ChartSensitivityAnalysisLine
+              key={segment.id}
+              data={binningData}
+              segment={segment}
+              origin={dataSource}
+            />
+          ) : null
+        )}
       </Col>
 
       <Col span={24} className="income-driver-dashboard">

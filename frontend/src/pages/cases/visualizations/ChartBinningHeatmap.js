@@ -91,6 +91,7 @@ const getOptions = ({
     grid: {
       // height: "50%",
       top: "10%",
+      left: "12%",
     },
     xAxis: {
       name: `${xAxis.name} (${xAxis.unitName})`,
@@ -326,7 +327,7 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
   const renderHeatChart = () => {
     const charts = binningData.binCharts.map((b, key) => {
       const oddKey = (key + 1) % 2 > 0;
-      const spanChart = oddKey ? 16 : 8;
+      const spanChart = oddKey ? 8 : 16;
       const filename = `Income Levels for ${b.binName} : ${b.binValue.toFixed(
         2
       )}`;
@@ -356,8 +357,8 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
           />
         </Card>
       );
-      const leftContent = oddKey ? rowTitle : chart;
-      const rightContent = oddKey ? chart : rowTitle;
+      const leftContent = oddKey ? chart : rowTitle;
+      const rightContent = oddKey ? rowTitle : chart;
       return (
         <Col span={24} key={key}>
           <Row gutter={[24, 24]} ref={refs[key]}>

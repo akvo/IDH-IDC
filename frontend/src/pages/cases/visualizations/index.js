@@ -8,3 +8,4 @@ export { default as ChartExploreBreakdownDrivers } from "./ChartExploreBreakdown
 export { default as DriverDropdown } from "./DriverDropdown";
 export { default as ChartIncomeLevelPerCommodities } from "./ChartIncomeLevelPerCommodities";
 export { default as ChartScenarioModeling } from "./ChartScenarioModeling";
+export { default as ChartSensitivityAnalysisLine } from "./ChartSensitivityAnalysisLine";
