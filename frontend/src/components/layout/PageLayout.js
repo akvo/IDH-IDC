@@ -32,7 +32,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     {
       testid: "nav-menu-explore-studies",
       name: "Explore Studies",
-      path: "/explore",
+      path: "/explore-studies",
       role: allUserRole,
     },
     {

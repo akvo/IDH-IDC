@@ -15,6 +15,7 @@ import { Users, UserForm, Tags, TagForm } from "./pages/admin";
 import { UserState, UIState } from "./store";
 import { api } from "./lib";
 import { adminRole } from "./store/static";
+import { ExploreStudiesPage } from "./pages/explore-studies";
 
 const optionRoutes = ["organisation/options", "tag/options"];
 
@@ -121,6 +122,11 @@ const App = () => {
               <Route exact path="/cases" element={<Cases />} />
               <Route exact path="/cases/new" element={<Case />} />
               <Route exact path="/cases/:caseId" element={<Case />} />
+              <Route
+                exact
+                path="/explore-studies"
+                element={<ExploreStudiesPage />}
+              />
             </Route>
           ) : (
             ""

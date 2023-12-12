@@ -16,6 +16,10 @@ import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
 import isEmpty from "lodash/isEmpty";
 import LogoWhite from "../../assets/images/logo-white.png";
+import {
+  PasswordCriteria,
+  checkPasswordCriteria,
+} from "../../components/utils";
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
@@ -25,6 +29,7 @@ const ResetPassword = () => {
   const { tokenId } = useParams();
   const [userDetail, setUserDetail] = useState({});
   const [fetchingUser, setFetchingUser] = useState(false);
+  const [passwordCheckList, setPasswordCheckList] = useState([]);
 
   const isInvitation = window.location.pathname.includes("invitation");
 
@@ -64,6 +69,7 @@ const ResetPassword = () => {
       .post(apiUrl, payload)
       .then(() => {
         form.resetFields();
+        setPasswordCheckList([]);
         messageApi.open({
           type: "success",
           content:
@@ -82,6 +88,13 @@ const ResetPassword = () => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const onChange = ({ target }) => {
+    if (target.id === "form-reset-password_password") {
+      const res = checkPasswordCriteria(target.value);
+      setPasswordCheckList(res);
+    }
   };
 
   return (
@@ -103,6 +116,7 @@ const ResetPassword = () => {
               </Typography.Title>
             </div>
             <h2>Set Password</h2>
+            <PasswordCriteria values={passwordCheckList} className="white" />
             <Form
               form={form}
               name="form-reset-password"
@@ -110,6 +124,7 @@ const ResetPassword = () => {
               layout="vertical"
               onFinish={onFinish}
               autoComplete="off"
+              onChange={onChange}
             >
               <Form.Item
                 name="password"
@@ -118,6 +133,16 @@ const ResetPassword = () => {
                     required: true,
                     message: "Please input your password!",
                   },
+                  () => ({
+                    validator(_, value) {
+                      if (passwordCheckList.length === 4 || !value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Please follow password criteria rule")
+                      );
+                    },
+                  }),
                 ]}
               >
                 <Input.Password
