@@ -1,33 +1,38 @@
 id,parent,text,description,unit,default_value,question_type
-1,,Income,"Crop, Aquaculture, Livestock",currency,( #2 * #3 * #4 ) - #5 + #7,aggregator
+1,,Income,"Crop, Aquaculture, Livestock",currency,( #2 * #3 * #4 ) - ( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) + #7,aggregator
 2,1,Area,"Crop, Aquaculture, Livestock",area_size_unit,,question
 3,1,Volume,"Crop, Aquaculture, Livestock",volume_measurement_unit / area_size_unit,#8 - #9,question
 4,1,Price,"Crop, Aquaculture, Livestock",currency / volume_measurement_unit,,question
-5,1,Cost of Production,"Crop, Aquaculture,Livestock",currency,,question
+5,1,Cost of Production,"Crop",currency / area_size_unit,,question
 6,2,Land Size,Crop,area_size_unit,,question
 7,2,Area Under Production,Aquaculture,currency,,question
 8,3,Yield,"Crop, Aquaculture",volume_measurement_unit / area_size_unit,,question
 9,3,Loss,"Crop, Aquaculture",volume_measurement_unit / area_size_unit,,question
 10,4,Farmgate Price,"Crop, Aquaculture",currency / volume_measurement_unit,,question
 11,4,Price Premium,"Crop, Aquaculture",currency / volume_measurement_unit,,question
-12,5,Labour costs,"Crop, Aquaculture",currency,,question
-13,5,Seeds,Crop,currency,,question
-14,5,Conventional Fertilizer,Crop,currency,,question
-15,5,Organic Fertilizer,Crop,currency,,question
-16,5,Conventional Chemicals,Crop,currency,,question
-17,5,Organic Chemicals,Crop,currency,,question
-18,5,Feed conversion ratio,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
-19,5,Unit feed cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
-20,5,Processing Costs,Aquaculture,currency,,question
-21,5,Machinery Cost,Aquaculture,currency,,question
-22,5,Other Cost,"Crop, Aquaculture,Livestock",currency,,question
-23,22,Cost for Irrigation,Crop,currency,,question
-24,22,Cost for Energy,Crop,currency,,question
-25,22,Cost for Other Land Costs,Crop,currency,,question
-26,22,Storage Costs,Crop,currency,,question
-27,22,Marketing Costs,Crop,currency,,question
-28,22,Certification Costs,Crop,currency,,question
-29,22,Cost of Capital,Crop,currency,,question
-31,,Income from livestock,"",currency,,diversified
-32,,Income from off-farm activities,"",currency,,diversified
-33,,Investment and cash transfer,"",currency,,diversified
+12,5,Labour costs,"Crop",currency / area_size_unit,,question
+13,5,Seeds,Crop,currency / area_size_unit,,question
+14,5,Conventional Fertilizer,Crop,currency / area_size_unit,,question
+15,5,Organic Fertilizer,Crop,currency / area_size_unit,,question
+16,5,Conventional Chemicals,Crop,currency / area_size_unit,,question
+17,5,Organic Chemicals,Crop,currency / area_size_unit,,question
+18,5,Other Cost,"Crop",currency / area_size_unit,,question
+19,18,Cost for Irrigation,Crop,currency / area_size_unit,,question
+20,18,Cost for Energy,Crop,currency / area_size_unit,,question
+21,18,Cost for Other Land Costs,Crop,currency / area_size_unit,,question
+22,18,Storage Costs,Crop,currency / area_size_unit,,question
+23,18,Marketing Costs,Crop,currency / area_size_unit,,question
+24,18,Certification Costs,Crop,currency / area_size_unit,,question
+25,18,Cost of Capital,Crop,currency / area_size_unit,,question
+26,1,Cost of Production,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
+27,26,Feed Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,#28 * #29,question
+28,27,Feed Conversion Ratio,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
+29,27,Feed Price,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
+30,26,Farm Production Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
+31,26,Cost of Fingerlings,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
+32,26,Labour Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question
+33,26,Processing Cost,Aquaculture,currency / volume_measurement_unit,,question
+34,26,Machinery & Equipment Cost,Aquaculture,currency / volume_measurement_unit,,question
+35,,Income from livestock,"",currency,,diversified
+36,,Income from off-farm activities,"",currency,,diversified
+37,,Investment and cash transfer,"",currency,,diversified

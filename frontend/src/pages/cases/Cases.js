@@ -287,6 +287,7 @@ const Cases = () => {
         { title: "Cases", href: "/cases" },
       ]}
       title="Cases"
+      wrapperId="case"
     >
       <TableContent
         title="All Cases"

@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Select, Row, Col } from "antd";
 import { selectProps } from "./";
+import { areaUnitOptions, volumeUnitOptions } from "../../../store/static";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -27,28 +28,7 @@ const AreaUnitFields = ({ disabled = true, index = 0 }) => {
           <Select
             disabled={disabled}
             placeholder="Select Area Unit"
-            options={[
-              {
-                label: "Hectares",
-                value: "hectares",
-              },
-              {
-                label: "Acres",
-                value: "acres",
-              },
-              {
-                label: "Cubic Metres",
-                value: "cubic-metres",
-              },
-              {
-                label: "Cubic Feet",
-                value: "cubic-feet",
-              },
-              {
-                label: "Cubic Yards",
-                value: "cubic-yards",
-              },
-            ]}
+            options={areaUnitOptions}
             {...selectProps}
           />
         </Form.Item>
@@ -71,36 +51,7 @@ const AreaUnitFields = ({ disabled = true, index = 0 }) => {
           <Select
             placeholder="Select Measurement Unit"
             disabled={disabled}
-            options={[
-              {
-                label: "Kilograms",
-                value: "kilograms",
-              },
-              {
-                label: "Grams",
-                value: "grams",
-              },
-              {
-                label: "Litres",
-                value: "litres",
-              },
-              {
-                label: "Kilolitres",
-                value: "kilolitres",
-              },
-              {
-                label: "Barrels",
-                value: "barrels",
-              },
-              {
-                label: "Bags",
-                value: "bags",
-              },
-              {
-                label: "Tons",
-                value: "tons",
-              },
-            ]}
+            options={volumeUnitOptions}
             {...selectProps}
           />
         </Form.Item>

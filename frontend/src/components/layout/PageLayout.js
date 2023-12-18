@@ -17,12 +17,12 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
   const userRole = UserState.useState((s) => s.role);
 
   const menus = [
-    {
-      testid: "nav-menu-calculator",
-      name: "Use the Calculator",
-      path: "use-calculator",
-      role: allUserRole,
-    },
+    // {
+    //   testid: "nav-menu-calculator",
+    //   name: "Use the Calculator",
+    //   path: "/use-calculator",
+    //   role: allUserRole,
+    // },
     {
       testid: "nav-menu-cases",
       name: "Cases Overview",
@@ -55,7 +55,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       id="page-layout-header"
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
-        <Col span={6} align="start" style={{ width: "100%" }}>
+        <Col span={4} align="start" style={{ width: "100%" }}>
           <Link to="/">
             <Image
               src={Logo}
@@ -65,7 +65,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
             />
           </Link>
         </Col>
-        <Col span={18} align="end" testid="nav-container">
+        <Col span={20} align="end" testid="nav-container">
           <Space size="large" className="navigation-container">
             <Link to="/about">About IDC</Link>
             {isLoggedIn

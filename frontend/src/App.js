@@ -127,6 +127,11 @@ const App = () => {
                 path="/explore-studies"
                 element={<ExploreStudiesPage />}
               />
+              <Route
+                exact
+                path="/explore-studies/:countryId/:commodityId/:driverId"
+                element={<ExploreStudiesPage />}
+              />
             </Route>
           ) : (
             ""

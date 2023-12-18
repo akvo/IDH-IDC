@@ -162,7 +162,12 @@ export const generateSegmentPayloads = (
 };
 
 export const InputNumberThousandFormatter = {
-  formatter: (value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ","),
+  formatter: (value) =>
+    value >= 1000
+      ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      : value && value % 1 !== 0
+      ? parseFloat(value)?.toFixed(2)
+      : value,
   parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
 };
 

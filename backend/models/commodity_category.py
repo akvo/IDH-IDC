@@ -20,7 +20,7 @@ class CommodityCategoryWithChildDict(TypedDict):
 
 
 class CommodityCategory(Base):
-    __tablename__ = 'commodity_category'
+    __tablename__ = "commodity_category"
 
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String, nullable=False, unique=True)
@@ -29,14 +29,14 @@ class CommodityCategory(Base):
         Commodity,
         cascade="all, delete",
         passive_deletes=True,
-        back_populates='commodity_category_detail'
+        back_populates="commodity_category_detail",
     )
     commodity_category_questions = relationship(
-        'Question',
+        "Question",
         secondary=CommodityCategoryQuestion.__tablename__,
         cascade="all, delete",
         passive_deletes=True,
-        back_populates='question_commodity_category_detail'
+        back_populates="question_commodity_category_detail",
     )
 
     def __init__(self, name: str, id: Optional[int] = None):
@@ -58,7 +58,7 @@ class CommodityCategory(Base):
         return {
             "id": self.id,
             "name": self.name,
-            "commodities": [c.simplify for c in self.commodities]
+            "commodities": [c.simplify for c in self.commodities],
         }
 
 
