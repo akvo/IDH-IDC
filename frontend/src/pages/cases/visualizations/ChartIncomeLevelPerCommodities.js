@@ -4,8 +4,8 @@ import { SegmentSelector } from ".";
 import { uniqBy, capitalize, sum } from "lodash";
 import Chart from "../../../components/chart";
 
-const colors = ["#0098FF", "#FFC505", "#47D985", "#FF5D00", "#00625F"];
-const legendColors = ["#47D985", "#00625F"];
+const colors = ["#00625F", "#47D985", "#82B2B2"];
+const legendColors = ["#00625F", "#47D985", "#82B2B2"];
 
 const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
@@ -59,7 +59,7 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
     const feasibleCommodityValuesExceptFocus = [];
     const res = commodities.map((cm, cmi) => {
       const data = ["current", "feasible"].map((x, xi) => {
-        const title = `${capitalize(x)}\n${currentSegmentData.name}`;
+        const title = `${capitalize(x)} ${currentSegmentData.name}`;
         // recalculate total value
         const incomeQuestion = currentSegmentData.answers.find(
           (a) =>
@@ -125,7 +125,7 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
     diversifiedQUestions = uniqBy(diversifiedQUestions, "id");
     // populate diversified income value
     const diversifiedData = ["current", "feasible"].map((x, xi) => {
-      const title = `${capitalize(x)}\n${currentSegmentData.name}`;
+      const title = `${capitalize(x)} ${currentSegmentData.name}`;
       let newValue = 0;
       if (x === "current") {
         newValue =

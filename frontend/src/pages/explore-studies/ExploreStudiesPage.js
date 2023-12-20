@@ -377,7 +377,6 @@ const ExploreStudiesPage = () => {
       .finally(() => {
         setSelectedDataId(null);
         setTimeout(() => {
-          setOpen(false);
           setConfirmLoading(false);
         }, 500);
       });

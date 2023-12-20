@@ -6,6 +6,7 @@ import {
   CaseProfile,
   IncomeDriverDataEntry,
   IncomeDriverDashboard,
+  getFunctionDefaultValue,
 } from "./components";
 import { Row, Col, Spin, Card, Alert } from "antd";
 import "./cases.scss";
@@ -38,6 +39,12 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   }, {});
   return { ...acc, ...commodities };
 }, {});
+
+const customFormula = {
+  revenue_focus_commodity: "#2 * #3 * #4",
+  focus_commodity_cost_of_production:
+    "( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) * -1",
+};
 
 const Case = () => {
   const { caseId } = useParams();
@@ -220,6 +227,35 @@ const Case = () => {
       const totalCurrentDiversifiedIncome = answers
         .filter((a) => a.isTotalCurrentDiversifiedIncome)
         .reduce((acc, curr) => acc + curr.value, 0);
+
+      const focusCommodityAnswers = answers
+        .filter((a) => a.commodityType === "focus")
+        .map((a) => ({
+          id: `${a.name}-${a.questionId}`,
+          value: a.value,
+        }));
+
+      const currentRevenueFocusCommodity = getFunctionDefaultValue(
+        { default_value: customFormula.revenue_focus_commodity },
+        "current",
+        focusCommodityAnswers
+      );
+      const feasibleRevenueFocusCommodity = getFunctionDefaultValue(
+        { default_value: customFormula.revenue_focus_commodity },
+        "feasible",
+        focusCommodityAnswers
+      );
+      const currentFocusCommodityCoP = getFunctionDefaultValue(
+        { default_value: customFormula.focus_commodity_cost_of_production },
+        "current",
+        focusCommodityAnswers
+      );
+      const feasibleFocusCommodityCoP = getFunctionDefaultValue(
+        { default_value: customFormula.focus_commodity_cost_of_production },
+        "feasible",
+        focusCommodityAnswers
+      );
+
       return {
         ...d,
         total_feasible_cost: -totalCostFeasible,
@@ -228,6 +264,12 @@ const Case = () => {
         total_feasible_diversified_income: totalFeasibleDiversifiedIncome,
         total_current_focus_income: totalCurrentFocusIncome,
         total_current_diversified_income: totalCurrentDiversifiedIncome,
+        total_current_revenue_focus_commodity: currentRevenueFocusCommodity,
+        total_feasible_revenue_focus_commodity: feasibleRevenueFocusCommodity,
+        total_current_focus_commodity_cost_of_production:
+          currentFocusCommodityCoP,
+        total_feasible_focus_commodity_cost_of_production:
+          feasibleFocusCommodityCoP,
         answers: answers,
       };
     });

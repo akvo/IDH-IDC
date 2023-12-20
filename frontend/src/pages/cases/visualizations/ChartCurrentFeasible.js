@@ -5,6 +5,14 @@ import { incomeTargetChartOption } from "../../../components/chart/options/commo
 const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
   const chartData = useMemo(() => {
     return dashboardData.reduce((c, d) => {
+      const currentIncomeGap =
+        d.target - d.total_current_income < 0
+          ? 0
+          : d.target - d.total_current_income;
+      const feasibleIncomeGap =
+        d.target - d.total_feasible_income < 0
+          ? 0
+          : d.target - d.total_feasible_income;
       return [
         ...c,
         {
@@ -13,28 +21,20 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
           target: d.target,
           stack: [
             {
-              name: "Cost of Production",
-              title: "Cost of Production",
-              value: d.total_current_cost,
-              total: d.total_current_cost,
+              name: "Household Income",
+              title: "Household Income",
+              value: d.total_current_income,
+              total: d.total_current_income,
+              color: "#03625f",
               order: 1,
-              color: "#ff5d00",
             },
             {
-              name: "Focus Crop Revenue",
-              title: "Focus Crop Revenue",
-              value: d.total_current_focus_income,
-              total: d.total_current_focus_income,
-              color: "#47d985",
+              name: "Income Gap",
+              title: "Income Gap",
+              value: currentIncomeGap,
+              total: currentIncomeGap,
+              color: "#fbbc04",
               order: 2,
-            },
-            {
-              name: "Diversified Income",
-              title: "Diversified Income",
-              value: d.total_current_diversified_income,
-              total: d.total_current_diversified_income,
-              color: "#fdc305",
-              order: 3,
             },
           ],
         },
@@ -44,25 +44,20 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
           target: d.target,
           stack: [
             {
-              name: "Cost of Production",
-              title: "Cost of Production",
-              value: d.total_feasible_cost,
-              total: d.total_feasible_cost,
+              name: "Household Income",
+              title: "Household Income",
+              value: d.total_feasible_income,
+              total: d.total_feasible_income,
+              color: "#03625f",
               order: 1,
             },
             {
-              name: "Focus Crop Revenue",
-              title: "Focus Crop Revenue",
-              value: d.total_feasible_focus_income,
-              total: d.total_feasible_focus_income,
+              name: "Income Gap",
+              title: "Income Gap",
+              value: feasibleIncomeGap,
+              total: feasibleIncomeGap,
+              color: "#fbbc04",
               order: 2,
-            },
-            {
-              name: "Diversified Income",
-              title: "Diversified Income",
-              value: d.total_feasible_diversified_income,
-              total: d.total_feasible_diversified_income,
-              order: 3,
             },
           ],
         },
@@ -77,6 +72,7 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
     return [
       {
         ...incomeTargetChartOption,
+        color: "#000",
         data: chartData.map((cd) => ({
           name: "Income Target",
           value: cd?.target ? cd.target.toFixed(2) : 0,

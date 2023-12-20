@@ -9,6 +9,7 @@ import { getFunctionDefaultValue } from "../components";
 import {
   TextStyle,
   AxisLabelFormatter,
+  Legend,
 } from "../../../components/chart/options/common";
 
 const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
@@ -55,17 +56,35 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
             value: feasibleValue.value || 0,
           },
         ];
-        const newTotalValue = getFunctionDefaultValue(
-          totalValueData.question,
-          "custom",
-          replacedCurrentValues
+        const newTotalValue =
+          getFunctionDefaultValue(
+            totalValueData.question,
+            "custom",
+            replacedCurrentValues
+          ) + data.total_current_diversified_income;
+        const resValue = (newTotalValue - data.total_current_income)?.toFixed(
+          2
         );
-        return (newTotalValue - data.total_current_focus_income).toFixed(2);
+        if (d.toLowerCase().includes("cost")) {
+          return (parseFloat(resValue) * -1)?.toFixed(2);
+        }
+        return resValue;
       }
       return 0;
     });
 
+    const diversifiedIncome =
+      data.total_current_focus_income +
+      data.total_feasible_diversified_income -
+      data.total_current_income;
+
     return {
+      legend: {
+        ...Legend,
+        data: ["Positive", "Negative"],
+        top: 10,
+        left: "center",
+      },
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -142,22 +161,54 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
           },
           data: [
             0,
-            ...indicators.map(() => data.total_current_income),
-            // diversified value
-            data.total_current_income,
+            ...additionalData.map(
+              (d) => parseFloat(d) + data.total_current_income
+            ),
+            diversifiedIncome + data.total_current_income, // diversified value
             0,
           ],
         },
         {
-          name: "Income",
+          name: "Positive",
           type: "bar",
           stack: "Total",
+          itemStyle: {
+            color: "#03625f",
+          },
+          label: {
+            position: "top",
+          },
           data: [
-            data.total_current_income.toFixed(2),
-            ...additionalData,
-            // diversified value
-            data.total_feasible_diversified_income.toFixed(2),
-            data.total_feasible_income.toFixed(2),
+            data?.total_current_income < 0
+              ? "-"
+              : data?.total_current_income?.toFixed(2),
+            ...additionalData.map((d) => (parseFloat(d) < 0 ? "-" : d)),
+            diversifiedIncome < 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
+            data?.total_feasible_income < 0
+              ? "-"
+              : data?.total_feasible_income?.toFixed(2),
+          ],
+          ...LabelStyle,
+        },
+        {
+          name: "Negative",
+          type: "bar",
+          stack: "Total",
+          itemStyle: {
+            color: "#D34F44",
+          },
+          label: {
+            position: "bottom",
+          },
+          data: [
+            data?.total_current_income >= 0
+              ? "-"
+              : data.total_current_income?.toFixed(2),
+            ...additionalData.map((d) => (parseFloat(d) >= 0 ? "-" : d)),
+            diversifiedIncome >= 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
+            data?.total_feasible_income >= 0
+              ? "-"
+              : data.total_feasible_income?.toFixed(2),
           ],
           ...LabelStyle,
         },

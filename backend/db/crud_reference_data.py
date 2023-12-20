@@ -105,6 +105,7 @@ def add_reference(
         volume_measurement_unit=payload.volume_measurement_unit,
         cost_of_production_unit=payload.cost_of_production_unit,
         diversified_income_unit=payload.diversified_income_unit,
+        price_unit=payload.price_unit,
         created_by=user.id if user else None,
     )
     session.add(data)
@@ -149,6 +150,7 @@ def update_reference(
     data.volume_measurement_unit = payload.volume_measurement_unit
     data.cost_of_production_unit = payload.cost_of_production_unit
     data.diversified_income_unit = payload.diversified_income_unit
+    data.price_unit = payload.price_unit
 
     session.commit()
     session.flush()

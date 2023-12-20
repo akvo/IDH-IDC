@@ -50,6 +50,7 @@ class TestReferenceRoute:
             "volume_measurement_unit": "liters",
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
+            "price_unit": "USD / liters",
         }
         # without cred
         res = await client.post(
@@ -94,6 +95,7 @@ class TestReferenceRoute:
             "volume_measurement_unit": "liters",
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
+            "price_unit": "USD / liters",
         }
 
         # add second data
@@ -118,6 +120,7 @@ class TestReferenceRoute:
             "volume_measurement_unit": "liters",
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
+            "price_unit": "USD / liters",
         }
         res = await client.post(
             app.url_path_for("reference_data:create"),
@@ -228,6 +231,7 @@ class TestReferenceRoute:
             "volume_measurement_unit": "liters",
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
+            "price_unit": "USD / liters",
         }
         # without cred
         res = await client.put(
@@ -284,6 +288,11 @@ class TestReferenceRoute:
                 "link": "http://example.com",
                 "value": 100.5,
                 "unit": "acres",
+                "region": "Sample Region",
+                "year": 2023,
+                "type": "Sample Type",
+                "confidence_level": "High",
+                "range": "Sample Range",
             }
         ]
 

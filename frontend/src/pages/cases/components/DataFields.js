@@ -26,7 +26,7 @@ import {
   HomeOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { isEmpty } from "lodash";
+import { isEmpty, upperFirst } from "lodash";
 import {
   IncomeDriverForm,
   IncomeDriverTarget,
@@ -595,8 +595,61 @@ const DataFields = ({
                     },
                   ]}
                   dataSource={referenceData}
-                  scroll={{
-                    y: 240,
+                  expandable={{
+                    expandedRowRender: (record) => (
+                      <div style={{ padding: 0 }}>
+                        <Table
+                          bordered
+                          showHeader={false}
+                          size="small"
+                          rowKey="id"
+                          columns={[
+                            {
+                              key: "label",
+                              title: "Label",
+                              dataIndex: "label",
+                              width: "45%",
+                            },
+                            {
+                              key: "value",
+                              title: "Value",
+                              dataIndex: "value",
+                            },
+                          ]}
+                          dataSource={Object.keys(record)
+                            .map((key) => {
+                              if (
+                                [
+                                  "id",
+                                  "unit",
+                                  "value",
+                                  "source",
+                                  "link",
+                                ].includes(key)
+                              ) {
+                                return false;
+                              }
+                              const label = key
+                                .split("_")
+                                ?.map((x) => upperFirst(x))
+                                ?.join(" ");
+                              let value = record[key];
+                              if (value && !Number(value)) {
+                                value = value
+                                  .split(" ")
+                                  .map((x) => upperFirst(x))
+                                  .join(" ");
+                              }
+                              return {
+                                label: label,
+                                value: value || "-",
+                              };
+                            })
+                            .filter((x) => x)}
+                          pagination={false}
+                        />
+                      </div>
+                    ),
                   }}
                 />
               </Space>

@@ -87,35 +87,28 @@ def get_reference_value(
     if not data:
         return []
     # transform value
-    res = []
+    data = [d.serialize for d in data]
     for d in data:
         value = None
         unit = None
         if driver == Driver.area:
-            value = d.area
-            unit = d.area_size_unit
+            value = d["area"]
+            unit = d["area_size_unit"]
         if driver == Driver.price:
-            value = d.price
-            unit = d.currency
+            value = d["price"]
+            unit = d["price_unit"]
         if driver == Driver.volume:
-            value = d.volume
-            unit = d.volume_measurement_unit
+            value = d["volume"]
+            unit = d["volume_measurement_unit"]
         if driver == Driver.cost_of_production:
-            value = d.cost_of_production
-            unit = d.cost_of_production_unit
+            value = d["cost_of_production"]
+            unit = d["cost_of_production_unit"]
         if driver == Driver.diversified_income:
-            value = d.diversified_income
-            unit = d.diversified_income_unit
-        res.append(
-            {
-                "id": d.id,
-                "source": d.source,
-                "link": d.link,
-                "value": value,
-                "unit": unit,
-            }
-        )
-    return res
+            value = d["diversified_income"]
+            unit = d["diversified_income_unit"]
+        d["value"] = value
+        d["unit"] = unit
+    return data
 
 
 @reference_data_routes.post(

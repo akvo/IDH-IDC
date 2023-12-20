@@ -45,6 +45,7 @@ class ReferenceDataDict(TypedDict):
     volume_measurement_unit: Optional[str]
     cost_of_production_unit: Optional[str]
     diversified_income_unit: Optional[str]
+    price_unit: Optional[str]
 
 
 class ReferenceDataList(TypedDict):
@@ -62,6 +63,11 @@ class ReferenceValueList(TypedDict):
     link: str
     value: Optional[float]
     unit: Optional[str]
+    region: str
+    year: int
+    type: Optional[str]
+    confidence_level: Optional[str]
+    range: Optional[str]
 
 
 class ReferenceData(Base):
@@ -91,6 +97,7 @@ class ReferenceData(Base):
     volume_measurement_unit = Column(String, nullable=True)
     cost_of_production_unit = Column(String, nullable=True)
     diversified_income_unit = Column(String, nullable=True)
+    price_unit = Column(String, nullable=True)
     created_by = Column(Integer, ForeignKey("user.id"))
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(
@@ -135,6 +142,7 @@ class ReferenceData(Base):
         volume_measurement_unit: Optional[str],
         cost_of_production_unit: Optional[str],
         diversified_income_unit: Optional[str],
+        price_unit: Optional[str],
         created_by: Optional[str],
         id: Optional[int] = None,
     ):
@@ -159,6 +167,7 @@ class ReferenceData(Base):
         self.volume_measurement_unit = volume_measurement_unit
         self.cost_of_production_unit = cost_of_production_unit
         self.diversified_income_unit = diversified_income_unit
+        self.price_unit = price_unit
         self.created_by = created_by
 
     def __repr__(self) -> int:
@@ -188,6 +197,7 @@ class ReferenceData(Base):
             "volume_measurement_unit": self.volume_measurement_unit,
             "cost_of_production_unit": self.cost_of_production_unit,
             "diversified_income_unit": self.diversified_income_unit,
+            "price_unit": self.price_unit,
         }
 
     @property
@@ -224,6 +234,7 @@ class ReferenceDataBase(BaseModel):
     volume_measurement_unit: Optional[str] = None
     cost_of_production_unit: Optional[str] = None
     diversified_income_unit: Optional[str] = None
+    price_unit: Optional[str] = None
 
 
 class PaginatedReferenceDataResponse(BaseModel):

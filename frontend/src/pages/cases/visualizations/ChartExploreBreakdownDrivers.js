@@ -6,7 +6,7 @@ import { SegmentSelector, DriverDropdown } from "./";
 import Chart from "../../../components/chart";
 
 const otherCommodities = ["secondary", "tertiary"];
-const colors = ["#0098FF", "#FFC505", "#47D985", "#FF5D00", "#00625F"];
+const colors = ["#00625F", "#47D985", "#82B2B2"];
 
 const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
