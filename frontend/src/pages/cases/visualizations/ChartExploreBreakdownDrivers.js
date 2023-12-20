@@ -11,6 +11,7 @@ const colors = ["#00625F", "#47D985", "#82B2B2"];
 const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
+  const [axisTitle, setAxisTitle] = useState(null);
 
   useEffect(() => {
     if (dashboardData.length > 0) {
@@ -32,7 +33,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
       return [];
     }
     const focusCommodityAnswers = currentSegmentData.answers.filter(
-      (a) => a.commodityFocus && a.question.question_type !== "deversified"
+      (a) => a.commodityFocus && a.question.question_type !== "diversified"
     );
     const driverQuestions =
       uniqBy(
@@ -50,7 +51,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
       .map((x) => {
         const commodity = currentSegmentData.answers.find(
           (a) =>
-            a.commodityType === x && a.question.question_type !== "deversified"
+            a.commodityType === x && a.question.question_type !== "diversified"
         );
         if (!commodity) {
           return false;
@@ -92,6 +93,27 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
       setSelectedDriver("diversified");
     }
   }, [driverOptionsDropdown]);
+
+  const handleOnChangeDriverDropdown = (value) => {
+    setSelectedDriver(value);
+    if (value === "diversified") {
+      setAxisTitle({ y: currentCase.currency });
+      return;
+    }
+    if (currentSegmentData) {
+      const questions = currentSegmentData.answers.find(
+        (a) => a.isTotalCurrentFocusIncome
+      ).question?.childrens;
+      const currentQuestion = questions.find((q) => q.id === value);
+      const { unit } = currentQuestion;
+      const unitName = unit
+        .split(" ")
+        .map((x) => currentCase?.[x])
+        .filter((x) => x)
+        .join(" / ");
+      setAxisTitle({ y: unitName });
+    }
+  };
 
   const chartData = useMemo(() => {
     if (!currentSegmentData || !driverOptionsDropdown.length) {
@@ -225,7 +247,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
           <DriverDropdown
             options={driverOptionsDropdown}
             value={selectedDriver}
-            onChange={setSelectedDriver}
+            onChange={handleOnChangeDriverDropdown}
           />
         </Col>
         <Col span={24}>
@@ -234,7 +256,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
             type={"BARSTACK"}
             data={chartData}
             affix={true}
-            extra={{ axisTitle: { y: `Income (${currentCase.currency})` } }}
+            extra={{ axisTitle: axisTitle }}
           />
         </Col>
       </Row>

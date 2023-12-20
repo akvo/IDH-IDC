@@ -11,6 +11,7 @@ import {
   AxisLabelFormatter,
   Legend,
 } from "../../../components/chart/options/common";
+import { sum } from "lodash";
 
 const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
@@ -62,11 +63,10 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
             "custom",
             replacedCurrentValues
           ) + data.total_current_diversified_income;
-        const resValue = (newTotalValue - data.total_current_income)?.toFixed(
-          2
-        );
+        const resValue = newTotalValue - data.total_current_income;
+        // CoP
         if (d.toLowerCase().includes("cost")) {
-          return (parseFloat(resValue) * -1)?.toFixed(2);
+          return resValue * -1;
         }
         return resValue;
       }
@@ -77,6 +77,28 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
       data.total_current_focus_income +
       data.total_feasible_diversified_income -
       data.total_current_income;
+
+    // populate the waterfall value for placeholder bar
+    const placeholderAdditionalData = additionalData.map((d, di) => {
+      if (di === 0) {
+        return data.total_current_income;
+      }
+      const prevSum = di > 0 ? sum(additionalData.slice(0, di)) : 0;
+      // handle cost of production value
+      if (d < 0) {
+        return d + prevSum + data.total_current_income;
+      }
+      // EOL handle cost of production value
+      return prevSum + data.total_current_income;
+    });
+
+    const diversifiedPlaceholder =
+      diversifiedIncome +
+      placeholderAdditionalData[placeholderAdditionalData.length - 1];
+    // EOL populate the waterfall value for placeholder bar
+
+    const feasibleValue =
+      data.total_current_income + sum(additionalData) + diversifiedIncome;
 
     return {
       legend: {
@@ -92,14 +114,21 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
         },
         ...TextStyle,
         formatter: function (params) {
-          var tar = params[1];
-          return (
-            tar.name +
-            "<br/>" +
-            tar.seriesName +
-            " : " +
-            thousandFormatter(tar.value)
-          );
+          const positive = params[1];
+          const negative = params[2];
+          let name = "";
+          let seriesName = "";
+          let value = 0;
+          if (positive.value !== "-") {
+            name = positive.name;
+            seriesName = positive.seriesName;
+            value = positive.value;
+          } else {
+            name = negative.name;
+            seriesName = negative.seriesName;
+            value = (negative.value * -1)?.toFixed(2);
+          }
+          return name + "<br/>" + seriesName + " : " + thousandFormatter(value);
         },
       },
       grid: {
@@ -149,6 +178,7 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
           name: "Placeholder",
           type: "bar",
           stack: "Total",
+          silent: true,
           itemStyle: {
             borderColor: "transparent",
             color: "transparent",
@@ -159,14 +189,7 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
               color: "transparent",
             },
           },
-          data: [
-            0,
-            ...additionalData.map(
-              (d) => parseFloat(d) + data.total_current_income
-            ),
-            diversifiedIncome + data.total_current_income, // diversified value
-            0,
-          ],
+          data: [0, ...placeholderAdditionalData, diversifiedPlaceholder, 0],
         },
         {
           name: "Positive",
@@ -176,17 +199,16 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
             color: "#03625f",
           },
           label: {
-            position: "top",
+            show: true,
+            position: "bottom",
           },
           data: [
             data?.total_current_income < 0
               ? "-"
               : data?.total_current_income?.toFixed(2),
-            ...additionalData.map((d) => (parseFloat(d) < 0 ? "-" : d)),
+            ...additionalData.map((d) => (d < 0 ? "-" : d?.toFixed(2))),
             diversifiedIncome < 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
-            data?.total_feasible_income < 0
-              ? "-"
-              : data?.total_feasible_income?.toFixed(2),
+            feasibleValue < 0 ? "-" : feasibleValue?.toFixed(2),
           ],
           ...LabelStyle,
         },
@@ -198,19 +220,20 @@ const ChartMonetaryContribution = ({ dashboardData, currentCase }) => {
             color: "#D34F44",
           },
           label: {
-            position: "bottom",
+            ...LabelStyle.label,
+            formatter: (param) => {
+              const value = parseFloat(param.value) * -1;
+              return thousandFormatter(value?.toFixed(2));
+            },
           },
           data: [
             data?.total_current_income >= 0
               ? "-"
               : data.total_current_income?.toFixed(2),
-            ...additionalData.map((d) => (parseFloat(d) >= 0 ? "-" : d)),
+            ...additionalData.map((d) => (d >= 0 ? "-" : (d * -1)?.toFixed(2))),
             diversifiedIncome >= 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
-            data?.total_feasible_income >= 0
-              ? "-"
-              : data.total_feasible_income?.toFixed(2),
+            feasibleValue >= 0 ? "-" : feasibleValue?.toFixed(2),
           ],
-          ...LabelStyle,
         },
       ],
     };

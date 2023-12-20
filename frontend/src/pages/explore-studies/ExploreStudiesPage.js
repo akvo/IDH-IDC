@@ -237,9 +237,10 @@ const ExploreStudiesPage = () => {
           if (!row?.link) {
             return value;
           }
-          const url = row.link?.includes("https://")
-            ? row.link
-            : `https://${row.link}`;
+          const url =
+            row.link?.includes("https://") || row.link?.includes("http://")
+              ? row.link
+              : `https://${row.link}`;
           return (
             <a href={url} target="_blank" rel="noreferrer noopener">
               {row.source}

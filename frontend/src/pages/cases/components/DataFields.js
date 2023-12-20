@@ -55,6 +55,7 @@ const DataFields = ({
   dashboardData,
   setPage,
   enableEditCase,
+  segments,
 }) => {
   const [confimationModal, setConfimationModal] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -132,8 +133,6 @@ const DataFields = ({
     };
   }, [segmentFormValues, segmentItem, dashboardData, totalIncomeQuestion]);
 
-  const segmentValues = segmentFormValues.find((v) => v.key === segment);
-
   const benchmarkInfo = useMemo(() => {
     const findSegmentBenchmark =
       dashboardData.find((d) => d.key === segment)?.benchmark || null;
@@ -162,20 +161,22 @@ const DataFields = ({
   }, [dashboardData, segment]);
 
   const chartData = useMemo(() => {
-    if (!segmentFormValues.length || !segmentValues) {
+    if (!segments.length) {
       return [];
     }
-    const res = segmentFormValues.map((currentFormValue) => {
+    const res = segments.map((item) => {
+      const answers =
+        segmentFormValues.find((fv) => fv.key === item.key)?.answers || {};
       const current = totalIncomeQuestion
-        .map((qs) => currentFormValue?.answers[`current-${qs}`])
+        .map((qs) => answers?.[`current-${qs}`] || 0)
         .filter((a) => a)
         .reduce((acc, a) => acc + a, 0);
       const feasible = totalIncomeQuestion
-        .map((qs) => currentFormValue?.answers[`feasible-${qs}`])
+        .map((qs) => answers?.[`feasible-${qs}`] || 0)
         .filter((a) => a)
         .reduce((acc, a) => acc + a, 0);
       return {
-        name: `Total Income\n${currentFormValue.name}`,
+        name: `Total Income\n${item.label}`,
         data: [
           {
             name: "Current Income",
@@ -191,7 +192,7 @@ const DataFields = ({
       };
     });
     return res;
-  }, [totalIncomeQuestion, segmentFormValues, segmentValues]);
+  }, [totalIncomeQuestion, segments, segmentFormValues]);
 
   const ButtonEdit = () => (
     <Button
@@ -579,9 +580,11 @@ const DataFields = ({
                         if (!row?.link) {
                           return value;
                         }
-                        const url = row.link?.includes("https://")
-                          ? row.link
-                          : `https://${row.link}`;
+                        const url =
+                          row.link?.includes("https://") ||
+                          row.link?.includes("http://")
+                            ? row.link
+                            : `https://${row.link}`;
                         return (
                           <a
                             href={url}

@@ -88,12 +88,14 @@ const IncomeDriverTarget = ({
       // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
       if (benchmark?.cpi_factor) {
         const caseYearLIB = targetValue * (1 - benchmark.cpi_factor);
+        // incorporate year multiplier
         const LITarget =
-          (householdSize / benchmark.household_equiv) * caseYearLIB;
+          (householdSize / benchmark.household_equiv) * caseYearLIB * 12;
         setIncomeTarget(LITarget);
       } else {
+        // incorporate year multiplier
         const LITarget =
-          (householdSize / benchmark.household_equiv) * targetValue;
+          (householdSize / benchmark.household_equiv) * targetValue * 12;
         setIncomeTarget(LITarget);
       }
     }
@@ -160,11 +162,18 @@ const IncomeDriverTarget = ({
         api.get(url).then((res) => {
           // data represent LI Benchmark value
           const { data } = res;
+          const household_adult = data.nr_adults;
+          const household_children = data.household_size - data.nr_adults;
           setBenchmark(data);
+          const defHHSize = calculateHouseholdSize({
+            household_adult,
+            household_children,
+          });
+          setHouseholdSize(defHHSize);
           // set hh adult and children default value
           form.setFieldsValue({
-            household_adult: data.nr_adults,
-            household_children: data.household_size - data.nr_adults,
+            household_adult: household_adult,
+            household_children: household_children,
           });
           //
           const targetHH = data.household_equiv;
@@ -174,24 +183,26 @@ const IncomeDriverTarget = ({
           // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
           if (data?.cpi_factor) {
             const caseYearLIB = targetValue * (1 - data.cpi_factor);
-            const LITarget = (HHSize / targetHH) * caseYearLIB;
-            setIncomeTarget(LITarget);
+            // incorporate year multiplier
+            const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
+            setIncomeTarget(LITarget * 12);
             updateFormValues({
               ...regionData,
               target: LITarget,
               benchmark: data,
-              adult: data.nr_adults,
-              child: data.household_size - data.nr_adults,
+              adult: household_adult,
+              child: household_children,
             });
           } else {
-            const LITarget = (HHSize / targetHH) * targetValue;
+            // incorporate year multiplier
+            const LITarget = (defHHSize / targetHH) * targetValue * 12;
             setIncomeTarget(LITarget);
             updateFormValues({
               ...regionData,
               target: LITarget,
               benchmark: data,
-              adult: data.nr_adults,
-              child: data.household_size - data.nr_adults,
+              adult: household_adult,
+              child: household_children,
             });
           }
         });
@@ -320,7 +331,7 @@ const IncomeDriverTarget = ({
       >
         <Col span={8}>
           <p>Living Income Target</p>
-          <h2>
+          <h2 className="income-target-value">
             {thousandFormatter(incomeTarget.toFixed(2))} {currentCase.currency}
           </h2>
         </Col>
