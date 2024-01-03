@@ -27,7 +27,6 @@ import {
   commodityOptions,
   countryOptions,
   currencyOptions,
-  reportingPeriod,
   selectProps,
   yesNoOptions,
   DebounceSelect,
@@ -217,23 +216,6 @@ const CaseForm = ({
               <AreaUnitFields form={form} disabled={!enableEditCase} />
             </Col>
           </Row>
-          <Form.Item
-            label="Reporting Period"
-            name="reporting_period"
-            rules={[
-              {
-                required: true,
-                message: "Reporting Period is required",
-              },
-            ]}
-          >
-            <Radio.Group
-              options={reportingPeriod}
-              optionType="button"
-              buttonStyle="solid"
-              disabled={!enableEditCase}
-            />
-          </Form.Item>
         </Card>
       </Col>
     </Row>
@@ -456,9 +438,9 @@ const CaseProfile = ({
       currency: values.currency,
       area_size_unit: values.area_size_unit,
       volume_measurement_unit: values.volume_measurement_unit,
-      reporting_period: values.reporting_period,
       multiple_commodities: secondary || tertiary,
-      // need to handle below value correctly
+      reporting_period: "per-year",
+      // TODO:: need to handle below value correctly
       cost_of_production_unit: "cost_of_production_unit",
       segmentation: true,
       living_income_study: null,

@@ -7,10 +7,11 @@ import {
   SaveOutlined,
   CloseOutlined,
   EyeOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { api } from "../../lib";
 import { UIState, UserState } from "../../store";
-import { Select, Space, Button, Row, Col } from "antd";
+import { Select, Space, Button, Row, Col, Popconfirm, message } from "antd";
 import { selectProps, DebounceSelect } from "./components";
 import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
@@ -39,7 +40,7 @@ const Cases = () => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
     id: userID,
-    email: userEmail,
+    // email: userEmail,
     role: userRole,
     internal_user: userInternal,
     case_access: userCaseAccess,
@@ -48,6 +49,8 @@ const Cases = () => {
   const [showChangeOwnerForm, setShowChangeOwnerForm] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const isCaseCreator = useMemo(() => {
     if (adminRole.includes(userRole)) {
@@ -90,6 +93,7 @@ const Cases = () => {
         })
         .finally(() => {
           setLoading(false);
+          setRefresh(false);
         });
     }
   }, [currentPage, search, userID, commodity, country, tags, refresh]);
@@ -109,6 +113,24 @@ const Cases = () => {
       })
       .catch((e) => {
         console.error(e);
+      });
+  };
+
+  const onConfirmDelete = (record) => {
+    api
+      .delete(`case/${record.id}`)
+      .then(() => {
+        setRefresh(true);
+        messageApi.open({
+          type: "success",
+          content: "Case deleted successfully.",
+        });
+      })
+      .catch(() => {
+        messageApi.open({
+          type: "error",
+          content: "Failed! Something went wrong.",
+        });
       });
   };
 
@@ -156,7 +178,8 @@ const Cases = () => {
       key: "created_by",
       width: "20%",
       render: (row) => {
-        if (row.created_by !== userEmail) {
+        // case owner row.created_by !== userEmail
+        if (!adminRole.includes(userRole)) {
           return row.created_by;
         }
         if (row.id === showChangeOwnerForm) {
@@ -224,7 +247,22 @@ const Cases = () => {
         );
 
         if (adminRole.includes(userRole)) {
-          return EditButton;
+          return (
+            <Space size="large">
+              {EditButton}
+              <Popconfirm
+                title="Delete Case"
+                description="Are you sure want to delete this case?"
+                onConfirm={() => onConfirmDelete(record)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Link>
+                  <DeleteOutlined style={{ color: "red" }} />
+                </Link>
+              </Popconfirm>
+            </Space>
+          );
         }
 
         // check case access
@@ -289,6 +327,7 @@ const Cases = () => {
       title="Cases"
       wrapperId="case"
     >
+      {contextHolder}
       <TableContent
         title="All Cases"
         dataSource={data.data}

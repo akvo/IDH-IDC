@@ -13,6 +13,11 @@ from models.case import Case, LivingIncomeStudyEnum
 from models.user_business_unit import UserBusinessUnit, UserBusinessUnitRole
 from models.enum_type import PermissionType
 from models.user_case_access import UserCaseAccess
+from models.case_commodity import CaseCommodity
+from models.case_tag import CaseTag
+from models.visualization import Visualization
+from models.segment import Segment
+
 
 from seeder.fake_seeder.fake_user import seed_fake_user
 from seeder.fake_seeder.fake_case import seed_fake_case
@@ -22,6 +27,7 @@ sys.path.append("..")
 
 
 account = Acc(email="super_admin@akvo.org", token=None)
+non_admin_account = Acc(email="support@akvo.org", token=None)
 
 
 def find_external_internal_user(session: Session):
@@ -107,7 +113,9 @@ class TestPermissionOveriding:
             headers={"Authorization": f"Bearer {account.token}"},
         )
         res = res.json()
-        assert res == [{"label": "John Doe <super_admin@akvo.org>", "value": 1}]
+        assert res == [
+            {"label": "John Doe <super_admin@akvo.org>", "value": 1}
+        ]
 
     @pytest.mark.asyncio
     async def test_seeder_fake_case(self, session: Session) -> None:
@@ -176,14 +184,18 @@ class TestPermissionOveriding:
         payloads = []
         permissions = [PermissionType.edit.value, PermissionType.view.value]
         for index, user in enumerate([ex_user, in_user]):
-            payloads.append({"user": user.id, "permission": permissions[index]})
+            payloads.append(
+                {"user": user.id, "permission": permissions[index]}
+            )
 
         # not case owner
         case = session.query(Case).all()
         exclude_user = [c.created_by for c in case]
         not_case_owner = (
             session.query(User)
-            .filter(and_(User.role == UserRole.user, ~User.id.in_(exclude_user)))
+            .filter(
+                and_(User.role == UserRole.user, ~User.id.in_(exclude_user))
+            )
             .first()
         )
         not_case_owner_acc = Acc(email=not_case_owner.email, token=None)
@@ -268,10 +280,14 @@ class TestPermissionOveriding:
         }
 
         # no permission user
-        user_no_permission_acc = Acc(email=user_no_permission.email, token=None)
+        user_no_permission_acc = Acc(
+            email=user_no_permission.email, token=None
+        )
         res = await client.put(
             app.url_path_for("case:update", case_id=case.id),
-            headers={"Authorization": f"Bearer {user_no_permission_acc.token}"},
+            headers={
+                "Authorization": f"Bearer {user_no_permission_acc.token}"
+            },
             json=payload,
         )
         assert res.status_code == 403
@@ -323,10 +339,14 @@ class TestPermissionOveriding:
         ) = find_editor_viewer_user(session=session)
 
         # no permission user
-        user_no_permission_acc = Acc(email=user_no_permission.email, token=None)
+        user_no_permission_acc = Acc(
+            email=user_no_permission.email, token=None
+        )
         res = await client.get(
             app.url_path_for("case:get_by_id", case_id=case.id),
-            headers={"Authorization": f"Bearer {user_no_permission_acc.token}"},
+            headers={
+                "Authorization": f"Bearer {user_no_permission_acc.token}"
+            },
         )
         assert res.status_code == 403
 
@@ -429,10 +449,14 @@ class TestPermissionOveriding:
         ex_user, in_user = find_external_internal_user(session=session)
 
         # user_no_permission user
-        user_no_permission_acc = Acc(email=user_no_permission.email, token=None)
+        user_no_permission_acc = Acc(
+            email=user_no_permission.email, token=None
+        )
         res = await client.put(
             app.url_path_for("case:update_case_owner", case_id=case.id),
-            headers={"Authorization": f"Bearer {user_no_permission_acc.token}"},
+            headers={
+                "Authorization": f"Bearer {user_no_permission_acc.token}"
+            },
             params={"user_id": editor_user.id},
         )
         assert res.status_code == 403
@@ -459,7 +483,12 @@ class TestPermissionOveriding:
             "password": None,
             "role": UserRole.user.value,
             "business_units": json.dumps(
-                [{"business_unit": 1, "role": UserBusinessUnitRole.member.value}]
+                [
+                    {
+                        "business_unit": 1,
+                        "role": UserBusinessUnitRole.member.value,
+                    }
+                ]
             ),
         }
         # without credential
@@ -510,3 +539,63 @@ class TestPermissionOveriding:
             params={"access_id": 4},
         )
         assert res.status_code == 204
+
+
+class TestDelete:
+    @pytest.mark.asyncio
+    async def test_delete_user_access_by_access_id(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # delete case without cred
+        res = await client.delete(app.url_path_for("case:delete", case_id=1))
+        assert res.status_code == 403
+        # delete user by admin
+        res = await client.delete(
+            app.url_path_for("case:delete", case_id=1),
+            headers={"Authorization": f"Bearer {non_admin_account.token}"},
+        )
+        assert res.status_code == 403
+        # delete user by admin
+        res = await client.delete(
+            app.url_path_for("case:delete", case_id=1000),
+            headers={"Authorization": f"Bearer {account.token}"},
+        )
+        assert res.status_code == 404
+        # delete user by admin
+        res = await client.delete(
+            app.url_path_for("case:delete", case_id=1),
+            headers={"Authorization": f"Bearer {account.token}"},
+        )
+        assert res.status_code == 204
+        # assert
+        case_id = 1
+        segment = (
+            session.query(Segment).filter(Segment.case == case_id).count()
+        )
+        assert segment == 0
+        # visualization
+        visualization = (
+            session.query(Visualization)
+            .filter(Visualization.case == case_id)
+            .count()
+        )
+        assert visualization == 0
+        # case_commodity
+        case_commodity = (
+            session.query(CaseCommodity)
+            .filter(CaseCommodity.case == case_id)
+            .count()
+        )
+        assert case_commodity == 0
+        # case tag
+        case_tag = (
+            session.query(CaseTag).filter(CaseTag.case == case_id).count()
+        )
+        assert case_tag == 0
+        # user case
+        user_case_access = (
+            session.query(UserCaseAccess)
+            .filter(UserCaseAccess.case == case_id)
+            .count()
+        )
+        assert user_case_access == 0

@@ -1,25 +1,10 @@
 import React, { useMemo, useRef, useState } from "react";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { getFunctionDefaultValue } from "../components";
+import { getFunctionDefaultValue, yAxisFormula } from "../components";
 import { range, orderBy, uniq, max } from "lodash";
 import { Row, Col, Card, Space } from "antd";
 import Chart from "../../../components/chart";
 import { SaveAsImageButton } from "../../../components/utils";
-
-/**
- * NOTE
- * Income formula ( #2 * #3 * #4 ) - ( ( #5 * #2 ) + ( #26 * #3 * #2 ) )
- * Target = 9001,
- * Diversified = 9002
- */
-const yAxisCalculation = {
-  "#2": "( #9001 - #9002 + ( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) )  / ( #4 * #3 )", // area
-  "#3": "( #9001 - #9002 + ( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) ) / ( #4 * #2 )", // volume
-  "#4": "( #9001 - #9002 + ( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) ) / ( #3 * #2 )", // price
-  "#5": "( ( #9001 - #9002 ) - ( #2 * #4 * #3 ) ) / #2", // CoP for crop
-  "#26": "( ( #9001 - #9002 ) - ( #2 * #4 * #3 ) ) / ( #3 * #2 )", // CoP for aqua
-  "#9002": "( #9001 + ( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) ) - ( #2 * #4 * #3 )", // diversified
-};
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -66,7 +51,7 @@ const getOptions = ({
   const yAxisId = yAxis.name.includes("Diversified")
     ? 9002
     : answers.find((a) => a.name === yAxis.name)?.qid;
-  const yAxisDefaultValue = { default_value: yAxisCalculation[`#${yAxisId}`] };
+  const yAxisDefaultValue = { default_value: yAxisFormula[`#${yAxisId}`] };
 
   const series = yAxisDefaultValue.default_value
     ? binCharts.map((b) => {

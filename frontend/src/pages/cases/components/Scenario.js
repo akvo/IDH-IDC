@@ -11,6 +11,9 @@ import {
   Form,
   Popover,
   Spin,
+  Tabs,
+  Select,
+  Table,
 } from "antd";
 import {
   EditTwoTone,
@@ -18,9 +21,13 @@ import {
   CloseCircleTwoTone,
   DeleteTwoTone,
 } from "@ant-design/icons";
-import { InputNumberThousandFormatter, getFunctionDefaultValue } from "./";
+import {
+  InputNumberThousandFormatter,
+  getFunctionDefaultValue,
+  selectProps,
+} from "./";
 import { ChartScenarioModeling } from "../visualizations";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy, uniq } from "lodash";
 import { SaveAsImageButton } from "../../../components/utils";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
@@ -49,13 +56,35 @@ const Question = ({
   }, [unit, commodity]);
 
   const answer = useMemo(() => {
+    // handle grouped diversified value
+    if (id === "diversified") {
+      const answers = childrens
+        .map((c) => {
+          return segment.answers.find(
+            (s) =>
+              s.question.id === c.id &&
+              s.caseCommodityId === case_commodity &&
+              s.name === "current"
+          );
+        })
+        .filter((x) => x);
+      return {
+        ...answers[0],
+        id: id,
+        question: childrens.map((c) => ({
+          ...c,
+          value: answers.find((a) => a.question.id === c.id)?.value || 0,
+        })),
+        value: answers.reduce((res, cur) => res + cur.value, 0),
+      };
+    }
     return segment.answers.find(
       (s) =>
         s.question.id === id &&
         s.caseCommodityId === case_commodity &&
         s.name === "current"
     );
-  }, [segment, id, case_commodity]);
+  }, [segment, id, case_commodity, childrens]);
 
   const currentIncrease = useMemo(() => {
     let value = 0;
@@ -88,6 +117,10 @@ const Question = ({
             <h4>
               Total Income from {commodity_name} <small>({currency})</small>
             </h4>
+          ) : question_type === "diversified" ? (
+            <h4>
+              {commodity_name} <small>({currency})</small>
+            </h4>
           ) : (
             <h4>
               {text} <small>({unitName})</small>
@@ -108,7 +141,6 @@ const Question = ({
                     ? "none"
                     : "",
               }}
-              // disabled={disableTotalIncomeFocusCommodityField}
             >
               <InputNumber
                 style={{
@@ -130,6 +162,7 @@ const Question = ({
             : `${currentIncrease} %`}
         </Col>
       </Row>
+      {/* Render questions */}
       {!parent && commodity_type === "focus"
         ? childrens.map((child) => (
             <Question
@@ -185,12 +218,40 @@ const ScenarioInput = ({
   const onValuesChange = (changedValues, allValues) => {
     const objectId = Object.keys(changedValues)[0];
     const [, case_commodity, id] = objectId.split("-");
-    const segmentAnswer = segment.answers.find(
-      (s) =>
-        s.questionId === parseInt(id) &&
-        s.caseCommodityId === parseInt(case_commodity) &&
-        s.name === "current"
-    );
+
+    let segmentAnswer = {};
+    // handle grouped diversified value
+    if (id === "diversified") {
+      const childrens = commodityQuestions
+        .find((cq) => cq.commodity_type === "diversified")
+        ?.questions?.find((q) => !q.parent)?.childrens;
+      const answers = childrens
+        ?.map((c) => {
+          return segment.answers.find(
+            (s) =>
+              s.question.id === c.id &&
+              s.caseCommodityId === parseInt(case_commodity) &&
+              s.name === "current"
+          );
+        })
+        .filter((x) => x);
+      segmentAnswer = {
+        ...answers[0],
+        id: id,
+        question: childrens.map((c) => ({
+          ...c,
+          value: answers.find((a) => a.question.id === c.id)?.value || 0,
+        })),
+        value: answers.reduce((res, cur) => res + cur.value, 0),
+      };
+    } else {
+      segmentAnswer = segment.answers.find(
+        (s) =>
+          s.questionId === parseInt(id) &&
+          s.caseCommodityId === parseInt(case_commodity) &&
+          s.name === "current"
+      );
+    }
 
     const parentQuestion = segment.answers.find(
       (s) =>
@@ -247,14 +308,20 @@ const ScenarioInput = ({
     );
     const allNewValues = { ...allValues, ...newFieldsValue };
 
-    const totalValues = allParentQuestions.reduce((acc, p) => {
+    let totalValues = allParentQuestions.reduce((acc, p) => {
       const questionId = `absolute-${p.caseCommodityId}-${p.question.id}`;
-      const value = allNewValues[questionId];
+      const value = allNewValues?.[questionId] || 0;
       if (value) {
         acc += parseFloat(value);
       }
       return acc;
     }, 0);
+    // handle grouped diversified value
+    const newDiversified =
+      allNewValues?.[`absolute-${parseInt(case_commodity)}-diversified`];
+    totalValues =
+      totalValues + (newDiversified ? parseFloat(newDiversified) : 0);
+    //
 
     const newScenarioValue = {
       segmentId: segment.id,
@@ -304,7 +371,15 @@ const ScenarioInput = ({
     >
       <Row gutter={[8, 8]} align="middle" justify="space-between">
         <Col span={9}>
-          <h4>Commodity</h4>
+          <h2>Income Target</h2>
+        </Col>
+        <Col span={15}>
+          <h2>{`${segment.target?.toFixed(2)} ${currencyUnitName}`}</h2>
+        </Col>
+      </Row>
+      <Row gutter={[8, 8]} align="middle" justify="space-between">
+        <Col span={9}>
+          <h4>Income Driver</h4>
         </Col>
         <Col span={5} align="center">
           <h4>New Value</h4>
@@ -360,6 +435,47 @@ const ScenarioInput = ({
   );
 };
 
+const Step = ({ number, title }) => (
+  <Col span={24}>
+    <Space align="center" className="scenario-step-wrapper">
+      <div className="number">{number}</div>
+      <div className="title">{title}</div>
+    </Space>
+  </Col>
+);
+
+const outcomeIndicator = [
+  {
+    key: "income_driver",
+    name: "What income drivers have changed?",
+  },
+  {
+    key: "income_gap",
+    name: "How big is the income gap?",
+  },
+  {
+    key: "income_target_reached",
+    name: "Is the income target reached?",
+  },
+  {
+    key: "income_increase",
+    name: "What is the income increase?",
+  },
+  {
+    key: "income_increase_percentage",
+    name: "What is the % income increase?",
+  },
+];
+
+const incomeTargetIcon = {
+  reached: (
+    <CheckCircleTwoTone twoToneColor="#52c41a" style={{ fontSize: 18 }} />
+  ),
+  not_reached: (
+    <CloseCircleTwoTone twoToneColor="#eb2f96" style={{ fontSize: 18 }} />
+  ),
+};
+
 const Scenario = ({
   index,
   scenarioItem,
@@ -370,6 +486,7 @@ const Scenario = ({
   commodityQuestions,
   segmentTabs,
   percentage,
+  scenarioData,
   setScenarioData,
   currentScenarioValues = {},
   enableEditCase,
@@ -382,7 +499,34 @@ const Scenario = ({
   );
   const [confirmationModal, setConfimationModal] = useState(false);
   const [scenarioValues, setScenarioValues] = useState([]);
-  const elScenarioModeling = useRef(null);
+  const [selectedScenarioSegmentChart, setSelectedScenarioSegmentChart] =
+    useState([]);
+  const [selectedSegment, setSelectedSegment] = useState(null);
+  const elIncomeGapScenario = useRef(null);
+
+  const scenarioSegmentOptions = useMemo(() => {
+    let i = 1;
+    const res = orderBy(scenarioData, "key").flatMap((sc) => {
+      const concat = segmentTabs.map((st) => {
+        const opt = {
+          order: i,
+          label: `${sc.name} - ${st.label}`,
+          value: `${sc.key}-${st.key}`,
+        };
+        i += 1;
+        return opt;
+      });
+      return concat;
+    });
+    return res;
+  }, [scenarioData, segmentTabs]);
+
+  const segmentOptions = useMemo(() => {
+    return segmentTabs.map((st) => ({
+      label: st.label,
+      value: st.key,
+    }));
+  }, [segmentTabs]);
 
   const finishEditing = () => {
     renameScenario(index, newName, newDescription);
@@ -429,70 +573,148 @@ const Scenario = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardData]);
 
+  const outcomeDriverQuestions = useMemo(() => {
+    const commodities = commodityQuestions
+      .filter(
+        (cq) =>
+          cq.commodity_type === "focus" && cq.commodity_type !== "diversified"
+      )
+      .flatMap((cq) => {
+        const questions = cq.questions.find((q) => !q.parent);
+        return questions.childrens?.map((x) => ({
+          ...x,
+          case_commodity: cq.case_commodity,
+          commodity_name: cq.commodity_name,
+        }));
+      });
+    let diversified = commodityQuestions.find(
+      (cq) => cq.commodity_type === "diversified"
+    );
+    diversified = diversified?.questions?.map((x) => ({
+      ...x,
+      case_commodity: diversified.case_commodity,
+      commodity_name: diversified.commodity_name,
+      childrens: x.childrens,
+    }));
+    return [...commodities, ...diversified].map((q) => ({
+      questionId: q.id,
+      text: q.text,
+      questionType: q.question_type,
+      caseCommodityId: q.case_commodity,
+      commodityName: q.commodity_name,
+      childrens: q?.childrens || [],
+    }));
+  }, [commodityQuestions]);
+
+  const combineScenarioDataWithDashboardData = useMemo(() => {
+    const scenarioKeys = [];
+    const segmentIds = [];
+    selectedScenarioSegmentChart.forEach((item) => {
+      const [scenario, segment] = item.split("-").map((x) => parseInt(x));
+      scenarioKeys.push(scenario);
+      segmentIds.push(segment);
+    });
+
+    const filterScenarioData = isEmpty(selectedScenarioSegmentChart)
+      ? scenarioData.filter((sd) => sd.key === scenarioItem.key)
+      : scenarioData.filter((sd) => scenarioKeys.includes(sd.key));
+
+    const data = filterScenarioData.flatMap((sd) => {
+      const segments = scenarioValues.map((sv) => {
+        return {
+          ...sv,
+          scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
+          allNewValues: sv?.allNewValues || {},
+          newTotalIncome: sv?.value || 0,
+          scenarioKey: sd.key,
+          scenarioName: sd.name,
+          currentSegmentValue: dashboardData.find(
+            (dd) => dd.id === sv.segmentId
+          ),
+        };
+      });
+      return segments;
+    });
+
+    if (!isEmpty(selectedScenarioSegmentChart)) {
+      return data.filter((d) =>
+        selectedScenarioSegmentChart.includes(d.scenarioSegmentKey)
+      );
+    }
+    return data;
+  }, [
+    dashboardData,
+    scenarioData,
+    scenarioItem,
+    scenarioValues,
+    selectedScenarioSegmentChart,
+  ]);
+
   const chartData = useMemo(() => {
-    const data = dashboardData.map((segment) => {
-      const scenarioIncome =
-        scenarioValues.find((s) => s.segmentId === segment.id)?.value || 0;
-      const increaseIncome = scenarioIncome
-        ? scenarioIncome - segment.total_current_income
-        : scenarioIncome;
-      const gapValue = scenarioIncome
-        ? scenarioIncome >= segment.target
-          ? 0
-          : segment.target - scenarioIncome
-        : segment.target - segment.total_current_income;
+    const data = combineScenarioDataWithDashboardData.map((d) => {
+      const incomeTarget = d.currentSegmentValue.target;
+      const currentTotalIncome = d.currentSegmentValue.total_current_income;
+      const feasibleFocusIncome =
+        d.currentSegmentValue.total_feasible_focus_income;
+
+      const newTotalIncome = d?.newTotalIncome || feasibleFocusIncome;
+      const additionalValue = newTotalIncome - currentTotalIncome;
+
+      let gapValue = incomeTarget - newTotalIncome;
+      gapValue = gapValue < 0 ? 0 : gapValue;
+
       return {
-        name: segment.name,
-        title: segment.name,
+        name: `${d.scenarioName} - ${d.name}`,
+        target: incomeTarget,
         stack: [
           {
-            name: "Current Income",
-            title: "Current Income",
+            name: "Current total household income",
+            title: "Current total household income",
+            value: currentTotalIncome,
+            total: currentTotalIncome,
+            color: "#1B625F",
             order: 1,
-            total: segment.total_current_income,
-            value: segment.total_current_income,
-            color: "#00625F",
           },
           {
-            name: "Income Increase",
-            title: "Income Increase",
+            name: "Additional income when income drivers are changed",
+            title: "Additional income when income drivers are changed",
+            value: additionalValue,
+            total: additionalValue,
+            color: "#49D985",
             order: 2,
-            total: increaseIncome,
-            value: increaseIncome,
-            color: "#47D985",
           },
           {
             name: "Gap",
             title: "Gap",
+            value: gapValue,
+            total: gapValue,
+            color: "#E06666",
             order: 3,
-            total: gapValue > 0 ? gapValue : 0,
-            value: gapValue > 0 ? gapValue : 0,
-            color: "#F1C5B2",
           },
         ],
       };
     });
     return data;
-  }, [dashboardData, scenarioValues]);
+  }, [combineScenarioDataWithDashboardData]);
 
   const targetChartData = useMemo(() => {
     return [
       {
-        name: "Benchmark",
+        name: "Income Target",
         type: "line",
         symbol: "diamond",
         symbolSize: 15,
-        color: "#FF5D00",
+        color: "#000",
         lineStyle: {
           width: 0,
         },
-        data: dashboardData.map((d) => ({
+        data: chartData.map((d) => ({
           name: "Benchmark",
           value: d?.target ? d.target.toFixed(2) : 0,
         })),
       },
     ];
-  }, [dashboardData]);
+  }, [chartData]);
 
   const ButtonEdit = () => (
     <Button
@@ -515,7 +737,9 @@ const Scenario = ({
       size="small"
       shape="circle"
       type="secondary"
-      icon={<CloseCircleTwoTone twoToneColor="#eb2f96" />}
+      icon={
+        <CloseCircleTwoTone twoToneColor="#eb2f96" style={{ fontSize: 18 }} />
+      }
       onClick={cancelEditing}
     />
   );
@@ -532,7 +756,7 @@ const Scenario = ({
           </Button>
         </Space>
       }
-      title="Are you sure want to delete this segment?"
+      title="Are you sure want to delete this scenario?"
       trigger="click"
       open={confirmationModal}
       onOpenChange={(e) => setConfimationModal(e)}
@@ -541,15 +765,15 @@ const Scenario = ({
         size="small"
         shape="circle"
         type="secondary"
-        icon={<DeleteTwoTone twoToneColor="#eb2f96" />}
+        icon={<DeleteTwoTone twoToneColor="#fff" style={{ fontSize: 18 }} />}
       />
     </Popover>
   );
 
   const extra = !hideDelete ? (
     <Space>
-      <ButtonEdit />
-      {editing && <ButtonCancelEdit />}
+      {/* <ButtonEdit />
+      {editing && <ButtonCancelEdit />} */}
       {!editing && <ButtonDelete />}
     </Space>
   ) : (
@@ -560,15 +784,19 @@ const Scenario = ({
   );
 
   const renderScenarioCardHeader = () => {
-    if (editing) {
-      return (
-        <Space direction="vertical" className="scenario-header-wrapper">
+    return (
+      <Row gutter={[16, 16]} className="scenario-information-wrapper">
+        <Col span={24}>
+          <div className="label">Name</div>
           <Input
             key={`scenario-name-${scenarioItem.key}`}
             placeholder="Scenario Name"
             defaultValue={scenarioItem.name}
             onChange={(e) => setNewName(e.target.value)}
           />
+        </Col>
+        <Col span={24}>
+          <div className="label">Description</div>
           <Input.TextArea
             key={`scenario-description-${scenarioItem.key}`}
             rows={4}
@@ -576,86 +804,343 @@ const Scenario = ({
             defaultValue={scenarioItem.description}
             onChange={(e) => setNewDescription(e.target.value)}
           />
-        </Space>
-      );
-    }
-    return (
-      <div className="scenario-header-wrapper">
-        <h3>{scenarioItem.name}</h3>
-        {scenarioItem?.description ? (
-          <p>{scenarioItem.description}</p>
-        ) : (
-          <p>Scenario Description</p>
-        )}
-      </div>
+        </Col>
+      </Row>
     );
   };
 
+  const scenarioOutcomeColumns = useMemo(() => {
+    const scenarioCol = scenarioData.map((x) => ({
+      title: x.name,
+      dataIndex: `scenario-${x.key}`,
+      key: `scenario-${x.key}`,
+    }));
+    return [
+      {
+        title: null,
+        dataIndex: "title",
+        key: "title",
+        width: "25%",
+      },
+      {
+        title: "Current Value",
+        dataIndex: "current",
+        key: "current",
+      },
+      ...scenarioCol,
+    ];
+  }, [scenarioData]);
+
+  const scenarioOutcomeDataSource = useMemo(() => {
+    if (!selectedSegment || isEmpty(outcomeDriverQuestions)) {
+      return [];
+    }
+    // current data
+    const current = dashboardData.find((dd) => dd.id === selectedSegment);
+    const data = outcomeIndicator.map((ind) => {
+      let res = { id: ind.key, title: ind.name };
+      if (ind.key === "income_driver") {
+        res = {
+          ...res,
+          current: "-",
+        };
+        const currentDriverValues = outcomeDriverQuestions.map((q) => {
+          // handle grouped diversified income
+          if (q.questionType === "diversified") {
+            const temp = q.childrens.map(
+              (c) =>
+                current?.answers?.find((a) => a.questionId === c.id)?.value || 0
+            );
+            return {
+              ...q,
+              value: temp.reduce((res, cur) => res + cur, 0),
+            };
+          }
+          return {
+            ...q,
+            value:
+              current?.answers?.find((a) => a.questionId === q.questionId)
+                ?.value || 0,
+          };
+        });
+        // scenario data
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const segment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const scenarioDriverValues = outcomeDriverQuestions.map((q) => {
+            const answerKey = `absolute-${q.caseCommodityId}-${q.questionId}`;
+            return {
+              ...q,
+              value: segment?.allNewValues?.[answerKey] || null,
+            };
+          });
+          // commpare current driver with scenario driver values
+          const compareDrivers = currentDriverValues
+            .map((cur) => {
+              const check = scenarioDriverValues.find(
+                (nw) => nw.questionId === cur.questionId
+              );
+              if (check.value !== null && check.value !== cur.value) {
+                return check.questionType !== "diversified"
+                  ? cur.text
+                  : "Diversified Income";
+              }
+              return false;
+            })
+            .filter((x) => x);
+          res = {
+            ...res,
+            [scenarioKey]: isEmpty(compareDrivers)
+              ? "-"
+              : uniq(compareDrivers).join(", "),
+          };
+        });
+      }
+
+      if (ind.key === "income_target_reached") {
+        res = {
+          ...res,
+          current:
+            current.target <= current.total_current_income
+              ? incomeTargetIcon.reached
+              : incomeTargetIcon.not_reached,
+        };
+        // scenario data
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const segment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const newTotalIncome = !segment?.value
+            ? current.total_current_income
+            : segment?.value;
+          res = {
+            ...res,
+            [scenarioKey]:
+              current.target <= newTotalIncome
+                ? incomeTargetIcon.reached
+                : incomeTargetIcon.not_reached,
+          };
+        });
+      }
+
+      if (ind.key === "income_gap") {
+        const currentGap = current.target - current.total_current_income;
+        res = {
+          ...res,
+          current: currentGap <= 0 ? "-" : currentGap?.toFixed(2),
+        };
+        // scenario data
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const segment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const segmentValue = segment?.value ? segment.value : current.target;
+          const segmentGap = current.target - segmentValue;
+          res = {
+            ...res,
+            [scenarioKey]:
+              segmentGap <= 0 ? "-" : thousandFormatter(segmentGap?.toFixed(2)),
+          };
+        });
+      }
+
+      if (ind.key === "income_increase") {
+        res = {
+          ...res,
+          current: "-",
+        };
+        // scenario data
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const segment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const segmentValue = segment?.value
+            ? segment.value
+            : current.total_current_income;
+          const incomeIncrease = segmentValue - current.total_current_income;
+          res = {
+            ...res,
+            [scenarioKey]:
+              parseInt(incomeIncrease) === 0
+                ? "-"
+                : thousandFormatter(incomeIncrease?.toFixed(2)),
+          };
+        });
+      }
+
+      if (ind.key === "income_increase_percentage") {
+        res = {
+          ...res,
+          current: "-",
+        };
+        // scenario data
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const segment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const segmentValue = segment?.value
+            ? segment.value
+            : current.total_current_income;
+          const incomeIncrease = segmentValue - current.total_current_income;
+          let incomeIncreasePercent = "-";
+          if (parseInt(incomeIncrease) !== 0) {
+            incomeIncreasePercent = (
+              (incomeIncrease / current.total_current_income) *
+              100
+            )?.toFixed(2);
+            incomeIncreasePercent = `${incomeIncreasePercent}%`;
+          }
+          res = {
+            ...res,
+            [scenarioKey]: incomeIncreasePercent,
+          };
+        });
+      }
+      return res;
+    });
+    return data;
+  }, [dashboardData, scenarioData, selectedSegment, outcomeDriverQuestions]);
+
   return (
-    <Col span={24} ref={elScenarioModeling}>
-      <Card
-        className="income-driver-dashboard"
-        title={renderScenarioCardHeader()}
-        extra={
-          <Space className="card-extra-wrapper">
-            {enableEditCase ? extra : null}
-            <SaveAsImageButton
-              elementRef={elScenarioModeling}
-              filename={scenarioItem.name}
-            />
-          </Space>
-        }
-        tabList={segmentTabs}
-        activeTabKey={activeTab}
-        onTabChange={(key) => setActiveTab(key)}
-      >
-        <Card.Grid
-          style={{
-            width: "100%",
-          }}
-          hoverable={false}
+    <Row gutter={[16, 16]}>
+      {/* Information Input */}
+      <Col span={24}>
+        <Card
+          className="info-card-wrapper"
+          title="Information"
+          extra={scenarioItem?.key > 1 ? extra : null}
         >
-          <Row
-            className="income-driver-content"
-            align="middle"
-            justify="space-evenly"
-            gutter={[8, 8]}
-          >
-            {dashboardData.map((segment) => (
-              <Col
-                key={segment.id}
-                span={12}
-                style={{
-                  display: activeTab === segment.id ? "" : "none",
-                  borderRight: "1px solid #f0f0f0",
-                }}
-              >
-                <ScenarioInput
-                  segment={segment}
-                  commodityQuestions={commodityQuestions}
-                  percentage={percentage}
-                  setScenarioValues={setScenarioValues}
-                  scenarioValue={scenarioValues.find(
-                    (s) => s.segmentId === segment.id
-                  )}
-                  scenarioItem={scenarioItem}
-                  setScenarioData={setScenarioData}
-                  currencyUnitName={currencyUnitName}
-                  enableEditCase={enableEditCase}
+          {renderScenarioCardHeader()}
+        </Card>
+      </Col>
+
+      {/* Step 1 */}
+      <Step number={1} title="Fill in values for your scenarios" />
+
+      {/* Income Driver Scenario Values */}
+      <Col span={24}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          items={segmentTabs.map((item) => ({
+            ...item,
+            children: dashboardData
+              .filter((d) => d.id === activeTab)
+              .map((segment) => (
+                <Row key={segment.id} gutter={[24, 24]}>
+                  <Col span={16}>
+                    <Card
+                      className="info-card-wrapper"
+                      title="Income Driver Values"
+                    >
+                      <ScenarioInput
+                        segment={segment}
+                        commodityQuestions={commodityQuestions}
+                        percentage={percentage}
+                        setScenarioValues={setScenarioValues}
+                        scenarioValue={scenarioValues.find(
+                          (s) => s.segmentId === segment.id
+                        )}
+                        scenarioItem={scenarioItem}
+                        setScenarioData={setScenarioData}
+                        currencyUnitName={currencyUnitName}
+                        enableEditCase={enableEditCase}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={8}>
+                    <h2>
+                      What is the income gap when you change your income drivers
+                      using the scenario modeler?
+                    </h2>
+                    <p>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                      sed do eiusmod tempor incididunt ut labore et dolore magna
+                      aliqua.
+                    </p>
+                  </Col>
+                </Row>
+              )),
+          }))}
+        />
+      </Col>
+
+      {/* Step 2 */}
+      <Step number={2} title="Visualise your scenarios" />
+
+      {/* Chart and Select scenario - segment */}
+      <Col span={24}>
+        <Row gutter={[24, 24]} ref={elIncomeGapScenario}>
+          <Col span={8}>
+            <Select
+              {...selectProps}
+              options={scenarioSegmentOptions}
+              placeholder="Select Scenario - Segment"
+              mode="multiple"
+              onChange={setSelectedScenarioSegmentChart}
+            />
+            <h2>
+              What is the income gap when you change your income drivers using
+              the scenario modeler?
+            </h2>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua.{" "}
+            </p>
+          </Col>
+          <Col span={16}>
+            <Card
+              className="chart-card-wrapper"
+              title="Income Gap"
+              extra={
+                <SaveAsImageButton
+                  elementRef={elIncomeGapScenario}
+                  filename="What is the income gap when you change your income drivers using
+              the scenario modeler?"
+                  type="ghost-white"
                 />
-              </Col>
-            ))}
-            <Col span={12}>
+              }
+            >
               <ChartScenarioModeling
                 data={chartData || []}
                 targetChartData={targetChartData}
                 currencyUnitName={currencyUnitName}
               />
-            </Col>
-          </Row>
-        </Card.Grid>
-      </Card>
-    </Col>
+            </Card>
+          </Col>
+        </Row>
+      </Col>
+
+      {/* Step 3 */}
+      <Step number={3} title="Better understand outcomes for your segments" />
+
+      {/* Scenario Outcomes */}
+      <Col span={24}>
+        <Card className="info-card-wrapper" title="Scenario Outcomes">
+          <Space size="large" direction="vertical">
+            <Select
+              {...selectProps}
+              options={segmentOptions}
+              placeholder="Select Segment"
+              style={{ width: "25%" }}
+              onChange={setSelectedSegment}
+            />
+            <Table
+              rowKey="id"
+              columns={scenarioOutcomeColumns}
+              dataSource={scenarioOutcomeDataSource}
+              pagination={false}
+            />
+          </Space>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

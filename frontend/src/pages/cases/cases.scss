@@ -409,6 +409,41 @@
     .scenario-field-item {
       margin-bottom: 0px;
     }
+
+    .scenario-information-wrapper {
+      .label {
+        margin-bottom: 5px;
+      }
+    }
+
+    .scenario-step-wrapper {
+      padding: 20px 0;
+
+      .number {
+        color: #00625f;
+        text-align: center;
+        font-family: "RocGrotesk";
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 28px;
+        letter-spacing: -0.28px;
+
+        padding: 4px 8px;
+        background: $yellow-color;
+        border-radius: 100px 70px 100px 70px;
+      }
+
+      .title {
+        color: #00625f;
+        font-family: "RocGrotesk";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 28px;
+        letter-spacing: -0.336px;
+      }
+    }
   }
 
   #income-overview-chart {

@@ -290,14 +290,29 @@
   .chart-container {
     padding: 24px;
   }
-  .alert-box {
-    font-family: "TabletGothic";
+
+  .card-alert-box {
+    padding-bottom: 20px;
     margin-bottom: 1.5rem;
-    border-radius: 5px;
-    border: none;
-    &.ant-alert-success {
-      background-color: $primary-color;
-      color: #ffffff;
+    border-radius: 20px;
+    background: #d0e2e2;
+
+    .title {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .description {
+      color: #01625f;
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 28px;
     }
   }
 

@@ -1,7 +1,19 @@
-import React, { useMemo } from "react";
-import { Row, Col, Alert, Button, Select, Card } from "antd";
+import React, { useMemo, useState } from "react";
+import { Row, Col, Card, Select, Tabs, Space } from "antd";
 import { Scenario } from "./";
 import { orderBy } from "lodash";
+import { PlusCircleFilled } from "@ant-design/icons";
+
+const addScenarioButton = {
+  key: "add",
+  name: (
+    <span>
+      <PlusCircleFilled /> Add Scenario
+    </span>
+  ),
+  description: null,
+  scenarioValues: [],
+};
 
 const DashboardScenarioModeling = ({
   dashboardData,
@@ -13,20 +25,55 @@ const DashboardScenarioModeling = ({
   setScenarioData,
   enableEditCase,
 }) => {
+  const [activeKey, setActiveKey] = useState(1);
+
   const segmentTabs = useMemo(
     () =>
       dashboardData.map((segment) => ({
         key: segment.id,
-        tab: segment.name,
+        label: segment.name,
       })),
     [dashboardData]
   );
 
+  const scenarioDataWithAddButton = useMemo(() => {
+    if (enableEditCase) {
+      return [...orderBy(scenarioData, "key"), addScenarioButton];
+    }
+    return orderBy(scenarioData, "key");
+  }, [enableEditCase, scenarioData]);
+
   const commodityQuestions = useMemo(() => {
-    return commodityList.map((c) => ({
-      ...c,
-      ...questionGroups.find((qg) => qg.commodity_id === c.commodity),
-    }));
+    return commodityList.map((c) => {
+      const findQG = questionGroups.find(
+        (qg) => qg.commodity_id === c.commodity
+      );
+      // handle grouped diversified income question
+      if (c.commodity_type === "diversified") {
+        return {
+          ...c,
+          ...findQG,
+          questions: [
+            {
+              ...findQG.questions[0],
+              id: "diversified",
+              default_value: findQG.questions
+                .map((x) => `#${x.id}`)
+                .join(" + "),
+              parent: null,
+              question_type: "diversified",
+              text: "Diversified Income",
+              description: "Custom question",
+              childrens: findQG.questions,
+            },
+          ],
+        };
+      }
+      return {
+        ...c,
+        ...findQG,
+      };
+    });
   }, [commodityList, questionGroups]);
 
   const renameScenario = (index, newName, newDescription) => {
@@ -50,85 +97,90 @@ const DashboardScenarioModeling = ({
     }
   };
 
+  const onChangeTab = (key) => {
+    if (key === "add") {
+      setScenarioData((prev) => {
+        return [
+          ...prev,
+          {
+            key: prev.length + 1,
+            name: `Scenario ${prev.length + 1}`,
+            description: null,
+            scenarioValues: [],
+          },
+        ];
+      });
+      setActiveKey(scenarioDataWithAddButton.length);
+    } else {
+      setActiveKey(key);
+    }
+  };
+
   return (
-    <Row id="scenario-modeling">
+    <div id="scenario-modeling">
       <Col span={24}>
-        <Alert
-          message="On this page you can define and save up to three scenarioData."
-          type="success"
-          className="alert-box"
-        />
-      </Col>
-      <Col span={24}>
-        <Card className="income-driver-dashboard">
-          <Card.Grid
-            style={{
-              width: "100%",
-            }}
-            hoverable={false}
-          >
-            <Row>
-              <Col span={12}>How do you want to report on change?</Col>
-              <Col span={12}>
-                <Select
-                  size="small"
-                  style={{ width: "100%", marginLeft: "10px" }}
-                  options={[
-                    { label: "Percentage", value: "percentage" },
-                    { label: "Absolute", value: "absolute" },
-                  ]}
-                  onChange={onChangePercentage}
-                  value={percentage ? "percentage" : "absolute"}
-                />
-              </Col>
-            </Row>
-          </Card.Grid>
+        <Card className="card-alert-box">
+          <Row gutter={[16, 16]} align="middle">
+            <Col span={18}>
+              <Space direction="vertical">
+                <div className="title">Choose approach</div>
+                <div className="description">
+                  Please choose whether you would like to express the changes in
+                  current values using percentages or absolute values.
+                </div>
+              </Space>
+            </Col>
+            <Col span={6}>
+              <Select
+                style={{ width: "100%" }}
+                options={[
+                  { label: "Percentage", value: "percentage" },
+                  { label: "Absolute", value: "absolute" },
+                ]}
+                onChange={onChangePercentage}
+                value={percentage ? "percentage" : "absolute"}
+              />
+            </Col>
+          </Row>
         </Card>
       </Col>
-      {orderBy(scenarioData, "key").map((scenarioItem, index) => (
-        <Scenario
-          key={index}
-          index={index}
-          scenarioItem={scenarioItem}
-          renameScenario={renameScenario}
-          onDelete={() => onDelete(index)}
-          hideDelete={scenarioData.length === 1 && index === 0}
-          dashboardData={dashboardData}
-          commodityQuestions={commodityQuestions}
-          segmentTabs={segmentTabs}
-          percentage={percentage}
-          setScenarioData={setScenarioData}
-          currentScenarioValues={
-            scenarioData.find((d) => d.key === scenarioItem.key)
-              ?.scenarioValues || {}
-          }
-          enableEditCase={enableEditCase}
+
+      <Col span={24}>
+        <Tabs
+          onChange={onChangeTab}
+          activeKey={activeKey}
+          items={scenarioDataWithAddButton.map((scenarioItem, index) => ({
+            ...scenarioItem,
+            label: scenarioItem.name,
+            children:
+              scenarioItem.key === "add" ? null : (
+                <Scenario
+                  key={index}
+                  index={index}
+                  scenarioItem={scenarioItem}
+                  renameScenario={renameScenario}
+                  onDelete={() => {
+                    onDelete(index);
+                    setActiveKey(1);
+                  }}
+                  hideDelete={scenarioData.length === 1 && index === 0}
+                  dashboardData={dashboardData}
+                  commodityQuestions={commodityQuestions}
+                  segmentTabs={segmentTabs}
+                  percentage={percentage}
+                  scenarioData={orderBy(scenarioData, "key")}
+                  setScenarioData={setScenarioData}
+                  currentScenarioValues={
+                    scenarioData.find((d) => d.key === scenarioItem.key)
+                      ?.scenarioValues || {}
+                  }
+                  enableEditCase={enableEditCase}
+                />
+              ),
+          }))}
         />
-      ))}
-      {enableEditCase && (
-        <Col span={24}>
-          <Button
-            onClick={() =>
-              setScenarioData((prev) => {
-                return [
-                  ...prev,
-                  {
-                    key: prev.length + 1,
-                    name: `Scenario ${prev.length + 1}`,
-                    description: null,
-                    scenarioValues: [],
-                  },
-                ];
-              })
-            }
-            type="primary"
-            style={{ width: "100%" }}
-          >
-            Add New Scenario
-          </Button>
-        </Col>
-      )}
-    </Row>
+      </Col>
+    </div>
   );
 };
 

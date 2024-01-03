@@ -57,7 +57,9 @@ class TestSeederMaster:
                 ],
             },
         ]
-        countries = session.query(Country).filter(Country.parent.is_(None)).all()
+        countries = (
+            session.query(Country).filter(Country.parent.is_(None)).all()
+        )
         countries = [c.serialize for c in countries]
         assert countries == [
             {

@@ -7,6 +7,7 @@ import {
   IncomeDriverDataEntry,
   IncomeDriverDashboard,
   getFunctionDefaultValue,
+  customFormula,
 } from "./components";
 import { Row, Col, Spin, Card, Alert } from "antd";
 import "./cases.scss";
@@ -39,12 +40,6 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   }, {});
   return { ...acc, ...commodities };
 }, {});
-
-const customFormula = {
-  revenue_focus_commodity: "#2 * #3 * #4",
-  focus_commodity_cost_of_production:
-    "( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) * -1",
-};
 
 const Case = () => {
   const { caseId } = useParams();
