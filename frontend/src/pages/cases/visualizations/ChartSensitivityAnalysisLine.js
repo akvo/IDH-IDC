@@ -240,12 +240,12 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
     const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
     const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
     // label
-    const label = `The following tables represent combination ${yAxisName} and ${xAxisName} to reach the income target for a each ${
+    const label = `The following tables represent combination of ${yAxisName} and ${xAxisName} to reach the income target for a each ${
       binName ? binName : ""
     } bin.`;
     setLabel(label);
     // chart title
-    setChartTitle(`Combination ${yAxisName} and ${xAxisName} value`);
+    setChartTitle(`Combination ${yAxisName} and ${xAxisName} to reach the income target`);
 
     return {
       binCharts: binName
