@@ -174,7 +174,7 @@ def get_case_options(
 
 @case_route.put(
     "/case/{case_id:path}",
-    response_model=CaseDict,
+    response_model=CaseDetailDict,
     summary="update case by id",
     name="case:update",
     tags=["Case"],
@@ -183,14 +183,19 @@ def update_Case(
     req: Request,
     case_id: int,
     payload: CaseBase,
+    updated: Optional[bool] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    verify_case_editor(
+    user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
     case = crud_case.update_case(session=session, id=case_id, payload=payload)
-    return case.serialize
+    if updated:
+        case = crud_case.case_updated_by(
+            session=session, case_id=case_id, user_id=user.id
+        )
+    return case.to_case_detail
 
 
 @case_route.get(

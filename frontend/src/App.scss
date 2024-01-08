@@ -332,6 +332,16 @@
       }
     }
   }
+
+  .breadcrumb-right-content {
+    position: absolute;
+    right: 0;
+    top: 20px;
+    padding-right: 5rem;
+    font-size: 13px;
+    font-family: "TabletGothic" !important;
+    font-style: italic;
+  }
 }
 
 .ant-popover {

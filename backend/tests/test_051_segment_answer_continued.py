@@ -21,7 +21,9 @@ class TestSegmentAnswerRouteContinued:
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
         # without cred
-        res = await client.get(app.url_path_for("segment:get_by_case_id", case_id=1))
+        res = await client.get(
+            app.url_path_for("segment:get_by_case_id", case_id=1)
+        )
         assert res.status_code == 403
         # return 404
         res = await client.get(
@@ -136,6 +138,7 @@ class TestSegmentAnswerRouteContinued:
             "multiple_commodities": False,
             "created_by": "super_admin@akvo.org",
             "created_at": res["created_at"],
+            "updated_by": "John Doe",
             "updated_at": res["updated_at"],
             "segments": [
                 {
@@ -221,7 +224,9 @@ class TestSegmentAnswerRouteContinued:
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
         # delete without cred
-        res = await client.delete(app.url_path_for("segment:delete", segment_id=1))
+        res = await client.delete(
+            app.url_path_for("segment:delete", segment_id=1)
+        )
         assert res.status_code == 403
         # delete with cred
         res = await client.delete(
@@ -232,6 +237,8 @@ class TestSegmentAnswerRouteContinued:
         segment = session.query(Segment).filter(Segment.id == 1).first()
         assert segment is None
         segment_answers = (
-            session.query(SegmentAnswer).filter(SegmentAnswer.segment == 1).count()
+            session.query(SegmentAnswer)
+            .filter(SegmentAnswer.segment == 1)
+            .count()
         )
         assert segment_answers == 0

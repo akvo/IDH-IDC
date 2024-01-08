@@ -87,6 +87,7 @@ class TestSegmentRoute:
         ]
         res = await client.post(
             app.url_path_for("segment:create"),
+            params={"updated": True},
             headers={"Authorization": f"Bearer {admin_account.token}"},
             json=payload,
         )
@@ -206,6 +207,7 @@ class TestSegmentRoute:
         ]
         res = await client.put(
             app.url_path_for("segment:update"),
+            params={"updated": True},
             headers={"Authorization": f"Bearer {admin_account.token}"},
             json=payload,
         )

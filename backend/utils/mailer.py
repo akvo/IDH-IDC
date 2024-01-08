@@ -10,16 +10,13 @@ from jinja2 import Environment, FileSystemLoader
 mjkey = os.environ["MAILJET_APIKEY"]
 mjsecret = os.environ["MAILJET_SECRET"]
 webdomain = os.environ["WEBDOMAIN"]
-image_url = f"{webdomain}/email-icons"
 
 mailjet = Client(auth=(mjkey, mjsecret))
 loader = FileSystemLoader(".")
 env = Environment(loader=loader)
 html_template = env.get_template("./templates/email.html")
 image_url = f"{webdomain}/email-icons"
-FTYPE = (
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"  # noqa
-)
+FTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"  # noqa
 
 
 class EmailBody(enum.Enum):
@@ -60,7 +57,7 @@ class EmailBody(enum.Enum):
             <br/>
             #url#
         """,
-        "image": f"{image_url}/lock.png",
+        "image": f"{image_url}/info-circle.png",
     }
     INVITATION = {
         "title": "Invitation",

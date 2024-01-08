@@ -92,6 +92,7 @@ class TestVisualizationRoute:
         # with admin user cred
         res = await client.post(
             app.url_path_for("visualization:create_or_update"),
+            params={"update": True},
             headers={"Authorization": f"Bearer {admin_account.token}"},
             json=payload,
         )

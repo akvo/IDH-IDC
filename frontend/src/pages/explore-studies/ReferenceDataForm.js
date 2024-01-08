@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./explore-studies-page.scss";
 import {
   Form,
@@ -10,11 +10,13 @@ import {
   Spin,
   InputNumber,
   Modal,
+  Tooltip,
+  Space,
 } from "antd";
-import { areaUnitOptions, volumeUnitOptions } from "../../store/static";
-import { uniqBy, isEmpty } from "lodash";
+// import { uniqBy, isEmpty } from "lodash";
 import { api } from "../../lib";
 import { InputNumberThousandFormatter } from "../cases/components";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const selectProps = {
   showSearch: true,
@@ -32,6 +34,7 @@ const confidenceLevelOptions = [
   },
   { label: "Medium", value: "medium" },
   { label: "Low", value: "low" },
+  { label: "Undefined", value: "undefined" },
 ];
 
 const rangeOptions = [
@@ -50,6 +53,9 @@ const typeOptions = [
   { label: "Minimum", value: "minimum" },
 ];
 
+const sources = ["Farmfit", "Desk research", "IDH internal", "FAO", "Other"];
+const sourceOptions = sources.map((x) => ({ label: x, value: x }));
+
 const isValidUrl = (url) => {
   try {
     new URL(url);
@@ -58,6 +64,15 @@ const isValidUrl = (url) => {
     return false;
   }
 };
+
+const LabelWithTooltip = ({ name, tooltip }) => (
+  <Space align="center">
+    <div>{name}</div>
+    <Tooltip placement="right" title={tooltip} color="#26605f">
+      <QuestionCircleOutlined />
+    </Tooltip>
+  </Space>
+);
 
 const ReferenceDataForm = ({
   open = false,
@@ -70,12 +85,12 @@ const ReferenceDataForm = ({
   const [loading, setLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  const [areaUnitName, setAreaUnitName] = useState(null);
-  const [volumeUnitName, setVolumeUnitName] = useState(null);
-  const [currencyUnitName, setCurrencyUnitName] = useState(null);
-  const [copUnitName, setCopUnitName] = useState(null);
-  const [priceUnitName, setPriceUnitName] = useState(null);
+  // const [selectedCountry, setSelectedCountry] = useState(null);
+  // const [areaUnitName, setAreaUnitName] = useState(null);
+  // const [volumeUnitName, setVolumeUnitName] = useState(null);
+  // const [currencyUnitName, setCurrencyUnitName] = useState(null);
+  // const [copUnitName, setCopUnitName] = useState(null);
+  // const [priceUnitName, setPriceUnitName] = useState(null);
 
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
     ct.commodities.map((c) => ({
@@ -86,25 +101,25 @@ const ReferenceDataForm = ({
   );
   const countryOptions = window?.master?.countries || [];
 
-  const filteredCurrencyOptions = useMemo(() => {
-    const currencyOptions = window?.master?.currencies || [];
-    if (!selectedCountry) {
-      return uniqBy(currencyOptions, "value");
-    }
-    const countryCurrency = currencyOptions.find(
-      (co) => co.country === selectedCountry
-    );
-    // set default currency value
-    if (isEmpty(initValues)) {
-      form.setFieldsValue({ currency: countryCurrency?.value });
-    }
-    // TODO: Wrong format when store to db
-    let additonalCurrencies = currencyOptions.filter((co) =>
-      ["eur", "usd"].includes(co.value.toLowerCase())
-    );
-    additonalCurrencies = uniqBy(additonalCurrencies, "value");
-    return [countryCurrency, ...additonalCurrencies];
-  }, [selectedCountry, form, initValues]);
+  // const filteredCurrencyOptions = useMemo(() => {
+  //   const currencyOptions = window?.master?.currencies || [];
+  //   if (!selectedCountry) {
+  //     return uniqBy(currencyOptions, "value");
+  //   }
+  //   const countryCurrency = currencyOptions.find(
+  //     (co) => co.country === selectedCountry
+  //   );
+  //   // set default currency value
+  //   if (isEmpty(initValues)) {
+  //     form.setFieldsValue({ currency: countryCurrency?.value });
+  //   }
+  //   // TODO: Wrong format when store to db
+  //   let additonalCurrencies = currencyOptions.filter((co) =>
+  //     ["eur", "usd"].includes(co.value.toLowerCase())
+  //   );
+  //   additonalCurrencies = uniqBy(additonalCurrencies, "value");
+  //   return [countryCurrency, ...additonalCurrencies];
+  // }, [selectedCountry, form, initValues]);
 
   useEffect(() => {
     setInitValues({});
@@ -114,26 +129,26 @@ const ReferenceDataForm = ({
       api
         .get(`reference_data/${referenceDataId}`)
         .then((res) => {
-          const {
-            country,
-            area_size_unit,
-            currency,
-            volume_measurement_unit,
-            cost_of_production_unit,
-            price_unit,
-          } = res.data;
-          // handle Volume unit
-          if (area_size_unit && volume_measurement_unit) {
-            setVolumeUnitName(`${volume_measurement_unit} / ${area_size_unit}`);
-          } else {
-            setVolumeUnitName(null);
-          }
-          // EOL handle Volume unit
-          setSelectedCountry(country || null);
-          setAreaUnitName(area_size_unit || null);
-          setCopUnitName(cost_of_production_unit || null);
-          setCurrencyUnitName(currency || null);
-          setPriceUnitName(price_unit || null);
+          // const {
+          //   country,
+          //   area_size_unit,
+          //   currency,
+          //   volume_measurement_unit,
+          //   cost_of_production_unit,
+          //   price_unit,
+          // } = res.data;
+          // // handle Volume unit
+          // if (area_size_unit && volume_measurement_unit) {
+          //   setVolumeUnitName(`${volume_measurement_unit} / ${area_size_unit}`);
+          // } else {
+          //   setVolumeUnitName(null);
+          // }
+          // // EOL handle Volume unit
+          // setSelectedCountry(country || null);
+          // setAreaUnitName(area_size_unit || null);
+          // setCopUnitName(cost_of_production_unit || null);
+          // setCurrencyUnitName(currency || null);
+          // setPriceUnitName(price_unit || null);
           setInitValues(res.data);
         })
         .finally(() => {
@@ -142,81 +157,76 @@ const ReferenceDataForm = ({
     }
   }, [referenceDataId, form]);
 
-  const onChange = (_, allValues) => {
-    const {
-      commodity,
-      currency,
-      area_size_unit,
-      volume_measurement_unit,
-      country,
-    } = allValues;
-
-    setSelectedCountry(country);
-    setCurrencyUnitName(currency);
-    setAreaUnitName(area_size_unit);
-
-    // handle CoP unit
-    const findCommodityCategory = commodityOptions.find(
-      (co) => co.value === commodity
-    )?.category;
-
-    if (findCommodityCategory?.toLowerCase() === "crop") {
-      if (currency && area_size_unit) {
-        setCopUnitName(`${currency} / ${area_size_unit}`);
-      } else {
-        setCopUnitName(null);
-      }
-    }
-
-    if (
-      ["aquaculture", "livestock"].includes(
-        findCommodityCategory?.toLowerCase()
-      )
-    ) {
-      if (currency && volume_measurement_unit) {
-        setCopUnitName(`${currency} / ${volume_measurement_unit}`);
-      } else {
-        setCopUnitName(null);
-      }
-    }
-    // EOL handle CoP unit
-
-    // handle Volume unit
-    if (area_size_unit && volume_measurement_unit) {
-      setVolumeUnitName(`${volume_measurement_unit} / ${area_size_unit}`);
-    } else {
-      setVolumeUnitName(null);
-    }
-    // EOL handle Volume unit
-
-    // handle Price unit
-    if (currency && volume_measurement_unit) {
-      setPriceUnitName(`${currency} / ${volume_measurement_unit}`);
-    } else {
-      setPriceUnitName(null);
-    }
-    // EOL handle Volume unit
-  };
+  // const onChange = (_, allValues) => {
+  //   const {
+  //     commodity,
+  //     currency,
+  //     area_size_unit,
+  //     volume_measurement_unit,
+  //     country,
+  //   } = allValues;
+  //   setSelectedCountry(country);
+  //   setCurrencyUnitName(currency);
+  //   setAreaUnitName(area_size_unit);
+  //   // handle CoP unit
+  //   const findCommodityCategory = commodityOptions.find(
+  //     (co) => co.value === commodity
+  //   )?.category;
+  //   if (findCommodityCategory?.toLowerCase() === "crop") {
+  //     if (currency && area_size_unit) {
+  //       setCopUnitName(`${currency} / ${area_size_unit}`);
+  //     } else {
+  //       setCopUnitName(null);
+  //     }
+  //   }
+  //   if (
+  //     ["aquaculture", "livestock"].includes(
+  //       findCommodityCategory?.toLowerCase()
+  //     )
+  //   ) {
+  //     if (currency && volume_measurement_unit) {
+  //       setCopUnitName(`${currency} / ${volume_measurement_unit}`);
+  //     } else {
+  //       setCopUnitName(null);
+  //     }
+  //   }
+  //   // EOL handle CoP unit
+  //   // handle Volume unit
+  //   if (area_size_unit && volume_measurement_unit) {
+  //     setVolumeUnitName(`${volume_measurement_unit} / ${area_size_unit}`);
+  //   } else {
+  //     setVolumeUnitName(null);
+  //   }
+  //   // EOL handle Volume unit
+  //   // handle Price unit
+  //   if (currency && volume_measurement_unit) {
+  //     setPriceUnitName(`${currency} / ${volume_measurement_unit}`);
+  //   } else {
+  //     setPriceUnitName(null);
+  //   }
+  //   // EOL handle Volume unit
+  // };
 
   const clearForm = () => {
     form.resetFields();
     setInitValues({});
-    setSelectedCountry(null);
-    setAreaUnitName(null);
-    setVolumeUnitName(null);
-    setCurrencyUnitName(null);
-    setCopUnitName(null);
-    setPriceUnitName(null);
+    // setSelectedCountry(null);
+    // setAreaUnitName(null);
+    // setVolumeUnitName(null);
+    // setCurrencyUnitName(null);
+    // setCopUnitName(null);
+    // setPriceUnitName(null);
   };
 
   const onFinish = (values) => {
     // transform values
     const payload = {
       ...values,
-      area_size_unit: areaUnitName,
-      cost_of_production_unit: copUnitName,
-      diversified_income_unit: values?.currency,
-      price_unit: priceUnitName,
+      currency: "",
+      // area_size_unit: areaUnitName,
+      // cost_of_production_unit: copUnitName,
+      // diversified_income_unit: values?.currency,
+      // price_unit: priceUnitName,
     };
     onSave({
       payload: payload,
@@ -256,7 +266,7 @@ const ReferenceDataForm = ({
           layout="vertical"
           initialValues={initValues}
           onFinish={onFinish}
-          onValuesChange={onChange}
+          // onValuesChange={onChange}
           className="reference-form-container"
         >
           <Row gutter={[16, 16]}>
@@ -279,7 +289,12 @@ const ReferenceDataForm = ({
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      label="Region"
+                      label={
+                        <LabelWithTooltip
+                          name="Region"
+                          tooltip={`Enter "National" if no region defined as part of the study`}
+                        />
+                      }
                       name="region"
                       rules={[
                         {
@@ -294,7 +309,7 @@ const ReferenceDataForm = ({
                 </Row>
 
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  {/* <Col span={12}>
                     <Form.Item
                       label="Currency"
                       name="currency"
@@ -311,7 +326,7 @@ const ReferenceDataForm = ({
                         disabled={!selectedCountry}
                       />
                     </Form.Item>
-                  </Col>
+                  </Col> */}
                   <Col span={12}>
                     <Form.Item
                       label="Commodity"
@@ -326,9 +341,6 @@ const ReferenceDataForm = ({
                       <Select {...selectProps} options={commodityOptions} />
                     </Form.Item>
                   </Col>
-                </Row>
-
-                <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Form.Item
                       label="Year"
@@ -343,6 +355,9 @@ const ReferenceDataForm = ({
                       <Input />
                     </Form.Item>
                   </Col>
+                </Row>
+
+                <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Form.Item
                       label="Source"
@@ -354,10 +369,10 @@ const ReferenceDataForm = ({
                         },
                       ]}
                     >
-                      <Input />
+                      <Select {...selectProps} options={sourceOptions} />
                     </Form.Item>
                   </Col>
-                  <Col span={24}>
+                  <Col span={12}>
                     <Form.Item
                       label="Link"
                       name="link"
@@ -396,7 +411,15 @@ const ReferenceDataForm = ({
               <Card title="Details about the data">
                 <Row gutter={[16, 16]}>
                   <Col span={8}>
-                    <Form.Item label="Confidence Level" name="confidence_level">
+                    <Form.Item
+                      label={
+                        <LabelWithTooltip
+                          name="Confidence Level"
+                          tooltip="Assess level of confidence you have with regards to the reliability of this source"
+                        />
+                      }
+                      name="confidence_level"
+                    >
                       <Select
                         {...selectProps}
                         options={confidenceLevelOptions}
@@ -404,7 +427,15 @@ const ReferenceDataForm = ({
                     </Form.Item>
                   </Col>
                   <Col span={8}>
-                    <Form.Item label="Range" name="range">
+                    <Form.Item
+                      label={
+                        <LabelWithTooltip
+                          name="Range"
+                          tooltip="If known, indicate whether the reference values are rather low, median or high values for the particular context"
+                        />
+                      }
+                      name="range"
+                    >
                       <Select {...selectProps} options={rangeOptions} />
                     </Form.Item>
                   </Col>
@@ -415,7 +446,7 @@ const ReferenceDataForm = ({
                   </Col>
                 </Row>
 
-                <Row gutter={[16, 16]}>
+                {/* <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Form.Item label="Area Unit" name="area_size_unit">
                       <Select {...selectProps} options={areaUnitOptions} />
@@ -429,39 +460,65 @@ const ReferenceDataForm = ({
                       <Select {...selectProps} options={volumeUnitOptions} />
                     </Form.Item>
                   </Col>
-                </Row>
+                </Row> */}
               </Card>
             </Col>
 
             <Col span={24}>
               <Card title="Drivers Value">
                 <Row gutter={[16, 16]}>
-                  <Col span={8}>
-                    <Form.Item
-                      label={areaUnitName ? `Area (${areaUnitName})` : "Area"}
-                      name="area"
-                    >
-                      <InputNumber {...InputNumberThousandFormatter} />
+                  <Col span={12}>
+                    <Form.Item label="Area" name="area">
+                      <InputNumber
+                        keyboard={false}
+                        {...InputNumberThousandFormatter}
+                      />
                     </Form.Item>
                   </Col>
-                  <Col span={8}>
+                  <Col span={12}>
                     <Form.Item
-                      label={
-                        volumeUnitName ? `Volume (${volumeUnitName})` : "Volume"
-                      }
-                      name="volume"
+                      label="Measurement Unit for Area"
+                      name="area_size_unit"
                     >
-                      <InputNumber {...InputNumberThousandFormatter} />
+                      <Input />
                     </Form.Item>
                   </Col>
-                  <Col span={8}>
+                </Row>
+
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
+                    <Form.Item label="Volume" name="volume">
+                      <InputNumber
+                        keyboard={false}
+                        {...InputNumberThousandFormatter}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
                     <Form.Item
-                      label={
-                        currencyUnitName ? `Price (${priceUnitName})` : "Price"
-                      }
-                      name="price"
+                      label="Measurement Unit for Volume"
+                      name="volume_measurement_unit"
                     >
-                      <InputNumber {...InputNumberThousandFormatter} />
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
+                    <Form.Item label="Price" name="price">
+                      <InputNumber
+                        keyboard={false}
+                        {...InputNumberThousandFormatter}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Measurement Unit for Price"
+                      name="price_unit"
+                    >
+                      <Input />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -469,26 +526,43 @@ const ReferenceDataForm = ({
                 <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Form.Item
-                      label={
-                        copUnitName
-                          ? `Cost of Production (${copUnitName})`
-                          : "Cost of Production"
-                      }
+                      label="Cost of Production"
                       name="cost_of_production"
                     >
-                      <InputNumber {...InputNumberThousandFormatter} />
+                      <InputNumber
+                        keyboard={false}
+                        {...InputNumberThousandFormatter}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
-                      label={
-                        currencyUnitName
-                          ? `Diversified Income (${currencyUnitName})`
-                          : "Diversified Income"
-                      }
+                      label="Measurement Unit for Cost of Production"
+                      name="cost_of_production_unit"
+                    >
+                      <Input />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Diversified Income"
                       name="diversified_income"
                     >
-                      <InputNumber {...InputNumberThousandFormatter} />
+                      <InputNumber
+                        keyboard={false}
+                        {...InputNumberThousandFormatter}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Measurement Unit for Diversified Income"
+                      name="diversified_income_unit"
+                    >
+                      <Input />
                     </Form.Item>
                   </Col>
                 </Row>

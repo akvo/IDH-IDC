@@ -214,7 +214,7 @@ const ChartBigImpact = ({ dashboardData }) => {
       },
       xAxis: {
         type: "value",
-        name: "Impact (%)",
+        name: "Change (%)",
         nameTextStyle: { ...TextStyle },
         nameLocation: "middle",
         nameGap: 50,

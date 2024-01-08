@@ -96,6 +96,9 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
       loading={!chartData.length || !targetChartData.length}
       targetData={targetChartData}
       extra={{ axisTitle: { y: `Income (${currentCase.currency})` } }}
+      grid={{
+        right: 250,
+      }}
     />
   );
 };

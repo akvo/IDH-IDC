@@ -4,10 +4,11 @@ import {
   DashboardIncomeOverview,
   DashboardSensitivityAnalysis,
   DashboardScenarioModeling,
+  removeUndefinedObjectValue,
 } from "./";
 import { api } from "../../../lib";
 import { StepBackwardOutlined } from "@ant-design/icons";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 
 const IncomeDriverDashboard = ({
   commodityList,
@@ -25,12 +26,14 @@ const IncomeDriverDashboard = ({
 
   // sensitivity analysis data
   const [binningData, setBinningData] = useState({});
+  const [currentBinningData, setCurrentBinningData] = useState({});
 
   // scenario modeling data
   const [percentage, setPercentage] = useState(true);
   const [scenarioData, setScenarioData] = useState([
     { key: 1, name: "Scenario 1", description: null, scenarioValues: [] },
   ]);
+  const [currentScenarioData, setCurrentScenarioData] = useState([]);
 
   useEffect(() => {
     if (currentCaseId) {
@@ -52,6 +55,10 @@ const IncomeDriverDashboard = ({
             ...prev,
             ...sensitivityAnalysisConfig,
           }));
+          setCurrentBinningData((prev) => ({
+            ...prev,
+            ...sensitivityAnalysisConfig,
+          }));
         }
         // Scenario modeling
         const scenarioModelingConfig =
@@ -59,6 +66,7 @@ const IncomeDriverDashboard = ({
         if (!isEmpty(scenarioModelingConfig)) {
           setPercentage(scenarioModelingConfig.percentage);
           setScenarioData(scenarioModelingConfig.scenarioData);
+          setCurrentScenarioData(scenarioModelingConfig.scenarioData);
         }
         setTimeout(() => {
           setLoading(false);
@@ -98,10 +106,43 @@ const IncomeDriverDashboard = ({
         },
       },
     ];
+
+    // sensitivity analysis
+    const isBinningDataUpdated = !isEqual(
+      removeUndefinedObjectValue(currentBinningData),
+      removeUndefinedObjectValue(binningData)
+    );
+    // scenario modeler
+    const currentScenarioDataTmp = currentScenarioData.map((d) => {
+      const scenarioValues = d.scenarioValues.map((v) => {
+        const filterAllNewValues = v?.allNewValues
+          ? removeUndefinedObjectValue(v.allNewValues)
+          : {};
+        return { ...v, allNewValues: filterAllNewValues };
+      });
+      return { ...d, scenarioValues: scenarioValues };
+    });
+    const scenarioDataTmp = scenarioData.map((d) => {
+      const scenarioValues = d.scenarioValues.map((v) => {
+        const filterAllNewValues = v?.allNewValues
+          ? removeUndefinedObjectValue(v.allNewValues)
+          : {};
+        return { ...v, allNewValues: filterAllNewValues };
+      });
+      return { ...d, scenarioValues: scenarioValues };
+    });
+    const isScenarioDataUpdated = !isEqual(
+      currentScenarioDataTmp,
+      scenarioDataTmp
+    );
+    const isUpdated = isBinningDataUpdated || isScenarioDataUpdated;
+
     // Save
     api
-      .post("visualization", payloads)
+      .post(`visualization?updated=${isUpdated}`, payloads)
       .then(() => {
+        setCurrentBinningData(binningData);
+        setCurrentScenarioData(scenarioData);
         messageApi.open({
           type: "success",
           content: "Visualization Dashboard saved successfully.",

@@ -1,6 +1,7 @@
 import os
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
+import db.crud_reset_password as crud_reset_pwd
 
 from math import ceil
 from middleware import (
@@ -24,6 +25,7 @@ from fastapi import Response
 from fastapi.security import HTTPBearer
 from fastapi.security import HTTPBasicCredentials as credentials
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from db.connection import get_session
 from models.user import (
@@ -115,7 +117,9 @@ def get_all(
     if user.role == UserRole.admin:
         business_unit_users = crud_bu.find_users_in_same_business_unit(
             session=session,
-            business_units=[bu.business_unit for bu in user.user_business_units],
+            business_units=[
+                bu.business_unit for bu in user.user_business_units
+            ],
         )
     user = crud_user.get_all_user(
         session=session,
@@ -140,7 +144,12 @@ def get_all(
     total_page = ceil(total / limit) if total > 0 else 0
     if total_page < page:
         raise HTTPException(status_code=404, detail="Not found")
-    return {"current": page, "data": user, "total": total, "total_page": total_page}
+    return {
+        "current": page,
+        "data": user,
+        "total": total,
+        "total_page": total_page,
+    }
 
 
 @user_route.get(
@@ -177,11 +186,15 @@ def register(
     user = None
     if invitation_id:
         if hasattr(req.state, "authenticated"):
-            user = verify_admin(session=session, authenticated=req.state.authenticated)
+            user = verify_admin(
+                session=session, authenticated=req.state.authenticated
+            )
         else:
             raise HTTPException(status_code=403, detail="Forbidden access")
     # Check if user exist by email
-    check_user_exist = crud_user.get_user_by_email(session=session, email=payload.email)
+    check_user_exist = crud_user.get_user_by_email(
+        session=session, email=payload.email
+    )
     if check_user_exist:
         raise HTTPException(
             status_code=409, detail=f"User {payload.email} already exist."
@@ -227,14 +240,19 @@ def register(
     if invitation_id:
         # send invitation email
         url = f"{webdomain}/invitation/{res_invitation_id}"
-        email = Email(recipients=recipients, email=MailTypeEnum.INVITATION, url=url)
+        email = Email(
+            recipients=recipients, email=MailTypeEnum.INVITATION, url=url
+        )
         email.send
     # regular / internal user registration
     if not invitation_id and payload.business_units:
         # send email to business unit admin
-        admins = crud_user.find_business_unit_admin(session=session, user_id=user["id"])
+        admins = crud_user.find_business_unit_admin(
+            session=session, user_id=user["id"]
+        )
         email = Email(
-            recipients=[a.recipient for a in admins], email=MailTypeEnum.REG_NEW
+            recipients=[a.recipient for a in admins],
+            email=MailTypeEnum.REG_NEW,
         )
         email.send
     # external user registration
@@ -242,7 +260,8 @@ def register(
         # send email to super admin
         super_admins = crud_user.find_super_admin(session=session)
         email = Email(
-            recipients=[a.recipient for a in super_admins], email=MailTypeEnum.REG_NEW
+            recipients=[a.recipient for a in super_admins],
+            email=MailTypeEnum.REG_NEW,
         )
         email.send
     return user
@@ -258,7 +277,9 @@ def register(
 def invitation(
     req: Request, invitation_id: str, session: Session = Depends(get_session)
 ):
-    user = crud_user.get_invitation(session=session, invitation_id=invitation_id)
+    user = crud_user.get_invitation(
+        session=session, invitation_id=invitation_id
+    )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
     return user.to_user_invitation
@@ -267,7 +288,7 @@ def invitation(
 @user_route.post(
     "/user/invitation/{invitation_id:path}",
     response_model=Token,
-    summary="get set password for invited user",
+    summary="set password for invited user",
     name="user:register_password",
     tags=["User"],
 )
@@ -318,6 +339,31 @@ def search_user(
 
 
 @user_route.get(
+    "/user/reset-password/{url:path}",
+    response_model=UserInvitation,
+    summary="Verify reset password",
+    name="user:reset-password",
+    tags=["User"],
+)
+def get_forgot_password(
+    req: Request, url: str, session: Session = Depends(get_session)
+):
+    reset_password = crud_reset_pwd.get_reset_password(
+        session=session, url=url
+    )
+    if not reset_password:
+        raise HTTPException(status_code=404, detail="URL is not valid")
+    reset_password = reset_password.serialize
+    if reset_password["expired"]:
+        return JSONResponse(
+            status_code=status.HTTP_410_GONE,
+            content={"message": "url is expired"},
+        )
+    user = crud_user.get_user_by_id(session=session, id=reset_password["user"])
+    return user.to_user_invitation
+
+
+@user_route.get(
     "/user/{user_id:path}",
     response_model=UserDetailDict,
     summary="get user detail by id",
@@ -357,7 +403,9 @@ def update_user_by_id(
     user = crud_user.update_user(session=session, id=user_id, payload=payload)
     # send email to approved user
     if user and approved:
-        email = Email(recipients=[user.recipient], email=MailTypeEnum.REG_APPROVED)
+        email = Email(
+            recipients=[user.recipient], email=MailTypeEnum.REG_APPROVED
+        )
         email.send
     return user.to_user_info
 
@@ -379,3 +427,72 @@ def delete(
     verify_admin(session=session, authenticated=req.state.authenticated)
     crud_user.delete_user(session=session, id=user_id)
     return Response(status_code=HTTPStatus.NO_CONTENT.value)
+
+
+@user_route.post(
+    "/user/forgot-password",
+    status_code=201,
+    summary="Generate Forgot Password Link",
+    name="user:forgot-password",
+    tags=["User"],
+)
+def new_forgot_password(
+    req: Request,
+    email: str = Form(...),
+    session: Session = Depends(get_session),
+):
+    reset_password = crud_reset_pwd.new_reset_password(
+        session=session, email=email
+    )
+    if not reset_password:
+        raise HTTPException(status_code=404, detail="User Not found")
+    # Send reset password email
+    user = crud_user.get_user_by_email(session=session, email=email)
+    url = f"{webdomain}/reset-password/{reset_password['url']}"
+    email = Email(
+        recipients=[user.recipient],
+        email=MailTypeEnum.FORGOT_PASSWORD,
+        url=url,
+    )
+    email.send
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={"message": "url is generated"},
+    )
+
+
+@user_route.post(
+    "/user/reset-password/{url:path}",
+    response_model=Token,
+    summary="Reset password",
+    name="user:reset-password",
+    tags=["User"],
+)
+def post_forgot_password(
+    req: Request,
+    url: str,
+    password: SecretStr = Form(...),
+    session: Session = Depends(get_session),
+):
+    reset_password = crud_reset_pwd.get_reset_password(
+        session=session, url=url
+    )
+    if not reset_password:
+        raise HTTPException(status_code=404, detail="URL is not valid")
+    reset_password = reset_password.serialize
+    if reset_password["expired"]:
+        return JSONResponse(
+            status_code=status.HTTP_410_GONE,
+            content={"message": "url is expired"},
+        )
+    password = get_password_hash(password.get_secret_value())
+    user = crud_user.update_password(
+        session=session, id=reset_password["user"], password=password
+    )
+    crud_reset_pwd.delete_reset_password(session=session, url=url)
+    access_token = create_access_token(data={"email": user.email})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user.to_user_info,
+    }

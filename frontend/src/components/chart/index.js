@@ -24,6 +24,7 @@ export const generateOptions = (
         horizontal: horizontal,
         highlighted: highlighted,
         targetData: targetData,
+        grid: grid,
       });
     case "COLUMN-BAR":
       return ColumnBar({

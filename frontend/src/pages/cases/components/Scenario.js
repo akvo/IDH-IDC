@@ -47,6 +47,9 @@ const Question = ({
   const { commodity_name, commodity_type, case_commodity, currency } =
     commodity;
 
+  // custom fieldName for grouped diversified
+  const fieldName = `${case_commodity}-${id}`;
+
   const unitName = useMemo(() => {
     return unit
       .split("/")
@@ -63,7 +66,7 @@ const Question = ({
           return segment.answers.find(
             (s) =>
               s.question.id === c.id &&
-              s.caseCommodityId === case_commodity &&
+              s.caseCommodityId === c.case_commodity &&
               s.name === "current"
           );
         })
@@ -130,8 +133,8 @@ const Question = ({
         <Col span={5}>
           {["absolute", "percentage"].map((qtype) => (
             <Form.Item
-              key={`${qtype}-${case_commodity}-${id}`}
-              name={`${qtype}-${case_commodity}-${id}`}
+              key={`${qtype}-${fieldName}`}
+              name={`${qtype}-${fieldName}`}
               className="scenario-field-item"
               style={{
                 display:
@@ -230,7 +233,7 @@ const ScenarioInput = ({
           return segment.answers.find(
             (s) =>
               s.question.id === c.id &&
-              s.caseCommodityId === parseInt(case_commodity) &&
+              s.caseCommodityId === c.case_commodity &&
               s.name === "current"
           );
         })
@@ -318,7 +321,7 @@ const ScenarioInput = ({
     }, 0);
     // handle grouped diversified value
     const newDiversified =
-      allNewValues?.[`absolute-${parseInt(case_commodity)}-diversified`];
+      allNewValues?.[`absolute-${case_commodity}-diversified`];
     totalValues =
       totalValues + (newDiversified ? parseFloat(newDiversified) : 0);
     //
@@ -849,7 +852,12 @@ const Scenario = ({
           if (q.questionType === "diversified") {
             const temp = q.childrens.map(
               (c) =>
-                current?.answers?.find((a) => a.questionId === c.id)?.value || 0
+                current?.answers?.find(
+                  (a) =>
+                    a.questionId === c.id &&
+                    a.name === "current" &&
+                    a.caseCommodityId === c.case_commodity
+                )?.value || 0
             );
             return {
               ...q,
@@ -859,10 +867,15 @@ const Scenario = ({
           return {
             ...q,
             value:
-              current?.answers?.find((a) => a.questionId === q.questionId)
-                ?.value || 0,
+              current?.answers?.find(
+                (a) =>
+                  a.questionId === q.questionId &&
+                  a.name === "current" &&
+                  a.commodityType === "focus"
+              )?.value || 0,
           };
         });
+
         // scenario data
         scenarioData.forEach((sd) => {
           const scenarioKey = `scenario-${sd.key}`;
@@ -1028,6 +1041,8 @@ const Scenario = ({
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
+          type="card"
+          className="scenario-segment-tabs-container"
           items={segmentTabs.map((item) => ({
             ...item,
             children: dashboardData

@@ -38,8 +38,8 @@ const SideMenu = ({ active, setActive, finished }) => {
           items={menuList.map((item) => {
             const isFinished = finished.includes(item.name);
             const result = {
-              className: isFinished ? "finished-dot" : "",
-              color: active === item.name ? activeStyle.color : "gray",
+              className: isFinished ? "finished-dot" : "pending-dot",
+              color: active === item.name ? activeStyle.color : "#ffc505",
               status: isFinished ? "finish" : "wait",
               title: (
                 <span

@@ -2,10 +2,10 @@ import db.crud_segment as crud_segment
 import db.crud_living_income_benchmark as crud_lib
 import db.crud_case as crud_case
 
-from fastapi import APIRouter, Request, Depends, Response
+from fastapi import APIRouter, Request, Depends, Response, Query
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from http import HTTPStatus
 from middleware import verify_case_editor, verify_case_viewer
 
@@ -32,13 +32,18 @@ segment_route = APIRouter()
 def create_segment(
     req: Request,
     payload: List[SegmentBase],
+    updated: Optional[bool] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
     case_id = payload[0].case
-    verify_case_editor(
+    user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
+    if updated:
+        crud_case.case_updated_by(
+            session=session, case_id=case_id, user_id=user.id
+        )
     segments = crud_segment.add_segment(session=session, payloads=payload)
     return [s.serialize for s in segments]
 
@@ -53,14 +58,19 @@ def create_segment(
 def update_segment(
     req: Request,
     payload: List[SegmentUpdateBase],
+    updated: Optional[bool] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
     case_id = payload[0].case
-    verify_case_editor(
+    user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
     segments = crud_segment.update_segment(session=session, payloads=payload)
+    if updated:
+        crud_case.case_updated_by(
+            session=session, case_id=case_id, user_id=user.id
+        )
     return [s.serialize for s in segments]
 
 
@@ -104,7 +114,9 @@ def get_segments_by_case_id(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
     case = crud_case.get_case_by_id(session=session, id=case_id)
-    segments = crud_segment.get_segments_by_case_id(session=session, case_id=case_id)
+    segments = crud_segment.get_segments_by_case_id(
+        session=session, case_id=case_id
+    )
     segments = [s.serialize_with_answers for s in segments]
     for segment in segments:
         benchmark = crud_lib.get_by_country_region_year(

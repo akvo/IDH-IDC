@@ -188,7 +188,7 @@ const getOptions = ({
             },
             out: {
               color: "#fff",
-              backgroundColor: "gray",
+              backgroundColor: "#FEC508",
               padding: 5,
             },
             down: {
@@ -216,7 +216,7 @@ const legends = [
     text: "Income target not reached",
   },
   {
-    color: "#808080",
+    color: "#FEC508",
     text: "Income target reached outside feasible values",
   },
   {

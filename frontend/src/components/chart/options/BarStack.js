@@ -53,6 +53,7 @@ const BarStack = ({
   horizontal = false,
   highlighted = null,
   targetData = [], // to show income target symbol
+  grid = {},
 }) => {
   if (isEmpty(data) || !data) {
     return NoData;
@@ -151,13 +152,14 @@ const BarStack = ({
       ...Legend,
       data: [...additionalLegends, ...legends],
       top: 15,
-      left: "center",
+      left: "right",
+      orient: "vertical",
     },
     grid: {
-      top: 95,
+      top: 25,
       bottom: 28,
-      left: 100,
-      right: 50,
+      left: 50,
+      right: grid?.right ? grid.right : 150,
       show: true,
       containLabel: true,
       label: {

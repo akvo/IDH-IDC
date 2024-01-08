@@ -2,13 +2,15 @@ import sys
 import os
 import pytest
 import json
+from datetime import timedelta
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
 from tests.test_000_main import Acc
 from db.crud_user import get_user_by_email
-from models.user import UserRole
+from models.user import UserRole, User
 from models.user_business_unit import UserBusinessUnitRole, UserBusinessUnit
+from models.reset_password import ResetPassword
 
 sys.path.append("..")
 
@@ -30,7 +32,12 @@ class TestUserEndpoint:
             "role": UserRole.viewer.value,
             "organisation": 1,
             "business_units": json.dumps(
-                [{"business_unit": 1, "role": UserBusinessUnitRole.member.value}]
+                [
+                    {
+                        "business_unit": 1,
+                        "role": UserBusinessUnitRole.member.value,
+                    }
+                ]
             ),
         }
         # without credential
@@ -95,7 +102,9 @@ class TestUserEndpoint:
         res = res.json()
         user_id = res["id"]
         # delete user without cred
-        res = await client.delete(app.url_path_for("user:delete", user_id=user_id))
+        res = await client.delete(
+            app.url_path_for("user:delete", user_id=user_id)
+        )
         assert res.status_code == 403
         # delete user by not admin
         res = await client.delete(
@@ -118,7 +127,8 @@ class TestUserEndpoint:
         }
         # without cred
         res = await client.put(
-            app.url_path_for("user:update", user_id=user.id), data=update_payload
+            app.url_path_for("user:update", user_id=user.id),
+            data=update_payload,
         )
         assert res.status_code == 403
 
@@ -302,7 +312,12 @@ class TestUserEndpoint:
             "password": None,
             "organisation": 1,
             "business_units": json.dumps(
-                [{"business_unit": 1, "role": UserBusinessUnitRole.admin.value}]
+                [
+                    {
+                        "business_unit": 1,
+                        "role": UserBusinessUnitRole.admin.value,
+                    }
+                ]
             ),
         }
         # with credential
@@ -343,7 +358,9 @@ class TestUserEndpoint:
     ) -> None:
         user = get_user_by_email(session=session, email="admin@akvo.org")
         res = await client.get(
-            app.url_path_for("user:invitation", invitation_id=user.invitation_id)
+            app.url_path_for(
+                "user:invitation", invitation_id=user.invitation_id
+            )
         )
         assert res.status_code == 200
         res = res.json()
@@ -361,7 +378,9 @@ class TestUserEndpoint:
     ) -> None:
         user = get_user_by_email(session=session, email="admin@akvo.org")
         res = await client.post(
-            app.url_path_for("user:invitation", invitation_id=user.invitation_id),
+            app.url_path_for(
+                "user:invitation", invitation_id=user.invitation_id
+            ),
             data={"password": "secret"},
         )
         assert res.status_code == 200
@@ -766,3 +785,95 @@ class TestUserEndpoint:
             "total": 3,
             "total_page": 1,
         }
+
+    @pytest.mark.asyncio
+    async def test_user_forgot_password(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        user_payload = {"email": "support@akvo.org"}
+        user = (
+            session.query(User)
+            .filter(User.email == user_payload["email"])
+            .first()
+        )
+        assert user.invitation_id is None
+        res = await client.post(
+            app.url_path_for("user:forgot-password"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "email": "support@akvo.org",
+                "client_id": os.environ["CLIENT_ID"],
+                "client_secret": os.environ["CLIENT_SECRET"],
+            },
+        )
+        assert res.status_code == 201
+        reset_password = (
+            session.query(ResetPassword)
+            .filter(ResetPassword.user == user.id)
+            .first()
+        )
+        res = await client.get(
+            app.url_path_for("user:reset-password", url=reset_password.url)
+        )
+        assert res.status_code == 200
+        reset_password.valid -= timedelta(minutes=30)
+        session.commit()
+        session.flush()
+        session.refresh(reset_password)
+        res = await client.get(
+            app.url_path_for("user:reset-password", url=reset_password.url)
+        )
+        assert res.status_code == 410
+
+    @pytest.mark.asyncio
+    async def test_forgot_password_then_change_and_login(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        user_payload = {"email": "support@akvo.org"}
+        user = (
+            session.query(User)
+            .filter(User.email == user_payload["email"])
+            .first()
+        )
+        assert user.invitation_id is None
+        res = await client.post(
+            app.url_path_for("user:forgot-password"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "email": "support@akvo.org",
+                "client_id": os.environ["CLIENT_ID"],
+                "client_secret": os.environ["CLIENT_SECRET"],
+            },
+        )
+        assert res.status_code == 201
+        reset_password = (
+            session.query(ResetPassword)
+            .filter(ResetPassword.user == user.id)
+            .first()
+        )
+        res = await client.post(
+            app.url_path_for("user:reset-password", url=reset_password.url),
+            data={"password": "test"},
+        )
+        assert res.status_code == 200
+        res = await client.get(
+            app.url_path_for("user:reset-password", url=reset_password.url)
+        )
+        assert res.status_code == 404
+        # test login with new password
+        res = await client.post(
+            app.url_path_for("user:login"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "username": user.email,
+                "password": "test",
+                "grant_type": "password",
+                "scopes": ["openid", "email"],
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+            },
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res["access_token"] is not None
+        assert res["user"]["email"] == user.email

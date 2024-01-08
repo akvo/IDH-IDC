@@ -322,6 +322,7 @@ class TestCaseRoute:
         # with admin user cred
         res = await client.put(
             app.url_path_for("case:update", case_id=1),
+            params={"updated": True},
             headers={"Authorization": f"Bearer {admin_account.token}"},
             json=payload,
         )
@@ -343,8 +344,10 @@ class TestCaseRoute:
             "segmentation": False,
             "living_income_study": "living_income",
             "multiple_commodities": False,
-            "logo": None,
-            "created_by": 1,
+            "created_by": "super_admin@akvo.org",
+            "created_at": res["created_at"],
+            "updated_by": "John Doe",
+            "updated_at": res["updated_at"],
             "case_commodities": [
                 {
                     "id": 1,
@@ -420,6 +423,7 @@ class TestCaseRoute:
             "multiple_commodities": False,
             "created_by": "super_admin@akvo.org",
             "created_at": res["created_at"],
+            "updated_by": "John Doe",
             "updated_at": res["updated_at"],
             "segments": [],
             "case_commodities": [

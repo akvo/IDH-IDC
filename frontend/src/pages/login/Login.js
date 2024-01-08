@@ -26,6 +26,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
+  const [isResetPassword, setIsResetPassword] = useState(false);
 
   const onFinish = (values) => {
     setLoading(true);
@@ -65,6 +66,31 @@ const Login = () => {
       });
   };
 
+  const handleForgotPassword = (values) => {
+    setLoading(true);
+    const { email } = values;
+    const payload = new FormData();
+    payload.append("email", email);
+    api
+      .post(`user/forgot-password`, payload)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content:
+            "Reset Password link has been sent to your email. Please use the link to reset your password.",
+        });
+      })
+      .catch(() => {
+        messageApi.open({
+          type: "error",
+          content: "Email not found",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <ContentLayout wrapperId="login">
       {contextHolder}
@@ -82,16 +108,18 @@ const Login = () => {
                 Income Driver <br />
                 <span style={{ color: "#47d985" }}>Calculator</span>
               </Typography.Title>
-              <Typography.Title level={3}>
-                Welcome to the income driver calculator version 2.0
-              </Typography.Title>
+              {!isResetPassword && (
+                <Typography.Title level={3}>
+                  Welcome to the income driver calculator version 2.0
+                </Typography.Title>
+              )}
             </div>
-            <h2>Sign In</h2>
+            <h2>{!isResetPassword ? "Sign In" : "Reset Password"}</h2>
             <Form
               name="form-login"
               className="form-login"
               layout="vertical"
-              onFinish={onFinish}
+              onFinish={!isResetPassword ? onFinish : handleForgotPassword}
               autoComplete="off"
             >
               <Form.Item
@@ -113,22 +141,24 @@ const Login = () => {
                   placeholder="Email"
                 />
               </Form.Item>
-              <Form.Item
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your password!",
-                  },
-                ]}
-              >
-                <Input.Password
-                  size="large"
-                  data-testid="input-password"
-                  placeholder="Password"
-                />
-              </Form.Item>
-              <Form.Item>
+              {!isResetPassword && (
+                <Form.Item
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your password!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    size="large"
+                    data-testid="input-password"
+                    placeholder="Password"
+                  />
+                </Form.Item>
+              )}
+              <Form.Item noStyle>
                 <Button
                   data-testid="button-login"
                   className="button-login"
@@ -138,14 +168,25 @@ const Login = () => {
                   block
                   loading={loading}
                 >
-                  Sign in
+                  {!isResetPassword ? "Sign In" : "Reset Password"}
                 </Button>
               </Form.Item>
               <Form.Item noStyle>
-                <p>
-                  Don&apos;t have an account?{" "}
-                  <Link to="/register">Register here.</Link>
-                </p>
+                <Row align="middle">
+                  <Col span={16} align="start" style={{ float: "left" }}>
+                    <p>
+                      Don&apos;t have an account?{" "}
+                      <Link to="/register">Register here.</Link>
+                    </p>
+                  </Col>
+                  <Col span={8} align="end" style={{ float: "right" }}>
+                    <Link onClick={() => setIsResetPassword(!isResetPassword)}>
+                      <p>
+                        {!isResetPassword ? "Forgot password" : "Back to Login"}
+                      </p>
+                    </Link>
+                  </Col>
+                </Row>
               </Form.Item>
             </Form>
           </Col>

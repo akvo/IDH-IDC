@@ -44,36 +44,80 @@ const DashboardScenarioModeling = ({
   }, [enableEditCase, scenarioData]);
 
   const commodityQuestions = useMemo(() => {
-    return commodityList.map((c) => {
-      const findQG = questionGroups.find(
-        (qg) => qg.commodity_id === c.commodity
-      );
-      // handle grouped diversified income question
-      if (c.commodity_type === "diversified") {
+    // modify this to handle secondary and tertiary commoditiy also grouped as diversified
+    // Focus
+    const focusQuestion = commodityList
+      .filter((c) => c.commodity_type === "focus")
+      .map((c) => {
+        const findQG = questionGroups.find(
+          (qg) => qg.commodity_id === c.commodity
+        );
+        // add case_commodity to questions
         return {
           ...c,
           ...findQG,
-          questions: [
-            {
-              ...findQG.questions[0],
-              id: "diversified",
-              default_value: findQG.questions
-                .map((x) => `#${x.id}`)
-                .join(" + "),
-              parent: null,
-              question_type: "diversified",
-              text: "Diversified Income",
-              description: "Custom question",
-              childrens: findQG.questions,
-            },
-          ],
+          questions: findQG.questions.map((q) => ({
+            ...q,
+            case_commodity: c.case_commodity,
+          })),
         };
-      }
-      return {
-        ...c,
-        ...findQG,
-      };
-    });
+      });
+    // Group secondary & tertiary into diversified
+    const additionalDiversifed = commodityList
+      .filter(
+        (c) =>
+          c.commodity_type !== "focus" && c.commodity_type !== "diversified"
+      )
+      .flatMap((c) => {
+        const findQG = questionGroups.find(
+          (qg) => qg.commodity_id === c.commodity
+        );
+        return {
+          ...c,
+          ...findQG,
+          questions: findQG.questions.map((q) => ({
+            ...q,
+            case_commodity: c.case_commodity,
+          })),
+        };
+      });
+    // Diversified
+    const diversified = commodityList.find(
+      (c) => c.commodity_type === "diversified"
+    );
+    const findDiversifiedQG = questionGroups.find(
+      (qg) => qg.commodity_id === diversified.commodity
+    );
+    const groupedDiversifiedQuestion = [
+      ...additionalDiversifed.flatMap((a) => a.questions),
+      ...findDiversifiedQG.questions.map((q) => ({
+        ...q,
+        case_commodity: diversified.case_commodity,
+      })),
+    ];
+    const diversifiedQuestion = {
+      ...diversified,
+      ...findDiversifiedQG,
+      case_commodity: [
+        diversified.case_commodity,
+        ...additionalDiversifed.map((a) => a.case_commodity),
+      ]?.join("_"),
+      questions: [
+        {
+          ...findDiversifiedQG.questions[0],
+          id: "diversified",
+          default_value: groupedDiversifiedQuestion
+            .map((x) => `#${x.id}`)
+            .join(" + "),
+          parent: null,
+          question_type: "diversified",
+          text: "Diversified Income",
+          description: "Custom question",
+          childrens: groupedDiversifiedQuestion,
+        },
+      ],
+    };
+    return [...focusQuestion, diversifiedQuestion];
   }, [commodityList, questionGroups]);
 
   const renameScenario = (index, newName, newDescription) => {
@@ -149,6 +193,8 @@ const DashboardScenarioModeling = ({
         <Tabs
           onChange={onChangeTab}
           activeKey={activeKey}
+          type="card"
+          className="scenario-tabs-container"
           items={scenarioDataWithAddButton.map((scenarioItem, index) => ({
             ...scenarioItem,
             label: scenarioItem.name,

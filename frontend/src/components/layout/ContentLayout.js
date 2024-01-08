@@ -24,6 +24,7 @@ const ContentLayout = ({
   breadcrumbItems = [],
   title = null,
   subTitle = null,
+  breadcrumbRightContent = null,
 }) => {
   const navigate = useNavigate();
   const hasBreadcrumb = breadcrumbItems.length;
@@ -53,21 +54,28 @@ const ContentLayout = ({
       <Affix offsetTop={80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
           {hasBreadcrumb ? (
-            <Breadcrumb
-              separator={<RightOutlined />}
-              items={breadcrumbItems.map((x, bi) => ({
-                key: bi,
-                title: (
-                  <Link to={x.href}>
-                    {x.title.toLowerCase() === "home" ? (
-                      <HomeOutlined style={{ fontSize: "16px" }} />
-                    ) : (
-                      x.title
-                    )}
-                  </Link>
-                ),
-              }))}
-            />
+            <div>
+              <Breadcrumb
+                separator={<RightOutlined />}
+                items={breadcrumbItems.map((x, bi) => ({
+                  key: bi,
+                  title: (
+                    <Link to={x.href}>
+                      {x.title.toLowerCase() === "home" ? (
+                        <HomeOutlined style={{ fontSize: "16px" }} />
+                      ) : (
+                        x.title
+                      )}
+                    </Link>
+                  ),
+                }))}
+              />
+              {breadcrumbRightContent && (
+                <div className="breadcrumb-right-content">
+                  {breadcrumbRightContent}
+                </div>
+              )}
+            </div>
           ) : (
             ""
           )}

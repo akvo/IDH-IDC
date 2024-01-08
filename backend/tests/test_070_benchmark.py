@@ -67,7 +67,7 @@ class TestBenchmarkRoute:
             "country": 1,
             "region": 1,
             "household_size": 4.0,
-            "year": 2021,
+            "year": 2020,
             "value": {"lcu": 1200.5, "usd": 2200.5, "eur": 3200.5},
             "case_year_cpi": 6000.0,
             "last_year_cpi": 7000.0,

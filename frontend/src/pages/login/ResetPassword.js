@@ -36,7 +36,7 @@ const ResetPassword = () => {
   const apiUrl = useMemo(() => {
     let url = "user/";
     url += isInvitation ? "invitation" : "reset-password";
-    if (!isEmpty(userDetail)) {
+    if (!isEmpty(userDetail) && isInvitation) {
       url += `/${userDetail.invitation_id}`;
     } else {
       url += `/${tokenId}`;
@@ -73,7 +73,7 @@ const ResetPassword = () => {
         messageApi.open({
           type: "success",
           content:
-            "Password already set. Now you can login with your password.",
+            "Password already set. Now you can login with your new password.",
         });
         setTimeout(() => {
           navigate("/login");

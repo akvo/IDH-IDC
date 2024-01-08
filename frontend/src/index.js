@@ -21,6 +21,9 @@ root.render(
             linkColor: "#26605F",
             separatorColor: "#26605F",
           },
+          Tabs: {
+            cardBg: "#F0F0F0",
+          },
         },
       }}
     >

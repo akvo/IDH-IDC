@@ -257,6 +257,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
             data={chartData}
             affix={true}
             extra={{ axisTitle: axisTitle }}
+            grid={{ right: 215 }}
           />
         </Col>
       </Row>

@@ -41,6 +41,12 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   return { ...acc, ...commodities };
 }, {});
 
+const options = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+
 const Case = () => {
   const { caseId } = useParams();
   const navigate = useNavigate();
@@ -58,6 +64,7 @@ const Case = () => {
   const [segmentFormValues, setSegmentFormValues] = useState([
     defaultSegmentFormValues,
   ]);
+  const showCaseTitle = false; // don't show title for now
 
   const {
     role: userRole,
@@ -377,7 +384,7 @@ const Case = () => {
               answers: it.answers,
             })
           );
-          setSegmentFormValues(segmentFormValuesTmp);
+          setSegmentFormValues(orderBy(segmentFormValuesTmp, ["id", "key"]));
           // fetch questions
           api
             .get(`/questions/${caseId}`)
@@ -423,6 +430,18 @@ const Case = () => {
         { title: "Cases", href: "/cases" },
         { title: caseTitle },
       ]}
+      breadcrumbRightContent={
+        currentCase.updated_by
+          ? `Last update by ${currentCase?.updated_by} ${
+              currentCase?.updated_at
+                ? `on ${new Date(currentCase?.updated_at).toLocaleString(
+                    "en-US",
+                    options
+                  )}`
+                : ""
+            }`
+          : null
+      }
       wrapperId="case"
     >
       {loading ? (
@@ -442,15 +461,17 @@ const Case = () => {
             </Col>
           )}
           {/* EOL Banner for Viewer */}
-          <Col span={24}>
-            <Card className="case-title-wrapper" id="case-title">
-              <h2>{caseTitle}</h2>
-              {caseDescription ? <p>{caseDescription}</p> : null}
-              <div className="case-title-icon">
-                <CaseTitleIcon height={110} />
-              </div>
-            </Card>
-          </Col>
+          {showCaseTitle && (
+            <Col span={24}>
+              <Card className="case-title-wrapper" id="case-title">
+                <h2>{caseTitle}</h2>
+                {caseDescription ? <p>{caseDescription}</p> : null}
+                <div className="case-title-icon">
+                  <CaseTitleIcon height={110} />
+                </div>
+              </Card>
+            </Col>
+          )}
           <Col span={24}>
             {page === "Case Profile" && (
               <CaseProfile

@@ -1,7 +1,15 @@
 import enum
 import json
 from db.connection import Base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, SmallInteger, Enum
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    DateTime,
+    ForeignKey,
+    SmallInteger,
+    Enum,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from typing import Optional, List
@@ -101,7 +109,7 @@ class UserInvitation(TypedDict):
     fullname: str
     email: str
     role: UserRole
-    invitation_id: str
+    invitation_id: Optional[str]
 
 
 class UserSearchDict(TypedDict):
@@ -128,7 +136,10 @@ class User(Base):
     invitation_id = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(
-        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     user_organisation = relationship(
@@ -197,7 +208,9 @@ class User(Base):
         business_unit_detail = [
             bu.to_business_unit_detail for bu in self.user_business_units
         ]
-        business_unit_detail = business_unit_detail if business_unit_detail else None
+        business_unit_detail = (
+            business_unit_detail if business_unit_detail else None
+        )
 
         case_access = []
         if self.user_case_access:

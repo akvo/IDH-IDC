@@ -332,7 +332,7 @@ const IncomeDriverTarget = ({
         <Col span={8}>
           <p>Living Income Target</p>
           <h2 className="income-target-value">
-            {thousandFormatter(incomeTarget.toFixed(2))} {currentCase.currency}
+            {thousandFormatter(incomeTarget.toFixed())} {currentCase.currency}
           </h2>
         </Col>
         {/* <Col span={16}>

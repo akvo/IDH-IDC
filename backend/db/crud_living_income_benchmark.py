@@ -63,7 +63,6 @@ def get_by_country_region_year(
             ) / case_year_cpi_value
             #
             lib = lib.serialize
-            lib["year"] = year
             lib["case_year_cpi"] = case_year_cpi_value
             lib["last_year_cpi"] = last_year_cpi_value
             lib["cpi_factor"] = cpi_factor

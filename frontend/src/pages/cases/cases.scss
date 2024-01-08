@@ -1,6 +1,10 @@
 @import "../../variables.scss";
 
 #case {
+  h2 {
+    font-family: "TabletGothicBold" !important;
+  }
+
   .case-content {
     margin-top: 2rem;
 
@@ -245,11 +249,22 @@
     .ant-tabs-tab-btn {
       font-family: "TabletGothicBold";
       font-size: 1rem;
-      background: #fff;
+      // background: #fff;
       text-shadow: none;
     }
   }
 
+  .ant-tabs-nav .ant-tabs-tab-active {
+    border-top: 1px solid #cfcfcf;
+    border-left: 1px solid #cfcfcf;
+    border-right: 1px solid #cfcfcf;
+  }
+
+  .pending-dot {
+    .ant-steps-item-icon {
+      background: $yellow-color;
+    }
+  }
   .anticon {
     &.finished-dot {
       // position: absolute;
@@ -283,6 +298,11 @@
     }
     .ant-tabs-tab-btn {
       background: none !important;
+    }
+    .ant-tabs-nav .ant-tabs-tab-active {
+      border-top: 1px solid transparent;
+      border-left: 1px solid transparent;
+      border-right: 1px solid transparent;
     }
   }
 
@@ -403,9 +423,31 @@
   .ant-steps-item-title {
     cursor: pointer;
   }
+  .ant-steps-item-title:after {
+    background-color: #053fff !important;
+    border: 1px solid #053fff !important;
+  }
 
   #scenario-modeling {
     font-family: "TabletGothic";
+
+    .scenario-tabs-container {
+      .ant-tabs-nav .ant-tabs-tab {
+        border: 1px solid #cfcfcf;
+      }
+      .ant-tabs-nav .ant-tabs-tab-active {
+        border-bottom: none;
+      }
+    }
+
+    // .scenario-segment-tabs-container {
+    //   .ant-tabs-nav .ant-tabs-tab {
+    //     border-top: none;
+    //     border-left: none;
+    //     border-right: none;
+    //   }
+    // }
+
     .scenario-field-item {
       margin-bottom: 0px;
     }
