@@ -45,8 +45,8 @@ const DataFields = ({
   totalIncomeQuestion,
   commodityList,
   renameItem,
-  formValues,
-  setFormValues,
+  segmentFormValues,
+  setSegmentFormValues,
   segmentItem,
   handleSave,
   isSaving,
@@ -103,7 +103,9 @@ const DataFields = ({
   }, [currentCase, selectedDriver]);
 
   const totalIncome = useMemo(() => {
-    const currentFormValue = formValues.find((x) => x.key === segmentItem.key);
+    const currentFormValue = segmentFormValues.find(
+      (x) => x.key === segmentItem.key
+    );
     const current = totalIncomeQuestion
       .map((qs) => currentFormValue?.answers[`current-${qs}`])
       .filter((a) => a)
@@ -129,7 +131,7 @@ const DataFields = ({
           : 0,
       },
     };
-  }, [formValues, segmentItem, dashboardData, totalIncomeQuestion]);
+  }, [segmentFormValues, segmentItem, dashboardData, totalIncomeQuestion]);
 
   const benchmarkInfo = useMemo(() => {
     const findSegmentBenchmark =
@@ -164,7 +166,7 @@ const DataFields = ({
     }
     const res = segments.map((item) => {
       const answers =
-        formValues.find((fv) => fv.key === item.key)?.answers || {};
+        segmentFormValues.find((fv) => fv.key === item.key)?.answers || {};
       const current = totalIncomeQuestion
         .map((qs) => answers?.[`current-${qs}`] || 0)
         .filter((a) => a)
@@ -190,7 +192,7 @@ const DataFields = ({
       };
     });
     return res;
-  }, [totalIncomeQuestion, segments, formValues]);
+  }, [totalIncomeQuestion, segments, segmentFormValues]);
 
   const ButtonEdit = () => (
     <Button
@@ -305,8 +307,8 @@ const DataFields = ({
                     <IncomeDriverTarget
                       segment={segment}
                       currentCase={currentCase}
-                      formValues={formValues}
-                      setFormValues={setFormValues}
+                      segmentFormValues={segmentFormValues}
+                      setSegmentFormValues={setSegmentFormValues}
                       segmentItem={segmentItem}
                       totalIncome={totalIncome}
                       enableEditCase={enableEditCase}
@@ -414,8 +416,8 @@ const DataFields = ({
                         groupIndex={groupIndex}
                         commodity={commodityList[groupIndex]}
                         key={groupIndex}
-                        formValues={formValues}
-                        setFormValues={setFormValues}
+                        segmentFormValues={segmentFormValues}
+                        setSegmentFormValues={setSegmentFormValues}
                         segmentItem={segmentItem}
                         currentCaseId={currentCaseId}
                         totalDiversifiedIncome={totalIncome.diversified}

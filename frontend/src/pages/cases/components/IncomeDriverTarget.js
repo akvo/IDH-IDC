@@ -10,8 +10,8 @@ const formStyle = { width: "100%" };
 const IncomeDriverTarget = ({
   segment,
   currentCase,
-  formValues,
-  setFormValues,
+  segmentFormValues,
+  setSegmentFormValues,
   segmentItem,
   enableEditCase,
   // totalIncome,
@@ -40,7 +40,7 @@ const IncomeDriverTarget = ({
   };
 
   const updateFormValues = (value) => {
-    const updatedFv = formValues.map((fv) => {
+    const updatedFv = segmentFormValues.map((fv) => {
       if (fv.key === segment) {
         return {
           ...fv,
@@ -49,7 +49,7 @@ const IncomeDriverTarget = ({
       }
       return fv;
     });
-    setFormValues(updatedFv);
+    setSegmentFormValues(updatedFv);
   };
 
   // load initial target & hh size
