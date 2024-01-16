@@ -11,10 +11,10 @@ import {
   Divider,
   Table,
   Select,
+  Tooltip,
 } from "antd";
 import {
   DeleteTwoTone,
-  InfoCircleFilled,
   CheckCircleTwoTone,
   EditTwoTone,
   CloseCircleTwoTone,
@@ -25,6 +25,8 @@ import {
   CalendarOutlined,
   HomeOutlined,
   UserOutlined,
+  InfoCircleOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
 import { isEmpty, upperFirst } from "lodash";
 import {
@@ -36,6 +38,17 @@ import Chart from "../../../components/chart";
 import { SaveAsImageButton } from "../../../components/utils";
 import { api } from "../../../lib";
 import { driverOptions } from "../../explore-studies";
+
+const LIBTooltipText = (
+  <div>
+    Living income is the net annual income required for a household in a
+    particular place to afford a decent standard of living for all members of
+    that household. Elements of a decent standard of living include: food,
+    water, housing, education, healthcare, transport, clothing, and other
+    essential needs including provision for unexpected events. To find out more,
+    visit https://www.living-income.com/the-concept
+  </div>
+);
 
 const DataFields = ({
   segment,
@@ -135,26 +148,37 @@ const DataFields = ({
 
   const benchmarkInfo = useMemo(() => {
     const findSegmentBenchmark =
-      dashboardData.find((d) => d.key === segment)?.benchmark || null;
+      dashboardData.find((d) => d.key === segment)?.benchmark || {};
+    const { source, links, year, household_size, nr_adults } =
+      findSegmentBenchmark;
+    let nr_childs = "NA";
+    if (household_size && nr_adults) {
+      nr_childs = household_size - nr_adults;
+    }
     return {
       label: "Source",
-      value: findSegmentBenchmark ? findSegmentBenchmark.source : "NA",
-      link: findSegmentBenchmark?.links || null,
+      value: source || "NA",
+      link: links || null,
       childs: [
         {
           label: "Year of Study",
-          value: findSegmentBenchmark?.year || "NA",
+          value: year || "NA",
           icon: <CalendarOutlined />,
         },
         {
           label: "Household Size",
-          value: findSegmentBenchmark?.household_size || "NA",
+          value: household_size || "NA",
           icon: <HomeOutlined />,
         },
         {
           label: "Adults",
-          value: findSegmentBenchmark?.nr_adults || "NA",
+          value: nr_adults || "NA",
           icon: <UserOutlined />,
+        },
+        {
+          label: "Childrens",
+          value: nr_childs || "NA",
+          icon: <UsergroupAddOutlined />,
         },
       ],
     };
@@ -180,12 +204,12 @@ const DataFields = ({
         data: [
           {
             name: "Current Income",
-            value: current,
+            value: Math.round(current),
             color: "#03625f",
           },
           {
             name: "Feasible Income",
-            value: feasible,
+            value: Math.round(feasible),
             color: "#82b2b2",
           },
         ],
@@ -291,9 +315,9 @@ const DataFields = ({
                   title={
                     <h2 className="section-title">
                       Income Target
-                      <small>
-                        <InfoCircleFilled />
-                      </small>
+                      <div>
+                        <InfoCircleOutlined />
+                      </div>
                     </h2>
                   }
                   className="segment-child-wrapper"
@@ -321,9 +345,9 @@ const DataFields = ({
                   title={
                     <h2 className="section-title">
                       Income Drivers
-                      <small>
-                        <InfoCircleFilled />
-                      </small>
+                      <div>
+                        <InfoCircleOutlined />
+                      </div>
                     </h2>
                   }
                   className="segment-child-wrapper"
@@ -479,6 +503,11 @@ const DataFields = ({
             <Card
               title="Information about Living Income Benchmark"
               className="info-card-wrapper"
+              extra={
+                <Tooltip title={LIBTooltipText}>
+                  <InfoCircleOutlined style={{ color: "#fff" }} />
+                </Tooltip>
+              }
             >
               <div className="benchmark-info-title-wrapper">
                 <b>{benchmarkInfo?.label}</b> :{" "}
@@ -522,9 +551,6 @@ const DataFields = ({
               }
             >
               <Chart
-                // title="Calculated Household Income"
-                // span={10}
-                // affix={true}
                 wrapper={false}
                 type="COLUMN-BAR"
                 data={chartData}
@@ -538,7 +564,17 @@ const DataFields = ({
           </Col>
           <Col span={24}>
             <Card
-              title="Explore Studies"
+              title={
+                <Space>
+                  <div>Explore data from other studies</div>
+                  <Tooltip
+                    title="We have assessed data from secondary sources that you can use
+                  as a reference for the income drivers."
+                  >
+                    <InfoCircleOutlined />
+                  </Tooltip>
+                </Space>
+              }
               className="info-card-wrapper"
               extra={
                 <a
@@ -580,11 +616,19 @@ const DataFields = ({
                       key: "value",
                       title: "Value",
                       dataIndex: "value",
+                      render: (value) => value || "-",
                     },
                     {
                       key: "unit",
                       title: "Unit",
                       dataIndex: "unit",
+                      render: (value) => value || "-",
+                    },
+                    {
+                      key: "type",
+                      title: "Type",
+                      dataIndex: "type",
+                      render: (value) => value || "-",
                     },
                     {
                       key: "source",

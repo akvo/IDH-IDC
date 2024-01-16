@@ -95,7 +95,6 @@ def add_reference(
         notes=payload.notes,
         confidence_level=payload.confidence_level,
         range=payload.range,
-        type=payload.type,
         area=payload.area,
         volume=payload.volume,
         price=payload.price,
@@ -107,6 +106,11 @@ def add_reference(
         diversified_income_unit=payload.diversified_income_unit,
         price_unit=payload.price_unit,
         created_by=user.id if user else None,
+        type_area=payload.type_area,
+        type_volume=payload.type_volume,
+        type_price=payload.type_price,
+        type_cost_of_production=payload.type_cost_of_production,
+        type_diversified_income=payload.type_diversified_income,
     )
     session.add(data)
     session.commit()
@@ -140,7 +144,6 @@ def update_reference(
     data.notes = payload.notes
     data.confidence_level = payload.confidence_level
     data.range = payload.range
-    data.type = payload.type
     data.area = payload.area
     data.volume = payload.volume
     data.price = payload.price
@@ -151,6 +154,11 @@ def update_reference(
     data.cost_of_production_unit = payload.cost_of_production_unit
     data.diversified_income_unit = payload.diversified_income_unit
     data.price_unit = payload.price_unit
+    data.type_area = payload.type_area
+    data.type_volume = payload.type_volume
+    data.type_price = payload.type_price
+    data.type_cost_of_production = payload.type_cost_of_production
+    data.type_diversified_income = payload.type_diversified_income
 
     session.commit()
     session.flush()

@@ -13,7 +13,6 @@ import {
   Tooltip,
   Space,
 } from "antd";
-// import { uniqBy, isEmpty } from "lodash";
 import { api } from "../../lib";
 import { InputNumberThousandFormatter } from "../cases/components";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -30,27 +29,27 @@ const selectProps = {
 const confidenceLevelOptions = [
   {
     label: "High",
-    value: "high",
+    value: "High",
   },
-  { label: "Medium", value: "medium" },
-  { label: "Low", value: "low" },
-  { label: "Undefined", value: "undefined" },
+  { label: "Medium", value: "Medium" },
+  { label: "Low", value: "Low" },
+  { label: "Undefined", value: "Undefined" },
 ];
 
 const rangeOptions = [
-  { label: "Low value", value: "low value" },
-  { label: "Median value", value: "median value" },
+  { label: "Low value", value: "Low value" },
+  { label: "Median value", value: "Median value" },
   {
     label: "High value",
-    value: "high value",
+    value: "High value",
   },
 ];
 
 const typeOptions = [
-  { label: "Mean", value: "mean" },
-  { label: "Median", value: "median" },
-  { label: "Maximum", value: "maximum" },
-  { label: "Minimum", value: "minimum" },
+  { label: "Mean", value: "Mean" },
+  { label: "Median", value: "Median" },
+  { label: "Maximum", value: "Maximum" },
+  { label: "Minimum", value: "Minimum" },
 ];
 
 const sources = ["Farmfit", "Desk research", "IDH internal", "FAO", "Other"];
@@ -85,13 +84,6 @@ const ReferenceDataForm = ({
   const [loading, setLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  // const [selectedCountry, setSelectedCountry] = useState(null);
-  // const [areaUnitName, setAreaUnitName] = useState(null);
-  // const [volumeUnitName, setVolumeUnitName] = useState(null);
-  // const [currencyUnitName, setCurrencyUnitName] = useState(null);
-  // const [copUnitName, setCopUnitName] = useState(null);
-  // const [priceUnitName, setPriceUnitName] = useState(null);
-
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
     ct.commodities.map((c) => ({
       label: c.name,
@@ -101,26 +93,6 @@ const ReferenceDataForm = ({
   );
   const countryOptions = window?.master?.countries || [];
 
-  // const filteredCurrencyOptions = useMemo(() => {
-  //   const currencyOptions = window?.master?.currencies || [];
-  //   if (!selectedCountry) {
-  //     return uniqBy(currencyOptions, "value");
-  //   }
-  //   const countryCurrency = currencyOptions.find(
-  //     (co) => co.country === selectedCountry
-  //   );
-  //   // set default currency value
-  //   if (isEmpty(initValues)) {
-  //     form.setFieldsValue({ currency: countryCurrency?.value });
-  //   }
-  //   // TODO: Wrong format when store to db
-  //   let additonalCurrencies = currencyOptions.filter((co) =>
-  //     ["eur", "usd"].includes(co.value.toLowerCase())
-  //   );
-  //   additonalCurrencies = uniqBy(additonalCurrencies, "value");
-  //   return [countryCurrency, ...additonalCurrencies];
-  // }, [selectedCountry, form, initValues]);
-
   useEffect(() => {
     setInitValues({});
     form.resetFields();
@@ -129,26 +101,6 @@ const ReferenceDataForm = ({
       api
         .get(`reference_data/${referenceDataId}`)
         .then((res) => {
-          // const {
-          //   country,
-          //   area_size_unit,
-          //   currency,
-          //   volume_measurement_unit,
-          //   cost_of_production_unit,
-          //   price_unit,
-          // } = res.data;
-          // // handle Volume unit
-          // if (area_size_unit && volume_measurement_unit) {
-          //   setVolumeUnitName(`${volume_measurement_unit} / ${area_size_unit}`);
-          // } else {
-          //   setVolumeUnitName(null);
-          // }
-          // // EOL handle Volume unit
-          // setSelectedCountry(country || null);
-          // setAreaUnitName(area_size_unit || null);
-          // setCopUnitName(cost_of_production_unit || null);
-          // setCurrencyUnitName(currency || null);
-          // setPriceUnitName(price_unit || null);
           setInitValues(res.data);
         })
         .finally(() => {
@@ -157,65 +109,9 @@ const ReferenceDataForm = ({
     }
   }, [referenceDataId, form]);
 
-  // const onChange = (_, allValues) => {
-  //   const {
-  //     commodity,
-  //     currency,
-  //     area_size_unit,
-  //     volume_measurement_unit,
-  //     country,
-  //   } = allValues;
-  //   setSelectedCountry(country);
-  //   setCurrencyUnitName(currency);
-  //   setAreaUnitName(area_size_unit);
-  //   // handle CoP unit
-  //   const findCommodityCategory = commodityOptions.find(
-  //     (co) => co.value === commodity
-  //   )?.category;
-  //   if (findCommodityCategory?.toLowerCase() === "crop") {
-  //     if (currency && area_size_unit) {
-  //       setCopUnitName(`${currency} / ${area_size_unit}`);
-  //     } else {
-  //       setCopUnitName(null);
-  //     }
-  //   }
-  //   if (
-  //     ["aquaculture", "livestock"].includes(
-  //       findCommodityCategory?.toLowerCase()
-  //     )
-  //   ) {
-  //     if (currency && volume_measurement_unit) {
-  //       setCopUnitName(`${currency} / ${volume_measurement_unit}`);
-  //     } else {
-  //       setCopUnitName(null);
-  //     }
-  //   }
-  //   // EOL handle CoP unit
-  //   // handle Volume unit
-  //   if (area_size_unit && volume_measurement_unit) {
-  //     setVolumeUnitName(`${volume_measurement_unit} / ${area_size_unit}`);
-  //   } else {
-  //     setVolumeUnitName(null);
-  //   }
-  //   // EOL handle Volume unit
-  //   // handle Price unit
-  //   if (currency && volume_measurement_unit) {
-  //     setPriceUnitName(`${currency} / ${volume_measurement_unit}`);
-  //   } else {
-  //     setPriceUnitName(null);
-  //   }
-  //   // EOL handle Volume unit
-  // };
-
   const clearForm = () => {
     form.resetFields();
     setInitValues({});
-    // setSelectedCountry(null);
-    // setAreaUnitName(null);
-    // setVolumeUnitName(null);
-    // setCurrencyUnitName(null);
-    // setCopUnitName(null);
-    // setPriceUnitName(null);
   };
 
   const onFinish = (values) => {
@@ -223,10 +119,6 @@ const ReferenceDataForm = ({
     const payload = {
       ...values,
       currency: "",
-      // area_size_unit: areaUnitName,
-      // cost_of_production_unit: copUnitName,
-      // diversified_income_unit: values?.currency,
-      // price_unit: priceUnitName,
     };
     onSave({
       payload: payload,
@@ -266,7 +158,6 @@ const ReferenceDataForm = ({
           layout="vertical"
           initialValues={initValues}
           onFinish={onFinish}
-          // onValuesChange={onChange}
           className="reference-form-container"
         >
           <Row gutter={[16, 16]}>
@@ -410,7 +301,7 @@ const ReferenceDataForm = ({
             <Col span={24}>
               <Card title="Details about the data">
                 <Row gutter={[16, 16]}>
-                  <Col span={8}>
+                  <Col span={12}>
                     <Form.Item
                       label={
                         <LabelWithTooltip
@@ -426,7 +317,7 @@ const ReferenceDataForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={8}>
+                  <Col span={12}>
                     <Form.Item
                       label={
                         <LabelWithTooltip
@@ -439,35 +330,19 @@ const ReferenceDataForm = ({
                       <Select {...selectProps} options={rangeOptions} />
                     </Form.Item>
                   </Col>
-                  <Col span={8}>
+                  {/* <Col span={8}>
                     <Form.Item label="Type" name="type">
                       <Select {...selectProps} options={typeOptions} />
                     </Form.Item>
-                  </Col>
+                  </Col> */}
                 </Row>
-
-                {/* <Row gutter={[16, 16]}>
-                  <Col span={12}>
-                    <Form.Item label="Area Unit" name="area_size_unit">
-                      <Select {...selectProps} options={areaUnitOptions} />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      label="Weight Measurement Unit"
-                      name="volume_measurement_unit"
-                    >
-                      <Select {...selectProps} options={volumeUnitOptions} />
-                    </Form.Item>
-                  </Col>
-                </Row> */}
               </Card>
             </Col>
 
             <Col span={24}>
               <Card title="Drivers Value">
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item label="Area" name="area">
                       <InputNumber
                         keyboard={false}
@@ -475,7 +350,7 @@ const ReferenceDataForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Measurement Unit for Area"
                       name="area_size_unit"
@@ -483,10 +358,15 @@ const ReferenceDataForm = ({
                       <Input />
                     </Form.Item>
                   </Col>
+                  <Col span={8}>
+                    <Form.Item label="Type for Area" name="type_area">
+                      <Select {...selectProps} options={typeOptions} />
+                    </Form.Item>
+                  </Col>
                 </Row>
 
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item label="Volume" name="volume">
                       <InputNumber
                         keyboard={false}
@@ -494,7 +374,7 @@ const ReferenceDataForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Measurement Unit for Volume"
                       name="volume_measurement_unit"
@@ -502,10 +382,15 @@ const ReferenceDataForm = ({
                       <Input />
                     </Form.Item>
                   </Col>
+                  <Col span={8}>
+                    <Form.Item label="Type for Volume" name="type_volume">
+                      <Select {...selectProps} options={typeOptions} />
+                    </Form.Item>
+                  </Col>
                 </Row>
 
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item label="Price" name="price">
                       <InputNumber
                         keyboard={false}
@@ -513,7 +398,7 @@ const ReferenceDataForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Measurement Unit for Price"
                       name="price_unit"
@@ -521,10 +406,15 @@ const ReferenceDataForm = ({
                       <Input />
                     </Form.Item>
                   </Col>
+                  <Col span={8}>
+                    <Form.Item label="Type for Price" name="type_price">
+                      <Select {...selectProps} options={typeOptions} />
+                    </Form.Item>
+                  </Col>
                 </Row>
 
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Cost of Production"
                       name="cost_of_production"
@@ -535,7 +425,7 @@ const ReferenceDataForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Measurement Unit for Cost of Production"
                       name="cost_of_production_unit"
@@ -543,10 +433,18 @@ const ReferenceDataForm = ({
                       <Input />
                     </Form.Item>
                   </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      label="Type for Cost of Production"
+                      name="type_cost_of_production"
+                    >
+                      <Select {...selectProps} options={typeOptions} />
+                    </Form.Item>
+                  </Col>
                 </Row>
 
                 <Row gutter={[16, 16]}>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Diversified Income"
                       name="diversified_income"
@@ -557,12 +455,20 @@ const ReferenceDataForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={8}>
                     <Form.Item
                       label="Measurement Unit for Diversified Income"
                       name="diversified_income_unit"
                     >
                       <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      label="Type for Diversified Income"
+                      name="type_diversified_income"
+                    >
+                      <Select {...selectProps} options={typeOptions} />
                     </Form.Item>
                   </Col>
                 </Row>

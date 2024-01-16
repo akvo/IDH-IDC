@@ -165,7 +165,7 @@
               padding: 10px 24px;
               position: relative;
               width: calc(100% + 48px);
-              small {
+              div {
                 position: absolute;
                 right: 24px;
                 top: calc(50% - 9px);
@@ -309,6 +309,10 @@
   #sensitivity-analysis {
     .ant-form-item {
       margin-bottom: 0px;
+    }
+
+    .anticon {
+      color: #fff;
     }
 
     .settings-wrapper {

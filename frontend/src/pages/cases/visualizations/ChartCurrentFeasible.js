@@ -9,29 +9,33 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
         ...c,
         {
           name: `Current\n${d.name}`,
-          target: d.total_current_income,
+          target: Math.round(d.total_current_income),
           stack: [
             {
               name: "Revenue Focus Commodity",
               title: "Revenue Focus Commodity",
-              value: d.total_current_revenue_focus_commodity,
-              total: d.total_current_revenue_focus_commodity,
+              value: Math.round(d.total_current_revenue_focus_commodity),
+              total: Math.round(d.total_current_revenue_focus_commodity),
               color: "#03625f",
               order: 1,
             },
             {
               name: "Diversified Income",
               title: "Diversified Income",
-              value: d.total_current_diversified_income,
-              total: d.total_current_diversified_income,
+              value: Math.round(d.total_current_diversified_income),
+              total: Math.round(d.total_current_diversified_income),
               color: "#49d985",
               order: 2,
             },
             {
               name: "Focus Commodity Costs of Production",
               title: "Focus Commodity Costs of Production",
-              value: d.total_current_focus_commodity_cost_of_production,
-              total: d.total_current_focus_commodity_cost_of_production,
+              value: Math.round(
+                d.total_current_focus_commodity_cost_of_production
+              ),
+              total: Math.round(
+                d.total_current_focus_commodity_cost_of_production
+              ),
               color: "#ff6d01",
               order: 3,
             },
@@ -39,29 +43,33 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
         },
         {
           name: `Feasible\n${d.name}`,
-          target: d.total_feasible_income,
+          target: Math.round(d.total_feasible_income),
           stack: [
             {
               name: "Revenue Focus Commodity",
               title: "Revenue Focus Commodity",
-              value: d.total_feasible_revenue_focus_commodity,
-              total: d.total_feasible_revenue_focus_commodity,
+              value: Math.round(d.total_feasible_revenue_focus_commodity),
+              total: Math.round(d.total_feasible_revenue_focus_commodity),
               color: "#03625f",
               order: 1,
             },
             {
               name: "Diversified Income",
               title: "Diversified Income",
-              value: d.total_feasible_diversified_income,
-              total: d.total_feasible_diversified_income,
+              value: Math.round(d.total_feasible_diversified_income),
+              total: Math.round(d.total_feasible_diversified_income),
               color: "#49d985",
               order: 2,
             },
             {
               name: "Focus Commodity Costs of Production",
               title: "Focus Commodity Costs of Production",
-              value: d.total_feasible_focus_commodity_cost_of_production,
-              total: d.total_feasible_focus_commodity_cost_of_production,
+              value: Math.round(
+                d.total_feasible_focus_commodity_cost_of_production
+              ),
+              total: Math.round(
+                d.total_feasible_focus_commodity_cost_of_production
+              ),
               color: "#ff6d01",
               order: 3,
             },
@@ -81,7 +89,7 @@ const ChartCurrentFeasible = ({ dashboardData = [], currentCase }) => {
         color: "#000",
         data: chartData.map((cd) => ({
           name: "Total Household Income",
-          value: cd?.target ? cd.target.toFixed(2) : 0,
+          value: cd?.target ? Math.round(cd.target) : 0,
         })),
       },
     ];

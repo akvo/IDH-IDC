@@ -14,7 +14,7 @@ describe("Landing page", () => {
     );
 
     expect(wrapper.getByTestId("logo-image")).toBeInTheDocument();
-    expect(wrapper.getByText("About IDC")).toBeInTheDocument();
+    // expect(wrapper.getByText("About IDC")).toBeInTheDocument();
     expect(wrapper.getByText("Sign in")).toBeInTheDocument();
   });
 

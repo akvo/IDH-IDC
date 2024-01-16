@@ -15,7 +15,7 @@ const ChartScenarioModeling = ({
         targetData={targetChartData}
         loading={!data.length}
         extra={{ axisTitle: { y: `Income ${currencyUnitName}` } }}
-        grid={{ right: 330 }}
+        grid={{ right: 161 }}
       />
     </div>
   );

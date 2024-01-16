@@ -1,5 +1,15 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { Row, Col, Card, Select, InputNumber, Table, Form, Space } from "antd";
+import {
+  Row,
+  Col,
+  Card,
+  Select,
+  InputNumber,
+  Table,
+  Form,
+  Space,
+  Tooltip,
+} from "antd";
 import { groupBy, map, isEmpty, uniq } from "lodash";
 import {
   ChartBinningHeatmap,
@@ -8,6 +18,7 @@ import {
 import { InputNumberThousandFormatter } from ".";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { SaveAsImageButton } from "../../../components/utils";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 const columns = [
   {
@@ -21,13 +32,13 @@ const columns = [
     ),
   },
   {
-    title: "Current",
+    title: "Current values",
     dataIndex: "current",
     key: "current",
     render: (value) => thousandFormatter(value),
   },
   {
-    title: "Feasible",
+    title: "Feasible values",
     dataIndex: "feasible",
     key: "feasible",
     render: (value) => thousandFormatter(value),
@@ -38,16 +49,17 @@ const settingsForAnalysisContent = [
   {
     title: "Select segment",
     description:
-      "Select segment for which you want to perform the sensitivity analysis.",
+      "Select the segment for which you want to perform the sensitivity analysis.",
   },
   {
-    title: "The drivers",
+    title: "Select the drivers",
     description:
       "Select three drivers you want to model. The other two drivers remain at their current level.",
   },
   {
-    title: "Overview",
-    description: "Use the driver overview on the right as reference.",
+    title: "Explore results",
+    description:
+      "Use the different visuals to understand the dynamics of changing the 3 income drivers.",
   },
 ];
 
@@ -116,6 +128,11 @@ const BinningForm = ({
             </b>
           }
           className="info-card-wrapper"
+          extra={
+            <Tooltip title="The binning driver can take on three specific values called 'bins.' We create a separate heatmap for each bin below allowing us to compare the results. Likewise, the lines in the line graph represent the 3 bins.">
+              <InfoCircleOutlined />
+            </Tooltip>
+          }
         >
           <Form.Item name={`${segment.id}_binning-driver-name`}>
             <Select
@@ -174,6 +191,11 @@ const BinningForm = ({
             </b>
           }
           className="info-card-wrapper"
+          extra={
+            <Tooltip title="This driver will be reflected on the x-axis of the line chart, and in the columns of the heatmaps. You need to set a minimum and maximum value.">
+              <InfoCircleOutlined />
+            </Tooltip>
+          }
         >
           <Form.Item name={`${segment.id}_x-axis-driver`}>
             <Select
@@ -230,6 +252,11 @@ const BinningForm = ({
             </b>
           }
           className="info-card-wrapper"
+          extra={
+            <Tooltip title="This driver will be reflected on the y-axis of the line chart, and in the rows of the heatmaps. You need to set a minimum and maximum value.">
+              <InfoCircleOutlined />
+            </Tooltip>
+          }
         >
           <Form.Item name={`${segment.id}_y-axis-driver`}>
             <Select
@@ -340,21 +367,21 @@ const DashboardSensitivityAnalysis = ({
       {
         key: data.length + 11,
         name: "Total Focus Income",
-        current: segmentData.total_current_focus_income?.toFixed(2) || 0,
-        feasible: segmentData.total_feasible_focus_income?.toFixed(2) || 0,
+        current: segmentData.total_current_focus_income?.toFixed() || 0,
+        feasible: segmentData.total_feasible_focus_income?.toFixed() || 0,
         unitName: currencyUnit,
       },
       {
         key: data.length + 12,
         name: "Total Income",
-        current: segmentData.total_current_income?.toFixed(2) || 0,
-        feasible: segmentData.total_feasible_income?.toFixed(2) || 0,
+        current: segmentData.total_current_income?.toFixed() || 0,
+        feasible: segmentData.total_feasible_income?.toFixed() || 0,
         unitName: currencyUnit,
       },
       {
         key: data.length + 13,
         name: "Income Target",
-        current: segmentData.target?.toFixed(2) || 0,
+        current: segmentData.target?.toFixed() || 0,
         unitName: currencyUnit,
         render: (i) => {
           <div>test {i}</div>;
@@ -464,12 +491,14 @@ const DashboardSensitivityAnalysis = ({
       <Col span={24} className="income-driver-dashboard">
         <Row gutter={[24, 24]} align="middle">
           <Col span={10} className="settings-wrapper">
-            <h2>Settings for analysis</h2>
+            <h2>Perform a sensitivity analysis</h2>
             <p>
-              This graph shows you how the current and feasible income levels
-              relate to the income target. Each element represents the monetary
-              contribution resulting from these changes. The final bar showcases
-              the achievable income when all drivers are set to feasible values.
+              On this page, you can explore how different combinations of income
+              drivers lead to varying income levels. Whether it&apos;s
+              increasing area, applying pricing strategies, or diversifying
+              income sources, this page empowers you to investigate various
+              scenarios and understand the paths towards improving farmer
+              household income.
             </p>
             <Space direction="vertical" className="settings-info-wrapper">
               {settingsForAnalysisContent.map((it, i) => (

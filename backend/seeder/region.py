@@ -13,20 +13,27 @@ sys.path.append(BASE_DIR)
 
 
 def seeder_region(session: Session):
-    ## regions
-    truncatedb(session=session, table="region")
+    # region
+    # truncatedb(session=session, table="region")
     regions = pd.read_csv(MASTER_DIR + "regions.csv")
     regions = regions.rename(columns={"region": "name"})
     regions = regions.drop(columns=["country_id", "country"])
     for index, row in regions.iterrows():
-        region = Region(id=row["id"], name=row["name"])
-        session.add(region)
+        # find prev region
+        region = session.query(Region).filter(Region.id == row["id"]).first()
+        if region:
+            # update
+            region.name = row["name"]
+        else:
+            # create
+            region = Region(id=row["id"], name=row["name"])
+            session.add(region)
         session.commit()
         session.flush()
         session.refresh(region)
     print("[DATABASE UPDATED]: Region")
 
-    ## country region
+    # country region
     # Filter rows where the list does not contain any string values
     truncatedb(session=session, table="country_region")
     regions = pd.read_csv(MASTER_DIR + "regions.csv")

@@ -70,7 +70,7 @@ const getOptions = ({
           diversifiedValue = parseFloat(h);
         }
         // EOL calculate diversified value
-        return [h, d, (newTotalValue + diversifiedValue).toFixed(2)];
+        return [h, d, (newTotalValue + diversifiedValue).toFixed()];
       });
     })
     .flatMap((x) => x);

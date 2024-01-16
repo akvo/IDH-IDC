@@ -67,7 +67,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         </Col>
         <Col span={20} align="end" testid="nav-container">
           <Space size="large" className="navigation-container">
-            <Link to="/about">About IDC</Link>
+            {/* <Link to={isLoggedIn ? "/welcome" : "/"}>About IDC</Link> */}
             {isLoggedIn
               ? menus
                   .filter((x) => x.role.includes(userRole))

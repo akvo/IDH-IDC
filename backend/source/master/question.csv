@@ -36,3 +36,5 @@ id,parent,text,description,unit,default_value,question_type
 35,,Income from livestock,"",currency,,diversified
 36,,Income from off-farm activities,"",currency,,diversified
 37,,Investment and cash transfer,"",currency,,diversified
+38,,Other net on-farm income,"",currency,,diversified
+39,,Other diversified income,"",currency,,diversified

@@ -69,7 +69,9 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
             a.question.question_type !== "diversified"
         );
         const newTotalValue =
-          incomeQuestion && incomeQuestion?.value ? incomeQuestion.value : 0;
+          incomeQuestion && incomeQuestion?.value
+            ? Math.round(incomeQuestion.value)
+            : 0;
         // add newTotalValue to temp variable for diversified value calculation
         if (x === "current" && !cm.commodityFocus) {
           currentCommodityValuesExceptFocus.push(newTotalValue);
@@ -85,7 +87,7 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
               a.name === x &&
               a.questionId === q.id
           );
-          const value = answer && answer.value ? answer.value : 0;
+          const value = answer && answer.value ? Math.round(answer.value) : 0;
           return {
             name: q.text,
             title: q.text,
@@ -137,6 +139,7 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
           currentSegmentData.total_feasible_diversified_income -
           sum(feasibleCommodityValuesExceptFocus);
       }
+      newValue = Math.round(newValue);
       const stack = diversifiedQUestions.map((q, qi) => {
         const answer = currentSegmentData.answers.find(
           (a) =>
@@ -144,7 +147,7 @@ const ChartIncomeLevelPerCommodities = ({ dashboardData, currentCase }) => {
             a.name === x &&
             a.questionId === q.id
         );
-        const value = answer && answer.value ? answer.value : 0;
+        const value = answer && answer.value ? Math.round(answer.value) : 0;
         return {
           name: q.text,
           title: q.text,

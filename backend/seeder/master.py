@@ -1,3 +1,6 @@
+# NOTE !!!
+# THIS WILL DEPRECATED
+
 import os
 import sys
 import pandas as pd
@@ -12,7 +15,6 @@ MASTER_DIR = BASE_DIR + "/source/master/"
 sys.path.append(BASE_DIR)
 
 
-# THIS WILL DEPRECATED
 def seeder_master(session: Session, engine: create_engine):
     ## Country and Currency
     truncatedb(session=session, table="country")

@@ -51,10 +51,10 @@ const referenceDataExpand = [
     key: "region",
     label: "Region",
   },
-  {
-    key: "currency",
-    label: "Currency",
-  },
+  // {
+  //   key: "currency",
+  //   label: "Currency",
+  // },
   {
     key: "year",
     label: "Year",
@@ -80,33 +80,34 @@ const referenceDataExpand = [
     label: "Range",
   },
   {
-    key: "type",
-    label: "Type",
-  },
-  {
     key: "area",
     label: "Area",
     unit: "area_size_unit",
+    type: "type_area",
   },
   {
     key: "volume",
     label: "Volume",
     unit: "volume_measurement_unit",
+    type: "type_volume",
   },
   {
     key: "price",
     label: "Price",
-    unit: "currency",
+    unit: "price_unit",
+    type: "type_price",
   },
   {
     key: "cost_of_production",
     label: "Cost of Production",
     unit: "cost_of_production_unit",
+    type: "type_cost_of_production",
   },
   {
     key: "diversified_income",
     label: "Diversified Income",
     unit: "diversified_income_unit",
+    type: "type_diversified_income",
   },
 ];
 
@@ -299,7 +300,14 @@ const ExploreStudiesPage = () => {
         const transformData = referenceDataExpand.map((d, di) => {
           let value = values[d.key];
           if (value && d?.unit) {
-            value = `${value} (${values[d.unit]})`;
+            value = `${value} ${
+              values?.[d.unit] ? `(${values[d.unit]})` : "(Unit NA)"
+            }`;
+          }
+          if (value && d?.type) {
+            value = `${value} ${
+              values?.[d.type] ? ` - type: ${values[d.type]}` : " - type NA"
+            }`;
           }
           return {
             id: di,
@@ -412,7 +420,7 @@ const ExploreStudiesPage = () => {
                     onClick={() => setOpen(true)}
                   >
                     {/* Open Form Modal */}
-                    Add New Reference Data
+                    Add a new study
                   </Button>
                 ) : null}
               </div>

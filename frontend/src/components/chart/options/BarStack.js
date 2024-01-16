@@ -73,15 +73,14 @@ const BarStack = ({
         resValue =
           vals?.length && stackSum !== 0
             ? +((sumBy(vals, "value") / stackSum) * 100 || 0)
-                ?.toFixed(2)
-                .toString()
+                ?.toString()
                 ?.match(/^-?\d+(?:\.\d{0,1})?/)[0] || 0
             : 0;
       }
       return {
         name: s.title || s.name,
-        value: resValue.toFixed(2),
-        percentage: resValue.toFixed(2),
+        value: resValue,
+        percentage: resValue,
         itemStyle: {
           color: vals[0]?.color || s.color,
           opacity: highlighted ? (d.name === highlighted ? 1 : 0.4) : 1,

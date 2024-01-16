@@ -157,7 +157,7 @@ const Question = ({
           ))}
         </Col>
         <Col span={5} align="right">
-          {thousandFormatter(answer?.value?.toFixed(2)) || ""}
+          {thousandFormatter(answer?.value?.toFixed()) || ""}
         </Col>
         <Col span={5} align="right">
           {percentage
@@ -209,7 +209,7 @@ const ScenarioInput = ({
       const { total_current_income: totalIncome } = segment;
       return {
         totalPercentage: ((absoluteValue / totalIncome) * 100).toFixed(2),
-        totalAbsolute: absoluteValue.toFixed(2),
+        totalAbsolute: absoluteValue.toFixed(),
       };
     }
     return {
@@ -377,7 +377,7 @@ const ScenarioInput = ({
           <h2>Income Target</h2>
         </Col>
         <Col span={15}>
-          <h2>{`${segment.target?.toFixed(2)} ${currencyUnitName}`}</h2>
+          <h2>{`${segment.target?.toFixed()} ${currencyUnitName}`}</h2>
         </Col>
       </Row>
       <Row gutter={[8, 8]} align="middle" justify="space-between">
@@ -385,10 +385,10 @@ const ScenarioInput = ({
           <h4>Income Driver</h4>
         </Col>
         <Col span={5} align="center">
-          <h4>New Value</h4>
+          <h4>New value</h4>
         </Col>
         <Col span={5} align="right">
-          <h4>Current</h4>
+          <h4>Current value</h4>
         </Col>
         <Col span={5} align="right">
           <h4>Increase</h4>
@@ -408,7 +408,7 @@ const ScenarioInput = ({
           </h4>
         </Col>
         <Col span={5} align="right">
-          <h4>{thousandFormatter(segment.total_current_income?.toFixed(2))}</h4>
+          <h4>{thousandFormatter(segment.total_current_income?.toFixed())}</h4>
         </Col>
         <Col span={5} align="right">
           <h4>
@@ -438,12 +438,15 @@ const ScenarioInput = ({
   );
 };
 
-const Step = ({ number, title }) => (
+const Step = ({ number, title, description = null }) => (
   <Col span={24}>
     <Space align="center" className="scenario-step-wrapper">
       <div className="number">{number}</div>
       <div className="title">{title}</div>
     </Space>
+    {description && (
+      <div className="scenario-step-description">{description}</div>
+    )}
   </Col>
 );
 
@@ -505,7 +508,14 @@ const Scenario = ({
   const [selectedScenarioSegmentChart, setSelectedScenarioSegmentChart] =
     useState([]);
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [currentScenarioIncomeGap, setCurrentScenarioIncomeGap] = useState({
+    chartData: [],
+    targetChartData: [],
+  });
+
+  const elCurrentScenarioIncomeGap = useRef(null);
   const elIncomeGapScenario = useRef(null);
+  const elScenarioOutcomes = useRef(null);
 
   const scenarioSegmentOptions = useMemo(() => {
     let i = 1;
@@ -622,7 +632,7 @@ const Scenario = ({
       ? scenarioData.filter((sd) => sd.key === scenarioItem.key)
       : scenarioData.filter((sd) => scenarioKeys.includes(sd.key));
 
-    const data = filterScenarioData.flatMap((sd) => {
+    let data = filterScenarioData.flatMap((sd) => {
       const segments = scenarioValues.map((sv) => {
         return {
           ...sv,
@@ -638,6 +648,7 @@ const Scenario = ({
       });
       return segments;
     });
+    data = orderBy(data, ["scenarioSegmentKey"]);
 
     if (!isEmpty(selectedScenarioSegmentChart)) {
       return data.filter((d) =>
@@ -668,40 +679,44 @@ const Scenario = ({
 
       return {
         name: `${d.scenarioName} - ${d.name}`,
-        target: incomeTarget,
+        target: Math.round(incomeTarget),
         stack: [
           {
-            name: "Current total household income",
-            title: "Current total household income",
-            value: currentTotalIncome,
-            total: currentTotalIncome,
+            name: "Current total\nhousehold income",
+            title: "Current total\nhousehold income",
+            value: Math.round(currentTotalIncome),
+            total: Math.round(currentTotalIncome),
             color: "#1B625F",
             order: 1,
           },
           {
-            name: "Additional income when income drivers are changed",
-            title: "Additional income when income drivers are changed",
-            value: additionalValue,
-            total: additionalValue,
+            name: "Additional income\nwhen income drivers\nare changed",
+            title: "Additional income\nwhen income drivers\nare changed",
+            value: Math.round(additionalValue),
+            total: Math.round(additionalValue),
             color: "#49D985",
             order: 2,
           },
           {
             name: "Gap",
             title: "Gap",
-            value: gapValue,
-            total: gapValue,
+            value: Math.round(gapValue),
+            total: Math.round(gapValue),
             color: "#E06666",
             order: 3,
           },
         ],
       };
     });
+
+    if (isEmpty(selectedScenarioSegmentChart)) {
+      setCurrentScenarioIncomeGap((prev) => ({ ...prev, chartData: data }));
+    }
     return data;
-  }, [combineScenarioDataWithDashboardData]);
+  }, [combineScenarioDataWithDashboardData, selectedScenarioSegmentChart]);
 
   const targetChartData = useMemo(() => {
-    return [
+    const target = [
       {
         name: "Income Target",
         type: "line",
@@ -713,11 +728,19 @@ const Scenario = ({
         },
         data: chartData.map((d) => ({
           name: "Benchmark",
-          value: d?.target ? d.target.toFixed(2) : 0,
+          value: d?.target ? Math.round(d.target) : 0,
         })),
       },
     ];
-  }, [chartData]);
+
+    if (isEmpty(selectedScenarioSegmentChart)) {
+      setCurrentScenarioIncomeGap((prev) => ({
+        ...prev,
+        targetChartData: target,
+      }));
+    }
+    return target;
+  }, [chartData, selectedScenarioSegmentChart]);
 
   const ButtonEdit = () => (
     <Button
@@ -790,7 +813,7 @@ const Scenario = ({
     return (
       <Row gutter={[16, 16]} className="scenario-information-wrapper">
         <Col span={24}>
-          <div className="label">Name</div>
+          <div className="label">Name of scenario</div>
           <Input
             key={`scenario-name-${scenarioItem.key}`}
             placeholder="Scenario Name"
@@ -1026,7 +1049,7 @@ const Scenario = ({
       <Col span={24}>
         <Card
           className="info-card-wrapper"
-          title="Information"
+          title="Describe your scenario"
           extra={scenarioItem?.key > 1 ? extra : null}
         >
           {renderScenarioCardHeader()}
@@ -1048,8 +1071,13 @@ const Scenario = ({
             children: dashboardData
               .filter((d) => d.id === activeTab)
               .map((segment) => (
-                <Row key={segment.id} gutter={[24, 24]}>
-                  <Col span={16}>
+                <Row
+                  key={segment.id}
+                  gutter={[24, 24]}
+                  align="center"
+                  ref={elCurrentScenarioIncomeGap}
+                >
+                  <Col span={12}>
                     <Card
                       className="info-card-wrapper"
                       title="Income Driver Values"
@@ -1069,16 +1097,35 @@ const Scenario = ({
                       />
                     </Card>
                   </Col>
-                  <Col span={8}>
+                  <Col span={12}>
                     <h2>
-                      What is the income gap when you change your income drivers
-                      using the scenario modeler?
+                      Input values for the various income drivers for each
+                      segments
                     </h2>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua.
+                      Below you find a visual showing the calculated household
+                      income and gap to the income target for the different
+                      segments in this scenario.
                     </p>
+                    <Card
+                      className="chart-card-wrapper"
+                      title="Income Gap for current scenario"
+                      extra={
+                        <SaveAsImageButton
+                          elementRef={elCurrentScenarioIncomeGap}
+                          filename="Calculated household income and gap to the income target for the different segments in this scenario."
+                          type="ghost-white"
+                        />
+                      }
+                    >
+                      <ChartScenarioModeling
+                        data={currentScenarioIncomeGap.chartData || []}
+                        targetChartData={
+                          currentScenarioIncomeGap.targetChartData
+                        }
+                        currencyUnitName={currencyUnitName}
+                      />
+                    </Card>
                   </Col>
                 </Row>
               )),
@@ -1133,11 +1180,27 @@ const Scenario = ({
       </Col>
 
       {/* Step 3 */}
-      <Step number={3} title="Better understand outcomes for your segments" />
-
+      <Step
+        number={3}
+        title="Better understand outcomes for your segments"
+        description="In the table below, you can compare specific outcomes per segment to
+        understand in which scenario the farmers in that segment reach the
+        income target, how this is established, and how it compares to the
+        current scenario."
+      />
       {/* Scenario Outcomes */}
-      <Col span={24}>
-        <Card className="info-card-wrapper" title="Scenario Outcomes">
+      <Col span={24} ref={elScenarioOutcomes}>
+        <Card
+          className="info-card-wrapper"
+          title="Scenario Outcomes"
+          // extra={
+          //   <SaveAsImageButton
+          //     elementRef={elScenarioOutcomes}
+          //     filename="Scenario Outcomes"
+          //     type="ghost-white"
+          //   />
+          // }
+        >
           <Space size="large" direction="vertical">
             <Select
               {...selectProps}

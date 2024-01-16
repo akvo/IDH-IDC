@@ -34,7 +34,7 @@ const getOptions = ({
     : feasibleAnswers.find((fa) => fa.name === yAxis.name)?.value || 0;
 
   let xAxisData = [
-    ...range(xAxis.min, xAxis.max, (xAxis.max - xAxis.min) / 5).map((x) =>
+    ...range(xAxis.min, xAxis.max, (xAxis.max - xAxis.min) / 20).map((x) =>
       x.toFixed(2)
     ),
     xAxis.max.toFixed(2),
@@ -92,7 +92,7 @@ const getOptions = ({
               "line",
               newValues
             );
-            return newYAxisValue.toFixed(2);
+            return newYAxisValue?.toFixed(2);
           })
           .flatMap((x) => x);
         return {
@@ -124,19 +124,19 @@ const getOptions = ({
         [
           {
             name: null,
-            xAxis: xAxisCurrentValue.toFixed(2),
+            xAxis: xAxisCurrentValue?.toFixed(2),
           },
           {
-            xAxis: xAxisFeasibleValue.toFixed(2),
+            xAxis: xAxisFeasibleValue?.toFixed(2),
           },
         ],
         [
           {
             name: null,
-            yAxis: yAxisCurrentValue.toFixed(2),
+            yAxis: yAxisCurrentValue?.toFixed(2),
           },
           {
-            yAxis: yAxisFeasibleValue.toFixed(2),
+            yAxis: yAxisFeasibleValue?.toFixed(2),
           },
         ],
       ],

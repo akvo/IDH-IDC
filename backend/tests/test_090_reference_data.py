@@ -40,7 +40,6 @@ class TestReferenceRoute:
             "notes": "Sample Notes",
             "confidence_level": "High",
             "range": "Sample Range",
-            "type": "Sample Type",
             "area": 100.5,
             "volume": 50.3,
             "price": 10.2,
@@ -51,6 +50,11 @@ class TestReferenceRoute:
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
             "price_unit": "USD / liters",
+            "type_area": "Sample Type Area",
+            "type_volume": "Sample Type Volume",
+            "type_price": "Sample Type Price",
+            "type_cost_of_production": "Sample Type CoP",
+            "type_diversified_income": "Sample Type DI",
         }
         # without cred
         res = await client.post(
@@ -85,7 +89,6 @@ class TestReferenceRoute:
             "notes": "Sample Notes",
             "confidence_level": "High",
             "range": "Sample Range",
-            "type": "Sample Type",
             "area": 100.5,
             "volume": 50.3,
             "price": 10.2,
@@ -96,6 +99,11 @@ class TestReferenceRoute:
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
             "price_unit": "USD / liters",
+            "type_area": "Sample Type Area",
+            "type_volume": "Sample Type Volume",
+            "type_price": "Sample Type Price",
+            "type_cost_of_production": "Sample Type CoP",
+            "type_diversified_income": "Sample Type DI",
         }
 
         # add second data
@@ -110,7 +118,6 @@ class TestReferenceRoute:
             "notes": "Sample Notes",
             "confidence_level": "Low",
             "range": "Sample Range",
-            "type": "Sample Type",
             "area": None,
             "volume": None,
             "price": None,
@@ -121,6 +128,11 @@ class TestReferenceRoute:
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
             "price_unit": "USD / liters",
+            "type_area": None,
+            "type_volume": None,
+            "type_price": None,
+            "type_cost_of_production": None,
+            "type_diversified_income": None,
         }
         res = await client.post(
             app.url_path_for("reference_data:create"),
@@ -221,7 +233,6 @@ class TestReferenceRoute:
             "notes": "Sample Notes",
             "confidence_level": "Low",
             "range": "Sample Range",
-            "type": "Sample Type",
             "area": None,
             "volume": None,
             "price": None,
@@ -232,6 +243,11 @@ class TestReferenceRoute:
             "cost_of_production_unit": "USD / acres",
             "diversified_income_unit": "USD",
             "price_unit": "USD / liters",
+            "type_area": None,
+            "type_volume": None,
+            "type_price": None,
+            "type_cost_of_production": None,
+            "type_diversified_income": None,
         }
         # without cred
         res = await client.put(
@@ -290,9 +306,9 @@ class TestReferenceRoute:
                 "unit": "acres",
                 "region": "Sample Region",
                 "year": 2023,
-                "type": "Sample Type",
                 "confidence_level": "High",
                 "range": "Sample Range",
+                "type": "Sample Type Area",
             }
         ]
 

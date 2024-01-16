@@ -136,6 +136,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
           if (d.type === "diversified" && d.value === "diversified") {
             value = currentSegmentData?.[`total_${x}_diversified_income`] || 0;
           }
+          value = value ? parseFloat(value.toFixed(2)) : value;
           return {
             name: d.label,
             title: d.label,
@@ -155,7 +156,8 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
             const answer = currentSegmentData.answers
               .filter((a) => a.commodityFocus && a.name === x)
               .find((a) => a.questionId === d.id);
-            const value = answer && answer.value ? answer.value : 0;
+            const value =
+              answer && answer.value ? parseFloat(answer.value.toFixed(2)) : 0;
             return {
               name: d.text,
               title: d.text,
@@ -172,7 +174,9 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
               .filter((a) => a.commodityFocus && a.name === x)
               .find((a) => a.questionId === findDriver.value);
             const value =
-              parentAnswer && parentAnswer.value ? parentAnswer.value : 0;
+              parentAnswer && parentAnswer.value
+                ? parseFloat(parentAnswer.value.toFixed(2))
+                : 0;
             stack = [
               {
                 name: findDriver.label,
@@ -210,7 +214,10 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
                   a.commodityType === d.type &&
                   a.questionId === d.id
               );
-              value = diversified && diversified?.value ? diversified.value : 0;
+              value =
+                diversified && diversified?.value
+                  ? parseFloat(diversified.value.toFixed(2))
+                  : 0;
             }
             return {
               name: d.text,
@@ -257,7 +264,7 @@ const ChartExploreBreakdownDrivers = ({ dashboardData, currentCase }) => {
             data={chartData}
             affix={true}
             extra={{ axisTitle: axisTitle }}
-            grid={{ right: 215 }}
+            grid={{ right: 235 }}
           />
         </Col>
       </Row>

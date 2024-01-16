@@ -91,23 +91,30 @@ def get_reference_value(
     for d in data:
         value = None
         unit = None
+        type = None
         if driver == Driver.area:
             value = d["area"]
             unit = d["area_size_unit"]
+            type = d["type_area"]
         if driver == Driver.price:
             value = d["price"]
             unit = d["price_unit"]
+            type = d["type_price"]
         if driver == Driver.volume:
             value = d["volume"]
             unit = d["volume_measurement_unit"]
+            type = d["type_volume"]
         if driver == Driver.cost_of_production:
             value = d["cost_of_production"]
             unit = d["cost_of_production_unit"]
+            type = d["type_cost_of_production"]
         if driver == Driver.diversified_income:
             value = d["diversified_income"]
             unit = d["diversified_income_unit"]
+            type = d["type_diversified_income"]
         d["value"] = value
         d["unit"] = unit
+        d["type"] = type
     return data
 
 

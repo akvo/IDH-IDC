@@ -237,7 +237,10 @@ const IncomeDriverTarget = ({
     >
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item label="Better income target" name="manual_target">
+          <Form.Item
+            label="Set an income target yourself?"
+            name="manual_target"
+          >
             <Switch checked={!disableTarget} disabled={!enableEditCase} />
           </Form.Item>
         </Col>
@@ -330,7 +333,7 @@ const IncomeDriverTarget = ({
         }}
       >
         <Col span={8}>
-          <p>Living Income Target</p>
+          <p>Living income benchmark value for a household per year</p>
           <h2 className="income-target-value">
             {thousandFormatter(incomeTarget.toFixed())} {currentCase.currency}
           </h2>

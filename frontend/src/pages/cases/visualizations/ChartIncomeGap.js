@@ -18,21 +18,21 @@ const ChartIncomeGap = ({ dashboardData, currentCase }) => {
         {
           name: `Current\n${d.name}`,
           title: `Current\n${d.name}`,
-          target: d.target,
+          target: Math.round(d.target),
           stack: [
             {
               name: "Household Income",
               title: "Household Income",
-              value: d.total_current_income,
-              total: d.total_current_income,
+              value: Math.round(d.total_current_income),
+              total: Math.round(d.total_current_income),
               color: "#03625f",
               order: 1,
             },
             {
               name: "Income Gap",
               title: "Income Gap",
-              value: currentIncomeGap,
-              total: currentIncomeGap,
+              value: Math.round(currentIncomeGap),
+              total: Math.round(currentIncomeGap),
               color: "#fbbc04",
               order: 2,
             },
@@ -41,21 +41,21 @@ const ChartIncomeGap = ({ dashboardData, currentCase }) => {
         {
           name: `Feasible\n${d.name}`,
           title: `Feasible\n${d.name}`,
-          target: d.target,
+          target: Math.round(d.target),
           stack: [
             {
               name: "Household Income",
               title: "Household Income",
-              value: d.total_feasible_income,
-              total: d.total_feasible_income,
+              value: Math.round(d.total_feasible_income),
+              total: Math.round(d.total_feasible_income),
               color: "#03625f",
               order: 1,
             },
             {
               name: "Income Gap",
               title: "Income Gap",
-              value: feasibleIncomeGap,
-              total: feasibleIncomeGap,
+              value: Math.round(feasibleIncomeGap),
+              total: Math.round(feasibleIncomeGap),
               color: "#fbbc04",
               order: 2,
             },
@@ -75,7 +75,7 @@ const ChartIncomeGap = ({ dashboardData, currentCase }) => {
         color: "#000",
         data: chartData.map((cd) => ({
           name: "Income Target",
-          value: cd?.target ? cd.target.toFixed(2) : 0,
+          value: cd?.target ? Math.round(cd.target) : 0,
         })),
       },
     ];

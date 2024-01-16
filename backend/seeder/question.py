@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 from db.connection import Base, engine, SessionLocal
+
 from utils.truncator import truncatedb
 from sqlalchemy.orm import Session
 from models.question import Question
@@ -15,7 +16,9 @@ sys.path.append(BASE_DIR)
 
 def seeder_question(session: Session):
     truncatedb(session=session, table="commodity_category_question")
-    truncatedb(session=session, table="question")
+
+    # Quesion
+    # truncatedb(session=session, table="question")
     data = pd.read_csv(MASTER_DIR + "question.csv")
     data.replace({np.nan: None}, inplace=True)
     question = data[
@@ -30,23 +33,35 @@ def seeder_question(session: Session):
         ]
     ]
     for index, row in question.iterrows():
-        question = Question(
-            id=row["id"],
-            parent=row["parent"],
-            text=row["text"],
-            unit=row["unit"],
-            description=row["description"],
-            question_type=row["question_type"],
-            default_value=row["default_value"],
-            created_by=None,
-        )
-        session.add(question)
+        # find prev question
+        question = session.query(Question).filter(Question.id == row["id"]).first()
+        if question:
+            # update
+            question.parent = row["parent"]
+            question.text = row["text"]
+            question.unit = row["unit"]
+            question.description = row["description"]
+            question.question_type = row["question_type"]
+            question.default_value = row["default_value"]
+        else:
+            # create
+            question = Question(
+                id=row["id"],
+                parent=row["parent"],
+                text=row["text"],
+                unit=row["unit"],
+                description=row["description"],
+                question_type=row["question_type"],
+                default_value=row["default_value"],
+                created_by=None,
+            )
+            session.add(question)
         session.commit()
         session.flush()
         session.refresh(question)
     print("[DATABASE UPDATED]: Question")
 
-    ## Commodity Categories Questions
+    # Commodity Category Question
     commodities = pd.read_csv(MASTER_DIR + "commodities.csv")
     commodity_group = commodities[["group_id", "group_name"]]
     data = data.dropna(subset=["description"])
