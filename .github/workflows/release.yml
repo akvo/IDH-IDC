@@ -1,13 +1,13 @@
-name: Deploy to Test Cluster
+name: IDH-IDC Release Pipeline
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,7 +27,6 @@ jobs:
         with:
           node-version: "18"
           node-command: "yarn install --no-progress --frozen-lock && yarn build && rm -rf node_modules"
-
 
       - name: Docker Build Frontend
         uses: ./composite-actions/.github/actions/docker-build
@@ -62,7 +61,7 @@ jobs:
         with:
           app-name: "idh-idc"
           service-name: "frontend"
-          cluster-name: "test"
+          cluster-name: "production"
           gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
 
       - name: Rollout Backend
@@ -70,5 +69,5 @@ jobs:
         with:
           app-name: "idh-idc"
           service-name: "backend"
-          cluster-name: "test"
+          cluster-name: "production"
           gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
