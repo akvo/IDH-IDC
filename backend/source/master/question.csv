@@ -5,7 +5,7 @@ id,parent,text,commodity_category,unit,default_value,question_type,description
 4,1,Price,"Crop, Aquaculture, Livestock",currency / volume_measurement_unit,,question,"The price per unit of the commodity. In the case farmers also receive a price premium, you can use the dropdown option and indicate the farm gate price and price premium."
 5,1,Cost of Production,Crop,currency / area_size_unit,,question,"The costs of production for growing the commodity can cover several types of costs, such as costs for labour, inputs or equipment. You can either add the total, or the costs for the different types of costs separately by using the drop-down."
 6,2,Land,Crop,area_size_unit,,question,
-7,2,Area Under Production,Aquaculture,currency,,question,
+7,2,Area Under Production,Aquaculture,area_size_unit,,question,
 8,3,Yield,"Crop, Aquaculture",volume_measurement_unit / area_size_unit,,question,
 9,3,Loss,"Crop, Aquaculture",volume_measurement_unit / area_size_unit,,question,
 10,4,Farmgate Price,"Crop, Aquaculture",currency / volume_measurement_unit,,question,
@@ -29,10 +29,10 @@ id,parent,text,commodity_category,unit,default_value,question_type,description
 28,27,Feed Conversion Ratio,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
 29,27,Feed Price,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
 30,26,Farm Production Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
-31,26,Cost of Fingerlings,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
+31,26,Fingerling Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
 32,26,Labour Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
-33,26,Processing Cost,Aquaculture,currency / volume_measurement_unit,,question,
-34,26,Machinery & Equipment Cost,Aquaculture,currency / volume_measurement_unit,,question,
+33,26,"Equipment cost (annual purchase, economic value < 1 year)",Aquaculture,currency / volume_measurement_unit,,question,
+34,26,"Equipment cost (long term purchase, economic value >1 year) = depreciation",Aquaculture,currency / volume_measurement_unit,,question,
 35,,Income from livestock,,currency,,diversified,
 36,,Income from off-farm activities,,currency,,diversified,
 37,,Investment and cash transfer,,currency,,diversified,
