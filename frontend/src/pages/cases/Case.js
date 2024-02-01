@@ -153,7 +153,7 @@ const Case = () => {
           (q) => q.id === parseInt(questionId)
         );
         const totalOtherDiversifiedIncome =
-          question.question_type === "diversified" && !question.parent;
+          question?.question_type === "diversified" && !question.parent;
         return {
           name: dataType,
           question: question,
