@@ -9,7 +9,6 @@ import {
   Button,
   Card,
   Select,
-  Input,
   Table,
   message,
   Form,
@@ -18,17 +17,14 @@ import {
 } from "antd";
 import { UserState } from "../../store";
 import { adminRole } from "../../store/static";
-import {
-  SearchOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { upperFirst, isEmpty } from "lodash";
 import ReferenceDataForm from "./ReferenceDataForm";
 import { api } from "../../lib";
 import { driverOptions } from ".";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { thousandFormatter } from "../../components/chart/options/common";
+import { sourceOptions } from ".";
 
 const selectProps = {
   showSearch: true,
@@ -472,9 +468,10 @@ const ExploreStudiesPage = () => {
                     <Col span={12}>
                       <div className="filter-label">Source</div>
                       <Form.Item name="source" noStyle>
-                        <Input
-                          prefix={<SearchOutlined />}
-                          placeholder="Search by Source"
+                        <Select
+                          {...selectProps}
+                          options={sourceOptions}
+                          placeholder="Select Source"
                         />
                       </Form.Item>
                     </Col>
