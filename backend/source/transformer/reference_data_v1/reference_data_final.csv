@@ -6,8 +6,8 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 5,Cote d'Ivoire,Cocoa,2016,National,,SDM Data,,,High confidence,Median/Mean value,2.5,ha,Mean,1665,kg/ha,Mean,1.35,,Mean,NA,-,Mean,0,,Mean
 6,Cote d'Ivoire,Cocoa,2016,National,,SDM Data,,,High confidence,Median/Mean value,3,ha,Mean,1500,kg/ha,Mean,1.77,,Mean,NA,-,Mean,0,,Mean
 7,Cote d'Ivoire,Cocoa,2016,National,,SDM Data,,,High confidence,Median/Mean value,3,ha,Mean,1831.2,kg/ha,Mean,1.77,,Mean,NA,-,Mean,0,,Mean
-8,Cote d'Ivoire,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,3.5,ha,Mean,3576.4,kg/ha,Mean,1.84,,Mean,1065.39,-,Mean,817.96,,Mean
-9,Cote d'Ivoire,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,6.71,ha,Mean,23961.51,kg/ha,Mean,0.4,,Mean,7888.68,-,Mean,38.18,,Mean
+8,Cote d'Ivoire,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,3.5,ha,Mean,3576.4,kg,Mean,1.84,USD/kg,Mean,1065.39,USD,Mean,817.96,USD,Mean
+9,Cote d'Ivoire,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,6.71,ha,Mean,23961.51,kg,Mean,0.4,USD/kg,Mean,7888.68,USD,Mean,38.18,USD,Mean
 10,Cote d'Ivoire,Cocoa,2023,National,CFA,IDH internal,,,High confidence,Low value,2,ha,Min,645,kg/ha,Min,1148,CFA/kg,Mean,1007326.00,XOF/ha,Mean,"1,242,368",XOF,Mean
 11,Cote d'Ivoire,Cocoa,2023,National,CFA,IDH internal,,,High confidence,Median/Mean value,3,ha,Median,645,kg/ha,Median,1148,CFA/kg,Mean,1007326.00,XOF/ha,Mean,"1,242,368",XOF,Mean
 12,Cote d'Ivoire,Cocoa,2023,National,CFA,IDH internal,,,High confidence,High value,4,ha,Max,645,kg/ha,Max ,1148,CFA/kg,Mean,1007326.00,XOF/ha,Mean,"1,242,368",XOF,Mean
@@ -16,20 +16,20 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 15,Ghana,Maize,2021,National,,Desk research,"https://veggiegrow.ng/how-many-bags-of-maize-can-an-acre-produce/#:~:text=The%20level%20of%20fertility%20of,bag%20of%20maize%20per%20acre.",With a potential of over 20 (100kg) bags and as low as 1 (100kg) bag.,Moderate confidence,Median/Mean value,,,,2000,kg/acre,Mean,,,,,,,,,
 16,Ghana,Maize,2023,National,GHS,Desk research,https://thefarmdreams.com/how-to-start-maize-farming-in-ghana-to-make-money/,With a potential of over 20 (100kg) bags and as low as 5 (100kg) bag.,Moderate confidence,Low value,,,,1500,kg/acre,Mean,1,GHS/kg,Mean,775.00,GHS/acre,Mean,,,
 17,Ghana,Rice,2020,National,,Desk research,https://agra.org/wp-content/uploads/2020/10/Ghana-Rice-Mechanisation-Report.pdf,Above 6 tonnes,High confidence,Low value,,,,6,t/ha,Min,,,,,,,,,
-18,Ghana,Maize,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.4,ha,Mean,650,kg/ha,Mean,0.13,,Mean,93.97,-,Mean,0,,Mean
-19,Ghana,Maize,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.4,ha,Mean,1670,kg/ha,Mean,0.16,,Mean,288.32,-,Mean,0,,Mean
-20,Ghana,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,1400,kg/ha,Mean,0.1,,Mean,59.70,-,Mean,25.76,,Mean
-21,Ghana,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,2800,kg/ha,Mean,0.16,,Mean,264.06,-,Mean,25.76,,Mean
+18,Ghana,Maize,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.4,ha,Mean,650,kg,Mean,0.13,USD/kg,Mean,93.97,USD,Mean,0,USD,Mean
+19,Ghana,Maize,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.4,ha,Mean,1670,kg,Mean,0.16,USD/kg,Mean,288.32,USD,Mean,0,USD,Mean
+20,Ghana,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,1400,kg,Mean,0.1,USD/kg,Mean,59.70,USD,Mean,25.76,USD,Mean
+21,Ghana,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,2800,kg,Mean,0.16,USD/kg,Mean,264.06,USD,Mean,25.76,USD,Mean
 22,Ghana,Cocoa,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.88,ha,Mean,940,kg/ha,Mean,1.73,,Mean,NA,-,Mean,0,,Mean
 23,Ghana,Cocoa,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.88,ha,Mean,740.25,kg/ha,Mean,1.73,,Mean,NA,-,Mean,0,,Mean
 24,Ghana,Cocoa,2017,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
 25,Ghana,Cocoa,2017,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
-26,Ghana,Rice,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,2200,kg/ha,Mean,0.31,,Mean,535.13,-,Mean,0,,Mean
-27,Ghana,Rice,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.62,ha,Mean,8600,kg/ha,Mean,0.38,,Mean,1928.25,-,Mean,0,,Mean
-28,Ghana,Maize,2020,National,,SDM Data,,,High confidence,Median/Mean value,4,ha,Mean,1179.15,kg/ha,Mean,0.51,,Mean,74.37,-,Mean,0,,Mean
-29,Ghana,Maize,2020,National,,SDM Data,,,High confidence,Median/Mean value,4,ha,Mean,2718.59,kg/ha,Mean,0.46,,Mean,730.14,-,Mean,0,,Mean
-30,Ghana,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,3.3,ha,Mean,3273.06,kg/ha,Mean,1.64,,Mean,1811.67,-,Mean,477,,Mean
-31,Ghana,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,3.7,ha,Mean,7518.01,kg/ha,Mean,0.99,,Mean,2298.96,-,Mean,477,,Mean
+26,Ghana,Rice,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,2200,kg,Mean,0.31,USD/kg,Mean,535.13,USD,Mean,0,USD,Mean
+27,Ghana,Rice,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.62,ha,Mean,8600,kg,Mean,0.38,USD/kg,Mean,1928.25,USD,Mean,0,USD,Mean
+28,Ghana,Maize,2020,National,,SDM Data,,,High confidence,Median/Mean value,4,ha,Mean,1179.15,kg,Mean,0.51,USD/kg,Mean,74.37,USD,Mean,0,USD,Mean
+29,Ghana,Maize,2020,National,,SDM Data,,,High confidence,Median/Mean value,4,ha,Mean,2718.59,kg,Mean,0.46,USD/kg,Mean,730.14,USD,Mean,0,USD,Mean
+30,Ghana,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,3.3,ha,Mean,3273.06,kg,Mean,1.64,USD/kg,Mean,1811.67,USD,Mean,477,USD,Mean
+31,Ghana,Cocoa,2021,National,,SDM Data,,,High confidence,Median/Mean value,3.7,ha,Mean,7518.01,kg,Mean,0.99,USD/kg,Mean,2298.96,USD,Mean,477,USD,Mean
 32,Ghana,Cocoa,2023,National,GHS,IDH internal,,,High confidence,Low value,1.5,ha,Min,1026,kg/ha,Median,23.8,GHS/kg,Mean,16750.00,GHS/ha,Mean,23772,GHS,Mean
 33,Ghana,Cocoa,2023,National,GHS,IDH internal,,,High confidence,Median/Mean value,2.5,ha,Median,1026,kg/ha,Median,23.8,GHS/kg,Mean,16750.00,GHS/ha,Mean,23772,GHS,Mean
 34,Ghana,Cocoa,2023,National,GHS,IDH internal,,,High confidence,High value,3,ha,Max,1026,kg/ha,Median,23.8,GHS/kg,Mean,16750.00,GHS/ha,Mean,23772,GHS,Mean
@@ -40,17 +40,17 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 39,Indonesia,Cocoa,2018,National,,Desk research,https://iopscience.iop.org/article/10.1088/1755-1315/157/1/012067/pdf,"a productivity level of 655,515 kg per hectare? around 655 kg per hectare?... conflicting info",Low confidence,Median/Mean value,,,,655,kg/ha,Mean,,,,,,,,,
 40,Indonesia,Coffee,2020,National,IDR,Desk research,https://www.fairtrade.org.uk/media-centre/news/new-living-income-price-for-indonesian-coffee-farmers/,equivalent to US$ 0.95 for a kilo of coffee cherry,High confidence,High value,,,,"6,000",kg/ha,Mean,"13,600",IDR/kg,Max ,,,,,,
 41,Indonesia,Coffee,2023,National,,Desk research,https://www.reuters.com/markets/commodities/too-wet-bone-dry-indonesian-coffee-crop-faces-el-nino-jolt-2023-08-14/,,Moderate confidence,Median/Mean value,,,,0.7 and 1.0,t/ha,Mean,,,,,,,,,
-42,Indonesia,Cocoa,2015,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,500,kg/ha,Mean,1.8,,Mean,338.15,-,Mean,0,,Mean
-43,Indonesia,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,390,kg/ha,Mean,1.48,,Mean,79.72,-,Mean,0,,Mean
-44,Indonesia,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,390,kg/ha,Mean,1.75,,Mean,143.11,-,Mean,0,,Mean
-45,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,733.7,kg/ha,Mean,6.64,,Mean,503.79,-,Mean,0,,Mean
-46,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.68,ha,Mean,325.34,kg/ha,Mean,4.74,,Mean,471.80,-,Mean,0,,Mean
-47,Indonesia,Cocoa,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,700,kg/ha,Mean,1.77,,Mean,107.53,-,Mean,0,,Mean
-48,Indonesia,Cocoa,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,682.63,kg/ha,Mean,1.94,,Mean,196.97,-,Mean,0,,Mean
-49,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.27,ha,Mean,612.35,kg/ha,Mean,2.02,,Mean,600.16,-,Mean,0,,Mean
-50,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.27,ha,Mean,687.59,kg/ha,Mean,2.76,,Mean,1100.80,-,Mean,0,,Mean
-51,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,899.53,kg/ha,Mean,3.24,,Mean,827.23,-,Mean,0,,Mean
-52,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,899.53,kg/ha,Mean,3.78,,Mean,1299.25,-,Mean,0,,Mean
+42,Indonesia,Cocoa,2015,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,500,kg,Mean,1.8,USD/kg,Mean,338.15,USD,Mean,0,USD,Mean
+43,Indonesia,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,390,kg,Mean,1.48,USD/kg,Mean,79.72,USD,Mean,0,USD,Mean
+44,Indonesia,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,390,kg,Mean,1.75,USD/kg,Mean,143.11,USD,Mean,0,USD,Mean
+45,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,733.7,kg,Mean,6.64,USD/kg,Mean,503.79,USD,Mean,0,USD,Mean
+46,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.68,ha,Mean,325.34,kg,Mean,4.74,USD/kg,Mean,471.80,USD,Mean,0,USD,Mean
+47,Indonesia,Cocoa,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,700,kg,Mean,1.77,USD/kg,Mean,107.53,USD,Mean,0,USD,Mean
+48,Indonesia,Cocoa,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,682.63,kg,Mean,1.94,USD/kg,Mean,196.97,USD,Mean,0,USD,Mean
+49,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.27,ha,Mean,612.35,kg,Mean,2.02,USD/kg,Mean,600.16,USD,Mean,0,USD,Mean
+50,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.27,ha,Mean,687.59,kg,Mean,2.76,USD/kg,Mean,1100.80,USD,Mean,0,USD,Mean
+51,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,899.53,kg,Mean,3.24,USD/kg,Mean,827.23,USD,Mean,0,USD,Mean
+52,Indonesia,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,899.53,kg,Mean,3.78,USD/kg,Mean,1299.25,USD,Mean,0,USD,Mean
 53,Kenya,Coffee,2021,National,KES,Desk research,https://www.globalcoffeeplatform.org/wp-content/uploads/2021/03/Kenya-Coffee-Platform-Coffee-Economic-Viability-Study-Report-F.pdf,,Moderate confidence,Low value,,,,300,kg/ha,Mean,53,kshs/kg,Median,30.48,kshs/kg,,,,
 54,Kenya,Coffee,2021,National,KES,Desk research,https://www.globalcoffeeplatform.org/wp-content/uploads/2021/03/Kenya-Coffee-Platform-Coffee-Economic-Viability-Study-Report-F.pdf,,Moderate confidence,High value,,,,1600,kg/ha,Max ,71,kshs/kg,Median,96.52,kshs/kg,Max ,,,
 55,Kenya,Coffee,2023,National,USD,Desk research,https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee%20Annual_Nairobi_Kenya_KE2023-0004.pdf,Average price for country is $194/50 kg bag for 2023.,Moderate confidence,Median/Mean value,,,,,,,3.88,$/kg,Mean,,,,,,
@@ -60,49 +60,49 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 59,Kenya,Tea,2022,National,KES,Desk research,https://www.ijhsr.org/IJHSR_Vol.12_Issue.11_Nov2022/IJHSR33.pdf,Production was between 101-150 Kgs per month,High confidence,Median/Mean value,,,,,,,18,kshs/kg,Median,,,,,,
 60,Kenya,Tea,2023,National,KES,Desk research,https://www.the-star.co.ke/news/realtime/2023-09-27-tea-farmers-will-receive-higher-bonuses-this-year-gachagua/,Farmers earn between Sh5 and Sh10 per kilo,Low confidence,Median/Mean value,,,,,,,6,kshs/kg,Median,,,,,,
 61,Kenya,Maize,2023,National,KES,Desk research,https://www.linkedin.com/pulse/top-20-most-profitable-crops-grow-profits-per-acre-kenya-trend/,"Average yield of 40-50 bags per acre. 1 bag of maize weighs 90kg, and sold at KES 4,500 – 5,600 per bag, translating to a potential income of KES 180,000 to KES 280,000 per acre.",Low confidence,Median/Mean value,,,,4500,kg/acre,Median,,,,,,,,,
-62,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.17,ha,Mean,504.34,kg/ha,Mean,0.34,,Mean,186.50,-,Mean,0,,Mean
-63,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.17,ha,Mean,652.6,kg/ha,Mean,2.5,,Mean,1545.74,-,Mean,0,,Mean
-64,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.04,ha,Mean,653.22,kg/ha,Mean,0.59,,Mean,138.63,-,Mean,78.69,,Mean
-65,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.04,ha,Mean,770.17,kg/ha,Mean,0.8,,Mean,608.02,-,Mean,208.25,,Mean
-66,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.61,ha,Mean,1670.33,kg/ha,Mean,0.36,,Mean,282.20,-,Mean,1.93,,Mean
-67,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.61,ha,Mean,2016.55,kg/ha,Mean,0.44,,Mean,531.30,-,Mean,0.89,,Mean
-68,Kenya,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.87,ha,Mean,10992.4,kg/ha,Mean,0.27,,Mean,1844.69,-,Mean,859.5,,Mean
-69,Kenya,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.87,ha,Mean,16286.93,kg/ha,Mean,0.31,,Mean,2684.05,-,Mean,859.5,,Mean
-70,Kenya,Pineapple,2023,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,50000,kg/ha,Mean,0.14,,Mean,94.15,-,Mean,101.84,,Mean
-71,Kenya,Pineapple,2023,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,50000,kg/ha,Mean,0.17,,Mean,98.19,-,Mean,101.84,,Mean
-72,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,812.5,kg/ha,Mean,0.26,,Mean,72.74,-,Mean,0,,Mean
-73,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,3180,kg/ha,Mean,0.26,,Mean,310.29,-,Mean,0,,Mean
-74,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,812.5,kg/ha,Mean,0.27,,Mean,54.74,-,Mean,0,,Mean
-75,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,3180,kg/ha,Mean,0.27,,Mean,265.29,-,Mean,0,,Mean
+62,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.17,ha,Mean,504.34,kg,Mean,0.34,USD/kg,Mean,186.50,USD,Mean,0,USD,Mean
+63,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.17,ha,Mean,652.6,kg,Mean,2.5,USD/kg,Mean,1545.74,USD,Mean,0,USD,Mean
+64,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.04,ha,Mean,653.22,kg,Mean,0.59,USD/kg,Mean,138.63,USD,Mean,78.69,USD,Mean
+65,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.04,ha,Mean,770.17,kg,Mean,0.8,USD/kg,Mean,608.02,USD,Mean,208.25,USD,Mean
+66,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.61,ha,Mean,1670.33,kg,Mean,0.36,USD/kg,Mean,282.20,USD,Mean,1.93,USD,Mean
+67,Kenya,Coffee,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.61,ha,Mean,2016.55,kg,Mean,0.44,USD/kg,Mean,531.30,USD,Mean,0.89,USD,Mean
+68,Kenya,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.87,ha,Mean,10992.4,kg,Mean,0.27,USD/kg,Mean,1844.69,USD,Mean,859.5,USD,Mean
+69,Kenya,Rice,2022,National,,SDM Data,,,High confidence,Median/Mean value,0.87,ha,Mean,16286.93,kg,Mean,0.31,USD/kg,Mean,2684.05,USD,Mean,859.5,USD,Mean
+70,Kenya,Pineapple,2023,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,50000,kg,Mean,0.14,USD/kg,Mean,94.15,USD,Mean,101.84,USD,Mean
+71,Kenya,Pineapple,2023,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,50000,kg,Mean,0.17,USD/kg,Mean,98.19,USD,Mean,101.84,USD,Mean
+72,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,812.5,kg,Mean,0.26,USD/kg,Mean,72.74,USD,Mean,0,USD,Mean
+73,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,3180,kg,Mean,0.26,USD/kg,Mean,310.29,USD,Mean,0,USD,Mean
+74,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,812.5,kg,Mean,0.27,USD/kg,Mean,54.74,USD,Mean,0,USD,Mean
+75,Kenya,Sorghum,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,3180,kg,Mean,0.27,USD/kg,Mean,265.29,USD,Mean,0,USD,Mean
 76,Kenya,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.15,ha,Mean,200,kg/ha,Mean,0.55,,Mean,NA,-,Mean,0,,Mean
 77,Kenya,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.15,ha,Mean,552.86,kg/ha,Mean,0.61,,Mean,NA,-,Mean,0,,Mean
-78,Kenya,Macadamia,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.76,ha,Mean,480,kg/ha,Mean,1.48,,Mean,301.61,-,Mean,0,,Mean
-79,Kenya,Macadamia,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.94,ha,Mean,657.62,kg/ha,Mean,1.7,,Mean,240.65,-,Mean,0,,Mean
-80,Kenya,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.2,ha,Mean,741.32,kg/ha,Mean,0.38,,Mean,8.96,-,Mean,0,,Mean
-81,Kenya,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.2,ha,Mean,1186.1,kg/ha,Mean,0.43,,Mean,491.76,-,Mean,0,,Mean
-82,Kenya,Rice,2020,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,5250,kg/ha,Mean,0.67,,Mean,1778.98,-,Mean,735.9,,Mean
-83,Kenya,Rice,2020,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,6750,kg/ha,Mean,0.68,,Mean,2334.87,-,Mean,973.95,,Mean
-84,Kenya,Macadamia,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.25,ha,Mean,469.25,kg/ha,Mean,0.41,,Mean,211.03,-,Mean,0,,Mean
-85,Kenya,Macadamia,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.25,ha,Mean,834.12,kg/ha,Mean,0.44,,Mean,231.97,-,Mean,0,,Mean
+78,Kenya,Macadamia,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.76,ha,Mean,480,kg,Mean,1.48,USD/kg,Mean,301.61,USD,Mean,0,USD,Mean
+79,Kenya,Macadamia,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.94,ha,Mean,657.62,kg,Mean,1.7,USD/kg,Mean,240.65,USD,Mean,0,USD,Mean
+80,Kenya,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.2,ha,Mean,741.32,kg,Mean,0.38,USD/kg,Mean,8.96,USD,Mean,0,USD,Mean
+81,Kenya,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.2,ha,Mean,1186.1,kg,Mean,0.43,USD/kg,Mean,491.76,USD,Mean,0,USD,Mean
+82,Kenya,Rice,2020,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,5250,kg,Mean,0.67,USD/kg,Mean,1778.98,USD,Mean,735.9,USD,Mean
+83,Kenya,Rice,2020,National,,SDM Data,,,High confidence,Median/Mean value,1.01,ha,Mean,6750,kg,Mean,0.68,USD/kg,Mean,2334.87,USD,Mean,973.95,USD,Mean
+84,Kenya,Macadamia,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.25,ha,Mean,469.25,kg,Mean,0.41,USD/kg,Mean,211.03,USD,Mean,0,USD,Mean
+85,Kenya,Macadamia,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.25,ha,Mean,834.12,kg,Mean,0.44,USD/kg,Mean,231.97,USD,Mean,0,USD,Mean
 86,Madagascar,Coffee,2022,National,USD,Desk research,"https://www.omwani.com/post/madagascar-coffee-production-sourcing-guide#:~:text=How%20much%20coffee%20does%20Madagascar,2019%2C%20it%20produced%20380%2C000%20bags.",Green coffee,Low confidence,Median/Mean value,,,,,,,1.46-4,$/kg,Mean,,,,,,
 87,Madagascar,Rice,2022,National,,Desk research,https://link.springer.com/article/10.1007/s10745-022-00336-2,Irrigated rice,High confidence,Median/Mean value,0.11,ha,Mean,1.72, t/ha,Median,"1,500",Ariary/ kg,Mean,,,,,,
 88,Madagascar,Rice,2022,National,,Desk research,https://link.springer.com/article/10.1007/s10745-022-00336-2,Rainfed rice,High confidence,Median/Mean value,0.57,ha,Mean,0.62, t/ha,Min,"1,500",Ariary/ kg,Mean,,,,,,
 89,Madagascar,Coffee,2022,National,USD,Desk research,https://www.omwani.com/post/madagascar-coffee-production-sourcing-guide,between $1.46 and $4 per kilogram or between $ 0.66 - $ 1.81 per pound,Moderate confidence,Median/Mean value,,,,,,,1.46- 4,$/kg,Mean,,,,,,
 90,Madagascar,Coffee,2023,National,USD,Desk research,https://www.selinawamucii.com/insights/prices/madagascar/coffee/#wholesale-prices,or between US$ 2.22 and US$ 4.76 per pound(lb),Moderate confidence,Median/Mean value,,,,,,,4.9- 10.5,$/kg,Mean,,,,,,
 91,Madagascar,Coffee,2020,National,USD,Desk research,https://www.selinawamucii.com/insights/prices/madagascar/coffee/#wholesale-prices,export price of coffee per unit,Moderate confidence,Median/Mean value,,,,,,,1.29,$/kg,Mean,,,,,,
-92,Madagascar,Vanilla,2021,National,,SDM Data,,,High confidence,Median/Mean value,0.9,ha,Mean,NA,NA,Mean,,,Mean,851.76,,Mean,480.92,,Mean
-93,Madagascar,Vanilla,2021,National,,SDM Data,,,High confidence,Median/Mean value,0.5,ha,Mean,NA,NA,Mean,,,Mean,464.45,,Mean,439.17,,Mean
-94,Madagascar,Vanilla,2017,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,149.62,kg/ha,Mean,17.3,,Mean,36.23,-,Mean,0,,Mean
-95,Madagascar,Vanilla,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.23,ha,Mean,291,kg/ha,Mean,17.3,,Mean,140.07,-,Mean,0,,Mean
+92,Madagascar,Vanilla,2021,National,,SDM Data,,,High confidence,Median/Mean value,0.9,ha,Mean,NA,kg,Mean,,USD/kg,Mean,851.76,USD,Mean,480.92,USD,Mean
+93,Madagascar,Vanilla,2021,National,,SDM Data,,,High confidence,Median/Mean value,0.5,ha,Mean,NA,kg,Mean,,USD/kg,Mean,464.45,USD,Mean,439.17,USD,Mean
+94,Madagascar,Vanilla,2017,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,149.62,kg,Mean,17.3,USD/kg,Mean,36.23,USD,Mean,0,USD,Mean
+95,Madagascar,Vanilla,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.23,ha,Mean,291,kg,Mean,17.3,USD/kg,Mean,140.07,USD,Mean,0,USD,Mean
 96,Mexico,Coffee,2022,National,MXN,Desk research,https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee%20Annual_Mexico%20City_Mexico_MX2022-0031.pdf,equal to  $310 [up to five irrigated hectares for small and medium producers],Moderate confidence,Median/Mean value,,,,336,kg/ha,Mean,"6,200",MXN/producer ,Max ,,,,,,
 97,Mexico,Coffee,2020,National,MXN,Desk research,https://www.reuters.com/article/us-mexico-coffee-idUSKBN2BZ1TN,equal to $308,Moderate confidence,High value,,,,,,,"6,200",MXN/producer ,Max ,,,,,,
 98,Mexico,Maize,2021,National,,Desk research,"https://ipad.fas.usda.gov/cropexplorer/pecad_stories.aspx?regionid=ca&ftype=prodbriefs#:~:text=Jan%2012%202022%20%7C%20Mexico%20Corn%3A%20Area%20Lower%20Than%20Expected&text=Area%20is%20estimated%20at%207.2,slightly%20down%20from%20last%20month.",,Moderate confidence,Median/Mean value,,,,3.38, t/ha,Mean,,,,,,,,,
-99,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1014.34,kg/ha,Mean,4.67,,Mean,2087.36,-,Mean,0,,Mean
-100,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1343.38,kg/ha,Mean,4.67,,Mean,3386.13,-,Mean,0,,Mean
-101,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.5,ha,Mean,644.93,kg/ha,Mean,2.72,,Mean,1392.73,-,Mean,0,,Mean
-102,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,587.11,kg/ha,Mean,2.72,,Mean,2991.40,-,Mean,0,,Mean
-103,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2.5,ha,Mean,734.48,kg/ha,Mean,3.03,,Mean,3036.00,-,Mean,0,,Mean
-104,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,4.5,ha,Mean,1276.29,kg/ha,Mean,3.03,,Mean,3141.18,-,Mean,0,,Mean
+99,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1014.34,kg,Mean,4.67,USD/kg,Mean,2087.36,USD,Mean,0,USD,Mean
+100,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1343.38,kg,Mean,4.67,USD/kg,Mean,3386.13,USD,Mean,0,USD,Mean
+101,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.5,ha,Mean,644.93,kg,Mean,2.72,USD/kg,Mean,1392.73,USD,Mean,0,USD,Mean
+102,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,587.11,kg,Mean,2.72,USD/kg,Mean,2991.40,USD,Mean,0,USD,Mean
+103,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2.5,ha,Mean,734.48,kg,Mean,3.03,USD/kg,Mean,3036.00,USD,Mean,0,USD,Mean
+104,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,4.5,ha,Mean,1276.29,kg,Mean,3.03,USD/kg,Mean,3141.18,USD,Mean,0,USD,Mean
 105,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
 106,Mexico,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
 107,Nigeria,Rice,2020,National,,Desk research,https://www.iita.org/wp-content/uploads/2020/07/Guide-to-Rice-Production-in-Northern-Nigeria.pdf,"Average rice yields per unit area in the country at 2-3 t/ha, while on research field at 6-8t/ha",High confidence,Median/Mean value,,,,2-3,t/ha,Mean,,,,,,,,,
@@ -112,10 +112,10 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 111,Nigeria,Maize,2020,National,,Desk research,https://veggiegrow.ng/maize-farming-in-nigeria/,With a potential of up to 12 tons per hectare,Moderate confidence,Median/Mean value,,,,6-10,t/ha,Mean,,,,,,,,,
 112,Nigeria,Maize,2020,National,,Desk research,https://veggiegrow.ng/maize-farming-in-nigeria/,,Moderate confidence,Median/Mean value,,,,,,,"320,000",N/ha,,,,,,,
 113,Nigeria,Maize,2020,National,,Desk research,https://veggiegrow.ng/maize-farming-in-nigeria/,equvalent to 91 bags,Moderate confidence,Median/Mean value,,,,9.1,t/ha,,,,,,,,,,
-114,Nigeria,Maize,2021,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,2000,kg/ha,Mean,0.42,,Mean,411.91,-,Mean,437.4,,Mean
-115,Nigeria,Maize,2021,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,2000,kg/ha,Mean,0.42,,Mean,527.45,-,Mean,437.4,,Mean
-116,Nigeria,Maize,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.44,ha,Mean,2694,kg/ha,Mean,0.14,,Mean,88.69,-,Mean,0,,Mean
-117,Nigeria,Maize,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.44,ha,Mean,2636.68,kg/ha,Mean,0.14,,Mean,229.63,-,Mean,0,,Mean
+114,Nigeria,Maize,2021,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,2000,kg,Mean,0.42,USD/kg,Mean,411.91,USD,Mean,437.4,USD,Mean
+115,Nigeria,Maize,2021,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,2000,kg,Mean,0.42,USD/kg,Mean,527.45,USD,Mean,437.4,USD,Mean
+116,Nigeria,Maize,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.44,ha,Mean,2694,kg,Mean,0.14,USD/kg,Mean,88.69,USD,Mean,0,USD,Mean
+117,Nigeria,Maize,2017,National,,SDM Data,,,High confidence,Median/Mean value,1.44,ha,Mean,2636.68,kg,Mean,0.14,USD/kg,Mean,229.63,USD,Mean,0,USD,Mean
 118,Nigeria,Cassava,2017,National,,SDM Data,,,High confidence,Median/Mean value,4,ha,Mean,38000,kg/ha,Mean,0.05,,Mean,NA,-,Mean,0,,Mean
 119,Nigeria,Cassava,2017,National,,SDM Data,,,High confidence,Median/Mean value,4,ha,Mean,70000,kg/ha,Mean,0.05,,Mean,NA,-,Mean,0,,Mean
 120,Nigeria,Cassava,2017,National,,SDM Data,,,High confidence,Median/Mean value,2.01,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
@@ -124,8 +124,8 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 123,Nigeria,Cassava,2017,National,,SDM Data,,,High confidence,Median/Mean value,3,ha,Mean,49500,kg/ha,Mean,0.08,,Mean,NA,-,Mean,0,,Mean
 124,Nigeria,Cassava,2018,National,,SDM Data,,,High confidence,Median/Mean value,1.11,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
 125,Nigeria,Cassava,2018,National,,SDM Data,,,High confidence,Median/Mean value,1.16,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
-126,Nigeria,Cassava,2019,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,1208.34,,Mean,0,,Mean
-127,Nigeria,Cassava,2019,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,1339.84,,Mean,0,,Mean
+126,Nigeria,Cassava,2019,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg,Mean,,USD/kg,Mean,1208.34,USD,Mean,0,USD,Mean
+127,Nigeria,Cassava,2019,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg,Mean,,USD/kg,Mean,1339.84,USD,Mean,0,USD,Mean
 128,Peru,Coffee,2020,National,USD,Desk research,https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee%20Annual_Lima_Peru_05-15-2021.pdf,,Moderate confidence,Median/Mean value,,,,718,kg/ha,Mean,2.2,$/kg,,,,,,,
 129,Peru,Coffee,2020,National,USD,Desk research,https://apps.fas.usda.gov/newgainapi/api/Report/DownloadReportByFileName?fileName=Coffee%20Annual_Lima_Peru_05-15-2021.pdf,,Moderate confidence,Median/Mean value,,,,2520,kg/ha,Max ,,,,,,,,,
 130,Peru,Coffee,2022,National,,Desk research,https://dailycoffeenews.com/2023/05/31/peru-coffee-report-production-rebounds-eu-regulation-concerns-farmers/,Report estimate,Moderate confidence,Median/Mean value,,,,,,,752,kg/ha,Mean,,,,,,
@@ -134,12 +134,12 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 133,Peru,Rice,2018,National,,Desk research,https://www.ceicdata.com/en/peru/agricultural-production-yield/agricultural-production-yield-rice-skinned,,Low confidence,Median/Mean value,,,,,,,8.185,kg/ha,Mean,,,,,,
 134,Peru,Rice,2018,National,PEN,Desk research,https://www.spacefordevelopment.org/wp-content/uploads/2022/04/PeruRice-WP5-D14_CaseStudy-1.0.pdf,,Moderate confidence,Median/Mean value,,,,,,,1,PEN/kg,Mean,,,,,,
 135,Peru,Maize,2018,National,,Desk research,https://www.ceicdata.com/en/peru/agricultural-production-yield/agricultural-production-yield-maize-corn,,Low confidence,Median/Mean value,,,,4.769,kg/ha,Mean,,,,,,,,,
-136,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1557.29,kg/ha,Mean,2.04,,Mean,3974.31,-,Mean,0,,Mean
-137,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,2226.93,kg/ha,Mean,2.34,,Mean,5023.64,-,Mean,0,,Mean
-138,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1557.29,kg/ha,Mean,2.04,,Mean,3974.31,-,Mean,0,,Mean
-139,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,2260.26,kg/ha,Mean,2.34,,Mean,4876.90,-,Mean,0,,Mean
-140,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,800.79,kg/ha,Mean,2.24,,Mean,3842.49,-,Mean,0,,Mean
-141,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1427.33,kg/ha,Mean,2.54,,Mean,4673.89,-,Mean,0,,Mean
+136,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1557.29,kg,Mean,2.04,USD/kg,Mean,3974.31,USD,Mean,0,USD,Mean
+137,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,2226.93,kg,Mean,2.34,USD/kg,Mean,5023.64,USD,Mean,0,USD,Mean
+138,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1557.29,kg,Mean,2.04,USD/kg,Mean,3974.31,USD,Mean,0,USD,Mean
+139,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,2260.26,kg,Mean,2.34,USD/kg,Mean,4876.90,USD,Mean,0,USD,Mean
+140,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,800.79,kg,Mean,2.24,USD/kg,Mean,3842.49,USD,Mean,0,USD,Mean
+141,Peru,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,1427.33,kg,Mean,2.54,USD/kg,Mean,4673.89,USD,Mean,0,USD,Mean
 142,Tanzania,Coffee,2021,National,,Desk research,"https://www.mdpi.com/2225-1154/9/6/90#:~:text=The%20average%20smallholder%20coffee%20productivity,farmers%20at%20risk%20%5B6%5D.",,Moderate confidence,Low value,,,,250-300,kg/ha,Mean,,,,,,,,,
 143,Tanzania,Coffee,2021,National,,Desk research,"https://www.mdpi.com/2225-1154/9/6/90#:~:text=The%20average%20smallholder%20coffee%20productivity,farmers%20at%20risk%20%5B6%5D.",potential yield,Moderate confidence,High value,,,,1000,kg/ha,Max ,,,,,,,,,
 144,Tanzania,Coffee,2020,National,,Desk research,https://viagroforestry.org/app/uploads/2020/11/code_p-project_factsheet-.pdf,"average coffee productivity over the years,equivalent to 0.54kg per tree",Moderate confidence,High value,,,,0.748,t/ha,Mean,,,,,,,,,
@@ -147,45 +147,45 @@ id,country,commodity,year,region,currency,source,link,notes,confidence_level,ran
 146,Tanzania,Maize,2021,National,TZS,Desk research,https://www.statista.com/statistics/1140512/average-wholesale-price-of-maize-in-tanzania/,"wholesale price, corresponding to 18.4 U.S. dollars per sack",High confidence,Median/Mean value,,,,,,,430,TZS/Kg,Mean,,,,,,
 147,Tanzania,Coffee,2015,National,,SDM Data,,,High confidence,Median/Mean value,0.8,ha,Mean,1040,kg/ha,Mean,0.43,,Mean,NA,-,Mean,0,,Mean
 148,Tanzania,Coffee,2015,National,,SDM Data,,,High confidence,Median/Mean value,0.8,ha,Mean,1039.96,kg/ha,Mean,0.43,,Mean,NA,-,Mean,0,,Mean
-149,Tanzania,Coffee,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.2,ha,Mean,576,kg/ha,Mean,2.06,,Mean,191.82,-,Mean,0,,Mean
-150,Tanzania,Coffee,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.2,ha,Mean,576,kg/ha,Mean,2.06,,Mean,191.82,-,Mean,0,,Mean
+149,Tanzania,Coffee,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.2,ha,Mean,576,kg,Mean,2.06,USD/kg,Mean,191.82,USD,Mean,0,USD,Mean
+150,Tanzania,Coffee,2016,National,,SDM Data,,,High confidence,Median/Mean value,1.2,ha,Mean,576,kg,Mean,2.06,USD/kg,Mean,191.82,USD,Mean,0,USD,Mean
 151,Tanzania,Maize,2018,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,1700,kg/ha,Mean,0.13,,Mean,NA,-,Mean,0,,Mean
 152,Tanzania,Maize,2018,National,,SDM Data,,,High confidence,Median/Mean value,1.1,ha,Mean,2527.2,kg/ha,Mean,0.13,,Mean,NA,-,Mean,0,,Mean
-153,Tanzania,Tea,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.32,ha,Mean,1292.93,kg/ha,Mean,0.13,,Mean,81.39,-,Mean,0,,Mean
-154,Tanzania,Tea,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.32,ha,Mean,2427.06,kg/ha,Mean,0.14,,Mean,164.54,-,Mean,0,,Mean
+153,Tanzania,Tea,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.32,ha,Mean,1292.93,kg,Mean,0.13,USD/kg,Mean,81.39,USD,Mean,0,USD,Mean
+154,Tanzania,Tea,2020,National,,SDM Data,,,High confidence,Median/Mean value,0.32,ha,Mean,2427.06,kg,Mean,0.14,USD/kg,Mean,164.54,USD,Mean,0,USD,Mean
 155,Uganda,Coffee,2022,National,UGX,Desk research,https://fairtradeafrica.net/wp-content/uploads/2022/11/Fairtrade-Living-Income-Reference-Price-Uganda-coffee.pdf,"UGX 11,640 (US$ 3.06) per kilo of dried parchment (equivalent to UGX 2,328 for a kilo of cherry); arabica",Moderate confidence,Median/Mean value,2,acres,Min,350,kg/acre,Median,2328,UGX/kg,Mean,,,,,,
 156,Uganda,Coffee,2022,National,UGX,Desk research,https://ugandacoffee.go.ug/sites/default/files/2022-12/November%202022.pdf,Robusta Kiboko,Moderate confidence,Median/Mean value,,,,,,,2400,UGX/kg,Mean,,,,,,
 157,Uganda,Coffee,2022,National,UGX,Desk research,https://ugandacoffee.go.ug/sites/default/files/2022-12/November%202022.pdf,Arabica,Moderate confidence,Median/Mean value,,,,,,,9500,UGX/kg,Mean,,,,,,
 158,Uganda,Cocoa,2023,National,UGX,Desk research,https://farmersreviewafrica.com/uganda-in-a-24-8-million-cocoa-factory-plan-to-improve-smallholder-farmers-income/,dried beans,Moderate confidence,High value,,,,,,,7800,UGX/kg,Max ,,,,,,
 159,Uganda,Cocoa,2023,National,UGX,Desk research,https://farmersreviewafrica.com/uganda-in-a-24-8-million-cocoa-factory-plan-to-improve-smallholder-farmers-income/,wet beans,Moderate confidence,Low value,2,acres,Min,,,,3000,UGX/kg,Min,,,,,,
 160,Uganda,Cocoa,2021,National,UGX,Desk research,https://www.monitor.co.ug/uganda/magazines/farming/how-farmers-can-earn-more-from-cocoa-3492918,"450 trees per acre, each tree 3-4kgs, a  kg sold at 7000",Moderate confidence,Median/Mean value,,,,1800,kg/acre,Mean,7000,UGX/kg,Median,,,,,,
-161,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,2.43,ha,Mean,3888,kg/ha,Mean,0.56,,Mean,522.67,-,Mean,1663.59,,Mean
-162,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,2.43,ha,Mean,18951.82,kg/ha,Mean,0.28,,Mean,3390.29,-,Mean,1475.25,,Mean
-163,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,649.05,kg/ha,Mean,3.79,,Mean,773.13,-,Mean,84.28,,Mean
-164,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,681.73,kg/ha,Mean,5.43,,Mean,1385.27,-,Mean,115.71,,Mean
+161,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,2.43,ha,Mean,3888,kg,Mean,0.56,USD/kg,Mean,522.67,USD,Mean,1663.59,USD,Mean
+162,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,2.43,ha,Mean,18951.82,kg,Mean,0.28,USD/kg,Mean,3390.29,USD,Mean,1475.25,USD,Mean
+163,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,649.05,kg,Mean,3.79,USD/kg,Mean,773.13,USD,Mean,84.28,USD,Mean
+164,Uganda,Coffee,2021,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,681.73,kg,Mean,5.43,USD/kg,Mean,1385.27,USD,Mean,115.71,USD,Mean
 165,Uganda,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
 166,Uganda,Coffee,2017,National,,SDM Data,,,High confidence,Median/Mean value,NA,ha,Mean,,kg/ha,Mean,,,Mean,NA,,Mean,0,,Mean
-167,Uganda,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.44,ha,Mean,800,kg/ha,Mean,0.13,,Mean,21.33,-,Mean,0,,Mean
-168,Uganda,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.44,ha,Mean,800.03,kg/ha,Mean,0.22,,Mean,40.00,-,Mean,0,,Mean
-169,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,1036.13,kg/ha,Mean,1.79,,Mean,780.02,-,Mean,0,,Mean
-170,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,1036.13,kg/ha,Mean,1.79,,Mean,664.58,-,Mean,0,,Mean
-171,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,1317.41,kg/ha,Mean,0.82,,Mean,528.61,-,Mean,0,,Mean
-172,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.98,ha,Mean,1640.6,kg/ha,Mean,1.35,,Mean,1186.23,-,Mean,0,,Mean
+167,Uganda,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.44,ha,Mean,800,kg,Mean,0.13,USD/kg,Mean,21.33,USD,Mean,0,USD,Mean
+168,Uganda,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,0.44,ha,Mean,800.03,kg,Mean,0.22,USD/kg,Mean,40.00,USD,Mean,0,USD,Mean
+169,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,1036.13,kg,Mean,1.79,USD/kg,Mean,780.02,USD,Mean,0,USD,Mean
+170,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.6,ha,Mean,1036.13,kg,Mean,1.79,USD/kg,Mean,664.58,USD,Mean,0,USD,Mean
+171,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.81,ha,Mean,1317.41,kg,Mean,0.82,USD/kg,Mean,528.61,USD,Mean,0,USD,Mean
+172,Uganda,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.98,ha,Mean,1640.6,kg,Mean,1.35,USD/kg,Mean,1186.23,USD,Mean,0,USD,Mean
 173,Vietnam,Rice,2021,National,,Desk research,"https://www.statista.com/statistics/1339019/vietnam-average-yield-of-rice-paddy/#:~:text=In%202021%2C%20each%20hectare%20of,export%20commodities%20in%20the%20country.",,High confidence,Median/Mean value,,,,60.6,quintals/ha,Mean,,,,,,,,,
 174,Vietnam,Rice,2022,National,USD,Desk research,"https://fulcrum.sg/vietnam-and-thailands-rice-cartel-is-a-hard-sell-but-rice-farmers-need-more-help/#:~:text=Vietnamese%20farmers%20earn%20an%20average,benefit%20from%20a%20rice%20cartel.",Vietnamese farmers earn an average of around US$160 per month,Moderate confidence,Median/Mean value,0.5,ha,Mean,5.69,t/ha,Mean,,,,,,,,,
 175,Vietnam,Coffee,2019,National,,Desk research,https://www.plantagbiosciences.org/people/catherine-beal/2020/07/03/background-on-coffee-in-vietnam/,,Moderate confidence,Median/Mean value,,,,2.3,t/ha,Mean,,,,,,,,,
 176,Vietnam,Coffee,2023,National,,Desk research,https://www.reuters.com/markets/commodities/too-wet-bone-dry-indonesian-coffee-crop-faces-el-nino-jolt-2023-08-14/,,High confidence,Median/Mean value,,,,2.7,t/ha,Mean,,,,,,,,,
 177,Vietnam,Coffee,2015,National,,SDM Data,,,High confidence,Median/Mean value,1.8,ha,Mean,6003,kg/ha,Mean,1.93,,Mean,NA,-,Mean,0,,Mean
 178,Vietnam,Coffee,2015,National,,SDM Data,,,High confidence,Median/Mean value,1.8,ha,Mean,6183.09,kg/ha,Mean,1.93,,Mean,NA,-,Mean,0,,Mean
-179,Vietnam,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,4891.65,kg/ha,Mean,1.77,,Mean,4832.48,-,Mean,0,,Mean
-180,Vietnam,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,4893.77,kg/ha,Mean,1.77,,Mean,4288.91,-,Mean,0,,Mean
+179,Vietnam,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,4891.65,kg,Mean,1.77,USD/kg,Mean,4832.48,USD,Mean,0,USD,Mean
+180,Vietnam,Coffee,2018,National,,SDM Data,,,High confidence,Median/Mean value,2,ha,Mean,4893.77,kg,Mean,1.77,USD/kg,Mean,4288.91,USD,Mean,0,USD,Mean
 181,Vietnam,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.1,ha,Mean,3277.74,kg/ha,Mean,1.44,,Mean,NA,-,Mean,0,,Mean
 182,Vietnam,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.1,ha,Mean,3277.86,kg/ha,Mean,1.44,,Mean,NA,-,Mean,0,,Mean
-183,Vietnam,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,3638.05,kg/ha,Mean,1.52,,Mean,1985.01,-,Mean,0,,Mean
-184,Vietnam,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,3548.67,kg/ha,Mean,1.52,,Mean,2126.88,-,Mean,0,,Mean
-185,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.75,ha,Mean,,kg/ha,Mean,,,Mean,1775.64,,Mean,0,,Mean
-186,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.6,ha,Mean,4188,kg/ha,Mean,0.85,,Mean,2019.39,-,Mean,0,,Mean
-187,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,2.5,,Mean,,kg/ha,Mean,,,Mean,11412.38,,Mean,0,,Mean
-188,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,2.5,ha,Mean,8490.9,kg/ha,Mean,1.71,,Mean,9850.78,-,Mean,0,,Mean
-189,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.9,ha,Mean,,kg/ha,Mean,,,Mean,5159.39,,Mean,0,,Mean
-190,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.9,ha,Mean,4844.56,kg/ha,Mean,1.81,,Mean,5014.78,-,Mean,0,,Mean
+183,Vietnam,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,3638.05,kg,Mean,1.52,USD/kg,Mean,1985.01,USD,Mean,0,USD,Mean
+184,Vietnam,Coffee,2019,National,,SDM Data,,,High confidence,Median/Mean value,1,ha,Mean,3548.67,kg,Mean,1.52,USD/kg,Mean,2126.88,USD,Mean,0,USD,Mean
+185,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,0.75,ha,Mean,,kg,Mean,,USD/kg,Mean,1775.64,USD,Mean,0,USD,Mean
+186,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.6,ha,Mean,4188,kg,Mean,0.85,USD/kg,Mean,2019.39,USD,Mean,0,USD,Mean
+187,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,2.5,,Mean,,kg,Mean,,USD/kg,Mean,11412.38,USD,Mean,0,USD,Mean
+188,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,2.5,ha,Mean,8490.9,kg,Mean,1.71,USD/kg,Mean,9850.78,USD,Mean,0,USD,Mean
+189,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.9,ha,Mean,,kg,Mean,,USD/kg,Mean,5159.39,USD,Mean,0,USD,Mean
+190,Vietnam,Pepper,2019,National,,SDM Data,,,High confidence,Median/Mean value,1.9,ha,Mean,4844.56,kg,Mean,1.81,USD/kg,Mean,5014.78,USD,Mean,0,USD,Mean
