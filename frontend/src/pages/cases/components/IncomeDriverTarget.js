@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Form, InputNumber, Select, Switch } from "antd";
+import { Row, Col, Form, InputNumber, Select, Switch, message } from "antd";
 import { InputNumberThousandFormatter, selectProps } from "./";
 import { api } from "../../../lib";
 import isEmpty from "lodash/isEmpty";
@@ -25,6 +25,8 @@ const IncomeDriverTarget = ({
   const [loadingRegionOptions, setLoadingRegionOptions] = useState(false);
   const currentSegmentId = segmentItem?.currentSegmentId || null;
   const [regionOptionStatus, setRegionOptionStatus] = useState(null);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const calculateHouseholdSize = ({
     household_adult = 0,
@@ -159,53 +161,82 @@ const IncomeDriverTarget = ({
       if (currentCase?.country && currentCase?.year && region) {
         let url = `country_region_benchmark?country_id=${currentCase.country}`;
         url = `${url}&region_id=${region}&year=${currentCase.year}`;
-        api.get(url).then((res) => {
-          // data represent LI Benchmark value
-          const { data } = res;
-          const household_adult = data.nr_adults;
-          const household_children = data.household_size - data.nr_adults;
-          setBenchmark(data);
-          const defHHSize = calculateHouseholdSize({
-            household_adult,
-            household_children,
-          });
-          setHouseholdSize(defHHSize);
-          // set hh adult and children default value
-          form.setFieldsValue({
-            household_adult: household_adult,
-            household_children: household_children,
-          });
-          //
-          const targetHH = data.household_equiv;
-          const targetValue =
-            data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
-          // with CPI calculation
-          // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
-          if (data?.cpi_factor) {
-            const caseYearLIB = targetValue * (1 - data.cpi_factor);
-            // incorporate year multiplier
-            const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
-            setIncomeTarget(LITarget * 12);
+        api
+          .get(url)
+          .then((res) => {
+            // data represent LI Benchmark value
+            const { data } = res;
+            const household_adult = data.nr_adults;
+            const household_children = data.household_size - data.nr_adults;
+            setBenchmark(data);
+            const defHHSize = calculateHouseholdSize({
+              household_adult,
+              household_children,
+            });
+            setHouseholdSize(defHHSize);
+            // set hh adult and children default value
+            form.setFieldsValue({
+              household_adult: household_adult,
+              household_children: household_children,
+            });
+            //
+            const targetHH = data.household_equiv;
+            const targetValue =
+              data.value?.[currentCase.currency.toLowerCase()] ||
+              data.value.lcu;
+            // with CPI calculation
+            // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+            if (data?.cpi_factor) {
+              const caseYearLIB = targetValue * (1 - data.cpi_factor);
+              // incorporate year multiplier
+              const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
+              setIncomeTarget(LITarget * 12);
+              updateFormValues({
+                ...regionData,
+                target: LITarget,
+                benchmark: data,
+                adult: household_adult,
+                child: household_children,
+              });
+            } else {
+              // incorporate year multiplier
+              const LITarget = (defHHSize / targetHH) * targetValue * 12;
+              setIncomeTarget(LITarget);
+              updateFormValues({
+                ...regionData,
+                target: LITarget,
+                benchmark: data,
+                adult: household_adult,
+                child: household_children,
+              });
+            }
+          })
+          .catch((e) => {
+            // reset field and benchmark value
+            form.setFieldsValue({
+              household_adult: null,
+              household_children: null,
+            });
+            setHouseholdSize(0);
+            setIncomeTarget(0);
             updateFormValues({
               ...regionData,
-              target: LITarget,
-              benchmark: data,
-              adult: household_adult,
-              child: household_children,
+              target: 0,
+              benchmark: {},
+              adult: null,
+              child: null,
             });
-          } else {
-            // incorporate year multiplier
-            const LITarget = (defHHSize / targetHH) * targetValue * 12;
-            setIncomeTarget(LITarget);
-            updateFormValues({
-              ...regionData,
-              target: LITarget,
-              benchmark: data,
-              adult: household_adult,
-              child: household_children,
+            // show notification
+            const { status, statusText, data } = e.response;
+            let content = data?.detail || statusText;
+            if (status === 404) {
+              content = "Benchmark value not found.";
+            }
+            messageApi.open({
+              type: "error",
+              content: content,
             });
-          }
-        });
+          });
       }
     }
   };
@@ -228,126 +259,129 @@ const IncomeDriverTarget = ({
   ];
 
   return (
-    <Form
-      name={`drivers-income-target-${segment}`}
-      layout="vertical"
-      form={form}
-      onValuesChange={onValuesChange}
-      style={{ width: "100%" }}
-    >
-      <Row gutter={[8, 8]}>
-        <Col span={12}>
-          <Form.Item
-            label="Set an income target yourself?"
-            name="manual_target"
+    <>
+      {contextHolder}
+      <Form
+        name={`drivers-income-target-${segment}`}
+        layout="vertical"
+        form={form}
+        onValuesChange={onValuesChange}
+        style={{ width: "100%" }}
+      >
+        <Row gutter={[8, 8]}>
+          <Col span={12}>
+            <Form.Item
+              label="Set an income target yourself?"
+              name="manual_target"
+            >
+              <Switch checked={!disableTarget} disabled={!enableEditCase} />
+            </Form.Item>
+          </Col>
+          <Col
+            span={12}
+            style={{
+              display: disableTarget ? "none" : "",
+            }}
           >
-            <Switch checked={!disableTarget} disabled={!enableEditCase} />
-          </Form.Item>
-        </Col>
-        <Col
-          span={12}
-          style={{
-            display: disableTarget ? "none" : "",
-          }}
-        >
-          <Row align="middle" gutter={[16, 16]}>
-            <Col span={21}>
-              <Form.Item label="Target" name="target">
-                <InputNumber
-                  style={formStyle}
-                  disabled={disableTarget || !enableEditCase}
-                  {...InputNumberThousandFormatter}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={3}>
-              <b>{currentCase.currency}</b>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      {/* region options notif */}
-      {regionOptionStatus === 404 && (
-        <Row
-          style={{
-            borderBottom: "1px solid #e8e8e8",
-            marginBottom: "12px",
-            color: "red",
-          }}
-        >
-          <Col span={24}>
-            A benchmark for the county is not available; please switch to manual
-            target.
+            <Row align="middle" gutter={[16, 16]}>
+              <Col span={21}>
+                <Form.Item label="Target" name="target">
+                  <InputNumber
+                    style={formStyle}
+                    disabled={disableTarget || !enableEditCase}
+                    {...InputNumberThousandFormatter}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={3}>
+                <b>{currentCase.currency}</b>
+              </Col>
+            </Row>
           </Col>
         </Row>
-      )}
-      <Row gutter={[8, 8]} style={{ display: !disableTarget ? "none" : "" }}>
-        <Col span={8}>
-          <Form.Item label="Region" name="region">
-            <Select
-              style={formStyle}
-              options={regionOptions}
-              disabled={!disableTarget || !enableEditCase}
-              loading={loadingRegionOptions}
-              placeholder={
-                regionOptionStatus === 404
-                  ? "Region not available"
-                  : "Select or Type Region"
-              }
-              {...selectProps}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label="Avg # of adults in HH"
-            name="household_adult"
-            rules={preventNegativeValue("household_adult")}
+        {/* region options notif */}
+        {regionOptionStatus === 404 && (
+          <Row
+            style={{
+              borderBottom: "1px solid #e8e8e8",
+              marginBottom: "12px",
+              color: "red",
+            }}
           >
-            <InputNumber
-              style={formStyle}
-              onChange={handleOnChangeHouseholdAdult}
-              disabled={!enableEditCase}
-            />
-          </Form.Item>
-        </Col>
-        <Col span={8}>
-          <Form.Item
-            label="Avg # of children in HH"
-            name="household_children"
-            rules={preventNegativeValue("household_children")}
-          >
-            <InputNumber
-              style={formStyle}
-              onChange={handleOnChangeHouseholdChild}
-              disabled={!enableEditCase}
-            />
-          </Form.Item>
-        </Col>
-      </Row>
-      <Row
-        gutter={[8, 8]}
-        style={{
-          borderTop: "1px solid #e8e8e8",
-          display: !disableTarget ? "none" : "",
-        }}
-      >
-        <Col span={8}>
-          <p>Living income benchmark value for a household per year</p>
-          <h2 className="income-target-value">
-            {incomeTarget ? thousandFormatter(incomeTarget.toFixed()) : 0}{" "}
-            {currentCase.currency}
-          </h2>
-        </Col>
-        {/* <Col span={16}>
+            <Col span={24}>
+              A benchmark for the county is not available; please switch to
+              manual target.
+            </Col>
+          </Row>
+        )}
+        <Row gutter={[8, 8]} style={{ display: !disableTarget ? "none" : "" }}>
+          <Col span={8}>
+            <Form.Item label="Region" name="region">
+              <Select
+                style={formStyle}
+                options={regionOptions}
+                disabled={!disableTarget || !enableEditCase}
+                loading={loadingRegionOptions}
+                placeholder={
+                  regionOptionStatus === 404
+                    ? "Region not available"
+                    : "Select or Type Region"
+                }
+                {...selectProps}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Avg # of adults in HH"
+              name="household_adult"
+              rules={preventNegativeValue("household_adult")}
+            >
+              <InputNumber
+                style={formStyle}
+                onChange={handleOnChangeHouseholdAdult}
+                disabled={!enableEditCase}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={8}>
+            <Form.Item
+              label="Avg # of children in HH"
+              name="household_children"
+              rules={preventNegativeValue("household_children")}
+            >
+              <InputNumber
+                style={formStyle}
+                onChange={handleOnChangeHouseholdChild}
+                disabled={!enableEditCase}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row
+          gutter={[8, 8]}
+          style={{
+            borderTop: "1px solid #e8e8e8",
+            display: !disableTarget ? "none" : "",
+          }}
+        >
+          <Col span={8}>
+            <p>Living income benchmark value for a household per year</p>
+            <h2 className="income-target-value">
+              {incomeTarget ? thousandFormatter(incomeTarget.toFixed()) : 0}{" "}
+              {currentCase.currency}
+            </h2>
+          </Col>
+          {/* <Col span={16}>
           <p>Current HH Living Income</p>
           <h2>
             {thousandFormatter(totalIncome.current.toFixed(2))}{" "}
             {currentCase.currency}
           </h2>
         </Col> */}
-      </Row>
-    </Form>
+        </Row>
+      </Form>
+    </>
   );
 };
 
