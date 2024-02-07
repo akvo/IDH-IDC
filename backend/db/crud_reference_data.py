@@ -35,7 +35,7 @@ def get_all_reference(
         data = data.filter(ReferenceData.commodity == commodity)
     if source:
         data = data.filter(
-            ReferenceData.name.ilike("%{}%".format(source.lower().strip()))
+            ReferenceData.source.ilike("%{}%".format(source.lower().strip()))
         )
     if driver == Driver.area:
         data = data.filter(ReferenceData.area.is_not(None))

@@ -21,4 +21,14 @@ export const driverOptions = [
   },
 ];
 
+const sources = [
+  "Farmfit",
+  "Desk research",
+  "IDH internal",
+  "SDM Data",
+  "FAO",
+  "Other",
+];
+export const sourceOptions = sources.map((x) => ({ label: x, value: x }));
+
 export { default as ExploreStudiesPage } from "./ExploreStudiesPage";

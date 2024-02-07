@@ -14,6 +14,7 @@ import {
 } from "antd";
 import { api } from "../../lib";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import { sourceOptions } from ".";
 
 const selectProps = {
   showSearch: true,
@@ -49,9 +50,6 @@ const typeOptions = [
   { label: "Maximum", value: "Maximum" },
   { label: "Minimum", value: "Minimum" },
 ];
-
-const sources = ["Farmfit", "Desk research", "IDH internal", "FAO", "Other"];
-const sourceOptions = sources.map((x) => ({ label: x, value: x }));
 
 const isValidUrl = (url) => {
   try {
