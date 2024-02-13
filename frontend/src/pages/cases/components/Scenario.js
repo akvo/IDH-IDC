@@ -1144,7 +1144,7 @@ const Scenario = ({
                   align="top"
                   ref={elCurrentScenarioIncomeGap}
                 >
-                  <Col span={12}>
+                  <Col span={10}>
                     <Card
                       className="info-card-wrapper"
                       title="Income Driver Values"
@@ -1164,7 +1164,7 @@ const Scenario = ({
                       />
                     </Card>
                   </Col>
-                  <Col span={12}>
+                  <Col span={14}>
                     <h2>
                       What are the results for the different segments in the
                       current scenario?
