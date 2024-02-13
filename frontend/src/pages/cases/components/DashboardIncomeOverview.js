@@ -335,15 +335,16 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               income drivers influence the transition from the current income
               level to a feasible income level. Each element represents how
               income changes resulting from changing an income driver from its
-              current to its feasible level, and the final bar showcases the
-              feasible total household income when all drivers are set to
-              feasible values. We first change area from its current to its
-              feasible level and see how income changes, next price, then yield
-              etc.
+              current to its feasible level, keeping the other income drivers at
+              their current levels.
               <br />
               <br />
               Insights: The graph serves to clarify which income drivers have
               the most significant impact on increasing household income levels.
+              The values do not add up to the feasible income level because some
+              income drivers are interconnected and in this graph we only assess
+              the change in income caused by changing one income driver to its
+              feasible levels, while the others remain at their current levels.
             </p>
           </Col>
         </Row>
