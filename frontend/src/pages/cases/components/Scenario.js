@@ -187,7 +187,7 @@ const Question = ({
   return (
     <>
       <Row
-        gutter={[8, 8]}
+        gutter={[5, 5]}
         align="middle"
         justify="space-between"
         display={
@@ -456,7 +456,7 @@ const ScenarioInput = ({
       onValuesChange={onValuesChange}
       initialValues={scenarioValue?.allNewValues || {}}
     >
-      <Row gutter={[8, 8]} align="middle" justify="space-between">
+      <Row gutter={[5, 5]} align="middle" justify="space-between">
         <Col span={9}>
           <h2>Income Target</h2>
         </Col>
@@ -464,7 +464,7 @@ const ScenarioInput = ({
           <h2>{`${segment.target?.toFixed()} ${currencyUnitName}`}</h2>
         </Col>
       </Row>
-      <Row gutter={[8, 8]} align="middle" justify="space-between">
+      <Row gutter={[5, 5]} align="middle" justify="space-between">
         <Col span={9}>
           <h4>Income Driver</h4>
         </Col>
@@ -475,10 +475,10 @@ const ScenarioInput = ({
           <h4>Current value</h4>
         </Col>
         <Col span={5} align="right">
-          <h4>Increase</h4>
+          <h4>Change</h4>
         </Col>
       </Row>
-      <Row gutter={[8, 8]} align="middle" justify="space-between">
+      <Row gutter={[5, 5]} align="middle" justify="space-between">
         <Col span={9}>
           <h4>
             Total Income <small>{currencyUnitName}</small>
@@ -486,9 +486,10 @@ const ScenarioInput = ({
         </Col>
         <Col span={5} align="center">
           <h4>
-            {percentage
+            {/* {percentage
               ? `${scenarioIncrease.totalPercentage}%`
-              : thousandFormatter(scenarioIncrease?.totalAbsolute)}
+              : thousandFormatter(scenarioIncrease?.totalAbsolute)} */}
+            {thousandFormatter(scenarioIncrease?.totalAbsolute)}
           </h4>
         </Col>
         <Col span={5} align="right">
@@ -1144,7 +1145,7 @@ const Scenario = ({
                   align="top"
                   ref={elCurrentScenarioIncomeGap}
                 >
-                  <Col span={12}>
+                  <Col span={10}>
                     <Card
                       className="info-card-wrapper"
                       title="Income Driver Values"
@@ -1164,7 +1165,7 @@ const Scenario = ({
                       />
                     </Card>
                   </Col>
-                  <Col span={12}>
+                  <Col span={14}>
                     <h2>
                       What are the results for the different segments in the
                       current scenario?
