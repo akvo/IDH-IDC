@@ -27,6 +27,7 @@ import {
   UserOutlined,
   InfoCircleOutlined,
   UsergroupAddOutlined,
+  FileOutlined,
 } from "@ant-design/icons";
 import { isEmpty, upperFirst } from "lodash";
 import {
@@ -523,9 +524,20 @@ const DataFields = ({
               title="Information about Living Income Benchmark"
               className="info-card-wrapper"
               extra={
-                <Tooltip title={LIBTooltipText}>
-                  <InfoCircleOutlined style={{ color: "#fff" }} />
-                </Tooltip>
+                <Space>
+                  <a
+                    href="/files/explanation_on_using_benchmarks.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Tooltip title='See "An explanation of how to contextualise the Living Income Benchmarks" document here.'>
+                      <FileOutlined style={{ color: "#fff" }} />
+                    </Tooltip>
+                  </a>
+                  <Tooltip title={LIBTooltipText}>
+                    <InfoCircleOutlined style={{ color: "#fff" }} />
+                  </Tooltip>
+                </Space>
               }
             >
               <div className="benchmark-info-title-wrapper">
