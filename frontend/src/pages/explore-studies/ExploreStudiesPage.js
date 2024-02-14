@@ -331,12 +331,13 @@ const ExploreStudiesPage = () => {
       });
       fetchReferenceData(country, commodity, driver, source);
     } else {
-      setFilterInitialValues({});
-      fetchReferenceData();
+      const { country, commodity, driver, source } = filterInitialValues;
+      fetchReferenceData(country, commodity, driver, source);
     }
-  }, [fetchReferenceData, currentPage, location]);
+  }, [fetchReferenceData, currentPage, location, filterInitialValues]);
 
   const onFilter = (values) => {
+    setCurrentPage(1);
     const { country, commodity, driver, source } = values;
     if (countryId && commodityId && driverId) {
       setFilterInitialValues({});
@@ -349,11 +350,18 @@ const ExploreStudiesPage = () => {
         },
       });
     } else {
+      setFilterInitialValues({
+        country: country,
+        commodity: commodity,
+        driver: driver,
+        source: source,
+      });
       fetchReferenceData(country, commodity, driver, source);
     }
   };
 
   const handleClearFilter = () => {
+    setCurrentPage(1);
     form.resetFields();
     if (countryId && commodityId && driverId) {
       setFilterInitialValues({});

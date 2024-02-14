@@ -68,10 +68,10 @@ const ChartMonetaryContribution = ({
             replacedCurrentValues
           ) + data.total_current_diversified_income;
         const resValue = newTotalValue - data.total_current_income;
-        // CoP
-        if (d.toLowerCase().includes("cost")) {
-          return resValue * -1;
-        }
+        // CoP - multiplied by 1
+        // if (d.toLowerCase().includes("cost")) {
+        //   return resValue * -1;
+        // }
         return resValue;
       }
       return 0;
