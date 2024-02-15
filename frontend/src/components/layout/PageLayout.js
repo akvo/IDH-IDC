@@ -69,7 +69,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
         <Col span={4} align="start" style={{ width: "100%" }}>
-          <Link to="/">
+          <Link to={isLoggedIn ? "/welcome" : "/"}>
             <Image
               src={Logo}
               height={65}

@@ -43,7 +43,7 @@ const ExploreStudies = ({ signedIn = false }) => {
         )}
         <div
           data-testid="map"
-          className={`map-container ${signedIn ? "signed-in" : ""}`}
+          className={`map-container ${signedIn ? "signed-in" : "public"}`}
         ></div>
       </Col>
     </Row>

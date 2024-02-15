@@ -216,6 +216,10 @@
     &.signed-in {
       background-image: url("/assets/images/signed-in-explore-studies.svg") !important;
     }
+
+    &.public {
+      background-image: url("/assets/images/visual_for_landing_page.png") !important;
+    }
   }
 }
 
