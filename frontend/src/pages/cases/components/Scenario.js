@@ -413,6 +413,7 @@ const ScenarioInput = ({
       segmentId: segment.id,
       name: segment.name,
       value: !isNaN(totalValues) ? totalValues : 0,
+      allNewValues: allNewValues,
     };
     setScenarioValues((prev) => {
       return [
