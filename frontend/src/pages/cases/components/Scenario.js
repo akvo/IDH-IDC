@@ -35,11 +35,11 @@ const generateChartData = (data) => {
   return data.map((d) => {
     const incomeTarget = d.currentSegmentValue.target;
     const currentTotalIncome = d.currentSegmentValue.total_current_income;
-    const feasibleFocusIncome =
-      d.currentSegmentValue.total_feasible_focus_income;
 
-    const newTotalIncome = d?.newTotalIncome || feasibleFocusIncome;
-    const additionalValue = newTotalIncome - currentTotalIncome;
+    const newTotalIncome = d?.newTotalIncome || 0;
+    const additionalValue = newTotalIncome
+      ? newTotalIncome - currentTotalIncome
+      : 0;
 
     let gapValue = incomeTarget - newTotalIncome;
     gapValue = gapValue < 0 ? 0 : gapValue;
