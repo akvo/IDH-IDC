@@ -180,7 +180,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               className="chart-card-wrapper has-segments-button"
               title={
                 <Space align="center">
-                  <div>Biggest Impact on Incom</div>
+                  <div>Biggest Impact on Income</div>
                   <Tooltip
                     className="info-tooltip"
                     title="This graph % changes shown in the grapg represent it's 'contribution' to household income and not the change it creates in household income."
@@ -235,7 +235,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               The value represented in the graph are a contribution (%) of the
               particular income driver to the household income for the
               particular scenario. The absolute value of the household income
-              are different in the 2 scenrios.
+              are different in the 2 scenarios.
               <br />
               <br />
               TIP! By clicking on an item in the legend you can make it appear

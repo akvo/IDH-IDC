@@ -1241,7 +1241,7 @@ const Scenario = ({
               In the visual on the right you have the flexibility to select and
               compare specific combinations of scenarios and segments that you
               wish to visualise. You have the option as a user to choose which
-              specific combination of scenrios and segments that you would like
+              specific combination of scenarios and segments that you would like
               to compare.
               <br />
               <br />
