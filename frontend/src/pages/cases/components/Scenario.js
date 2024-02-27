@@ -677,6 +677,11 @@ const Scenario = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardData]);
 
+  useEffect(() => {
+    renameScenario(index, newName, newDescription);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, newName, newDescription]);
+
   const outcomeDriverQuestions = useMemo(() => {
     const commodities = commodityQuestions
       .filter(
