@@ -192,26 +192,28 @@ const FooterDisclaimer = () => {
           For our own analyses, insights and recommendations based on this data,
           please refer to our Insights Explorer.
         </p>
+        <br />
+        <p>
+          <Link
+            className="copyright-text"
+            style={{ color: "#fff" }}
+            onClick={() => setDataSecurityProvisionVisible(true)}
+          >
+            Data Security Provision
+          </Link>
+          .
+        </p>
       </Col>
       <Col span={24} className="footer-wrapper">
         <Divider style={{ borderColor: "#fff", opacity: 0.25 }} />
         <Row align="middle">
-          <Col span="18">
+          <Col span={24}>
             <Space align="center">
               <Image src={LogoWhite} preview={false} width={100} />
               <div className="copyright-text">
                 Copyright 2023 © IDH. All rights reserved - Created by Akvo.
               </div>
             </Space>
-          </Col>
-          <Col span="6" align="end" style={{ float: "right" }}>
-            <Link
-              className="copyright-text"
-              style={{ color: "#fff" }}
-              onClick={() => setDataSecurityProvisionVisible(true)}
-            >
-              Data Security Provision
-            </Link>
           </Col>
         </Row>
       </Col>
