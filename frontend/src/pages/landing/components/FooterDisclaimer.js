@@ -194,14 +194,17 @@ const FooterDisclaimer = () => {
         </p>
         <br />
         <p>
+          We are committed to safeguarding your information and maintaining the
+          highest standards of data protection. Please review our{" "}
           <Link
             className="copyright-text"
             style={{ color: "#fff" }}
             onClick={() => setDataSecurityProvisionVisible(true)}
           >
-            Data Security Provision
-          </Link>
-          .
+            <u>Data Security Provision</u>
+          </Link>{" "}
+          for detailed information on how we collect, use, and protect your
+          data.
         </p>
       </Col>
       <Col span={24} className="footer-wrapper">
