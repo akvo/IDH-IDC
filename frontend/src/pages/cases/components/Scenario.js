@@ -402,9 +402,13 @@ const ScenarioInput = ({
       }
       return acc;
     }, 0);
+
     // handle grouped diversified value
+    const filterDiversifiedKeys = Object.keys(allNewValues).filter((key) => {
+      return key.includes("absolute") && key.includes("diversified");
+    });
     const newDiversified =
-      allNewValues?.[`absolute-${case_commodity}-diversified`];
+      filterDiversifiedKeys.map((key) => allNewValues[key])?.[0] || 0;
     totalValues =
       totalValues + (newDiversified ? parseFloat(newDiversified) : 0);
     //
@@ -502,7 +506,8 @@ const ScenarioInput = ({
               ? thousandFormatter(
                   (scenarioIncrease?.totalAbsolute
                     ? scenarioIncrease.totalAbsolute
-                    : 0) - segment.total_current_income
+                    : 0) - segment.total_current_income,
+                  2
                 )
               : `${scenarioIncrease.totalPercentage}%`}
           </h4>

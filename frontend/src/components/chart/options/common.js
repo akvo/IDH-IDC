@@ -1,9 +1,13 @@
 import { upperFirst, take } from "lodash";
 
-export const thousandFormatter = (value) => {
-  return value
+export const thousandFormatter = (value, toFixed = null) => {
+  const finalValue = value
     ? String(value).replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, "$1,")
     : 0;
+  if (toFixed !== null) {
+    return parseFloat(finalValue)?.toFixed(toFixed);
+  }
+  return finalValue;
 };
 
 export const formatNumberToString = (number) => {
