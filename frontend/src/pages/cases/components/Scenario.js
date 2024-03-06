@@ -499,7 +499,12 @@ const ScenarioInput = ({
         <Col span={5} align="right">
           <h4>
             {percentage
-              ? thousandFormatter(scenarioIncrease?.totalAbsolute)
+              ? thousandFormatter(
+                  segment.total_current_income -
+                    (scenarioIncrease?.totalAbsolute
+                      ? scenarioIncrease.totalAbsolute
+                      : 0)
+                )
               : `${scenarioIncrease.totalPercentage}%`}
           </h4>
         </Col>
