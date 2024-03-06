@@ -367,7 +367,7 @@ const ScenarioInput = ({
         const [type, , id] = key.split("-");
         acc.push({
           id: `${type}-${id}`,
-          value: allValues[key] || absoluteIncrease,
+          value: !isNaN(allValues?.[key]) ? allValues[key] : absoluteIncrease,
         });
         return acc;
       }, []);
@@ -499,7 +499,11 @@ const ScenarioInput = ({
         <Col span={5} align="right">
           <h4>
             {percentage
-              ? thousandFormatter(scenarioIncrease?.totalAbsolute)
+              ? thousandFormatter(
+                  (scenarioIncrease?.totalAbsolute
+                    ? scenarioIncrease.totalAbsolute
+                    : 0) - segment.total_current_income
+                )
               : `${scenarioIncrease.totalPercentage}%`}
           </h4>
         </Col>
