@@ -171,7 +171,9 @@ const getOptions = ({
         const xValue = thousandFormatter(parseFloat(p.name));
         const yValue = thousandFormatter(parseFloat(p.value));
         let text = `<span style="color: #000;">${newSeriesName}</span><br>`;
-        text += `<span>Income Target: ${target}</span><br>`;
+        text += `<span>Income Target: ${
+          target ? target?.toFixed() : 0
+        }</span><br>`;
         text += `<span>${xAxis.name}: ${xValue}</span><br>`;
         text += `<span>${yAxis.name}: ${yValue}</span><br>`;
         return text;
