@@ -132,10 +132,18 @@ const DashboardScenarioModeling = ({
   }, [commodityList, questionGroups]);
 
   const renameScenario = (index, newName, newDescription) => {
-    const newScenarioData = [...scenarioData];
-    newScenarioData[index].name = newName;
-    newScenarioData[index].description = newDescription;
-    setScenarioData(newScenarioData);
+    setScenarioData((prev) =>
+      prev.map((d) => {
+        if (d.key === index) {
+          return {
+            ...d,
+            name: newName,
+            description: newDescription,
+          };
+        }
+        return d;
+      })
+    );
   };
 
   const onDelete = (index) => {
@@ -214,7 +222,7 @@ const DashboardScenarioModeling = ({
               scenarioItem.key === "add" ? null : (
                 <Scenario
                   key={index}
-                  index={index}
+                  index={scenarioItem.key}
                   scenarioItem={scenarioItem}
                   renameScenario={renameScenario}
                   onDelete={() => {

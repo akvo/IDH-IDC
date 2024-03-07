@@ -738,7 +738,7 @@ const Scenario = ({
       : scenarioData.filter((sd) => scenarioKeys.includes(sd.key));
 
     let data = filterScenarioData.flatMap((sd) => {
-      const segments = scenarioValues.map((sv) => {
+      const segments = sd.scenarioValues.map((sv) => {
         return {
           ...sv,
           scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
@@ -769,7 +769,6 @@ const Scenario = ({
     dashboardData,
     scenarioData,
     scenarioItem,
-    scenarioValues,
     selectedScenarioSegmentChart,
     activeScenario,
   ]);
