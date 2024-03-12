@@ -301,6 +301,17 @@ const ScenarioInput = ({
     };
   }, [scenarioValue, segment]);
 
+  const scenarioChange = useMemo(() => {
+    if (percentage) {
+      const totalAbsolute = scenarioIncrease?.totalAbsolute
+        ? scenarioIncrease.totalAbsolute
+        : 0;
+      const res = parseFloat(totalAbsolute) - segment.total_current_income;
+      return thousandFormatter(res, 2);
+    }
+    return `${scenarioIncrease.totalPercentage}%`;
+  }, [scenarioIncrease, segment, percentage]);
+
   const onValuesChange = (changedValues, allValues) => {
     const objectId = Object.keys(changedValues)[0];
     const [, case_commodity, id] = objectId.split("-");
@@ -501,16 +512,7 @@ const ScenarioInput = ({
           <h4>{thousandFormatter(segment.total_current_income?.toFixed())}</h4>
         </Col>
         <Col span={5} align="right">
-          <h4>
-            {percentage
-              ? thousandFormatter(
-                  (scenarioIncrease?.totalAbsolute
-                    ? scenarioIncrease.totalAbsolute
-                    : 0) - segment.total_current_income,
-                  2
-                )
-              : `${scenarioIncrease.totalPercentage}%`}
-          </h4>
+          <h4>{scenarioChange}</h4>
         </Col>
       </Row>
       {commodityQuestions.map((c) => (

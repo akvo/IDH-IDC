@@ -1,12 +1,12 @@
 import { upperFirst, take } from "lodash";
 
 export const thousandFormatter = (value, toFixed = null) => {
+  if (toFixed !== null) {
+    return parseFloat(value)?.toFixed(toFixed);
+  }
   const finalValue = value
     ? String(value).replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, "$1,")
     : 0;
-  if (toFixed !== null) {
-    return parseFloat(finalValue)?.toFixed(toFixed);
-  }
   return finalValue;
 };
 
