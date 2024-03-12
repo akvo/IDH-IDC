@@ -52,6 +52,8 @@ user_route = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 oauth2_scopes = ["openid", "email"]
 webdomain = os.environ["WEBDOMAIN"]
+if webdomain == "idc.akvo.org":
+    webdomain = "incomedrivercalculator.idhtrade.org"
 
 
 @user_route.post(
