@@ -83,6 +83,9 @@ const getOptions = ({
         const x = params.value[0];
         const y = params.value[1];
         let text = `<span style="color: #000;">${value}</span><br>`;
+        text += `<span>Income Target: ${
+          target ? target?.toFixed() : 0
+        }</span><br>`;
         text += `<span>${xAxis.name}: ${x}</span><br>`;
         text += `<span>${yAxis.name}: ${y}</span><br>`;
         return text;
