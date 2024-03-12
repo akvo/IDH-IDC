@@ -2,7 +2,7 @@ import { upperFirst, take } from "lodash";
 
 export const thousandFormatter = (value, toFixed = null) => {
   if (toFixed !== null) {
-    return parseFloat(value)?.toFixed(toFixed);
+    value = parseFloat(value)?.toFixed(toFixed);
   }
   const finalValue = value
     ? String(value).replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, "$1,")
