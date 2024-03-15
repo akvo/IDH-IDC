@@ -172,9 +172,9 @@ const Question = ({
   const currentIncrease = useMemo(() => {
     let value = 0;
     if (percentage) {
-      value = form.getFieldValue(`absolute-${case_commodity}-${id}`) || "-";
+      value = form.getFieldValue(`absolute-${fieldName}`) || "-";
     } else {
-      value = form.getFieldValue(`percentage-${case_commodity}-${id}`) || "-";
+      value = form.getFieldValue(`percentage-${fieldName}`) || "-";
     }
     return !isNaN(value) ? value : 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -359,6 +359,7 @@ const ScenarioInput = ({
 
     const currentValue = segmentAnswer?.value || 0;
     const value = parseFloat(changedValues[objectId]);
+    let allNewValues = {};
     const newFieldsValue = {};
 
     let absoluteIncrease = 0;
@@ -373,12 +374,16 @@ const ScenarioInput = ({
       newFieldsValue[`percentage-${case_commodity}-${id}`] = percentageIncrease;
     }
 
+    allNewValues = { ...allValues, ...newFieldsValue };
+
     if (parentQuestion) {
-      const allObjectValues = Object.keys(allValues).reduce((acc, key) => {
+      const allObjectValues = Object.keys(allNewValues).reduce((acc, key) => {
         const [type, , id] = key.split("-");
         acc.push({
           id: `${type}-${id}`,
-          value: !isNaN(allValues?.[key]) ? allValues[key] : absoluteIncrease,
+          value: !isNaN(allNewValues?.[key])
+            ? allNewValues[key]
+            : absoluteIncrease,
         });
         return acc;
       }, []);
@@ -403,7 +408,8 @@ const ScenarioInput = ({
     const allParentQuestions = segment.answers.filter(
       (s) => s.question.parent === null && s.name === "current"
     );
-    const allNewValues = { ...allValues, ...newFieldsValue };
+
+    allNewValues = { ...allNewValues, ...newFieldsValue };
 
     let totalValues = allParentQuestions.reduce((acc, p) => {
       const questionId = `absolute-${p.caseCommodityId}-${p.question.id}`;
