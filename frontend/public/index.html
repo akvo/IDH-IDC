@@ -45,9 +45,9 @@
     <script type="text/javascript">
       const origin = window?.location?.origin;
       const ID =
-        origin?.includes("test") && origin?.includes("localhost")
+        origin?.includes("test") || origin?.includes("localhost")
           ? "418c8745-6f9d-4e93-946c-ef65731f366d"
-          : "418c8745-6f9d-4e93-946c-ef65731f366d";
+          : "9d53ab3a-14de-4429-85e9-4afa6f570013";
       (function (window, document, dataLayerName, id) {
         (window[dataLayerName] = window[dataLayerName] || []),
           window[dataLayerName].push({
@@ -110,9 +110,9 @@
       document.addEventListener("DOMContentLoaded", function () {
         const origin = window?.location?.origin;
         const ID =
-          origin?.includes("test") && origin?.includes("localhost")
+          origin?.includes("test") || origin?.includes("localhost")
             ? "418c8745-6f9d-4e93-946c-ef65731f366d"
-            : "418c8745-6f9d-4e93-946c-ef65731f366d";
+            : "9d53ab3a-14de-4429-85e9-4afa6f570013";
         // Get the noscript element
         var noscriptElement = document.querySelector("noscript");
         // Check if the noscript element exists
