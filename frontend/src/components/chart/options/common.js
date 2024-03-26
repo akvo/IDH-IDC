@@ -24,7 +24,7 @@ export const formatNumberToString = (number) => {
 export const popupFormatter = (params) => {
   var value = (params.value + "").split(".");
   value = thousandFormatter(value[0]);
-  if (Number.isNaN(params.value)) {
+  if (isNaN(params.value)) {
     return;
   }
   return params.name + ": " + value;

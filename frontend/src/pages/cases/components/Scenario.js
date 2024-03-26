@@ -491,10 +491,10 @@ const ScenarioInput = ({
           <h4>Income Driver</h4>
         </Col>
         <Col span={5} align="center">
-          <h4>New value</h4>
+          <h4>New Value</h4>
         </Col>
         <Col span={5} align="right">
-          <h4>Current value</h4>
+          <h4>Current Value (actual)</h4>
         </Col>
         <Col span={5} align="right">
           <h4>Change</h4>
@@ -1315,13 +1315,14 @@ const Scenario = ({
         <Card
           className="info-card-wrapper"
           title="Scenario Outcomes"
-          // extra={
-          //   <SaveAsImageButton
-          //     elementRef={elScenarioOutcomes}
-          //     filename="Scenario Outcomes"
-          //     type="ghost-white"
-          //   />
-          // }
+          extra={
+            <SaveAsImageButton
+              elementRef={elScenarioOutcomes}
+              filename="Scenario Outcomes"
+              type="ghost-white"
+              buttonText="Download scenario outcomes"
+            />
+          }
         >
           <Space size="large" direction="vertical">
             <Select

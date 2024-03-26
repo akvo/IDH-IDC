@@ -70,6 +70,7 @@ const SaveAsImageButton = ({
   filename = "Undefined",
   style = {},
   type = null,
+  buttonText = null,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -90,7 +91,7 @@ const SaveAsImageButton = ({
       style={{ ...defaultStyle, ...typeStyle, ...style }}
       loading={loading}
     >
-      Download chart
+      {buttonText ? buttonText : "Download chart"}
     </Button>
   );
 };

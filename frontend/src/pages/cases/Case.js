@@ -68,6 +68,10 @@ const Case = () => {
     if (adminRole.includes(userRole)) {
       return true;
     }
+    // allow internal user to create new case
+    if (userInternal && !caseIdParam) {
+      return true;
+    }
     // check user access
     const userPermission = userCaseAccess.find(
       (a) => a.case === parseInt(caseIdParam)

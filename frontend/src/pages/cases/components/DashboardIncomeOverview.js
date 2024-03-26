@@ -216,15 +216,9 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               affect income?
             </h2>
             <p>
-              This graph helps users compare the contribution of each income
-              driver on household income in two scenarios: In Scenario 1 (light
-              green), we set an income driver to its feasible when all other
-              drivers values remain at current level.
-              <br />
-              <br />
               Insights: First, comparing the contribution of each income driver
               to the household income in either the current or feasible
-              scenario, can help idenitfy the most impactful drivers with
+              scenario, can help identify the most impactful drivers with
               regards to the impact they can have on household income. Second,
               it&apos;s important to note that the contributions of any driver
               are influenced by the values of other income drivers, so caution
@@ -232,14 +226,17 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               in isolation.
               <br />
               <br />
-              The value represented in the graph are a contribution (%) of the
-              particular income driver to the household income for the
-              particular scenario. The absolute value of the household income
-              are different in the 2 scenarios.
+              The value represented in the graph is a contribution (%) of the
+              particular income driver to the household income. In essence, it
+              isolates the impact of one driver on income change, considering it
+              in relation to other drivers being held constant (light green) or
+              having changed to feasible levels (green). This can be compared to
+              the percentage change by which the driver itself has been adjusted
+              from current to feasible level (yellow).
               <br />
               <br />
               TIP! By clicking on an item in the legend you can make it appear
-              or dissapear. Doing this could help you isolate the various
+              or disappear. Doing this could help you isolate the various
               analysis the graph can offer you.
             </p>
           </Col>

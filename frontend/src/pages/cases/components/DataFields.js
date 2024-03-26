@@ -139,19 +139,19 @@ const DataFields = ({
       .reduce((acc, a) => acc + a, 0);
     const percent = ((feasible - current) / current) * 100;
     const other = dashboardData.find((x) => x.key === segmentItem.key);
+    const otherCurrent = other?.total_current_diversified_income || 0;
+    const otherFeasible = other?.total_feasible_diversified_income || 0;
+    const otherPercent = otherFeasible
+      ? ((otherFeasible - otherCurrent) / otherCurrent) * 100
+      : 0;
     return {
       current: current,
       feasible: feasible,
-      percent: percent,
+      percent: isNaN(percent) ? 0 : percent,
       diversified: {
-        current: other?.total_current_diversified_income || 0,
-        feasible: other?.total_feasible_diversified_income || 0,
-        percent: other?.total_feasible_diversified_income
-          ? ((other?.total_feasible_diversified_income -
-              other?.total_current_diversified_income) /
-              other?.total_current_diversified_income) *
-            100
-          : 0,
+        current: otherCurrent,
+        feasible: otherFeasible,
+        percent: isNaN(otherPercent) ? 0 : otherPercent,
       },
     };
   }, [formValues, segmentItem, dashboardData, totalIncomeQuestion]);

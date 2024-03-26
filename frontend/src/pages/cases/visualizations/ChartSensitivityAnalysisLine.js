@@ -299,9 +299,9 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       <Row gutter={[24, 24]} ref={elLineChart}>
         <Col span={8}>
           <Space direction="vertical" className="binning-chart-info-wrapper">
-            <div className="segment">
+            {/* <div className="segment">
               <b>{segment.name}</b>
-            </div>
+            </div> */}
             <div className="label">{label}</div>
             <p>
               This line graph illustrates how different levels of the binning

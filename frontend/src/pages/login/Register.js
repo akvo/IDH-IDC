@@ -77,10 +77,15 @@ const Register = () => {
             "Registration complete. You can log in once it's approved by an admin.",
         });
       })
-      .catch(() => {
+      .catch((e) => {
+        let content = "Registration failed. Please contact your admin.";
+        const { data, status } = e.response;
+        if (status === 409 && data?.detail) {
+          content = data.detail;
+        }
         messageApi.open({
           type: "error",
-          content: "Registration failed. Please contact your admin.",
+          content: content,
         });
       })
       .finally(() => {

@@ -168,11 +168,11 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
       }
       if (x === "income") {
         title =
-          "Resulting change in farmers' income if all other income drivers stay the same (%)";
+          "Percentage change in income with driver at feasible level, while all other drivers stay the same (%)";
       }
       if (x === "additional") {
         title =
-          "Additional change in farmers' income if all other income drivers are at feasible levels (%)";
+          "Percentage change in income when this driver moves from current to feasible level while all other drivers are at feasible level (%)";
       }
       const data = transformedData.map((d) => ({
         name: d.name,
@@ -192,6 +192,19 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
         trigger: "axis",
         axisPointer: {
           type: "shadow",
+        },
+        formatter: (params) => {
+          const name = params?.[0]?.name;
+          let html = "<div>";
+          html += `<h4>${name}</h4>`;
+          html +=
+            "<ul style='list-style-type: none; width: 300px; margin: 0; padding: 0;'>";
+          params.forEach((p) => {
+            html += `<li style='overflow-wrap: break-word; word-wrap: break-word; white-space: normal;'>${p.marker} ${p.seriesName}: <b>${p.value}</b></li>`;
+          });
+          html += "</ul>";
+          html += "</div>";
+          return html;
         },
         ...TextStyle,
       },
