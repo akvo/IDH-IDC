@@ -308,9 +308,9 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
 
   const rowTitle = binningData.binCharts?.length ? (
     <Space direction="vertical" className="binning-chart-info-wrapper">
-      <div className="segment">
+      {/* <div className="segment">
         <b>{segment.name}</b>
-      </div>
+      </div> */}
       <div className="label">{label}</div>
       <Row gutter={[8, 16]} style={{ minHeight: 95 }}>
         <Col span={24}>
