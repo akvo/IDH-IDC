@@ -16,11 +16,13 @@ import {
   Modal,
   Table,
   Divider,
+  Tooltip,
 } from "antd";
 import {
   StepForwardOutlined,
   PlusOutlined,
   MinusCircleOutlined,
+  InfoCircleTwoTone,
 } from "@ant-design/icons";
 import {
   AreaUnitFields,
@@ -111,7 +113,17 @@ const CaseForm = ({
 
           <Form.Item
             name="year"
-            label="Year"
+            label={
+              <Space align="center">
+                <div>Year</div>
+                <Tooltip
+                  title="Year for which you are entering data. This also the year for which we are retrieving a living income benchmark (if available)."
+                  placement="topRight"
+                >
+                  <InfoCircleTwoTone twoToneColor="#1677ff" />
+                </Tooltip>
+              </Space>
+            }
             rules={[
               {
                 required: true,
