@@ -1315,13 +1315,14 @@ const Scenario = ({
         <Card
           className="info-card-wrapper"
           title="Scenario Outcomes"
-          // extra={
-          //   <SaveAsImageButton
-          //     elementRef={elScenarioOutcomes}
-          //     filename="Scenario Outcomes"
-          //     type="ghost-white"
-          //   />
-          // }
+          extra={
+            <SaveAsImageButton
+              elementRef={elScenarioOutcomes}
+              filename="Scenario Outcomes"
+              type="ghost-white"
+              buttonText="Download scenario outcomes"
+            />
+          }
         >
           <Space size="large" direction="vertical">
             <Select
