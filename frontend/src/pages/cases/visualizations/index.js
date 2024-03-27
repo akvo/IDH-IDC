@@ -8,7 +8,9 @@ import {
   backgroundColor,
   Easing,
   LabelStyle,
+  NoData,
 } from "../../../components/chart/options/common";
+import isEmpty from "lodash/isEmpty";
 
 export const getColumnStackBarOptions = ({
   xAxis = { name: "", axisLabel: {} },
@@ -18,6 +20,10 @@ export const getColumnStackBarOptions = ({
   showLabel = false,
   grid = {},
 }) => {
+  if (isEmpty(series) || !series) {
+    return NoData;
+  }
+
   const legends = series.map((x) => ({
     name: x.name,
     icon: x?.symbol || "circle",

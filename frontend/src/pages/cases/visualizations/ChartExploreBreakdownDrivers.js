@@ -17,6 +17,7 @@ const ChartExploreBreakdownDrivers = ({
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [axisTitle, setAxisTitle] = useState(currentCase.currency);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (dashboardData.length > 0) {
@@ -123,7 +124,9 @@ const ChartExploreBreakdownDrivers = ({
   };
 
   const chartData = useMemo(() => {
+    setLoading(true);
     if (!currentSegmentData || !driverOptionsDropdown.length) {
+      setLoading(false);
       return [];
     }
     const res = ["current", "feasible"]
@@ -268,6 +271,7 @@ const ChartExploreBreakdownDrivers = ({
           },
         ];
       }, []);
+    setLoading(false);
     return res;
   }, [currentSegmentData, driverOptionsDropdown, selectedDriver]);
 
@@ -292,12 +296,12 @@ const ChartExploreBreakdownDrivers = ({
           <Chart
             wrapper={false}
             type={"BAR"}
-            loading={!chartData.length || !currentSegmentData}
+            loading={loading}
             override={getColumnStackBarOptions({
               series: chartData,
               origin: currentSegmentData ? [currentSegmentData] : [],
               yAxis: { name: axisTitle },
-              grid: { right: 285, left: 70, bottom: 20 },
+              grid: { right: 255, left: 70, bottom: 20 },
               showLabel: showLabel,
             })}
           />
