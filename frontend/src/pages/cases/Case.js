@@ -167,7 +167,7 @@ const Case = () => {
           commodityId: parseInt(commodityId),
           commodityName: commodityNames[commodityId],
           questionId: parseInt(questionId),
-          value: d.answers[k],
+          value: d.answers?.[k] || 0, // if not found set as 0 to calculated inside array reduce
           isTotalFeasibleFocusIncome:
             totalCommodityValue && commodityFocus && dataType === "feasible"
               ? true
