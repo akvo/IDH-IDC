@@ -272,7 +272,10 @@ const IncomeDriverDataEntry = ({
     setFormValues(filteredFormValues);
     // eol handle form values
     let newItems = items.filter((item) => item.key !== segmentKey);
-    if (newItems?.length === MAX_SEGMENT - 1 && items?.length === MAX_SEGMENT) {
+    if (
+      newItems?.filter((x) => x.key !== "add")?.length === MAX_SEGMENT - 1 &&
+      items?.filter((x) => x.key !== "add")?.length === MAX_SEGMENT
+    ) {
       newItems = [...newItems, ...addSegmentTab];
     }
     setItems(newItems);
@@ -339,6 +342,7 @@ const IncomeDriverDataEntry = ({
           {
             ...currentFormValue,
             label: newLabel,
+            name: newLabel,
           },
         ]);
         // EOL handle form values
