@@ -377,19 +377,15 @@ const IncomeDriverTarget = ({
           }}
         >
           <Col span={24}>
-            <p>
-              <Space align="center">
-                <div>
-                  Living income benchmark value for a household per year
-                </div>
-                <Tooltip
-                  title="Living Income Benchmarks are automatically adjusted for inflation."
-                  placement="topRight"
-                >
-                  <InfoCircleTwoTone twoToneColor="#1677ff" />
-                </Tooltip>
-              </Space>
-            </p>
+            <Space align="center" style={{ paddingTop: "18px" }}>
+              <div>Living income benchmark value for a household per year</div>
+              <Tooltip
+                title="Living Income Benchmarks are automatically adjusted for inflation."
+                placement="topRight"
+              >
+                <InfoCircleTwoTone twoToneColor="#1677ff" />
+              </Tooltip>
+            </Space>
             <h2 className="income-target-value">
               {incomeTarget ? thousandFormatter(incomeTarget.toFixed()) : 0}{" "}
               {currentCase.currency}
