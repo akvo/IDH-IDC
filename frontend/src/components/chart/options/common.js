@@ -64,13 +64,14 @@ export const LabelStyle = {
 
 export const AxisLabelFormatter = {
   formatter: function (params) {
-    const maxLength = 2;
+    const maxLength = 1;
     let newParamsName = String(params).split(" ");
     if (newParamsName.length > maxLength) {
-      newParamsName = newParamsName.map((p, pi) => {
-        if (pi !== 0 && pi % maxLength === 0) {
-          p += "\n";
-        }
+      newParamsName = newParamsName.map((p) => {
+        // if (pi !== 0 && pi % maxLength === 0) {
+        //   p += "\n";
+        // }
+        p += "\n";
         return p;
       });
     }

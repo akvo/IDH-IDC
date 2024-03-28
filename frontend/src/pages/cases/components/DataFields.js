@@ -210,7 +210,7 @@ const DataFields = ({
         .filter((a) => a)
         .reduce((acc, a) => acc + a, 0);
       return {
-        name: `Total Income\n${item.label}`,
+        name: item.label,
         data: [
           {
             name: "Current Income",
@@ -597,7 +597,7 @@ const DataFields = ({
                 extra={{
                   axisTitle: { y: `Income (${currentCase.currency})` },
                 }}
-                grid={{ bottom: 90 }}
+                grid={{ bottom: 60, right: 5, left: 90 }}
                 showLabel={showChartLabel}
               />
             </Card>
