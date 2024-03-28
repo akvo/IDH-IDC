@@ -68,8 +68,8 @@ const ChartMonetaryContribution = ({
             replacedCurrentValues
           ) + data.total_current_diversified_income;
         const resValue = newTotalValue - data.total_current_income;
-        // CoP - multiplied by 1
-        // if (d.toLowerCase().includes("cost")) {
+        // CoP -> multiplied by -1
+        // if (d.toLowerCase().includes("cost") && resValue < 0) {
         //   return resValue * -1;
         // }
         return resValue;
@@ -113,6 +113,7 @@ const ChartMonetaryContribution = ({
         itemStyle: {
           borderColor: "transparent",
           color: "transparent",
+          borderWidth: 2,
         },
         emphasis: {
           itemStyle: {
@@ -128,6 +129,8 @@ const ChartMonetaryContribution = ({
         stack: "Total",
         itemStyle: {
           color: "#03625f",
+          borderWidth: 2,
+          borderColor: "#03625f",
         },
         label: {
           ...LabelStyle.label,
@@ -148,20 +151,22 @@ const ChartMonetaryContribution = ({
         stack: "Total",
         itemStyle: {
           color: "#D34F44",
+          borderWidth: 2,
+          borderColor: "#D34F44",
         },
         label: {
           ...LabelStyle.label,
           show: showLabel,
-          // formatter: (param) => {
-          //   const value = parseFloat(param.value) * -1;
-          //   return thousandFormatter(value?.toFixed(2));
-          // },
+          formatter: (param) => {
+            const value = parseFloat(param.value) * -1;
+            return thousandFormatter(value?.toFixed(2));
+          },
         },
         data: [
           data?.total_current_income >= 0
             ? "-"
             : data.total_current_income?.toFixed(2),
-          ...additionalData.map((d) => (d >= 0 ? "-" : d?.toFixed(2))),
+          ...additionalData.map((d) => (d >= 0 ? "-" : (d * -1)?.toFixed(2))),
           diversifiedIncome >= 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
           feasibleValue >= 0 ? "-" : feasibleValue?.toFixed(2),
         ],

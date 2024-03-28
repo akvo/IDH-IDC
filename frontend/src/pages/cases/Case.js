@@ -267,7 +267,6 @@ const Case = () => {
     questionGroups,
     flattenedQuestionGroups,
   ]);
-  console.log("dashboardData PARENT", dashboardData);
 
   useEffect(() => {
     if (caseId && isEmpty(formData) && !loading) {
