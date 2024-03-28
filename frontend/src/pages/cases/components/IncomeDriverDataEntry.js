@@ -9,6 +9,21 @@ import {
 import { api } from "../../../lib";
 import { orderBy, isEqual, isEmpty } from "lodash";
 
+const MAX_SEGMENT = 5;
+
+const addSegmentTab = [
+  {
+    key: "add",
+    label: (
+      <span>
+        <PlusCircleFilled /> Add Segment
+      </span>
+    ),
+    currentSegmentId: null,
+    answers: {},
+  },
+];
+
 const IncomeDriverDataEntry = ({
   commodityList,
   currentCaseId,
@@ -85,6 +100,10 @@ const IncomeDriverDataEntry = ({
             answers: removeUndefinedObjectValue(cv.answers),
           };
           let findPayload = formValues.find((fv) => fv.key === cv.key);
+          if (!findPayload) {
+            // handle deleted segment
+            return true;
+          }
           findPayload = {
             ...findPayload,
             answers: removeUndefinedObjectValue(findPayload.answers),
@@ -186,19 +205,7 @@ const IncomeDriverDataEntry = ({
       return;
     }
     api.get(`/questions/${currentCaseId}`).then((res) => {
-      const defaultItems = enableEditCase
-        ? [
-            {
-              key: "add",
-              label: (
-                <span>
-                  <PlusCircleFilled /> Add Segment
-                </span>
-              ),
-              currentSegmentId: null,
-            },
-          ]
-        : [];
+      const defaultItems = enableEditCase ? addSegmentTab : [];
       // reorder question to match commodity list order (CORRECT ORDER)
       const dataTmp = commodityList.map((cl) =>
         res.data.find((d) => d.commodity_id === cl.commodity)
@@ -222,7 +229,7 @@ const IncomeDriverDataEntry = ({
             answers: it.answers,
             ...it,
           }));
-          if (itemsTmp.length !== 5) {
+          if (itemsTmp.length !== MAX_SEGMENT) {
             itemsTmp = [...itemsTmp, ...defaultItems];
           }
           setItems(itemsTmp);
@@ -264,7 +271,13 @@ const IncomeDriverDataEntry = ({
     const filteredFormValues = formValues.filter((x) => x.key !== segmentKey);
     setFormValues(filteredFormValues);
     // eol handle form values
-    const newItems = items.filter((item) => item.key !== segmentKey);
+    let newItems = items.filter((item) => item.key !== segmentKey);
+    if (
+      newItems?.filter((x) => x.key !== "add")?.length === MAX_SEGMENT - 1 &&
+      items?.filter((x) => x.key !== "add")?.length === MAX_SEGMENT
+    ) {
+      newItems = [...newItems, ...addSegmentTab];
+    }
     setItems(newItems);
     const newActiveKey = segmentKey - 1;
     setActiveKey(newActiveKey.toString());
@@ -329,6 +342,7 @@ const IncomeDriverDataEntry = ({
           {
             ...currentFormValue,
             label: newLabel,
+            name: newLabel,
           },
         ]);
         // EOL handle form values
@@ -351,7 +365,7 @@ const IncomeDriverDataEntry = ({
       setItems(newItems);
       setActiveKey(newKey.toString());
 
-      if (newKey === 5) {
+      if (newKey === MAX_SEGMENT) {
         newItems.splice(newItems.length - 1, 1);
         setItems(newItems);
       }

@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Form, InputNumber, Select, Switch, message } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  InputNumber,
+  Select,
+  Switch,
+  message,
+  Tooltip,
+  Space,
+} from "antd";
+import { InfoCircleTwoTone } from "@ant-design/icons";
 import { InputNumberThousandFormatter, selectProps } from "./";
 import { api } from "../../../lib";
 import isEmpty from "lodash/isEmpty";
@@ -365,8 +376,16 @@ const IncomeDriverTarget = ({
             display: !disableTarget ? "none" : "",
           }}
         >
-          <Col span={8}>
-            <p>Living income benchmark value for a household per year</p>
+          <Col span={24}>
+            <Space align="center" style={{ paddingTop: "18px" }}>
+              <div>Living income benchmark value for a household per year</div>
+              <Tooltip
+                title="Living Income Benchmarks are automatically adjusted for inflation."
+                placement="topRight"
+              >
+                <InfoCircleTwoTone twoToneColor="#1677ff" />
+              </Tooltip>
+            </Space>
             <h2 className="income-target-value">
               {incomeTarget ? thousandFormatter(incomeTarget.toFixed()) : 0}{" "}
               {currentCase.currency}
