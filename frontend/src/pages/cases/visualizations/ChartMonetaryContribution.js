@@ -104,10 +104,86 @@ const ChartMonetaryContribution = ({
     const feasibleValue =
       data.total_current_income + sum(additionalData) + diversifiedIncome;
 
+    const series = [
+      {
+        name: "Placeholder",
+        type: "bar",
+        stack: "Total",
+        silent: true,
+        itemStyle: {
+          borderColor: "transparent",
+          color: "transparent",
+        },
+        emphasis: {
+          itemStyle: {
+            borderColor: "transparent",
+            color: "transparent",
+          },
+        },
+        data: [0, ...placeholderAdditionalData, diversifiedPlaceholder, 0],
+      },
+      {
+        name: "Positive",
+        type: "bar",
+        stack: "Total",
+        itemStyle: {
+          color: "#03625f",
+        },
+        label: {
+          ...LabelStyle.label,
+          show: showLabel,
+        },
+        data: [
+          data?.total_current_income < 0
+            ? "-"
+            : data?.total_current_income?.toFixed(2),
+          ...additionalData.map((d) => (d < 0 ? "-" : d?.toFixed(2))),
+          diversifiedIncome < 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
+          feasibleValue < 0 ? "-" : feasibleValue?.toFixed(2),
+        ],
+      },
+      {
+        name: "Negative",
+        type: "bar",
+        stack: "Total",
+        itemStyle: {
+          color: "#D34F44",
+        },
+        label: {
+          ...LabelStyle.label,
+          show: showLabel,
+          // formatter: (param) => {
+          //   const value = parseFloat(param.value) * -1;
+          //   return thousandFormatter(value?.toFixed(2));
+          // },
+        },
+        data: [
+          data?.total_current_income >= 0
+            ? "-"
+            : data.total_current_income?.toFixed(2),
+          ...additionalData.map((d) => (d >= 0 ? "-" : d?.toFixed(2))),
+          diversifiedIncome >= 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
+          feasibleValue >= 0 ? "-" : feasibleValue?.toFixed(2),
+        ],
+      },
+    ];
+
+    const legendData = series
+      .map((s) => {
+        if (s.name === "Placeholder") {
+          return false;
+        }
+        if (s.data?.every((x) => x === "-")) {
+          return false;
+        }
+        return s.name;
+      })
+      .filter((x) => x);
+
     return {
       legend: {
         ...Legend,
-        data: ["Positive", "Negative"],
+        data: legendData,
         top: 10,
         left: "center",
       },
@@ -120,17 +196,18 @@ const ChartMonetaryContribution = ({
         formatter: function (params) {
           const positive = params[1];
           const negative = params[2];
-          let name = "";
-          let seriesName = "";
+          let name = "No Data";
+          let seriesName = "NA";
           let value = 0;
-          if (positive.value !== "-") {
+          if (positive && positive.value !== "-") {
             name = positive.name;
             seriesName = positive.seriesName;
             value = positive.value;
-          } else {
+          }
+          if (negative && negative.value !== "-") {
             name = negative.name;
             seriesName = negative.seriesName;
-            value = negative.value * -1;
+            value = negative.value;
           }
           value = thousandFormatter(value);
           return (
@@ -180,69 +257,7 @@ const ChartMonetaryContribution = ({
           color: "#9292ab",
         },
       },
-      series: [
-        {
-          name: "Placeholder",
-          type: "bar",
-          stack: "Total",
-          silent: true,
-          itemStyle: {
-            borderColor: "transparent",
-            color: "transparent",
-          },
-          emphasis: {
-            itemStyle: {
-              borderColor: "transparent",
-              color: "transparent",
-            },
-          },
-          data: [0, ...placeholderAdditionalData, diversifiedPlaceholder, 0],
-        },
-        {
-          name: "Positive",
-          type: "bar",
-          stack: "Total",
-          itemStyle: {
-            color: "#03625f",
-          },
-          label: {
-            ...LabelStyle.label,
-            show: showLabel,
-          },
-          data: [
-            data?.total_current_income < 0
-              ? "-"
-              : data?.total_current_income?.toFixed(2),
-            ...additionalData.map((d) => (d < 0 ? "-" : d?.toFixed(2))),
-            diversifiedIncome < 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
-            feasibleValue < 0 ? "-" : feasibleValue?.toFixed(2),
-          ],
-        },
-        {
-          name: "Negative",
-          type: "bar",
-          stack: "Total",
-          itemStyle: {
-            color: "#D34F44",
-          },
-          label: {
-            ...LabelStyle.label,
-            show: showLabel,
-            formatter: (param) => {
-              const value = parseFloat(param.value) * -1;
-              return thousandFormatter(value?.toFixed(2));
-            },
-          },
-          data: [
-            data?.total_current_income >= 0
-              ? "-"
-              : data.total_current_income?.toFixed(2),
-            ...additionalData.map((d) => (d >= 0 ? "-" : (d * -1)?.toFixed(2))),
-            diversifiedIncome >= 0 ? "-" : diversifiedIncome?.toFixed(2), // diversified value
-            feasibleValue >= 0 ? "-" : feasibleValue?.toFixed(2),
-          ],
-        },
-      ],
+      series: series,
     };
   }, [dashboardData, selectedSegment, currentCase.currency, showLabel]);
 
