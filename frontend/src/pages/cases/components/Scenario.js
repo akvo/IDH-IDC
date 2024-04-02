@@ -1190,6 +1190,13 @@ const Scenario = ({
                       capture changes in in CoP for secondary and tertiary crops
                       then that needs to be accounted for in the changes you
                       model under Diversified Income.
+                      <br />
+                      <br />
+                      Keep in mind that income drivers are interconnected.
+                      Changing one income driver may cause changes in another.
+                      For example, if the land size changes, this could result
+                      in changes to the total volume, potentially affecting
+                      diversified income as well.
                     </p>
                     <Card
                       className="chart-card-wrapper"
