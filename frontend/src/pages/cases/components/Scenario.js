@@ -32,7 +32,7 @@ import { isEmpty, orderBy, uniqBy } from "lodash";
 import { SaveAsImageButton, ShowLabelButton } from "../../../components/utils";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
-const generateChartData = (data) => {
+const generateChartData = (data, current = false) => {
   return data.map((d) => {
     const incomeTarget = d.currentSegmentValue.target;
     const currentTotalIncome = d.currentSegmentValue.total_current_income;
@@ -46,7 +46,7 @@ const generateChartData = (data) => {
     gapValue = gapValue < 0 ? 0 : gapValue;
 
     return {
-      name: `${d.scenarioName}-${d.name}`,
+      name: current ? d.name : `${d.scenarioName}-${d.name}`,
       target: Math.round(incomeTarget),
       stack: [
         {
@@ -781,7 +781,7 @@ const Scenario = ({
   );
 
   const currentChartData = useMemo(
-    () => generateChartData(currentScenarioData),
+    () => generateChartData(currentScenarioData, true),
     [currentScenarioData]
   );
 
