@@ -1,4 +1,5 @@
 import uniq from "lodash/uniq";
+import { Col, Space } from "antd";
 
 const commodityCategories = window.master?.commodity_categories || [];
 const commodities = commodityCategories
@@ -212,6 +213,25 @@ export const removeUndefinedObjectValue = (obj) => {
 
 export const diversifiedIncomeTooltipText =
   "The majority of farmer households also earn an income from other sources than the primary commodity. This can be income from other crops, livestock, income earned from off-farm labour or non-farm non labour sources (e.g. remittances, government transfers).";
+
+export const Step = ({
+  number,
+  title,
+  description = null,
+  titleStyle = {},
+}) => (
+  <Col span={24}>
+    <Space align="center" className="scenario-step-wrapper">
+      {number && <div className="number">{number}</div>}
+      <div className="title" style={titleStyle}>
+        {title}
+      </div>
+    </Space>
+    {description && (
+      <div className="scenario-step-description">{description}</div>
+    )}
+  </Col>
+);
 
 export { default as AreaUnitFields } from "./AreaUnitFields";
 export { default as SideMenu } from "./SideMenu";

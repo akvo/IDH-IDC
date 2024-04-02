@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Card, Select, Tabs, Space } from "antd";
-import { Scenario } from "./";
+import { Scenario, Step } from "./";
 import { orderBy } from "lodash";
 import { PlusCircleFilled } from "@ant-design/icons";
 
@@ -182,33 +182,50 @@ const DashboardScenarioModeling = ({
   return (
     <div id="scenario-modeling">
       <Col span={24}>
-        <Card className="card-alert-box">
-          <Row gutter={[16, 16]} align="middle">
-            <Col span={18}>
-              <Space direction="vertical">
-                <div className="title">Choose approach</div>
-                <div className="description">
-                  Please choose whether you would like to express the changes in
-                  current values using percentages or absolute values.
-                </div>
-              </Space>
-            </Col>
-            <Col span={6}>
-              <Select
-                style={{ width: "100%" }}
-                options={[
-                  { label: "Percentage", value: "percentage" },
-                  { label: "Absolute", value: "absolute" },
-                ]}
-                onChange={onChangePercentage}
-                value={percentage ? "percentage" : "absolute"}
-              />
-            </Col>
-          </Row>
-        </Card>
+        <Row gutter={[16, 16]}>
+          <Col span={12}>
+            <Step
+              number={null}
+              title="Perform scenario modeling"
+              titleStyle={{ fontSize: "24px" }}
+              description="This page enables you to explore various scenarios by adjusting your income drivers in different ways across your segments. This allows you to understand the potential paths towards improving farmer household income"
+            />
+          </Col>
+          <Col span={12}>
+            <Card className="card-alert-box">
+              <Row gutter={[16, 16]} align="middle">
+                <Col span={24}>
+                  <Space direction="vertical">
+                    <div className="title">Choose approach</div>
+                    <div className="description">
+                      Please choose whether you would like to express the
+                      changes in current values using percentages or absolute
+                      values.
+                    </div>
+                    <Row>
+                      <Col span={6}>
+                        <Select
+                          style={{ width: "100%" }}
+                          options={[
+                            { label: "Percentage", value: "percentage" },
+                            { label: "Absolute", value: "absolute" },
+                          ]}
+                          onChange={onChangePercentage}
+                          value={percentage ? "percentage" : "absolute"}
+                        />
+                      </Col>
+                    </Row>
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
       </Col>
 
       <Col span={24}>
+        {/* Step 1 */}
+        <Step number={1} title="Fill in values for your scenarios" />
         <Tabs
           onChange={onChangeTab}
           activeKey={activeKey}

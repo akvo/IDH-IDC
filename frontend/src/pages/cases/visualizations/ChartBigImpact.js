@@ -52,10 +52,16 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
       return [...c, { id: `feasible-${d.questionId}`, value: d.value || 0 }];
     }, []);
 
-    const feasiblePerCurrentTotalIncome =
-      (currentSegmentData.total_feasible_income /
-        currentSegmentData.total_current_income) *
-      100;
+    const totalCurrentIncome = currentSegmentData?.total_current_income || 0;
+    const totalFeasibleIncome = currentSegmentData?.total_feasible_income || 0;
+    const totalCurrentDiversifiedIncome =
+      currentSegmentData?.total_current_diversified_income || 0;
+    const totalFeasibleDiversifiedIncome =
+      currentSegmentData?.total_feasible_diversified_income || 0;
+
+    // const feasiblePerCurrentTotalIncome = totalCurrentIncome
+    //   ? (totalFeasibleIncome / totalCurrentIncome) * 100
+    //   : 0;
 
     // populate impact values for focus commodity
     let transformedData = indicators.map((ind) => {
@@ -67,8 +73,9 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
       );
       const currentValueTemp = currentValue?.value || 0;
       const feasibleValueTemp = feasibleValue?.value || 0;
-      const possibleValue =
-        ((feasibleValueTemp - currentValueTemp) / currentValueTemp) * 100;
+      const possibleValue = currentValueTemp
+        ? ((feasibleValueTemp - currentValueTemp) / currentValueTemp) * 100
+        : 0;
 
       if (currentValue && feasibleValue) {
         // Income value
@@ -85,11 +92,11 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
             driverQuestion.question,
             "current",
             replacedCurrentValues
-          ) + currentSegmentData.total_current_diversified_income;
-        const incomeValue =
-          ((newTotalValue - currentSegmentData.total_current_income) /
-            currentSegmentData.total_current_income) *
-          100;
+          ) + totalCurrentDiversifiedIncome;
+
+        const incomeValue = totalCurrentIncome
+          ? ((newTotalValue - totalCurrentIncome) / totalCurrentIncome) * 100
+          : 0;
         // EOL Income value
 
         // Additional value
@@ -106,12 +113,17 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
             driverQuestion.question,
             "feasible",
             replacedFeasibleValues
-          ) + currentSegmentData.total_feasible_diversified_income;
-        const incomeIncreaseFeasible =
-          (newAdditionalTotalValue / currentSegmentData.total_current_income) *
-          100;
-        const additionalValue =
-          feasiblePerCurrentTotalIncome - incomeIncreaseFeasible;
+          ) + totalFeasibleDiversifiedIncome;
+
+        const additionalValue = totalCurrentIncome
+          ? ((totalFeasibleIncome - newAdditionalTotalValue) /
+              totalCurrentIncome) *
+            100
+          : 0;
+
+        // const additionalValue =
+        //   feasiblePerCurrentTotalIncome - incomeIncreaseFeasible;
+
         // EOL Income value
         return {
           id: ind.id,
@@ -132,31 +144,38 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
     });
     // add diversified value
     if (transformedData.length) {
+      const totalCurrentFocusIncome =
+        currentSegmentData?.total_current_focus_income || 0;
+      const totalFeasibleFocusIncome =
+        currentSegmentData?.total_feasible_focus_income || 0;
+
       const newDiversifiedValue =
-        currentSegmentData.total_current_focus_income +
-        currentSegmentData.total_feasible_diversified_income;
+        totalCurrentFocusIncome + totalFeasibleDiversifiedIncome;
       const newAdditionalDiversifiedValue =
-        currentSegmentData.total_feasible_focus_income +
-        currentSegmentData.total_current_diversified_income;
-      const diversifiedIncreaseFeasible =
-        (newAdditionalDiversifiedValue /
-          currentSegmentData.total_current_income) *
-        100;
-      const additionalDiversifiedValue =
-        feasiblePerCurrentTotalIncome - diversifiedIncreaseFeasible;
+        totalFeasibleFocusIncome + totalCurrentDiversifiedIncome;
+
+      const additionalDiversifiedValue = totalCurrentIncome
+        ? ((totalFeasibleIncome - newAdditionalDiversifiedValue) /
+            totalCurrentIncome) *
+          100
+        : 0;
+
+      // const additionalDiversifiedValue =
+      //   feasiblePerCurrentTotalIncome - diversifiedIncreaseFeasible;
+
       transformedData.push({
         id: 9002,
         name: "Diversified Income",
-        income:
-          ((currentSegmentData.total_current_income - newDiversifiedValue) /
-            currentSegmentData.total_current_income) *
-            100 || 0,
-        possible:
-          ((currentSegmentData.total_feasible_diversified_income -
-            currentSegmentData.total_current_diversified_income) /
-            currentSegmentData.total_current_diversified_income) *
-            100 || 0,
-        additional: additionalDiversifiedValue || 0,
+        income: totalCurrentIncome
+          ? ((totalCurrentIncome - newDiversifiedValue) / totalCurrentIncome) *
+            100
+          : 0,
+        possible: totalCurrentDiversifiedIncome
+          ? ((totalFeasibleDiversifiedIncome - totalCurrentDiversifiedIncome) /
+              totalCurrentDiversifiedIncome) *
+            100
+          : 0,
+        additional: additionalDiversifiedValue,
       });
     }
     // reorder
@@ -168,11 +187,11 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
       }
       if (x === "income") {
         title =
-          "Percentage change in income with driver at feasible level, while all other drivers stay the same (%)";
+          "Percentage change in income with driver at feasible level,\nwhile all other drivers stay the same (%)";
       }
       if (x === "additional") {
         title =
-          "Percentage change in income when this driver moves from current to feasible level while all other drivers are at feasible level (%)";
+          "Percentage change in income when this driver moves\nfrom current to feasible level while all other drivers\nare at feasible level (%)";
       }
       const data = transformedData.map((d) => ({
         name: d.name,
@@ -219,7 +238,7 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
         containLabel: true,
         left: 55,
         right: 50,
-        top: 75,
+        top: 90,
         bottom: 20,
         label: {
           color: "#222",

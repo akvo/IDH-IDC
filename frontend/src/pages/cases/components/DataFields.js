@@ -53,6 +53,11 @@ const LIBTooltipText = (
   </div>
 );
 
+const incomeTargetTooltipText =
+  "To make use of the calculations and visualizations in this tool, it's crucial to set an income target. You have two options: either define the target yourself or rely on a living income benchmark value if available.";
+const incomeDriversTooltipText =
+  "We consider five income drivers to compute the income of a farmer and their household members. For further details on these income drivers and their role in income calculation, please refer to the home page or select the information box per driver below.";
+
 const DataFields = ({
   segment,
   segmentLabel,
@@ -328,7 +333,9 @@ const DataFields = ({
                     <h2 className="section-title">
                       Income Target
                       <div>
-                        <InfoCircleOutlined />
+                        <Tooltip title={incomeTargetTooltipText}>
+                          <InfoCircleOutlined />
+                        </Tooltip>
                       </div>
                     </h2>
                   }
@@ -358,7 +365,9 @@ const DataFields = ({
                     <h2 className="section-title">
                       Income Drivers
                       <div>
-                        <InfoCircleOutlined />
+                        <Tooltip title={incomeDriversTooltipText}>
+                          <InfoCircleOutlined />
+                        </Tooltip>
                       </div>
                     </h2>
                   }

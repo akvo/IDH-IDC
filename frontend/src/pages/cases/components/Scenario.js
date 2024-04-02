@@ -25,13 +25,14 @@ import {
   InputNumberThousandFormatter,
   getFunctionDefaultValue,
   selectProps,
+  Step,
 } from "./";
 import { ChartScenarioModeling } from "../visualizations";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { SaveAsImageButton, ShowLabelButton } from "../../../components/utils";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
-const generateChartData = (data) => {
+const generateChartData = (data, current = false) => {
   return data.map((d) => {
     const incomeTarget = d.currentSegmentValue.target;
     const currentTotalIncome = d.currentSegmentValue.total_current_income;
@@ -45,7 +46,7 @@ const generateChartData = (data) => {
     gapValue = gapValue < 0 ? 0 : gapValue;
 
     return {
-      name: `${d.scenarioName}-${d.name}`,
+      name: current ? d.name : `${d.scenarioName}-${d.name}`,
       target: Math.round(incomeTarget),
       stack: [
         {
@@ -542,18 +543,6 @@ const ScenarioInput = ({
   );
 };
 
-const Step = ({ number, title, description = null }) => (
-  <Col span={24}>
-    <Space align="center" className="scenario-step-wrapper">
-      <div className="number">{number}</div>
-      <div className="title">{title}</div>
-    </Space>
-    {description && (
-      <div className="scenario-step-description">{description}</div>
-    )}
-  </Col>
-);
-
 const outcomeIndicator = [
   {
     key: "income_driver",
@@ -792,7 +781,7 @@ const Scenario = ({
   );
 
   const currentChartData = useMemo(
-    () => generateChartData(currentScenarioData),
+    () => generateChartData(currentScenarioData, true),
     [currentScenarioData]
   );
 
@@ -1145,9 +1134,6 @@ const Scenario = ({
         </Card>
       </Col>
 
-      {/* Step 1 */}
-      <Step number={1} title="Fill in values for your scenarios" />
-
       {/* Income Driver Scenario Values */}
       <Col span={24}>
         <Tabs
@@ -1204,6 +1190,13 @@ const Scenario = ({
                       capture changes in in CoP for secondary and tertiary crops
                       then that needs to be accounted for in the changes you
                       model under Diversified Income.
+                      <br />
+                      <br />
+                      Keep in mind that income drivers are interconnected.
+                      Changing one income driver may cause changes in another.
+                      For example, if the land size changes, this could result
+                      in changes to the total volume, potentially affecting
+                      diversified income as well.
                     </p>
                     <Card
                       className="chart-card-wrapper"
