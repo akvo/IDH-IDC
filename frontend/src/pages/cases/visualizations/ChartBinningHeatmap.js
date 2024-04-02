@@ -298,11 +298,11 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
         (s) =>
           s.question.parent === null && s.name === "current" && s.commodityFocus
       ),
-      min: segment.total_current_income,
-      max: segment.total_feasible_income,
-      diversified: segment.total_current_diversified_income,
-      diversified_feasible: segment.total_feasible_diversified_income,
-      target: segment.target,
+      min: segment.total_current_income || 0,
+      max: segment.total_feasible_income || 0,
+      diversified: segment.total_current_diversified_income || 0,
+      diversified_feasible: segment.total_feasible_diversified_income || 0,
+      target: segment.target || 0,
     };
   }, [data, segment, origin]);
 

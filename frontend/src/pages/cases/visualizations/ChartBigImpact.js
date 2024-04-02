@@ -59,9 +59,9 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
     const totalFeasibleDiversifiedIncome =
       currentSegmentData?.total_feasible_diversified_income || 0;
 
-    const feasiblePerCurrentTotalIncome = totalCurrentIncome
-      ? (totalFeasibleIncome / totalCurrentIncome) * 100
-      : 0;
+    // const feasiblePerCurrentTotalIncome = totalCurrentIncome
+    //   ? (totalFeasibleIncome / totalCurrentIncome) * 100
+    //   : 0;
 
     // populate impact values for focus commodity
     let transformedData = indicators.map((ind) => {
@@ -115,12 +115,15 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
             replacedFeasibleValues
           ) + totalFeasibleDiversifiedIncome;
 
-        const incomeIncreaseFeasible = totalCurrentIncome
-          ? (newAdditionalTotalValue / totalCurrentIncome) * 100
+        const additionalValue = totalCurrentIncome
+          ? ((totalFeasibleIncome - newAdditionalTotalValue) /
+              totalCurrentIncome) *
+            100
           : 0;
 
-        const additionalValue =
-          feasiblePerCurrentTotalIncome - incomeIncreaseFeasible;
+        // const additionalValue =
+        //   feasiblePerCurrentTotalIncome - incomeIncreaseFeasible;
+
         // EOL Income value
         return {
           id: ind.id,
@@ -150,12 +153,16 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
         totalCurrentFocusIncome + totalFeasibleDiversifiedIncome;
       const newAdditionalDiversifiedValue =
         totalFeasibleFocusIncome + totalCurrentDiversifiedIncome;
-      const diversifiedIncreaseFeasible = totalCurrentIncome
-        ? (newAdditionalDiversifiedValue / totalCurrentIncome) * 100
+
+      const additionalDiversifiedValue = totalCurrentIncome
+        ? ((totalFeasibleIncome - newAdditionalDiversifiedValue) /
+            totalCurrentIncome) *
+          100
         : 0;
 
-      const additionalDiversifiedValue =
-        feasiblePerCurrentTotalIncome - diversifiedIncreaseFeasible;
+      // const additionalDiversifiedValue =
+      //   feasiblePerCurrentTotalIncome - diversifiedIncreaseFeasible;
+
       transformedData.push({
         id: 9002,
         name: "Diversified Income",
@@ -180,11 +187,11 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
       }
       if (x === "income") {
         title =
-          "Percentage change in income with driver at feasible level, while all other drivers stay the same (%)";
+          "Percentage change in income with driver at feasible level,\nwhile all other drivers stay the same (%)";
       }
       if (x === "additional") {
         title =
-          "Percentage change in income when this driver moves from current to feasible level while all other drivers are at feasible level (%)";
+          "Percentage change in income when this driver moves\nfrom current to feasible level while all other drivers\nare at feasible level (%)";
       }
       const data = transformedData.map((d) => ({
         name: d.name,
@@ -231,7 +238,7 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
         containLabel: true,
         left: 55,
         right: 50,
-        top: 75,
+        top: 90,
         bottom: 20,
         label: {
           color: "#222",
