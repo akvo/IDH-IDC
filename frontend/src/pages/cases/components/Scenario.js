@@ -25,6 +25,7 @@ import {
   InputNumberThousandFormatter,
   getFunctionDefaultValue,
   selectProps,
+  Step,
 } from "./";
 import { ChartScenarioModeling } from "../visualizations";
 import { isEmpty, orderBy, uniqBy } from "lodash";
@@ -541,18 +542,6 @@ const ScenarioInput = ({
     </Form>
   );
 };
-
-const Step = ({ number, title, description = null }) => (
-  <Col span={24}>
-    <Space align="center" className="scenario-step-wrapper">
-      <div className="number">{number}</div>
-      <div className="title">{title}</div>
-    </Space>
-    {description && (
-      <div className="scenario-step-description">{description}</div>
-    )}
-  </Col>
-);
 
 const outcomeIndicator = [
   {
@@ -1144,9 +1133,6 @@ const Scenario = ({
           {renderScenarioCardHeader()}
         </Card>
       </Col>
-
-      {/* Step 1 */}
-      <Step number={1} title="Fill in values for your scenarios" />
 
       {/* Income Driver Scenario Values */}
       <Col span={24}>
