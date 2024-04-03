@@ -494,8 +494,8 @@ const DashboardSensitivityAnalysis = ({
             <h2>Perform a sensitivity analysis</h2>
             <p>
               On this page, you can explore how different combinations of income
-              drivers affect income levels. Whether it&apos;s increasing growing
-              area, applying pricing strategies, or accounting for environmental
+              drivers affect income levels. Whether it&apos;s increasing area,
+              applying pricing strategies, or accounting for environmental
               shocks, you can model these in the sensitivity analysis. Adjust
               each driver&apos;s range individually and compare them to two
               other drivers of your choice.
