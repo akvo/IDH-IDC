@@ -256,7 +256,7 @@ const ChartExploreBreakdownDrivers = ({
                 );
                 value =
                   nonFocusCommodity && nonFocusCommodity?.value
-                    ? nonFocusCommodity.value
+                    ? parseFloat(nonFocusCommodity.value.toFixed(2))
                     : 0;
               }
               // Calculate diversified
