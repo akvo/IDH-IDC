@@ -3,26 +3,27 @@ from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from typing import Optional
 from pydantic import BaseModel
+from models.tag import Tag
 
 
 class CaseTag(Base):
-    __tablename__ = 'case_tag'
+    __tablename__ = "case_tag"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    case = Column(Integer, ForeignKey('case.id'), nullable=False)
-    tag = Column(Integer, ForeignKey('tag.id'), nullable=False)
+    case = Column(Integer, ForeignKey("case.id"), nullable=False)
+    tag = Column(Integer, ForeignKey("tag.id"), nullable=False)
 
     case_detail = relationship(
-        'Case',
+        "Case",
         cascade="all, delete",
         passive_deletes=True,
-        back_populates='case_tags'
+        back_populates="case_tags",
     )
     case_tag_detail = relationship(
-        'Tag',
+        Tag,
         cascade="all, delete",
         passive_deletes=True,
-        back_populates='tag_cases'
+        back_populates="tag_cases",
     )
 
     def __init__(

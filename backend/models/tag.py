@@ -5,7 +5,6 @@ from sqlalchemy.sql import func
 from typing_extensions import TypedDict
 from typing import Optional, List
 from pydantic import BaseModel
-from models.case_tag import CaseTag
 
 
 class TagDict(TypedDict):
@@ -36,14 +35,17 @@ class Tag(Base):
     created_by = Column(Integer, ForeignKey("user.id"), nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(
-        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime,
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     created_by_user = relationship(
         "User", cascade="all, delete", passive_deletes=True, backref="Tags"
     )
     tag_cases = relationship(
-        CaseTag,
+        "CaseTag",
         cascade="all, delete",
         passive_deletes=True,
         back_populates="case_tag_detail",
