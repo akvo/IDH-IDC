@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from typing import Optional
 from typing_extensions import TypedDict
 from pydantic import BaseModel
+from models.question import Question
 
 
 class SegmentAnswerDict(TypedDict):
@@ -16,26 +17,26 @@ class SegmentAnswerDict(TypedDict):
 
 
 class SegmentAnswer(Base):
-    __tablename__ = 'segment_answer'
+    __tablename__ = "segment_answer"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    case_commodity = Column(Integer, ForeignKey('case_commodity.id'))
-    segment = Column(Integer, ForeignKey('segment.id'))
-    question = Column(Integer, ForeignKey('question.id'))
+    case_commodity = Column(Integer, ForeignKey("case_commodity.id"))
+    segment = Column(Integer, ForeignKey("segment.id"))
+    question = Column(Integer, ForeignKey("question.id"))
     current_value = Column(Float, nullable=False)
     feasible_value = Column(Float, nullable=True)
 
     case_commodity_detail = relationship(
-        'CaseCommodity',
+        "CaseCommodity",
         cascade="all, delete",
         passive_deletes=True,
-        backref='case_commodity_segment_answer'
+        backref="case_commodity_segment_answer",
     )
     question_detail = relationship(
-        'Question',
+        Question,
         cascade="all, delete",
         passive_deletes=True,
-        backref='question_segment_answer'
+        backref="question_segment_answer",
     )
 
     def __init__(
