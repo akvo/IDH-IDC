@@ -1147,12 +1147,7 @@ const Scenario = ({
             children: dashboardData
               .filter((d) => d.id === activeTab)
               .map((segment) => (
-                <Row
-                  key={segment.id}
-                  gutter={[24, 24]}
-                  align="top"
-                  ref={elCurrentScenarioIncomeGap}
-                >
+                <Row key={segment.id} gutter={[24, 24]} align="top">
                   <Col span={10}>
                     <Card
                       className="info-card-wrapper"
@@ -1199,6 +1194,7 @@ const Scenario = ({
                       diversified income as well.
                     </p>
                     <Card
+                      ref={elCurrentScenarioIncomeGap}
                       className="chart-card-wrapper"
                       title="Income gap for the different segments in the current scenario"
                       extra={
@@ -1238,7 +1234,7 @@ const Scenario = ({
 
       {/* Chart and Select scenario - segment */}
       <Col span={24}>
-        <Row gutter={[24, 24]} ref={elIncomeGapScenario}>
+        <Row gutter={[24, 24]}>
           <Col span={8}>
             <Select
               {...selectProps}
@@ -1264,7 +1260,7 @@ const Scenario = ({
               created.
             </p>
           </Col>
-          <Col span={16}>
+          <Col span={16} ref={elIncomeGapScenario}>
             <Card
               className="chart-card-wrapper"
               title="Income gap across scenario"

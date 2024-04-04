@@ -296,7 +296,7 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
 
   return binningData.binCharts?.length ? (
     <Col span={24}>
-      <Row gutter={[24, 24]} ref={elLineChart}>
+      <Row gutter={[24, 24]}>
         <Col span={8}>
           <Space direction="vertical" className="binning-chart-info-wrapper">
             {/* <div className="segment">
@@ -324,7 +324,7 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
             </p>
           </Space>
         </Col>
-        <Col span={16}>
+        <Col span={16} ref={elLineChart}>
           <Card
             title={chartTitle}
             className="chart-card-wrapper with-padding"

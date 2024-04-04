@@ -43,11 +43,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
       className="income-driver-dashboard"
     >
       <Col span={24}>
-        <Row
-          className="income-driver-content"
-          gutter={[24, 24]}
-          ref={elCurrentFeasibleChart}
-        >
+        <Row className="income-driver-content" gutter={[24, 24]}>
           <Col span={24} className="income-overview-chart-wrapper">
             <h2>
               What are the current and feasible income levels for the different
@@ -65,7 +61,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               between segments.
             </p>
           </Col>
-          <Col span={24}>
+          <Col span={24} ref={elCurrentFeasibleChart}>
             <Card
               className="chart-card-wrapper"
               title={
@@ -105,11 +101,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
       </Col>
 
       <Col span={24}>
-        <Row
-          className="income-driver-content"
-          gutter={[24, 24]}
-          ref={elIncomeGap}
-        >
+        <Row className="income-driver-content" gutter={[24, 24]}>
           <Col span={24} className="income-overview-chart-wrapper">
             <h2>What is the size of the income gap?</h2>
             <p>
@@ -130,7 +122,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               or dissapear.
             </p>
           </Col>
-          <Col span={24}>
+          <Col span={24} ref={elIncomeGap}>
             <Card
               className="chart-card-wrapper"
               title={
@@ -170,12 +162,8 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
       </Col>
 
       <Col span={24}>
-        <Row
-          className="income-driver-content"
-          gutter={[24, 24]}
-          ref={elBigImpact}
-        >
-          <Col span={16}>
+        <Row className="income-driver-content" gutter={[24, 24]}>
+          <Col span={16} ref={elBigImpact}>
             <Card
               className="chart-card-wrapper has-segments-button"
               title={
@@ -244,11 +232,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
       </Col>
 
       <Col span={24}>
-        <Row
-          className="income-driver-content"
-          gutter={[24, 24]}
-          ref={elExploreBreakdownDrivers}
-        >
+        <Row className="income-driver-content" gutter={[24, 24]}>
           <Col span={8} className="income-overview-chart-wrapper">
             <h2>Explore the breakdown of drivers</h2>
             <p>
@@ -261,7 +245,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               and how these vary across different segments.
             </p>
           </Col>
-          <Col span={16}>
+          <Col span={16} ref={elExploreBreakdownDrivers}>
             <Card
               className="chart-card-wrapper has-segments-button"
               title="The breakdown of drivers"
@@ -291,12 +275,8 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
       </Col>
 
       <Col span={24}>
-        <Row
-          className="income-driver-content"
-          gutter={[24, 24]}
-          ref={elMonetaryContribution}
-        >
-          <Col span={16}>
+        <Row className="income-driver-content" gutter={[24, 24]}>
+          <Col span={16} ref={elMonetaryContribution}>
             <Card
               className="chart-card-wrapper has-segments-button"
               title="Monetary impact of each driver to income"
@@ -348,11 +328,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
       </Col>
 
       <Col span={24}>
-        <Row
-          className="income-driver-content"
-          gutter={[24, 24]}
-          ref={elIncomeLevelPerCommodities}
-        >
+        <Row className="income-driver-content" gutter={[24, 24]}>
           <Col span={8} className="income-overview-chart-wrapper">
             <h2>
               What are the current and feasible income levels for the different
@@ -368,7 +344,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               different commodities you included in the different segements
             </p>
           </Col>
-          <Col span={16}>
+          <Col span={16} ref={elIncomeLevelPerCommodities}>
             <Card
               className="chart-card-wrapper has-segments-button"
               title="Income levels for different commodities"
