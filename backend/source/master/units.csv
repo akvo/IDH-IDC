@@ -8,3 +8,5 @@ id,unit_type,unit_name
 7,"Cost of Production Measurement Units",Per-area
 8,"Cost of Production Measurement Units",Per-yield
 9,"Cost of Production Measurement Units",Per-tree
+10,"Area Size Units",square feet
+11,"Area Size Units",square meter
