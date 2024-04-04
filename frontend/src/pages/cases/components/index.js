@@ -4,10 +4,21 @@ import { Col, Space } from "antd";
 const commodityCategories = window.master?.commodity_categories || [];
 const commodities = commodityCategories
   ? commodityCategories.reduce(
-      (acc, category) => [...acc, ...category.commodities],
+      (acc, category) => [
+        ...acc,
+        ...category.commodities.map((c) => ({ ...c, category: category.name })),
+      ],
       []
     )
   : [];
+
+// create focus/primary commodities without livestock
+export const focusCommodityOptions = commodities
+  .filter((c) => c.category.toLowerCase() !== "livestock")
+  .map((commodity) => ({
+    label: commodity.name,
+    value: commodity.id,
+  }));
 
 export const commodityOptions = commodities.map((commodity) => ({
   label: commodity.name,

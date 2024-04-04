@@ -26,6 +26,7 @@ import {
 } from "@ant-design/icons";
 import {
   AreaUnitFields,
+  focusCommodityOptions,
   commodityOptions,
   countryOptions,
   currencyOptions,
@@ -220,7 +221,7 @@ const CaseForm = ({
               >
                 <Select
                   placeholder="Select Primary Commodity"
-                  options={commodityOptions}
+                  options={focusCommodityOptions}
                   {...selectProps}
                   disabled={!enableEditCase}
                 />
