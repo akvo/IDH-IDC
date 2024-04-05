@@ -16,7 +16,7 @@ import {
   CaretUpFilled,
   InfoCircleTwoTone,
 } from "@ant-design/icons";
-import { InputNumberThousandFormatter, indentSize } from "./";
+import { InputNumberThousandFormatter, indentSize, commodities } from "./";
 import orderBy from "lodash/orderBy";
 
 const commoditiesBreakdown = ["secondary", "tertiary"];
@@ -92,7 +92,13 @@ const Questions = ({
   const unitName = unit
     .split("/")
     .map((u) => u.trim())
-    .map((u) => units?.[u])
+    .map((u) =>
+      u === "crop"
+        ? commodities
+            .find((c) => c.id === units?.commodity)
+            ?.name?.toLowerCase() || ""
+        : units?.[u]
+    )
     .join(" / ");
 
   useEffect(() => {
