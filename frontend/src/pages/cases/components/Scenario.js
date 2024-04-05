@@ -26,6 +26,7 @@ import {
   getFunctionDefaultValue,
   selectProps,
   Step,
+  commodities,
 } from "./";
 import { ChartScenarioModeling } from "../visualizations";
 import { isEmpty, orderBy, uniqBy } from "lodash";
@@ -122,7 +123,13 @@ const Question = ({
     return unit
       .split("/")
       .map((u) => u.trim())
-      .map((u) => commodity?.[u])
+      .map((u) =>
+        u === "crop"
+          ? commodities
+              .find((c) => c.id === commodity?.commodity)
+              ?.name?.toLowerCase() || ""
+          : commodity?.[u]
+      )
       .join(" / ");
   }, [unit, commodity]);
 
