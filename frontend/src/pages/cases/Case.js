@@ -96,12 +96,7 @@ const Case = () => {
       if (!group) {
         return [];
       }
-      const questions = flatten(
-        group.questions.map((q) => ({
-          ...q,
-          commodityId: group.commodity_id,
-        }))
-      ).filter((q) => !q.parent);
+      const questions = flatten(group.questions).filter((q) => !q.parent);
       const commodity = commodityList.find(
         (c) => c.commodity === group.commodity_id
       );
