@@ -1,6 +1,6 @@
 id,parent,text,commodity_category,unit,default_value,question_type,description
-1,,Income,"Crop, Aquaculture, Livestock",currency,( #2 * #3 * #4 ) - ( ( #5 * #2 ) + ( #26 * #3 * #2 ) ) + #7,aggregator,
-2,1,Land,"Crop, Aquaculture, Livestock",area_size_unit,,question,"The size of the land used to grow the crops."
+1,,Income,"Crop, Aquaculture, Livestock",currency,( ( #2 * #3 * #4 ) + ( #40 * #3 * #4 ) ) - ( ( #5 * #2 ) + ( #26 * #3 * #2 ) + ( #26 * #3 * #40 ) ) + #7,aggregator,
+2,1,Land,"Crop, Aquaculture",area_size_unit,,question,"The size of the land used to grow the crops."
 3,1,Volume,"Crop, Aquaculture, Livestock",volume_measurement_unit / area_size_unit,#8 - #9,question,"The volume of produce available for commercial sale, taking into account both yield and potential losses."
 4,1,Price,"Crop, Aquaculture, Livestock",currency / volume_measurement_unit,,question,"The farmgate price for the produce which may also include a price premiums."
 5,1,Cost of Production,Crop,currency / area_size_unit,,question,"The costs of production for producing the primary crop which covers all can cover several types of costs, such as costs for labour, inputs or equipment."
@@ -38,3 +38,5 @@ id,parent,text,commodity_category,unit,default_value,question_type,description
 37,,Investment and cash transfer,,currency,,diversified,
 38,,Other net on-farm income,,currency,,diversified,
 39,,Other diversified income,,currency,,diversified,
+40,1,Animals,"Livestock",crop,,question,"Number of animals."
+
