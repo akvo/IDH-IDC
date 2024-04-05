@@ -2,9 +2,10 @@ import React, { useMemo, useRef, useState } from "react";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { getFunctionDefaultValue, yAxisFormula } from "../components";
 import { range, orderBy, uniq, max } from "lodash";
-import { Row, Col, Card, Space } from "antd";
+import { Row, Col, Card, Space, Image } from "antd";
 import Chart from "../../../components/chart";
 import { SaveAsImageButton } from "../../../components/utils";
+import SensitivityAnalisysImg from "../../../assets/images/sensitivity-analysis-line-chart.png";
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -329,6 +330,19 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
               combinations of income driver levels are most likely to lead to
               the desired income target.
             </p>
+            <div>
+              <Space size="large" align="center">
+                <Image
+                  src={SensitivityAnalisysImg}
+                  preview={false}
+                  width={175}
+                />
+                <p>
+                  The orange zone indicates the range of current to feasible
+                  values for the X and Y-axis drivers.
+                </p>
+              </Space>
+            </div>
           </Space>
         </Col>
         <Col span={16} ref={elLineChart}>
