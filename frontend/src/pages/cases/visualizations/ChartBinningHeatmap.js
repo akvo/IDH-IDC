@@ -253,7 +253,8 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
       })
       .filter((x) => x.id === segment.id && x.value);
     const answers = segment.answers.filter(
-      (s) => s.question.parent === 1 && s.name === "current" && s.commodityFocus
+      (s) =>
+        s.question?.parent === 1 && s.name === "current" && s.commodityFocus
     );
     const binCharts = bins.filter(
       (b) => b.name.startsWith("binning-value") && b.value
@@ -264,9 +265,9 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
     const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
     const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
     // label
-    const label = `At what level of the ${
+    const label = `At what level of ${yAxisName}, ${xAxisName}, ${
       binName ? binName : ""
-    }, and a combination of the ${xAxisName} and ${yAxisName}, will we reach the income target?`;
+    } will we reach the income target?`;
     setLabel(label);
 
     return {
@@ -296,7 +297,9 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
       })),
       incomeQuestion: segment.answers.find(
         (s) =>
-          s.question.parent === null && s.name === "current" && s.commodityFocus
+          s.question?.parent === null &&
+          s.name === "current" &&
+          s.commodityFocus
       ),
       min: segment.total_current_income || 0,
       max: segment.total_feasible_income || 0,

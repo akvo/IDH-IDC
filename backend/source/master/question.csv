@@ -38,7 +38,7 @@ id,parent,text,commodity_category,unit,default_value,question_type,description
 37,,Investment and cash transfer,,currency,,diversified,
 38,,Other net on-farm income,,currency,,diversified,
 39,,Other diversified income,,currency,,diversified,
-40,1,Animals,"Livestock",crop,,question,"Number of animals."
+40,1,Animals,"Livestock",crop,,question,"Insert the number of animals here"
 41,1,Volume,"Livestock",volume_measurement_unit / crop,,question,"The volume of produce available for commercial sale, taking into account both yield and potential losses."
 42,1,Price,"Livestock",currency / volume_measurement_unit,,question,"The farmgate price for the produce which may also include a price premiums."
 43,1,Cost of Production,"Livestock",currency / crop,,question,"The costs of production for producing the primary crop which covers all can cover several types of costs, such as costs for labour, inputs or equipment."

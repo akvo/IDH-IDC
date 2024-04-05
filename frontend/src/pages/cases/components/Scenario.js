@@ -140,7 +140,7 @@ const Question = ({
         .map((c) => {
           return segment.answers.find(
             (s) =>
-              s.question.id === c.id &&
+              s.question?.id === c.id &&
               s.caseCommodityId === c.case_commodity &&
               s.name === "current"
           );
@@ -314,7 +314,9 @@ const ScenarioInput = ({
       const totalAbsolute = scenarioIncrease?.totalAbsolute
         ? scenarioIncrease.totalAbsolute
         : 0;
-      const res = parseFloat(totalAbsolute) - segment.total_current_income;
+      const res = parseInt(totalAbsolute)
+        ? parseFloat(totalAbsolute) - segment.total_current_income
+        : 0;
       return thousandFormatter(res, 2);
     }
     return `${scenarioIncrease.totalPercentage}%`;
@@ -329,7 +331,7 @@ const ScenarioInput = ({
     if (id === "diversified") {
       const childrens = commodityQuestions
         .find((cq) => cq.commodity_type === "diversified")
-        ?.questions?.find((q) => !q.parent)?.childrens;
+        ?.questions?.find((q) => !q?.parent)?.childrens;
       const answers = childrens
         ?.map((c) => {
           return segment.answers.find(
@@ -414,7 +416,7 @@ const ScenarioInput = ({
     }
 
     const allParentQuestions = segment.answers.filter(
-      (s) => s.question.parent === null && s.name === "current"
+      (s) => s.question?.parent === null && s.name === "current"
     );
 
     allNewValues = { ...allNewValues, ...newFieldsValue };

@@ -2,9 +2,10 @@ import React, { useMemo, useRef, useState } from "react";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { getFunctionDefaultValue, yAxisFormula } from "../components";
 import { range, orderBy, uniq, max } from "lodash";
-import { Row, Col, Card, Space } from "antd";
+import { Row, Col, Card, Space, Image } from "antd";
 import Chart from "../../../components/chart";
 import { SaveAsImageButton } from "../../../components/utils";
+import SensitivityAnalisysImg from "../../../assets/images/sensitivity-analysis-line-chart.png";
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -222,18 +223,23 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
     if (!segment?.id) {
       return {};
     }
+    // support adjusted custom target
+    const adjustedTarget = data?.[`${segment.id}_adjusted-target`] || 0;
+
     const bins = Object.keys(data)
+      .filter((x) => !x.includes("adjusted-target"))
       .map((x) => {
         const [segmentId, name] = x?.split("_") || [];
         return { id: parseInt(segmentId), name, value: data[x] };
       })
       .filter((x) => x.id === segment.id && x.value);
     const answers = segment.answers.filter(
-      (s) => s.question.parent === 1 && s.name === "current" && s.commodityFocus
+      (s) =>
+        s.question?.parent === 1 && s.name === "current" && s.commodityFocus
     );
     const feasibleAnswers = segment.answers.filter(
       (s) =>
-        s.question.parent === 1 && s.name === "feasible" && s.commodityFocus
+        s.question?.parent === 1 && s.name === "feasible" && s.commodityFocus
     );
     const binCharts = bins.filter(
       (b) => b.name.startsWith("binning-value") && b.value
@@ -243,9 +249,9 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
     const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
     const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
     // label
-    const label = `At what level of the ${
+    const label = `At what level of ${yAxisName}, ${xAxisName}, ${
       binName ? binName : ""
-    }, and a combination of the ${xAxisName} and ${yAxisName}, will we reach the income target?`;
+    } will we reach the income target?`;
     setLabel(label);
     // chart title
     setChartTitle(
@@ -284,13 +290,15 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       })),
       incomeQuestion: segment.answers.find(
         (s) =>
-          s.question.parent === null && s.name === "current" && s.commodityFocus
+          s.question?.parent === null &&
+          s.name === "current" &&
+          s.commodityFocus
       ),
       total_current_income: segment.total_current_income,
       total_feasible_income: segment.total_feasible_income,
       diversified: segment.total_current_diversified_income,
       diversified_feasible: segment.total_feasible_diversified_income,
-      target: segment.target,
+      target: adjustedTarget ? adjustedTarget : segment.target, // support adjusted target
     };
   }, [data, segment, origin]);
 
@@ -322,6 +330,19 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
               combinations of income driver levels are most likely to lead to
               the desired income target.
             </p>
+            <div>
+              <Space size="large" align="center">
+                <Image
+                  src={SensitivityAnalisysImg}
+                  preview={false}
+                  width={175}
+                />
+                <p>
+                  The orange zone indicates the range of current to feasible
+                  values for the X and Y-axis drivers.
+                </p>
+              </Space>
+            </div>
           </Space>
         </Col>
         <Col span={16} ref={elLineChart}>

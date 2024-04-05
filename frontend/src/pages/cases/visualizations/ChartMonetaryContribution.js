@@ -32,7 +32,7 @@ const ChartMonetaryContribution = ({
       return {};
     }
     const dataSeries = data.answers.filter(
-      (d) => d.question.parent === 1 && d.commodityFocus
+      (d) => d.question?.parent === 1 && d.commodityFocus
     );
 
     const indicators = dataSeries

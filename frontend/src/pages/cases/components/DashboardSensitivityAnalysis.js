@@ -9,6 +9,7 @@ import {
   Form,
   Space,
   Tooltip,
+  Alert,
 } from "antd";
 import { groupBy, map, isEmpty, uniq } from "lodash";
 import {
@@ -133,6 +134,7 @@ const BinningForm = ({
               <InfoCircleOutlined className="info-icon" />
             </Tooltip>
           }
+          style={{ minHeight: "375px" }}
         >
           <Form.Item name={`${segment.id}_binning-driver-name`}>
             <Select
@@ -196,6 +198,7 @@ const BinningForm = ({
               <InfoCircleOutlined className="info-icon" />
             </Tooltip>
           }
+          style={{ minHeight: "375px" }}
         >
           <Form.Item name={`${segment.id}_x-axis-driver`}>
             <Select
@@ -241,6 +244,42 @@ const BinningForm = ({
               </Row>
             </Col>
           </Row>
+          <br />
+          {/* Current & Feasible value */}
+          <Row gutter={[8, 8]} align="middle">
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>
+                  <div>Current Value</div>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_x-axis-current-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>
+                  <div>Feasible Value</div>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_x-axis-feasible-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </Card>
       </Col>
       <Col span={8}>
@@ -257,6 +296,7 @@ const BinningForm = ({
               <InfoCircleOutlined className="info-icon" />
             </Tooltip>
           }
+          style={{ minHeight: "375px" }}
         >
           <Form.Item name={`${segment.id}_y-axis-driver`}>
             <Select
@@ -298,6 +338,44 @@ const BinningForm = ({
               </Row>
             </Col>
           </Row>
+          <br />
+          {/* Current & Feasible value */}
+          <Row gutter={[8, 8]} align="middle">
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>Current Value</Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_y-axis-current-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>Feasible Value</Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_y-axis-feasible-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <br />
+          <Alert
+            type="info"
+            message="Values entered here impact only the heatmap, not the line graph below."
+            style={{ fontSize: "13px" }}
+          />
         </Card>
       </Col>
     </Row>
@@ -310,8 +388,12 @@ const DashboardSensitivityAnalysis = ({
   setBinningData,
   commodityList,
   enableEditCase,
+  percentageSensitivity,
+  setPercentageSensitivity,
 }) => {
   const [currentSegment, setCurrentSegment] = useState(null);
+  const [refreshAdjustedIncrease, setRefreshAdjustedIncrease] = useState(0);
+  const [adjustedValues, setAdjustedValues] = useState({});
   const [form] = Form.useForm();
   const elDriversTable = useRef(null);
 
@@ -321,6 +403,12 @@ const DashboardSensitivityAnalysis = ({
         Object.keys(binningData).map((key) => key.split("_")[0])
       );
       setCurrentSegment(parseInt(segmentIds[0]));
+      setAdjustedValues(
+        Object.keys(binningData)
+          .filter((x) => x.includes("adjusted-target"))
+          .map((x) => ({ [x]: binningData[x] }))
+          .reduce((a, c) => ({ ...a, ...c }))
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -337,7 +425,7 @@ const DashboardSensitivityAnalysis = ({
     );
     const answers = segmentData.answers;
     const drivers = answers.filter(
-      (answer) => answer.question.parent_id === 1 && answer.commodityFocus
+      (answer) => answer.question?.parent_id === 1 && answer.commodityFocus
     );
     const data = map(groupBy(drivers, "question.id"), (d, i) => {
       const currentQuestion = d[0].question;
@@ -460,6 +548,8 @@ const DashboardSensitivityAnalysis = ({
         [`${segmentId}_x-axis-driver`]: dataValue?.name,
         [`${segmentId}_x-axis-min-value`]: dataValue?.current,
         [`${segmentId}_x-axis-max-value`]: dataValue?.feasible,
+        [`${segmentId}_x-axis-current-value`]: dataValue?.current,
+        [`${segmentId}_x-axis-feasible-value`]: dataValue?.feasible,
       };
     }
     if (valueName === "y-axis-driver") {
@@ -469,6 +559,8 @@ const DashboardSensitivityAnalysis = ({
         [`${segmentId}_y-axis-driver`]: dataValue?.name,
         [`${segmentId}_y-axis-min-value`]: dataValue?.current,
         [`${segmentId}_y-axis-max-value`]: dataValue?.feasible,
+        [`${segmentId}_y-axis-current-value`]: dataValue?.current,
+        [`${segmentId}_y-axis-feasible-value`]: dataValue?.feasible,
       };
     }
     if (valueName === "binning-driver-name") {
@@ -491,6 +583,79 @@ const DashboardSensitivityAnalysis = ({
     () => dataSource.find((d) => d.name === "Income Target"),
     [dataSource]
   );
+
+  const onChangePercentage = (value) => {
+    if (value === "percentage") {
+      setPercentageSensitivity(true);
+    } else {
+      setPercentageSensitivity(false);
+    }
+    setRefreshAdjustedIncrease((prev) => prev + 1);
+  };
+
+  const onAdjustTarget = (value, qtype) => {
+    const currentValue = tableSummaryValue?.current
+      ? parseFloat(tableSummaryValue.current)
+      : 0;
+    let newValue = {};
+    let adjustedTarget = 0;
+    if (qtype === "percentage" && percentageSensitivity) {
+      const absoluteValue = (currentValue * value) / 100;
+      adjustedTarget = (absoluteValue + currentValue).toFixed(2);
+      newValue = {
+        ...newValue,
+        [`${currentSegment}_absolute-increase_adjusted-target`]: parseFloat(
+          absoluteValue.toFixed(2)
+        ),
+        [`${currentSegment}_percentage-increase_adjusted-target`]: value,
+      };
+    }
+    if (qtype === "absolute" && !percentageSensitivity) {
+      adjustedTarget = value;
+      const absoluteChanged = value - currentValue;
+      const percentage = currentValue ? absoluteChanged / currentValue : 0;
+      const percentageIncrease = (percentage * 100).toFixed(2);
+      newValue = {
+        ...newValue,
+        [`${currentSegment}_percentage-increase_adjusted-target`]:
+          parseFloat(percentageIncrease),
+        [`${currentSegment}_absolute-increase_adjusted-target`]:
+          absoluteChanged,
+      };
+    }
+    newValue = {
+      ...newValue,
+      [`${currentSegment}_adjusted-target`]: parseFloat(adjustedTarget),
+    };
+    setAdjustedValues((prev) => ({ ...prev, ...newValue }));
+    setTimeout(() => {
+      setBinningData((prev) => ({
+        ...prev,
+        ...newValue,
+      }));
+    }, 500);
+  };
+
+  const adustedTargetChange = useMemo(() => {
+    if (percentageSensitivity) {
+      const res =
+        adjustedValues?.[
+          `${currentSegment}_absolute-increase_adjusted-target`
+        ] || 0;
+      return thousandFormatter(res, 2);
+    }
+    const res =
+      adjustedValues?.[
+        `${currentSegment}_percentage-increase_adjusted-target`
+      ] || 0;
+    return `${res}%`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentSegment,
+    percentageSensitivity,
+    adjustedValues,
+    refreshAdjustedIncrease,
+  ]);
 
   return (
     <Row id="sensitivity-analysis" gutter={[24, 24]}>
@@ -617,6 +782,160 @@ const DashboardSensitivityAnalysis = ({
                 />
               ))}
             </Form>
+          </Col>
+        </Row>
+      </Col>
+
+      <Col span={24} className="income-driver-dashboard">
+        <Row
+          className="income-driver-content"
+          align="middle"
+          justify="space-evenly"
+          gutter={[8, 8]}
+        >
+          <Col span={24}>
+            <Card className="card-alert-box">
+              <Row gutter={[16, 16]} align="start">
+                <Col span={12}>
+                  <Space direction="vertical">
+                    <div className="title">Adjust your income target</div>
+                    <div className="description">
+                      The results in the sensitivity analysis depend
+                      significantly on the income target value set. When
+                      conducting the sensitivity analysis, adjusting the income
+                      target is recommended to observe how the results vary,
+                      providing better insight into the sensitivity of various
+                      income drivers in reaching the income target. If you do
+                      not adjust the target, we will use the current target
+                      value for the calculations.
+                    </div>
+                  </Space>
+                </Col>
+                <Col span={12} className="settings-wrapper">
+                  <Space
+                    direction="vertical"
+                    size="large"
+                    className="settings-info-wrapper"
+                  >
+                    <div key="custom-1">
+                      <Space direction="vertical">
+                        <Space align="center">
+                          <div className="number small">1</div>
+                          <div className="title small">
+                            Explore the graphs and their insights below
+                          </div>
+                        </Space>
+                      </Space>
+                    </div>
+                    <div key="custom-2">
+                      <Space direction="vertical">
+                        <Space align="start">
+                          <div className="number small">2</div>
+                          <div className="title small">
+                            If you like to change the target, Please choose
+                            whether you would like to express the changes in
+                            current values using percentages or absolute values.
+                          </div>
+                        </Space>
+                        <div className="description small">
+                          <Row>
+                            <Col span={6}>
+                              <Select
+                                style={{ width: "100%" }}
+                                options={[
+                                  { label: "Percentage", value: "percentage" },
+                                  { label: "Absolute", value: "absolute" },
+                                ]}
+                                onChange={onChangePercentage}
+                                value={
+                                  percentageSensitivity
+                                    ? "percentage"
+                                    : "absolute"
+                                }
+                              />
+                            </Col>
+                          </Row>
+                        </div>
+                      </Space>
+                    </div>
+                    <div key="custom-3">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        <Space align="start" style={{ width: "100%" }}>
+                          <div className="number small">3</div>
+                          <div className="title small">
+                            Adjust current values below
+                          </div>
+                        </Space>
+                        <div className="description small">
+                          <Row gutter={[8, 8]} align="start">
+                            <Col span={8}>
+                              <div className="title small">Current Target</div>
+                              <div
+                                className="title small"
+                                style={{
+                                  fontWeight: "700",
+                                }}
+                              >
+                                {tableSummaryValue?.current
+                                  ? thousandFormatter(tableSummaryValue.current)
+                                  : 0}{" "}
+                                <small>({tableSummaryValue?.unitName})</small>
+                              </div>
+                            </Col>
+                            <Col span={8}>
+                              <div className="title small">Adjusted Target</div>
+                              {["absolute", "percentage"].map((qtype) => (
+                                <div
+                                  key={qtype}
+                                  style={{
+                                    display:
+                                      qtype !== "percentage" &&
+                                      percentageSensitivity
+                                        ? "none"
+                                        : qtype === "percentage" &&
+                                          !percentageSensitivity
+                                        ? "none"
+                                        : "",
+                                  }}
+                                >
+                                  <InputNumber
+                                    style={{
+                                      width: "95%",
+                                    }}
+                                    addonAfter={
+                                      qtype === "percentage" ? "%" : ""
+                                    }
+                                    {...InputNumberThousandFormatter}
+                                    onChange={(value) =>
+                                      onAdjustTarget(value, qtype)
+                                    }
+                                    value={
+                                      percentageSensitivity
+                                        ? adjustedValues?.[
+                                            `${currentSegment}_percentage-increase_adjusted-target`
+                                          ]
+                                        : adjustedValues?.[
+                                            `${currentSegment}_adjusted-target`
+                                          ]
+                                    }
+                                  />
+                                </div>
+                              ))}
+                            </Col>
+                            <Col span={8}>
+                              <div className="title small">Change</div>
+                              <div className="title small">
+                                {adustedTargetChange}
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
+                      </Space>
+                    </div>
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
           </Col>
         </Row>
       </Col>

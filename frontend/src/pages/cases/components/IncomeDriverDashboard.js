@@ -27,6 +27,7 @@ const IncomeDriverDashboard = ({
   // sensitivity analysis data
   const [binningData, setBinningData] = useState({});
   const [currentBinningData, setCurrentBinningData] = useState({});
+  const [percentageSensitivity, setPercentageSensitivity] = useState(true);
 
   // scenario modeling data
   const [percentage, setPercentage] = useState(true);
@@ -204,6 +205,8 @@ const IncomeDriverDashboard = ({
                   binningData={binningData}
                   setBinningData={setBinningData}
                   enableEditCase={enableEditCase}
+                  percentageSensitivity={percentageSensitivity}
+                  setPercentageSensitivity={setPercentageSensitivity}
                 />
               ),
             },
