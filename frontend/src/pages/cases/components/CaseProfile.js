@@ -63,10 +63,7 @@ const livestockPrompt = (
     detail if there is a commercial production system. If you do not have
     detailed information on the production system, we recommend inserting values
     on the next page under &apos;diversified income&apos; -&gt; &apos;income
-    from livestock&apos;. In the case of multiple by-products from livestock,
-    please insert information for each by-product separately. For example, in
-    the case of cows, consider meat as the secondary commodity income source and
-    milk as the tertiary income source.
+    from livestock&apos;.
   </>
 );
 
