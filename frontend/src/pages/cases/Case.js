@@ -96,7 +96,12 @@ const Case = () => {
       if (!group) {
         return [];
       }
-      const questions = flatten(group.questions).filter((q) => !q.parent);
+      const questions = flatten(
+        group.questions.map((q) => ({
+          ...q,
+          commodityId: group.commodity_id,
+        }))
+      ).filter((q) => !q.parent);
       const commodity = commodityList.find(
         (c) => c.commodity === group.commodity_id
       );
@@ -113,15 +118,22 @@ const Case = () => {
       const questions = flatten(group.questions).filter((q) =>
         q.text.toLowerCase().includes("cost")
       );
-      return questions;
+      return questions.map((q) => ({
+        ...q,
+        commodityId: group.commodity_id,
+      }));
     });
     return qs.flatMap((q) => q);
   }, [questionGroups]);
 
   const flattenedQuestionGroups = useMemo(() => {
-    const qg = questionGroups.map((group) =>
-      group ? flatten(group.questions) : []
-    );
+    const qg = questionGroups.map((group) => {
+      const questions = group ? flatten(group.questions) : [];
+      return questions.map((q) => ({
+        ...q,
+        commodityId: group.commodity_id,
+      }));
+    });
     return qg.flatMap((q) => q);
   }, [questionGroups]);
 
@@ -151,10 +163,13 @@ const Case = () => {
           (q) => q.id === parseInt(questionId)
         );
         const cost = costQuestions.find(
-          (q) => q.id === parseInt(questionId) && q.parent === 1
+          (q) =>
+            q.id === parseInt(questionId) &&
+            q.parent === 1 &&
+            q.commodityId === commodityId
         );
         const question = flattenedQuestionGroups.find(
-          (q) => q.id === parseInt(questionId)
+          (q) => q.id === parseInt(questionId) && q.commodityId === commodityId
         );
         const totalOtherDiversifiedIncome =
           question?.question_type === "diversified" && !question.parent;
