@@ -370,9 +370,27 @@ const CaseProfile = ({
         // handle enable disable area size field for other commodities
         if (cm.commodity_type === "secondary") {
           setDisableAreaSizeSecondaryField(!cm.breakdown);
+          // handle disable secondary land unit field
+          const checkSecondaryCommodity = commodities.find(
+            (c) => c.id === cm.commodity
+          );
+          setDisableSecondaryLandUnitField(
+            checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+              ? true
+              : false
+          );
         }
         if (cm.commodity_type === "tertiary") {
           setDisableAreaSizeTertiaryField(!cm.breakdown);
+          // handle disable tertiary land unit field
+          const checkTertiaryCommodity = commodities.find(
+            (c) => c.id === cm.commodity
+          );
+          setDisableTertiaryLandUnitField(
+            checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+              ? true
+              : false
+          );
         }
       });
       const completed = finished.filter((item) => item !== "Case Profile");
