@@ -44,7 +44,7 @@ const ChartIncomeLevelPerCommodities = ({
       return [];
     }
     const parentQuestions = currentSegmentData.answers.filter(
-      (a) => !a.question.parent && a.question.question_type === "aggregator"
+      (a) => !a.question?.parent && a.question?.question_type === "aggregator"
     );
     if (!parentQuestions?.length) {
       return [];
@@ -59,7 +59,7 @@ const ChartIncomeLevelPerCommodities = ({
         if (
           a.commodityId &&
           a.commodityName &&
-          (parendQuestionIds.includes(a.question.parent) ||
+          (parendQuestionIds.includes(a.question?.parent) ||
             currentCommodity?.breakdown === false)
         ) {
           return a;

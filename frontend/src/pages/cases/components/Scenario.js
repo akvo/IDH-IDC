@@ -140,7 +140,7 @@ const Question = ({
         .map((c) => {
           return segment.answers.find(
             (s) =>
-              s.question.id === c.id &&
+              s.question?.id === c.id &&
               s.caseCommodityId === c.case_commodity &&
               s.name === "current"
           );
