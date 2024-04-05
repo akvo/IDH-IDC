@@ -264,9 +264,9 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
     const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
     const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
     // label
-    const label = `At what level of the ${
+    const label = `At what level of ${yAxisName}, ${xAxisName}, ${
       binName ? binName : ""
-    }, and a combination of the ${xAxisName} and ${yAxisName}, will we reach the income target?`;
+    } will we reach the income target?`;
     setLabel(label);
 
     return {
