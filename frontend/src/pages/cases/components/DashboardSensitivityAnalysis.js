@@ -811,9 +811,31 @@ const DashboardSensitivityAnalysis = ({
                             </Col>
                             <Col span={8}>
                               <div className="title small">Adjusted Target</div>
-                              <div>
-                                <InputNumber style={{ width: "90%" }} />
-                              </div>
+                              {["absolute", "percentage"].map((qtype) => (
+                                <div
+                                  key={qtype}
+                                  style={{
+                                    display:
+                                      qtype !== "percentage" &&
+                                      percentageSensitivity
+                                        ? "none"
+                                        : qtype === "percentage" &&
+                                          !percentageSensitivity
+                                        ? "none"
+                                        : "",
+                                  }}
+                                >
+                                  <InputNumber
+                                    style={{
+                                      width: "95%",
+                                    }}
+                                    addonAfter={
+                                      qtype === "percentage" ? "%" : ""
+                                    }
+                                    {...InputNumberThousandFormatter}
+                                  />
+                                </div>
+                              ))}
                             </Col>
                             <Col span={8}>
                               <div className="title small">Change</div>
