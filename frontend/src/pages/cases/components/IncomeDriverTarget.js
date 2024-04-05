@@ -320,7 +320,7 @@ const IncomeDriverTarget = ({
             }}
           >
             <Col span={24}>
-              A benchmark for the county is not available; please switch to
+              A benchmark for the country is not available; please switch to
               manual target.
             </Col>
           </Row>
