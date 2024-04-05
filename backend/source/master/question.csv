@@ -1,8 +1,8 @@
 id,parent,text,commodity_category,unit,default_value,question_type,description
-1,,Income,"Crop, Aquaculture, Livestock",currency,( ( #2 * #3 * #4 ) + ( #40 * #3 * #4 ) ) - ( ( #5 * #2 ) + ( #26 * #3 * #2 ) + ( #26 * #3 * #40 ) ) + #7,aggregator,
+1,,Income,"Crop, Aquaculture, Livestock",currency,( ( #2 * #3 * #4 ) + ( #40 * #41 * #42 ) ) - ( ( #5 * #2 ) + ( #26 * #3 * #2 ) + ( #43 * #40 ) ) + #7,aggregator,
 2,1,Land,"Crop, Aquaculture",area_size_unit,,question,"The size of the land used to grow the crops."
-3,1,Volume,"Crop, Aquaculture, Livestock",volume_measurement_unit / area_size_unit,#8 - #9,question,"The volume of produce available for commercial sale, taking into account both yield and potential losses."
-4,1,Price,"Crop, Aquaculture, Livestock",currency / volume_measurement_unit,,question,"The farmgate price for the produce which may also include a price premiums."
+3,1,Volume,"Crop, Aquaculture",volume_measurement_unit / area_size_unit,#8 - #9,question,"The volume of produce available for commercial sale, taking into account both yield and potential losses."
+4,1,Price,"Crop, Aquaculture",currency / volume_measurement_unit,,question,"The farmgate price for the produce which may also include a price premiums."
 5,1,Cost of Production,Crop,currency / area_size_unit,,question,"The costs of production for producing the primary crop which covers all can cover several types of costs, such as costs for labour, inputs or equipment."
 6,2,Land,Crop,area_size_unit,,question,
 7,2,Area Under Production,Aquaculture,area_size_unit,,question,
@@ -24,13 +24,13 @@ id,parent,text,commodity_category,unit,default_value,question_type,description
 23,18,Marketing Costs,Crop,currency / area_size_unit,,question,
 24,18,Certification Costs,Crop,currency / area_size_unit,,question,
 25,18,Cost of Capital,Crop,currency / area_size_unit,,question,
-26,1,Cost of Production,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,"The costs of production for producing the primary crop which covers all can cover several types of costs, such as costs for labour, inputs or equipment."
-27,26,Feed Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,#28 * #29,question,
-28,27,Feed Conversion Ratio,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
-29,27,Feed Price,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
-30,26,Farm Production Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
-31,26,Fingerling Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
-32,26,Labour Cost,"Aquaculture, Livestock",currency / volume_measurement_unit,,question,
+26,1,Cost of Production,"Aquaculture",currency / volume_measurement_unit,,question,"The costs of production for producing the primary crop which covers all can cover several types of costs, such as costs for labour, inputs or equipment."
+27,26,Feed Cost,"Aquaculture",currency / volume_measurement_unit,#28 * #29,question,
+28,27,Feed Conversion Ratio,"Aquaculture",currency / volume_measurement_unit,,question,
+29,27,Feed Price,"Aquaculture",currency / volume_measurement_unit,,question,
+30,26,Farm Production Cost,"Aquaculture",currency / volume_measurement_unit,,question,
+31,26,Fingerling Cost,"Aquaculture",currency / volume_measurement_unit,,question,
+32,26,Labour Cost,"Aquaculture",currency / volume_measurement_unit,,question,
 33,26,"Equipment cost (annual purchase, economic value < 1 year)",Aquaculture,currency / volume_measurement_unit,,question,
 34,26,"Equipment cost (long term purchase, economic value >1 year) = depreciation",Aquaculture,currency / volume_measurement_unit,,question,
 35,,Income from livestock,,currency,,diversified,
@@ -39,4 +39,13 @@ id,parent,text,commodity_category,unit,default_value,question_type,description
 38,,Other net on-farm income,,currency,,diversified,
 39,,Other diversified income,,currency,,diversified,
 40,1,Animals,"Livestock",crop,,question,"Number of animals."
+41,1,Volume,"Livestock",volume_measurement_unit / crop,,question,"The volume of produce available for commercial sale, taking into account both yield and potential losses."
+42,1,Price,"Livestock",currency / volume_measurement_unit,,question,"The farmgate price for the produce which may also include a price premiums."
+43,1,Cost of Production,"Livestock",currency / crop,,question,"The costs of production for producing the primary crop which covers all can cover several types of costs, such as costs for labour, inputs or equipment."
+44,43,Feed Cost,"Livestock",currency / crop,#45 * #46,question,
+45,44,Feed Conversion Ratio,"Livestock",currency / crop,,question,
+46,44,Feed Price,"Livestock",currency / crop,,question,
+47,43,Farm Production Cost,"Livestock",currency / crop,,question,
+48,43,Fingerling Cost,"Livestock",currency / crop,,question,
+49,43,Labour Cost,"Livestock",currency / crop,,question,
 
