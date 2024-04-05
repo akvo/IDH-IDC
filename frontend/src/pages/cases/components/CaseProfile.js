@@ -17,6 +17,7 @@ import {
   Table,
   Divider,
   Tooltip,
+  Alert,
 } from "antd";
 import {
   StepForwardOutlined,
@@ -52,6 +53,22 @@ const responsiveCol = {
   lg: { span: 12 },
   xl: { span: 12 },
 };
+
+const livestockPrompt = (
+  <>
+    In the case of multiple by-products from livestock, please insert
+    information for each by-product separately. For example, in the case of
+    cows, consider meat as the secondary commodity income source and milk as the
+    tertiary income source. Only enter information for these by-products in
+    detail if there is a commercial production system. If you do not have
+    detailed information on the production system, we recommend inserting values
+    on the next page under &apos;diversified income&apos; -&gt; &apos;income
+    from livestock&apos;. In the case of multiple by-products from livestock,
+    please insert information for each by-product separately. For example, in
+    the case of cows, consider meat as the secondary commodity income source and
+    milk as the tertiary income source.
+  </>
+);
 
 const CaseForm = ({
   form,
@@ -264,6 +281,16 @@ const SecondaryForm = ({
           {...selectProps}
         />
       </Form.Item>
+      {/* PROMPT */}
+      {disableLandUnitField ? (
+        <Alert
+          style={{ marginTop: "-10px", marginBottom: "24px", fontSize: "13px" }}
+          message={livestockPrompt}
+          type="info"
+        />
+      ) : (
+        ""
+      )}
       <Form.Item
         name={`${index}-breakdown`}
         label={`Data on income drivers available`}
