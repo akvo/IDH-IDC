@@ -26,6 +26,7 @@ import {
 } from "@ant-design/icons";
 import {
   AreaUnitFields,
+  commodities,
   focusCommodityOptions,
   commodityOptions,
   countryOptions,
@@ -242,6 +243,7 @@ const SecondaryForm = ({
   indexLabel,
   disabled,
   disableAreaSizeUnitField,
+  disableLandUnitField,
 }) => {
   return (
     <>
@@ -277,6 +279,7 @@ const SecondaryForm = ({
       <AreaUnitFields
         disabled={disabled || disableAreaSizeUnitField}
         index={index}
+        disableLandUnitField={disableLandUnitField}
       />
     </>
   );
@@ -313,6 +316,11 @@ const CaseProfile = ({
   const [isNextButton, setIsNextButton] = useState(false);
   const [privateCase, setPrivateCase] = useState(false);
   const [currentCaseProfile, setCurrentCaseProfile] = useState({});
+
+  const [disableSecondaryLandUnitField, setDisableSecondaryLandUnitField] =
+    useState(false);
+  const [disableTertiaryLandUnitField, setDisableTertiaryLandUnitField] =
+    useState(false);
 
   useEffect(
     () => {
@@ -560,11 +568,39 @@ const CaseProfile = ({
     }
     setDisableAreaSizeSecondaryField(allValues?.["1-breakdown"] ? false : true);
     setDisableAreaSizeTertiaryField(allValues?.["2-breakdown"] ? false : true);
+    // handle secondary commodity
+    if (changedValues?.["1-commodity"] || allValues?.["1-commodity"]) {
+      const checkSecondaryCommodity = commodities.find(
+        (c) =>
+          c.id === changedValues["1-commodity"] ||
+          c.id === allValues["1-commodity"]
+      );
+      setDisableSecondaryLandUnitField(
+        checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+          ? true
+          : false
+      );
+    } else {
+      setDisableSecondaryLandUnitField(false);
+    }
+    // handle tertiary commodity
+    if (changedValues?.["2-commodity"] || allValues?.["2-commodity"]) {
+      const checkTertiaryCommodity = commodities.find(
+        (c) =>
+          c.id === changedValues["2-commodity"] ||
+          c.id === allValues["2-commodity"]
+      );
+      setDisableTertiaryLandUnitField(
+        checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+          ? true
+          : false
+      );
+    } else {
+      setDisableTertiaryLandUnitField(false);
+    }
   };
 
-  {
-    /* Support add User Access */
-  }
+  /* Support add User Access */
   const fetchUsers = (searchValue) => {
     return api
       .get(`user/search_dropdown?search=${searchValue}`)
@@ -689,6 +725,7 @@ const CaseProfile = ({
                   indexLabel="Secondary"
                   disabled={!secondary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeSecondaryField}
+                  disableLandUnitField={disableSecondaryLandUnitField}
                 />
               </Card>
             </Col>
@@ -715,6 +752,7 @@ const CaseProfile = ({
                   indexLabel="Tertiary"
                   disabled={!tertiary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeTertiaryField}
+                  disableLandUnitField={disableTertiaryLandUnitField}
                 />
               </Card>
             </Col>

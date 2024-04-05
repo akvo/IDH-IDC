@@ -11,7 +11,11 @@ const responsiveCol = {
   xl: { span: 12 },
 };
 
-const AreaUnitFields = ({ disabled = true, index = 0 }) => {
+const AreaUnitFields = ({
+  disabled = true,
+  index = 0,
+  disableLandUnitField = false,
+}) => {
   return (
     <Row gutter={[12, 12]}>
       <Col {...responsiveCol}>
@@ -20,13 +24,13 @@ const AreaUnitFields = ({ disabled = true, index = 0 }) => {
           name={index ? `${index}-area_size_unit` : "area_size_unit"}
           rules={[
             {
-              required: !disabled,
+              required: !disabled && !disableLandUnitField,
               message: "Land Unit is required",
             },
           ]}
         >
           <Select
-            disabled={disabled}
+            disabled={disabled || disableLandUnitField}
             placeholder="Select Land Unit"
             options={areaUnitOptions}
             {...selectProps}

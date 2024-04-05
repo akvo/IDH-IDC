@@ -2,11 +2,14 @@ import uniq from "lodash/uniq";
 import { Col, Space } from "antd";
 
 const commodityCategories = window.master?.commodity_categories || [];
-const commodities = commodityCategories
+export const commodities = commodityCategories
   ? commodityCategories.reduce(
       (acc, category) => [
         ...acc,
-        ...category.commodities.map((c) => ({ ...c, category: category.name })),
+        ...category.commodities.map((c) => ({
+          ...c,
+          category: category.name.toLowerCase(),
+        })),
       ],
       []
     )
