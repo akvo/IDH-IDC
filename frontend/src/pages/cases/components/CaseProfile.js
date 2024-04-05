@@ -17,6 +17,7 @@ import {
   Table,
   Divider,
   Tooltip,
+  Alert,
 } from "antd";
 import {
   StepForwardOutlined,
@@ -26,6 +27,8 @@ import {
 } from "@ant-design/icons";
 import {
   AreaUnitFields,
+  commodities,
+  focusCommodityOptions,
   commodityOptions,
   countryOptions,
   currencyOptions,
@@ -50,6 +53,22 @@ const responsiveCol = {
   lg: { span: 12 },
   xl: { span: 12 },
 };
+
+const livestockPrompt = (
+  <>
+    In the case of multiple by-products from livestock, please insert
+    information for each by-product separately. For example, in the case of
+    cows, consider meat as the secondary commodity income source and milk as the
+    tertiary income source. Only enter information for these by-products in
+    detail if there is a commercial production system. If you do not have
+    detailed information on the production system, we recommend inserting values
+    on the next page under &apos;diversified income&apos; -&gt; &apos;income
+    from livestock&apos;. In the case of multiple by-products from livestock,
+    please insert information for each by-product separately. For example, in
+    the case of cows, consider meat as the secondary commodity income source and
+    milk as the tertiary income source.
+  </>
+);
 
 const CaseForm = ({
   form,
@@ -220,7 +239,7 @@ const CaseForm = ({
               >
                 <Select
                   placeholder="Select Primary Commodity"
-                  options={commodityOptions}
+                  options={focusCommodityOptions}
                   {...selectProps}
                   disabled={!enableEditCase}
                 />
@@ -241,6 +260,7 @@ const SecondaryForm = ({
   indexLabel,
   disabled,
   disableAreaSizeUnitField,
+  disableLandUnitField,
 }) => {
   return (
     <>
@@ -261,6 +281,16 @@ const SecondaryForm = ({
           {...selectProps}
         />
       </Form.Item>
+      {/* PROMPT */}
+      {disableLandUnitField ? (
+        <Alert
+          style={{ marginTop: "-10px", marginBottom: "24px", fontSize: "13px" }}
+          message={livestockPrompt}
+          type="info"
+        />
+      ) : (
+        ""
+      )}
       <Form.Item
         name={`${index}-breakdown`}
         label={`Data on income drivers available`}
@@ -276,6 +306,7 @@ const SecondaryForm = ({
       <AreaUnitFields
         disabled={disabled || disableAreaSizeUnitField}
         index={index}
+        disableLandUnitField={disableLandUnitField}
       />
     </>
   );
@@ -312,6 +343,11 @@ const CaseProfile = ({
   const [isNextButton, setIsNextButton] = useState(false);
   const [privateCase, setPrivateCase] = useState(false);
   const [currentCaseProfile, setCurrentCaseProfile] = useState({});
+
+  const [disableSecondaryLandUnitField, setDisableSecondaryLandUnitField] =
+    useState(false);
+  const [disableTertiaryLandUnitField, setDisableTertiaryLandUnitField] =
+    useState(false);
 
   useEffect(
     () => {
@@ -361,9 +397,27 @@ const CaseProfile = ({
         // handle enable disable area size field for other commodities
         if (cm.commodity_type === "secondary") {
           setDisableAreaSizeSecondaryField(!cm.breakdown);
+          // handle disable secondary land unit field
+          const checkSecondaryCommodity = commodities.find(
+            (c) => c.id === cm.commodity
+          );
+          setDisableSecondaryLandUnitField(
+            checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+              ? true
+              : false
+          );
         }
         if (cm.commodity_type === "tertiary") {
           setDisableAreaSizeTertiaryField(!cm.breakdown);
+          // handle disable tertiary land unit field
+          const checkTertiaryCommodity = commodities.find(
+            (c) => c.id === cm.commodity
+          );
+          setDisableTertiaryLandUnitField(
+            checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+              ? true
+              : false
+          );
         }
       });
       const completed = finished.filter((item) => item !== "Case Profile");
@@ -559,11 +613,39 @@ const CaseProfile = ({
     }
     setDisableAreaSizeSecondaryField(allValues?.["1-breakdown"] ? false : true);
     setDisableAreaSizeTertiaryField(allValues?.["2-breakdown"] ? false : true);
+    // handle secondary commodity
+    if (changedValues?.["1-commodity"] || allValues?.["1-commodity"]) {
+      const checkSecondaryCommodity = commodities.find(
+        (c) =>
+          c.id === changedValues["1-commodity"] ||
+          c.id === allValues["1-commodity"]
+      );
+      setDisableSecondaryLandUnitField(
+        checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+          ? true
+          : false
+      );
+    } else {
+      setDisableSecondaryLandUnitField(false);
+    }
+    // handle tertiary commodity
+    if (changedValues?.["2-commodity"] || allValues?.["2-commodity"]) {
+      const checkTertiaryCommodity = commodities.find(
+        (c) =>
+          c.id === changedValues["2-commodity"] ||
+          c.id === allValues["2-commodity"]
+      );
+      setDisableTertiaryLandUnitField(
+        checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+          ? true
+          : false
+      );
+    } else {
+      setDisableTertiaryLandUnitField(false);
+    }
   };
 
-  {
-    /* Support add User Access */
-  }
+  /* Support add User Access */
   const fetchUsers = (searchValue) => {
     return api
       .get(`user/search_dropdown?search=${searchValue}`)
@@ -688,6 +770,7 @@ const CaseProfile = ({
                   indexLabel="Secondary"
                   disabled={!secondary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeSecondaryField}
+                  disableLandUnitField={disableSecondaryLandUnitField}
                 />
               </Card>
             </Col>
@@ -714,6 +797,7 @@ const CaseProfile = ({
                   indexLabel="Tertiary"
                   disabled={!tertiary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeTertiaryField}
+                  disableLandUnitField={disableTertiaryLandUnitField}
                 />
               </Card>
             </Col>

@@ -336,7 +336,7 @@ const ChartExploreBreakdownDrivers = ({
               series: chartData,
               origin: currentSegmentData ? [currentSegmentData] : [],
               yAxis: { name: axisTitle },
-              grid: { right: 290, left: 70, bottom: 20 },
+              grid: { right: 325, left: 70, bottom: 20 },
               showLabel: showLabel,
             })}
           />

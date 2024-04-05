@@ -43,13 +43,13 @@ const ChartIncomeLevelPerCommodities = ({
     if (!currentSegmentData) {
       return [];
     }
-    let parentQuestion = currentSegmentData.answers.find(
-      (a) => !a.question.parent
+    const parentQuestions = currentSegmentData.answers.filter(
+      (a) => !a.question.parent && a.question.question_type === "aggregator"
     );
-    if (!parentQuestion && !parentQuestion?.question) {
+    if (!parentQuestions?.length) {
       return [];
     }
-    parentQuestion = parentQuestion.question;
+    const parendQuestionIds = parentQuestions.map((pq) => pq.question.id);
     // list commodities exclude diversified income
     const commoditiesTemp = currentSegmentData.answers
       .filter((a) => {
@@ -59,22 +59,31 @@ const ChartIncomeLevelPerCommodities = ({
         if (
           a.commodityId &&
           a.commodityName &&
-          (a.question.parent === parentQuestion.id ||
+          (parendQuestionIds.includes(a.question.parent) ||
             currentCommodity?.breakdown === false)
         ) {
           return a;
         }
         return false;
       })
-      .map((a) => ({
-        commodityId: a.commodityId,
-        commodityName: a.commodityName,
-        commodityFocus: a.commodityFocus,
-        questions: parentQuestion.childrens.map((q) => ({
-          id: q.id,
-          text: q.text,
-        })),
-      }));
+      .map((a) => {
+        const parentQuestion = parentQuestions.find(
+          (pq) =>
+            pq.commodityId === a.commodityId &&
+            pq.commodityType === a.commodityType
+        )?.question;
+        return {
+          commodityId: a.commodityId,
+          commodityName: a.commodityName,
+          commodityFocus: a.commodityFocus,
+          questions: parentQuestion
+            ? parentQuestion.childrens.map((q) => ({
+                id: q.id,
+                text: q.text,
+              }))
+            : [],
+        };
+      });
     const commodities = uniqBy(commoditiesTemp, "commodityId");
     // populate chart data
     const currentCommodityValuesExceptFocus = [];

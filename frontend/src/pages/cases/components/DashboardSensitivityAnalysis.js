@@ -15,7 +15,7 @@ import {
   ChartBinningHeatmap,
   ChartSensitivityAnalysisLine,
 } from "../visualizations";
-import { InputNumberThousandFormatter } from ".";
+import { InputNumberThousandFormatter, commodities } from ".";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { SaveAsImageButton } from "../../../components/utils";
 import { InfoCircleOutlined } from "@ant-design/icons";
@@ -344,7 +344,13 @@ const DashboardSensitivityAnalysis = ({
       const unitName = currentQuestion.unit
         .split("/")
         .map((u) => u.trim())
-        .map((u) => focusCommodity?.[u])
+        .map((u) =>
+          u === "crop"
+            ? commodities
+                .find((c) => c.id === focusCommodity?.commodity)
+                ?.name?.toLowerCase() || ""
+            : focusCommodity?.[u]
+        )
         .join(" / ");
       return {
         key: parseInt(i) - 1,

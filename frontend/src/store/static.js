@@ -27,6 +27,14 @@ export const areaUnitOptions = [
     label: "Cubic Yards",
     value: "cubic-yards",
   },
+  {
+    label: "Square Feet",
+    value: "square-feet",
+  },
+  {
+    label: "Square Meter",
+    value: "square-meter",
+  },
 ];
 
 export const volumeUnitOptions = [
