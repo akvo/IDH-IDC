@@ -388,6 +388,8 @@ const DashboardSensitivityAnalysis = ({
   setBinningData,
   commodityList,
   enableEditCase,
+  percentageSensitivity,
+  setPercentageSensitivity,
 }) => {
   const [currentSegment, setCurrentSegment] = useState(null);
   const [form] = Form.useForm();
@@ -574,6 +576,14 @@ const DashboardSensitivityAnalysis = ({
     [dataSource]
   );
 
+  const onChangePercentage = (value) => {
+    if (value === "percentage") {
+      setPercentageSensitivity(true);
+    } else {
+      setPercentageSensitivity(false);
+    }
+  };
+
   return (
     <Row id="sensitivity-analysis" gutter={[24, 24]}>
       <Col span={24} className="income-driver-dashboard">
@@ -699,6 +709,124 @@ const DashboardSensitivityAnalysis = ({
                 />
               ))}
             </Form>
+          </Col>
+        </Row>
+      </Col>
+
+      <Col span={24} className="income-driver-dashboard">
+        <Row
+          className="income-driver-content"
+          align="middle"
+          justify="space-evenly"
+          gutter={[8, 8]}
+        >
+          <Col span={24}>
+            <Card className="card-alert-box">
+              <Row gutter={[16, 16]} align="start">
+                <Col span={12}>
+                  <Space direction="vertical">
+                    <div className="title">Adjust your income target</div>
+                    <div className="description">
+                      The results in the sensitivity analysis depend
+                      significantly on the income target value set. When
+                      conducting the sensitivity analysis, adjusting the income
+                      target is recommended to observe how the results vary,
+                      providing better insight into the sensitivity of various
+                      income drivers in reaching the income target. If you do
+                      not adjust the target, we will use the current target
+                      value for the calculations.
+                    </div>
+                  </Space>
+                </Col>
+                <Col span={12} className="settings-wrapper">
+                  <Space
+                    direction="vertical"
+                    size="large"
+                    className="settings-info-wrapper"
+                  >
+                    <div key="custom-1">
+                      <Space direction="vertical">
+                        <Space align="center">
+                          <div className="number small">1</div>
+                          <div className="title small">
+                            Explore the graphs and their insights below
+                          </div>
+                        </Space>
+                      </Space>
+                    </div>
+                    <div key="custom-2">
+                      <Space direction="vertical">
+                        <Space align="start">
+                          <div className="number small">2</div>
+                          <div className="title small">
+                            If you like to change the target, Please choose
+                            whether you would like to express the changes in
+                            current values using percentages or absolute values.
+                          </div>
+                        </Space>
+                        <div className="description small">
+                          <Row>
+                            <Col span={6}>
+                              <Select
+                                style={{ width: "100%" }}
+                                options={[
+                                  { label: "Percentage", value: "percentage" },
+                                  { label: "Absolute", value: "absolute" },
+                                ]}
+                                onChange={onChangePercentage}
+                                value={
+                                  percentageSensitivity
+                                    ? "percentage"
+                                    : "absolute"
+                                }
+                              />
+                            </Col>
+                          </Row>
+                        </div>
+                      </Space>
+                    </div>
+                    <div key="custom-3">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        <Space align="start" style={{ width: "100%" }}>
+                          <div className="number small">3</div>
+                          <div className="title small">
+                            Adjust current values below
+                          </div>
+                        </Space>
+                        <div className="description small">
+                          <Row gutter={[8, 8]} align="start">
+                            <Col span={8}>
+                              <div className="title small">Current Target</div>
+                              <div
+                                className="title small"
+                                style={{
+                                  fontWeight: "700",
+                                }}
+                              >
+                                {tableSummaryValue?.current
+                                  ? thousandFormatter(tableSummaryValue.current)
+                                  : 0}{" "}
+                                <small>({tableSummaryValue?.unitName})</small>
+                              </div>
+                            </Col>
+                            <Col span={8}>
+                              <div className="title small">Adjusted Target</div>
+                              <div>
+                                <InputNumber style={{ width: "90%" }} />
+                              </div>
+                            </Col>
+                            <Col span={8}>
+                              <div className="title small">Change</div>
+                              <div className="title small">change value</div>
+                            </Col>
+                          </Row>
+                        </div>
+                      </Space>
+                    </div>
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
           </Col>
         </Row>
       </Col>
