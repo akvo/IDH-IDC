@@ -241,6 +241,42 @@ const BinningForm = ({
               </Row>
             </Col>
           </Row>
+          <br />
+          {/* Current & Feasible value */}
+          <Row gutter={[8, 8]} align="middle">
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>
+                  <div>Current Value</div>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_x-axis-current-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>
+                  <div>Feasible Value</div>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_x-axis-feasible-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </Card>
       </Col>
       <Col span={8}>
@@ -292,6 +328,38 @@ const BinningForm = ({
                       className="binning-input"
                       {...InputNumberThousandFormatter}
                       disabled={!enableEditCase}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <br />
+          {/* Current & Feasible value */}
+          <Row gutter={[8, 8]} align="middle">
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>Current Value</Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_y-axis-current-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>Feasible Value</Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_y-axis-feasible-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
                     />
                   </Form.Item>
                 </Col>
@@ -460,6 +528,8 @@ const DashboardSensitivityAnalysis = ({
         [`${segmentId}_x-axis-driver`]: dataValue?.name,
         [`${segmentId}_x-axis-min-value`]: dataValue?.current,
         [`${segmentId}_x-axis-max-value`]: dataValue?.feasible,
+        [`${segmentId}_x-axis-current-value`]: dataValue?.current,
+        [`${segmentId}_x-axis-feasible-value`]: dataValue?.feasible,
       };
     }
     if (valueName === "y-axis-driver") {
@@ -469,6 +539,8 @@ const DashboardSensitivityAnalysis = ({
         [`${segmentId}_y-axis-driver`]: dataValue?.name,
         [`${segmentId}_y-axis-min-value`]: dataValue?.current,
         [`${segmentId}_y-axis-max-value`]: dataValue?.feasible,
+        [`${segmentId}_y-axis-current-value`]: dataValue?.current,
+        [`${segmentId}_y-axis-feasible-value`]: dataValue?.feasible,
       };
     }
     if (valueName === "binning-driver-name") {
