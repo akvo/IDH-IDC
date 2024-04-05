@@ -392,6 +392,8 @@ const DashboardSensitivityAnalysis = ({
   setPercentageSensitivity,
 }) => {
   const [currentSegment, setCurrentSegment] = useState(null);
+  const [refreshAdjustedIncrease, setRefreshAdjustedIncrease] = useState(0);
+  const [adjustedValues, setAdjustedValues] = useState({});
   const [form] = Form.useForm();
   const elDriversTable = useRef(null);
 
@@ -401,6 +403,12 @@ const DashboardSensitivityAnalysis = ({
         Object.keys(binningData).map((key) => key.split("_")[0])
       );
       setCurrentSegment(parseInt(segmentIds[0]));
+      setAdjustedValues(
+        Object.keys(binningData)
+          .filter((x) => x.includes("adjusted-target"))
+          .map((x) => ({ [x]: binningData[x] }))
+          .reduce((a, c) => ({ ...a, ...c }))
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -582,6 +590,7 @@ const DashboardSensitivityAnalysis = ({
     } else {
       setPercentageSensitivity(false);
     }
+    setRefreshAdjustedIncrease((prev) => prev + 1);
   };
 
   const onAdjustTarget = (value, qtype) => {
@@ -595,44 +604,58 @@ const DashboardSensitivityAnalysis = ({
       adjustedTarget = (absoluteValue + currentValue).toFixed(2);
       newValue = {
         ...newValue,
-        [`${currentSegment}_absolute_increase_adjusted-target`]: parseFloat(
+        [`${currentSegment}_absolute-increase_adjusted-target`]: parseFloat(
           absoluteValue.toFixed(2)
         ),
+        [`${currentSegment}_percentage-increase_adjusted-target`]: value,
       };
     }
     if (qtype === "absolute" && !percentageSensitivity) {
       adjustedTarget = value;
-      const percentage = (value - currentValue) / currentValue;
+      const absoluteChanged = value - currentValue;
+      const percentage = currentValue ? absoluteChanged / currentValue : 0;
       const percentageIncrease = (percentage * 100).toFixed(2);
       newValue = {
         ...newValue,
-        [`${currentSegment}_percentage_increase_adjusted-target`]:
+        [`${currentSegment}_percentage-increase_adjusted-target`]:
           parseFloat(percentageIncrease),
+        [`${currentSegment}_absolute-increase_adjusted-target`]:
+          absoluteChanged,
       };
     }
     newValue = {
       ...newValue,
       [`${currentSegment}_adjusted-target`]: parseFloat(adjustedTarget),
     };
-    setBinningData((prev) => ({
-      ...prev,
-      ...newValue,
-    }));
+    setAdjustedValues((prev) => ({ ...prev, ...newValue }));
+    setTimeout(() => {
+      setBinningData((prev) => ({
+        ...prev,
+        ...newValue,
+      }));
+    }, 500);
   };
-  console.log(binningData);
 
   const adustedTargetChange = useMemo(() => {
     if (percentageSensitivity) {
       const res =
-        binningData?.[`${currentSegment}_absolute_increase_adjusted-target`] ||
-        0;
+        adjustedValues?.[
+          `${currentSegment}_absolute-increase_adjusted-target`
+        ] || 0;
       return thousandFormatter(res, 2);
     }
     const res =
-      binningData?.[`${currentSegment}_percentage_increase_adjusted-target`] ||
-      0;
+      adjustedValues?.[
+        `${currentSegment}_percentage-increase_adjusted-target`
+      ] || 0;
     return `${res}%`;
-  }, [percentageSensitivity, binningData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentSegment,
+    percentageSensitivity,
+    adjustedValues,
+    refreshAdjustedIncrease,
+  ]);
 
   return (
     <Row id="sensitivity-analysis" gutter={[24, 24]}>
@@ -885,6 +908,15 @@ const DashboardSensitivityAnalysis = ({
                                     {...InputNumberThousandFormatter}
                                     onChange={(value) =>
                                       onAdjustTarget(value, qtype)
+                                    }
+                                    value={
+                                      percentageSensitivity
+                                        ? adjustedValues?.[
+                                            `${currentSegment}_percentage-increase_adjusted-target`
+                                          ]
+                                        : adjustedValues?.[
+                                            `${currentSegment}_adjusted-target`
+                                          ]
                                     }
                                   />
                                 </div>

@@ -222,7 +222,11 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
     if (!segment?.id) {
       return {};
     }
+    // support adjusted custom target
+    const adjustedTarget = data?.[`${segment.id}_adjusted-target`] || 0;
+
     const bins = Object.keys(data)
+      .filter((x) => !x.includes("adjusted-target"))
       .map((x) => {
         const [segmentId, name] = x?.split("_") || [];
         return { id: parseInt(segmentId), name, value: data[x] };
@@ -290,7 +294,7 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       total_feasible_income: segment.total_feasible_income,
       diversified: segment.total_current_diversified_income,
       diversified_feasible: segment.total_feasible_diversified_income,
-      target: segment.target,
+      target: adjustedTarget ? adjustedTarget : segment.target, // support adjusted target
     };
   }, [data, segment, origin]);
 
