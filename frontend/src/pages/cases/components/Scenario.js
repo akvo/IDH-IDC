@@ -314,7 +314,9 @@ const ScenarioInput = ({
       const totalAbsolute = scenarioIncrease?.totalAbsolute
         ? scenarioIncrease.totalAbsolute
         : 0;
-      const res = parseFloat(totalAbsolute) - segment.total_current_income;
+      const res = parseInt(totalAbsolute)
+        ? parseFloat(totalAbsolute) - segment.total_current_income
+        : 0;
       return thousandFormatter(res, 2);
     }
     return `${scenarioIncrease.totalPercentage}%`;

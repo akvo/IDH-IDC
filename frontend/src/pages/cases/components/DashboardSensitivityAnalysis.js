@@ -584,6 +584,56 @@ const DashboardSensitivityAnalysis = ({
     }
   };
 
+  const onAdjustTarget = (value, qtype) => {
+    const currentValue = tableSummaryValue?.current
+      ? parseFloat(tableSummaryValue.current)
+      : 0;
+    let newValue = {};
+    let adjustedTarget = 0;
+    if (qtype === "percentage" && percentageSensitivity) {
+      const absoluteValue = (currentValue * value) / 100;
+      adjustedTarget = (absoluteValue + currentValue).toFixed(2);
+      newValue = {
+        ...newValue,
+        [`${currentSegment}_absolute_increase_adjusted-target`]: parseFloat(
+          absoluteValue.toFixed(2)
+        ),
+      };
+    }
+    if (qtype === "absolute" && !percentageSensitivity) {
+      adjustedTarget = value;
+      const percentage = (value - currentValue) / currentValue;
+      const percentageIncrease = (percentage * 100).toFixed(2);
+      newValue = {
+        ...newValue,
+        [`${currentSegment}_percentage_increase_adjusted-target`]:
+          parseFloat(percentageIncrease),
+      };
+    }
+    newValue = {
+      ...newValue,
+      [`${currentSegment}_adjusted-target`]: parseFloat(adjustedTarget),
+    };
+    setBinningData((prev) => ({
+      ...prev,
+      ...newValue,
+    }));
+  };
+  console.log(binningData);
+
+  const adustedTargetChange = useMemo(() => {
+    if (percentageSensitivity) {
+      const res =
+        binningData?.[`${currentSegment}_absolute_increase_adjusted-target`] ||
+        0;
+      return thousandFormatter(res, 2);
+    }
+    const res =
+      binningData?.[`${currentSegment}_percentage_increase_adjusted-target`] ||
+      0;
+    return `${res}%`;
+  }, [percentageSensitivity, binningData]);
+
   return (
     <Row id="sensitivity-analysis" gutter={[24, 24]}>
       <Col span={24} className="income-driver-dashboard">
@@ -833,13 +883,18 @@ const DashboardSensitivityAnalysis = ({
                                       qtype === "percentage" ? "%" : ""
                                     }
                                     {...InputNumberThousandFormatter}
+                                    onChange={(value) =>
+                                      onAdjustTarget(value, qtype)
+                                    }
                                   />
                                 </div>
                               ))}
                             </Col>
                             <Col span={8}>
                               <div className="title small">Change</div>
-                              <div className="title small">change value</div>
+                              <div className="title small">
+                                {adustedTargetChange}
+                              </div>
                             </Col>
                           </Row>
                         </div>
