@@ -9,6 +9,7 @@ import {
   Form,
   Space,
   Tooltip,
+  Alert,
 } from "antd";
 import { groupBy, map, isEmpty, uniq } from "lodash";
 import {
@@ -133,6 +134,7 @@ const BinningForm = ({
               <InfoCircleOutlined className="info-icon" />
             </Tooltip>
           }
+          style={{ minHeight: "375px" }}
         >
           <Form.Item name={`${segment.id}_binning-driver-name`}>
             <Select
@@ -196,6 +198,7 @@ const BinningForm = ({
               <InfoCircleOutlined className="info-icon" />
             </Tooltip>
           }
+          style={{ minHeight: "375px" }}
         >
           <Form.Item name={`${segment.id}_x-axis-driver`}>
             <Select
@@ -293,6 +296,7 @@ const BinningForm = ({
               <InfoCircleOutlined className="info-icon" />
             </Tooltip>
           }
+          style={{ minHeight: "375px" }}
         >
           <Form.Item name={`${segment.id}_y-axis-driver`}>
             <Select
@@ -366,6 +370,12 @@ const BinningForm = ({
               </Row>
             </Col>
           </Row>
+          <br />
+          <Alert
+            type="info"
+            message="Values entered here impact only the heatmap, not the line graph below."
+            style={{ fontSize: "13px" }}
+          />
         </Card>
       </Col>
     </Row>
