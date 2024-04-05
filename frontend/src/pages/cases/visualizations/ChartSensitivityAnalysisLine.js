@@ -233,11 +233,12 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       })
       .filter((x) => x.id === segment.id && x.value);
     const answers = segment.answers.filter(
-      (s) => s.question.parent === 1 && s.name === "current" && s.commodityFocus
+      (s) =>
+        s.question?.parent === 1 && s.name === "current" && s.commodityFocus
     );
     const feasibleAnswers = segment.answers.filter(
       (s) =>
-        s.question.parent === 1 && s.name === "feasible" && s.commodityFocus
+        s.question?.parent === 1 && s.name === "feasible" && s.commodityFocus
     );
     const binCharts = bins.filter(
       (b) => b.name.startsWith("binning-value") && b.value
@@ -288,7 +289,9 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       })),
       incomeQuestion: segment.answers.find(
         (s) =>
-          s.question.parent === null && s.name === "current" && s.commodityFocus
+          s.question?.parent === null &&
+          s.name === "current" &&
+          s.commodityFocus
       ),
       total_current_income: segment.total_current_income,
       total_feasible_income: segment.total_feasible_income,

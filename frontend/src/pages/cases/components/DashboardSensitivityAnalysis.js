@@ -425,7 +425,7 @@ const DashboardSensitivityAnalysis = ({
     );
     const answers = segmentData.answers;
     const drivers = answers.filter(
-      (answer) => answer.question.parent_id === 1 && answer.commodityFocus
+      (answer) => answer.question?.parent_id === 1 && answer.commodityFocus
     );
     const data = map(groupBy(drivers, "question.id"), (d, i) => {
       const currentQuestion = d[0].question;

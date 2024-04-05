@@ -331,7 +331,7 @@ const ScenarioInput = ({
     if (id === "diversified") {
       const childrens = commodityQuestions
         .find((cq) => cq.commodity_type === "diversified")
-        ?.questions?.find((q) => !q.parent)?.childrens;
+        ?.questions?.find((q) => !q?.parent)?.childrens;
       const answers = childrens
         ?.map((c) => {
           return segment.answers.find(
@@ -416,7 +416,7 @@ const ScenarioInput = ({
     }
 
     const allParentQuestions = segment.answers.filter(
-      (s) => s.question.parent === null && s.name === "current"
+      (s) => s.question?.parent === null && s.name === "current"
     );
 
     allNewValues = { ...allNewValues, ...newFieldsValue };
