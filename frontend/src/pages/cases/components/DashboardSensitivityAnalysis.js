@@ -931,7 +931,7 @@ const DashboardSensitivityAnalysis = ({
                                     </Space>
                                     <div className="description small">
                                       <Row gutter={[8, 8]} align="start">
-                                        <Col span={8}>
+                                        <Col span={7}>
                                           <div className="title small">
                                             Current Target
                                           </div>
@@ -951,7 +951,7 @@ const DashboardSensitivityAnalysis = ({
                                             </small>
                                           </div>
                                         </Col>
-                                        <Col span={8}>
+                                        <Col span={10}>
                                           <div className="title small">
                                             {percentageSensitivity ? "%" : ""}{" "}
                                             Change
@@ -974,7 +974,10 @@ const DashboardSensitivityAnalysis = ({
                                               >
                                                 <InputNumber
                                                   style={{
-                                                    width: "95%",
+                                                    width:
+                                                      qtype === "percentage"
+                                                        ? "150px"
+                                                        : "75%",
                                                   }}
                                                   addonAfter={
                                                     qtype === "percentage"
@@ -995,14 +998,14 @@ const DashboardSensitivityAnalysis = ({
                                                         ]
                                                   }
                                                 />
-                                                <small className="title small">
+                                                <div className="title small">
                                                   of current target
-                                                </small>
+                                                </div>
                                               </div>
                                             )
                                           )}
                                         </Col>
-                                        <Col span={8}>
+                                        <Col span={7}>
                                           <div className="title small">
                                             Adjusted Target
                                           </div>
