@@ -11,6 +11,26 @@ import {
 import { SaveAsImageButton, ShowLabelButton } from "../../../components/utils";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
+const biggestImpactOnIncomeTooltipText = (
+  <>
+    The % change shown in this graph represent the drivers&apos; contribution to
+    total income and not the % change in total income. For the second bar, the
+    formula is: &apos;(total income with the income driver at feasible level and
+    others at current level - current total income) / current total
+    income&apos;. The third bar is calculated using: &apos;(feasible total
+    income - total income with the income driver at current level and others at
+    feasible level) / current total income&apos;.
+  </>
+);
+
+const monetaryImpactTooltipText = (
+  <>
+    The value for each driver is calculated as &apos;total income with income
+    driver at feasible level and others at current level - current total
+    income&apos;.
+  </>
+);
+
 const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
   const elCurrentFeasibleChart = useRef(null);
   const elIncomeGap = useRef(null);
@@ -171,7 +191,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
                   <div>Biggest Impact on Income</div>
                   <Tooltip
                     className="info-tooltip"
-                    title="This graph % changes shown in the grapg represent it's 'contribution' to household income and not the change it creates in household income."
+                    title={biggestImpactOnIncomeTooltipText}
                   >
                     <InfoCircleOutlined style={{ color: "#fff" }} />
                   </Tooltip>
@@ -279,7 +299,17 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
           <Col span={16} ref={elMonetaryContribution}>
             <Card
               className="chart-card-wrapper has-segments-button"
-              title="Monetary impact of each driver to income"
+              title={
+                <Space align="center">
+                  <div>Monetary impact of each driver to income</div>
+                  <Tooltip
+                    className="info-tooltip"
+                    title={monetaryImpactTooltipText}
+                  >
+                    <InfoCircleOutlined style={{ color: "#fff" }} />
+                  </Tooltip>
+                </Space>
+              }
               extra={
                 <Space align="center">
                   <ShowLabelButton
