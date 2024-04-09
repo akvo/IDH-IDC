@@ -153,7 +153,11 @@ const dataSecurityProvisionText = [
   },
 ];
 
-const DataSecurityProvisionModal = ({ visible, setVisible }) => {
+const DataSecurityProvisionModal = ({
+  visible,
+  setVisible,
+  onAgree = () => {},
+}) => {
   return (
     <Modal
       title="Privacy statement and disclaimer for Income Driver Calculator "
@@ -162,8 +166,14 @@ const DataSecurityProvisionModal = ({ visible, setVisible }) => {
       width="70%"
       closable={false}
       maskClosable={false}
-      onOk={() => setVisible(false)}
-      onCancel={() => setVisible(false)}
+      onOk={() => {
+        onAgree(true);
+        setVisible(false);
+      }}
+      onCancel={() => {
+        onAgree(false);
+        setVisible(false);
+      }}
       okText="Agree"
     >
       <Space direction="vertical">

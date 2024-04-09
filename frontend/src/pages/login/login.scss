@@ -79,6 +79,11 @@
           background-color: $yellow-color;
           color: $primary-color;
           font-weight: 700;
+
+          &.disabled {
+            background-color: $muted-color;
+            color: #fff;
+          }
         }
       }
 
