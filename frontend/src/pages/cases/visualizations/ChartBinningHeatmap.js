@@ -2,9 +2,10 @@ import React, { useMemo, useState, useRef } from "react";
 import Chart from "../../../components/chart";
 import { range } from "lodash";
 import { getFunctionDefaultValue } from "../components";
-import { Row, Col, Space, Card } from "antd";
+import { Row, Col, Space, Card, Tooltip } from "antd";
 import { SaveAsImageButton } from "../../../components/utils";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -220,6 +221,14 @@ const getOptions = ({
   return options;
 };
 
+const heatmapTooltipText = (
+  <>
+    In each cell of the heatmap, we calculate total household income using the
+    values indicated for the binning, X-axis, and Y-axis driver. The other 2
+    drivers are at their current levels.
+  </>
+);
+
 const legends = [
   {
     color: "#F50902",
@@ -353,7 +362,14 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
       );
       const chart = (
         <Card
-          title={chartTitle}
+          title={
+            <Space align="center">
+              <div>{chartTitle}</div>
+              <Tooltip className="info-tooltip" title={heatmapTooltipText}>
+                <InfoCircleOutlined style={{ color: "#fff" }} />
+              </Tooltip>
+            </Space>
+          }
           className="chart-card-wrapper with-padding"
           extra={
             <SaveAsImageButton

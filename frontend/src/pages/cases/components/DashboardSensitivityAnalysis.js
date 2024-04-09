@@ -407,7 +407,7 @@ const DashboardSensitivityAnalysis = ({
         Object.keys(binningData)
           .filter((x) => x.includes("adjusted-target"))
           .map((x) => ({ [x]: binningData[x] }))
-          .reduce((a, c) => ({ ...a, ...c }))
+          .reduce((a, c) => ({ ...a, ...c }), {})
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

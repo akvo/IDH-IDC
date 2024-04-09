@@ -2,9 +2,10 @@ import React, { useMemo, useRef, useState } from "react";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { getFunctionDefaultValue, yAxisFormula } from "../components";
 import { range, orderBy, uniq, max } from "lodash";
-import { Row, Col, Card, Space, Image } from "antd";
+import { Row, Col, Card, Space, Image, Tooltip } from "antd";
 import Chart from "../../../components/chart";
 import { SaveAsImageButton } from "../../../components/utils";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import SensitivityAnalisysImg from "../../../assets/images/sensitivity-analysis-line-chart.png";
 
 const getOptions = ({
@@ -214,6 +215,20 @@ const getOptions = ({
   return options;
 };
 
+const lineChartTooltipText = (
+  <>
+    We calculate what value for the Y-axis driver should be to reach the income
+    target. For any commodities in the crop category, we use the formula:
+    &apos;Income target = (Area x Volume x Price) - (Area x CoP) + diversified
+    income&apos;. For any commodities in the aquaculture category, we use the
+    formula: &apos;Income target = (Area x Volume x Price) - (Area x Volume x
+    CoP) + diversified income&apos;. The Y-axis driver value is unknown, while
+    all the values for the other drivers and income target are known. By
+    transforming the mentioned formulas, we can then calculate what the value
+    should be for the Y-axis driver.
+  </>
+);
+
 const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
   const [label, setLabel] = useState(null);
   const [chartTitle, setChartTitle] = useState(null);
@@ -347,7 +362,14 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
         </Col>
         <Col span={16} ref={elLineChart}>
           <Card
-            title={chartTitle}
+            title={
+              <Space align="center">
+                <div>{chartTitle}</div>
+                <Tooltip className="info-tooltip" title={lineChartTooltipText}>
+                  <InfoCircleOutlined style={{ color: "#fff" }} />
+                </Tooltip>
+              </Space>
+            }
             className="chart-card-wrapper with-padding"
             extra={
               <SaveAsImageButton

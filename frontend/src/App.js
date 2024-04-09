@@ -105,7 +105,8 @@ const App = () => {
           }, 300);
         });
     }
-  }, [authTokenAvailable, userRole, navigate, signOut]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authTokenAvailable, userRole]);
 
   return (
     <PageLayout testid="page-layout" signOut={signOut}>
