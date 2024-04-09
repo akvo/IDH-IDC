@@ -379,7 +379,9 @@ const ScenarioInput = ({
     );
 
     const currentValue = segmentAnswer?.value || 0;
-    const value = parseFloat(changedValues[objectId]);
+    const value = changedValues?.[objectId]
+      ? parseFloat(changedValues[objectId])
+      : 0;
     let allNewValues = {};
     const newFieldsValue = {};
 
