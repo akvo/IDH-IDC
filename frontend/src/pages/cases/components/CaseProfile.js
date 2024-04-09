@@ -44,7 +44,7 @@ import uniqBy from "lodash/uniqBy";
 import isEqual from "lodash/isEqual";
 import { useParams, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { casePermission } from "../../../store/static";
+import { casePermission, adminRole } from "../../../store/static";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -357,9 +357,15 @@ const CaseProfile = ({
   {
     /* Support add User Access */
   }
-  const { id: userId, email: userEmail } = UserState.useState((s) => s);
+  const {
+    id: userId,
+    email: userEmail,
+    role: userRole,
+  } = UserState.useState((s) => s);
   const isCaseOwner =
     userEmail === currentCase?.created_by || userId === currentCase?.created_by;
+  const isAdmin = adminRole.includes(userRole);
+
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedPermission, setSelectedPermission] = useState(null);
@@ -717,7 +723,7 @@ const CaseProfile = ({
         <Card
           title="Case Details"
           extra={
-            isCaseOwner && (
+            isCaseOwner || isAdmin ? (
               <Button
                 icon={<PlusOutlined />}
                 size="small"
@@ -727,7 +733,7 @@ const CaseProfile = ({
               >
                 Share
               </Button>
-            )
+            ) : null
           }
           className="case-detail-card-wrapper"
         >

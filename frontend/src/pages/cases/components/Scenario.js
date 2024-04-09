@@ -14,6 +14,7 @@ import {
   Tabs,
   Select,
   Table,
+  Tooltip,
 } from "antd";
 import {
   EditTwoTone,
@@ -32,6 +33,7 @@ import { ChartScenarioModeling } from "../visualizations";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { SaveAsImageButton, ShowLabelButton } from "../../../components/utils";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 const generateChartData = (data, current = false) => {
   return data.map((d) => {
@@ -78,6 +80,15 @@ const generateChartData = (data, current = false) => {
     };
   });
 };
+
+const chartScenarioModelingTooltipText = (
+  <>
+    We calculate the additional income when income drivers are changed by
+    subtracting the current total income from the new total income after you
+    have changed one or more values of the income drivers. The income gap is the
+    difference between the new total income and the income target.
+  </>
+);
 
 const generateTargetChartData = (data) => {
   const target = [
@@ -368,7 +379,9 @@ const ScenarioInput = ({
     );
 
     const currentValue = segmentAnswer?.value || 0;
-    const value = parseFloat(changedValues[objectId]);
+    const value = changedValues?.[objectId]
+      ? parseFloat(changedValues[objectId])
+      : 0;
     let allNewValues = {};
     const newFieldsValue = {};
 
@@ -1205,7 +1218,20 @@ const Scenario = ({
                     <Card
                       ref={elCurrentScenarioIncomeGap}
                       className="chart-card-wrapper"
-                      title="Income gap for the different segments in the current scenario"
+                      title={
+                        <Space align="center">
+                          <div>
+                            Income gap for the different segments in the current
+                            scenario
+                          </div>
+                          <Tooltip
+                            className="info-tooltip"
+                            title={chartScenarioModelingTooltipText}
+                          >
+                            <InfoCircleOutlined style={{ color: "#fff" }} />
+                          </Tooltip>
+                        </Space>
+                      }
                       extra={
                         <Space align="center">
                           <ShowLabelButton
@@ -1272,7 +1298,17 @@ const Scenario = ({
           <Col span={16} ref={elIncomeGapScenario}>
             <Card
               className="chart-card-wrapper"
-              title="Income gap across scenario"
+              title={
+                <Space align="center">
+                  <div>Income gap across scenario</div>
+                  <Tooltip
+                    className="info-tooltip"
+                    title={chartScenarioModelingTooltipText}
+                  >
+                    <InfoCircleOutlined style={{ color: "#fff" }} />
+                  </Tooltip>
+                </Space>
+              }
               extra={
                 <Space align="center">
                   <ShowLabelButton
