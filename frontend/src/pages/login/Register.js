@@ -21,6 +21,7 @@ import {
   PasswordCriteria,
   checkPasswordCriteria,
 } from "../../components/utils";
+import { DataSecurityProvisionModal } from "../../components/utils";
 
 const Register = () => {
   const [form] = Form.useForm();
@@ -28,6 +29,10 @@ const Register = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [showBusinessUnit, setShowBusinessUnit] = useState(false);
   const [passwordCheckList, setPasswordCheckList] = useState([]);
+  const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
+    useState(false);
+  const [agreeDataSecurityProvision, setAgreeDataSecurityProvision] =
+    useState(false);
 
   // const organisationOptions = UIState.useState((s) => s.organisationOptions);
   const businessUnitOptions = window.master.business_units?.map((x) => ({
@@ -258,14 +263,37 @@ const Register = () => {
                   />
                 </Form.Item>
               )}
+
+              <Form.Item>
+                <Checkbox
+                  style={{ width: "100%", color: "#fff" }}
+                  checked={agreeDataSecurityProvision}
+                  onChange={() =>
+                    setAgreeDataSecurityProvision(!agreeDataSecurityProvision)
+                  }
+                >
+                  By checking this box, I agree to the{" "}
+                  <Link
+                    className="copyright-text"
+                    style={{ color: "#fff" }}
+                    onClick={() => setDataSecurityProvisionVisible(true)}
+                  >
+                    <u>Data Security Provision</u>
+                  </Link>
+                  .
+                </Checkbox>
+              </Form.Item>
               <Form.Item>
                 <Button
                   data-testid="button-login"
-                  className="button-login"
+                  className={`button-login ${
+                    !agreeDataSecurityProvision ? "disabled" : ""
+                  }`}
                   type="primary"
                   htmlType="submit"
                   block
                   loading={loading}
+                  disabled={!agreeDataSecurityProvision}
                 >
                   Register
                 </Button>
@@ -291,6 +319,12 @@ const Register = () => {
             data-testid="login-image"
           />
         </Col>
+
+        <DataSecurityProvisionModal
+          visible={dataSecurityProvisionVisible}
+          setVisible={setDataSecurityProvisionVisible}
+          onAgree={setAgreeDataSecurityProvision}
+        />
       </Row>
     </ContentLayout>
   );
