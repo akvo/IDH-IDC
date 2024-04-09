@@ -953,7 +953,8 @@ const DashboardSensitivityAnalysis = ({
                                         </Col>
                                         <Col span={8}>
                                           <div className="title small">
-                                            Adjusted Target
+                                            {percentageSensitivity ? "%" : ""}{" "}
+                                            Change
                                           </div>
                                           {["absolute", "percentage"].map(
                                             (qtype) => (
@@ -994,13 +995,16 @@ const DashboardSensitivityAnalysis = ({
                                                         ]
                                                   }
                                                 />
+                                                <small className="title small">
+                                                  of current target
+                                                </small>
                                               </div>
                                             )
                                           )}
                                         </Col>
                                         <Col span={8}>
                                           <div className="title small">
-                                            Change
+                                            Adjusted Target
                                           </div>
                                           <div className="title small">
                                             {adustedTargetChange}
