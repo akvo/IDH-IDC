@@ -182,6 +182,44 @@ const BinningForm = ({
               </Row>
             </Col>
           </Row>
+          <br />
+          {/* Current & Feasible value */}
+          <Row gutter={[8, 8]} align="middle">
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>
+                  <div>Current Value</div>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_binning-current-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                      bordered={false}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+            <Col span={12}>
+              <Row gutter={[8, 8]}>
+                <Col span={24}>
+                  <div>Feasible Value</div>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={`${segment.id}_binning-feasible-value`}>
+                    <InputNumber
+                      className="binning-input"
+                      {...InputNumberThousandFormatter}
+                      disabled={true}
+                      bordered={false}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
         </Card>
       </Col>
       <Col span={8}>
@@ -258,6 +296,7 @@ const BinningForm = ({
                       className="binning-input"
                       {...InputNumberThousandFormatter}
                       disabled={true}
+                      bordered={false}
                     />
                   </Form.Item>
                 </Col>
@@ -274,6 +313,7 @@ const BinningForm = ({
                       className="binning-input"
                       {...InputNumberThousandFormatter}
                       disabled={true}
+                      bordered={false}
                     />
                   </Form.Item>
                 </Col>
@@ -350,6 +390,7 @@ const BinningForm = ({
                       className="binning-input"
                       {...InputNumberThousandFormatter}
                       disabled={true}
+                      bordered={false}
                     />
                   </Form.Item>
                 </Col>
@@ -364,6 +405,7 @@ const BinningForm = ({
                       className="binning-input"
                       {...InputNumberThousandFormatter}
                       disabled={true}
+                      bordered={false}
                     />
                   </Form.Item>
                 </Col>
@@ -573,6 +615,8 @@ const DashboardSensitivityAnalysis = ({
           ? (dataValue.current + dataValue.feasible) / 2
           : dataValue,
         [`${segmentId}_binning-value-3`]: dataValue?.feasible,
+        [`${segmentId}_binning-current-value`]: dataValue?.current,
+        [`${segmentId}_binning-feasible-value`]: dataValue?.feasible,
       };
     }
     setBinningData(values);
