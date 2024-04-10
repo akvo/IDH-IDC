@@ -6,6 +6,10 @@ export const businessUnitRole = ["admin", "member"];
 export const casePermission = ["edit", "view"];
 export const businessUnitRequiredForRole = ["admin", "editor", "viewer"];
 
+export const disableLandUnitFieldForCommodityTypes = ["livestock"];
+export const incomeDriversCheckboxForCommodityTypes = ["timber"];
+export const excludeCommodityTypesFromPrimaryCrop = ["livestock", "timber"];
+
 export const areaUnitOptions = [
   {
     label: "Hectares",

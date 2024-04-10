@@ -44,7 +44,11 @@ import uniqBy from "lodash/uniqBy";
 import isEqual from "lodash/isEqual";
 import { useParams, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { casePermission, adminRole } from "../../../store/static";
+import {
+  casePermission,
+  adminRole,
+  disableLandUnitFieldForCommodityTypes,
+} from "../../../store/static";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -405,7 +409,9 @@ const CaseProfile = ({
             (c) => c.id === cm.commodity
           );
           setDisableSecondaryLandUnitField(
-            checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+            disableLandUnitFieldForCommodityTypes.includes(
+              checkSecondaryCommodity?.category?.toLowerCase()
+            )
               ? true
               : false
           );
@@ -417,7 +423,9 @@ const CaseProfile = ({
             (c) => c.id === cm.commodity
           );
           setDisableTertiaryLandUnitField(
-            checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+            disableLandUnitFieldForCommodityTypes.includes(
+              checkTertiaryCommodity?.category?.toLowerCase()
+            )
               ? true
               : false
           );
@@ -624,7 +632,9 @@ const CaseProfile = ({
           c.id === allValues["1-commodity"]
       );
       setDisableSecondaryLandUnitField(
-        checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+        disableLandUnitFieldForCommodityTypes.includes(
+          checkSecondaryCommodity?.category?.toLowerCase()
+        )
           ? true
           : false
       );
@@ -639,7 +649,9 @@ const CaseProfile = ({
           c.id === allValues["2-commodity"]
       );
       setDisableTertiaryLandUnitField(
-        checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+        disableLandUnitFieldForCommodityTypes.includes(
+          checkTertiaryCommodity?.category?.toLowerCase()
+        )
           ? true
           : false
       );
