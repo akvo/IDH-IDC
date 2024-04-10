@@ -44,7 +44,12 @@ import uniqBy from "lodash/uniqBy";
 import isEqual from "lodash/isEqual";
 import { useParams, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { casePermission, adminRole } from "../../../store/static";
+import {
+  casePermission,
+  adminRole,
+  disableLandUnitFieldForCommodityTypes,
+  disableIncomeDriversFieldForCommodityTypes,
+} from "../../../store/static";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -258,6 +263,7 @@ const SecondaryForm = ({
   disabled,
   disableAreaSizeUnitField,
   disableLandUnitField,
+  disableDataOnIncomeDriverField,
 }) => {
   return (
     <>
@@ -293,12 +299,15 @@ const SecondaryForm = ({
         label={`Data on income drivers available`}
         rules={[
           {
-            required: !disabled,
+            required: !disabled && !disableDataOnIncomeDriverField,
             message: "Please select yes or no",
           },
         ]}
       >
-        <Radio.Group disabled={disabled} options={yesNoOptions} />
+        <Radio.Group
+          disabled={disabled || disableDataOnIncomeDriverField}
+          options={yesNoOptions}
+        />
       </Form.Item>
       <AreaUnitFields
         disabled={disabled || disableAreaSizeUnitField}
@@ -345,6 +354,14 @@ const CaseProfile = ({
     useState(false);
   const [disableTertiaryLandUnitField, setDisableTertiaryLandUnitField] =
     useState(false);
+  const [
+    disableSecondaryDataOnIncomeDriverField,
+    setDisableSecondaryDataOnIncomeDriverField,
+  ] = useState(false);
+  const [
+    disableTertiaryDataOnIncomeDriverField,
+    setDisableTertiaryDataOnIncomeDriverField,
+  ] = useState(false);
 
   useEffect(
     () => {
@@ -405,7 +422,16 @@ const CaseProfile = ({
             (c) => c.id === cm.commodity
           );
           setDisableSecondaryLandUnitField(
-            checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+            disableLandUnitFieldForCommodityTypes.includes(
+              checkSecondaryCommodity?.category?.toLowerCase()
+            )
+              ? true
+              : false
+          );
+          setDisableSecondaryDataOnIncomeDriverField(
+            disableIncomeDriversFieldForCommodityTypes.includes(
+              checkSecondaryCommodity?.category?.toLowerCase()
+            )
               ? true
               : false
           );
@@ -417,7 +443,16 @@ const CaseProfile = ({
             (c) => c.id === cm.commodity
           );
           setDisableTertiaryLandUnitField(
-            checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+            disableLandUnitFieldForCommodityTypes.includes(
+              checkTertiaryCommodity?.category?.toLowerCase()
+            )
+              ? true
+              : false
+          );
+          setDisableTertiaryDataOnIncomeDriverField(
+            disableIncomeDriversFieldForCommodityTypes.includes(
+              checkTertiaryCommodity?.category?.toLowerCase()
+            )
               ? true
               : false
           );
@@ -624,12 +659,22 @@ const CaseProfile = ({
           c.id === allValues["1-commodity"]
       );
       setDisableSecondaryLandUnitField(
-        checkSecondaryCommodity?.category?.toLowerCase() === "livestock"
+        disableLandUnitFieldForCommodityTypes.includes(
+          checkSecondaryCommodity?.category?.toLowerCase()
+        )
+          ? true
+          : false
+      );
+      setDisableSecondaryDataOnIncomeDriverField(
+        disableIncomeDriversFieldForCommodityTypes.includes(
+          checkSecondaryCommodity?.category?.toLowerCase()
+        )
           ? true
           : false
       );
     } else {
       setDisableSecondaryLandUnitField(false);
+      setDisableSecondaryDataOnIncomeDriverField(false);
     }
     // handle tertiary commodity
     if (changedValues?.["2-commodity"] || allValues?.["2-commodity"]) {
@@ -639,12 +684,22 @@ const CaseProfile = ({
           c.id === allValues["2-commodity"]
       );
       setDisableTertiaryLandUnitField(
-        checkTertiaryCommodity?.category?.toLowerCase() === "livestock"
+        disableLandUnitFieldForCommodityTypes.includes(
+          checkTertiaryCommodity?.category?.toLowerCase()
+        )
+          ? true
+          : false
+      );
+      setDisableTertiaryDataOnIncomeDriverField(
+        disableIncomeDriversFieldForCommodityTypes.includes(
+          checkTertiaryCommodity?.category?.toLowerCase()
+        )
           ? true
           : false
       );
     } else {
       setDisableTertiaryLandUnitField(false);
+      setDisableTertiaryDataOnIncomeDriverField(false);
     }
   };
 
@@ -774,6 +829,9 @@ const CaseProfile = ({
                   disabled={!secondary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeSecondaryField}
                   disableLandUnitField={disableSecondaryLandUnitField}
+                  disableDataOnIncomeDriverField={
+                    disableSecondaryDataOnIncomeDriverField
+                  }
                 />
               </Card>
             </Col>
@@ -801,6 +859,9 @@ const CaseProfile = ({
                   disabled={!tertiary || !enableEditCase}
                   disableAreaSizeUnitField={disableAreaSizeTertiaryField}
                   disableLandUnitField={disableTertiaryLandUnitField}
+                  disableDataOnIncomeDriverField={
+                    disableTertiaryDataOnIncomeDriverField
+                  }
                 />
               </Card>
             </Col>

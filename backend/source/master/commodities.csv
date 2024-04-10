@@ -2,7 +2,7 @@ id,group_id,name,group_name
 1000,100,Coffee,Crop
 1001,100,Tea,Crop
 1002,100,Wheat,Crop
-1003,100,Rice,Crop
+1003,100,Rice / Paddy,Crop
 1004,100,Cocoa,Crop
 1005,100,Maize,Crop
 1006,100,Cassava,Crop
@@ -16,10 +16,10 @@ id,group_id,name,group_name
 1014,100,Cashew,Crop
 1015,100,Macadamia,Crop
 1016,100,Mango,Crop
-1017,100,Palm Oil,Crop
-1018,100,Timber,Crop
+1017,100,Oil palm (FFB),Crop
+1018,103,Trees for timber,Timber
 1019,100,Vanilla,Crop
-1020,100,Bean,Crop
+1020,100,Beans,Crop
 1021,100,Chilli,Crop
 1022,100,Fonio,Crop
 1023,100,Ginger,Crop
@@ -34,8 +34,23 @@ id,group_id,name,group_name
 1032,102,Dairy,Livestock
 1033,101,Aquaculture,Aquaculture
 1034,100,Spices,Crop
-1035,100,Pulses,Crop
+1035,100,Pulses,Cropç
 1036,100,Soybean,Crop
 1037,100,Nuts,Crop
 1038,100,Black Pepper,Crop
 1039,100,Sugar snaps,Crop
+1040,100,Corn,Crop
+1041,101,Shrimp,Aquaculture
+1042,101,Salmon,Aquaculture
+1043,102,Cattle,Livestock
+1044,102,Bees,Livestock
+1045,100,Avocado,Crop
+1046,100,Fruit trees,Crop
+1047,100,Plantain,Crop
+1048,103,NTFP,Timber
+1049,100,Vegetables,Crop
+1050,101,Catfish,Aquaculture
+1051,100,Tumeric,Crop
+1052,100,Coriander,Crop
+1053,100,Cumin,Crop
+

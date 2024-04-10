@@ -1,5 +1,6 @@
 import uniq from "lodash/uniq";
 import { Col, Space } from "antd";
+import { excludeCommodityTypesFromPrimaryCrop } from "../../../store/static";
 
 const commodityCategories = window.master?.commodity_categories || [];
 export const commodities = commodityCategories
@@ -15,9 +16,12 @@ export const commodities = commodityCategories
     )
   : [];
 
-// create focus/primary commodities without livestock
+// create focus/primary commodities filtered by excludeCommodityTypesFromPrimaryCrop
 export const focusCommodityOptions = commodities
-  .filter((c) => c.category.toLowerCase() !== "livestock")
+  .filter(
+    (c) =>
+      !excludeCommodityTypesFromPrimaryCrop.includes(c.category.toLowerCase())
+  )
   .map((commodity) => ({
     label: commodity.name,
     value: commodity.id,
