@@ -229,7 +229,12 @@ const lineChartTooltipText = (
   </>
 );
 
-const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
+const ChartSensitivityAnalysisLine = ({
+  data,
+  segment,
+  origin,
+  setAdjustTargetVisible = () => {},
+}) => {
   const [label, setLabel] = useState(null);
   const [chartTitle, setChartTitle] = useState(null);
   const elLineChart = useRef(null);
@@ -273,14 +278,18 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       "Understanding the influence of a combination of income drivers on reaching the income target"
     );
 
+    const binChartsRes = binName
+      ? binCharts.map((b) => ({
+          binName: binName,
+          binValue: b.value,
+          unitName: origin.find((or) => or.name === binName)?.unitName,
+        }))
+      : [];
+
+    setAdjustTargetVisible(binChartsRes?.length);
+
     return {
-      binCharts: binName
-        ? binCharts.map((b) => ({
-            binName: binName,
-            binValue: b.value,
-            unitName: origin.find((or) => or.name === binName)?.unitName,
-          }))
-        : [],
+      binCharts: binChartsRes,
       xAxis: {
         name: xAxisName,
         min: bins.find((b) => b.name === "x-axis-min-value")?.value || 0,
@@ -315,7 +324,7 @@ const ChartSensitivityAnalysisLine = ({ data, segment, origin }) => {
       diversified_feasible: segment.total_feasible_diversified_income,
       target: adjustedTarget ? adjustedTarget : segment.target, // support adjusted target
     };
-  }, [data, segment, origin]);
+  }, [data, segment, origin, setAdjustTargetVisible]);
 
   return binningData.binCharts?.length ? (
     <Col span={24}>

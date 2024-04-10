@@ -438,6 +438,7 @@ const DashboardSensitivityAnalysis = ({
   const [adjustedValues, setAdjustedValues] = useState({});
   const [form] = Form.useForm();
   const elDriversTable = useRef(null);
+  const [adjustTargetVisible, setAdjustTargetVisible] = useState(false);
 
   useEffect(() => {
     if (!isEmpty(binningData)) {
@@ -825,208 +826,183 @@ const DashboardSensitivityAnalysis = ({
                     hidden={currentSegment !== segment.id}
                     enableEditCase={enableEditCase}
                   />
-
-                  <Col
-                    span={24}
-                    className="income-driver-dashboard"
-                    style={{
-                      display: currentSegment === segment.id ? "none" : "",
-                    }}
-                  >
-                    <Row
-                      className="income-driver-content"
-                      align="middle"
-                      justify="space-evenly"
-                      gutter={[8, 8]}
-                    >
-                      <Col span={24}>
-                        <Card className="card-alert-box">
-                          <Row gutter={[16, 16]} align="start">
-                            <Col span={12}>
-                              <Space direction="vertical">
-                                <div className="title">
-                                  Adjust your income target
-                                </div>
-                                <div className="description">
-                                  The results in the sensitivity analysis depend
-                                  significantly on the income target value set.
-                                  When conducting the sensitivity analysis,
-                                  adjusting the income target is recommended to
-                                  observe how the results vary, providing better
-                                  insight into the sensitivity of various income
-                                  drivers in reaching the income target. If you
-                                  do not adjust the target, we will use the
-                                  current target value for the calculations.
-                                </div>
-                              </Space>
-                            </Col>
-                            <Col span={12} className="settings-wrapper">
-                              <Space
-                                direction="vertical"
-                                size="large"
-                                className="settings-info-wrapper"
-                              >
-                                <div key="custom-1">
-                                  <Space direction="vertical">
-                                    <Space align="center">
-                                      <div className="number small">1</div>
-                                      <div className="title small">
-                                        Explore the graphs and their insights
-                                        below
-                                      </div>
-                                    </Space>
-                                  </Space>
-                                </div>
-                                <div key="custom-2">
-                                  <Space direction="vertical">
-                                    <Space align="start">
-                                      <div className="number small">2</div>
-                                      <div className="title small">
-                                        If you like to change the target, Please
-                                        choose whether you would like to express
-                                        the changes in current values using
-                                        percentages or absolute values.
-                                      </div>
-                                    </Space>
-                                    <div className="description small">
-                                      <Row>
-                                        <Col span={6}>
-                                          <Select
-                                            style={{ width: "100%" }}
-                                            options={[
-                                              {
-                                                label: "Percentage",
-                                                value: "percentage",
-                                              },
-                                              {
-                                                label: "Absolute",
-                                                value: "absolute",
-                                              },
-                                            ]}
-                                            onChange={onChangePercentage}
-                                            value={
-                                              percentageSensitivity
-                                                ? "percentage"
-                                                : "absolute"
-                                            }
-                                          />
-                                        </Col>
-                                      </Row>
-                                    </div>
-                                  </Space>
-                                </div>
-                                <div key="custom-3">
-                                  <Space
-                                    direction="vertical"
-                                    style={{ width: "100%" }}
-                                  >
-                                    <Space
-                                      align="start"
-                                      style={{ width: "100%" }}
-                                    >
-                                      <div className="number small">3</div>
-                                      <div className="title small">
-                                        Adjust current values below
-                                      </div>
-                                    </Space>
-                                    <div className="description small">
-                                      <Row gutter={[8, 8]} align="start">
-                                        <Col span={7}>
-                                          <div className="title small">
-                                            Current Target
-                                          </div>
-                                          <div
-                                            className="title small"
-                                            style={{
-                                              fontWeight: "700",
-                                            }}
-                                          >
-                                            {tableSummaryValue?.current
-                                              ? thousandFormatter(
-                                                  tableSummaryValue.current
-                                                )
-                                              : 0}{" "}
-                                            <small>
-                                              ({tableSummaryValue?.unitName})
-                                            </small>
-                                          </div>
-                                        </Col>
-                                        <Col span={10}>
-                                          <div className="title small">
-                                            {percentageSensitivity ? "%" : ""}{" "}
-                                            Change
-                                          </div>
-                                          {["absolute", "percentage"].map(
-                                            (qtype) => (
-                                              <div
-                                                key={qtype}
-                                                style={{
-                                                  display:
-                                                    qtype !== "percentage" &&
-                                                    percentageSensitivity
-                                                      ? "none"
-                                                      : qtype ===
-                                                          "percentage" &&
-                                                        !percentageSensitivity
-                                                      ? "none"
-                                                      : "",
-                                                }}
-                                              >
-                                                <InputNumber
-                                                  style={{
-                                                    width:
-                                                      qtype === "percentage"
-                                                        ? "150px"
-                                                        : "75%",
-                                                  }}
-                                                  addonAfter={
-                                                    qtype === "percentage"
-                                                      ? "%"
-                                                      : ""
-                                                  }
-                                                  {...InputNumberThousandFormatter}
-                                                  onChange={(value) =>
-                                                    onAdjustTarget(value, qtype)
-                                                  }
-                                                  value={
-                                                    percentageSensitivity
-                                                      ? adjustedValues?.[
-                                                          `${currentSegment}_percentage-increase_adjusted-target`
-                                                        ]
-                                                      : adjustedValues?.[
-                                                          `${currentSegment}_adjusted-target`
-                                                        ]
-                                                  }
-                                                />
-                                                <div className="title small">
-                                                  of current target
-                                                </div>
-                                              </div>
-                                            )
-                                          )}
-                                        </Col>
-                                        <Col span={7}>
-                                          <div className="title small">
-                                            Adjusted Target
-                                          </div>
-                                          <div className="title small">
-                                            {adustedTargetChange}
-                                          </div>
-                                        </Col>
-                                      </Row>
-                                    </div>
-                                  </Space>
-                                </div>
-                              </Space>
-                            </Col>
-                          </Row>
-                        </Card>
-                      </Col>
-                    </Row>
-                  </Col>
                 </>
               ))}
             </Form>
+          </Col>
+        </Row>
+      </Col>
+
+      <Col
+        span={24}
+        className="income-driver-dashboard"
+        style={{
+          display: !adjustTargetVisible ? "none" : "",
+        }}
+      >
+        <Row
+          className="income-driver-content"
+          align="middle"
+          justify="space-evenly"
+          gutter={[8, 8]}
+        >
+          <Col span={24}>
+            <Card className="card-alert-box">
+              <Row gutter={[16, 16]} align="start">
+                <Col span={12}>
+                  <Space direction="vertical">
+                    <div className="title">Adjust your income target</div>
+                    <div className="description">
+                      The results in the sensitivity analysis depend
+                      significantly on the income target value set. When
+                      conducting the sensitivity analysis, adjusting the income
+                      target is recommended to observe how the results vary,
+                      providing better insight into the sensitivity of various
+                      income drivers in reaching the income target. If you do
+                      not adjust the target, we will use the current target
+                      value for the calculations.
+                    </div>
+                  </Space>
+                </Col>
+                <Col span={12} className="settings-wrapper">
+                  <Space
+                    direction="vertical"
+                    size="large"
+                    className="settings-info-wrapper"
+                  >
+                    <div key="custom-1">
+                      <Space direction="vertical">
+                        <Space align="center">
+                          <div className="number small">1</div>
+                          <div className="title small">
+                            Explore the graphs and their insights below
+                          </div>
+                        </Space>
+                      </Space>
+                    </div>
+                    <div key="custom-2">
+                      <Space direction="vertical">
+                        <Space align="start">
+                          <div className="number small">2</div>
+                          <div className="title small">
+                            If you like to change the target, Please choose
+                            whether you would like to express the changes in
+                            current values using percentages or absolute values.
+                          </div>
+                        </Space>
+                        <div className="description small">
+                          <Row>
+                            <Col span={6}>
+                              <Select
+                                style={{ width: "100%" }}
+                                options={[
+                                  {
+                                    label: "Percentage",
+                                    value: "percentage",
+                                  },
+                                  {
+                                    label: "Absolute",
+                                    value: "absolute",
+                                  },
+                                ]}
+                                onChange={onChangePercentage}
+                                value={
+                                  percentageSensitivity
+                                    ? "percentage"
+                                    : "absolute"
+                                }
+                              />
+                            </Col>
+                          </Row>
+                        </div>
+                      </Space>
+                    </div>
+                    <div key="custom-3">
+                      <Space direction="vertical" style={{ width: "100%" }}>
+                        <Space align="start" style={{ width: "100%" }}>
+                          <div className="number small">3</div>
+                          <div className="title small">
+                            Adjust current values below
+                          </div>
+                        </Space>
+                        <div className="description small">
+                          <Row gutter={[8, 8]} align="start">
+                            <Col span={7}>
+                              <div className="title small">Current Target</div>
+                              <div
+                                className="title small"
+                                style={{
+                                  fontWeight: "700",
+                                }}
+                              >
+                                {tableSummaryValue?.current
+                                  ? thousandFormatter(tableSummaryValue.current)
+                                  : 0}{" "}
+                                <small>({tableSummaryValue?.unitName})</small>
+                              </div>
+                            </Col>
+                            <Col span={10}>
+                              <div className="title small">
+                                {percentageSensitivity ? "%" : ""} Change
+                              </div>
+                              {["absolute", "percentage"].map((qtype) => (
+                                <div
+                                  key={qtype}
+                                  style={{
+                                    display:
+                                      qtype !== "percentage" &&
+                                      percentageSensitivity
+                                        ? "none"
+                                        : qtype === "percentage" &&
+                                          !percentageSensitivity
+                                        ? "none"
+                                        : "",
+                                  }}
+                                >
+                                  <InputNumber
+                                    style={{
+                                      width:
+                                        qtype === "percentage"
+                                          ? "150px"
+                                          : "75%",
+                                    }}
+                                    addonAfter={
+                                      qtype === "percentage" ? "%" : ""
+                                    }
+                                    {...InputNumberThousandFormatter}
+                                    onChange={(value) =>
+                                      onAdjustTarget(value, qtype)
+                                    }
+                                    value={
+                                      percentageSensitivity
+                                        ? adjustedValues?.[
+                                            `${currentSegment}_percentage-increase_adjusted-target`
+                                          ]
+                                        : adjustedValues?.[
+                                            `${currentSegment}_adjusted-target`
+                                          ]
+                                    }
+                                  />
+                                  <div className="title small">
+                                    of current target
+                                  </div>
+                                </div>
+                              ))}
+                            </Col>
+                            <Col span={7}>
+                              <div className="title small">Adjusted Target</div>
+                              <div className="title small">
+                                {adustedTargetChange}
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
+                      </Space>
+                    </div>
+                  </Space>
+                </Col>
+              </Row>
+            </Card>
           </Col>
         </Row>
       </Col>
@@ -1039,6 +1015,7 @@ const DashboardSensitivityAnalysis = ({
               data={binningData}
               segment={segment}
               origin={dataSource}
+              setAdjustTargetVisible={setAdjustTargetVisible}
             />
           ) : null
         )}
