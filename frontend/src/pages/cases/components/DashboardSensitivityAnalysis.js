@@ -808,24 +808,22 @@ const DashboardSensitivityAnalysis = ({
               initialValues={binningData}
             >
               {dashboardData.map((segment, key) => (
-                <>
-                  <BinningForm
-                    key={key}
-                    segment={segment}
-                    drivers={drivers.map((x) => {
-                      return {
-                        value: x.name,
-                        label: x.name,
-                        unitName: x.unitName,
-                      };
-                    })}
-                    selected={
-                      binningValues.find((b) => b.id === segment.id)?.selected
-                    }
-                    hidden={currentSegment !== segment.id}
-                    enableEditCase={enableEditCase}
-                  />
-                </>
+                <BinningForm
+                  key={key}
+                  segment={segment}
+                  drivers={drivers.map((x) => {
+                    return {
+                      value: x.name,
+                      label: x.name,
+                      unitName: x.unitName,
+                    };
+                  })}
+                  selected={
+                    binningValues.find((b) => b.id === segment.id)?.selected
+                  }
+                  hidden={currentSegment !== segment.id}
+                  enableEditCase={enableEditCase}
+                />
               ))}
             </Form>
           </Col>
@@ -941,7 +939,9 @@ const DashboardSensitivityAnalysis = ({
                               </div>
                             </Col>
                             <Col span={10}>
-                              <div className="title small">Adjusted Target</div>
+                              <div className="title small">
+                                {percentageSensitivity ? "%" : ""} Change
+                              </div>
                               {["absolute", "percentage"].map((qtype) => (
                                 <div
                                   key={qtype}
@@ -984,9 +984,7 @@ const DashboardSensitivityAnalysis = ({
                               ))}
                             </Col>
                             <Col span={7}>
-                              <div className="title small">
-                                {!percentageSensitivity ? "%" : ""} Change
-                              </div>
+                              <div className="title small">Adjusted Target</div>
                               <div className="title small">
                                 {adustedTargetChange}
                               </div>
