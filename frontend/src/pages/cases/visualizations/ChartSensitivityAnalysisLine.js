@@ -196,6 +196,8 @@ const getOptions = ({
       axisLabel: {
         formatter: (e) => thousandFormatter(e),
       },
+      min: xAxis.min.toFixed(2),
+      max: xAxis.max.toFixed(2),
     },
     yAxis: {
       name: `${yAxis.name} (${yAxis?.unitName})`,

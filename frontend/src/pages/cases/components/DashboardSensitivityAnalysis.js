@@ -645,19 +645,18 @@ const DashboardSensitivityAnalysis = ({
     let newValue = {};
     let adjustedTarget = 0;
     if (qtype === "percentage" && percentageSensitivity) {
-      const absoluteValue = (currentValue * value) / 100;
-      adjustedTarget = (absoluteValue + currentValue).toFixed(2);
+      const absoluteValue = value ? (currentValue * value) / 100 : 0;
+      adjustedTarget = value ? (absoluteValue + currentValue).toFixed(2) : 0;
       newValue = {
         ...newValue,
-        [`${currentSegment}_absolute-increase_adjusted-target`]: parseFloat(
-          absoluteValue.toFixed(2)
-        ),
+        [`${currentSegment}_absolute-increase_adjusted-target`]:
+          parseFloat(adjustedTarget),
         [`${currentSegment}_percentage-increase_adjusted-target`]: value,
       };
     }
     if (qtype === "absolute" && !percentageSensitivity) {
-      adjustedTarget = value;
-      const absoluteChanged = value - currentValue;
+      adjustedTarget = value || 0;
+      const absoluteChanged = value ? value - currentValue : 0;
       const percentage = currentValue ? absoluteChanged / currentValue : 0;
       const percentageIncrease = (percentage * 100).toFixed(2);
       newValue = {
@@ -809,24 +808,22 @@ const DashboardSensitivityAnalysis = ({
               initialValues={binningData}
             >
               {dashboardData.map((segment, key) => (
-                <>
-                  <BinningForm
-                    key={key}
-                    segment={segment}
-                    drivers={drivers.map((x) => {
-                      return {
-                        value: x.name,
-                        label: x.name,
-                        unitName: x.unitName,
-                      };
-                    })}
-                    selected={
-                      binningValues.find((b) => b.id === segment.id)?.selected
-                    }
-                    hidden={currentSegment !== segment.id}
-                    enableEditCase={enableEditCase}
-                  />
-                </>
+                <BinningForm
+                  key={key}
+                  segment={segment}
+                  drivers={drivers.map((x) => {
+                    return {
+                      value: x.name,
+                      label: x.name,
+                      unitName: x.unitName,
+                    };
+                  })}
+                  selected={
+                    binningValues.find((b) => b.id === segment.id)?.selected
+                  }
+                  hidden={currentSegment !== segment.id}
+                  enableEditCase={enableEditCase}
+                />
               ))}
             </Form>
           </Col>
@@ -983,9 +980,6 @@ const DashboardSensitivityAnalysis = ({
                                           ]
                                     }
                                   />
-                                  <div className="title small">
-                                    of current target
-                                  </div>
                                 </div>
                               ))}
                             </Col>
