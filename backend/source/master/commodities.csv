@@ -23,7 +23,7 @@ id,group_id,name,group_name
 1021,100,Chilli,Crop
 1022,100,Fonio,Crop
 1023,100,Ginger,Crop
-1024,100,Mange Tout,Crop
+1024,100,Cumin,Crop
 1025,100,Millet,Crop
 1026,100,Onion,Crop
 1027,100,Potato,Crop
@@ -31,10 +31,10 @@ id,group_id,name,group_name
 1029,100,Sunflower,Crop
 1030,100,Tomato,Crop
 1031,100,Mint,Crop
-1032,102,Dairy,Livestock
-1033,101,Aquaculture,Aquaculture
-1034,100,Spices,Crop
-1035,100,Pulses,Cropç
+1032,100,Coriander,Crop
+1033,101,Catfish,Aquaculture
+1034,100,Tumeric,Crop
+1035,100,Vegetables,Crop
 1036,100,Soybean,Crop
 1037,100,Nuts,Crop
 1038,100,Black Pepper,Crop
@@ -48,9 +48,3 @@ id,group_id,name,group_name
 1046,100,Fruit trees,Crop
 1047,100,Plantain,Crop
 1048,103,NTFP,Timber
-1049,100,Vegetables,Crop
-1050,101,Catfish,Aquaculture
-1051,100,Tumeric,Crop
-1052,100,Coriander,Crop
-1053,100,Cumin,Crop
-
