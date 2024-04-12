@@ -324,7 +324,11 @@ const ChartSensitivityAnalysisLine = ({
       total_feasible_income: segment.total_feasible_income,
       diversified: segment.total_current_diversified_income,
       diversified_feasible: segment.total_feasible_diversified_income,
-      target: adjustedTarget ? adjustedTarget : segment.target, // support adjusted target
+      target: adjustedTarget
+        ? adjustedTarget
+        : segment?.target
+        ? segment.target
+        : 0, // support adjusted target value
     };
   }, [data, segment, origin, setAdjustTargetVisible]);
 

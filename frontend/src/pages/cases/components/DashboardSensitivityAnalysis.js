@@ -656,7 +656,7 @@ const DashboardSensitivityAnalysis = ({
     }
     if (qtype === "absolute" && !percentageSensitivity) {
       adjustedTarget = value || 0;
-      const absoluteChanged = value ? value - currentValue : 0;
+      const absoluteChanged = value - currentValue;
       const percentage = currentValue ? absoluteChanged / currentValue : 0;
       const percentageIncrease = (percentage * 100).toFixed(2);
       newValue = {
@@ -940,7 +940,9 @@ const DashboardSensitivityAnalysis = ({
                             </Col>
                             <Col span={10}>
                               <div className="title small">
-                                {percentageSensitivity ? "%" : ""} Change
+                                {percentageSensitivity
+                                  ? "% Change"
+                                  : "Adjusted Target"}
                               </div>
                               {["absolute", "percentage"].map((qtype) => (
                                 <div
@@ -984,7 +986,11 @@ const DashboardSensitivityAnalysis = ({
                               ))}
                             </Col>
                             <Col span={7}>
-                              <div className="title small">Adjusted Target</div>
+                              <div className="title small">
+                                {percentageSensitivity
+                                  ? "Adjusted Target"
+                                  : "% Change"}
+                              </div>
                               <div className="title small">
                                 {adustedTargetChange}
                               </div>
