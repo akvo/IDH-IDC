@@ -276,9 +276,7 @@ const ChartSensitivityAnalysisLine = ({
     } will we reach the income target?`;
     setLabel(label);
     // chart title
-    setChartTitle(
-      "Understanding the influence of a combination of income drivers on reaching the income target"
-    );
+    setChartTitle("Influence of income drivers on reaching the income target");
 
     const binChartsRes = binName
       ? binCharts.map((b) => ({
@@ -379,10 +377,10 @@ const ChartSensitivityAnalysisLine = ({
           <Card
             title={
               <Space align="center">
-                <div>{chartTitle}</div>
                 <Tooltip className="info-tooltip" title={lineChartTooltipText}>
                   <InfoCircleOutlined style={{ color: "#fff" }} />
                 </Tooltip>
+                <div style={{ fontSize: "14px" }}>{chartTitle}</div>
               </Space>
             }
             className="chart-card-wrapper with-padding"
