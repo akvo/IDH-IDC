@@ -255,6 +255,9 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
     if (!segment?.id) {
       return {};
     }
+    // support adjusted custom target
+    const adjustedTarget = data?.[`${segment.id}_adjusted-target`] || 0;
+
     const bins = Object.keys(data)
       .map((x) => {
         const [segmentId, name] = x.split("_");
@@ -314,7 +317,11 @@ const ChartBinningHeatmap = ({ segment, data, origin }) => {
       max: segment.total_feasible_income || 0,
       diversified: segment.total_current_diversified_income || 0,
       diversified_feasible: segment.total_feasible_diversified_income || 0,
-      target: segment.target || 0,
+      target: adjustedTarget
+        ? adjustedTarget
+        : segment?.target
+        ? segment.target
+        : 0, // support adjusted target value
     };
   }, [data, segment, origin]);
 
