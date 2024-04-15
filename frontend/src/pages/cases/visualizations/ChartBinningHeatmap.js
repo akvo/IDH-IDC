@@ -158,8 +158,7 @@ const getOptions = ({
             if (value >= target && binRange) {
               const isOutRange =
                 binRange.current > binRange.feasible
-                  ? (binValue) =>
-                      binRange.current || binValue < binRange.feasible
+                  ? binValue > binRange.current || binValue < binRange.feasible
                   : binValue < binRange.current || binValue > binRange.feasible;
               if (isOutRange) {
                 return `{out|${thousandFormatter(params.value[2])}}`;
