@@ -143,6 +143,10 @@ class Email:
 
     @property
     def data(self):
+        from_email = "noreply@incomedrivercalculator.idhtrade.org"
+        TESTING = os.environ.get("TESTING")
+        if TESTING:
+            from_email = "noreply@akvo.org"
         email = self.email.value
         body = email["body"]
         message = email["message"]
@@ -160,7 +164,7 @@ class Email:
             context=self.context,
         )
         payload = {
-            "FromEmail": "noreply@akvo.org",
+            "FromEmail": from_email,
             "Subject": email["subject"],
             "Html-part": html,
             "Text-part": html_to_text(html),
