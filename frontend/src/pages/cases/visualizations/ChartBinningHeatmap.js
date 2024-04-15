@@ -159,9 +159,8 @@ const getOptions = ({
               const isOutRange =
                 binRange.current > binRange.feasible
                   ? (binValue) =>
-                      binRange.current || binValue <= binRange.feasible
-                  : binValue <= binRange.current ||
-                    binValue >= binRange.feasible;
+                      binRange.current || binValue < binRange.feasible
+                  : binValue < binRange.current || binValue > binRange.feasible;
               if (isOutRange) {
                 return `{out|${thousandFormatter(params.value[2])}}`;
               }
@@ -191,19 +190,19 @@ const getOptions = ({
           rich: {
             up: {
               color: "#fff",
-              backgroundColor: "#218400",
+              backgroundColor: "#218400", // green
               padding: 5,
               fontWeight: 700,
             },
             out: {
               color: "#fff",
-              backgroundColor: "#FEC508",
+              backgroundColor: "#FEC508", // yellow
               padding: 5,
               fontWeight: 700,
             },
             down: {
               color: "#fff",
-              backgroundColor: "#F50902",
+              backgroundColor: "#F50902", // red
               padding: 5,
               fontWeight: 700,
             },
