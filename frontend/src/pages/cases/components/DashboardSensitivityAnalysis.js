@@ -620,7 +620,7 @@ const DashboardSensitivityAnalysis = ({
         [`${segmentId}_binning-feasible-value`]: dataValue?.feasible,
       };
     }
-    setBinningData(values);
+    setBinningData((prev) => ({ ...prev, ...values }));
     form.setFieldsValue(values);
   };
 
