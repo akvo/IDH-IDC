@@ -145,7 +145,8 @@ class Email:
     def data(self):
         from_email = "noreply@incomedrivercalculator.idhtrade.org"
         TESTING = os.environ.get("TESTING")
-        if TESTING:
+        CLIENT_ID = os.environ.get("CLIENT_ID")
+        if TESTING or CLIENT_ID == "test":
             from_email = "noreply@akvo.org"
         email = self.email.value
         body = email["body"]
