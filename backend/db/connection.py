@@ -11,7 +11,7 @@ def get_db_url():
     return DB_URL
 
 
-engine = create_engine(get_db_url(), pool_size=10, max_overflow=20)
+engine = create_engine(get_db_url(), pool_size=1, max_overflow=20)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
