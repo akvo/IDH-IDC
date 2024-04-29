@@ -165,6 +165,7 @@ const IncomeDriverTarget = ({
             adult: null,
             child: null,
           });
+          setBenchmark("NA");
           // show notification
           const { status, statusText, data } = e.response;
           let content = data?.detail || statusText;
@@ -182,14 +183,14 @@ const IncomeDriverTarget = ({
 
   useEffect(() => {
     // handle income target value when householdSize updated
-    if (benchmark && !isEmpty(benchmark)) {
+    if (benchmark && !isEmpty(benchmark) && benchmark !== "NA") {
       const targetValue =
         benchmark.value?.[currentCase.currency.toLowerCase()] ||
         benchmark.value.lcu;
       // with CPI calculation
       // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
       if (benchmark?.cpi_factor) {
-        const caseYearLIB = targetValue * (1 - benchmark.cpi_factor);
+        const caseYearLIB = targetValue * (1 + benchmark.cpi_factor);
         // incorporate year multiplier
         const LITarget =
           (householdSize / benchmark.household_equiv) * caseYearLIB * 12;
@@ -203,7 +204,11 @@ const IncomeDriverTarget = ({
     }
 
     // refetch benchmark if current case year changed
-    if (isEmpty(benchmark) && segmentItem?.benchmark?.region) {
+    if (
+      isEmpty(benchmark) &&
+      segmentItem?.benchmark?.region &&
+      benchmark !== "NA"
+    ) {
       fetchBenchmark({ region: segmentItem?.benchmark?.region });
     }
   }, [benchmark, householdSize, currentCase, fetchBenchmark, segmentItem]);

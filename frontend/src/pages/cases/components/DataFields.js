@@ -177,7 +177,7 @@ const DataFields = ({
       nr_childs = household_size - nr_adults;
     }
     let inflationRate = [];
-    if (benchmark?.cpi_factor) {
+    if (benchmark !== "NA" && benchmark?.cpi_factor) {
       inflationRate = [
         {
           label: "Inflation Rate",
@@ -214,7 +214,7 @@ const DataFields = ({
         ...inflationRate,
       ],
     };
-  }, [dashboardData, segment, benchmark?.cpi_factor]);
+  }, [dashboardData, segment, benchmark]);
 
   const chartData = useMemo(() => {
     if (!segments.length) {
