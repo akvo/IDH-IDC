@@ -52,7 +52,7 @@ def get_by_country_region_year(
         # get CPI from lastest year
         last_year_cpi = cpi.order_by(Cpi.year.desc()).first()
         # add CPI value
-        # TODO :: INFLATION RATE HERE
+        # INFLATION RATE HERE
         if case_year_cpi:
             # Calculate CPI factor
             # CPI Factor logic
