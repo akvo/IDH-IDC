@@ -28,6 +28,7 @@ import {
   InfoCircleOutlined,
   UsergroupAddOutlined,
   FileOutlined,
+  MoneyCollectOutlined,
 } from "@ant-design/icons";
 import { isEmpty, upperFirst } from "lodash";
 import {
@@ -89,6 +90,11 @@ const DataFields = ({
   const [exploreButtonLink, setExploreButtonLink] = useState(null);
 
   const [showChartLabel, setShowChartLabel] = useState(false);
+  const [benchmark, setBenchmark] = useState(
+    segmentItem?.benchmark?.year === currentCase?.year
+      ? segmentItem?.benchmark
+      : null
+  );
 
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
@@ -170,6 +176,16 @@ const DataFields = ({
     if (household_size && nr_adults) {
       nr_childs = household_size - nr_adults;
     }
+    let inflationRate = [];
+    if (benchmark?.cpi_factor) {
+      inflationRate = [
+        {
+          label: "Inflation Rate",
+          value: benchmark.cpi_factor.toFixed(2),
+          icon: <MoneyCollectOutlined />,
+        },
+      ];
+    }
     return {
       label: "Source",
       value: source || "NA",
@@ -195,9 +211,10 @@ const DataFields = ({
           value: nr_childs || "NA",
           icon: <UsergroupAddOutlined />,
         },
+        ...inflationRate,
       ],
     };
-  }, [dashboardData, segment]);
+  }, [dashboardData, segment, benchmark?.cpi_factor]);
 
   const chartData = useMemo(() => {
     if (!segments.length) {
@@ -355,6 +372,8 @@ const DataFields = ({
                       segmentItem={segmentItem}
                       totalIncome={totalIncome}
                       enableEditCase={enableEditCase}
+                      setBenchmark={setBenchmark}
+                      benchmark={benchmark}
                     />
                   </Card.Grid>
                 </Card>

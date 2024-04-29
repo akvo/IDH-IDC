@@ -25,15 +25,12 @@ const IncomeDriverTarget = ({
   setFormValues,
   segmentItem,
   enableEditCase,
+  setBenchmark,
+  benchmark,
   // totalIncome,
 }) => {
   const [form] = Form.useForm();
   const [householdSize, setHouseholdSize] = useState(0);
-  const [benchmark, setBenchmark] = useState(
-    segmentItem?.benchmark?.year === currentCase?.year
-      ? segmentItem?.benchmark
-      : null
-  );
   const [incomeTarget, setIncomeTarget] = useState(0);
   const [disableTarget, setDisableTarget] = useState(true);
   const [regionOptions, setRegionOptions] = useState([]);
@@ -127,7 +124,7 @@ const IncomeDriverTarget = ({
             data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
           // with CPI calculation
           // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
-          // TODO :: INFLATION RATE HERE
+          // INFLATION RATE HERE
           if (data?.cpi_factor) {
             const caseYearLIB = targetValue * (1 + data.cpi_factor);
             // incorporate year multiplier
@@ -180,7 +177,7 @@ const IncomeDriverTarget = ({
           });
         });
     },
-    [currentCase, form, messageApi, updateFormValues]
+    [currentCase, form, messageApi, updateFormValues, setBenchmark]
   );
 
   useEffect(() => {
@@ -399,7 +396,11 @@ const IncomeDriverTarget = ({
             <Space align="center" style={{ paddingTop: "18px" }}>
               <div>Living income benchmark value for a household per year</div>
               <Tooltip
-                title="Living Income Benchmarks are automatically adjusted for inflation."
+                title={`Living Income Benchmarks are automatically adjusted for inflation.${
+                  benchmark?.cpi_factor
+                    ? ` Inflation rate: ${benchmark.cpi_factor.toFixed(2)}`
+                    : ""
+                }`}
                 placement="topRight"
               >
                 <InfoCircleTwoTone twoToneColor="#1677ff" />
