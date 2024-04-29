@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./login.scss";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
 import {
   Row,
@@ -11,6 +11,7 @@ import {
   Typography,
   Image,
   message,
+  Checkbox,
 } from "antd";
 import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
@@ -20,6 +21,7 @@ import {
   PasswordCriteria,
   checkPasswordCriteria,
 } from "../../components/utils";
+import { DataSecurityProvisionModal } from "../../components/utils";
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
@@ -32,6 +34,12 @@ const ResetPassword = () => {
   const [passwordCheckList, setPasswordCheckList] = useState([]);
 
   const isInvitation = window.location.pathname.includes("invitation");
+
+  const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
+    useState(false);
+  const [agreeDataSecurityProvision, setAgreeDataSecurityProvision] = useState(
+    isInvitation ? false : true
+  );
 
   const apiUrl = useMemo(() => {
     let url = "user/";
@@ -179,16 +187,42 @@ const ResetPassword = () => {
                   disabled={fetchingUser}
                 />
               </Form.Item>
+
+              {isInvitation && (
+                <Form.Item>
+                  <Checkbox
+                    style={{ width: "100%", color: "#fff" }}
+                    checked={agreeDataSecurityProvision}
+                    onChange={() =>
+                      setAgreeDataSecurityProvision(!agreeDataSecurityProvision)
+                    }
+                  >
+                    By checking this box, I agree to the{" "}
+                    <Link
+                      className="copyright-text"
+                      style={{ color: "#fff" }}
+                      onClick={() => setDataSecurityProvisionVisible(true)}
+                    >
+                      <u>Data Security Provision</u>
+                    </Link>
+                    .
+                  </Checkbox>
+                </Form.Item>
+              )}
+
               <Form.Item>
                 <Button
                   data-testid="button-login"
-                  className="button-login"
+                  className={`button-login ${
+                    !agreeDataSecurityProvision ? "disabled" : ""
+                  }`}
                   type="primary"
                   htmlType="submit"
                   block
                   loading={loading || fetchingUser}
+                  disabled={!agreeDataSecurityProvision}
                 >
-                  {fetchingUser ? "Load user detail..." : "Save Password"}
+                  {fetchingUser ? "Loading..." : "Save Password"}
                 </Button>
               </Form.Item>
             </Form>
@@ -207,6 +241,12 @@ const ResetPassword = () => {
             data-testid="login-image"
           />
         </Col>
+
+        <DataSecurityProvisionModal
+          visible={dataSecurityProvisionVisible}
+          setVisible={setDataSecurityProvisionVisible}
+          onAgree={setAgreeDataSecurityProvision}
+        />
       </Row>
     </ContentLayout>
   );
