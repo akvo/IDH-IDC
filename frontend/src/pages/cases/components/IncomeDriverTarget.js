@@ -129,7 +129,7 @@ const IncomeDriverTarget = ({
           // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
           // TODO :: INFLATION RATE HERE
           if (data?.cpi_factor) {
-            const caseYearLIB = targetValue * (1 - data.cpi_factor);
+            const caseYearLIB = targetValue * (1 + data.cpi_factor);
             // incorporate year multiplier
             const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
             setIncomeTarget(LITarget * 12);
