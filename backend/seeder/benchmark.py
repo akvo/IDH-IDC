@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 from db.connection import Base, engine, SessionLocal
 
-# from utils.truncator import truncatedb
+from utils.truncator import truncatedb
 from sqlalchemy.orm import Session
 from models.living_income_benchmark import LivingIncomeBenchmark
 from models.cpi import Cpi
@@ -75,7 +75,7 @@ def seeder_benchmark(session: Session):
     print("[DATABASE UPDATED]: Living Income Benchmark")
 
     # CPI
-    # truncatedb(session=session, table="cpi")
+    truncatedb(session=session, table="cpi")
     cpi = pd.read_csv(MASTER_DIR + "cpi.csv")
     # Filter rows where the list does not contain any string values
     filtered_cpi = cpi[cpi["country_id"] != cpi["country"]]

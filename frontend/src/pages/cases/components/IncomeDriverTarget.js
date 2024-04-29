@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Row,
   Col,
@@ -25,11 +25,12 @@ const IncomeDriverTarget = ({
   setFormValues,
   segmentItem,
   enableEditCase,
+  setBenchmark,
+  benchmark,
   // totalIncome,
 }) => {
   const [form] = Form.useForm();
   const [householdSize, setHouseholdSize] = useState(0);
-  const [benchmark, setBenchmark] = useState(segmentItem?.benchmark || null);
   const [incomeTarget, setIncomeTarget] = useState(0);
   const [disableTarget, setDisableTarget] = useState(true);
   const [regionOptions, setRegionOptions] = useState([]);
@@ -52,18 +53,21 @@ const IncomeDriverTarget = ({
     return adult_size + children_size;
   };
 
-  const updateFormValues = (value) => {
-    const updatedFv = formValues.map((fv) => {
-      if (fv.key === segment) {
-        return {
-          ...fv,
-          ...value,
-        };
-      }
-      return fv;
-    });
-    setFormValues(updatedFv);
-  };
+  const updateFormValues = useCallback(
+    (value) => {
+      const updatedFv = formValues.map((fv) => {
+        if (fv.key === segment) {
+          return {
+            ...fv,
+            ...value,
+          };
+        }
+        return fv;
+      });
+      setFormValues(updatedFv);
+    },
+    [formValues, segment, setFormValues]
+  );
 
   // load initial target & hh size
   useEffect(() => {
@@ -91,6 +95,91 @@ const IncomeDriverTarget = ({
     }
   }, [segmentItem, currentSegmentId, form]);
 
+  const fetchBenchmark = useCallback(
+    ({ region }) => {
+      const regionData = { region: region };
+      let url = `country_region_benchmark?country_id=${currentCase.country}`;
+      url = `${url}&region_id=${region}&year=${currentCase.year}`;
+      api
+        .get(url)
+        .then((res) => {
+          // data represent LI Benchmark value
+          const { data } = res;
+          const household_adult = data.nr_adults;
+          const household_children = data.household_size - data.nr_adults;
+          setBenchmark(data);
+          const defHHSize = calculateHouseholdSize({
+            household_adult,
+            household_children,
+          });
+          setHouseholdSize(defHHSize);
+          // set hh adult and children default value
+          form.setFieldsValue({
+            household_adult: household_adult,
+            household_children: household_children,
+          });
+          //
+          const targetHH = data.household_equiv;
+          const targetValue =
+            data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
+          // with CPI calculation
+          // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+          // INFLATION RATE HERE
+          if (data?.cpi_factor) {
+            const caseYearLIB = targetValue * (1 + data.cpi_factor);
+            // incorporate year multiplier
+            const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
+            setIncomeTarget(LITarget * 12);
+            updateFormValues({
+              ...regionData,
+              target: LITarget,
+              benchmark: data,
+              adult: household_adult,
+              child: household_children,
+            });
+          } else {
+            // incorporate year multiplier
+            const LITarget = (defHHSize / targetHH) * targetValue * 12;
+            setIncomeTarget(LITarget);
+            updateFormValues({
+              ...regionData,
+              target: LITarget,
+              benchmark: data,
+              adult: household_adult,
+              child: household_children,
+            });
+          }
+        })
+        .catch((e) => {
+          // reset field and benchmark value
+          form.setFieldsValue({
+            household_adult: null,
+            household_children: null,
+          });
+          setHouseholdSize(0);
+          setIncomeTarget(0);
+          updateFormValues({
+            ...regionData,
+            target: 0,
+            benchmark: {},
+            adult: null,
+            child: null,
+          });
+          // show notification
+          const { status, statusText, data } = e.response;
+          let content = data?.detail || statusText;
+          if (status === 404) {
+            content = "Benchmark value not found.";
+          }
+          messageApi.open({
+            type: "error",
+            content: content,
+          });
+        });
+    },
+    [currentCase, form, messageApi, updateFormValues, setBenchmark]
+  );
+
   useEffect(() => {
     // handle income target value when householdSize updated
     if (benchmark && !isEmpty(benchmark)) {
@@ -112,7 +201,12 @@ const IncomeDriverTarget = ({
         setIncomeTarget(LITarget);
       }
     }
-  }, [benchmark, householdSize, currentCase]);
+
+    // refetch benchmark if current case year changed
+    if (isEmpty(benchmark) && segmentItem?.benchmark?.region) {
+      fetchBenchmark({ region: segmentItem?.benchmark?.region });
+    }
+  }, [benchmark, householdSize, currentCase, fetchBenchmark, segmentItem]);
 
   // call region api
   useEffect(() => {
@@ -167,87 +261,9 @@ const IncomeDriverTarget = ({
       updateFormValues({ region: null, target: target });
     }
     if (changedValues.region && disableTarget) {
-      const regionData = { region: region };
       // get from API
       if (currentCase?.country && currentCase?.year && region) {
-        let url = `country_region_benchmark?country_id=${currentCase.country}`;
-        url = `${url}&region_id=${region}&year=${currentCase.year}`;
-        api
-          .get(url)
-          .then((res) => {
-            // data represent LI Benchmark value
-            const { data } = res;
-            const household_adult = data.nr_adults;
-            const household_children = data.household_size - data.nr_adults;
-            setBenchmark(data);
-            const defHHSize = calculateHouseholdSize({
-              household_adult,
-              household_children,
-            });
-            setHouseholdSize(defHHSize);
-            // set hh adult and children default value
-            form.setFieldsValue({
-              household_adult: household_adult,
-              household_children: household_children,
-            });
-            //
-            const targetHH = data.household_equiv;
-            const targetValue =
-              data.value?.[currentCase.currency.toLowerCase()] ||
-              data.value.lcu;
-            // with CPI calculation
-            // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
-            if (data?.cpi_factor) {
-              const caseYearLIB = targetValue * (1 - data.cpi_factor);
-              // incorporate year multiplier
-              const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
-              setIncomeTarget(LITarget * 12);
-              updateFormValues({
-                ...regionData,
-                target: LITarget,
-                benchmark: data,
-                adult: household_adult,
-                child: household_children,
-              });
-            } else {
-              // incorporate year multiplier
-              const LITarget = (defHHSize / targetHH) * targetValue * 12;
-              setIncomeTarget(LITarget);
-              updateFormValues({
-                ...regionData,
-                target: LITarget,
-                benchmark: data,
-                adult: household_adult,
-                child: household_children,
-              });
-            }
-          })
-          .catch((e) => {
-            // reset field and benchmark value
-            form.setFieldsValue({
-              household_adult: null,
-              household_children: null,
-            });
-            setHouseholdSize(0);
-            setIncomeTarget(0);
-            updateFormValues({
-              ...regionData,
-              target: 0,
-              benchmark: {},
-              adult: null,
-              child: null,
-            });
-            // show notification
-            const { status, statusText, data } = e.response;
-            let content = data?.detail || statusText;
-            if (status === 404) {
-              content = "Benchmark value not found.";
-            }
-            messageApi.open({
-              type: "error",
-              content: content,
-            });
-          });
+        fetchBenchmark({ region });
       }
     }
   };
@@ -380,7 +396,11 @@ const IncomeDriverTarget = ({
             <Space align="center" style={{ paddingTop: "18px" }}>
               <div>Living income benchmark value for a household per year</div>
               <Tooltip
-                title="Living Income Benchmarks are automatically adjusted for inflation."
+                title={`Living Income Benchmarks are automatically adjusted for inflation.${
+                  benchmark?.cpi_factor
+                    ? ` Inflation rate: ${benchmark.cpi_factor.toFixed(2)}`
+                    : ""
+                }`}
                 placement="topRight"
               >
                 <InfoCircleTwoTone twoToneColor="#1677ff" />
