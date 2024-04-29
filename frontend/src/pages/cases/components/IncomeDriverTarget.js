@@ -119,7 +119,7 @@ const IncomeDriverTarget = ({
             household_children: household_children,
           });
           //
-          const targetHH = data.household_equiv;
+          // const targetHH = data.household_equiv;
           const targetValue =
             data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
           // with CPI calculation
@@ -129,7 +129,7 @@ const IncomeDriverTarget = ({
             const caseYearLIB = targetValue * (1 + data.cpi_factor);
             // incorporate year multiplier
             // const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
-            const LITarget = (defHHSize / targetHH) * caseYearLIB;
+            const LITarget = caseYearLIB;
             setIncomeTarget(LITarget);
             updateFormValues({
               ...regionData,
@@ -141,7 +141,7 @@ const IncomeDriverTarget = ({
           } else {
             // incorporate year multiplier
             // const LITarget = (defHHSize / targetHH) * targetValue * 12;
-            const LITarget = (defHHSize / targetHH) * targetValue;
+            const LITarget = targetValue;
             setIncomeTarget(LITarget);
             updateFormValues({
               ...regionData,
@@ -196,15 +196,13 @@ const IncomeDriverTarget = ({
         // incorporate year multiplier
         // const LITarget =
         //   (householdSize / benchmark.household_equiv) * caseYearLIB * 12;
-        const LITarget =
-          (householdSize / benchmark.household_equiv) * caseYearLIB;
+        const LITarget = caseYearLIB;
         setIncomeTarget(LITarget);
       } else {
         // incorporate year multiplier
         // const LITarget =
         //   (householdSize / benchmark.household_equiv) * targetValue * 12;
-        const LITarget =
-          (householdSize / benchmark.household_equiv) * targetValue;
+        const LITarget = targetValue;
         setIncomeTarget(LITarget);
       }
     }
