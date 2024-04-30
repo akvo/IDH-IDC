@@ -71,7 +71,7 @@ const IncomeDriverTarget = ({
 
   // load initial target & hh size
   useEffect(() => {
-    if (!isEmpty(segmentItem) && currentSegmentId) {
+    if (!isEmpty(segmentItem) && currentSegmentId && !isEmpty(regionOptions)) {
       setIncomeTarget(segmentItem?.target || 0);
       if (!segmentItem?.region) {
         form.setFieldsValue({
@@ -80,20 +80,30 @@ const IncomeDriverTarget = ({
         });
         setDisableTarget(false);
       }
-      form.setFieldsValue({ region: segmentItem?.region || null });
-      form.setFieldsValue({
-        household_adult: segmentItem?.adult || null,
-      });
-      form.setFieldsValue({
-        household_children: segmentItem?.child || null,
-      });
-      const HHSize = calculateHouseholdSize({
-        household_adult: segmentItem?.adult || 0,
-        household_children: segmentItem?.child || 0,
-      });
-      setHouseholdSize(HHSize);
+
+      const checkRegion = regionOptions.find(
+        (x) => x.value === segmentItem?.region
+      );
+      if (checkRegion) {
+        form.setFieldsValue({
+          region: segmentItem?.region || null,
+        });
+        form.setFieldsValue({
+          household_adult: segmentItem?.adult || null,
+        });
+        form.setFieldsValue({
+          household_children: segmentItem?.child || null,
+        });
+        const HHSize = calculateHouseholdSize({
+          household_adult: segmentItem?.adult || 0,
+          household_children: segmentItem?.child || 0,
+        });
+        setHouseholdSize(HHSize);
+      } else {
+        setIncomeTarget(0);
+      }
     }
-  }, [segmentItem, currentSegmentId, form]);
+  }, [segmentItem, currentSegmentId, form, regionOptions]);
 
   const fetchBenchmark = useCallback(
     ({ region }) => {
