@@ -256,6 +256,11 @@ def get_case_by_created_by(session: Session, created_by: int):
     return case
 
 
+def get_case_by_updated_by(session: Session, updated_by: int):
+    case = session.query(Case).filter(Case.updated_by == updated_by).all()
+    return case
+
+
 def update_case_owner(
     session: Session, case_id: int, user_id: int
 ) -> CaseDict:

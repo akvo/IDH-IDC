@@ -46,7 +46,9 @@ def add_case_access(
     session: Session, payload: List[UserCaseAccessPayload], case_id: int
 ) -> UserCaseAccessDict:
     # add new case access
-    uca = UserCaseAccess(case=case_id, user=payload.user, permission=payload.permission)
+    uca = UserCaseAccess(
+        case=case_id, user=payload.user, permission=payload.permission
+    )
     session.add(uca)
     session.commit()
     session.flush()
@@ -55,12 +57,34 @@ def add_case_access(
 
 
 def delete_case_access(session: Session, access_id: int):
-    uca = session.query(UserCaseAccess).filter(UserCaseAccess.id == access_id).first()
+    uca = (
+        session.query(UserCaseAccess)
+        .filter(UserCaseAccess.id == access_id)
+        .first()
+    )
     session.delete(uca)
     session.commit()
     session.flush()
 
 
-def get_case_access(session: Session, case_id: int) -> List[UserCaseAccessDict]:
-    data = session.query(UserCaseAccess).filter(UserCaseAccess.case == case_id).all()
+def get_case_access(
+    session: Session, case_id: int
+) -> List[UserCaseAccessDict]:
+    data = (
+        session.query(UserCaseAccess)
+        .filter(UserCaseAccess.case == case_id)
+        .all()
+    )
     return data
+
+
+def delete_case_access_by_user_id(session: Session, user_id: int):
+    ucas = (
+        session.query(UserCaseAccess)
+        .filter(UserCaseAccess.user == user_id)
+        .all()
+    )
+    for uca in ucas:
+        session.delete(uca)
+        session.commit()
+        session.flush()

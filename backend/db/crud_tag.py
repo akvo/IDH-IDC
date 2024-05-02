@@ -15,7 +15,10 @@ class PaginatedTagData(TypedDict):
 
 
 def get_all_tag(
-    session: Session, search: Optional[str] = None, skip: int = 0, limit: int = 10
+    session: Session,
+    search: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 10,
 ) -> List[TagListDict]:
     tag = session.query(Tag)
     if search:
@@ -53,7 +56,9 @@ def get_tag_by_id(session: Session, id: int) -> TagListDict:
     return tag
 
 
-def update_tag(session: Session, id: int, payload: UpdateTagBase) -> TagListDict:
+def update_tag(
+    session: Session, id: int, payload: UpdateTagBase
+) -> TagListDict:
     tag = get_tag_by_id(session=session, id=id)
     tag.name = payload.name
     tag.description = payload.description
@@ -71,3 +76,8 @@ def update_tag(session: Session, id: int, payload: UpdateTagBase) -> TagListDict
 
 def get_all_tag_options(session: Session) -> List[TagDict]:
     return session.query(Tag).all()
+
+
+def get_tag_by_user_id(session: Session, user_id: int):
+    tags = session.query(Tag).filter(Tag.created_by == user_id).all()
+    return tags
