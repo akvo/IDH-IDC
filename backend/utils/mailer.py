@@ -10,6 +10,10 @@ from jinja2 import Environment, FileSystemLoader
 mjkey = os.environ["MAILJET_APIKEY"]
 mjsecret = os.environ["MAILJET_SECRET"]
 webdomain = os.environ["WEBDOMAIN"]
+if webdomain == "idc.akvo.org":
+    webdomain = "incomedrivercalculator.idhtrade.org"
+if "https://" not in webdomain:
+    webdomain = f"https://{webdomain}"
 
 mailjet = Client(auth=(mjkey, mjsecret))
 loader = FileSystemLoader(".")
@@ -161,6 +165,7 @@ class Email:
             message = message.replace("#url#", self.url)
         html = html_template.render(
             logo=f"{webdomain}/logo.png",
+            instance_name="Income Driver Calculator",
             webdomain=webdomain,
             title=email["title"],
             body=body,

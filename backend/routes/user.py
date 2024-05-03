@@ -57,6 +57,8 @@ oauth2_scopes = ["openid", "email"]
 webdomain = os.environ["WEBDOMAIN"]
 if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
+if "https://" not in webdomain:
+    webdomain = f"https://{webdomain}"
 
 
 @user_route.post(
