@@ -2,6 +2,9 @@ import os
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
 import db.crud_reset_password as crud_reset_pwd
+import db.crud_case as crud_case
+import db.crud_user_case_access as crud_uca
+import db.crud_tag as crud_tag
 
 from math import ceil
 from middleware import (
@@ -430,7 +433,51 @@ def delete(
     credentials: credentials = Depends(security),
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
-    crud_user.delete_user(session=session, id=user_id)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+
+    # Make sure to check the case owner before allowing user deletion.
+    cases_owned_by_user = crud_case.get_case_by_created_by(
+        session=session, created_by=user.id
+    )
+    if cases_owned_by_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"user {id} owned a case",
+        )
+
+    # Ensure that the 'case updated_by' field is moved into the case owner.
+    cases_updated_by_user = crud_case.get_case_by_updated_by(
+        session=session, updated_by=user.id
+    )
+    if cases_updated_by_user:
+        for case in cases_updated_by_user:
+            case.updated_by = case.created_by
+            session.commit()
+            session.flush()
+            session.refresh(case)
+
+    # Confirm that the user's case access is removed.
+    crud_uca.delete_case_access_by_user_id(session=session, user_id=user.id)
+
+    # Verify that the user's business unit is deleted.
+    crud_bu.delete_user_business_units_by_user_id(
+        session=session, user_id=user.id
+    )
+
+    # Ensure that the user's ID is removed from tags created_by the user.
+    tags = crud_tag.get_tag_by_user_id(session=session, user_id=user.id)
+    if tags:
+        for tag in tags:
+            tag.created_by = None
+            session.commit()
+            session.flush()
+            session.refresh(tag)
+
+    # question created by user?
+    # reference data created by user?
+
+    # delete user
+    crud_user.delete_user(session=session, id=user.id)
     return Response(status_code=HTTPStatus.NO_CONTENT.value)
 
 

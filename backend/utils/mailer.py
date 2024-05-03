@@ -55,7 +55,9 @@ class EmailBody(enum.Enum):
             </a> or the link below to reset your password.
             <br/>
             <br/>
-            #url#
+            <a href="#url#" target="_blank" rel="noreferrer">
+                #url#
+            </a>
         """,
         "image": f"{image_url}/info-circle.png",
     }
@@ -70,7 +72,9 @@ class EmailBody(enum.Enum):
             </a> or the link below to set your password.
             <br/>
             <br/>
-            #url#
+            <a href="#url#" target="_blank" rel="noreferrer">
+                #url#
+            </a>
         """,
         "image": f"{image_url}/user.png",
     }
