@@ -147,9 +147,14 @@ const UserForm = () => {
       })
       .catch((e) => {
         console.error(e);
+        let content = "Failed! Something went wrong.";
+        const { data, status } = e.response;
+        if (status === 409 && data?.detail) {
+          content = data.detail;
+        }
         messageApi.open({
           type: "error",
-          content: "Failed! Something went wrong.",
+          content: content,
         });
       })
       .finally(() => {
