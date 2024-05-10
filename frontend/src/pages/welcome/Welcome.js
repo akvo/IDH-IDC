@@ -32,6 +32,7 @@ const FAQ = () => {
   return (
     <div id="faq">
       <h2>Frequently asked questions</h2>
+      <p style={{ fontSize: "26px" }}>Coming soon:</p>
       {items.map((it, i) => (
         <Row key={i} className="item-wrapper">
           <Col span={12} className="title">
