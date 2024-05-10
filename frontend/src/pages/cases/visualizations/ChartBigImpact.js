@@ -167,7 +167,7 @@ const ChartBigImpact = ({ dashboardData, showLabel = false }) => {
         id: 9002,
         name: "Diversified Income",
         income: totalCurrentIncome
-          ? ((totalCurrentIncome - newDiversifiedValue) / totalCurrentIncome) *
+          ? ((newDiversifiedValue - totalCurrentIncome) / totalCurrentIncome) *
             100
           : 0,
         possible: totalCurrentDiversifiedIncome
