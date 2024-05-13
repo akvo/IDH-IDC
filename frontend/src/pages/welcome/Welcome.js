@@ -1,6 +1,6 @@
 import React from "react";
 import "./welcome.scss";
-import { Row, Col } from "antd";
+import { Row, Col, Alert } from "antd";
 import {
   Jumbotron,
   GetStarted,
@@ -11,6 +11,7 @@ import {
 } from "../landing/components";
 
 const FAQ = () => {
+  const showItems = false;
   const items = [
     {
       title: "What is Driver Calculator?",
@@ -32,17 +33,24 @@ const FAQ = () => {
   return (
     <div id="faq">
       <h2>Frequently asked questions</h2>
-      <p style={{ fontSize: "26px" }}>Coming soon:</p>
-      {items.map((it, i) => (
-        <Row key={i} className="item-wrapper">
-          <Col span={12} className="title">
-            {it.title}
-          </Col>
-          <Col span={12} className="description">
-            {it.description}
-          </Col>
-        </Row>
-      ))}
+      <Alert
+        message="Coming soon"
+        type="info"
+        showIcon
+        style={{ fontSize: "20px" }}
+      />
+      {showItems
+        ? items.map((it, i) => (
+            <Row key={i} className="item-wrapper">
+              <Col span={12} className="title">
+                {it.title}
+              </Col>
+              <Col span={12} className="description">
+                {it.description}
+              </Col>
+            </Row>
+          ))
+        : ""}
     </div>
   );
 };
