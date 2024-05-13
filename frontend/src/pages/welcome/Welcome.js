@@ -1,6 +1,6 @@
 import React from "react";
 import "./welcome.scss";
-import { Row, Col, Alert } from "antd";
+import { Row, Col } from "antd";
 import {
   Jumbotron,
   GetStarted,
@@ -33,12 +33,12 @@ const FAQ = () => {
   return (
     <div id="faq">
       <h2>Frequently asked questions</h2>
-      <Alert
-        message="Coming soon"
-        type="info"
-        showIcon
-        style={{ fontSize: "20px" }}
-      />
+      <Row className="item-wrapper">
+        <Col span={12} className="title">
+          Coming soon
+        </Col>
+      </Row>
+
       {showItems
         ? items.map((it, i) => (
             <Row key={i} className="item-wrapper">
