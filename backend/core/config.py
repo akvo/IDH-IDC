@@ -15,7 +15,7 @@ from routes.cpi import cpi_route
 from routes.visualization import visualization_route
 from routes.reference_data import reference_data_routes
 
-from utils.generate_config import generate_config_file, JS_FILE
+from utils.generate_config import JS_FILE
 
 
 app = FastAPI(
@@ -33,8 +33,6 @@ app = FastAPI(
         "url": "https://www.gnu.org/licenses/agpl-3.0.en.html",
     },
 )
-
-generate_config_file()
 
 
 # Routes register

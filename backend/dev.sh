@@ -6,4 +6,6 @@ pip check
 
 alembic upgrade head
 
+./generate_config.sh
+
 uvicorn main:app --reload --port 5000
