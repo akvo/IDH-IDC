@@ -1,5 +1,4 @@
 import uvicorn
-# import models
 
 from db.connection import engine, Base
 from core.config import app, generate_config_file

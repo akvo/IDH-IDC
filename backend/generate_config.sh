@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+set -eu
 
-python -m utils.generate_config
+# Run the Python command to import and execute the function
+python -c "from core.config import generate_config_file; generate_config_file(); exit()"
