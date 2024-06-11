@@ -1,9 +1,10 @@
-from db.connection import Base
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
 from typing import Optional
 from typing_extensions import TypedDict
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+
 from pydantic import BaseModel
+from db.connection import Base
 
 
 class BusinessUnitDict(TypedDict):
@@ -18,7 +19,7 @@ class BusinessUnit(Base):
     name = Column(String, nullable=False, unique=True)
 
     business_unit_users = relationship(
-        'UserBusinessUnit',
+        "UserBusinessUnit",
         cascade="all, delete",
         passive_deletes=True,
         back_populates="business_unit_detail"
