@@ -117,6 +117,7 @@ def update_user(
         for ut in prev_user_tags:
             session.delete(ut)
             session.commit()
+            session.flush()
         # add new user tags
         for tag in payload.tags:
             user_tag = UserTag(user=user.id, tag=tag)
@@ -131,6 +132,7 @@ def update_user(
         for uc in prev_user_cases:
             session.delete(uc)
             session.commit()
+            session.flush()
         # add new user case access
         for proj in payload.cases:
             case_access = UserCaseAccess(
@@ -153,6 +155,7 @@ def update_user(
         for bu in prev_user_bus:
             session.delete(bu)
             session.commit()
+            session.flush()
         # add new user business units
         for bu in payload.business_units:
             business_unit = UserBusinessUnit(

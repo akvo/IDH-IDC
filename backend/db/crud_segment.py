@@ -71,6 +71,7 @@ def update_segment(
             for sa in prev_segment_answers:
                 session.delete(sa)
             session.commit()
+            session.flush()
         # handle segment answers
         for val in payload.answers:
             segment_answer = SegmentAnswer(

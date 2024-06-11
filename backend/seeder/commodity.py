@@ -47,6 +47,7 @@ def seeder_commodity(session: Session):
     if category_objects:
         session.bulk_save_objects(category_objects, update_changed_only=True)
         session.commit()
+        session.flush()
     print("[DATABASE UPDATED]: Commodity Category")
 
     commodities = commodities[["id", "group_id", "name"]]
@@ -73,6 +74,7 @@ def seeder_commodity(session: Session):
     if commodity_objects:
         session.bulk_save_objects(commodity_objects, update_changed_only=True)
         session.commit()
+        session.flush()
     print("[DATABASE UPDATED]: Commodity")
     session.close()
 
