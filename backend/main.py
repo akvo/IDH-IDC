@@ -1,9 +1,8 @@
 import uvicorn
-import models
+# import models
 
 from db.connection import engine, Base
-from core.config import app
-from utils.generate_config import generate_config_file
+from core.config import app, generate_config_file
 
 Base.metadata.create_all(bind=engine)
 
