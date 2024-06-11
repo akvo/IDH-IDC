@@ -171,6 +171,7 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
         for ct in prev_tags:
             session.delete(ct)
             session.commit()
+            session.flush()
         # store new tags
         for tag_id in payload.tags:
             tag = CaseTag(tag=tag_id, case=case.id)
@@ -290,9 +291,11 @@ def delete_case(session: Session, case_id: int):
     for sa in segment_answer:
         session.delete(sa)
         session.commit()
+        session.flush()
     for s in segment:
         session.delete(s)
         session.commit()
+        session.flush()
 
     # visualization
     visualization = (
@@ -303,6 +306,7 @@ def delete_case(session: Session, case_id: int):
     for vis in visualization:
         session.delete(vis)
         session.commit()
+        session.flush()
 
     # case_commodity
     case_commodity = (
@@ -313,12 +317,14 @@ def delete_case(session: Session, case_id: int):
     for cc in case_commodity:
         session.delete(cc)
         session.commit()
+        session.flush()
 
     # case tag
     case_tag = session.query(CaseTag).filter(CaseTag.case == case_id).all()
     for ct in case_tag:
         session.delete(ct)
         session.commit()
+        session.flush()
 
     # user case
     user_case_access = (
@@ -329,6 +335,7 @@ def delete_case(session: Session, case_id: int):
     for uca in user_case_access:
         session.delete(uca)
         session.commit()
+        session.flush()
 
     session.delete(case)
     session.commit()
