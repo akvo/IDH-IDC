@@ -11,6 +11,7 @@ import {
   Typography,
   Image,
   message,
+  Divider,
 } from "antd";
 import { useCookies } from "react-cookie";
 import { api } from "../../lib";
@@ -115,6 +116,20 @@ const Login = () => {
               )}
             </div>
             <h2>{!isResetPassword ? "Sign In" : "Reset Password"}</h2>
+            {!isResetPassword ? (
+              <div style={{ padding: "0 10px" }}>
+                <p>
+                  For registration, please reach out to your IDH point of
+                  contact or email us at{" "}
+                  <a href="mailto:someone@example.com">
+                    livingincome@idhtrade.org
+                  </a>
+                </p>
+                <Divider style={{ borderColor: "#fff", opacity: 0.2 }} />
+              </div>
+            ) : (
+              ""
+            )}
             <Form
               name="form-login"
               className="form-login"
@@ -172,14 +187,14 @@ const Login = () => {
                 </Button>
               </Form.Item>
               <Form.Item noStyle>
-                <Row align="middle">
-                  <Col span={16} align="start" style={{ float: "left" }}>
+                <Row align="top">
+                  {/* <Col span={12} align="start" style={{ float: "left" }}>
                     <p>
                       Don&apos;t have an account?{" "}
                       <Link to="/register">Register here.</Link>
                     </p>
-                  </Col>
-                  <Col span={8} align="end" style={{ float: "right" }}>
+                  </Col> */}
+                  <Col span={24} align="end" style={{ float: "right" }}>
                     <Link onClick={() => setIsResetPassword(!isResetPassword)}>
                       <p>
                         {!isResetPassword ? "Forgot password" : "Back to Login"}
