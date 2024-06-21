@@ -105,6 +105,23 @@ const IncomeDriverTarget = ({
     }
   }, [segmentItem, currentSegmentId, form, regionOptions]);
 
+  const resetBenchmark = ({ regionData }) => {
+    form.setFieldsValue({
+      household_adult: null,
+      household_children: null,
+    });
+    setHouseholdSize(0);
+    setIncomeTarget(0);
+    updateFormValues({
+      ...regionData,
+      target: 0,
+      benchmark: {},
+      adult: null,
+      child: null,
+    });
+    setBenchmark("NA");
+  };
+
   const fetchBenchmark = useCallback(
     ({ region }) => {
       const regionData = { region: region };
@@ -115,6 +132,17 @@ const IncomeDriverTarget = ({
         .then((res) => {
           // data represent LI Benchmark value
           const { data } = res;
+          // if data value by currency not found or 0
+          // return a NA notif
+          if (!data.value?.[currentCase.currency.toLowerCase()] === 0) {
+            resetBenchmark({ regionData });
+            messageApi.open({
+              type: "error",
+              content: `Benchmark not available in ${currentCase.currency} for the year ${currentCase.year}.`,
+            });
+            return;
+          }
+          //
           const household_adult = data.nr_adults;
           const household_children = data.household_size - data.nr_adults;
           setBenchmark(data);
@@ -164,26 +192,10 @@ const IncomeDriverTarget = ({
         })
         .catch((e) => {
           // reset field and benchmark value
-          form.setFieldsValue({
-            household_adult: null,
-            household_children: null,
-          });
-          setHouseholdSize(0);
-          setIncomeTarget(0);
-          updateFormValues({
-            ...regionData,
-            target: 0,
-            benchmark: {},
-            adult: null,
-            child: null,
-          });
-          setBenchmark("NA");
+          resetBenchmark({ regionData });
           // show notification
-          const { status, statusText, data } = e.response;
+          const { statusText, data } = e.response;
           let content = data?.detail || statusText;
-          if (status === 404) {
-            content = "Benchmark value not found.";
-          }
           messageApi.open({
             type: "error",
             content: content,
