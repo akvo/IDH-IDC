@@ -6,6 +6,7 @@ from models.living_income_benchmark import (
     LivingIncomeBenchmarkDict,
 )
 from models.cpi import Cpi
+from fastapi import HTTPException, status
 
 
 def get_all_lib(session: Session) -> List[LivingIncomeBenchmarkDict]:
@@ -69,10 +70,14 @@ def get_by_country_region_year(
             lib["last_year_cpi"] = last_year_cpi_value
             lib["cpi_factor"] = cpi_factor
             return lib
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Benchmark not available for the year {year}."
+            )
     else:
         lib = lib.serialize
         lib["case_year_cpi"] = None
         lib["last_year_cpi"] = None
         lib["cpi_factor"] = None
         return lib
-    return None

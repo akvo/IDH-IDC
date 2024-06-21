@@ -94,6 +94,10 @@ class TestBenchmarkRoute:
             },
         )
         assert res.status_code == 404
+        res = res.json()
+        assert res == {
+            "detail": "Benchmark value not found."
+        }
 
     @pytest.mark.asyncio
     async def test_get_benchmark_by_country_region_year_4(
@@ -107,7 +111,11 @@ class TestBenchmarkRoute:
             params={
                 "country_id": 1,
                 "region_id": 1,
-                "year": 2012,
+                "year": 2023,
             },
         )
         assert res.status_code == 404
+        res = res.json()
+        assert res == {
+            "detail": "Benchmark not available for the year 2023."
+        }
