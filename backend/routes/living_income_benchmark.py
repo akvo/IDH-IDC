@@ -30,6 +30,7 @@ def get_by_country_region_year(
     )
     if not res:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Benchmark not found"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Benchmark value not found."
         )
     return res
