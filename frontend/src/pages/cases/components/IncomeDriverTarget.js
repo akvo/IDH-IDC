@@ -105,22 +105,25 @@ const IncomeDriverTarget = ({
     }
   }, [segmentItem, currentSegmentId, form, regionOptions]);
 
-  const resetBenchmark = ({ regionData }) => {
-    form.setFieldsValue({
-      household_adult: null,
-      household_children: null,
-    });
-    setHouseholdSize(0);
-    setIncomeTarget(0);
-    updateFormValues({
-      ...regionData,
-      target: 0,
-      benchmark: {},
-      adult: null,
-      child: null,
-    });
-    setBenchmark("NA");
-  };
+  const resetBenchmark = useCallback(
+    ({ regionData }) => {
+      form.setFieldsValue({
+        household_adult: null,
+        household_children: null,
+      });
+      setHouseholdSize(0);
+      setIncomeTarget(0);
+      updateFormValues({
+        ...regionData,
+        target: 0,
+        benchmark: {},
+        adult: null,
+        child: null,
+      });
+      setBenchmark("NA");
+    },
+    [form, setBenchmark, updateFormValues]
+  );
 
   const fetchBenchmark = useCallback(
     ({ region }) => {
@@ -195,14 +198,21 @@ const IncomeDriverTarget = ({
           resetBenchmark({ regionData });
           // show notification
           const { statusText, data } = e.response;
-          let content = data?.detail || statusText;
+          const content = data?.detail || statusText;
           messageApi.open({
             type: "error",
             content: content,
           });
         });
     },
-    [currentCase, form, messageApi, updateFormValues, setBenchmark]
+    [
+      currentCase,
+      form,
+      messageApi,
+      updateFormValues,
+      setBenchmark,
+      resetBenchmark,
+    ]
   );
 
   useEffect(() => {
