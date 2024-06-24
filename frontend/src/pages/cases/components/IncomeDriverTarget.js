@@ -40,6 +40,8 @@ const IncomeDriverTarget = ({
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  const [notificationShown, setNotificationShown] = useState(false);
+
   const calculateHouseholdSize = ({
     household_adult = 0,
     household_children = 0,
@@ -106,15 +108,17 @@ const IncomeDriverTarget = ({
   }, [segmentItem, currentSegmentId, form, regionOptions]);
 
   const resetBenchmark = useCallback(
-    ({ regionData }) => {
+    ({ region }) => {
       form.setFieldsValue({
+        region: region,
+        target: null,
         household_adult: null,
         household_children: null,
       });
       setHouseholdSize(0);
       setIncomeTarget(0);
       updateFormValues({
-        ...regionData,
+        region: region,
         target: 0,
         benchmark: {},
         adult: null,
@@ -123,6 +127,16 @@ const IncomeDriverTarget = ({
       setBenchmark("NA");
     },
     [form, setBenchmark, updateFormValues]
+  );
+
+  const showBenchmarNotification = useCallback(
+    ({ currentCase }) => {
+      return messageApi.open({
+        type: "error",
+        content: `Benchmark not available in ${currentCase.currency} for the year ${currentCase.year}.`,
+      });
+    },
+    [messageApi]
   );
 
   const fetchBenchmark = useCallback(
@@ -137,12 +151,9 @@ const IncomeDriverTarget = ({
           const { data } = res;
           // if data value by currency not found or 0
           // return a NA notif
-          if (!data.value?.[currentCase.currency.toLowerCase()] === 0) {
-            resetBenchmark({ regionData });
-            messageApi.open({
-              type: "error",
-              content: `Benchmark not available in ${currentCase.currency} for the year ${currentCase.year}.`,
-            });
+          if (data?.value?.[currentCase.currency.toLowerCase()] === 0) {
+            resetBenchmark({ region: region });
+            showBenchmarNotification({ currentCase });
             return;
           }
           //
@@ -161,6 +172,7 @@ const IncomeDriverTarget = ({
           });
           //
           const targetHH = data.household_equiv;
+          // Use LCU if currency if not USE/EUR
           const targetValue =
             data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
           // with CPI calculation
@@ -195,7 +207,7 @@ const IncomeDriverTarget = ({
         })
         .catch((e) => {
           // reset field and benchmark value
-          resetBenchmark({ regionData });
+          resetBenchmark({ region: region });
           // show notification
           const { statusText, data } = e.response;
           const content = data?.detail || statusText;
@@ -212,12 +224,28 @@ const IncomeDriverTarget = ({
       updateFormValues,
       setBenchmark,
       resetBenchmark,
+      showBenchmarNotification,
     ]
   );
 
   useEffect(() => {
     // handle income target value when householdSize updated
     if (benchmark && !isEmpty(benchmark) && benchmark !== "NA") {
+      // show benchmark notification
+      if (
+        benchmark?.value?.[currentCase.currency.toLowerCase()] === 0 &&
+        !notificationShown
+      ) {
+        showBenchmarNotification({ currentCase });
+        setNotificationShown(true);
+        setTimeout(() => {
+          resetBenchmark({ region: null });
+          setNotificationShown(false); // Reset the flag after the benchmark is reset
+        }, 600);
+        return;
+      }
+
+      // Use LCU if currency if not USE/EUR
       const targetValue =
         benchmark.value?.[currentCase.currency.toLowerCase()] ||
         benchmark.value.lcu;
@@ -249,7 +277,16 @@ const IncomeDriverTarget = ({
     ) {
       fetchBenchmark({ region: segmentItem?.benchmark?.region });
     }
-  }, [benchmark, householdSize, currentCase, fetchBenchmark, segmentItem]);
+  }, [
+    benchmark,
+    householdSize,
+    currentCase,
+    fetchBenchmark,
+    segmentItem,
+    resetBenchmark,
+    notificationShown,
+    showBenchmarNotification,
+  ]);
 
   // call region api
   useEffect(() => {
