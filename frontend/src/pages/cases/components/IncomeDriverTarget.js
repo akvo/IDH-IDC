@@ -280,28 +280,54 @@ const IncomeDriverTarget = ({
   };
 
   const onValuesChange = (changedValues, allValues) => {
-    const { target, region } = allValues;
+    const { target, region, manual_target } = allValues;
     const HHSize = calculateHouseholdSize(allValues);
     setHouseholdSize(HHSize);
     // eslint-disable-next-line no-undefined
     if (changedValues.manual_target !== undefined) {
       // manual target
+      // comment for now
+      // setDisableTarget(!changedValues.manual_target);
+      // if (changedValues.manual_target && target) {
+      //   form.setFieldsValue({ region: null });
+      //   setIncomeTarget(target);
+      //   updateFormValues({ region: null, target: target });
+      // }
+      // if (!changedValues.manual_target) {
+      //   form.setFieldsValue({ target: null });
+      //   setIncomeTarget(segmentItem?.target || 0);
+      //   updateFormValues({ region: null, target: 0 });
+      // }
+
+      // new version
       setDisableTarget(!changedValues.manual_target);
-      if (changedValues.manual_target && target) {
-        form.setFieldsValue({ region: null });
-        setIncomeTarget(target);
-        updateFormValues({ region: null, target: target });
-      }
-      if (!changedValues.manual_target) {
-        form.setFieldsValue({ target: null });
-        setIncomeTarget(segmentItem?.target || 0);
-        updateFormValues({ region: null, target: 0 });
-      }
+      form.setFieldsValue({
+        region: null,
+        target: null,
+        household_adult: null,
+        household_children: null,
+      });
+      setIncomeTarget(0);
+      updateFormValues({
+        region: null,
+        target: 0,
+        adult: null,
+        child: null,
+        benchmark: {},
+      });
+      setBenchmark("NA");
     }
     // manual target
-    if ((changedValues.target || !changedValues.target) && !disableTarget) {
+    // eslint-disable-next-line no-undefined
+    if (manual_target && changedValues.target !== undefined && !disableTarget) {
       setIncomeTarget(target);
-      updateFormValues({ region: null, target: target });
+      updateFormValues({
+        region: null,
+        target: target,
+        adult: null,
+        child: null,
+        benchmark: {},
+      });
     }
     if (changedValues.region && disableTarget) {
       // get from API
