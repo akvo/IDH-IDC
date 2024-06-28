@@ -15,7 +15,7 @@ sys.path.append(BASE_DIR)
 
 def seeder_benchmark(session: Session):
     # living income benchmark
-    # truncatedb(session=session, table="living_income_benchmark")
+    truncatedb(session=session, table="living_income_benchmark")
     li_benchmark = pd.read_csv(MASTER_DIR + "li_benchmark.csv")
     # Filter rows where the list does not contain any string values
     filtered_lib = li_benchmark[
