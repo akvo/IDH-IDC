@@ -86,19 +86,21 @@ const IncomeDriverTarget = ({
       const checkRegion = regionOptions.find(
         (x) => x.value === segmentItem?.region
       );
+      const hhAdult = segmentItem?.adult ? Math.round(segmentItem.adult) : 0;
+      const hhChild = segmentItem?.child ? Math.round(segmentItem.child) : 0;
       if (checkRegion) {
         form.setFieldsValue({
           region: segmentItem?.region || null,
         });
         form.setFieldsValue({
-          household_adult: segmentItem?.adult || null,
+          household_adult: hhAdult || null,
         });
         form.setFieldsValue({
-          household_children: segmentItem?.child || null,
+          household_children: hhChild || null,
         });
         const HHSize = calculateHouseholdSize({
-          household_adult: segmentItem?.adult || 0,
-          household_children: segmentItem?.child || 0,
+          household_adult: hhAdult,
+          household_children: hhChild,
         });
         setHouseholdSize(HHSize);
       } else {
@@ -157,8 +159,10 @@ const IncomeDriverTarget = ({
             return;
           }
           //
-          const household_adult = data.nr_adults;
-          const household_children = data.household_size - data.nr_adults;
+          const household_adult = Math.round(data.nr_adults);
+          const household_children = Math.round(
+            data.household_size - data.nr_adults
+          );
           setBenchmark(data);
           const defHHSize = calculateHouseholdSize({
             household_adult,
@@ -229,22 +233,22 @@ const IncomeDriverTarget = ({
   );
 
   useEffect(() => {
+    // show benchmark notification
+    if (
+      benchmark?.value?.[currentCase?.currency?.toLowerCase()] === 0 &&
+      !notificationShown
+    ) {
+      showBenchmarNotification({ currentCase });
+      setNotificationShown(true);
+      setTimeout(() => {
+        resetBenchmark({ region: null });
+        setNotificationShown(false); // Reset the flag after the benchmark is reset
+      }, 600);
+      return;
+    }
+
     // handle income target value when householdSize updated
     if (benchmark && !isEmpty(benchmark) && benchmark !== "NA") {
-      // show benchmark notification
-      if (
-        benchmark?.value?.[currentCase.currency.toLowerCase()] === 0 &&
-        !notificationShown
-      ) {
-        showBenchmarNotification({ currentCase });
-        setNotificationShown(true);
-        setTimeout(() => {
-          resetBenchmark({ region: null });
-          setNotificationShown(false); // Reset the flag after the benchmark is reset
-        }, 600);
-        return;
-      }
-
       // Use LCU if currency if not USE/EUR
       const targetValue =
         benchmark.value?.[currentCase.currency.toLowerCase()] ||

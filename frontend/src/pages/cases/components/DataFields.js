@@ -203,12 +203,12 @@ const DataFields = ({
         },
         {
           label: "Adults",
-          value: nr_adults || "NA",
+          value: nr_adults || nr_adults === 0 ? Math.round(nr_adults) : "NA",
           icon: <UserOutlined />,
         },
         {
           label: "Childrens",
-          value: nr_childs || "NA",
+          value: nr_childs || nr_childs === 0 ? Math.round(nr_childs) : "NA",
           icon: <UsergroupAddOutlined />,
         },
         ...inflationRate,
