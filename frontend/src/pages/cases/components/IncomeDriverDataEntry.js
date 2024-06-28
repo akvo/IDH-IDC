@@ -7,7 +7,7 @@ import {
   removeUndefinedObjectValue,
 } from "./";
 import { api } from "../../../lib";
-import { orderBy, isEqual, isEmpty } from "lodash";
+import { orderBy, isEqual } from "lodash";
 
 const MAX_SEGMENT = 5;
 
@@ -46,7 +46,7 @@ const IncomeDriverDataEntry = ({
   const [currentValues, setCurrentValues] = useState([]);
 
   const isAllSegmentHasBenchmark = useMemo(() => {
-    const check = formValues.filter((f) => !f.target && !isEmpty(f.answers));
+    const check = formValues.filter((f) => !f.target);
     return check;
   }, [formValues]);
 
