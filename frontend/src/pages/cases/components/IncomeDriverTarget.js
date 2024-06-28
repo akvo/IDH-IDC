@@ -235,15 +235,17 @@ const IncomeDriverTarget = ({
   useEffect(() => {
     // show benchmark notification
     if (
-      benchmark?.value?.[currentCase?.currency?.toLowerCase()] === 0 &&
+      (isEmpty(benchmark) ||
+        benchmark?.value?.[currentCase?.currency?.toLowerCase()] === 0) &&
+      benchmark !== "NA" &&
       !notificationShown
     ) {
-      showBenchmarNotification({ currentCase });
       setNotificationShown(true);
+      showBenchmarNotification({ currentCase });
       setTimeout(() => {
         resetBenchmark({ region: null });
-        setNotificationShown(false); // Reset the flag after the benchmark is reset
-      }, 600);
+        setNotificationShown(false);
+      }, 200);
       return;
     }
 
