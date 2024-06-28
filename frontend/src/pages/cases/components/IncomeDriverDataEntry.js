@@ -46,7 +46,7 @@ const IncomeDriverDataEntry = ({
   const [currentValues, setCurrentValues] = useState([]);
 
   const isAllSegmentHasBenchmark = useMemo(() => {
-    const check = formValues.filter((f) => f.target === null);
+    const check = formValues.filter((f) => !f.target);
     return check;
   }, [formValues]);
 
