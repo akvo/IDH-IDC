@@ -142,7 +142,7 @@ const IncomeDriverTarget = ({
   );
 
   const fetchBenchmark = useCallback(
-    ({ region }) => {
+    ({ region, onLoadInitialValue = false }) => {
       const regionData = { region: region };
       let url = `country_region_benchmark?country_id=${currentCase.country}`;
       url = `${url}&region_id=${region}&year=${currentCase.year}`;
@@ -154,8 +154,11 @@ const IncomeDriverTarget = ({
           // if data value by currency not found or 0
           // return a NA notif
           if (data?.value?.[currentCase.currency.toLowerCase()] === 0) {
-            resetBenchmark({ region: region });
+            const timeout = onLoadInitialValue ? 500 : 0;
             showBenchmarNotification({ currentCase });
+            setTimeout(() => {
+              resetBenchmark({ region: onLoadInitialValue ? null : region });
+            }, timeout);
             return;
           }
           //
@@ -233,24 +236,21 @@ const IncomeDriverTarget = ({
   );
 
   useEffect(() => {
-    // show benchmark notification
-    if (
-      (isEmpty(benchmark) ||
-        benchmark?.value?.[currentCase?.currency?.toLowerCase()] === 0) &&
-      benchmark !== "NA" &&
-      !notificationShown
-    ) {
-      setNotificationShown(true);
-      showBenchmarNotification({ currentCase });
-      setTimeout(() => {
-        resetBenchmark({ region: null });
-        setNotificationShown(false);
-      }, 200);
-      return;
-    }
-
     // handle income target value when householdSize updated
     if (benchmark && !isEmpty(benchmark) && benchmark !== "NA") {
+      // show benchmark notification
+      if (
+        benchmark?.value?.[currentCase?.currency?.toLowerCase()] === 0 &&
+        !notificationShown
+      ) {
+        setNotificationShown(true);
+        showBenchmarNotification({ currentCase });
+        setTimeout(() => {
+          resetBenchmark({ region: null });
+          setNotificationShown(false);
+        }, 500);
+        return;
+      }
       // Use LCU if currency if not USE/EUR
       const targetValue =
         benchmark.value?.[currentCase.currency.toLowerCase()] ||
@@ -281,7 +281,10 @@ const IncomeDriverTarget = ({
       segmentItem?.benchmark?.region &&
       benchmark !== "NA"
     ) {
-      fetchBenchmark({ region: segmentItem?.benchmark?.region });
+      fetchBenchmark({
+        region: segmentItem?.benchmark?.region,
+        onLoadInitialValue: true,
+      });
     }
   }, [
     benchmark,
