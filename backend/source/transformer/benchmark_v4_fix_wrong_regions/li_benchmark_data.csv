@@ -1,0 +1,294 @@
+"country","region","source","household_size","nr_adults","year","LCU","USD","EUR","household_equiv","links"
+"Angola","Rural /  coffee-producing households in
+Cuanza Sul province","New Foresight",7.5,2,2023,4474488,NA,NA,3.15,"https://www.globallivingwage.org/living-wage-reference-value-non-metropolitan-urban-argentina/"
+"Argentina","Non-Metropolitan Urban /  All","Calculated from Global Living Wage Coalition",4,2,2023,3847528.08,NA,NA,2.1,"https://globallivingwage.org/living-income-reference-value-rural-argentina/"
+"Argentina","Rural /  All","Global Living Wage Coalition",4,2,2023,3187332,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/urban-bangladesh-surrounding-dhaka/"
+"Bangladesh","Urban /  Satellite Cities","Calculated from Global Living Wage Coalition",4,2,2023,399708,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/urban-bangladesh-surrounding-dhaka/"
+"Bangladesh","Urban /  Dhaka City","Calculated from Global Living Wage Coalition",4,2,2023,482736,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-belize/"
+"Belize","Rural /  All","Calculated from Global Living Wage Coalition",4,2,2023,18936,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/urban-brazil/"
+"Brazil","Urban /  Minas Gerais South/Southwestern Region","Calculated from Global Living Wage Coalition",4,2,2023,46788,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-non-metropolitan-brazil/"
+"Brazil","Non-metropolitan /  State of São Paulo, non-metropolitan areas","Calculated from Global Living Wage Coalition",4,2,2023,56340,NA,NA,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Coffee or Cocoa growing regions /  Northwest Espírito Santo","Global Living Wage Coalition Living income estimate",4,2,2021,39396,7303.12810197005,6174.75200578181,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Cocoa growing regions /  South Bahia","Global Living Wage Coalition Living income estimate",4,2,2021,32028,5937.26740912521,5019.92479544065,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Cocoa growing regions /  East
+Rondônia","Global Living Wage Coalition Living income estimate",4,2,2021,35964,6666.9128606775,5636.83574819619,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Cocoa growing regions /  Southeast
+Pará","Global Living Wage Coalition Living income estimate",4,2,2021,39288,7283.10734262868,6157.82457110255,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Cocoa growing regions /  Southwest
+Pará","Global Living Wage Coalition Living income estimate",4,2,2021,39288,7283.10734262868,6157.82457110255,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Cocoa growing regions /  Belém and the
+metropolitan
+area","Global Living Wage Coalition Living income estimate",4,2,2021,41952,7776.9527397159,6575.36795985782,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Coffee growing regions /  Zona da Mata
+mineira","Global Living Wage Coalition Living income estimate",4,2,2021,39396,7303.12810197005,6174.75200578181,2.1,"https://globallivingwage.org/resource-library/?fwp_country=brazil"
+"Brazil","Coffee growing regions /  Triângulo Mineiro/Alto Paranaíba","Global Living Wage Coalition Living income estimate",4,2,2021,47040,8720.15295757618,7372.83821585888,2.1,"https://www.globallivingwage.org/living-income-reference-value%e2%81%a0-rural-burkina-faso/"
+"Burkina Faso","Rural /  All","Global Living Wage Coalition",5.5,2,2023,1253232,NA,NA,2.55,"https://www.globallivingwage.org/living-wage-reference-value-urban-cambodia/"
+"Cambodia","Urban /  All","Calculated from Global Living Wage Coalition",4,2,2023,20062857.6,NA,NA,2.1,"https://www.globallivingwage.org/wp-content/uploads/2022/10/Cameroon-Living-Income-Update-2022-FV-09262022.pdf"
+"Cameroon","Urban /  All","Calculated from Global Living Wage Coalition",5,2,2023,2936807.04,NA,NA,2.4,"https://www.globallivingwage.org/reference-value/living-wage-reference-value-rural-chad/"
+"Cameroon","Rural /  All","Global Living Wage Coalition",5.5,2,2023,2188188,NA,NA,2.55,"https://www.globallivingwage.org/living-wage-reference-value-non-metropolitan-urban-chile/"
+"Chad","Rural /  All","Calculated from  Global Living Wage Coalition",6,2,2023,1561533.12,NA,NA,2.7,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-zhengzhou-china/"
+"Chile","Non-Metropolitan Urban /  All","Calculated from  Global Living Wage Coalition",4,2,2023,13154328,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/urban-chengdu-china/"
+"China","Urban /  Zhengzhou","Calculated from  Global Living Wage Coalition",3.5,2,2023,59940,NA,NA,1.95,"https://www.globallivingwage.org/living-wage-benchmarks/urban-hangzhou-china/"
+"China","Urban /  Chengdu","Calculated from  Global Living Wage Coalition",3.5,2,2023,52476,NA,NA,1.95,"https://www.globallivingwage.org/living-wage-benchmarks/urban-shanghai-china/"
+"China","Urban /  Hangzhou","Calculated from  Global Living Wage Coalition",3.5,2,2023,83256,NA,NA,1.95,"https://www.globallivingwage.org/living-wage-benchmarks/urban-shenzhen-china/"
+"China","Urban /  Shanghai","Calculated from  Global Living Wage Coalition",3.5,2,2023,90120,NA,NA,1.95,"https://www.globallivingwage.org/living-wage-benchmarks/urban-suzhou-china/"
+"China","Urban /  Shenzhen","Calculated from  Global Living Wage Coalition",3.5,2,2023,61716,NA,NA,1.95,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-small-towns-colombia/"
+"China","Urban /  Suzhou","Calculated from Global Living Wage Coalition",3.5,2,2023,77172,NA,NA,1.95,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-caribbean-coast-of-colombia/"
+"Colombia","Rural /  Rural Areas and Small Towns","Calculated from Global Living Wage Coalition",4,2,2023,36414552,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/rural-costa-rica-limon-and-heredia-provinces/"
+"Colombia","Urban-Rural /  Caribbean coast","Calculated from  Global Living Wage Coalition",4,2,2023,37487148,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-reference-value-rural-cote-divoire/"
+"Costa Rica","Rural /  Limón and Heredia Provinces","Calculated from  Global Living Wage Coalition",4,2,2023,8183556,NA,NA,2.1,"https://www.living-income.com/_files/ugd/0c5ab3_9aef39b2ef654ab6a8f7bc4dd2bdb026.pdf"
+"Cote d'Ivoire","Rural /  All","Calculated from  Global Living Wage Coalition",5.5,2,2023,2559764.76,NA,NA,2.55,"https://www.globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-republic-of-congo/"
+"Cote d'Ivoire","Rural /  Cocoa growing areas","Living Income Community of Practice",6,2,2022,3587796,5751.8880985081,5462.129563844,2.7,"https://www.globallivingwage.org/living-income-reference-value-rural-democratic-republic-of-congo/"
+"Congo, Rep.","Rural /  Congo/Congo Brazzaville","Calculated from  Global Living Wage Coalition",5.5,2,2023,2281006.08,NA,NA,2.55,"https://www.globallivingwage.org/living-wage-benchmarks/rural-dominican-republic/"
+"Congo, Dem. Rep.","Rural /  All/ Congo Kinshasa","Living Income Reference Value",6,2,2023,5843748,NA,NA,2.7,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ecuador/"
+"Dominican Republic","Urban /  Santo Domingo","Calculated from Global Living Wage Coalition",4,2,2023,706524,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-reference-value-rural-egypt/"
+"Dominican Republic","Rural /  Northern Region","Calculated from Global Living Wage Coalition",4,2,2023,518496,NA,NA,2.1,"https://globallivingwage.org/reference-value/living-wage-reference-value-urban-el-salvador/"
+"Ecuador","Rural /  Southern Coastal Region","Calculated from  Global Living Wage Coalition",4,2,2023,8688,NA,NA,2.1,"https://globallivingwage.org/reference-value/living-wage-reference-value-rural-el-salvador/"
+"Egypt, Arab Rep.","Rural /  All","Calculated from  Global Living Wage Coalition",5,2,2023,109021.68,NA,NA,2.4,"https://globallivingwage.org/resource-library/?fwp_country=ethiopia"
+"El Salvador","Urban /  All","Calculated from  Global Living Wage Coalition",4,2,2023,9060.48,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/non-metropolitan-urban-ethiopia/"
+"El Salvador","Rural /  All","Calculated from  Global Living Wage Coalition",4.5,2,2023,6964.2,NA,NA,2.25,"https://www.globallivingwage.org/living-wage-reference-value%e2%81%a0-rural-and-urban-gabon/"
+"Ethiopia","Rural Guji zone /  Oromia Region","Global Living Wage Coalition",4.88,2,2021,102528,2344.3663900366,1982.14804218771,2.36,"https://www.globallivingwage.org/living-wage-reference-value%e2%81%a0-rural-and-urban-gabon/"
+"Ethiopia","Non-Metropolitan Urban /  Ziway Region","Calculated from  Global Living Wage Coalition",5,2,2023,204984,NA,NA,2.4,"https://www.globallivingwage.org/living-wage-benchmarks/ghana/"
+"Gabon","Urban /  All","Calculated from  Global Living Wage Coalition",5,2,2023,5380887.6,NA,NA,2.4,"https://www.living-income.com/_files/ugd/0c5ab3_ccd80a4924e44ae797ea4c0966c02fc9.pdf"
+"Gabon","Rural /  All","Calculated from  Global Living Wage Coalition",5,2,2023,4060940.4,NA,NA,2.4,"https://globallivingwage.org/reference-value/living-wage-reference-value-urban-guatemala/"
+"Ghana","Peri-Urban /  Lower Volta Region","Calculated from  Global Living Wage Coalition",4.5,2,2023,49416,NA,NA,2.25,"https://www.globallivingwage.org/living-wage-benchmarks/rural-guatemala/"
+"Ghana","Rural /  Cocoa growing areas of Ashanti, Central, Eastern, Western Regions","Living Income Community of Practice",5,2,2022,27888,3371.21028963783,3201.38136792718,2.4,"https://www.globallivingwage.org/living-wage-reference-value-urban-honduras/"
+"Guatemala","Urban /  Urban Guatemala","Calculated from  Global Living Wage Coalition",4,2,2023,88802.4,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-reference-value-rural-honduras/"
+"Guatemala","Rural /  Central Valley Area","Calculated from  Global Living Wage Coalition",5,2,2023,63984,NA,NA,2.4,"https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-andhra-pradesh-india/"
+"Honduras","Urban /  All","Calculated from  Global Living Wage Coalition",4,2,2023,197586.72,NA,NA,2.1,"https://globallivingwage.org/living-wage-benchmarks/rural-madhya-pradesh-india-chhindwara-district/"
+"Honduras","Rural /  All","Calculated from  Global Living Wage Coalition",4.5,2,2023,152064,NA,NA,2.25,"https://globallivingwage.org/living-wage-benchmarks/rural-madhya-pradesh-india-ratlam-district/"
+"Honduras","Rural coffee-growing regions /  Comayagua, Copán, and El Paraíso","New Foresight",4.6,2,2023,217620,NA,NA,2.28,"https://www.globallivingwage.org/living-wage-benchmarks/urban-india/"
+"India","Rural /  Andhra Pradesh","Calculated from  Global Living Wage Coalition",4,2,2023,318372,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/rural-india/"
+"India","Rural /  Madhya Pradesh/Chhindwara District","Calculated from  Global Living Wage Coalition",4.5,2,2023,249588,NA,NA,2.25,"https://www.globallivingwage.org/living-wage-benchmarks/rural-nilgiris-tamil-nadu-india/"
+"India","Rural /  Madhya Pradesh/Ratlam District","Calculated from  Global Living Wage Coalition",4.5,2,2023,265260,NA,NA,2.25,"https://globallivingwage.org/reference-value/living-wage-reference-value-urban-jordan/"
+"India","Urban /  Tiruppur, Tamil Nadu","Calculated from  Global Living Wage Coalition",4,2,2023,328260,NA,NA,2.1,"https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-kericho-kenya/"
+"India","Rural /  Bhadohi, Uttar Pradesh","Calculated from  Global Living Wage Coalition",5,2,2023,235200,NA,NA,2.4,"https://globallivingwage.org/living-wage-benchmarks/non-metropolitan-urban-kenya/"
+"India","Rural /  Rural Nilgiris, Tamil Nadu","Calculated from  Global Living Wage Coalition",4,2,2023,270576,NA,NA,2.1,"https://www.globallivingwage.org/living-income-reference-value-rural-madagascar/"
+"Jordan","Urban /  All","Calculated from  Global Living Wage Coalition",4.5,2,2023,5921.76,NA,NA,2.25,"https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/"
+"Kenya","Rural /  Kericho","Calculated from  Global Living Wage Coalition",5,2,2023,570492,NA,NA,2.4,"https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/"
+"Kenya","Non-metropolitan Urban /  Lake Naivasha","Calculated from  Global Living Wage Coalition",5,2,2023,627012,NA,NA,2.4,"https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/"
+"Madagascar","Rural /  All","Global Living Wage Coalition",5,2,2023,7823664,NA,NA,2.4,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/"
+"Malawi","Rural /  Southern Region","Calculated from  Global Living Wage Coalition",5,2,2023,2836308,NA,NA,2.4,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/"
+"Mexico","Yucatán /  Rural Areas and Small Towns in Yucatan","Calculated from  Global Living Wage Coalition",4,2,2023,216444,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/"
+"Mexico","Rural Areas and Small Towns /  Rural Areas and Small Towns of Nayarit","Calculated from  Global Living Wage Coalition",4,2,2023,226752,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-reference-value-rural-morocco/"
+"Mexico","Non-metropolitan Urban & Rural /  Michoacán, northwestern regions","Calculated from  Global Living Wage Coalition",4,2,2023,235704,NA,NA,2.1,"https://globallivingwage.org/living-income-reference-value-rural-mozambique/"
+"Mexico","Municipality of San Quintín /  Baja California","Calculated from Global Living Wage Coalition",4,2,2023,302832,NA,NA,2.1,"https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/"
+"Mexico","Municipality of Ensenada /  Baja California","Calculated from Global Living Wage Coalition",4,2,2023,323208,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/"
+"Morocco","Rural /  All","Calculated from  Global Living Wage Coalition",4.5,2,2023,45040.32,NA,NA,2.25,"https://globallivingwage.org/living-income-reference-value-rural-nigeria/"
+"Mozambique","Rural /  All","Global Living Wage Coalition",5.5,2,2023,138804,NA,NA,2.55,"https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/"
+"Nicaragua","Urban /  Managua Free Trade Zone","Calculated from  Global Living Wage Coalition",4,2,2023,275940,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/urban-pakistan/"
+"Nicaragua","Rural-Urban /  Northwest","Calculated from  Global Living Wage Coalition",4,2,2023,219864,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/"
+"Nigeria","Rural /  All","Global Living Wage Coalition",5,2,2023,2795376,NA,NA,2.4,"https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/"
+"Pakistan","Rural /  Sialkot","Calculated from  Global Living Wage Coalition",5.5,2,2023,789324,NA,NA,2.55,"https://globallivingwage.org/living-income-reference-value-rural-papua-new-guinea/"
+"Pakistan","Urban /  Sialkot","Calculated from  Global Living Wage Coalition",5,2,2023,806040,NA,NA,2.4,"https://globallivingwage.org/resource-library/?fwp_country=peru"
+"Pakistan","Rural /  Khyber Pakhtunkhwa (KP)","Calculated from Global Living Wage Coalition",6,2,2023,1035060,NA,NA,2.7,"https://globallivingwage.org/resource-library/?fwp_country=peru"
+"Panama","Rural /  All","Calculated from  Global Living Wage Coalition",4,2,2023,10946.88,NA,NA,2.1,"https://globallivingwage.org/resource-library/?fwp_country=peru"
+"Papua New Guinea","Rural /  All","Global Living Wage Coalition",5,2,2023,21120,NA,NA,2.4,"https://globallivingwage.org/resource-library/?fwp_country=peru"
+"Peru","Rural Areas and Small Towns /  San Martín","Global Living Wage Coalition",4,2,2022,28452,7418.68433848525,7044.95886499898,2.1,"https://globallivingwage.org/resource-library/?fwp_country=peru"
+"Peru","Rural Areas and Small Towns /  Cajamarca","Global Living Wage Coalition",4,2,2022,25752,6714.67591328104,6376.41574200245,2.1,"https://www.globallivingwage.org/living-income-reference-value-rural-peru/"
+"Peru","Rural Areas and Small Towns /  Junín","Global Living Wage Coalition",4,2,2022,25212,6573.8742282402,6242.70711740315,2.1,"https://www.globallivingwage.org/living-income-reference-value-rural-rwanda/"
+"Peru","Rural Areas and Small Towns /  Cusco","Global Living Wage Coalition",4,2,2022,28308,7381.13722247436,7009.3032317725,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/"
+"Peru","Rural Areas and Small Towns /  Rural coffee and cocoa growing regions","Global Living Wage Coalition",4,2,2023,30360,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/"
+"Peru","Rural /  All","Global Living Wage Coalition",5,2,2023,29700,NA,NA,2.4,"https://www.globallivingwage.org/living-wage-reference-value-urban-sri-lanka/"
+"Philippines","Rural /  Ilocos Sur Province","Calculated from  Global Living Wage Coalition",4.5,2,2023,301980,NA,NA,2.25,"https://www.globallivingwage.org/living-income-reference-value-rural-tanzania/"
+"Rwanda","Rural /  All","Global Living Wage Coalition",5,2,2023,3332088,NA,NA,2.4,"https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/"
+"Rwanda","Rural /  coffee-producing households in
+the Western province","New Foresight",5.4,2,2023,2565276,NA,NA,2.52,"https://www.globallivingwage.org/living-wage-reference-value-urban-thailand/"
+"South Africa","Rural /  Western Cape Province","Calculated from  Global Living Wage Coalition",4.5,2,2023,104304,NA,NA,2.25,"https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/"
+"Sri Lanka","Rural /  Estate Sector","Calculated from  Global Living Wage Coalition",4.5,2,2023,915192,NA,NA,2.25,"https://www.globallivingwage.org/living-wage-reference-value-rural-tunisia/"
+"Sri Lanka","Urban /  All","Calculated from Global Living Wage Coalition",4,2,2023,2013465.6,NA,NA,2.1,"https://www.globallivingwage.org/living-income-reference-value-rural-turkey/"
+"Tanzania","Rural /  All","Global Living Wage Coalition",5.5,2,2023,6159132,NA,NA,2.55,"https://www.globallivingwage.org/living-wage-reference-value-urban-turkey/"
+"Tanzania","Urban /  All","Calculated from  Global Living Wage Coalition",5,2,2023,8210459.4,NA,NA,2.4,"https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/"
+"Thailand","Urban /  All","Calculated from  Global Living Wage Coalition",4,2,2023,292096.8,NA,NA,2.1,"https://www.globallivingwage.org/living-wage-benchmarks/rural-vietnam/"
+"Togo","Rural /  All","Global Living Wage Coalition",5.5,2,2023,1790472,NA,NA,2.55,"https://www.globallivingwage.org/living-wage-benchmarks/urban-vietnam/"
+"Togo","Urban /  All","Calculated from Global Living Wage Coalition",5,2,2023,2385090.24,NA,NA,2.4,"https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/"
+"Togo","Rural /  coffee-producing households in
+the Wawa prefecture","New Foresight",5.7,2,2023,2971452,NA,NA,2.61,"https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/"
+"Tunisia","Rural /  All","Calculated from  Global Living Wage Coalition",4.5,2,2023,14506.56,NA,NA,2.25,NA
+"Turkey","Rural /  All","Global Living Wage Coalition",4,2,2023,123636,NA,NA,2.1,NA
+"Turkey","Urban /  All","Calculated from  Global Living Wage Coalition",4,2,2023,169095.84,NA,NA,2.1,NA
+"Uganda","Rural /  Lake Victoria Basin","Calculated from  Global Living Wage Coalition",5,2,2023,13878528,NA,NA,2.4,NA
+"Vietnam","Urban /  Minimum Wage Region 1","Calculated from Global Living Wage Coalition",4,2,2023,160856628,NA,NA,2.1,NA
+"Vietnam","Urban /  Minimum Wage Region 2","Calculated from Global Living Wage Coalition",4,2,2023,147362616,NA,NA,2.1,NA
+"Vietnam","Urban /  Minimum Wage Region 3","Calculated from Global Living Wage Coalition",4,2,2023,143111172,NA,NA,2.1,NA
+"Vietnam","Rural /  Minimum Wage Region 4","Calculated from Global Living Wage Coalition",4,2,2023,121875948,NA,NA,2.1,NA
+"Zambia","Rural /  All","Calculated from  Global Living Wage Coalition",6,2,2023,54109.44,NA,NA,2.7,NA
+"Zimbabwe","Rural /  All","Calculated from  Global Living Wage Coalition",5,2,2023,4368,NA,NA,2.4,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
