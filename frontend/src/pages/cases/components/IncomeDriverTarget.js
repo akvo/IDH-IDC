@@ -121,7 +121,7 @@ const IncomeDriverTarget = ({
       setIncomeTarget(0);
       updateFormValues({
         region: region,
-        target: 0,
+        target: null,
         benchmark: {},
         adult: null,
         child: null,
