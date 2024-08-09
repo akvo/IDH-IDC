@@ -138,7 +138,7 @@ const CaseForm = ({
               <Space align="center">
                 <div>Year</div>
                 <Tooltip
-                  title="Year for which you are entering data. This also the year for which we are retrieving a living income benchmark (if available)."
+                  title="Please enter the year for which you are providing data. This year will also be used to retrieve a living income benchmark, if it is available for the specified region. If a benchmark for this year is not available, we will use the most recent available benchmark value."
                   placement="topRight"
                 >
                   <InfoCircleTwoTone twoToneColor="#1677ff" />
