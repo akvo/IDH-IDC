@@ -43,4 +43,4 @@ backend_build() {
 backend_build
 frontend_build
 
-docker-compose -f docker-compose.test.yml run -T backend ./check.sh
+docker compose -f docker-compose.test.yml run -T backend ./check.sh
