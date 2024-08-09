@@ -135,7 +135,7 @@ const IncomeDriverTarget = ({
     ({ currentCase }) => {
       return messageApi.open({
         type: "error",
-        content: `Benchmark not available in ${currentCase.currency} for the year ${currentCase.year}.`,
+        content: `No benchmark available in the specified currency (${currentCase.currency}). Consider switching to the local currency.`,
       });
     },
     [messageApi]

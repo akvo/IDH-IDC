@@ -73,7 +73,7 @@ def get_by_country_region_year(
         else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Benchmark not available for the year {year}."
+                detail=f"Benchmark not available for the year {year}.",
             )
     else:
         lib = lib.serialize
