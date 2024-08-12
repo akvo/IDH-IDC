@@ -1732,6 +1732,18 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@piwikpro/react-piwik-pro@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@piwikpro/react-piwik-pro/-/react-piwik-pro-2.1.1.tgz#3ff6edd3c3cdb7d36c9544bf69c863e33a1304b4"
+  integrity sha512-orb861m9jqlfogK0Jxz61mHyKYlQ8nolyB+fZ/XwAMtxHRaBTjPM/pF+NxjT9zYaa4O+qW8Zm4Ypyy/zpyJ0Lg==
+  dependencies:
+    "@piwikpro/tracking-base-library" "^1.2.0"
+
+"@piwikpro/tracking-base-library@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@piwikpro/tracking-base-library/-/tracking-base-library-1.2.0.tgz#66c93c04dc2b29e986f05221c1422b26a8e4fb30"
+  integrity sha512-D3F29v0D77vPHGeVognfLYWrP/K6SfnukWERelxsiduFuRWPbKagMLqMxsxnw81QURhSy/CngAmjPBAM1jXAjg==
+
 "@pmmmwh/react-refresh-webpack-plugin@^0.5.3":
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.5.11.tgz#7c2268cedaa0644d677e8c4f377bc8fb304f714a"
