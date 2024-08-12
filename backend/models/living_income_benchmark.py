@@ -27,6 +27,7 @@ class LivingIncomeBenchmarkDict(TypedDict):
     case_year_cpi: Optional[float]
     last_year_cpi: Optional[float]
     cpi_factor: Optional[float]
+    message: Optional[str] = None
 
 
 class LivingIncomeBenchmark(Base):
@@ -95,6 +96,8 @@ class LivingIncomeBenchmark(Base):
             },
             "case_year_cpi": None,
             "last_year_cpi": None,
+            "cpi_factor": None,
+            "message": None,
         }
 
 

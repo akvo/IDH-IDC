@@ -72,7 +72,11 @@ class TestAddMasterDataWithoutDedenpentToUser:
         payload = [
             {
                 "name": "Grains",
-                "children": [{"name": "Wheat"}, {"name": "Rice"}, {"name": "Corn"}],
+                "children": [
+                    {"name": "Wheat"},
+                    {"name": "Rice"},
+                    {"name": "Corn"},
+                ],
             },
             {
                 "name": "Nuts",
@@ -122,8 +126,14 @@ class TestAddMasterDataWithoutDedenpentToUser:
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
         payload = [
-            {"name": "Indonesia", "children": [{"name": "Bali"}, {"name": "Lombok"}]},
-            {"name": "India", "children": [{"name": "Delhi"}, {"name": "Mumbai"}]},
+            {
+                "name": "Indonesia",
+                "children": [{"name": "Bali"}, {"name": "Lombok"}],
+            },
+            {
+                "name": "India",
+                "children": [{"name": "Delhi"}, {"name": "Mumbai"}],
+            },
         ]
         for val in payload:
             country = Country(name=val["name"])
@@ -134,7 +144,9 @@ class TestAddMasterDataWithoutDedenpentToUser:
             session.commit()
             session.flush()
             session.refresh(country)
-        countries = session.query(Country).filter(Country.parent.is_(None)).all()
+        countries = (
+            session.query(Country).filter(Country.parent.is_(None)).all()
+        )
         countries = [c.serialize for c in countries]
         assert countries == [
             {
@@ -273,6 +285,8 @@ class TestAddMasterDataWithoutDedenpentToUser:
                 "value": {"lcu": 1200.5, "usd": 2200.5, "eur": 3200.5},
                 "case_year_cpi": None,
                 "last_year_cpi": None,
+                "cpi_factor": None,
+                "message": None,
             },
             {
                 "id": 2,
@@ -287,6 +301,8 @@ class TestAddMasterDataWithoutDedenpentToUser:
                 "value": {"lcu": 1000.0, "usd": 2000.0, "eur": 3000.0},
                 "case_year_cpi": None,
                 "last_year_cpi": None,
+                "cpi_factor": None,
+                "message": None,
             },
         ]
         # cpi
