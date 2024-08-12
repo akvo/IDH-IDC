@@ -448,6 +448,7 @@ const IncomeDriverTarget = ({
               borderBottom: "1px solid #e8e8e8",
               marginBottom: "12px",
               color: "red",
+              paddingBottom: "10px",
             }}
           >
             <Col span={24}>
@@ -456,6 +457,20 @@ const IncomeDriverTarget = ({
             </Col>
           </Row>
         )}
+        {/* Benchmark message if no CPI */}
+        {benchmark?.message && (
+          <Row
+            style={{
+              borderBottom: "1px solid #e8e8e8",
+              marginBottom: "12px",
+              color: "red",
+              paddingBottom: "10px",
+            }}
+          >
+            <Col span={24}>{benchmark.message}</Col>
+          </Row>
+        )}
+        {/* EOL Benchmark message if no CPI */}
         <Row gutter={[8, 8]} style={{ display: !disableTarget ? "none" : "" }}>
           <Col span={8}>
             <Form.Item label="Region" name="region">

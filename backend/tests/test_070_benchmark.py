@@ -39,6 +39,7 @@ class TestBenchmarkRoute:
             "case_year_cpi": None,
             "last_year_cpi": None,
             "cpi_factor": None,
+            "message": None,
             "household_equiv": None,
             "links": None,
             "nr_adults": None,
@@ -71,6 +72,7 @@ class TestBenchmarkRoute:
             "value": {"lcu": 1200.5, "usd": 2200.5, "eur": 3200.5},
             "case_year_cpi": 6000.0,
             "last_year_cpi": 7000.0,
+            "message": None,
             "cpi_factor": -0.14285714285714285,
             "household_equiv": None,
             "links": None,
@@ -95,9 +97,7 @@ class TestBenchmarkRoute:
         )
         assert res.status_code == 404
         res = res.json()
-        assert res == {
-            "detail": "Benchmark value not found."
-        }
+        assert res == {"detail": "Benchmark value not found."}
 
     @pytest.mark.asyncio
     async def test_get_benchmark_by_country_region_year_4(
@@ -114,8 +114,26 @@ class TestBenchmarkRoute:
                 "year": 2023,
             },
         )
-        assert res.status_code == 404
+        assert res.status_code == 200
         res = res.json()
         assert res == {
-            "detail": "Benchmark not available for the year 2023."
+            "id": 1,
+            "country": 1,
+            "region": 1,
+            "household_size": 4.0,
+            "year": 2020,
+            "nr_adults": None,
+            "household_equiv": None,
+            "source": "www.akvo.org",
+            "links": None,
+            "value": {"lcu": 1200.5, "usd": 2200.5, "eur": 3200.5},
+            "case_year_cpi": None,
+            "last_year_cpi": None,
+            "cpi_factor": None,
+            "message": (
+                "This is the benchmark value for 2020, which is the most "
+                "recent available. If you wish to adjust it for inflation "
+                "and update the value manually, you can use the 'Set the "
+                "target yourself' option."
+            ),
         }
