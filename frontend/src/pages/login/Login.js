@@ -17,6 +17,7 @@ import { useCookies } from "react-cookie";
 import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
@@ -28,6 +29,14 @@ const Login = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isResetPassword, setIsResetPassword] = useState(false);
+
+  const trackEventOnClickLivingIncomeEmail = () => {
+    CustomEvent.trackEvent(
+      "Registration",
+      "Click",
+      "IDC Measurement unit Frequency on Living income email"
+    );
+  };
 
   const onFinish = (values) => {
     setLoading(true);
@@ -121,7 +130,10 @@ const Login = () => {
                 <p>
                   For registration, please reach out to your IDH point of
                   contact or email us at{" "}
-                  <a href="mailto:someone@example.com">
+                  <a
+                    href="mailto:someone@example.com"
+                    onClick={trackEventOnClickLivingIncomeEmail}
+                  >
                     livingincome@idhtrade.org
                   </a>
                 </p>
