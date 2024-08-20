@@ -31,11 +31,13 @@ const Login = () => {
   const [isResetPassword, setIsResetPassword] = useState(false);
 
   const trackEventOnClickLivingIncomeEmail = () => {
-    CustomEvent.trackEvent(
-      "Registration",
-      "Click",
-      "IDC Measurement unit Frequency on Living income email"
-    );
+    CustomEvent.trackEvent({
+      category: "Registration",
+      action: "Click",
+      name: "Clicking on Living income email for registration",
+      value: 1,
+      dimension1: "Clicked",
+    });
   };
 
   const onFinish = (values) => {
