@@ -19,6 +19,7 @@ import upperFirst from "lodash/upperFirst";
 import { UserState } from "../../../store";
 import { api } from "../../../lib";
 import FormItem from "antd/es/form/FormItem";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const transformToSelectOptions = (values) => {
   return values.map((x) => ({
@@ -110,6 +111,7 @@ const UserForm = () => {
 
     let allCasesValue = adminRole.includes(role) ? true : false;
     if (business_units) {
+      // internal user
       allCasesValue = true;
       let businessUnitVals = Array.isArray(business_units)
         ? business_units
@@ -119,6 +121,15 @@ const UserForm = () => {
         role: adminRole.includes(role) ? "admin" : "member",
       }));
       payload.append("business_units", JSON.stringify(businessUnitVals));
+    } else {
+      // external user
+      CustomEvent.trackEvent(
+        "User Management",
+        "Invite External User",
+        "New external users",
+        1,
+        { dimension2: "External" }
+      );
     }
     payload.append("all_cases", allCasesValue);
 
