@@ -237,9 +237,11 @@ class User(Base):
             "tags_count": len(self.user_tags),
             "cases_count": len(self.user_case_access),
             "case_access": case_access,
-            "internal_user": True
-            if business_unit_detail and self.role == UserRole.user
-            else False,
+            "internal_user": (
+                False
+                if not business_unit_detail and self.role == UserRole.user
+                else True
+            ),
         }
 
     @property

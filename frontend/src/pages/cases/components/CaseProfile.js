@@ -50,6 +50,7 @@ import {
   disableLandUnitFieldForCommodityTypes,
   disableIncomeDriversFieldForCommodityTypes,
 } from "../../../store/static";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -378,6 +379,7 @@ const CaseProfile = ({
     id: userId,
     email: userEmail,
     role: userRole,
+    internal_user: userInternal,
   } = UserState.useState((s) => s);
   const isCaseOwner =
     userEmail === currentCase?.created_by || userId === currentCase?.created_by;
@@ -574,13 +576,13 @@ const CaseProfile = ({
       private: privateCase,
       reporting_period: "per-year",
     };
-    const isUpdated = !isEqual(filteredCurrentCaseProfile, filteredValues);
 
+    const isPUT = currentCaseId || caseId;
+    const isUpdated = !isEqual(filteredCurrentCaseProfile, filteredValues);
     const paramCaseId = caseId ? caseId : currentCaseId;
-    const apiCall =
-      currentCaseId || caseId
-        ? api.put(`case/${paramCaseId}?updated=${isUpdated}`, payload)
-        : api.post("case", payload);
+    const apiCall = isPUT
+      ? api.put(`case/${paramCaseId}?updated=${isUpdated}`, payload)
+      : api.post("case", payload);
     apiCall
       .then((res) => {
         setCurrentCaseProfile(filteredValues);
@@ -596,6 +598,34 @@ const CaseProfile = ({
             case_commodity: findCm.id,
           };
         });
+        // track event: external user create new case
+        if (!userInternal && !isPUT) {
+          const reportedCountry = countryOptions.find(
+            (co) => co.value === data.country
+          );
+          const reportedCommodity = focusCommodityOptions.find(
+            (fc) => fc.value === data.focus_commodity
+          );
+          CustomEvent.trackEvent(
+            "Case Overview",
+            "Create new case",
+            "External users Country wise",
+            1,
+            { dimension3: reportedCountry ? reportedCountry : data.country }
+          );
+          CustomEvent.trackEvent(
+            "Case Overview",
+            "Create new case",
+            "External users Commodity wise",
+            1,
+            {
+              dimension4: reportedCommodity
+                ? reportedCommodity
+                : data.focus_commodity,
+            }
+          );
+        }
+        // EOL track event
         messageApi.open({
           type: "success",
           content: "Case profile saved successfully.",
