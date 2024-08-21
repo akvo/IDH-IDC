@@ -598,7 +598,7 @@ const CaseProfile = ({
             case_commodity: findCm.id,
           };
         });
-        // track event: external user create new case
+        // track event: external user create new case (PoC)
         if (!userInternal && !isPUT) {
           const reportedCountry = countryOptions.find(
             (co) => co.value === data.country
@@ -611,7 +611,11 @@ const CaseProfile = ({
             "Create new case",
             "External users Country wise",
             1,
-            { dimension3: reportedCountry ? reportedCountry : data.country }
+            {
+              dimension3: reportedCountry
+                ? reportedCountry.label
+                : data.country,
+            }
           );
           CustomEvent.trackEvent(
             "Case Overview",
@@ -620,7 +624,7 @@ const CaseProfile = ({
             1,
             {
               dimension4: reportedCommodity
-                ? reportedCommodity
+                ? reportedCommodity.label
                 : data.focus_commodity,
             }
           );
