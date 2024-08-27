@@ -25,6 +25,7 @@ import { driverOptions } from ".";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { sourceOptions } from ".";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const selectProps = {
   showSearch: true,
@@ -339,6 +340,57 @@ const ExploreStudiesPage = () => {
   const onFilter = (values) => {
     setCurrentPage(1);
     const { country, commodity, driver, source } = values;
+    // track event: most searched on Explore Studies
+    if (country) {
+      const searchedCountry = countryOptions.find((co) => co.value === country);
+      CustomEvent.trackEvent(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Country",
+        1,
+        {
+          dimension5: searchedCountry ? searchedCountry.label : country,
+        }
+      );
+    }
+    if (commodity) {
+      const searchedCommodity = commodityOptions.find(
+        (co) => co.value === commodity
+      );
+      CustomEvent.trackEvent(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Commodity",
+        1,
+        {
+          dimension6: searchedCommodity ? searchedCommodity.label : country,
+        }
+      );
+    }
+    if (source) {
+      CustomEvent.trackEvent(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Source",
+        1,
+        {
+          dimension7: source,
+        }
+      );
+    }
+    if (driver) {
+      CustomEvent.trackEvent(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Driver",
+        1,
+        {
+          dimension8: driver,
+        }
+      );
+    }
+    // EOL track event: most searched on Explore Studies
+
     if (countryId && commodityId && driverId) {
       setFilterInitialValues({});
       navigate("/explore-studies", {
