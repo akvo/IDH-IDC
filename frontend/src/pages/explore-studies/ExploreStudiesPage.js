@@ -363,7 +363,7 @@ const ExploreStudiesPage = () => {
         "Search by Commodity",
         1,
         {
-          dimension6: searchedCommodity ? searchedCommodity.label : country,
+          dimension6: searchedCommodity ? searchedCommodity.label : commodity,
         }
       );
     }
