@@ -352,6 +352,16 @@ const ExploreStudiesPage = () => {
           dimension5: searchedCountry ? searchedCountry.label : country,
         }
       );
+      console.info(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Country",
+        1,
+        {
+          dimension5: searchedCountry ? searchedCountry.label : country,
+        },
+        new Date()
+      );
     }
     if (commodity) {
       const searchedCommodity = commodityOptions.find(
@@ -366,6 +376,16 @@ const ExploreStudiesPage = () => {
           dimension6: searchedCommodity ? searchedCommodity.label : commodity,
         }
       );
+      console.info(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Commodity",
+        1,
+        {
+          dimension6: searchedCommodity ? searchedCommodity.label : commodity,
+        },
+        new Date()
+      );
     }
     if (source) {
       CustomEvent.trackEvent(
@@ -377,6 +397,16 @@ const ExploreStudiesPage = () => {
           dimension7: source,
         }
       );
+      console.info(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Source",
+        1,
+        {
+          dimension7: source,
+        },
+        new Date()
+      );
     }
     if (driver) {
       CustomEvent.trackEvent(
@@ -387,6 +417,16 @@ const ExploreStudiesPage = () => {
         {
           dimension8: driver,
         }
+      );
+      console.info(
+        "Explore Studies Filter",
+        "on Search Explore Studies",
+        "Search by Driver",
+        1,
+        {
+          dimension8: driver,
+        },
+        new Date()
       );
     }
     // EOL track event: most searched on Explore Studies
