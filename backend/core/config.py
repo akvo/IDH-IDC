@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import FastAPI, Request, Response
 from middleware import decode_token
 from fastapi.responses import FileResponse
@@ -23,6 +25,15 @@ from models.business_unit import BusinessUnit
 from models.commodity_category import CommodityCategory
 from models.currency import Currency
 from models.country import Country
+
+
+# Configure logging
+logging.basicConfig(
+    filename="app.log",
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",  # Date format
+)
 
 
 JS_FILE = "./config.min.js"

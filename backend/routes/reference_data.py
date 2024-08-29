@@ -1,3 +1,4 @@
+import logging
 import db.crud_reference_data as crud_ref
 
 from math import ceil
@@ -20,6 +21,8 @@ from middleware import verify_admin
 security = HTTPBearer()
 reference_data_routes = APIRouter()
 
+logger = logging.getLogger(__name__)
+
 
 @reference_data_routes.get(
     "/reference_data",
@@ -39,6 +42,16 @@ def get_all(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    logText = "/reference_data | on Search explore studies by"
+    if country:
+        logger.info(f"{logText} country: {country}")
+    if commodity:
+        logger.info(f"{logText} commodity: {commodity}")
+    if source:
+        logger.info(f"{logText} source: {source}")
+    if driver:
+        logger.info(f"{logText} driver: {driver.value}")
+
     data = crud_ref.get_all_reference(
         session=session,
         commodity=commodity,
