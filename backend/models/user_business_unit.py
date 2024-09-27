@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship
 
 from pydantic import BaseModel
 from db.connection import Base
+from models.business_unit import BusinessUnit
 
 
 class UserBusinessUnitRole(enum.Enum):
@@ -38,9 +39,12 @@ class UserBusinessUnit(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     user = Column(Integer, ForeignKey("user.id"), nullable=False)
     business_unit = Column(
-        Integer, ForeignKey("business_unit.id"), nullable=False)
-    role = Column(Enum(
-        UserBusinessUnitRole, name="user_business_unit_role"), nullable=False)
+        Integer, ForeignKey("business_unit.id"), nullable=False
+    )
+    role = Column(
+        Enum(UserBusinessUnitRole, name="user_business_unit_role"),
+        nullable=False,
+    )
 
     user_business_unit_user_detail = relationship(
         "User",
@@ -49,7 +53,7 @@ class UserBusinessUnit(Base):
         back_populates="user_business_units",
     )
     business_unit_detail = relationship(
-        "BusinessUnit",
+        BusinessUnit,
         cascade="all, delete",
         passive_deletes=True,
         back_populates="business_unit_users",
@@ -60,7 +64,7 @@ class UserBusinessUnit(Base):
         business_unit: int,
         role: UserBusinessUnitRole,
         id: Optional[int] = None,
-        user: Optional[int] = None
+        user: Optional[int] = None,
     ):
         self.id = id
         self.user = user
