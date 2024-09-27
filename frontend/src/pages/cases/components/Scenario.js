@@ -980,9 +980,11 @@ const Scenario = ({
             {};
           const scenarioDriverValues = outcomeDriverQuestions.map((q) => {
             const answerKey = `absolute-${q.caseCommodityId}-${q.questionId}`;
+            const percentKey = `percentage-${q.caseCommodityId}-${q.questionId}`;
             return {
               ...q,
               value: segment?.allNewValues?.[answerKey] || null,
+              percent: segment?.allNewValues?.[percentKey] || 0,
             };
           });
           // commpare current driver with scenario driver values
@@ -993,7 +995,9 @@ const Scenario = ({
               );
               if (check.value !== null && check.value !== cur.value) {
                 let percentChange = 0;
-                if (cur.value !== 0) {
+                if (check.percent || check.percent === 0) {
+                  percentChange = `${parseFloat(check.percent)?.toFixed(2)}%`;
+                } else if (cur.value !== 0) {
                   percentChange = ((check.value - cur.value) / cur.value) * 100;
                   percentChange = `${percentChange?.toFixed(2)}%`;
                 } else {
