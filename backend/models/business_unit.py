@@ -13,7 +13,7 @@ class BusinessUnitDict(TypedDict):
 
 
 class BusinessUnit(Base):
-    __tablename__ = 'business_unit'
+    __tablename__ = "business_unit"
 
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String, nullable=False, unique=True)
@@ -22,7 +22,7 @@ class BusinessUnit(Base):
         "UserBusinessUnit",
         cascade="all, delete",
         passive_deletes=True,
-        back_populates="business_unit_detail"
+        back_populates="business_unit_detail",
     )
 
     def __init__(self, name: str, id: Optional[int] = None):

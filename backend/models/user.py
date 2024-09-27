@@ -20,7 +20,6 @@ from fastapi import Form, HTTPException, status
 from models.user_tag import UserTag
 from models.user_case_access import UserCaseAccess, UserCasePermissionDict
 from models.user_business_unit import (
-    UserBusinessUnit,
     UserBusinessUnitDetailDict,
     UserBusinessUnitRoleDict,
 )
@@ -170,7 +169,7 @@ class User(Base):
         back_populates="user_case_access_detail",
     )
     user_business_units = relationship(
-        UserBusinessUnit,
+        "UserBusinessUnit",
         cascade="all, delete",
         passive_deletes=True,
         back_populates="user_business_unit_user_detail",
