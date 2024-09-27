@@ -37,8 +37,9 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 
 const generateChartData = (data, current = false) => {
   return data.map((d) => {
-    const incomeTarget = d.currentSegmentValue.target;
-    const currentTotalIncome = d.currentSegmentValue.total_current_income;
+    const incomeTarget = d?.currentSegmentValue?.target || 0;
+    const currentTotalIncome =
+      d?.currentSegmentValue?.total_current_income || 0;
 
     const newTotalIncome = d?.newTotalIncome || 0;
     const additionalValue = newTotalIncome
