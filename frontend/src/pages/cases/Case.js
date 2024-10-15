@@ -61,6 +61,7 @@ const Case = () => {
     role: userRole,
     internal_user: userInternal,
     case_access: userCaseAccess,
+    email: userEmail,
   } = UserState.useState((s) => s);
 
   const enableEditCase = useMemo(() => {
@@ -76,6 +77,10 @@ const Case = () => {
     const userPermission = userCaseAccess.find(
       (a) => a.case === parseInt(caseIdParam)
     )?.permission;
+    // allow internal user case owner to edit case
+    if (userInternal && currentCase?.created_by === userEmail) {
+      return true;
+    }
     if ((userInternal && !userPermission) || userPermission === "view") {
       return false;
     }
@@ -83,7 +88,15 @@ const Case = () => {
       return true;
     }
     return false;
-  }, [caseId, currentCaseId, userRole, userCaseAccess, userInternal]);
+  }, [
+    caseId,
+    currentCaseId,
+    userRole,
+    userEmail,
+    userCaseAccess,
+    userInternal,
+    currentCase?.created_by,
+  ]);
 
   useEffect(() => {
     if (caseId && caseData.length) {

@@ -40,7 +40,7 @@ const Cases = () => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
     id: userID,
-    // email: userEmail,
+    email: userEmail,
     role: userRole,
     internal_user: userInternal,
     case_access: userCaseAccess,
@@ -269,7 +269,10 @@ const Cases = () => {
         const userPermission = userCaseAccess.find(
           (a) => a.case === record.id
         )?.permission;
-
+        // allow internal user case owner to edit case
+        if (userInternal && record.created_by === userEmail) {
+          return EditButton;
+        }
         if ((userInternal && !userPermission) || userPermission === "view") {
           return ViewButton;
         }
