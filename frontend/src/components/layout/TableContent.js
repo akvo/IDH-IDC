@@ -15,7 +15,24 @@ const TableContent = ({
   buttonProps = {},
   paginationProps = {},
   otherFilters = null,
+  showTotalPagination = false,
 }) => {
+  const showTotalOption = showTotalPagination
+    ? {
+        showTotal: (total) => (
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              marginLeft: "14px",
+            }}
+          >
+            Total Case: {total}
+          </div>
+        ),
+      }
+    : {};
+
   return (
     <Row data-testid="table-content" className="table-content-container">
       <Col span={24}>
@@ -58,7 +75,11 @@ const TableContent = ({
           dataSource={dataSource}
           columns={columns}
           loading={loading}
-          pagination={{ ...paginationProps, showSizeChanger: false }}
+          pagination={{
+            ...paginationProps,
+            ...showTotalOption,
+            showSizeChanger: false,
+          }}
         />
       </Col>
     </Row>

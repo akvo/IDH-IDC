@@ -356,6 +356,7 @@ const Cases = () => {
           onChange: (page) => setCurrentPage(page),
         }}
         otherFilters={otherFilters}
+        showTotalPagination={true}
       />
     </ContentLayout>
   );
