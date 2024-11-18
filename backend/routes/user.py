@@ -5,6 +5,8 @@ import db.crud_reset_password as crud_reset_pwd
 import db.crud_case as crud_case
 import db.crud_user_case_access as crud_uca
 import db.crud_tag as crud_tag
+import db.crud_question as crud_question
+import db.crud_reference_data as crud_ref_data
 
 from math import ceil
 from middleware import (
@@ -444,19 +446,18 @@ def delete(
     if cases_owned_by_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"user {id} owned a case",
+            detail={"id": user.id, "email": user.email},
         )
 
-    # Ensure that the 'case updated_by' field is moved into the case owner.
+    # Ensure that the case updated by deleted user also clean
+    # by move created_by value into updated_by column
     cases_updated_by_user = crud_case.get_case_by_updated_by(
         session=session, updated_by=user.id
     )
     if cases_updated_by_user:
         for case in cases_updated_by_user:
             case.updated_by = case.created_by
-            session.commit()
-            session.flush()
-            session.refresh(case)
+        session.commit()
 
     # Confirm that the user's case access is removed.
     crud_uca.delete_case_access_by_user_id(session=session, user_id=user.id)
@@ -471,14 +472,29 @@ def delete(
     if tags:
         for tag in tags:
             tag.created_by = None
-            session.commit()
+        session.commit()
+
+    # Verify user's ID removed from questions created_by the user
+    questions = crud_question.get_question_by_created_by(
+        session=session, created_by=user.id
+    )
+    if questions:
+        for question in questions:
+            question.created_by = None
+        session.commit()
+
+    # Verify user's ID removed from reference created_by the user
+    references = crud_ref_data.get_reference_by_created_by(
+        session=session, created_by=user.id
+    )
+    if references:
+        for reference in references:
+            reference.created_by = None
             session.flush()
-            session.refresh(tag)
+            session.commit()
+            session.refresh(reference)
 
-    # question created by user?
-    # reference data created by user?
-
-    # delete user
+    # finally delete user
     crud_user.delete_user(session=session, id=user.id)
     return Response(status_code=HTTPStatus.NO_CONTENT.value)
 

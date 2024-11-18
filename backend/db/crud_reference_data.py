@@ -171,3 +171,11 @@ def delete_reference(session: Session, id: int):
     session.delete(data)
     session.commit()
     session.flush()
+
+
+def get_reference_by_created_by(session: Session, created_by: int):
+    return (
+        session.query(ReferenceData)
+        .filter(ReferenceData.created_by == created_by)
+        .all()
+    )

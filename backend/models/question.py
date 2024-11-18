@@ -53,10 +53,14 @@ class Question(Base):
     text = Column(String, nullable=False)
     description = Column(String, nullable=True)
     default_value = Column(String, nullable=True)
-    created_by = Column(Integer, ForeignKey("user.id"), nullable=True, default=None)
+    created_by = Column(
+        Integer, ForeignKey("user.id"), nullable=True, default=None
+    )
 
     children = relationship("Question")
-    parent_detail = relationship("Question", remote_side=[id], overlaps="children")
+    parent_detail = relationship(
+        "Question", remote_side=[id], overlaps="children"
+    )
     created_by_user = relationship(
         User, cascade="all, delete", passive_deletes=True, backref="questions"
     )

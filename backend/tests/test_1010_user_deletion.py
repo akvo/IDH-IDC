@@ -10,6 +10,8 @@ from models.case import Case
 from models.user_case_access import UserCaseAccess
 from models.user_business_unit import UserBusinessUnit
 from models.tag import Tag
+from models.question import Question
+from models.reference_data import ReferenceData
 
 
 pytestmark = pytest.mark.asyncio
@@ -41,6 +43,8 @@ class TestUserDeletion:
             headers={"Authorization": f"Bearer {account.token}"},
         )
         assert res.status_code == 409
+        res = res.json()
+        assert res == {"detail": {"id": 1, "email": "super_admin@akvo.org"}}
 
     @pytest.mark.asyncio
     async def test_deleting_a_user_who_doesnt_have_cases(
@@ -100,6 +104,38 @@ class TestUserDeletion:
         assert tag is not None
         assert tag.created_by == deleted_user
 
+        # add question
+        question_id = 1000
+        question = Question(
+            id=question_id, text="Test Question 1000", created_by=deleted_user
+        )
+        session.add(question)
+        session.commit()
+        session.flush()
+        session.refresh(question)
+        assert question is not None
+        assert question.created_by == deleted_user
+
+        # add reference_data
+        reference_id = 10000
+        reference = ReferenceData(
+            id=reference_id,
+            country=1,
+            commodity=1,
+            region="asia",
+            currency="usd",
+            year="2020",
+            source="source",
+            link="link",
+            created_by=deleted_user,
+        )
+        session.add(reference)
+        session.commit()
+        session.flush()
+        session.refresh(reference)
+        assert reference is not None
+        assert reference.created_by == deleted_user
+
         # delete user
         res = await client.delete(
             app.url_path_for("user:delete", user_id=deleted_user),
@@ -132,3 +168,19 @@ class TestUserDeletion:
         # make sure tag created_by removed
         tag = session.query(Tag).filter(Tag.created_by == deleted_user).first()
         assert tag is None
+
+        # make sure question created_by is None
+        question = (
+            session.query(Question).filter(Question.id == question_id).first()
+        )
+        assert question is not None
+        assert question.id == question_id
+        assert question.created_by is None
+
+        # make sure reference data created by is None
+        reference_data = (
+            session.query(ReferenceData)
+            .filter(ReferenceData.created_by == deleted_user)
+            .all()
+        )
+        assert reference_data == []

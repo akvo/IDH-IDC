@@ -29,7 +29,9 @@ def get_question_by_commodity(
     res = []
     for param in params:
         commodity = (
-            session.query(Commodity).filter(Commodity.id == param["commodity"]).first()
+            session.query(Commodity)
+            .filter(Commodity.id == param["commodity"])
+            .first()
         )
         commodity = commodity.to_question_list
         commodity_category_id = commodity["commodity_category_id"]
@@ -37,7 +39,8 @@ def get_question_by_commodity(
             session.query(Question)
             .join(CommodityCategoryQuestion)
             .filter(
-                CommodityCategoryQuestion.commodity_category == commodity_category_id,
+                CommodityCategoryQuestion.commodity_category
+                == commodity_category_id,
             )
             .all()
         )
@@ -45,7 +48,8 @@ def get_question_by_commodity(
         if not param["breakdown"]:
             questions = list(
                 filter(
-                    lambda question: question["id"] == 1 or question["parent"] == 1,
+                    lambda question: question["id"] == 1
+                    or question["parent"] == 1,
                     questions,
                 )
             )
@@ -54,9 +58,13 @@ def get_question_by_commodity(
     return res
 
 
-def get_question_by_case(session: Session, case_id: int) -> List[QuestionGroupListDict]:
+def get_question_by_case(
+    session: Session, case_id: int
+) -> List[QuestionGroupListDict]:
     case_commodity = (
-        session.query(CaseCommodity).filter(CaseCommodity.case == case_id).all()
+        session.query(CaseCommodity)
+        .filter(CaseCommodity.case == case_id)
+        .all()
     )
     commodities = (
         session.query(Commodity)
@@ -71,7 +79,8 @@ def get_question_by_case(session: Session, case_id: int) -> List[QuestionGroupLi
             session.query(Question)
             .join(CommodityCategoryQuestion)
             .filter(
-                CommodityCategoryQuestion.commodity_category == commodity_category_id,
+                CommodityCategoryQuestion.commodity_category
+                == commodity_category_id,
             )
             .all()
         )
@@ -93,3 +102,9 @@ def get_question_by_case(session: Session, case_id: int) -> List[QuestionGroupLi
         }
     )
     return res
+
+
+def get_question_by_created_by(session: Session, created_by=int):
+    return (
+        session.query(Question).filter(Question.created_by == created_by).all()
+    )
