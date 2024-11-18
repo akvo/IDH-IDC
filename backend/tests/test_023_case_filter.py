@@ -258,3 +258,50 @@ class TestCaseWithFilterRoute:
             "total": 2,
             "total_page": 1,
         }
+
+    @pytest.mark.asyncio
+    async def test_get_case_filtered_by_year(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        res = await client.get(
+            app.url_path_for("case:get_all"),
+            params={"year": "1992"},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 404
+        res = await client.get(
+            app.url_path_for("case:get_all"),
+            params={"year": "2023"},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "current": 1,
+            "data": [
+                {
+                    "id": 2,
+                    "name": "Bali Coffee Production (Private)",
+                    "country": "Bali",
+                    "focus_commodity": 1,
+                    "diversified_commodities_count": 1,
+                    "year": 2023,
+                    "created_at": res["data"][0]["created_at"],
+                    "created_by": "super_admin@akvo.org",
+                    "tags": [],
+                },
+                {
+                    "id": 1,
+                    "name": "Bali Rice and Corn Production",
+                    "country": "Bali",
+                    "focus_commodity": 2,
+                    "diversified_commodities_count": 2,
+                    "year": 2023,
+                    "created_at": res["data"][1]["created_at"],
+                    "created_by": "super_admin@akvo.org",
+                    "tags": [2, 1],
+                },
+            ],
+            "total": 2,
+            "total_page": 1,
+        }
