@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ContentLayout, TableContent } from "../../components/layout";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   EditOutlined,
   UserSwitchOutlined,
@@ -39,6 +39,9 @@ const filterProps = {
 };
 
 const Cases = () => {
+  const [searchParams] = useSearchParams();
+  const caseOwner = searchParams.get("owner");
+
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState(null);
@@ -46,7 +49,7 @@ const Cases = () => {
   const [country, setCountry] = useState(null);
   const [commodity, setCommodity] = useState(null);
   const [tags, setTags] = useState([]);
-  const [email, setEmail] = useState(null);
+  const [email, setEmail] = useState(caseOwner || null);
   const [year, setYear] = useState(null);
 
   const tagOptions = UIState.useState((s) => s.tagOptions);
@@ -179,6 +182,19 @@ const Cases = () => {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
+      title: "Primary Commodity",
+      key: "primary_commodity",
+      render: (record) => {
+        const findPrimaryCommodity = commodityOptios.find(
+          (co) => co.value === record.focus_commodity
+        );
+        if (!findPrimaryCommodity?.label) {
+          return "-";
+        }
+        return findPrimaryCommodity.label;
+      },
+    },
+    {
       title: "Tags",
       key: "tags",
       render: (record) => {
@@ -212,7 +228,7 @@ const Cases = () => {
         }
         if (row.id === showChangeOwnerForm) {
           return (
-            <Row align="center" gutter={[8, 8]}>
+            <Row align="center" gutter={[6, 6]}>
               <Col span={20}>
                 <DebounceSelect
                   placeholder="Search for a user"
@@ -350,12 +366,14 @@ const Cases = () => {
         key="4"
         placeholder="Case owner email"
         onChange={(e) => setEmail(e.target.value)}
+        value={email}
       />
       <InputNumber
         key="5"
         placeholder="Year"
         controls={false}
         onChange={setYear}
+        value={year}
       />
     </Space>
   );
