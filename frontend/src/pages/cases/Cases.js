@@ -11,7 +11,17 @@ import {
 } from "@ant-design/icons";
 import { api } from "../../lib";
 import { UIState, UserState } from "../../store";
-import { Select, Space, Button, Row, Col, Popconfirm, message } from "antd";
+import {
+  Select,
+  Space,
+  Button,
+  Row,
+  Col,
+  Popconfirm,
+  message,
+  Input,
+  InputNumber,
+} from "antd";
 import { selectProps, DebounceSelect } from "./components";
 import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
@@ -25,7 +35,7 @@ const defData = {
 };
 const filterProps = {
   ...selectProps,
-  style: { width: window.innerHeight * 0.225 },
+  style: { width: window.innerHeight * 0.175 },
 };
 
 const Cases = () => {
@@ -36,6 +46,8 @@ const Cases = () => {
   const [country, setCountry] = useState(null);
   const [commodity, setCommodity] = useState(null);
   const [tags, setTags] = useState([]);
+  const [email, setEmail] = useState(null);
+  const [year, setYear] = useState(null);
 
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
@@ -79,6 +91,12 @@ const Cases = () => {
         const tagQuery = tags.join("&tags=");
         url = `${url}&tags=${tagQuery}`;
       }
+      if (email) {
+        url = `${url}&email=${email}`;
+      }
+      if (year) {
+        url = `${url}&year=${year}`;
+      }
       api
         .get(url)
         .then((res) => {
@@ -96,7 +114,17 @@ const Cases = () => {
           setRefresh(false);
         });
     }
-  }, [currentPage, search, userID, commodity, country, tags, refresh]);
+  }, [
+    currentPage,
+    search,
+    userID,
+    commodity,
+    country,
+    tags,
+    refresh,
+    year,
+    email,
+  ]);
 
   const fetchUsers = (searchValue) => {
     return api
@@ -317,6 +345,17 @@ const Cases = () => {
         mode="multiple"
         value={tags}
         onChange={setTags}
+      />
+      <Input
+        key="4"
+        placeholder="Case owner email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <InputNumber
+        key="5"
+        placeholder="Year"
+        controls={false}
+        onChange={setYear}
       />
     </Space>
   );
