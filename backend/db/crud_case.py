@@ -95,6 +95,8 @@ def get_all_case(
     business_unit_users: Optional[List[int]] = None,
     user_cases: Optional[List[int]] = None,
     country: Optional[int] = None,
+    email: Optional[str] = None,
+    year: Optional[int] = None,
 ) -> List[CaseListDict]:
     case = session.query(Case)
     if not show_private:
@@ -115,6 +117,16 @@ def get_all_case(
         case = case.filter(Case.id.in_(user_cases))
     if country:
         case = case.filter(Case.country == country)
+    if email:
+        users = (
+            session.query(User)
+            .filter(User.email.ilike("%{}%".format(email.lower().strip())))
+            .all()
+        )
+        user_ids = [u.id for u in users]
+        case = case.filter(Case.created_by.in_(user_ids))
+    if year:
+        case = case.filter(Case.year.ilike("%{}%".format(year)))
     count = case.count()
     case = case.order_by(Case.id.desc()).offset(skip).limit(limit).all()
     return PaginatedCaseData(count=count, data=case)
