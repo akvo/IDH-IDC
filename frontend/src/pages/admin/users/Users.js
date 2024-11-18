@@ -117,7 +117,7 @@ const Users = () => {
             ),
             okText: "Go to cases",
             onOk: () => {
-              const URL = `/cases/${user.email}`;
+              const URL = `/cases?owner=${user.email}`;
               window.open(URL, "_blank");
             },
             cancelText: "Cancel",

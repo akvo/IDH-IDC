@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ContentLayout, TableContent } from "../../components/layout";
-import { Link, useParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   EditOutlined,
   UserSwitchOutlined,
@@ -39,7 +39,8 @@ const filterProps = {
 };
 
 const Cases = () => {
-  const { caseOwner } = useParams();
+  const [searchParams] = useSearchParams();
+  const caseOwner = searchParams.get("owner");
 
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
