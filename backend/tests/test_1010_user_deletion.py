@@ -12,6 +12,7 @@ from models.user_business_unit import UserBusinessUnit
 from models.tag import Tag
 from models.question import Question
 from models.reference_data import ReferenceData
+from models.user import User
 
 
 pytestmark = pytest.mark.asyncio
@@ -184,3 +185,6 @@ class TestUserDeletion:
             .all()
         )
         assert reference_data == []
+
+        user = session.query(User).filter(User.id == deleted_user).first()
+        assert user is None

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ContentLayout, TableContent } from "../../../components/layout";
 import { Link } from "react-router-dom";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteTwoTone } from "@ant-design/icons";
 import upperFirst from "lodash/upperFirst";
 import { api } from "../../../lib";
-import { Checkbox, Select } from "antd";
+import { Button, Checkbox, Select, Space, Popconfirm, Modal, List } from "antd";
 import { selectProps } from "../../cases/components";
 import "./user.scss";
 
@@ -18,7 +18,7 @@ const defData = {
 
 const filterProps = {
   ...selectProps,
-  style: { width: window.innerHeight * 0.225 },
+  style: { width: window.innerHeight * 0.175 },
 };
 
 const userRoleOptions = [
@@ -47,32 +47,86 @@ const Users = () => {
   const [data, setData] = useState(defData);
   const [showApprovedUser, setShowApprovedUser] = useState(true);
   const [role, setRole] = useState(null);
+  const [deleting, setDeleting] = useState([]);
+  const [modal, contextHolder] = Modal.useModal();
+
+  const fetchUser = useCallback(
+    ({ currentPage, search, showApprovedUser, role }) => {
+      setLoading(true);
+      let url = `user?page=${currentPage}&limit=${perPage}&approved=${showApprovedUser}`;
+      if (search) {
+        url = `${url}&search=${search}`;
+      }
+      if (role) {
+        url = `${url}&role=${role}`;
+      }
+      api
+        .get(url)
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((e) => {
+          console.error(e.response);
+          const { status } = e.response;
+          if (status === 404) {
+            setData(defData);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    []
+  );
 
   useEffect(() => {
-    setLoading(true);
-    let url = `user?page=${currentPage}&limit=${perPage}&approved=${showApprovedUser}`;
-    if (search) {
-      url = `${url}&search=${search}`;
-    }
-    if (role) {
-      url = `${url}&role=${role}`;
-    }
+    fetchUser({ currentPage, search, showApprovedUser, role });
+  }, [currentPage, search, showApprovedUser, role]);
+
+  const handleDeleteUser = (user) => {
+    setDeleting((prev) => [...prev, user.id]);
     api
-      .get(url)
+      .delete(`user/${user.id}`)
       .then((res) => {
-        setData(res.data);
+        console.log(res);
+        fetchUser({ currentPage, search, showApprovedUser, role });
       })
       .catch((e) => {
-        console.error(e.response);
-        const { status } = e.response;
-        if (status === 404) {
-          setData(defData);
+        const { status, data } = e.response;
+        if (status === 409) {
+          const { email, cases } = data.detail;
+          // show the case names and add a button "Go to cases"
+          modal.confirm({
+            title: `Unable to delete user ${user.email}`,
+            content: (
+              <div style={{ marginLeft: "-26px" }}>
+                <h4>The following cases are still owned by this user:</h4>
+                <List
+                  header={null}
+                  footer={null}
+                  size="small"
+                  bordered
+                  style={{ maxHeight: "200px", overflow: "auto" }}
+                  dataSource={cases}
+                  renderItem={(item) => <List.Item>{item.label}</List.Item>}
+                />
+                <p>
+                  Please assign new owners for these cases before deleting this
+                  user.
+                </p>
+              </div>
+            ),
+            okText: "Go to cases",
+            cancelText: "Cancel",
+          });
         }
       })
       .finally(() => {
-        setLoading(false);
+        setTimeout(() => {
+          setDeleting((prev) => prev.filter((id) => id !== user.id));
+        }, 500);
       });
-  }, [currentPage, search, showApprovedUser, role]);
+  };
 
   const columns = [
     {
@@ -114,9 +168,27 @@ const Users = () => {
       width: "5%",
       align: "center",
       render: (text, record) => (
-        <Link to={`/admin/user/${record.id}`}>
-          <EditOutlined />
-        </Link>
+        <Space align="center">
+          <Link to={`/admin/user/${record.id}`}>
+            <EditOutlined style={{ marginTop: "5px" }} />
+          </Link>
+          <Popconfirm
+            title="Delete User"
+            description={`Are you sure to delete user ${record.email}?`}
+            onConfirm={() => handleDeleteUser(record)}
+            okText="Yes"
+            cancelText="No"
+            placement="leftBottom"
+          >
+            <Button
+              size="small"
+              type="text"
+              icon={<DeleteTwoTone twoToneColor="#eb2f96" />}
+              loading={deleting.find((id) => id === record.id) ? true : false}
+              disabled={deleting.length ? true : false}
+            />
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
@@ -173,6 +245,8 @@ const Users = () => {
           />
         }
       />
+      {/* modal context holder */}
+      {contextHolder}
     </ContentLayout>
   );
 };

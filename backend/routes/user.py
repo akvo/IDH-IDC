@@ -446,7 +446,11 @@ def delete(
     if cases_owned_by_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail={"id": user.id, "email": user.email},
+            detail={
+                "id": user.id,
+                "email": user.email,
+                "cases": [case.to_dropdown for case in cases_owned_by_user],
+            },
         )
 
     # Ensure that the case updated by deleted user also clean
