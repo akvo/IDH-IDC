@@ -45,7 +45,15 @@ class TestUserDeletion:
         )
         assert res.status_code == 409
         res = res.json()
-        assert res == {"detail": {"id": 1, "email": "super_admin@akvo.org"}}
+        assert res == {
+            "detail": {
+                "id": 1,
+                "email": "super_admin@akvo.org",
+                "cases": [
+                    {"label": "Bali Coffee Production (Private)", "value": 2}
+                ],
+            }
+        }
 
     @pytest.mark.asyncio
     async def test_deleting_a_user_who_doesnt_have_cases(

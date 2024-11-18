@@ -81,20 +81,19 @@ const Users = () => {
 
   useEffect(() => {
     fetchUser({ currentPage, search, showApprovedUser, role });
-  }, [currentPage, search, showApprovedUser, role]);
+  }, [currentPage, search, showApprovedUser, role, fetchUser]);
 
   const handleDeleteUser = (user) => {
     setDeleting((prev) => [...prev, user.id]);
     api
       .delete(`user/${user.id}`)
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         fetchUser({ currentPage, search, showApprovedUser, role });
       })
       .catch((e) => {
         const { status, data } = e.response;
         if (status === 409) {
-          const { email, cases } = data.detail;
+          const { cases } = data.detail;
           // show the case names and add a button "Go to cases"
           modal.confirm({
             title: `Unable to delete user ${user.email}`,
@@ -117,14 +116,16 @@ const Users = () => {
               </div>
             ),
             okText: "Go to cases",
+            onOk: () => {
+              const URL = `/cases/${user.email}`;
+              window.open(URL, "_blank");
+            },
             cancelText: "Cancel",
           });
         }
       })
       .finally(() => {
-        setTimeout(() => {
-          setDeleting((prev) => prev.filter((id) => id !== user.id));
-        }, 500);
+        setDeleting((prev) => prev.filter((id) => id !== user.id));
       });
   };
 
