@@ -69,6 +69,7 @@ class CaseDict(TypedDict):
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
     tags: Optional[List[int]] = []
+    company: Optional[int] = None
 
 
 class CaseDetailDict(TypedDict):
@@ -95,6 +96,7 @@ class CaseDetailDict(TypedDict):
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
     tags: Optional[List[int]] = []
+    company: Optional[int] = None
 
 
 class Case(Base):
@@ -241,6 +243,7 @@ class Case(Base):
             "segments": [ps.serialize for ps in self.case_segments],
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
+            "company": self.company,
         }
 
     @property
@@ -294,6 +297,7 @@ class Case(Base):
             "case_commodities": [pc.simplify for pc in self.case_commodities],
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
+            "company": self.company,
         }
 
     @property

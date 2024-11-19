@@ -120,11 +120,11 @@ class TestPermissionOveriding:
     @pytest.mark.asyncio
     async def test_seeder_fake_case(self, session: Session) -> None:
         cases = session.query(Case).count()
-        assert cases == 3
+        assert cases == 4
 
         seed_fake_case(session=session)
         cases = session.query(Case).count()
-        assert cases == 9
+        assert cases == 10
 
     @pytest.mark.asyncio
     async def test_create_case_by_external_user(
@@ -223,7 +223,7 @@ class TestPermissionOveriding:
         res = res.json()
         assert res == {
             "id": 3,
-            "case": 10,
+            "case": 11,
             "label": res["label"],
             "value": 17,
             "permission": "edit",
@@ -239,7 +239,7 @@ class TestPermissionOveriding:
         res = res.json()
         assert res == {
             "id": 4,
-            "case": 10,
+            "case": 11,
             "label": res["label"],
             "value": 7,
             "permission": "view",

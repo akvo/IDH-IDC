@@ -158,3 +158,20 @@ class TestCompanyRoute:
             "id": 1,
             "name": "Company Updated",
         }
+
+    @pytest.mark.asyncio
+    async def test_create_second_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        payload = {
+            "name": "Banyuatis Group",
+        }
+        # with admin user cred
+        res = await client.post(
+            app.url_path_for("company:create"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json=payload,
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {"id": 2, "name": "Banyuatis Group"}

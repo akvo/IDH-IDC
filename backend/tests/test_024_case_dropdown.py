@@ -29,13 +29,10 @@ class TestCaseDropdownRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == [{
-            'label': 'Bali Coffee Production (Private)',
-            'value': 2
-        }, {
-            'label': 'Bali Rice and Corn Production',
-            'value': 1
-        }]
+        assert res == [
+            {"label": "Bali Coffee Production (Private)", "value": 2},
+            {"label": "Bali Rice and Corn Production", "value": 1},
+        ]
 
     @pytest.mark.asyncio
     async def test_case_options_dropdown_by_admin(
@@ -67,7 +64,7 @@ class TestCaseDropdownRoute:
             "reporting_period": "Per-season",
             "segmentation": False,
             "living_income_study": LivingIncomeStudyEnum.better_income.value,
-            "multiple_commodities": False,
+            "multiple_commodities": True,
             "other_commodities": [
                 {
                     "commodity": 3,
@@ -93,7 +90,77 @@ class TestCaseDropdownRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == [{
-            'label': 'Bali Coffee',
-            'value': 3
-        }]
+        assert res == [{"label": "Bali Coffee", "value": 3}]
+
+    @pytest.mark.asyncio
+    async def test_create_non_private_case_by_admin_with_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        admin_account = Acc(email="admin@akvo.org", token=None)
+        payload = {
+            "name": "Banyuatis Coffe",
+            "description": "This is a description",
+            "date": "2023-10-03",
+            "year": 2023,
+            "country": 2,
+            "company": 1,
+            "focus_commodity": 2,
+            "currency": "USD",
+            "area_size_unit": "hectare",
+            "volume_measurement_unit": "liters",
+            "cost_of_production_unit": "Per-area",
+            "reporting_period": "Per-season",
+            "segmentation": False,
+            "living_income_study": LivingIncomeStudyEnum.better_income.value,
+            "multiple_commodities": False,
+            "tags": [1],
+        }
+        # without cred
+        res = await client.post(
+            app.url_path_for("case:create"),
+            json=payload,
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "id": 4,
+            "name": "Banyuatis Coffe",
+            "description": "This is a description",
+            "date": "2023-10-03",
+            "year": 2023,
+            "country": 2,
+            "focus_commodity": 2,
+            "currency": "USD",
+            "area_size_unit": "hectare",
+            "volume_measurement_unit": "liters",
+            "cost_of_production_unit": "Per-area",
+            "reporting_period": "Per-season",
+            "segmentation": False,
+            "living_income_study": "better_income",
+            "multiple_commodities": False,
+            "logo": None,
+            "created_by": 3,
+            "segments": [],
+            "case_commodities": [
+                {
+                    "id": 9,
+                    "commodity": 2,
+                    "breakdown": True,
+                    "commodity_type": "focus",
+                    "area_size_unit": "hectare",
+                    "volume_measurement_unit": "liters",
+                },
+                {
+                    "id": 10,
+                    "commodity": None,
+                    "breakdown": True,
+                    "commodity_type": "diversified",
+                    "area_size_unit": "hectare",
+                    "volume_measurement_unit": "liters",
+                },
+            ],
+            "private": False,
+            "tags": [1],
+            "company": 1,
+        }
