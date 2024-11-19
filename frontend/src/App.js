@@ -24,7 +24,7 @@ import { api } from "./lib";
 import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 
-const optionRoutes = ["organisation/options", "tag/options"];
+const optionRoutes = ["organisation/options", "tag/options", "company/options"];
 
 const App = () => {
   const navigate = useNavigate();
@@ -40,10 +40,11 @@ const App = () => {
     const optionApiCalls = optionRoutes.map((url) => api.get(url));
     Promise.all(optionApiCalls)
       .then((res) => {
-        const [orgRes, tagRes] = res;
+        const [orgRes, tagRes, companyRes] = res;
         UIState.update((s) => {
           s.organisationOptions = orgRes.data;
           s.tagOptions = tagRes.data;
+          s.companyOptions = companyRes.data;
         });
       })
       .catch((e) => {
