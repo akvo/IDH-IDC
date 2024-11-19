@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { ContentLayout, TableContent } from "../../../components/layout";
 import { Link } from "react-router-dom";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { api } from "../../../lib";
 import "./company.scss";
+import { Space, Popconfirm } from "antd";
 
 const perPage = 10;
 const defData = {
@@ -42,23 +43,40 @@ const Company = () => {
       });
   }, [currentPage, search]);
 
+  const handleDeleteCompany = (company) => {
+    console.log(company);
+  };
+
   const columns = [
     {
       title: "Company Name",
       dataIndex: "name",
       key: "name",
-      width: "25%",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
       key: "action",
-      width: "5%",
+      width: "7%",
       align: "center",
       render: (text, record) => (
-        <Link to={`/admin/company/${record.id}`}>
-          <EditOutlined />
-        </Link>
+        <Space align="center">
+          <Link to={`/admin/company/${record.id}`}>
+            <EditOutlined />
+          </Link>
+          <Link>
+            <Popconfirm
+              title="Delete Company"
+              description={`Are you sure to delete company ${record.name}?`}
+              onConfirm={() => handleDeleteCompany(record)}
+              okText="Yes"
+              cancelText="No"
+              placement="leftBottom"
+            >
+              <DeleteOutlined style={{ color: "red" }} />
+            </Popconfirm>
+          </Link>
+        </Space>
       ),
     },
   ];

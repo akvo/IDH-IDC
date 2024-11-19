@@ -135,6 +135,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     organisation = Column(Integer, ForeignKey("organisation.id"))
+    company = Column(Integer, ForeignKey("company.id"))
     email = Column(String, nullable=False, unique=True)
     fullname = Column(String, nullable=False)
     password = Column(String, nullable=True)
@@ -155,6 +156,12 @@ class User(Base):
         cascade="all, delete",
         passive_deletes=True,
         back_populates="users",
+    )
+    user_companies = relationship(
+        "Company",
+        cascade="all, delete",
+        passive_deletes=True,
+        back_populates="user_company_detail",
     )
     user_tags = relationship(
         UserTag,
