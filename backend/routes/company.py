@@ -1,7 +1,7 @@
 import db.crud_company as crud_company
 
 from math import ceil
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Response
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -14,6 +14,7 @@ from models.company import (
     PaginatedCompanyResponse,
 )
 from middleware import verify_admin
+from http import HTTPStatus
 
 security = HTTPBearer()
 company_route = APIRouter()
@@ -109,3 +110,22 @@ def update_Case(
         session=session, company_id=company_id, payload=payload
     )
     return company.serialize
+
+
+@company_route.delete(
+    "/Company/{company_id:path}",
+    responses={204: {"model": None}},
+    status_code=HTTPStatus.NO_CONTENT,
+    summary="delete a company by company id",
+    name="company:delete",
+    tags=["Company"],
+)
+def delete_case(
+    req: Request,
+    company_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    crud_company.delete_company(session=Session, company_id=company_id)
+    return Response(status_code=HTTPStatus.NO_CONTENT.value)

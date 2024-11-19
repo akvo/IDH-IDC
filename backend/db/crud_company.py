@@ -7,6 +7,7 @@ from models.company import (
     CompanyDict,
     CompanyBase,
 )
+from models.user import User
 
 
 class PaginatedCompanyData(TypedDict):
@@ -75,3 +76,20 @@ def update_company(
     session.flush()
     session.refresh(company)
     return company
+
+
+def delete_company(session: Session, company_id: int):
+    company = get_company_by_id(session=session, id=company_id)
+
+    # check if users in company
+    # TODO :: query user by company
+    users = session.query(User).all()
+    if users:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Company {id} has users",
+        )
+
+    session.delete(company)
+    session.commit()
+    session.flush()
