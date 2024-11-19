@@ -23,6 +23,9 @@ const tabItems = [
   },
 ];
 
+// Show tabItems only on manage/table view, hide in form page
+const showTabItemsForPath = tabItems.map((x) => x.key);
+
 const ContentLayout = ({
   children,
   wrapperId = "landing",
@@ -85,7 +88,11 @@ const ContentLayout = ({
             ""
           )}
           {title ? (
-            <div data-testid="title" className="title">
+            <div
+              data-testid="title"
+              className="title"
+              style={{ paddingTop: "14px" }}
+            >
               {title}
             </div>
           ) : (
@@ -98,7 +105,9 @@ const ContentLayout = ({
           ) : (
             ""
           )}
-          {adminRole.includes(userRole) && currentPath.includes("/admin/") ? (
+          {adminRole.includes(userRole) &&
+          currentPath.includes("/admin/") &&
+          showTabItemsForPath.includes(window.location.pathname) ? (
             <Tabs
               data-testid="admin-tabs-menu"
               activeKey={activeTabMenu.key}
