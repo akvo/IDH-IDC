@@ -95,3 +95,36 @@ class TestCompanyRoute:
         assert res.status_code == 200
         res = res.json()
         assert res == [{"label": "Company Test", "value": 1}]
+
+    @pytest.mark.asyncio
+    async def test_update_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        payload = {
+            "name": "Company Updated",
+        }
+        # without cred
+        res = await client.put(
+            app.url_path_for("company:update", company_id=1),
+            json=payload,
+        )
+        assert res.status_code == 403
+        # with normal user cred
+        res = await client.put(
+            app.url_path_for("company:update", company_id=1),
+            headers={"Authorization": f"Bearer {non_admin_account.token}"},
+            json=payload,
+        )
+        assert res.status_code == 403
+        # with admin user cred
+        res = await client.put(
+            app.url_path_for("company:update", company_id=1),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json=payload,
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "id": 1,
+            "name": "Company Updated",
+        }

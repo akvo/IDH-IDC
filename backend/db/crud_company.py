@@ -64,3 +64,14 @@ def filter_company(
         companies.order_by(Company.id.desc()).offset(skip).limit(limit).all()
     )
     return PaginatedCompanyData(count=count, data=companies)
+
+
+def update_company(
+    session: Session, company_id: int, payload: CompanyBase
+) -> CompanyDict:
+    company = get_company_by_id(session=session, id=company_id)
+    company.name = payload.name
+    session.commit()
+    session.flush()
+    session.refresh(company)
+    return company

@@ -88,3 +88,24 @@ def get_all_company(
         "total": total,
         "total_page": total_page,
     }
+
+
+@company_route.put(
+    "/company/{company_id:path}",
+    response_model=CompanyDict,
+    summary="update company by id",
+    name="company:update",
+    tags=["Company"],
+)
+def update_Case(
+    req: Request,
+    company_id: int,
+    payload: CompanyBase,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    company = crud_company.update_company(
+        session=session, company_id=company_id, payload=payload
+    )
+    return company.serialize
