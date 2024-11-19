@@ -511,6 +511,36 @@ class TestPermissionOveriding:
         }
 
     @pytest.mark.asyncio
+    async def test_user_register_with_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        user_payload = {
+            "fullname": "Company User",
+            "email": "company_user@test.org",
+            "password": None,
+            "role": UserRole.user.value,
+            "company": 1,
+        }
+        # without credential
+        res = await client.post(
+            app.url_path_for("user:register"),
+            data=user_payload,
+            headers={
+                "content-type": "application/x-www-form-urlencoded",
+            },
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "id": 23,
+            "fullname": "Company User",
+            "email": "company_user@test.org",
+            "organisation": 2,
+            "active": False,
+            "role": "user",
+        }
+
+    @pytest.mark.asyncio
     async def test_delete_user_access_by_access_id(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:

@@ -193,6 +193,7 @@ class User(Base):
         invitation_id: Optional[str] = None,
         password: Optional[str] = None,
         all_cases: Optional[int] = 0,
+        company: Optional[int] = None,
     ):
         self.id = id
         self.organisation = organisation
@@ -203,6 +204,7 @@ class User(Base):
         self.all_cases = all_cases
         self.is_active = is_active
         self.invitation_id = invitation_id
+        self.company = company
 
     def __repr__(self) -> int:
         return f"<User {self.id}>"
@@ -321,6 +323,7 @@ class UserBase(BaseModel):
     tags: Optional[str] = None
     cases: Optional[str] = None
     business_units: Optional[str] = None
+    company: Optional[int] = None
 
     @field_validator("tags")
     @classmethod
@@ -344,6 +347,7 @@ class UserBase(BaseModel):
         fullname: str = Form(...),
         email: str = Form(...),
         organisation: int = Form(None),
+        company: int = Form(None),
         password: SecretStr = Form(None),
         role: UserRole = Form(None),
         all_cases: bool = Form(False),
@@ -356,6 +360,7 @@ class UserBase(BaseModel):
             email=email,
             password=password,
             organisation=organisation,
+            company=company,
             role=role,
             all_cases=all_cases,
             tags=tags,
@@ -381,6 +386,7 @@ class UserUpdateBase(BaseModel):
     tags: Optional[str] = None
     cases: Optional[str] = None
     business_units: Optional[str] = None
+    company: Optional[int] = None
 
     @field_validator("tags")
     @classmethod
@@ -403,6 +409,7 @@ class UserUpdateBase(BaseModel):
         cls,
         fullname: str = Form(...),
         organisation: int = Form(None),
+        company: int = Form(None),
         password: SecretStr = Form(None),
         role: UserRole = Form(None),
         all_cases: bool = Form(False),
@@ -417,6 +424,7 @@ class UserUpdateBase(BaseModel):
             role=role,
             all_cases=all_cases,
             organisation=organisation,
+            company=company,
             is_active=is_active,
             tags=tags,
             cases=cases,
