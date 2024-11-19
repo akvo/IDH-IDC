@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ContentLayout, TableContent } from "../../../components/layout";
 import { Link } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { api } from "../../../lib";
 import "./company.scss";
-import { Space, Popconfirm } from "antd";
+import { Space, Popconfirm, message } from "antd";
 
 const perPage = 10;
 const defData = {
@@ -19,8 +19,9 @@ const Company = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState(null);
   const [data, setData] = useState(defData);
+  const [messageApi, messageContextHolder] = message.useMessage();
 
-  useEffect(() => {
+  const fetchCompany = useCallback(({ currentPage, search }) => {
     setLoading(true);
     let url = `company?page=${currentPage}&limit=${perPage}`;
     if (search) {
@@ -41,10 +42,36 @@ const Company = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentPage, search]);
+  }, []);
+
+  useEffect(() => {
+    fetchCompany({ currentPage, search });
+  }, [currentPage, search, fetchCompany]);
 
   const handleDeleteCompany = (company) => {
-    console.log(company);
+    api
+      .delete(`company/${company.id}`)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "Company deleted successfully.",
+        });
+        fetchCompany({ currentPage, search });
+      })
+      .catch((e) => {
+        const { status, data } = e.response;
+        if (status === 409) {
+          messageApi.open({
+            type: "warning",
+            content: data.detail,
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Failed! Something went wrong.",
+          });
+        }
+      });
   };
 
   const columns = [
@@ -113,6 +140,8 @@ const Company = () => {
           onChange: (page) => setCurrentPage(page),
         }}
       />
+      {/* message context holder */}
+      {messageContextHolder}
     </ContentLayout>
   );
 };
