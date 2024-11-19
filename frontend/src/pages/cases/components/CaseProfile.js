@@ -85,6 +85,7 @@ const CaseForm = ({
   enableEditCase,
 }) => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
+  const companyOptions = UIState.useState((s) => s.companyOptions);
 
   return (
     <Row gutter={[16, 16]}>
@@ -133,34 +134,50 @@ const CaseForm = ({
             </Checkbox>
           </Form.Item>
 
-          <Form.Item
-            name="year"
-            label={
-              <Space align="center">
-                <div>Year</div>
-                <Tooltip
-                  title="Please enter the year for which you are providing data. This year will also be used to retrieve a living income benchmark, if it is available for the specified region. If a benchmark for this year is not available, we will use the most recent available benchmark value."
-                  placement="topRight"
-                >
-                  <InfoCircleTwoTone twoToneColor="#1677ff" />
-                </Tooltip>
-              </Space>
-            }
-            rules={[
-              {
-                required: true,
-                message: "Select year",
-              },
-            ]}
-          >
-            <DatePicker
-              picker="year"
-              disabledDate={(current) => {
-                return current && dayjs(current).year() > dayjs().year();
-              }}
-              disabled={!enableEditCase}
-            />
-          </Form.Item>
+          {/* Case and Company */}
+          <Row gutter={[16, 16]}>
+            <Col span={4}>
+              <Form.Item
+                name="year"
+                label={
+                  <Space align="center">
+                    <div>Year</div>
+                    <Tooltip
+                      title="Please enter the year for which you are providing data. This year will also be used to retrieve a living income benchmark, if it is available for the specified region. If a benchmark for this year is not available, we will use the most recent available benchmark value."
+                      placement="topRight"
+                    >
+                      <InfoCircleTwoTone twoToneColor="#1677ff" />
+                    </Tooltip>
+                  </Space>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Select year",
+                  },
+                ]}
+              >
+                <DatePicker
+                  picker="year"
+                  disabledDate={(current) => {
+                    return current && dayjs(current).year() > dayjs().year();
+                  }}
+                  disabled={!enableEditCase}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="company" label="Company">
+                <Select
+                  placeholder="Select Company"
+                  options={companyOptions}
+                  {...selectProps}
+                  disabled={!enableEditCase}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          {/* EOL Case and Company */}
 
           <Form.Item
             name="tags"
@@ -565,6 +582,7 @@ const CaseProfile = ({
       private: privateCase,
       other_commodities: other_commodities,
       tags: values.tags || null,
+      company: values.company || null,
     };
 
     // detect is payload updated

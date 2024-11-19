@@ -23,6 +23,7 @@ import { UserState, UIState } from "./store";
 import { api } from "./lib";
 import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
+import orderBy from "lodash/orderBy";
 
 const optionRoutes = ["organisation/options", "tag/options", "company/options"];
 
@@ -44,7 +45,7 @@ const App = () => {
         UIState.update((s) => {
           s.organisationOptions = orgRes.data;
           s.tagOptions = tagRes.data;
-          s.companyOptions = companyRes.data;
+          s.companyOptions = orderBy(companyRes.data, ["label"], ["asc"]);
         });
       })
       .catch((e) => {

@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ContentLayout } from "../../../components/layout";
 import { Form, Input, Card, Button, Spin, message } from "antd";
 import { api } from "../../../lib";
+import { UIState } from "../../../store";
+import orderBy from "lodash/orderBy";
 
 const CompanyForm = () => {
   const navigate = useNavigate();
@@ -44,7 +46,16 @@ const CompanyForm = () => {
       ? api.put(`company/${companyId}`, payload)
       : api.post("company", payload);
     apiCall
-      .then(() => {
+      .then((res) => {
+        const { data } = res;
+        // Update companyOptions state
+        UIState.update((s) => {
+          s.companyOptions = orderBy(
+            [...s.companyOptions, { label: data.name, value: data.id }],
+            ["label"],
+            ["asc"]
+          );
+        });
         messageApi.open({
           type: "success",
           content: "Company saved successfully.",

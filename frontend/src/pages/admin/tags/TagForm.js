@@ -4,6 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ContentLayout } from "../../../components/layout";
 import { Form, Input, Card, Button, Spin, message } from "antd";
 import { api } from "../../../lib";
+import { UIState } from "../../../store";
+import orderBy from "lodash/orderBy";
 
 const TagForm = () => {
   const navigate = useNavigate();
@@ -45,7 +47,16 @@ const TagForm = () => {
       ? api.put(`tag/${tagId}`, payload)
       : api.post("tag", payload);
     apiCall
-      .then(() => {
+      .then((res) => {
+        const { data } = res;
+        // Update tagOptions state
+        UIState.update((s) => {
+          s.tagOptions = orderBy(
+            [...s.tagOptions, { label: data.name, value: data.id }],
+            ["value"],
+            ["asc"]
+          );
+        });
         messageApi.open({
           type: "success",
           content: "Tag saved successfully.",
