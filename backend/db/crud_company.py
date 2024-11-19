@@ -1,15 +1,24 @@
-from typing import Optional, List
+from typing import List, Optional
+from typing_extensions import TypedDict
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from models.company import Company, CompanyDict
+from models.company import (
+    Company,
+    CompanyDict,
+    CompanyBase,
+)
 
 
-def add_Company(
+class PaginatedCompanyData(TypedDict):
+    count: int
+    data: List[CompanyDict]
+
+
+def add_company(
     session: Session,
-    name: str,
-    id: Optional[int] = None,
+    payload: CompanyBase,
 ) -> CompanyDict:
-    company = Company(id=id, name=name)
+    company = Company(id=payload.id, name=payload.name)
     session.add(company)
     session.commit()
     session.flush()
@@ -35,5 +44,23 @@ def get_company_by_id(session: Session, id: int) -> CompanyDict:
     return company
 
 
-def get_all_company(session: Session) -> List[CompanyDict]:
+def get_all_company(session: Session):
     return session.query(Company).all()
+
+
+def filter_company(
+    session: Session,
+    skip: int = 0,
+    limit: int = 10,
+    search: Optional[str] = None,
+) -> List[CompanyDict]:
+    companies = session.query(Company)
+    if search:
+        companies = companies.filter(
+            Company.name.ilike("%{}%".format(search.lower().strip()))
+        )
+    count = companies.count()
+    companies = (
+        companies.order_by(Company.id.desc()).offset(skip).limit(limit).all()
+    )
+    return PaginatedCompanyData(count=count, data=companies)

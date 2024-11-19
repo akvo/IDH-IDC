@@ -1,7 +1,8 @@
 from db.connection import Base
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from typing import Optional
+
+# from sqlalchemy.orm import relationship
+from typing import Optional, List
 from typing_extensions import TypedDict
 from pydantic import BaseModel
 
@@ -22,12 +23,12 @@ class Company(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String, nullable=False)
 
-    users = relationship(
-        "User",
-        cascade="all, delete",
-        passive_deletes=True,
-        back_populates="user_company",
-    )
+    # user_company_detail = relationship(
+    #     "User",
+    #     cascade="all, delete",
+    #     passive_deletes=True,
+    #     back_populates="user_companies",
+    # )
 
     def __init__(self, id: Optional[int], name: str):
         self.id = id
@@ -49,5 +50,12 @@ class Company(Base):
 
 
 class CompanyBase(BaseModel):
-    id: int
     name: str
+    id: Optional[int] = None
+
+
+class PaginatedCompanyResponse(BaseModel):
+    current: int
+    data: List[CompanyDict]
+    total: int
+    total_page: int

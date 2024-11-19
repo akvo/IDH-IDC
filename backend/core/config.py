@@ -16,6 +16,7 @@ from routes.living_income_benchmark import lib_route
 from routes.cpi import cpi_route
 from routes.visualization import visualization_route
 from routes.reference_data import reference_data_routes
+from routes.company import company_route
 
 import os
 from jsmin import jsmin
@@ -107,6 +108,7 @@ app = FastAPI(
 
 # Routes register
 app.include_router(organisation_route)
+app.include_router(company_route)
 app.include_router(user_route)
 app.include_router(case_route)
 app.include_router(question_route)
