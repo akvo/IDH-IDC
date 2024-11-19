@@ -1,0 +1,13 @@
+@import "../../../variables.scss";
+
+#company {
+  .company-form-container {
+    .ant-card {
+      margin: 16px 0;
+    }
+
+    .ant-select {
+      width: 100% !important;
+    }
+  }
+}

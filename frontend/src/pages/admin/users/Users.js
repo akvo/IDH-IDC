@@ -4,7 +4,16 @@ import { Link } from "react-router-dom";
 import { EditOutlined, DeleteTwoTone } from "@ant-design/icons";
 import upperFirst from "lodash/upperFirst";
 import { api } from "../../../lib";
-import { Button, Checkbox, Select, Space, Popconfirm, Modal, List } from "antd";
+import {
+  Button,
+  Checkbox,
+  Select,
+  Space,
+  Popconfirm,
+  Modal,
+  List,
+  message,
+} from "antd";
 import { selectProps } from "../../cases/components";
 import "./user.scss";
 
@@ -49,6 +58,7 @@ const Users = () => {
   const [role, setRole] = useState(null);
   const [deleting, setDeleting] = useState([]);
   const [modal, contextHolder] = Modal.useModal();
+  const [messageApi, messageContextHolder] = message.useMessage();
 
   const fetchUser = useCallback(
     ({ currentPage, search, showApprovedUser, role }) => {
@@ -88,6 +98,10 @@ const Users = () => {
     api
       .delete(`user/${user.id}`)
       .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "User deleted successfully.",
+        });
         fetchUser({ currentPage, search, showApprovedUser, role });
       })
       .catch((e) => {
@@ -121,6 +135,11 @@ const Users = () => {
               window.open(URL, "_blank");
             },
             cancelText: "Cancel",
+          });
+        } else {
+          messageApi.open({
+            type: "error",
+            content: "Failed! Something went wrong.",
           });
         }
       })
@@ -248,6 +267,8 @@ const Users = () => {
       />
       {/* modal context holder */}
       {contextHolder}
+      {/* message context holder */}
+      {messageContextHolder}
     </ContentLayout>
   );
 };

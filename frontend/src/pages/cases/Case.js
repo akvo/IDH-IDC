@@ -337,6 +337,7 @@ const Case = () => {
             area_size_unit: data.area_size_unit,
             volume_measurement_unit: data.volume_measurement_unit,
             reporting_period: data.reporting_period,
+            company: data.company,
           };
           // secondary
           let secondaryCommodityValue = {};

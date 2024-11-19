@@ -69,6 +69,7 @@ class CaseDict(TypedDict):
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
     tags: Optional[List[int]] = []
+    company: Optional[int] = None
 
 
 class CaseDetailDict(TypedDict):
@@ -95,6 +96,7 @@ class CaseDetailDict(TypedDict):
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
     tags: Optional[List[int]] = []
+    company: Optional[int] = None
 
 
 class Case(Base):
@@ -129,6 +131,7 @@ class Case(Base):
         onupdate=func.now(),
     )
     updated_by = Column(Integer, ForeignKey("user.id"), nullable=True)
+    company = Column(Integer, ForeignKey("company.id"), nullable=True)
 
     case_commodities = relationship(
         CaseCommodity,
@@ -189,6 +192,7 @@ class Case(Base):
         created_by: int,
         updated_by: Optional[int] = None,
         private: Optional[int] = 0,
+        company: Optional[int] = None,
         id: Optional[int] = None,
     ):
         self.id = id
@@ -210,6 +214,7 @@ class Case(Base):
         self.private = private
         self.created_by = created_by
         self.updated_by = updated_by
+        self.company = company
 
     def __repr__(self) -> int:
         return f"<Case {self.id}>"
@@ -238,6 +243,7 @@ class Case(Base):
             "segments": [ps.serialize for ps in self.case_segments],
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
+            "company": self.company,
         }
 
     @property
@@ -281,9 +287,9 @@ class Case(Base):
             "logo": self.logo,
             "created_by": self.created_by_user.email,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-            "updated_by": self.updated_by_user.fullname
-            if self.updated_by
-            else None,
+            "updated_by": (
+                self.updated_by_user.fullname if self.updated_by else None
+            ),
             "updated_at": self.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
             "segments": [
                 ps.serialize_with_answers for ps in self.case_segments
@@ -291,6 +297,7 @@ class Case(Base):
             "case_commodities": [pc.simplify for pc in self.case_commodities],
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
+            "company": self.company,
         }
 
     @property
@@ -328,6 +335,7 @@ class CaseBase(BaseModel):
     private: Optional[bool] = False
     other_commodities: Optional[List[OtherCommoditysBase]] = None
     tags: Optional[List[int]] = None
+    company: Optional[int] = None
 
 
 class PaginatedCaseResponse(BaseModel):

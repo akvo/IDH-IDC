@@ -58,6 +58,7 @@ class TestCaseRoute:
                 }
             ],
             "tags": [1],
+            "company": 1,
         }
         # without cred
         res = await client.post(
@@ -127,6 +128,7 @@ class TestCaseRoute:
             "private": False,
             "segments": [],
             "tags": [1],
+            "company": 1,
         }
 
     @pytest.mark.asyncio
@@ -209,6 +211,7 @@ class TestCaseRoute:
             "private": True,
             "segments": [],
             "tags": [],
+            "company": None,
         }
 
     @pytest.mark.asyncio
@@ -305,6 +308,7 @@ class TestCaseRoute:
                 }
             ],
             "tags": [1],
+            "company": None,
         }
         # without cred
         res = await client.put(
@@ -377,6 +381,7 @@ class TestCaseRoute:
             "private": False,
             "segments": [],
             "tags": [1],
+            "company": None,
         }
 
     @pytest.mark.asyncio
@@ -454,4 +459,5 @@ class TestCaseRoute:
             ],
             "private": False,
             "tags": [1],
+            "company": None,
         }

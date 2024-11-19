@@ -86,6 +86,7 @@ class UserDetailDict(TypedDict):
     role: UserRole
     all_cases: bool
     active: bool
+    company: Optional[int]
     tags: Optional[List[int]]
     business_units: Optional[List[UserBusinessUnitRoleDict]]
     cases: Optional[List[UserCasePermissionDict]]
@@ -110,6 +111,7 @@ class UserDict(TypedDict):
     fullname: str
     role: UserRole
     active: bool
+    company: Optional[int]
 
 
 class UserInvitation(TypedDict):
@@ -135,6 +137,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     organisation = Column(Integer, ForeignKey("organisation.id"))
+    company = Column(Integer, ForeignKey("company.id"), nullable=True)
     email = Column(String, nullable=False, unique=True)
     fullname = Column(String, nullable=False)
     password = Column(String, nullable=True)
@@ -155,6 +158,12 @@ class User(Base):
         cascade="all, delete",
         passive_deletes=True,
         back_populates="users",
+    )
+    user_companies = relationship(
+        "Company",
+        cascade="all, delete",
+        passive_deletes=True,
+        back_populates="user_company_detail",
     )
     user_tags = relationship(
         UserTag,
@@ -186,6 +195,7 @@ class User(Base):
         invitation_id: Optional[str] = None,
         password: Optional[str] = None,
         all_cases: Optional[int] = 0,
+        company: Optional[int] = None,
     ):
         self.id = id
         self.organisation = organisation
@@ -196,6 +206,7 @@ class User(Base):
         self.all_cases = all_cases
         self.is_active = is_active
         self.invitation_id = invitation_id
+        self.company = company
 
     def __repr__(self) -> int:
         return f"<User {self.id}>"
@@ -205,6 +216,7 @@ class User(Base):
         return {
             "id": self.id,
             "organisation": self.organisation,
+            "company": self.company,
             "email": self.email,
             "fullname": self.fullname,
             "role": self.role,
@@ -264,6 +276,7 @@ class User(Base):
             "all_cases": self.all_cases,
             "active": self.is_active,
             "organisation": self.organisation,
+            "company": self.company,
             "tags": tags,
             "business_units": business_units,
             "cases": cases,
@@ -314,6 +327,7 @@ class UserBase(BaseModel):
     tags: Optional[str] = None
     cases: Optional[str] = None
     business_units: Optional[str] = None
+    company: Optional[int] = None
 
     @field_validator("tags")
     @classmethod
@@ -337,6 +351,7 @@ class UserBase(BaseModel):
         fullname: str = Form(...),
         email: str = Form(...),
         organisation: int = Form(None),
+        company: int = Form(None),
         password: SecretStr = Form(None),
         role: UserRole = Form(None),
         all_cases: bool = Form(False),
@@ -349,6 +364,7 @@ class UserBase(BaseModel):
             email=email,
             password=password,
             organisation=organisation,
+            company=company,
             role=role,
             all_cases=all_cases,
             tags=tags,
@@ -374,6 +390,7 @@ class UserUpdateBase(BaseModel):
     tags: Optional[str] = None
     cases: Optional[str] = None
     business_units: Optional[str] = None
+    company: Optional[int] = None
 
     @field_validator("tags")
     @classmethod
@@ -396,6 +413,7 @@ class UserUpdateBase(BaseModel):
         cls,
         fullname: str = Form(...),
         organisation: int = Form(None),
+        company: int = Form(None),
         password: SecretStr = Form(None),
         role: UserRole = Form(None),
         all_cases: bool = Form(False),
@@ -410,6 +428,7 @@ class UserUpdateBase(BaseModel):
             role=role,
             all_cases=all_cases,
             organisation=organisation,
+            company=company,
             is_active=is_active,
             tags=tags,
             cases=cases,

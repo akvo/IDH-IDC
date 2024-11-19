@@ -11,13 +11,21 @@ import { Login, ResetPassword } from "./pages/login";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome } from "./pages/welcome";
-import { Users, UserForm, Tags, TagForm } from "./pages/admin";
+import {
+  Users,
+  UserForm,
+  Tags,
+  TagForm,
+  Company,
+  CompanyForm,
+} from "./pages/admin";
 import { UserState, UIState } from "./store";
 import { api } from "./lib";
 import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
+import orderBy from "lodash/orderBy";
 
-const optionRoutes = ["organisation/options", "tag/options"];
+const optionRoutes = ["organisation/options", "tag/options", "company/options"];
 
 const App = () => {
   const navigate = useNavigate();
@@ -33,10 +41,11 @@ const App = () => {
     const optionApiCalls = optionRoutes.map((url) => api.get(url));
     Promise.all(optionApiCalls)
       .then((res) => {
-        const [orgRes, tagRes] = res;
+        const [orgRes, tagRes, companyRes] = res;
         UIState.update((s) => {
           s.organisationOptions = orgRes.data;
           s.tagOptions = tagRes.data;
+          s.companyOptions = orderBy(companyRes.data, ["label"], ["asc"]);
         });
       })
       .catch((e) => {
@@ -156,6 +165,17 @@ const App = () => {
               <Route path="/admin/tags" element={<Tags />} />
               <Route path="/admin/tag/new" element={<TagForm />} />
               <Route path="/admin/tag/:tagId" element={<TagForm />} />
+              <Route exact path="/admin/company" element={<Company />} />
+              <Route
+                exact
+                path="/admin/company/new"
+                element={<CompanyForm />}
+              />
+              <Route
+                exact
+                path="/admin/company/:companyId"
+                element={<CompanyForm />}
+              />
             </Route>
           ) : (
             ""

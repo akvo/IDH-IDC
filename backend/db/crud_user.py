@@ -21,7 +21,7 @@ from db.crud_user_business_unit import (
     delete_user_business_units_by_user_id,
     get_all_business_unit_users,
 )
-from db.crud_organisation import defaul_organisation
+from db.crud_organisation import default_organisation
 
 
 def add_user(
@@ -41,7 +41,7 @@ def add_user(
     # default organisation for now
     organisation = payload.organisation
     if not organisation:
-        def_org = defaul_organisation(session=session, name="IDH")
+        def_org = default_organisation(session=session, name="IDH")
         organisation = def_org.id
     user = User(
         fullname=payload.fullname,
@@ -52,6 +52,7 @@ def add_user(
         all_cases=all_cases,
         is_active=1 if invitation_id else 0,
         invitation_id=str(uuid4()) if invitation_id else None,
+        company=payload.company,
     )
     if payload.tags:
         for tag in payload.tags:
@@ -89,6 +90,7 @@ def update_user(
     user.organisation = (
         payload.organisation if payload.organisation else user.organisation
     )
+    user.company = payload.company
     user.is_active = 1 if payload.is_active else user.is_active
     role = payload.role if payload.role else user.role
     user.role = role

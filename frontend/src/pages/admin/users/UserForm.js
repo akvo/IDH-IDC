@@ -12,13 +12,11 @@ import {
   Select,
   Spin,
   message,
-  Checkbox,
 } from "antd";
 import { allUserRole, nonAdminRole, adminRole } from "../../../store/static";
 import upperFirst from "lodash/upperFirst";
-import { UserState } from "../../../store";
+import { UserState, UIState } from "../../../store";
 import { api } from "../../../lib";
-import FormItem from "antd/es/form/FormItem";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const transformToSelectOptions = (values) => {
@@ -37,6 +35,14 @@ const defFormListValue = {
 
 const useRoleWithBusinessUnitFieldByDefault = ["admin"];
 
+const userRoleTypeOptions = [
+  { label: "IDH Internal User", value: "internal" },
+  {
+    label: "External User",
+    value: "external",
+  },
+];
+
 const UserForm = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
@@ -49,8 +55,10 @@ const UserForm = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [isUserActive, setIsUserActive] = useState(null);
   const [showBusinessUnit, setShowBusinessUnit] = useState(false);
+  const [showCompany, setShowCompany] = useState(false);
 
   // const organisationOptions = UIState.useState((s) => s.organisationOptions);
+  const companyOptions = UIState.useState((s) => s.companyOptions);
 
   const businessUnitOptions = window.master.business_units?.map((x) => ({
     label: x.name,
@@ -69,16 +77,24 @@ const UserForm = () => {
           const { data } = res;
           setSelectedRole(data?.role || null);
           setIsUserActive(data.active);
+          let userType = null;
 
           const businessUnits = data?.business_units?.length
             ? data.business_units.map((bu) => bu.business_unit)
             : [];
           if (businessUnits.length) {
+            userType = "internal";
             setShowBusinessUnit(true);
+          }
+
+          if (data?.company) {
+            userType = "external";
+            setShowCompany(true);
           }
 
           setInitValues({
             ...data,
+            user_type: userType,
             business_units: businessUnits,
           });
         })
@@ -101,7 +117,7 @@ const UserForm = () => {
 
   const onFinish = (values) => {
     setSubmitting(true);
-    const { fullname, email, role, business_units } = values;
+    const { fullname, email, role, business_units, company } = values;
 
     const payload = new FormData();
     payload.append("fullname", fullname);
@@ -122,6 +138,9 @@ const UserForm = () => {
       }));
       payload.append("business_units", JSON.stringify(businessUnitVals));
     } else {
+      if (company) {
+        payload.append("company", company);
+      }
       // external user
       CustomEvent.trackEvent(
         "User Management",
@@ -175,6 +194,17 @@ const UserForm = () => {
 
   const handleOnChangeRole = (value) => {
     setSelectedRole(value);
+  };
+
+  const handleOnChangeUserType = (value) => {
+    if (value === "internal") {
+      setShowCompany(false);
+      setShowBusinessUnit(true);
+    } else {
+      // external
+      setShowBusinessUnit(false);
+      setShowCompany(true);
+    }
   };
 
   return (
@@ -275,6 +305,26 @@ const UserForm = () => {
                   />
                 </Form.Item> */}
                 {selectedRole === "user" && (
+                  <Form.Item
+                    label="User Type"
+                    name="user_type"
+                    rules={[
+                      {
+                        required: true,
+                        message: "User type is required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      optionFilterProp="children"
+                      filterOption={filterOption}
+                      options={userRoleTypeOptions}
+                      onChange={handleOnChangeUserType}
+                    />
+                  </Form.Item>
+                  /*
+                  Old business unit TODO:: Delete
                   <FormItem>
                     <Checkbox
                       checked={showBusinessUnit}
@@ -282,7 +332,7 @@ const UserForm = () => {
                     >
                       IDH Internal User
                     </Checkbox>
-                  </FormItem>
+                  </FormItem> */
                 )}
               </Card>
             </Col>
@@ -308,6 +358,30 @@ const UserForm = () => {
                       optionFilterProp="children"
                       filterOption={filterOption}
                       options={businessUnitOptions}
+                    />
+                  </Form.Item>
+                </Card>
+              ) : (
+                ""
+              )}
+              {/* Company Selector */}
+              {showCompany ? (
+                <Card title="Company">
+                  <Form.Item
+                    label="Company"
+                    name="company"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Company is required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      optionFilterProp="children"
+                      filterOption={filterOption}
+                      options={companyOptions}
                     />
                   </Form.Item>
                 </Card>

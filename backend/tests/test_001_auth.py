@@ -81,6 +81,7 @@ class TestUserAuthentication:
             "organisation": 1,
             "active": False,
             "role": UserRole.user.value,
+            "company": None,
         }
 
     @pytest.mark.asyncio
@@ -201,7 +202,9 @@ class TestUserAuthentication:
         )
         assert res.status_code == 401
         res = res.json()
-        assert res == {"detail": "You can't login until your account is approved."}
+        assert res == {
+            "detail": "You can't login until your account is approved."
+        }
 
     @pytest.mark.asyncio
     async def test_get_user_me(

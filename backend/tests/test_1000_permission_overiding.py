@@ -120,11 +120,11 @@ class TestPermissionOveriding:
     @pytest.mark.asyncio
     async def test_seeder_fake_case(self, session: Session) -> None:
         cases = session.query(Case).count()
-        assert cases == 3
+        assert cases == 4
 
         seed_fake_case(session=session)
         cases = session.query(Case).count()
-        assert cases == 9
+        assert cases == 10
 
     @pytest.mark.asyncio
     async def test_create_case_by_external_user(
@@ -223,7 +223,7 @@ class TestPermissionOveriding:
         res = res.json()
         assert res == {
             "id": 3,
-            "case": 10,
+            "case": 11,
             "label": res["label"],
             "value": 17,
             "permission": "edit",
@@ -239,7 +239,7 @@ class TestPermissionOveriding:
         res = res.json()
         assert res == {
             "id": 4,
-            "case": 10,
+            "case": 11,
             "label": res["label"],
             "value": 7,
             "permission": "view",
@@ -508,6 +508,38 @@ class TestPermissionOveriding:
             "fullname": "Test User",
             "role": "user",
             "active": False,
+            "company": None,
+        }
+
+    @pytest.mark.asyncio
+    async def test_user_register_with_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        user_payload = {
+            "fullname": "Company User",
+            "email": "company_user@test.org",
+            "password": None,
+            "role": UserRole.user.value,
+            "company": 1,
+        }
+        # without credential
+        res = await client.post(
+            app.url_path_for("user:register"),
+            data=user_payload,
+            headers={
+                "content-type": "application/x-www-form-urlencoded",
+            },
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "id": 23,
+            "fullname": "Company User",
+            "email": "company_user@test.org",
+            "organisation": 2,
+            "active": False,
+            "role": "user",
+            "company": 1,
         }
 
     @pytest.mark.asyncio

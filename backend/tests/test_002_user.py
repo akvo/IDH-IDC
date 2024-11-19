@@ -274,6 +274,7 @@ class TestUserEndpoint:
             "tags": [],
             "business_units": [],
             "cases": [],
+            "company": None,
         }
 
     @pytest.mark.asyncio
@@ -339,6 +340,7 @@ class TestUserEndpoint:
             "organisation": 1,
             "role": UserRole.admin.value,
             "active": True,
+            "company": None,
         }
         user = get_user_by_email(session=session, email=user_payload["email"])
         assert user.invitation_id is not None
@@ -452,6 +454,7 @@ class TestUserEndpoint:
             "tags": [],
             "business_units": [{"business_unit": 1, "role": "member"}],
             "cases": [],
+            "company": None,
         }
 
     @pytest.mark.asyncio
@@ -496,6 +499,7 @@ class TestUserEndpoint:
             "tags": [],
             "business_units": [{"business_unit": 1, "role": "member"}],
             "cases": [],
+            "company": None,
         }
 
     @pytest.mark.asyncio
