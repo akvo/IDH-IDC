@@ -130,7 +130,7 @@ def update_Case(
 
 
 @company_route.delete(
-    "/Company/{company_id:path}",
+    "/company/{company_id:path}",
     responses={204: {"model": None}},
     status_code=HTTPStatus.NO_CONTENT,
     summary="delete a company by company id",
@@ -144,5 +144,5 @@ def delete_case(
     credentials: credentials = Depends(security),
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
-    crud_company.delete_company(session=Session, company_id=company_id)
+    crud_company.delete_company(session=session, company_id=company_id)
     return Response(status_code=HTTPStatus.NO_CONTENT.value)

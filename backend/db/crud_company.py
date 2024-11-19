@@ -87,10 +87,12 @@ def delete_company(session: Session, company_id: int):
     cases = session.query(Case).filter(Case.company == company_id).all()
     if users or cases:
         error_text = "There're some "
-        if users:
+        if users and not cases:
             error_text += "users"
-        if cases:
+        if cases and not users:
             error_text += "cases"
+        if users and cases:
+            error_text += "users & cases"
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"{error_text} linked into this company.",
