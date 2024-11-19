@@ -56,7 +56,7 @@ def get_company_options(
 @company_route.get(
     "/company",
     response_model=PaginatedCompanyResponse,
-    summary="get all comapany",
+    summary="get all company",
     name="company:get_all",
     tags=["Company"],
 )
@@ -89,6 +89,23 @@ def get_all_company(
         "total": total,
         "total_page": total_page,
     }
+
+
+@company_route.get(
+    "/company/{company_id:path}",
+    response_model=CompanyDict,
+    summary="get company by id",
+    name="company:get_by_id",
+    tags=["Company"],
+)
+def get_company_by_id(
+    req: Request,
+    company_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    company = crud_company.get_company_by_id(session=session, id=company_id)
+    return company.serialize
 
 
 @company_route.put(

@@ -37,6 +37,23 @@ class TestCompanyRoute:
         assert res.status_code == 404
 
     @pytest.mark.asyncio
+    async def test_get_company_by_id_return_404(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # without cred
+        res = await client.get(
+            app.url_path_for("company:get_by_id", company_id=1000),
+        )
+        assert res.status_code == 403
+
+        # with cred super admin
+        res = await client.get(
+            app.url_path_for("company:get_by_id", company_id=1000),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 404
+
+    @pytest.mark.asyncio
     async def test_create_company(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
@@ -83,6 +100,19 @@ class TestCompanyRoute:
             "total": 1,
             "total_page": 1,
         }
+
+    @pytest.mark.asyncio
+    async def test_get_company_by_id(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # with cred super admin
+        res = await client.get(
+            app.url_path_for("company:get_by_id", company_id=1),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {"id": 1, "name": "Company Test"}
 
     @pytest.mark.asyncio
     async def test_get_company_options(

@@ -45,7 +45,12 @@ def get_all(
     total_page = ceil(total / limit) if total > 0 else 0
     if total_page < page:
         raise HTTPException(status_code=404, detail="Not found")
-    return {"current": page, "data": tags, "total": total, "total_page": total_page}
+    return {
+        "current": page,
+        "data": tags,
+        "total": total,
+        "total_page": total_page,
+    }
 
 
 @tag_route.post(
