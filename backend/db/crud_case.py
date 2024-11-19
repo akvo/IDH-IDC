@@ -44,6 +44,7 @@ def add_case(session: Session, payload: CaseBase, user: User) -> CaseDict:
         private=1 if payload.private else 0,
         created_by=user.id,
         updated_by=user.id,
+        company=payload.company,
     )
     # store focus to case_commodity by default
     def_focus_commodity = CaseCommodity(
@@ -173,6 +174,7 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
     case.multiple_commodities = 1 if payload.multiple_commodities else 0
     case.logo = payload.logo
     case.private = 1 if payload.private else 0
+    case.company = payload.company
     # don't update updated_at value
     case.updated_at = case.updated_at
     # reporting period

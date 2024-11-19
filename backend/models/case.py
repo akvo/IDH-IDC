@@ -190,6 +190,7 @@ class Case(Base):
         created_by: int,
         updated_by: Optional[int] = None,
         private: Optional[int] = 0,
+        company: Optional[int] = None,
         id: Optional[int] = None,
     ):
         self.id = id
@@ -211,6 +212,7 @@ class Case(Base):
         self.private = private
         self.created_by = created_by
         self.updated_by = updated_by
+        self.company = company
 
     def __repr__(self) -> int:
         return f"<Case {self.id}>"
@@ -329,6 +331,7 @@ class CaseBase(BaseModel):
     private: Optional[bool] = False
     other_commodities: Optional[List[OtherCommoditysBase]] = None
     tags: Optional[List[int]] = None
+    company: Optional[int] = None
 
 
 class PaginatedCaseResponse(BaseModel):

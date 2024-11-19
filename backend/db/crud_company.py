@@ -8,6 +8,7 @@ from models.company import (
     CompanyBase,
 )
 from models.user import User
+from models.case import Case
 
 
 class PaginatedCompanyData(TypedDict):
@@ -81,13 +82,18 @@ def update_company(
 def delete_company(session: Session, company_id: int):
     company = get_company_by_id(session=session, id=company_id)
 
-    # check if users in company
-    # TODO :: query user by company
-    users = session.query(User).all()
-    if users:
+    # check if users/cases linked into the company
+    users = session.query(User).filter(User.company == company_id).all()
+    cases = session.query(Case).filter(Case.company == company_id).all()
+    if users or cases:
+        error_text = "There're some "
+        if users:
+            error_text += "users"
+        if cases:
+            error_text += "cases"
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Company {id} has users",
+            detail=f"{error_text} linked into this company.",
         )
 
     session.delete(company)
