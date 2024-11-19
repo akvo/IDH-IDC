@@ -20,7 +20,11 @@ def seeder_organisation(session: Session):
     organisation = organisation[["id", "name"]]
     for index, row in organisation.iterrows():
         # find prev org
-        org = session.query(Organisation).filter(Organisation.id == row["id"]).first()
+        org = (
+            session.query(Organisation)
+            .filter(Organisation.id == row["id"])
+            .first()
+        )
         if org:
             # update
             org.name = row["name"]

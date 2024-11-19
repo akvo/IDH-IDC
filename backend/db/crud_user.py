@@ -21,7 +21,7 @@ from db.crud_user_business_unit import (
     delete_user_business_units_by_user_id,
     get_all_business_unit_users,
 )
-from db.crud_organisation import defaul_organisation
+from db.crud_organisation import default_organisation
 
 
 def add_user(
@@ -41,7 +41,7 @@ def add_user(
     # default organisation for now
     organisation = payload.organisation
     if not organisation:
-        def_org = defaul_organisation(session=session, name="IDH")
+        def_org = default_organisation(session=session, name="IDH")
         organisation = def_org.id
     user = User(
         fullname=payload.fullname,
