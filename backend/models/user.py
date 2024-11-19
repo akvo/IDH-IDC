@@ -137,7 +137,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     organisation = Column(Integer, ForeignKey("organisation.id"))
-    company = Column(Integer, ForeignKey("company.id"))
+    company = Column(Integer, ForeignKey("company.id"), nullable=True)
     email = Column(String, nullable=False, unique=True)
     fullname = Column(String, nullable=False)
     password = Column(String, nullable=True)
