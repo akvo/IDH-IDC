@@ -11,7 +11,14 @@ import { Login, ResetPassword } from "./pages/login";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome } from "./pages/welcome";
-import { Users, UserForm, Tags, TagForm } from "./pages/admin";
+import {
+  Users,
+  UserForm,
+  Tags,
+  TagForm,
+  Company,
+  CompanyForm,
+} from "./pages/admin";
 import { UserState, UIState } from "./store";
 import { api } from "./lib";
 import { adminRole } from "./store/static";
@@ -156,6 +163,17 @@ const App = () => {
               <Route path="/admin/tags" element={<Tags />} />
               <Route path="/admin/tag/new" element={<TagForm />} />
               <Route path="/admin/tag/:tagId" element={<TagForm />} />
+              <Route exact path="/admin/company" element={<Company />} />
+              <Route
+                exact
+                path="/admin/company/new"
+                element={<CompanyForm />}
+              />
+              <Route
+                exact
+                path="/admin/company/:companyId"
+                element={<CompanyForm />}
+              />
             </Route>
           ) : (
             ""
