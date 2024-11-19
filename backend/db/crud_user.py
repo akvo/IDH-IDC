@@ -52,6 +52,7 @@ def add_user(
         all_cases=all_cases,
         is_active=1 if invitation_id else 0,
         invitation_id=str(uuid4()) if invitation_id else None,
+        company=payload.company,
     )
     if payload.tags:
         for tag in payload.tags:
@@ -89,6 +90,7 @@ def update_user(
     user.organisation = (
         payload.organisation if payload.organisation else user.organisation
     )
+    user.company = payload.company
     user.is_active = 1 if payload.is_active else user.is_active
     role = payload.role if payload.role else user.role
     user.role = role

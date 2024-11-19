@@ -77,16 +77,24 @@ const UserForm = () => {
           const { data } = res;
           setSelectedRole(data?.role || null);
           setIsUserActive(data.active);
+          let userType = null;
 
           const businessUnits = data?.business_units?.length
             ? data.business_units.map((bu) => bu.business_unit)
             : [];
           if (businessUnits.length) {
+            userType = "internal";
             setShowBusinessUnit(true);
+          }
+
+          if (data?.company) {
+            userType = "external";
+            setShowCompany(true);
           }
 
           setInitValues({
             ...data,
+            user_type: userType,
             business_units: businessUnits,
           });
         })
@@ -109,7 +117,7 @@ const UserForm = () => {
 
   const onFinish = (values) => {
     setSubmitting(true);
-    const { fullname, email, role, business_units } = values;
+    const { fullname, email, role, business_units, company } = values;
 
     const payload = new FormData();
     payload.append("fullname", fullname);
@@ -130,6 +138,9 @@ const UserForm = () => {
       }));
       payload.append("business_units", JSON.stringify(businessUnitVals));
     } else {
+      if (company) {
+        payload.append("company", company);
+      }
       // external user
       CustomEvent.trackEvent(
         "User Management",
@@ -306,7 +317,6 @@ const UserForm = () => {
                   >
                     <Select
                       showSearch
-                      allowClear
                       optionFilterProp="children"
                       filterOption={filterOption}
                       options={userRoleTypeOptions}

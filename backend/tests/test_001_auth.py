@@ -81,6 +81,7 @@ class TestUserAuthentication:
             "organisation": 1,
             "active": False,
             "role": UserRole.user.value,
+            "company": None,
         }
 
     @pytest.mark.asyncio

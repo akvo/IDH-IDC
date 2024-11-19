@@ -508,6 +508,7 @@ class TestPermissionOveriding:
             "fullname": "Test User",
             "role": "user",
             "active": False,
+            "company": None,
         }
 
     @pytest.mark.asyncio
@@ -538,6 +539,7 @@ class TestPermissionOveriding:
             "organisation": 2,
             "active": False,
             "role": "user",
+            "company": 1,
         }
 
     @pytest.mark.asyncio

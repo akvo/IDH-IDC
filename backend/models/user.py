@@ -86,6 +86,7 @@ class UserDetailDict(TypedDict):
     role: UserRole
     all_cases: bool
     active: bool
+    company: Optional[int]
     tags: Optional[List[int]]
     business_units: Optional[List[UserBusinessUnitRoleDict]]
     cases: Optional[List[UserCasePermissionDict]]
@@ -110,6 +111,7 @@ class UserDict(TypedDict):
     fullname: str
     role: UserRole
     active: bool
+    company: Optional[int]
 
 
 class UserInvitation(TypedDict):
@@ -214,6 +216,7 @@ class User(Base):
         return {
             "id": self.id,
             "organisation": self.organisation,
+            "company": self.company,
             "email": self.email,
             "fullname": self.fullname,
             "role": self.role,
@@ -273,6 +276,7 @@ class User(Base):
             "all_cases": self.all_cases,
             "active": self.is_active,
             "organisation": self.organisation,
+            "company": self.company,
             "tags": tags,
             "business_units": business_units,
             "cases": cases,
