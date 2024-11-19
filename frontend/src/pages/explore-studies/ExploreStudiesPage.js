@@ -271,6 +271,7 @@ const ExploreStudiesPage = () => {
                 onConfirm={() => onConfirmDelete(record)}
                 okText="Yes"
                 cancelText="No"
+                placement="leftBottom"
               >
                 <Link>
                   <DeleteOutlined style={{ color: "red" }} />
