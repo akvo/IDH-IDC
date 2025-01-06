@@ -8,7 +8,8 @@ import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/landing";
 import { Login, ResetPassword } from "./pages/login";
-import { Cases, Case } from "./pages/old-cases";
+import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
+import { Cases } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome } from "./pages/welcome";
 import {
@@ -134,9 +135,15 @@ const App = () => {
                 element={<Welcome signOut={signOut} />}
               />
               <Route exact path="/home" element={<Home />} />
-              <Route exact path="/old-cases" element={<Cases />} />
-              <Route exact path="/old-cases/new" element={<Case />} />
-              <Route exact path="/old-cases/:caseId" element={<Case />} />
+              <Route exact path="/cases" element={<Cases />} />
+              {/*
+                TODO :: Delete later
+                Old Case Page
+              */}
+              <Route exact path="/old-cases" element={<OldCases />} />
+              <Route exact path="/old-cases/new" element={<OldCase />} />
+              <Route exact path="/old-cases/:caseId" element={<OldCase />} />
+              {/* EOL Old Case */}
             </Route>
           ) : (
             ""
