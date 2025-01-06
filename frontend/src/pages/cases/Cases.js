@@ -1,0 +1,427 @@
+import React, { useState, useEffect, useMemo } from "react";
+import "./cases.scss";
+import { ContentLayout } from "../../components/layout";
+import { selectProps, DebounceSelect } from "./components";
+import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Input,
+  Space,
+  Popconfirm,
+  message,
+} from "antd";
+import {
+  PlusOutlined,
+  FilterOutlined,
+  EditOutlined,
+  UserSwitchOutlined,
+  SaveOutlined,
+  CloseOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
+import { Link, useSearchParams } from "react-router-dom";
+import { UIState, UserState } from "../../store";
+import { api } from "../../lib";
+import { isEmpty } from "lodash";
+import { adminRole } from "../../store/static";
+
+const { Search } = Input;
+
+const perPage = 10;
+const defData = {
+  current: 1,
+  data: [],
+  total: 0,
+  total_page: 1,
+};
+const filterProps = {
+  ...selectProps,
+  style: { width: window.innerHeight * 0.175 },
+};
+
+const caseSelectorItems = [
+  {
+    key: "all-cases",
+    label: "All cases",
+    type: "default",
+    onClick: () => console.log("1"),
+  },
+  {
+    key: "my-cases",
+    label: "My cases",
+    type: "text",
+    onClick: () => console.log("2"),
+  },
+];
+
+const Cases = () => {
+  const [searchParams] = useSearchParams();
+  const caseOwner = searchParams.get("owner");
+
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState(null);
+  const [data, setData] = useState(defData);
+  const [country, setCountry] = useState(null);
+  const [commodity, setCommodity] = useState(null);
+  const [tags, setTags] = useState([]);
+  const [email, setEmail] = useState(caseOwner || null);
+  const [year, setYear] = useState(null);
+
+  const tagOptions = UIState.useState((s) => s.tagOptions);
+  const {
+    id: userID,
+    email: userEmail,
+    role: userRole,
+    internal_user: userInternal,
+    case_access: userCaseAccess,
+  } = UserState.useState((s) => s);
+
+  const [showChangeOwnerForm, setShowChangeOwnerForm] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const countryOptions = window.master.countries;
+  const commodityOptions = window.master.commodity_categories
+    .flatMap((c) => c.commodities)
+    .map((c) => ({ label: c.name, value: c.id }));
+
+  const searchProps = {
+    placeholder: "Find Case",
+    style: { width: 575 },
+    onSearch: (value) => setSearch(value),
+  };
+
+  const columns = [
+    {
+      title: "Case Name",
+      dataIndex: "name",
+      key: "case",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
+      width: "10%",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.country.localeCompare(b.country),
+    },
+    {
+      title: "Primary Commodity",
+      key: "primary_commodity",
+      render: (record) => {
+        const findPrimaryCommodity = commodityOptions.find(
+          (co) => co.value === record.focus_commodity
+        );
+        if (!findPrimaryCommodity?.label) {
+          return "-";
+        }
+        return findPrimaryCommodity.label;
+      },
+    },
+    {
+      title: "Tags",
+      key: "tags",
+      render: (record) => {
+        const tags = record.tags
+          .map((tag_id) => {
+            const findTag = tagOptions.find((x) => x.value === tag_id);
+            return findTag?.label || null;
+          })
+          .filter((x) => x);
+        if (!tags.length) {
+          return "-";
+        }
+        return tags.join(", ");
+      },
+    },
+    {
+      title: "Date",
+      dataIndex: "created_at",
+      key: "created_at",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.year - b.year,
+    },
+    {
+      title: "Case Owner",
+      key: "created_by",
+      width: "20%",
+      render: (row) => {
+        // case owner row.created_by !== userEmail
+        if (!adminRole.includes(userRole)) {
+          return row.created_by;
+        }
+        if (row.id === showChangeOwnerForm) {
+          return (
+            <Row align="center" gutter={[6, 6]}>
+              <Col span={20}>
+                <DebounceSelect
+                  placeholder="Search for a user"
+                  value={selectedUser}
+                  fetchOptions={fetchUsers}
+                  onChange={(value) => setSelectedUser(value)}
+                  style={{
+                    width: "100%",
+                  }}
+                  size="small"
+                />
+              </Col>
+              <Col span={4}>
+                <Space align="center">
+                  <Button
+                    size="small"
+                    icon={<SaveOutlined />}
+                    shape="circle"
+                    onClick={() => handleOnUpdateCaseOwner(row)}
+                  />
+                  <Button
+                    size="small"
+                    icon={<CloseOutlined />}
+                    shape="circle"
+                    onClick={() => setShowChangeOwnerForm(null)}
+                  />
+                </Space>
+              </Col>
+            </Row>
+          );
+        }
+        return (
+          <Space align="center">
+            <Button
+              icon={<UserSwitchOutlined />}
+              size="small"
+              shape="circle"
+              onClick={() => setShowChangeOwnerForm(row.id)}
+            />
+            <div>{row.created_by}</div>
+          </Space>
+        );
+      },
+    },
+    {
+      title: "Actions",
+      key: "action",
+      width: "5%",
+      align: "center",
+      render: (text, record) => {
+        const caseDetailURL = `/old-cases/${record.id}`;
+        const EditButton = (
+          <Link to={caseDetailURL}>
+            <EditOutlined />
+          </Link>
+        );
+        const ViewButton = (
+          <Link to={caseDetailURL}>
+            <EyeOutlined />
+          </Link>
+        );
+
+        if (adminRole.includes(userRole)) {
+          return (
+            <Space size="large">
+              {EditButton}
+              <Popconfirm
+                title="Delete Case"
+                description="Are you sure want to delete this case?"
+                onConfirm={() => onConfirmDelete(record)}
+                okText="Yes"
+                cancelText="No"
+                placement="leftBottom"
+              >
+                <Link>
+                  <DeleteOutlined style={{ color: "red" }} />
+                </Link>
+              </Popconfirm>
+            </Space>
+          );
+        }
+
+        // check case access
+        const userPermission = userCaseAccess.find(
+          (a) => a.case === record.id
+        )?.permission;
+        // allow internal user case owner to edit case
+        if (userInternal && record.created_by === userEmail) {
+          return EditButton;
+        }
+        if ((userInternal && !userPermission) || userPermission === "view") {
+          return ViewButton;
+        }
+        if (userPermission === "edit") {
+          return EditButton;
+        }
+        return ViewButton;
+      },
+    },
+  ];
+  console.log(search);
+
+  useEffect(() => {
+    if (userID || refresh) {
+      setLoading(true);
+      let url = `case?page=${currentPage}&limit=${perPage}`;
+      if (search) {
+        url = `${url}&search=${search}`;
+      }
+      if (country) {
+        url = `${url}&country=${country}`;
+      }
+      if (commodity) {
+        url = `${url}&focus_commodity=${commodity}`;
+      }
+      if (!isEmpty(tags)) {
+        const tagQuery = tags.join("&tags=");
+        url = `${url}&tags=${tagQuery}`;
+      }
+      if (email) {
+        url = `${url}&email=${email}`;
+      }
+      if (year) {
+        url = `${url}&year=${year}`;
+      }
+      api
+        .get(url)
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((e) => {
+          console.error(e.response);
+          const { status } = e.response;
+          if (status === 404) {
+            setData(defData);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+          setRefresh(false);
+        });
+    }
+  }, [
+    currentPage,
+    userID,
+    commodity,
+    country,
+    tags,
+    refresh,
+    year,
+    email,
+    search,
+  ]);
+
+  const isCaseCreator = useMemo(() => {
+    if (adminRole.includes(userRole)) {
+      return true;
+    }
+    if (userInternal) {
+      return true;
+    }
+    return false;
+  }, [userRole, userInternal]);
+
+  const fetchUsers = (searchValue) => {
+    return api
+      .get(`user/search_dropdown?search=${searchValue}`)
+      .then((res) => res.data);
+  };
+
+  const handleOnUpdateCaseOwner = (caseRecord) => {
+    api
+      .put(`update_case_owner/${caseRecord.id}?user_id=${selectedUser.value}`)
+      .then(() => {
+        setRefresh(true);
+        setShowChangeOwnerForm(null);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
+  const onConfirmDelete = (record) => {
+    api
+      .delete(`case/${record.id}`)
+      .then(() => {
+        setRefresh(true);
+        messageApi.open({
+          type: "success",
+          content: "Case deleted successfully.",
+        });
+      })
+      .catch(() => {
+        messageApi.open({
+          type: "error",
+          content: "Failed! Something went wrong.",
+        });
+      });
+  };
+
+  return (
+    <ContentLayout
+      breadcrumbItems={[
+        { title: "Home", href: "/welcome" },
+        { title: "Cases", href: "/cases" },
+      ]}
+      title="Cases"
+      wrapperId="case"
+      titleRighContent={
+        <Space>
+          <Search className="search" allowClear {...searchProps} />
+          <Button className="button-ghost" icon={<FilterOutlined />}>
+            Filter
+          </Button>
+          {isCaseCreator && (
+            <Button className="button-green-fill" icon={<PlusOutlined />}>
+              Create new case
+            </Button>
+          )}
+        </Space>
+      }
+    >
+      {contextHolder}
+      <Row gutter={[12, 12]} style={{ paddingBottom: 16 }}>
+        {caseSelectorItems.map((cs) => (
+          <Col key={cs.key}>
+            <Button type={cs.type}>{cs.label}</Button>
+          </Col>
+        ))}
+      </Row>
+      <Row className="table-content-container">
+        <Col span={24}>
+          <Table
+            rowKey="id"
+            className="table-content-wrapper"
+            columns={columns}
+            dataSource={data.data}
+            loading={loading}
+            pagination={{
+              current: currentPage,
+              pageSize: perPage,
+              total: data.total,
+              onChange: (page) => setCurrentPage(page),
+              showSizeChanger: false,
+              showTotal: (total) => (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    marginLeft: "14px",
+                  }}
+                >
+                  Total Case: {total}
+                </div>
+              ),
+            }}
+          />
+        </Col>
+      </Row>
+    </ContentLayout>
+  );
+};
+
+export default Cases;
