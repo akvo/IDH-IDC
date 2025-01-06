@@ -1,5 +1,41 @@
 @import "../../variables.scss";
 
+.case-filter-container {
+  width: 375px !important;
+
+  .case-filter-header {
+    .case-filter-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+
+  .case-filter-body {
+    margin-top: 16px;
+    label {
+      font-weight: 500;
+      font-size: 12px;
+    }
+  }
+
+  .case-filter-footer {
+    margin-top: 16px;
+    .button-filter {
+      background-color: $primary-color;
+      color: #fff;
+      font-weight: 500;
+      border: none;
+
+      :hover {
+        color: #fff;
+      }
+    }
+    .button-reset {
+      font-weight: 500;
+    }
+  }
+}
+
 #case {
   margin-top: 24px;
 

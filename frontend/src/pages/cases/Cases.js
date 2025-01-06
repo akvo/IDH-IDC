@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./cases.scss";
 import { ContentLayout } from "../../components/layout";
-import { selectProps, DebounceSelect } from "./components";
+import { DebounceSelect, CaseFilter } from "./components";
 import {
   Row,
   Col,
@@ -11,6 +11,7 @@ import {
   Space,
   Popconfirm,
   message,
+  Dropdown,
 } from "antd";
 import {
   PlusOutlined,
@@ -37,23 +38,19 @@ const defData = {
   total: 0,
   total_page: 1,
 };
-const filterProps = {
-  ...selectProps,
-  style: { width: window.innerHeight * 0.175 },
-};
 
 const caseSelectorItems = [
   {
     key: "all-cases",
     label: "All cases",
     type: "default",
-    onClick: () => console.log("1"),
+    onClick: () => console.info("1"),
   },
   {
     key: "my-cases",
     label: "My cases",
     type: "text",
-    onClick: () => console.log("2"),
+    onClick: () => console.info("2"),
   },
 ];
 
@@ -65,11 +62,14 @@ const Cases = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState(null);
   const [data, setData] = useState(defData);
-  const [country, setCountry] = useState(null);
-  const [commodity, setCommodity] = useState(null);
-  const [tags, setTags] = useState([]);
-  const [email, setEmail] = useState(caseOwner || null);
-  const [year, setYear] = useState(null);
+  const [filters, setFilters] = useState({
+    country: null,
+    commodity: null,
+    tags: [],
+    email: caseOwner || null,
+    year: null,
+  });
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
@@ -86,7 +86,6 @@ const Cases = () => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const countryOptions = window.master.countries;
   const commodityOptions = window.master.commodity_categories
     .flatMap((c) => c.commodities)
     .map((c) => ({ label: c.name, value: c.id }));
@@ -261,10 +260,10 @@ const Cases = () => {
       },
     },
   ];
-  console.log(search);
 
   useEffect(() => {
     if (userID || refresh) {
+      const { country, commodity, tags, year, email } = filters;
       setLoading(true);
       let url = `case?page=${currentPage}&limit=${perPage}`;
       if (search) {
@@ -303,17 +302,7 @@ const Cases = () => {
           setRefresh(false);
         });
     }
-  }, [
-    currentPage,
-    userID,
-    commodity,
-    country,
-    tags,
-    refresh,
-    year,
-    email,
-    search,
-  ]);
+  }, [currentPage, userID, refresh, search, filters]);
 
   const isCaseCreator = useMemo(() => {
     if (adminRole.includes(userRole)) {
@@ -361,6 +350,10 @@ const Cases = () => {
       });
   };
 
+  const handleApplyFilters = ({ country, commodity, tags, year }) => {
+    setFilters((prev) => ({ ...prev, country, commodity, tags, year }));
+  };
+
   return (
     <ContentLayout
       breadcrumbItems={[
@@ -372,9 +365,26 @@ const Cases = () => {
       titleRighContent={
         <Space>
           <Search className="search" allowClear {...searchProps} />
-          <Button className="button-ghost" icon={<FilterOutlined />}>
-            Filter
-          </Button>
+          <Dropdown
+            trigger="click"
+            placement="bottomRight"
+            dropdownRender={() => (
+              <CaseFilter
+                filters={filters}
+                handleApplyFilters={handleApplyFilters}
+                handleClose={() => setDropdownOpen(false)}
+              />
+            )}
+            open={dropdownOpen}
+          >
+            <Button
+              className="button-ghost"
+              icon={<FilterOutlined />}
+              onClick={() => setDropdownOpen(true)}
+            >
+              Filter
+            </Button>
+          </Dropdown>
           {isCaseCreator && (
             <Button className="button-green-fill" icon={<PlusOutlined />}>
               Create new case
