@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Button, Select, InputNumber, Input } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { selectProps } from ".";
+import { selectProps, countryOptions, commodityOptions } from ".";
 import { UIState } from "../../../store";
-
-const countryOptions = window.master.countries;
-const commodityOptions = window.master.commodity_categories
-  .flatMap((c) => c.commodities)
-  .map((c) => ({ label: c.name, value: c.id }));
 
 const CaseFilter = ({
   filters = {},

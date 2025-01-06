@@ -262,7 +262,7 @@ export const Step = ({
   </Col>
 );
 
-// export { default as AreaUnitFields } from "./AreaUnitFields";
+export { default as AreaUnitFields } from "./AreaUnitFields";
 // export { default as SideMenu } from "./SideMenu";
 // export { default as CaseProfile } from "./CaseProfile";
 // export { default as DataFields } from "./DataFields";
@@ -277,3 +277,4 @@ export const Step = ({
 // export { default as Scenario } from "./Scenario";
 export { default as DebounceSelect } from "./DebounceSelect";
 export { default as CaseFilter } from "./CaseFilter";
+export { default as CaseSettings } from "./CaseSettings";

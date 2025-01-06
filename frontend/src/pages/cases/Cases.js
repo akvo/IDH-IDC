@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./cases.scss";
 import { ContentLayout } from "../../components/layout";
-import { DebounceSelect, CaseFilter } from "./components";
+import {
+  DebounceSelect,
+  CaseFilter,
+  CaseSettings,
+  commodityOptions,
+} from "./components";
 import {
   Row,
   Col,
@@ -70,6 +75,7 @@ const Cases = () => {
     year: null,
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
 
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
@@ -85,10 +91,6 @@ const Cases = () => {
   const [refresh, setRefresh] = useState(false);
 
   const [messageApi, contextHolder] = message.useMessage();
-
-  const commodityOptions = window.master.commodity_categories
-    .flatMap((c) => c.commodities)
-    .map((c) => ({ label: c.name, value: c.id }));
 
   const searchProps = {
     placeholder: "Find Case",
@@ -386,7 +388,11 @@ const Cases = () => {
             </Button>
           </Dropdown>
           {isCaseCreator && (
-            <Button className="button-green-fill" icon={<PlusOutlined />}>
+            <Button
+              className="button-green-fill"
+              icon={<PlusOutlined />}
+              onClick={() => setCaseSettingModalVisible(true)}
+            >
               Create new case
             </Button>
           )}
@@ -430,6 +436,11 @@ const Cases = () => {
           />
         </Col>
       </Row>
+
+      <CaseSettings
+        open={caseSettingModalVisible}
+        handleCancel={() => setCaseSettingModalVisible(false)}
+      />
     </ContentLayout>
   );
 };

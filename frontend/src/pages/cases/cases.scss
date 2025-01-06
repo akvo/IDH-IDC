@@ -36,6 +36,33 @@
   }
 }
 
+.case-settings-modal-container {
+  .ant-modal-body {
+    height: 70vh;
+    overflow-y: auto;
+    padding: 24px 5px;
+  }
+
+  .case-setting-child-card-wrapper {
+    .ant-card-head {
+      background: #f2f2f2;
+    }
+
+    .section-title {
+      font-weight: 500;
+      line-height: 1.2;
+    }
+  }
+
+  .segment-card-container {
+    margin-bottom: 14px;
+
+    .ant-card-head {
+      background: transparent;
+    }
+  }
+}
+
 #case {
   margin-top: 24px;
 
