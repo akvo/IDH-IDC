@@ -6,7 +6,7 @@ import {
   getFunctionDefaultValue,
   InputNumberThousandFormatter,
   diversifiedIncomeTooltipText,
-} from "./";
+} from ".";
 import { flatten } from "../../../lib";
 import { isEmpty, orderBy } from "lodash";
 import {

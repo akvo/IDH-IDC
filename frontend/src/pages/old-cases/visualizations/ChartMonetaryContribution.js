@@ -4,7 +4,7 @@ import {
   LabelStyle,
   thousandFormatter,
 } from "../../../components/chart/options/common";
-import { SegmentSelector } from "./";
+import { SegmentSelector } from ".";
 import { getFunctionDefaultValue } from "../components";
 import {
   TextStyle,

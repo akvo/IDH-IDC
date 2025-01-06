@@ -11,7 +11,7 @@ import {
   Space,
 } from "antd";
 import { InfoCircleTwoTone } from "@ant-design/icons";
-import { InputNumberThousandFormatter, selectProps } from "./";
+import { InputNumberThousandFormatter, selectProps } from ".";
 import { api } from "../../../lib";
 import isEmpty from "lodash/isEmpty";
 import { thousandFormatter } from "../../../components/chart/options/common";

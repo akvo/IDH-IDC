@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col } from "antd";
 import uniqBy from "lodash/uniqBy";
 import capitalize from "lodash/capitalize";
-import { SegmentSelector, DriverDropdown, getColumnStackBarOptions } from "./";
+import { SegmentSelector, DriverDropdown, getColumnStackBarOptions } from ".";
 import Chart from "../../../components/chart";
 
 const otherCommodities = ["secondary", "tertiary"];

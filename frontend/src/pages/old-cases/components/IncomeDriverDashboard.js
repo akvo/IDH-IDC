@@ -5,7 +5,7 @@ import {
   DashboardSensitivityAnalysis,
   DashboardScenarioModeling,
   removeUndefinedObjectValue,
-} from "./";
+} from ".";
 import { api } from "../../../lib";
 import { StepBackwardOutlined } from "@ant-design/icons";
 import { isEmpty, isEqual } from "lodash";

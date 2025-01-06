@@ -8,7 +8,7 @@ import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/landing";
 import { Login, ResetPassword } from "./pages/login";
-import { Cases, Case } from "./pages/cases";
+import { Cases, Case } from "./pages/old-cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome } from "./pages/welcome";
 import {
@@ -134,9 +134,9 @@ const App = () => {
                 element={<Welcome signOut={signOut} />}
               />
               <Route exact path="/home" element={<Home />} />
-              <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/cases/new" element={<Case />} />
-              <Route exact path="/cases/:caseId" element={<Case />} />
+              <Route exact path="/old-cases" element={<Cases />} />
+              <Route exact path="/old-cases/new" element={<Case />} />
+              <Route exact path="/old-cases/:caseId" element={<Case />} />
             </Route>
           ) : (
             ""

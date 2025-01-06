@@ -278,7 +278,7 @@ const Cases = () => {
       width: "5%",
       align: "center",
       render: (text, record) => {
-        const caseDetailURL = `/cases/${record.id}`;
+        const caseDetailURL = `/old-cases/${record.id}`;
         const EditButton = (
           <Link to={caseDetailURL}>
             <EditOutlined />
@@ -383,7 +383,7 @@ const Cases = () => {
     <ContentLayout
       breadcrumbItems={[
         { title: "Home", href: "/welcome" },
-        { title: "Cases", href: "/cases" },
+        { title: "Cases", href: "/old-cases" },
       ]}
       title="Cases"
       wrapperId="case"
@@ -402,7 +402,7 @@ const Cases = () => {
           isCaseCreator
             ? {
                 text: "New Case",
-                to: "/cases/new",
+                to: "/old-cases/new",
               }
             : {}
         }

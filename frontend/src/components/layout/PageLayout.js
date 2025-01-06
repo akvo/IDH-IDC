@@ -34,7 +34,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       {
         testid: "nav-menu-cases",
         name: "Cases Overview",
-        path: "/cases",
+        path: "/old-cases",
         role: allUserRole,
       },
     ];
