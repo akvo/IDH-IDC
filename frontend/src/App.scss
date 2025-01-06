@@ -47,6 +47,13 @@
     color: #ffffff !important;
     font-weight: 700;
   }
+
+  .button-ghost {
+    background: transparent;
+    border-radius: 20px;
+    border-color: #000;
+    font-weight: 700;
+  }
   // EOL global css setting
 
   header {
@@ -183,12 +190,17 @@
           color: #8c8c8c;
         }
 
-        .title {
+        .title-wrapper {
           padding: 0 $default-padding-size;
+          padding-top: 14px;
+        }
+
+        .title {
           font-family: "TabletGothicBold";
           font-size: 1.5rem;
           font-weight: 600;
           padding-top: 4px;
+          color: $primary-color;
         }
 
         .subTitle {

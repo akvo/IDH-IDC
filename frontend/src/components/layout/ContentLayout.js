@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Breadcrumb, Card, Tabs, Affix } from "antd";
+import { Breadcrumb, Card, Tabs, Affix, Row, Col } from "antd";
 import { HomeOutlined, RightOutlined } from "@ant-design/icons";
 import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
@@ -33,6 +33,7 @@ const ContentLayout = ({
   title = null,
   subTitle = null,
   breadcrumbRightContent = null,
+  titleRighContent = null,
 }) => {
   const navigate = useNavigate();
   const hasBreadcrumb = breadcrumbItems.length;
@@ -87,24 +88,36 @@ const ContentLayout = ({
           ) : (
             ""
           )}
-          {title ? (
-            <div
-              data-testid="title"
-              className="title"
-              style={{ paddingTop: "14px" }}
-            >
-              {title}
-            </div>
-          ) : (
-            ""
-          )}
-          {subTitle ? (
-            <div data-testid="subTitle" className="subTitle">
-              {subTitle}
-            </div>
-          ) : (
-            ""
-          )}
+          <Row
+            gutter={[12, 12]}
+            align="middle"
+            justify="start"
+            className="title-wrapper"
+          >
+            <Col span={titleRighContent ? 6 : 24}>
+              {title ? (
+                <div data-testid="title" className="title">
+                  {title}
+                </div>
+              ) : (
+                ""
+              )}
+              {subTitle ? (
+                <div data-testid="subTitle" className="subTitle">
+                  {subTitle}
+                </div>
+              ) : (
+                ""
+              )}
+            </Col>
+            {titleRighContent && (
+              <Col span={18}>
+                <Row justify="end">
+                  <Col>{titleRighContent}</Col>
+                </Row>
+              </Col>
+            )}
+          </Row>
           {adminRole.includes(userRole) &&
           currentPath.includes("/admin/") &&
           showTabItemsForPath.includes(window.location.pathname) ? (
