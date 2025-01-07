@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import "./case-wrapper.scss";
+import { useNavigate } from "react-router-dom";
 import { Row, Col, Steps } from "antd";
 import { ContentLayout } from "../../../components/layout";
 
@@ -32,24 +33,25 @@ const sidebarItems = [
   },
 ];
 
-const CaseSidebar = ({ stepId }) => {
-  const [currentStep, setCurrentStep] = useState(stepId - 1);
+const CaseSidebar = ({ stepId, caseId }) => {
+  const navigate = useNavigate();
+
   return (
     <Steps
       direction="vertical"
       items={sidebarItems}
       className="case-step-wrapper"
-      onChange={(val) => setCurrentStep(val)}
-      current={currentStep}
+      onChange={(val) => navigate(`/case/${caseId}/${val + 1}`)}
+      current={stepId - 1}
     />
   );
 };
 
-const CaseWrapper = ({ children, stepId }) => {
+const CaseWrapper = ({ children, stepId, caseId }) => {
   return (
     <Row id="case-detail" className="case-container">
       <Col span={6} className="case-sidebar-container">
-        <CaseSidebar stepId={stepId} />
+        <CaseSidebar stepId={stepId} caseId={caseId} />
       </Col>
       <Col span={18} className="case-content-container">
         <ContentLayout
