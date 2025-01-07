@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   Modal,
   Card,
@@ -29,9 +29,17 @@ import {
   focusCommodityOptions,
   commodityOptions,
   yesNoOptions,
+  currencyOptions,
+  commodities,
 } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
+import { CaseUIState, CurrentCaseState } from "../store";
+import {
+  disableLandUnitFieldForCommodityTypes,
+  disableIncomeDriversFieldForCommodityTypes,
+} from "../../../store/static";
+import { uniqBy, isEmpty } from "lodash";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -103,7 +111,7 @@ const SegmentForm = () => {
                 block
                 icon={<PlusOutlined />}
               >
-                Add field
+                Add another segment
               </Button>
             </Form.Item>
           ) : null}
@@ -121,6 +129,36 @@ const SecondaryForm = ({
   disableLandUnitField,
   disableDataOnIncomeDriverField,
 }) => {
+  const caseUI = CaseUIState.useState((s) => s);
+
+  const updateCaseUI = (key, value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      [key]: value,
+    }));
+  };
+
+  const handleOnChangeCommodity = (value) => {
+    const findCommodityCategory = commodities
+      .find((c) => c.id === value)
+      ?.category?.toLowerCase();
+    const disableLandUnitField = disableLandUnitFieldForCommodityTypes.includes(
+      findCommodityCategory
+    )
+      ? true
+      : false;
+    const disableDataOnIncomeDriverField =
+      disableIncomeDriversFieldForCommodityTypes.includes(findCommodityCategory)
+        ? true
+        : false;
+    const updatedValue = {
+      ...caseUI[index],
+      disableLandUnitField,
+      disableDataOnIncomeDriverField,
+    };
+    updateCaseUI(index, updatedValue);
+  };
+
   return (
     <>
       <Col span={24}>
@@ -137,6 +175,12 @@ const SecondaryForm = ({
           <Radio.Group
             disabled={disabled || disableDataOnIncomeDriverField}
             options={yesNoOptions}
+            onChange={(e) =>
+              updateCaseUI(index, {
+                ...caseUI[index],
+                disableAreaSizeField: e.target.value ? false : true,
+              })
+            }
           />
         </Form.Item>
       </Col>
@@ -155,6 +199,7 @@ const SecondaryForm = ({
             placeholder={`Add your ${indexLabel} Commodity`}
             disabled={disabled}
             options={commodityOptions}
+            onChange={handleOnChangeCommodity}
             {...selectProps}
           />
         </Form.Item>
@@ -186,19 +231,44 @@ const SecondaryForm = ({
   );
 };
 
-const CaseForm = ({
-  form,
-  setCaseTitle,
-  setCaseDescription,
-  selectedCountry,
-  setSelectedCountry,
-  filteredCurrencyOptions,
-  privateCase,
-  setPrivateCase,
-  enableEditCase,
-}) => {
+const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const { secondary, tertiary } = CaseUIState.useState((s) => s);
+
+  const updateCaseUI = (key, value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      [key]: value,
+    }));
+  };
+
+  const filteredCurrencyOptions = useMemo(() => {
+    if (!currentCase.country) {
+      return uniqBy(currencyOptions, "value");
+    }
+    const countryCurrency = currencyOptions.find(
+      (co) => co.country === currentCase.country
+    );
+    // set default currency value
+    if (!currentCase?.id) {
+      updateCurrentCase("currency", countryCurrency?.value);
+    }
+    let additonalCurrencies = currencyOptions.filter((co) =>
+      ["eur", "usd"].includes(co.value.toLowerCase())
+    );
+    additonalCurrencies = uniqBy(additonalCurrencies, "value");
+    return [countryCurrency, ...additonalCurrencies];
+  }, [currentCase, updateCurrentCase]);
+
+  useEffect(() => {
+    // set default currency value
+    if (!currentCase?.id && currentCase?.currency) {
+      form.setFieldValue("currency", currentCase.currency);
+    }
+  }, [form, currentCase]);
+  console.log(currentCase);
 
   return (
     <Row gutter={[16, 16]}>
@@ -210,14 +280,13 @@ const CaseForm = ({
           size="small"
           extra={
             <Form.Item style={{ marginBottom: 0 }}>
-              <Switch size="small" /> Private case
-              {/* <Checkbox
-              checked={privateCase}
-              onChange={() => setPrivateCase(!privateCase)}
-              disabled={!enableEditCase}
-            >
-              Private Case
-            </Checkbox> */}
+              <Switch
+                size="small"
+                checked={currentCase.private}
+                onChange={(value) => updateCurrentCase("private", value)}
+                disabled={!enableEditCase}
+              />{" "}
+              Private case
             </Form.Item>
           }
         >
@@ -232,7 +301,6 @@ const CaseForm = ({
                     message: "Name of Case is required",
                   },
                 ]}
-                // onChange={(e) => setCaseTitle(e.target.value)}
               >
                 <Input disabled={!enableEditCase} />
               </Form.Item>
@@ -246,11 +314,7 @@ const CaseForm = ({
                   },
                 ]}
               >
-                <Input.TextArea
-                  onChange={(e) => setCaseDescription(e.target.value)}
-                  rows={5}
-                  disabled={!enableEditCase}
-                />
+                <Input.TextArea rows={5} disabled={!enableEditCase} />
               </Form.Item>
               <Form.Item
                 name="country"
@@ -263,10 +327,10 @@ const CaseForm = ({
                 ]}
               >
                 <Select
-                  placeholder="Select Country"
+                  placeholder="Select country"
                   options={countryOptions}
                   {...selectProps}
-                  onChange={setSelectedCountry}
+                  onChange={(value) => updateCurrentCase("country", value)}
                   disabled={!enableEditCase}
                 />
               </Form.Item>
@@ -274,7 +338,7 @@ const CaseForm = ({
             <Col span={12}>
               <Form.Item name="company" label="Company">
                 <Select
-                  placeholder="Select Company"
+                  placeholder="Select company"
                   options={companyOptions}
                   {...selectProps}
                   disabled={!enableEditCase}
@@ -320,10 +384,10 @@ const CaseForm = ({
                 ]}
               >
                 <Select
-                  placeholder="Select Currency"
+                  placeholder="Select currency"
                   options={filteredCurrencyOptions}
                   {...selectProps}
-                  disabled={!selectedCountry || !enableEditCase}
+                  disabled={!currentCase.country || !enableEditCase}
                 />
               </Form.Item>
               <Form.Item
@@ -372,7 +436,7 @@ const CaseForm = ({
                 ]}
               >
                 <Select
-                  placeholder="Select Primary Commodity"
+                  placeholder="Select primary commodity"
                   options={focusCommodityOptions}
                   {...selectProps}
                   disabled={!enableEditCase}
@@ -391,21 +455,23 @@ const CaseForm = ({
                 <div className="section-title">Secondary commodity</div>
                 <Switch
                   size="small"
-                  // checked={secondary}
-                  // onChange={setSecondary}
-                  // disabled={!enableEditCase}
+                  checked={secondary.enable}
+                  onChange={(value) =>
+                    updateCaseUI("secondary", { ...secondary, enable: value })
+                  }
+                  disabled={!enableEditCase}
                 />
               </Space>
             </Col>
             <SecondaryForm
-              index={1}
+              index="secondary"
               indexLabel="Secondary"
-              // disabled={!secondary || !enableEditCase}
-              // disableAreaSizeUnitField={disableAreaSizeSecondaryField}
-              // disableLandUnitField={disableSecondaryLandUnitField}
-              // disableDataOnIncomeDriverField={
-              //   disableSecondaryDataOnIncomeDriverField
-              // }
+              disabled={!secondary.enable || !enableEditCase}
+              disableAreaSizeUnitField={secondary.disableAreaSizeField}
+              disableLandUnitField={secondary.disableLandUnitField}
+              disableDataOnIncomeDriverField={
+                secondary.disableDataOnIncomeDriverField
+              }
             />
           </Row>
           <Divider />
@@ -416,21 +482,23 @@ const CaseForm = ({
                 <div className="section-title">Tertiary commodity</div>
                 <Switch
                   size="small"
-                  // checked={tertiary}
-                  // onChange={setTertiary}
-                  // disabled={!secondary || !enableEditCase}
+                  checked={tertiary.enable}
+                  onChange={(value) =>
+                    updateCaseUI("tertiary", { ...tertiary, enable: value })
+                  }
+                  disabled={!secondary.enable || !enableEditCase}
                 />
               </Space>
             </Col>
             <SecondaryForm
-              index={2}
+              index="tertiary"
               indexLabel="Tertiary"
-              // disabled={!tertiary || !enableEditCase}
-              // disableAreaSizeUnitField={disableAreaSizeTertiaryField}
-              // disableLandUnitField={disableTertiaryLandUnitField}
-              // disableDataOnIncomeDriverField={
-              //   disableTertiaryDataOnIncomeDriverField
-              // }
+              disabled={!tertiary.enable || !enableEditCase}
+              disableAreaSizeUnitField={tertiary.disableAreaSizeField}
+              disableLandUnitField={tertiary.disableLandUnitField}
+              disableDataOnIncomeDriverField={
+                tertiary.disableDataOnIncomeDriverField
+              }
             />
           </Row>
         </Card>
@@ -455,6 +523,24 @@ const CaseSettings = ({
   handleCancel = () => {},
 }) => {
   const [form] = Form.useForm();
+  const currentCase = CurrentCaseState.useState((s) => s);
+
+  const transformCurrentCase = useMemo(() => {
+    const segments = isEmpty(currentCase?.segments)
+      ? [""]
+      : currentCase.segments;
+    return {
+      ...currentCase,
+      segments,
+    };
+  }, [currentCase]);
+
+  const updateCurrentCase = useCallback((key, value) => {
+    CurrentCaseState.update((s) => ({
+      ...s,
+      [key]: value,
+    }));
+  }, []);
 
   return (
     <Modal
@@ -470,16 +556,17 @@ const CaseSettings = ({
         form={form}
         name="basic"
         layout="vertical"
-        initialValues={{
-          // formData
-          segments: [""],
-        }}
+        initialValues={transformCurrentCase}
         // onValuesChange={onValuesChange}
         // onFinish={onFinish}
         // onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <CaseForm />
+        <CaseForm
+          form={form}
+          enableEditCase={true}
+          updateCurrentCase={updateCurrentCase}
+        />
       </Form>
     </Modal>
   );
