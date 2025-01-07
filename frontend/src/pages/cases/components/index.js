@@ -278,3 +278,5 @@ export { default as AreaUnitFields } from "./AreaUnitFields";
 export { default as DebounceSelect } from "./DebounceSelect";
 export { default as CaseFilter } from "./CaseFilter";
 export { default as CaseSettings } from "./CaseSettings";
+export { default as SegmentForm } from "./SegmentForm";
+export { default as CaseForm } from "./CaseForm";
