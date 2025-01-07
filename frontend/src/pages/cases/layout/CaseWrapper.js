@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import "./case-wrapper.scss";
 import { useNavigate } from "react-router-dom";
-import { Row, Col, Steps, Layout, Affix } from "antd";
+import { Row, Col, Steps, Layout, Affix, Button } from "antd";
 import { ContentLayout } from "../../../components/layout";
+import { SettingOutlined } from "@ant-design/icons";
+import { CaseSettings } from "../components";
 
 const { Sider, Content } = Layout;
 
@@ -49,7 +51,9 @@ const CaseSidebar = ({ stepId, caseId }) => {
   );
 };
 
-const CaseWrapper = ({ children, stepId, caseId }) => {
+const CaseWrapper = ({ children, stepId, caseId, currentCase }) => {
+  const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
+
   return (
     <Row id="case-detail" className="case-container">
       <Col span={4}>
@@ -66,11 +70,27 @@ const CaseWrapper = ({ children, stepId, caseId }) => {
               { title: "Home", href: "/welcome" },
               { title: "Cases", href: "/cases" },
             ]}
+            title={currentCase?.name}
+            titleRighContent={
+              <Button
+                className="button-green-transparent"
+                icon={<SettingOutlined />}
+                onClick={() => setCaseSettingModalVisible(true)}
+              >
+                Case settings
+              </Button>
+            }
           >
             {children}
           </ContentLayout>
         </Content>
       </Col>
+
+      <CaseSettings
+        open={caseSettingModalVisible}
+        handleCancel={() => setCaseSettingModalVisible(false)}
+        enableEditCase={true}
+      />
     </Row>
   );
 };

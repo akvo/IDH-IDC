@@ -41,6 +41,14 @@
     font-weight: 700;
   }
 
+  .button-green-transparent {
+    border: 2px solid $primary-color;
+    border-radius: 20px;
+    color: $primary-color;
+    font-weight: 700;
+    background: transparent;
+  }
+
   .button-green-fill {
     background: $primary-color;
     border-radius: 20px;

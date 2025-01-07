@@ -81,8 +81,9 @@
       padding: 0px 32px;
     }
 
-    .content-wrapper {
-      padding: 0px 32px;
+    .content-wrapper,
+    .title-wrapper {
+      padding: 10px 32px !important;
     }
   }
 }

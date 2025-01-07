@@ -51,7 +51,7 @@ const Case = () => {
   }, [caseId, currentCase, navigate]);
 
   return (
-    <CaseWrapper caseId={caseId} stepId={stepId}>
+    <CaseWrapper caseId={caseId} stepId={stepId} currentCase={currentCase}>
       {loading ? (
         <div className="loading-container">
           <Spin />
