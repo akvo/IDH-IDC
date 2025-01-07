@@ -153,3 +153,4 @@ class SegmentUpdateBase(BaseModel):
 class CaseSettingSegmentPayload(BaseModel):
     name: str
     number_of_farmers: int
+    id: Optional[int] = None
