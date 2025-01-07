@@ -212,7 +212,7 @@ const Cases = () => {
       width: "5%",
       align: "center",
       render: (text, record) => {
-        const caseDetailURL = `/old-cases/${record.id}`;
+        const caseDetailURL = `/case/${record.id}/1`;
         const EditButton = (
           <Link to={caseDetailURL}>
             <EditOutlined />

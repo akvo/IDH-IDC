@@ -9,7 +9,7 @@ import { Home } from "./pages/home";
 import { Landing } from "./pages/landing";
 import { Login, ResetPassword } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
-import { Cases } from "./pages/cases";
+import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome } from "./pages/welcome";
 import {
@@ -136,7 +136,7 @@ const App = () => {
               />
               <Route exact path="/home" element={<Home />} />
               <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/case/:caseId" element={<Cases />} />
+              <Route exact path="/case/:caseId/:stepId" element={<Case />} />
               {/*
                 TODO :: Delete later
                 Old Case Page
