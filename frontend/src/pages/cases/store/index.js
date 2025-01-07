@@ -1,4 +1,4 @@
-export const defaultCaseCommodities = {
+export const defaultCaseCommodityValue = {
   commodity: null,
   breakdown: true,
   currency: null,

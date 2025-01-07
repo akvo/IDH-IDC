@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Modal,
   Card,
@@ -16,6 +16,7 @@ import {
   InputNumber,
   Button,
   Switch,
+  message,
 } from "antd";
 import {
   CloseOutlined,
@@ -31,6 +32,7 @@ import {
   yesNoOptions,
   currencyOptions,
   commodities,
+  removeUndefinedObjectValue,
 } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
@@ -39,7 +41,8 @@ import {
   disableLandUnitFieldForCommodityTypes,
   disableIncomeDriversFieldForCommodityTypes,
 } from "../../../store/static";
-import { uniqBy, isEmpty } from "lodash";
+import { uniqBy, isEqual } from "lodash";
+import { api } from "../../../lib";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -122,6 +125,7 @@ const SegmentForm = () => {
 };
 
 const SecondaryForm = ({
+  form,
   index,
   indexLabel,
   disabled,
@@ -156,6 +160,10 @@ const SecondaryForm = ({
       disableLandUnitField,
       disableDataOnIncomeDriverField,
     };
+    // reset breakdown value when disableDataOnIncomeDriverField
+    if (disableDataOnIncomeDriverField) {
+      form.setFieldValue(`${index}-breakdown`, null);
+    }
     updateCaseUI(index, updatedValue);
   };
 
@@ -268,7 +276,6 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
       form.setFieldValue("currency", currentCase.currency);
     }
   }, [form, currentCase]);
-  console.log(currentCase);
 
   return (
     <Row gutter={[16, 16]}>
@@ -464,6 +471,7 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
               </Space>
             </Col>
             <SecondaryForm
+              form={form}
               index="secondary"
               indexLabel="Secondary"
               disabled={!secondary.enable || !enableEditCase}
@@ -491,6 +499,7 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
               </Space>
             </Col>
             <SecondaryForm
+              form={form}
               index="tertiary"
               indexLabel="Tertiary"
               disabled={!tertiary.enable || !enableEditCase}
@@ -517,23 +526,15 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
   );
 };
 
-const CaseSettings = ({
-  open = false,
-  handleOk = () => {},
-  handleCancel = () => {},
-}) => {
+const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
   const currentCase = CurrentCaseState.useState((s) => s);
+  const { secondary, tertiary } = CaseUIState.useState((s) => s);
 
-  const transformCurrentCase = useMemo(() => {
-    const segments = isEmpty(currentCase?.segments)
-      ? [""]
-      : currentCase.segments;
-    return {
-      ...currentCase,
-      segments,
-    };
-  }, [currentCase]);
+  const [prevCaseSettingValue, setPrevCaseSettingValue] = useState({});
+  const [formData, setFormData] = useState({ segments: [""] });
+  const [isSaving, setIsSaving] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
@@ -542,24 +543,150 @@ const CaseSettings = ({
     }));
   }, []);
 
+  useEffect(
+    () => {
+      setPrevCaseSettingValue(formData);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const onValuesChange = (changedValues) => {
+    // secondary breakdown handle
+    if (changedValues?.["secondary-breakdown"] === 0) {
+      form.setFieldsValue({
+        ["secondary-area_size_unit"]: null,
+        ["secondary-volume_measurement_unit"]: null,
+      });
+    }
+    // tertiary breakdown handle
+    if (changedValues?.["tertiary-breakdown"] === 0) {
+      form.setFieldsValue({
+        ["tertiary-area_size_unit"]: null,
+        ["tertiary-volume_measurement_unit"]: null,
+      });
+    }
+  };
+
+  const onFinish = (values) => {
+    setIsSaving(true);
+    setFormData(values);
+
+    const other_commodities = [];
+
+    if (secondary.enable) {
+      // add secondary crop into case commodities
+      const secondaryCommodityValue = {
+        commodity: values["secondary-commodity"],
+        breakdown: values["secondary-breakdown"] ? true : false,
+        currency: values.currency,
+        area_size_unit: values["secondary-area_size_unit"],
+        volume_measurement_unit: values["secondary-volume_measurement_unit"],
+        commodity_type: "secondary",
+      };
+      other_commodities.push(secondaryCommodityValue);
+    }
+
+    if (tertiary.enable) {
+      // add tertiary crop into case commodities
+      const tertiaryCommodityValue = {
+        commodity: values["tertiary-commodity"],
+        breakdown: values["tertiary-breakdown"] ? true : false,
+        currency: values.currency,
+        area_size_unit: values["tertiary-area_size_unit"],
+        volume_measurement_unit: values["tertiary-volume_measurement_unit"],
+        commodity_type: "tertiary",
+      };
+      other_commodities.push(tertiaryCommodityValue);
+    }
+
+    const payload = {
+      name: values.name,
+      description: values.description,
+      country: values.country,
+      focus_commodity: values.focus_commodity,
+      year: dayjs(values.year).year(),
+      currency: values.currency,
+      area_size_unit: values.area_size_unit,
+      volume_measurement_unit: values.volume_measurement_unit,
+      multiple_commodities: secondary.enable || tertiary.enable,
+      reporting_period: "per-year",
+      cost_of_production_unit: "cost_of_production_unit",
+      segmentation: true,
+      living_income_study: null,
+      logo: null,
+      private: currentCase.private,
+      other_commodities: other_commodities,
+      tags: values.tags || null,
+      company: values.company || null,
+    };
+
+    // detect is payload updated
+    const filteredPrevValue = removeUndefinedObjectValue(prevCaseSettingValue);
+    const filteredCurrentValue = {
+      ...filteredPrevValue,
+      ...removeUndefinedObjectValue(values),
+      private: currentCase.private,
+      reporting_period: "per-year",
+    };
+    const isUpdated = !isEqual(filteredPrevValue, filteredCurrentValue);
+    // EOL detect is payload updated
+
+    const apiCall = currentCase.id
+      ? api.put(`case/${currentCase.id}?updated=${isUpdated}`, payload)
+      : api.post("case", payload);
+
+    apiCall
+      .then((res) => {
+        setPrevCaseSettingValue(filteredCurrentValue);
+        const { data } = res;
+        CurrentCaseState.update((s) => ({
+          ...s,
+          ...data,
+        }));
+        messageApi.open({
+          type: "success",
+          content: "Case setting saved successfully.",
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        const { status, data } = e.response;
+        let errorText = "Failed to save case setting.";
+        if (status === 403) {
+          errorText = data.detail;
+        }
+        messageApi.open({
+          type: "error",
+          content: errorText,
+        });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
   return (
     <Modal
       title="Create new case"
       open={open}
-      onOk={handleOk}
+      onOk={() => form.submit()}
+      okButtonProps={{
+        loading: isSaving,
+      }}
       okText="Save case"
       onCancel={handleCancel}
       width="65%"
       className="case-settings-modal-container"
     >
+      {contextHolder}
       <Form
         form={form}
         name="basic"
         layout="vertical"
-        initialValues={transformCurrentCase}
-        // onValuesChange={onValuesChange}
-        // onFinish={onFinish}
-        // onFinishFailed={onFinishFailed}
+        initialValues={formData}
+        onValuesChange={onValuesChange}
+        onFinish={onFinish}
         autoComplete="off"
       >
         <CaseForm
