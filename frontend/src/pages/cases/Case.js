@@ -15,7 +15,7 @@ const Case = () => {
   const page = (key) => {
     switch (parseInt(key)) {
       case 1:
-        return <>Step 1 {currentCase.name}</>;
+        return <div>Step 1 {currentCase.name}</div>;
       case 2:
         return <>Step 2</>;
       case 3:

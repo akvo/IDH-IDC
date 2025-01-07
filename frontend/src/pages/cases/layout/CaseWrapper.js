@@ -1,8 +1,10 @@
 import React from "react";
 import "./case-wrapper.scss";
 import { useNavigate } from "react-router-dom";
-import { Row, Col, Steps } from "antd";
+import { Row, Col, Steps, Layout, Affix } from "antd";
 import { ContentLayout } from "../../../components/layout";
+
+const { Sider, Content } = Layout;
 
 const sidebarItems = [
   {
@@ -50,18 +52,24 @@ const CaseSidebar = ({ stepId, caseId }) => {
 const CaseWrapper = ({ children, stepId, caseId }) => {
   return (
     <Row id="case-detail" className="case-container">
-      <Col span={6} className="case-sidebar-container">
-        <CaseSidebar stepId={stepId} caseId={caseId} />
+      <Col span={4}>
+        <Affix offsetTop={80}>
+          <Sider className="case-sidebar-container" width="100%">
+            <CaseSidebar stepId={stepId} caseId={caseId} />
+          </Sider>
+        </Affix>
       </Col>
-      <Col span={18} className="case-content-container">
-        <ContentLayout
-          breadcrumbItems={[
-            { title: "Home", href: "/welcome" },
-            { title: "Cases", href: "/cases" },
-          ]}
-        >
-          {children}
-        </ContentLayout>
+      <Col span={20} className="case-content-container">
+        <Content>
+          <ContentLayout
+            breadcrumbItems={[
+              { title: "Home", href: "/welcome" },
+              { title: "Cases", href: "/cases" },
+            ]}
+          >
+            {children}
+          </ContentLayout>
+        </Content>
       </Col>
     </Row>
   );

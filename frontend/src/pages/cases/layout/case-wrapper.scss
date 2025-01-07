@@ -76,7 +76,12 @@
   }
 
   .case-content-container {
+    // rewrite content layout css for this page
     .ant-breadcrumb {
+      padding: 0px 32px;
+    }
+
+    .content-wrapper {
       padding: 0px 32px;
     }
   }
