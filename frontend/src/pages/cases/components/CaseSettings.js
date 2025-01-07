@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Modal,
   Card,
@@ -67,7 +68,6 @@ const livestockPrompt = (
 
 const SegmentForm = () => {
   const MAX_SEGMENT = 5;
-
   return (
     <Form.List name="segments">
       {(fields, { add, remove }) => (
@@ -89,8 +89,20 @@ const SegmentForm = () => {
               className="segment-card-container"
             >
               <Row gutter={[12, 12]} align="middle">
+                <Form.Item {...restField} name={[name, "id"]} hidden={true}>
+                  <Input />
+                </Form.Item>
                 <Col span={14}>
-                  <Form.Item {...restField} name={[name, "name"]}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "name"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: `Segment ${index + 1} name required`,
+                      },
+                    ]}
+                  >
                     <Input width="100%" placeholder="Segment name" />
                   </Form.Item>
                 </Col>
@@ -125,7 +137,6 @@ const SegmentForm = () => {
 };
 
 const SecondaryForm = ({
-  form,
   index,
   indexLabel,
   disabled,
@@ -133,6 +144,7 @@ const SecondaryForm = ({
   disableLandUnitField,
   disableDataOnIncomeDriverField,
 }) => {
+  const form = Form.useFormInstance();
   const caseUI = CaseUIState.useState((s) => s);
 
   const updateCaseUI = (key, value) => {
@@ -239,7 +251,8 @@ const SecondaryForm = ({
   );
 };
 
-const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
+const CaseForm = ({ enableEditCase, updateCurrentCase = () => {} }) => {
+  const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -300,24 +313,24 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
           <Row gutter={[12, 12]}>
             <Col span={12}>
               <Form.Item
-                label="Name of Case"
+                label="Name of case"
                 name="name"
                 rules={[
                   {
                     required: true,
-                    message: "Name of Case is required",
+                    message: "Name of case is required",
                   },
                 ]}
               >
                 <Input disabled={!enableEditCase} />
               </Form.Item>
               <Form.Item
-                label="Case Description"
+                label="Case description"
                 name="description"
                 rules={[
                   {
                     required: true,
-                    message: "Case Description is required",
+                    message: "Case description is required",
                   },
                 ]}
               >
@@ -471,7 +484,6 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
               </Space>
             </Col>
             <SecondaryForm
-              form={form}
               index="secondary"
               indexLabel="Secondary"
               disabled={!secondary.enable || !enableEditCase}
@@ -499,7 +511,6 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
               </Space>
             </Col>
             <SecondaryForm
-              form={form}
               index="tertiary"
               indexLabel="Tertiary"
               disabled={!tertiary.enable || !enableEditCase}
@@ -528,6 +539,8 @@ const CaseForm = ({ form, enableEditCase, updateCurrentCase = () => {} }) => {
 
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
+  const navigate = useNavigate();
+
   const currentCase = CurrentCaseState.useState((s) => s);
   const { secondary, tertiary } = CaseUIState.useState((s) => s);
 
@@ -616,9 +629,10 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       living_income_study: null,
       logo: null,
       private: currentCase.private,
-      other_commodities: other_commodities,
       tags: values.tags || null,
       company: values.company || null,
+      other_commodities: other_commodities,
+      segments: values.segments,
     };
 
     // detect is payload updated
@@ -648,6 +662,10 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           type: "success",
           content: "Case setting saved successfully.",
         });
+        setTimeout(() => {
+          form.resetFields();
+          navigate(`/case/${data.id}`);
+        }, 250);
       })
       .catch((e) => {
         console.error(e);
