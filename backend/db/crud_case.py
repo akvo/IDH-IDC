@@ -79,6 +79,11 @@ def add_case(session: Session, payload: CaseBase, user: User) -> CaseDict:
         for tag_id in payload.tags:
             tag = CaseTag(tag=tag_id)
             case.case_tags.append(tag)
+    if payload.segments:
+        for segment in payload.segments:
+            # TODO:: add number of farmers
+            new_segment = Segment(name=segment.name)
+            case.case_segments.append(new_segment)
     session.add(case)
     session.commit()
     session.flush()
