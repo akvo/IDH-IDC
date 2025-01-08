@@ -1,5 +1,6 @@
 import uniq from "lodash/uniq";
 import {
+  commodities,
   disableLandUnitFieldForCommodityTypes,
   disableIncomeDriversFieldForCommodityTypes,
 } from "../store/static";

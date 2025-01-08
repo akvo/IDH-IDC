@@ -56,14 +56,14 @@ const CaseWrapper = ({ children, stepId, caseId, currentCase }) => {
 
   return (
     <Row id="case-detail" className="case-container">
-      <Col span={4}>
+      <Col span={5}>
         <Affix offsetTop={80}>
           <Sider className="case-sidebar-container" width="100%">
             <CaseSidebar stepId={stepId} caseId={caseId} />
           </Sider>
         </Affix>
       </Col>
-      <Col span={20} className="case-content-container">
+      <Col span={19} className="case-content-container">
         <Content>
           <ContentLayout
             breadcrumbItems={[

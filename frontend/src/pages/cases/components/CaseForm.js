@@ -21,17 +21,12 @@ import {
   commodityOptions,
   yesNoOptions,
   currencyOptions,
-  commodities,
 } from "../../../store/static";
-import { selectProps } from "../../../lib";
+import { selectProps, getFieldDisableStatusForCommodity } from "../../../lib";
 import { AreaUnitFields, SegmentForm } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
-import {
-  disableLandUnitFieldForCommodityTypes,
-  disableIncomeDriversFieldForCommodityTypes,
-} from "../../../store/static";
 import { uniqBy } from "lodash";
 
 const responsiveCol = {
@@ -74,18 +69,8 @@ const SecondaryForm = ({
   };
 
   const handleOnChangeCommodity = (value) => {
-    const findCommodityCategory = commodities
-      .find((c) => c.id === value)
-      ?.category?.toLowerCase();
-    const disableLandUnitField = disableLandUnitFieldForCommodityTypes.includes(
-      findCommodityCategory
-    )
-      ? true
-      : false;
-    const disableDataOnIncomeDriverField =
-      disableIncomeDriversFieldForCommodityTypes.includes(findCommodityCategory)
-        ? true
-        : false;
+    const { disableLandUnitField, disableDataOnIncomeDriverField } =
+      getFieldDisableStatusForCommodity(value);
     const updatedValue = {
       ...caseUI[index],
       disableLandUnitField,

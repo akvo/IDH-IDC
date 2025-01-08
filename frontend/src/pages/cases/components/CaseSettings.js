@@ -2,11 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, message } from "antd";
 import { CaseForm } from ".";
-import { removeUndefinedObjectValue } from "../../../lib";
+import {
+  removeUndefinedObjectValue,
+  getFieldDisableStatusForCommodity,
+  api,
+} from "../../../lib";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { isEqual } from "lodash";
-import { api } from "../../../lib";
 
 const CaseSettings = ({
   enableEditCase = true,
@@ -36,7 +39,7 @@ const CaseSettings = ({
       ...s,
       [key]: value,
     }));
-  });
+  }, []);
 
   useEffect(
     () => {
@@ -77,7 +80,6 @@ const CaseSettings = ({
         (val) => val.commodity_type === "secondary"
       );
       if (secondaryCommodityTmp) {
-        console.log(secondaryCommodityTmp);
         let disableAreaSizeField = true;
         Object.keys(secondaryCommodityTmp).forEach((key) => {
           let val = secondaryCommodityTmp[key];
@@ -90,12 +92,14 @@ const CaseSettings = ({
             [`secondary-${key}`]: val,
           };
         });
+        const { disableLandUnitField, disableDataOnIncomeDriverField } =
+          getFieldDisableStatusForCommodity(secondaryCommodityTmp?.commodity);
         // update case UI state
         updateCaseUI("secondary", {
           enable: true,
           disableAreaSizeField: disableAreaSizeField,
-          disableLandUnitField: false,
-          disableDataOnIncomeDriverField: false,
+          disableLandUnitField: disableLandUnitField,
+          disableDataOnIncomeDriverField: disableDataOnIncomeDriverField,
         });
       }
       // tertiary
@@ -116,12 +120,14 @@ const CaseSettings = ({
             [`tertiary-${key}`]: val,
           };
         });
+        const { disableLandUnitField, disableDataOnIncomeDriverField } =
+          getFieldDisableStatusForCommodity(tertiaryCommodityTmp?.commodity);
         // update case UI state
         updateCaseUI("tertiary", {
           enable: true,
           disableAreaSizeField: disableAreaSizeField,
-          disableLandUnitField: false,
-          disableDataOnIncomeDriverField: false,
+          disableLandUnitField: disableLandUnitField,
+          disableDataOnIncomeDriverField: disableDataOnIncomeDriverField,
         });
       }
       // set initial value
@@ -132,7 +138,7 @@ const CaseSettings = ({
       };
       setFormData(formDataTmp);
     }
-  }, [currentCase]);
+  }, [currentCase, updateCaseUI]);
 
   const onValuesChange = (changedValues) => {
     // secondary breakdown handle
