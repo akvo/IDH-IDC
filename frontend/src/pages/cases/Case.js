@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Spin } from "antd";
+import React, { useState, useEffect, useMemo } from "react";
+import { Spin, Tabs } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../lib";
@@ -13,6 +13,29 @@ import {
 } from "./steps";
 import "./steps/steps.scss";
 
+const SegmentTabsWrapper = ({ children }) => {
+  const currentCase = CurrentCaseState.useState((s) => s);
+
+  const segmentTabItems = useMemo(() => {
+    return currentCase.segments.map((segment) => ({
+      label: segment.name,
+      key: segment.id,
+      children: React.cloneElement(children, { segment }),
+    }));
+  }, [currentCase, children]);
+
+  return (
+    <div id="step1">
+      <Tabs
+        className="step-segment-tabs-container"
+        type="card"
+        items={segmentTabItems}
+        tabBarGutter={5}
+      />
+    </div>
+  );
+};
+
 const Case = () => {
   const navigate = useNavigate();
   const { caseId, step } = useParams();
@@ -20,18 +43,30 @@ const Case = () => {
   const [loading, setLoading] = useState(false);
   const currentCase = CurrentCaseState.useState((s) => s);
 
-  const page = (key) => {
+  const renderPage = (key) => {
     switch (key) {
       case stepPath.step1.label:
-        return <SetIncomeTarget />;
+        return (
+          <SegmentTabsWrapper>
+            <SetIncomeTarget />
+          </SegmentTabsWrapper>
+        );
       case stepPath.step2.label:
-        return <EnterIncomeData />;
+        return (
+          <SegmentTabsWrapper>
+            <EnterIncomeData />
+          </SegmentTabsWrapper>
+        );
       case stepPath.step3.label:
         return <UnderstandIncomeGap />;
       case stepPath.step4.label:
         return <AssessImpactMitigationStrategies />;
       case stepPath.step5.label:
-        return <ClosingGap />;
+        return (
+          <SegmentTabsWrapper>
+            <ClosingGap />
+          </SegmentTabsWrapper>
+        );
       default:
         return navigate("/not-found");
     }
@@ -66,7 +101,7 @@ const Case = () => {
           <Spin />
         </div>
       ) : (
-        page(step)
+        renderPage(step)
       )}
     </CaseWrapper>
   );

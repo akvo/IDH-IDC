@@ -1,27 +1,16 @@
-import React, { useMemo } from "react";
-import {
-  Tabs,
-  Form,
-  Radio,
-  Row,
-  Col,
-  InputNumber,
-  Select,
-  Card,
-  Space,
-} from "antd";
+import React from "react";
+import { Form, Radio, Row, Col, InputNumber, Select, Card, Space } from "antd";
 import { CurrentCaseState } from "../store";
 import { yesNoOptions } from "../../../store/static";
 import { InputNumberThousandFormatter } from "../../../lib";
 
 const formStyle = { width: "100%" };
 
-const IncomeTargetForm = ({ segmentId }) => {
+const SetIncomeTarget = (/* { segment } */) => {
   const [form] = Form.useForm();
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   const setTargetYourself = Form.useWatch("set_target_yourself", form);
-
-  const currentCase = CurrentCaseState.useState((s) => s);
 
   const preventNegativeValue = (fieldName) => [
     () => ({
@@ -160,29 +149,6 @@ const IncomeTargetForm = ({ segmentId }) => {
         {renderTargetInput(setTargetYourself)}
       </Row>
     </Form>
-  );
-};
-
-const SetIncomeTarget = () => {
-  const currentCase = CurrentCaseState.useState((s) => s);
-
-  const segmentTabItems = useMemo(() => {
-    return currentCase.segments.map((segment) => ({
-      label: segment.name,
-      key: segment.id,
-      children: <IncomeTargetForm segmentId={segment.id} />,
-    }));
-  }, [currentCase]);
-
-  return (
-    <div id="step1">
-      <Tabs
-        className="step-segment-tabs-container"
-        type="card"
-        items={segmentTabItems}
-        tabBarGutter={5}
-      />
-    </div>
   );
 };
 
