@@ -31,7 +31,7 @@ const calculateHouseholdSize = ({
   return adult_size + children_size;
 };
 
-const SetIncomeTarget = (/* { segment } */) => {
+const SetIncomeTarget = ({ segment }) => {
   const [form] = Form.useForm();
   const currentCase = CurrentCaseState.useState((s) => s);
   const stepSetIncomeTargetState = CaseUIState.useState(
@@ -110,8 +110,8 @@ const SetIncomeTarget = (/* { segment } */) => {
           // setHouseholdSize(defHHSize);
           // set hh adult and children default value
           form.setFieldsValue({
-            household_adult: household_adult,
-            household_children: household_children,
+            [`${segment.id}-household_adult`]: household_adult,
+            [`${segment.id}-household_children`]: household_children,
           });
           //
           const targetHH = data.household_equiv;
@@ -126,7 +126,7 @@ const SetIncomeTarget = (/* { segment } */) => {
             // incorporate year multiplier
             // const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
             const LITarget = (defHHSize / targetHH) * caseYearLIB;
-            form.setFieldValue("target", LITarget);
+            form.setFieldValue(`${segment.id}-target`, LITarget);
             updateStepIncomeTargetState("incomeTarget", LITarget);
             // setIncomeTarget(LITarget);
             // updateFormValues({
@@ -140,7 +140,7 @@ const SetIncomeTarget = (/* { segment } */) => {
             // incorporate year multiplier
             // const LITarget = (defHHSize / targetHH) * targetValue * 12;
             const LITarget = (defHHSize / targetHH) * targetValue;
-            form.setFieldValue("target", LITarget);
+            form.setFieldValue(`${segment.id}-target`, LITarget);
             updateStepIncomeTargetState("incomeTarget", LITarget);
             // setIncomeTarget(LITarget);
             // updateFormValues({
@@ -189,7 +189,7 @@ const SetIncomeTarget = (/* { segment } */) => {
         return (
           <Col span={24}>
             <Form.Item
-              name="target"
+              name={`${segment.id}-target`}
               label="Target"
               rules={[
                 {
@@ -213,10 +213,10 @@ const SetIncomeTarget = (/* { segment } */) => {
           <Col span={24}>
             <Row gutter={[12, 12]}>
               <Col span={8}>
-                <Form.Item name="target" noStyle hidden>
+                <Form.Item name={`${segment.id}-target`} noStyle hidden>
                   <InputNumber disabled />
                 </Form.Item>
-                <Form.Item label="Region" name="region">
+                <Form.Item label="Region" name={`${segment.id}-region`}>
                   <Select
                     style={formStyle}
                     options={stepSetIncomeTargetState.regionOptions}
@@ -235,7 +235,7 @@ const SetIncomeTarget = (/* { segment } */) => {
               <Col span={8}>
                 <Form.Item
                   label="Average number of adults in the household"
-                  name="household_adult"
+                  name={`${segment.id}-household_adult`}
                   rules={preventNegativeValue("household_adult")}
                 >
                   <InputNumber
@@ -249,7 +249,7 @@ const SetIncomeTarget = (/* { segment } */) => {
               <Col span={8}>
                 <Form.Item
                   label="Average number of children in the household"
-                  name="household_children"
+                  name={`${segment.id}-household_children`}
                   rules={preventNegativeValue("household_children")}
                 >
                   <InputNumber
