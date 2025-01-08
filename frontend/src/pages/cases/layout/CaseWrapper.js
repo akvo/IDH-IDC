@@ -5,6 +5,7 @@ import { Row, Col, Steps, Layout, Affix, Button } from "antd";
 import { ContentLayout } from "../../../components/layout";
 import { SettingOutlined } from "@ant-design/icons";
 import { CaseSettings } from "../components";
+import { stepPath } from "../store";
 
 const { Sider, Content } = Layout;
 
@@ -37,21 +38,27 @@ const sidebarItems = [
   },
 ];
 
-const CaseSidebar = ({ stepId, caseId }) => {
+const CaseSidebar = ({ step, caseId }) => {
   const navigate = useNavigate();
+
+  const findStepPathValue = Object.values(stepPath).find(
+    (path) => path.label === step
+  )?.value;
 
   return (
     <Steps
       direction="vertical"
       items={sidebarItems}
       className="case-step-wrapper"
-      onChange={(val) => navigate(`/case/${caseId}/${val + 1}`)}
-      current={stepId - 1}
+      onChange={(val) =>
+        navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`)
+      }
+      current={findStepPathValue ? findStepPathValue - 1 : 1}
     />
   );
 };
 
-const CaseWrapper = ({ children, stepId, caseId, currentCase }) => {
+const CaseWrapper = ({ children, step, caseId, currentCase }) => {
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
 
   return (
@@ -59,7 +66,7 @@ const CaseWrapper = ({ children, stepId, caseId, currentCase }) => {
       <Col span={5}>
         <Affix offsetTop={80}>
           <Sider className="case-sidebar-container" width="100%">
-            <CaseSidebar stepId={stepId} caseId={caseId} />
+            <CaseSidebar step={step} caseId={caseId} />
           </Sider>
         </Affix>
       </Col>

@@ -8,7 +8,7 @@ import {
   api,
 } from "../../../lib";
 import dayjs from "dayjs";
-import { CaseUIState, CurrentCaseState } from "../store";
+import { CaseUIState, CurrentCaseState, stepPath } from "../store";
 import { isEqual } from "lodash";
 
 const CaseSettings = ({
@@ -240,7 +240,7 @@ const CaseSettings = ({
         });
         setTimeout(() => {
           form.resetFields();
-          navigate(`/case/${data.id}/1`);
+          navigate(`/case/${data.id}/${stepPath.step1.label}`);
         }, 250);
       })
       .catch((e) => {

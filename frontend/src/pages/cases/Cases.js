@@ -29,6 +29,7 @@ import { UIState, UserState } from "../../store";
 import { api } from "../../lib";
 import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
+import { stepPath } from "./store";
 
 const { Search } = Input;
 
@@ -208,7 +209,7 @@ const Cases = () => {
       width: "5%",
       align: "center",
       render: (text, record) => {
-        const caseDetailURL = `/case/${record.id}/1`;
+        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
         const EditButton = (
           <Link to={caseDetailURL}>
             <EditOutlined />

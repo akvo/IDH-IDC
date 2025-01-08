@@ -136,7 +136,7 @@ const App = () => {
               />
               <Route exact path="/home" element={<Home />} />
               <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/case/:caseId/:stepId" element={<Case />} />
+              <Route exact path="/case/:caseId/:step" element={<Case />} />
               {/*
                 TODO :: Delete later
                 Old Case Page

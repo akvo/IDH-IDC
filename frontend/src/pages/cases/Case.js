@@ -3,28 +3,34 @@ import { Spin } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../lib";
-import { CurrentCaseState } from "./store";
-import { SetIncomeTarget } from "./steps";
+import { CurrentCaseState, stepPath } from "./store";
+import {
+  SetIncomeTarget,
+  EnterIncomeData,
+  UnderstandIncomeGap,
+  AssessImpactMitigationStrategies,
+  ClosingGap,
+} from "./steps";
 
 const Case = () => {
   const navigate = useNavigate();
-  const { caseId, stepId } = useParams();
+  const { caseId, step } = useParams();
 
   const [loading, setLoading] = useState(true);
   const currentCase = CurrentCaseState.useState((s) => s);
 
   const page = (key) => {
-    switch (parseInt(key)) {
-      case 1:
+    switch (key) {
+      case stepPath.step1.label:
         return <SetIncomeTarget />;
-      case 2:
-        return <>Step 2</>;
-      case 3:
-        return <>Step 3</>;
-      case 4:
-        return <>Step 4</>;
-      case 5:
-        return <>Step 5</>;
+      case stepPath.step2.label:
+        return <EnterIncomeData />;
+      case stepPath.step3.label:
+        return <UnderstandIncomeGap />;
+      case stepPath.step4.label:
+        return <AssessImpactMitigationStrategies />;
+      case stepPath.step5.label:
+        return <ClosingGap />;
       default:
         return navigate("/not-found");
     }
@@ -52,13 +58,13 @@ const Case = () => {
   }, [caseId, currentCase, navigate]);
 
   return (
-    <CaseWrapper caseId={caseId} stepId={stepId} currentCase={currentCase}>
+    <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
       {loading ? (
         <div className="loading-container">
           <Spin />
         </div>
       ) : (
-        page(stepId)
+        page(step)
       )}
     </CaseWrapper>
   );
