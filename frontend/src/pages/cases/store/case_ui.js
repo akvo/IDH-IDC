@@ -13,6 +13,11 @@ const defaultCaseUIState = {
     disableLandUnitField: false,
     disableDataOnIncomeDriverField: false,
   },
+  stepSetIncomeTarget: {
+    regionOptions: [],
+    regionOptionStatus: null,
+    regionOptionLoading: false,
+  },
 };
 
 const CaseUIState = new Store(defaultCaseUIState);

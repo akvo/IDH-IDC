@@ -3,7 +3,7 @@ import { Spin, Tabs } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../lib";
-import { CurrentCaseState, stepPath } from "./store";
+import { CurrentCaseState, stepPath, CaseUIState } from "./store";
 import {
   SetIncomeTarget,
   EnterIncomeData,
@@ -12,6 +12,35 @@ import {
   ClosingGap,
 } from "./steps";
 import "./steps/steps.scss";
+
+const renderPage = (key, navigate) => {
+  switch (key) {
+    case stepPath.step1.label:
+      return (
+        <SegmentTabsWrapper>
+          <SetIncomeTarget />
+        </SegmentTabsWrapper>
+      );
+    case stepPath.step2.label:
+      return (
+        <SegmentTabsWrapper>
+          <EnterIncomeData />
+        </SegmentTabsWrapper>
+      );
+    case stepPath.step3.label:
+      return <UnderstandIncomeGap />;
+    case stepPath.step4.label:
+      return <AssessImpactMitigationStrategies />;
+    case stepPath.step5.label:
+      return (
+        <SegmentTabsWrapper>
+          <ClosingGap />
+        </SegmentTabsWrapper>
+      );
+    default:
+      return navigate("/not-found");
+  }
+};
 
 const SegmentTabsWrapper = ({ children }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -43,37 +72,17 @@ const Case = () => {
   const [loading, setLoading] = useState(false);
   const currentCase = CurrentCaseState.useState((s) => s);
 
-  const renderPage = (key) => {
-    switch (key) {
-      case stepPath.step1.label:
-        return (
-          <SegmentTabsWrapper>
-            <SetIncomeTarget />
-          </SegmentTabsWrapper>
-        );
-      case stepPath.step2.label:
-        return (
-          <SegmentTabsWrapper>
-            <EnterIncomeData />
-          </SegmentTabsWrapper>
-        );
-      case stepPath.step3.label:
-        return <UnderstandIncomeGap />;
-      case stepPath.step4.label:
-        return <AssessImpactMitigationStrategies />;
-      case stepPath.step5.label:
-        return (
-          <SegmentTabsWrapper>
-            <ClosingGap />
-          </SegmentTabsWrapper>
-        );
-      default:
-        return navigate("/not-found");
-    }
+  const updateStepIncomeTargetState = (key, value) => {
+    CaseUIState.update((s) => {
+      s.stepSetIncomeTarget = {
+        ...s.stepSetIncomeTarget,
+        [key]: value,
+      };
+    });
   };
 
   useEffect(() => {
-    if (caseId && !currentCase.id) {
+    if (caseId && currentCase.id !== caseId) {
       setLoading(true);
       // prevent fetch the data when it's already defined
       api
@@ -94,6 +103,26 @@ const Case = () => {
     }
   }, [caseId, currentCase, navigate]);
 
+  useEffect(() => {
+    // fetch region data
+    if (currentCase?.country) {
+      updateStepIncomeTargetState("regionOptionLoading", true);
+      api
+        .get(`region/options?country_id=${currentCase.country}`)
+        .then((res) => {
+          updateStepIncomeTargetState("regionOptionStatus", 200);
+          updateStepIncomeTargetState("regionOptions", res.data);
+        })
+        .catch((e) => {
+          const { status } = e.response;
+          updateStepIncomeTargetState("regionOptionStatus", status);
+        })
+        .finally(() => {
+          updateStepIncomeTargetState("regionOptionLoading", false);
+        });
+    }
+  }, [currentCase?.country]);
+
   return (
     <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
       {loading ? (
@@ -101,7 +130,7 @@ const Case = () => {
           <Spin />
         </div>
       ) : (
-        renderPage(step)
+        renderPage(step, navigate)
       )}
     </CaseWrapper>
   );

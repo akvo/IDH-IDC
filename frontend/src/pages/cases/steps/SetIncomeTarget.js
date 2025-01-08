@@ -1,14 +1,17 @@
 import React from "react";
 import { Form, Radio, Row, Col, InputNumber, Select, Card, Space } from "antd";
-import { CurrentCaseState } from "../store";
+import { CurrentCaseState, CaseUIState } from "../store";
 import { yesNoOptions } from "../../../store/static";
-import { InputNumberThousandFormatter } from "../../../lib";
+import { InputNumberThousandFormatter, selectProps } from "../../../lib";
 
 const formStyle = { width: "100%" };
 
 const SetIncomeTarget = (/* { segment } */) => {
   const [form] = Form.useForm();
   const currentCase = CurrentCaseState.useState((s) => s);
+  const stepSetIncomeTargetState = CaseUIState.useState(
+    (s) => s.stepSetIncomeTarget
+  );
 
   const setTargetYourself = Form.useWatch("set_target_yourself", form);
 
@@ -57,15 +60,15 @@ const SetIncomeTarget = (/* { segment } */) => {
                 <Form.Item label="Region" name="region">
                   <Select
                     style={formStyle}
-                    // options={regionOptions}
-                    // disabled={!disableTarget || !enableEditCase}
-                    // loading={loadingRegionOptions}
-                    // placeholder={
-                    //   regionOptionStatus === 404
-                    //     ? "Region not available"
-                    //     : "Select or Type Region"
-                    // }
-                    // {...selectProps}
+                    options={stepSetIncomeTargetState.regionOptions}
+                    // disabled={!enableEditCase}
+                    loading={stepSetIncomeTargetState.regionOptionLoading}
+                    placeholder={
+                      stepSetIncomeTargetState.regionOptionStatus === 404
+                        ? "Region not available"
+                        : "Select or Type Region"
+                    }
+                    {...selectProps}
                   />
                 </Form.Item>
               </Col>
