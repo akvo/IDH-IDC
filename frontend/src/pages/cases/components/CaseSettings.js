@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, message } from "antd";
-import { removeUndefinedObjectValue, CaseForm } from ".";
+import { CaseForm } from ".";
+import { removeUndefinedObjectValue } from "../../../lib";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { isEqual } from "lodash";
@@ -30,6 +31,13 @@ const CaseSettings = ({
     }));
   }, []);
 
+  const updateCaseUI = useCallback((key, value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      [key]: value,
+    }));
+  });
+
   useEffect(
     () => {
       setPrevCaseSettingValue(formData);
@@ -37,6 +45,94 @@ const CaseSettings = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  useEffect(() => {
+    // handle initial load
+    if (currentCase.id) {
+      // focus commodity
+      const focusCommodityValue = {
+        name: currentCase.name,
+        description: currentCase.description,
+        private: currentCase?.private || false,
+        tags: currentCase?.tags || [],
+        country: currentCase.country,
+        focus_commodity: currentCase.focus_commodity,
+        year: dayjs(String(currentCase.year)),
+        currency: currentCase.currency,
+        area_size_unit: currentCase.area_size_unit,
+        volume_measurement_unit: currentCase.volume_measurement_unit,
+        reporting_period: currentCase.reporting_period,
+        company: currentCase.company,
+        segments: currentCase?.segments?.length
+          ? currentCase.segments.map((s) => ({
+              id: s.id,
+              name: s.name,
+              number_of_farmers: null,
+            }))
+          : [""],
+      };
+      // secondary
+      let secondaryCommodityValue = {};
+      const secondaryCommodityTmp = currentCase.case_commodities.find(
+        (val) => val.commodity_type === "secondary"
+      );
+      if (secondaryCommodityTmp) {
+        console.log(secondaryCommodityTmp);
+        let disableAreaSizeField = true;
+        Object.keys(secondaryCommodityTmp).forEach((key) => {
+          let val = secondaryCommodityTmp[key];
+          if (key === "breakdown") {
+            val = val ? 1 : 0;
+            disableAreaSizeField = val ? false : true;
+          }
+          secondaryCommodityValue = {
+            ...secondaryCommodityValue,
+            [`secondary-${key}`]: val,
+          };
+        });
+        // update case UI state
+        updateCaseUI("secondary", {
+          enable: true,
+          disableAreaSizeField: disableAreaSizeField,
+          disableLandUnitField: false,
+          disableDataOnIncomeDriverField: false,
+        });
+      }
+      // tertiary
+      let tertiaryCommodityValue = {};
+      const tertiaryCommodityTmp = currentCase.case_commodities.find(
+        (val) => val.commodity_type === "tertiary"
+      );
+      if (tertiaryCommodityTmp) {
+        let disableAreaSizeField = true;
+        Object.keys(tertiaryCommodityTmp).forEach((key) => {
+          let val = tertiaryCommodityTmp[key];
+          if (key === "breakdown") {
+            val = val ? 1 : 0;
+            disableAreaSizeField = val ? false : true;
+          }
+          tertiaryCommodityValue = {
+            ...tertiaryCommodityValue,
+            [`tertiary-${key}`]: val,
+          };
+        });
+        // update case UI state
+        updateCaseUI("tertiary", {
+          enable: true,
+          disableAreaSizeField: disableAreaSizeField,
+          disableLandUnitField: false,
+          disableDataOnIncomeDriverField: false,
+        });
+      }
+      // set initial value
+      const formDataTmp = {
+        ...focusCommodityValue,
+        ...secondaryCommodityValue,
+        ...tertiaryCommodityValue,
+      };
+      setFormData(formDataTmp);
+    }
+  }, [currentCase]);
 
   const onValuesChange = (changedValues) => {
     // secondary breakdown handle
@@ -138,7 +234,7 @@ const CaseSettings = ({
         });
         setTimeout(() => {
           form.resetFields();
-          navigate(`/case/${data.id}`);
+          navigate(`/case/${data.id}/1`);
         }, 250);
       })
       .catch((e) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, Select, Row, Col } from "antd";
-import { selectProps } from ".";
+import { selectProps } from "../../../lib";
 import { areaUnitOptions, volumeUnitOptions } from "../../../store/static";
 
 const responsiveCol = {

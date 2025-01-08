@@ -4,6 +4,7 @@ import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../lib";
 import { CurrentCaseState } from "./store";
+import { SetIncomeTarget } from "./steps";
 
 const Case = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Case = () => {
   const page = (key) => {
     switch (parseInt(key)) {
       case 1:
-        return <div>Step 1 {currentCase.name}</div>;
+        return <SetIncomeTarget />;
       case 2:
         return <>Step 2</>;
       case 3:

@@ -16,16 +16,15 @@ import {
 } from "antd";
 import { InfoCircleTwoTone } from "@ant-design/icons";
 import {
-  selectProps,
-  AreaUnitFields,
   countryOptions,
   focusCommodityOptions,
   commodityOptions,
   yesNoOptions,
   currencyOptions,
   commodities,
-  SegmentForm,
-} from ".";
+} from "../../../store/static";
+import { selectProps } from "../../../lib";
+import { AreaUnitFields, SegmentForm } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
@@ -92,6 +91,10 @@ const SecondaryForm = ({
       disableLandUnitField,
       disableDataOnIncomeDriverField,
     };
+    // reset breakdown value land unit on disableLandUnitField
+    if (disableLandUnitField) {
+      form.setFieldValue(`${index}-area_size_unit`, null);
+    }
     // reset breakdown value when disableDataOnIncomeDriverField
     if (disableDataOnIncomeDriverField) {
       form.setFieldValue(`${index}-breakdown`, null);

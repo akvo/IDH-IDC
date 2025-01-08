@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Button, Select, InputNumber, Input } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { selectProps, countryOptions, commodityOptions } from ".";
+import { selectProps } from "../../../lib";
+import { commodityOptions, countryOptions } from "../../../store/static";
 import { UIState } from "../../../store";
 
 const CaseFilter = ({

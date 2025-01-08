@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./cases.scss";
 import { ContentLayout } from "../../components/layout";
-import {
-  DebounceSelect,
-  CaseFilter,
-  CaseSettings,
-  commodityOptions,
-} from "./components";
+import { commodityOptions } from "../../store/static";
+import { DebounceSelect, CaseFilter, CaseSettings } from "./components";
 import {
   Row,
   Col,
