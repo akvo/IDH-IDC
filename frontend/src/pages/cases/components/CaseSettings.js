@@ -240,8 +240,9 @@ const CaseSettings = ({
         });
         setTimeout(() => {
           form.resetFields();
+          handleCancel();
           navigate(`/case/${data.id}/${stepPath.step1.label}`);
-        }, 250);
+        }, 100);
       })
       .catch((e) => {
         console.error(e);

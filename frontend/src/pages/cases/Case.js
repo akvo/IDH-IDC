@@ -16,7 +16,7 @@ const Case = () => {
   const navigate = useNavigate();
   const { caseId, step } = useParams();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const currentCase = CurrentCaseState.useState((s) => s);
 
   const page = (key) => {
@@ -38,6 +38,7 @@ const Case = () => {
 
   useEffect(() => {
     if (caseId && !currentCase.id) {
+      setLoading(true);
       // prevent fetch the data when it's already defined
       api
         .get(`case/${caseId}`)
