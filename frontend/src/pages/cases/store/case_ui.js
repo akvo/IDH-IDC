@@ -17,6 +17,7 @@ const defaultCaseUIState = {
     regionOptions: [],
     regionOptionStatus: null,
     regionOptionLoading: false,
+    incomeTarget: null,
   },
 };
 

@@ -119,13 +119,20 @@ export const InputNumberThousandFormatter = {
     if (round) {
       value = Math.round(parseFloat(value));
     }
-    const res =
-      value >= 1000
-        ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-        : value && value % 1 !== 0
-        ? parseFloat(value)
-        : value;
-    return res;
+
+    // Convert value to a string and split into integer and decimal parts
+    const [integerPart, decimalPart] = `${value}`.split(".");
+
+    // Format the integer part with commas
+    const formattedIntegerPart = integerPart.replace(
+      /\B(?=(\d{3})+(?!\d))/g,
+      ","
+    );
+
+    // Combine the formatted integer part with the decimal part, if it exists
+    return decimalPart !== undefined
+      ? `${formattedIntegerPart}.${decimalPart}`
+      : formattedIntegerPart;
   },
   parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
 };

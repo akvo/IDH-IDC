@@ -1,10 +1,35 @@
-import React from "react";
-import { Form, Radio, Row, Col, InputNumber, Select, Card, Space } from "antd";
-import { CurrentCaseState, CaseUIState } from "../store";
+import React, { useCallback } from "react";
+import {
+  Form,
+  Radio,
+  Row,
+  Col,
+  InputNumber,
+  Select,
+  Card,
+  Space,
+  message,
+  Alert,
+} from "antd";
+import { CurrentCaseState, CaseUIState, BenchmarkState } from "../store";
 import { yesNoOptions } from "../../../store/static";
-import { InputNumberThousandFormatter, selectProps } from "../../../lib";
+import { InputNumberThousandFormatter, selectProps, api } from "../../../lib";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const formStyle = { width: "100%" };
+
+const calculateHouseholdSize = ({
+  household_adult = 0,
+  household_children = 0,
+}) => {
+  // OECD average household size
+  // first adult = 1, next adult 0.5
+  // 1 child = 0.3
+  const adult_size =
+    household_adult === 1 ? 1 : 1 + (household_adult - 1) * 0.5;
+  const children_size = household_children * 0.3;
+  return adult_size + children_size;
+};
 
 const SetIncomeTarget = (/* { segment } */) => {
   const [form] = Form.useForm();
@@ -12,8 +37,20 @@ const SetIncomeTarget = (/* { segment } */) => {
   const stepSetIncomeTargetState = CaseUIState.useState(
     (s) => s.stepSetIncomeTarget
   );
+  const benchmarkState = BenchmarkState.useState((s) => s);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const setTargetYourself = Form.useWatch("set_target_yourself", form);
+
+  const updateStepIncomeTargetState = (key, value) => {
+    CaseUIState.update((s) => {
+      s.stepSetIncomeTarget = {
+        ...s.stepSetIncomeTarget,
+        [key]: value,
+      };
+    });
+  };
 
   const preventNegativeValue = (fieldName) => [
     () => ({
@@ -27,9 +64,128 @@ const SetIncomeTarget = (/* { segment } */) => {
     }),
   ];
 
+  const showBenchmarNotification = useCallback(
+    ({ currentCase }) => {
+      return messageApi.open({
+        type: "error",
+        content: `No benchmark available in the specified currency (${currentCase.currency}). Consider switching to the local currency.`,
+      });
+    },
+    [messageApi]
+  );
+
+  const fetchBenchmark = useCallback(
+    ({ region, onLoadInitialValue = false }) => {
+      const regionData = { region: region };
+      let url = `country_region_benchmark?country_id=${currentCase.country}`;
+      url = `${url}&region_id=${region}&year=${currentCase.year}`;
+      api
+        .get(url)
+        .then((res) => {
+          // data represent LI Benchmark value
+          const { data } = res;
+          BenchmarkState.update((s) => ({ ...data }));
+          // if data value by currency not found or 0
+          // return a NA notif
+          /*
+          if (data?.value?.[currentCase.currency.toLowerCase()] === 0) {
+            const timeout = onLoadInitialValue ? 500 : 0;
+            showBenchmarNotification({ currentCase });
+            setTimeout(() => {
+              resetBenchmark({ region: onLoadInitialValue ? null : region });
+            }, timeout);
+            return;
+          }
+            */
+          //
+          const household_adult = Math.round(data.nr_adults);
+          const household_children = Math.round(
+            data.household_size - data.nr_adults
+          );
+          // setBenchmark(data);
+          const defHHSize = calculateHouseholdSize({
+            household_adult,
+            household_children,
+          });
+          // setHouseholdSize(defHHSize);
+          // set hh adult and children default value
+          form.setFieldsValue({
+            household_adult: household_adult,
+            household_children: household_children,
+          });
+          //
+          const targetHH = data.household_equiv;
+          // Use LCU if currency if not USE/EUR
+          const targetValue =
+            data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
+          // with CPI calculation
+          // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+          // INFLATION RATE HERE
+          if (data?.cpi_factor) {
+            const caseYearLIB = targetValue * (1 + data.cpi_factor);
+            // incorporate year multiplier
+            // const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
+            const LITarget = (defHHSize / targetHH) * caseYearLIB;
+            form.setFieldValue("target", LITarget);
+            updateStepIncomeTargetState("incomeTarget", LITarget);
+            // setIncomeTarget(LITarget);
+            // updateFormValues({
+            //   ...regionData,
+            //   target: LITarget,
+            //   benchmark: data,
+            //   adult: household_adult,
+            //   child: household_children,
+            // });
+          } else {
+            // incorporate year multiplier
+            // const LITarget = (defHHSize / targetHH) * targetValue * 12;
+            const LITarget = (defHHSize / targetHH) * targetValue;
+            form.setFieldValue("target", LITarget);
+            updateStepIncomeTargetState("incomeTarget", LITarget);
+            // setIncomeTarget(LITarget);
+            // updateFormValues({
+            //   ...regionData,
+            //   target: LITarget,
+            //   benchmark: data,
+            //   adult: household_adult,
+            //   child: household_children,
+            // });
+          }
+        })
+        .catch((e) => {
+          // reset field and benchmark value
+          // resetBenchmark({ region: region });
+          // show notification
+          const { statusText, data } = e.response;
+          const content = data?.detail || statusText;
+          messageApi.open({
+            type: "error",
+            content: content,
+          });
+        });
+    },
+    [
+      currentCase,
+      form,
+      // messageApi,
+      // updateFormValues,
+      // setBenchmark,
+      // resetBenchmark,
+      // showBenchmarNotification,
+    ]
+  );
+
+  const handleRegionChange = (value) => {
+    if (value) {
+      fetchBenchmark({ region: value });
+    } else {
+      updateStepIncomeTargetState("incomeTarget", null);
+    }
+  };
+
   const renderTargetInput = (key) => {
     switch (key) {
-      case 1:
+      case 1: // yes
         return (
           <Col span={24}>
             <Form.Item
@@ -52,11 +208,14 @@ const SetIncomeTarget = (/* { segment } */) => {
             </Form.Item>
           </Col>
         );
-      case 0:
+      case 0: // no
         return (
           <Col span={24}>
             <Row gutter={[12, 12]}>
               <Col span={8}>
+                <Form.Item name="target" noStyle hidden>
+                  <InputNumber disabled />
+                </Form.Item>
                 <Form.Item label="Region" name="region">
                   <Select
                     style={formStyle}
@@ -69,6 +228,7 @@ const SetIncomeTarget = (/* { segment } */) => {
                         : "Select or Type Region"
                     }
                     {...selectProps}
+                    onChange={handleRegionChange}
                   />
                 </Form.Item>
               </Col>
@@ -81,7 +241,7 @@ const SetIncomeTarget = (/* { segment } */) => {
                   <InputNumber
                     style={formStyle}
                     // onChange={handleOnChangeHouseholdAdult}
-                    // disabled={!enableEditCase}
+                    // disabled={!disableTarget || !enableEditCase}
                     controls={false}
                   />
                 </Form.Item>
@@ -100,30 +260,55 @@ const SetIncomeTarget = (/* { segment } */) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={24}>
-                <Card className="card-income-target-wrapper">
-                  <Space size={50}>
-                    <div className="income-target-value">
-                      4486.00 {currentCase.currency}
-                    </div>
-                    <div className="income-target-text">
-                      Living income benchmark value for a household per year
-                    </div>
-                  </Space>
-                </Card>
-              </Col>
-              <Col span={24}>
-                <Card className="card-lib-wrapper">
-                  <Row align="middle">
-                    <Col span={12} className="lib-text">
-                      Information about Living Income Benchmark
-                    </Col>
-                    <Col span={12} align="end" className="lib-source">
-                      Source: Living Income Benchmark
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
+              {stepSetIncomeTargetState.regionOptionStatus === 404 && (
+                <Col span={24}>
+                  <Alert
+                    showIcon
+                    type="warning"
+                    message="A benchmark for the country is not available; please switch
+                    to manual target."
+                  />
+                </Col>
+              )}
+              {stepSetIncomeTargetState.incomeTarget && (
+                <>
+                  <Col span={24}>
+                    <Card className="card-income-target-wrapper">
+                      <Space size={50}>
+                        <div className="income-target-value">
+                          {`${
+                            stepSetIncomeTargetState.incomeTarget
+                              ? thousandFormatter(
+                                  stepSetIncomeTargetState.incomeTarget.toFixed()
+                                )
+                              : 0
+                          } ${currentCase.currency}`}
+                        </div>
+                        <div className="income-target-text">
+                          Living income benchmark value for a household per year
+                        </div>
+                      </Space>
+                    </Card>
+                  </Col>
+                  <Col span={24}>
+                    <Card className="card-lib-wrapper">
+                      <Row align="middle">
+                        <Col span={12} className="lib-text">
+                          Information about Living Income Benchmark
+                        </Col>
+                        <Col span={12} align="end" className="lib-source">
+                          Source:{" "}
+                          <a
+                            href={benchmarkState.links}
+                            target="_blank"
+                            rel="noreferrer"
+                          >{`${benchmarkState.source}`}</a>
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                </>
+              )}
             </Row>
           </Col>
         );
@@ -133,25 +318,28 @@ const SetIncomeTarget = (/* { segment } */) => {
   };
 
   return (
-    <Form form={form} layout="vertical" autoComplete="off">
-      <Row gutter={[12, 12]}>
-        <Col span={24}>
-          <Form.Item
-            name="set_target_yourself"
-            label="Do you want to set an income target yourself?"
-            rules={[
-              {
-                required: true,
-                message: "Please select yes or no",
-              },
-            ]}
-          >
-            <Radio.Group options={yesNoOptions} />
-          </Form.Item>
-        </Col>
-        {renderTargetInput(setTargetYourself)}
-      </Row>
-    </Form>
+    <div>
+      {contextHolder}
+      <Form form={form} layout="vertical" autoComplete="off">
+        <Row gutter={[12, 12]}>
+          <Col span={24}>
+            <Form.Item
+              name="set_target_yourself"
+              label="Do you want to set an income target yourself?"
+              rules={[
+                {
+                  required: true,
+                  message: "Please select yes or no",
+                },
+              ]}
+            >
+              <Radio.Group options={yesNoOptions} />
+            </Form.Item>
+          </Col>
+          {renderTargetInput(setTargetYourself)}
+        </Row>
+      </Form>
+    </div>
   );
 };
 

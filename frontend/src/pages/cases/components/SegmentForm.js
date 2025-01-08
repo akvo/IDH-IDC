@@ -26,7 +26,7 @@ const SegmentForm = () => {
             >
               <Row gutter={[12, 12]} align="middle">
                 <Form.Item {...restField} name={[name, "id"]} hidden={true}>
-                  <Input />
+                  <Input disabled />
                 </Form.Item>
                 <Col span={14}>
                   <Form.Item
