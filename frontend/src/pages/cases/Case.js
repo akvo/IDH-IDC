@@ -11,6 +11,7 @@ import {
   AssessImpactMitigationStrategies,
   ClosingGap,
 } from "./steps";
+import "./steps/steps.scss";
 
 const Case = () => {
   const navigate = useNavigate();
