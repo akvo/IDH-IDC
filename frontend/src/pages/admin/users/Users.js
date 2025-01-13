@@ -194,7 +194,7 @@ const Users = () => {
           </Link>
           <Popconfirm
             title="Delete User"
-            description={`Are you sure to delete user ${record.email}?`}
+            description={`Are you sure you want to delete the user ${record.email}?`}
             onConfirm={() => handleDeleteUser(record)}
             okText="Yes"
             cancelText="No"
