@@ -221,7 +221,7 @@ const Users = () => {
         { title: "Home", href: "/welcome" },
         { title: "Users", href: "/admin/users" },
       ]}
-      title="Users"
+      title="User Management"
       wrapperId="user"
     >
       <TableContent
