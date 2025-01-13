@@ -64,19 +64,22 @@ const SetIncomeTarget = ({ segment }) => {
     }),
   ];
 
-  const showBenchmarNotification = useCallback(
-    ({ currentCase }) => {
-      return messageApi.open({
-        type: "error",
-        content: `No benchmark available in the specified currency (${currentCase.currency}). Consider switching to the local currency.`,
-      });
-    },
-    [messageApi]
-  );
+  // const showBenchmarNotification = useCallback(
+  //   ({ currentCase }) => {
+  //     return messageApi.open({
+  //       type: "error",
+  //       content: `No benchmark available in the specified currency (${currentCase.currency}). Consider switching to the local currency.`,
+  //     });
+  //   },
+  //   [messageApi]
+  // );
 
   const fetchBenchmark = useCallback(
-    ({ region, onLoadInitialValue = false }) => {
-      const regionData = { region: region };
+    ({
+      region,
+      // onLoadInitialValue = false
+    }) => {
+      // const regionData = { region: region };
       let url = `country_region_benchmark?country_id=${currentCase.country}`;
       url = `${url}&region_id=${region}&year=${currentCase.year}`;
       api
@@ -84,7 +87,7 @@ const SetIncomeTarget = ({ segment }) => {
         .then((res) => {
           // data represent LI Benchmark value
           const { data } = res;
-          BenchmarkState.update((s) => ({ ...data }));
+          BenchmarkState.update((s) => ({ ...s, ...data }));
           // if data value by currency not found or 0
           // return a NA notif
           /*
@@ -167,7 +170,8 @@ const SetIncomeTarget = ({ segment }) => {
     [
       currentCase,
       form,
-      // messageApi,
+      messageApi,
+      segment.id,
       // updateFormValues,
       // setBenchmark,
       // resetBenchmark,

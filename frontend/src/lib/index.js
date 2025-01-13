@@ -130,7 +130,7 @@ export const InputNumberThousandFormatter = {
     );
 
     // Combine the formatted integer part with the decimal part, if it exists
-    return decimalPart !== undefined
+    return typeof decimalPart !== "undefined"
       ? `${formattedIntegerPart}.${decimalPart}`
       : formattedIntegerPart;
   },
