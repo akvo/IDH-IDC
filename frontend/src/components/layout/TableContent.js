@@ -27,7 +27,7 @@ const TableContent = ({
               marginLeft: "14px",
             }}
           >
-            Total Case: {total}
+            Total number of cases: {total}
           </div>
         ),
       }

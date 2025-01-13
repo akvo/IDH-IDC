@@ -62,7 +62,7 @@ const CompanyForm = () => {
         });
         setTimeout(() => {
           form.resetFields();
-          navigate("/admin/company");
+          navigate("/admin/companies");
         }, 500);
       })
       .catch((e) => {
@@ -81,7 +81,7 @@ const CompanyForm = () => {
     <ContentLayout
       breadcrumbItems={[
         { title: "Home", href: "/welcome" },
-        { title: "Company", href: "/admin/company" },
+        { title: "Companies", href: "/admin/companies" },
         {
           title: `${companyId ? "Edit" : "Add"} Company`,
           href: `/admin/company/${companyId ? companyId : "new"}`,

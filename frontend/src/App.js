@@ -173,7 +173,7 @@ const App = () => {
               <Route path="/admin/tags" element={<Tags />} />
               <Route path="/admin/tag/new" element={<TagForm />} />
               <Route path="/admin/tag/:tagId" element={<TagForm />} />
-              <Route exact path="/admin/company" element={<Company />} />
+              <Route exact path="/admin/companies" element={<Company />} />
               <Route
                 exact
                 path="/admin/company/new"

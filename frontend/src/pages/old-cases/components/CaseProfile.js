@@ -167,7 +167,20 @@ const CaseForm = ({
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="company" label="Company">
+              <Form.Item
+                name="company"
+                label={
+                  <Space align="center">
+                    <div>Company</div>
+                    <Tooltip
+                      title="If your company is not in this list, you can leave this field blank."
+                      placement="topRight"
+                    >
+                      <InfoCircleTwoTone twoToneColor="#1677ff" />
+                    </Tooltip>
+                  </Space>
+                }
+              >
                 <Select
                   placeholder="Select Company"
                   options={companyOptions}
