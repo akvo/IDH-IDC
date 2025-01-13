@@ -76,7 +76,7 @@ const Company = () => {
 
   const columns = [
     {
-      title: "Company Name",
+      title: "Company name",
       dataIndex: "name",
       key: "name",
       defaultSortOrder: "descend",
@@ -94,7 +94,7 @@ const Company = () => {
           <Link>
             <Popconfirm
               title="Delete Company"
-              description={`Are you sure to delete company ${record.name}?`}
+              description={`Are you sure you want to delete the company ${record.name}?`}
               onConfirm={() => handleDeleteCompany(record)}
               okText="Yes"
               cancelText="No"
@@ -114,13 +114,13 @@ const Company = () => {
     <ContentLayout
       breadcrumbItems={[
         { title: "Home", href: "/welcome" },
-        { title: "Company", href: "/admin/company" },
+        { title: "Companies", href: "/admin/companies" },
       ]}
       title="Company Management"
       wrapperId="company"
     >
       <TableContent
-        title="All Company"
+        title="All Companies"
         dataSource={data.data}
         columns={columns}
         searchProps={{
