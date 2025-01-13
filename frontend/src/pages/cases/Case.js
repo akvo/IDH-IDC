@@ -101,7 +101,7 @@ const Case = () => {
           }, 100);
         });
     }
-  }, [caseId, currentCase, navigate]);
+  }, [caseId, currentCase.id, navigate]);
 
   useEffect(() => {
     // fetch region data

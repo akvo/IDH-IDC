@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   Form,
   Radio,
@@ -11,7 +11,7 @@ import {
   message,
   Alert,
 } from "antd";
-import { CurrentCaseState, CaseUIState, BenchmarkState } from "../store";
+import { CurrentCaseState, CaseUIState } from "../store";
 import { yesNoOptions } from "../../../store/static";
 import { InputNumberThousandFormatter, selectProps, api } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
@@ -37,20 +37,27 @@ const SetIncomeTarget = ({ segment }) => {
   const stepSetIncomeTargetState = CaseUIState.useState(
     (s) => s.stepSetIncomeTarget
   );
-  const benchmarkState = BenchmarkState.useState((s) => s);
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const setTargetYourself = Form.useWatch("set_target_yourself", form);
 
-  const updateStepIncomeTargetState = (key, value) => {
-    CaseUIState.update((s) => {
-      s.stepSetIncomeTarget = {
-        ...s.stepSetIncomeTarget,
-        [key]: value,
-      };
-    });
-  };
+  const updateCurrentSegmentState = useCallback(
+    (updatedSegmentValue) => {
+      CurrentCaseState.update((s) => {
+        s.segments = s.segments.map((prev) => {
+          if (prev.id === segment.id) {
+            return {
+              ...prev,
+              ...updatedSegmentValue,
+            };
+          }
+          return prev;
+        });
+      });
+    },
+    [segment.id]
+  );
 
   const preventNegativeValue = (fieldName) => [
     () => ({
@@ -64,21 +71,18 @@ const SetIncomeTarget = ({ segment }) => {
     }),
   ];
 
-  // const showBenchmarNotification = useCallback(
-  //   ({ currentCase }) => {
-  //     return messageApi.open({
-  //       type: "error",
-  //       content: `No benchmark available in the specified currency (${currentCase.currency}). Consider switching to the local currency.`,
-  //     });
-  //   },
-  //   [messageApi]
-  // );
+  const showBenchmarNotification = useCallback(
+    ({ currentCase }) => {
+      return messageApi.open({
+        type: "error",
+        content: `No benchmark available in the specified currency (${currentCase.currency}). Consider switching to the local currency.`,
+      });
+    },
+    [messageApi]
+  );
 
   const fetchBenchmark = useCallback(
-    ({
-      region,
-      // onLoadInitialValue = false
-    }) => {
+    ({ region, onLoadInitialValue = false }) => {
       // const regionData = { region: region };
       let url = `country_region_benchmark?country_id=${currentCase.country}`;
       url = `${url}&region_id=${region}&year=${currentCase.year}`;
@@ -87,19 +91,25 @@ const SetIncomeTarget = ({ segment }) => {
         .then((res) => {
           // data represent LI Benchmark value
           const { data } = res;
-          BenchmarkState.update((s) => ({ ...s, ...data }));
-          // if data value by currency not found or 0
-          // return a NA notif
-          /*
-          if (data?.value?.[currentCase.currency.toLowerCase()] === 0) {
+          // if data value by currency not found or 0 return a NA notif
+          if (
+            !data?.value?.[currentCase.currency.toLowerCase()] ||
+            data?.value?.[currentCase.currency.toLowerCase()] === 0
+          ) {
             const timeout = onLoadInitialValue ? 500 : 0;
             showBenchmarNotification({ currentCase });
             setTimeout(() => {
-              resetBenchmark({ region: onLoadInitialValue ? null : region });
+              // reset benchmark
+              updateCurrentSegmentState({
+                region: onLoadInitialValue ? null : region,
+                benchmark: null,
+                adult: null,
+                child: null,
+                target: null,
+              });
             }, timeout);
             return;
           }
-            */
           //
           const household_adult = Math.round(data.nr_adults);
           const household_children = Math.round(
@@ -113,8 +123,14 @@ const SetIncomeTarget = ({ segment }) => {
           // setHouseholdSize(defHHSize);
           // set hh adult and children default value
           form.setFieldsValue({
-            [`${segment.id}-household_adult`]: household_adult,
-            [`${segment.id}-household_children`]: household_children,
+            [`${segment.id}-adult`]: household_adult,
+            [`${segment.id}-child`]: household_children,
+          });
+          updateCurrentSegmentState({
+            region: region,
+            benchmark: data,
+            adult: household_adult,
+            child: household_children,
           });
           //
           const targetHH = data.household_equiv;
@@ -130,29 +146,13 @@ const SetIncomeTarget = ({ segment }) => {
             // const LITarget = (defHHSize / targetHH) * caseYearLIB * 12;
             const LITarget = (defHHSize / targetHH) * caseYearLIB;
             form.setFieldValue(`${segment.id}-target`, LITarget);
-            updateStepIncomeTargetState("incomeTarget", LITarget);
-            // setIncomeTarget(LITarget);
-            // updateFormValues({
-            //   ...regionData,
-            //   target: LITarget,
-            //   benchmark: data,
-            //   adult: household_adult,
-            //   child: household_children,
-            // });
+            updateCurrentSegmentState({ target: LITarget });
           } else {
             // incorporate year multiplier
             // const LITarget = (defHHSize / targetHH) * targetValue * 12;
             const LITarget = (defHHSize / targetHH) * targetValue;
             form.setFieldValue(`${segment.id}-target`, LITarget);
-            updateStepIncomeTargetState("incomeTarget", LITarget);
-            // setIncomeTarget(LITarget);
-            // updateFormValues({
-            //   ...regionData,
-            //   target: LITarget,
-            //   benchmark: data,
-            //   adult: household_adult,
-            //   child: household_children,
-            // });
+            updateCurrentSegmentState({ target: LITarget });
           }
         })
         .catch((e) => {
@@ -172,10 +172,8 @@ const SetIncomeTarget = ({ segment }) => {
       form,
       messageApi,
       segment.id,
-      // updateFormValues,
-      // setBenchmark,
-      // resetBenchmark,
-      // showBenchmarNotification,
+      showBenchmarNotification,
+      updateCurrentSegmentState,
     ]
   );
 
@@ -183,9 +181,30 @@ const SetIncomeTarget = ({ segment }) => {
     if (value) {
       fetchBenchmark({ region: value });
     } else {
-      updateStepIncomeTargetState("incomeTarget", null);
+      updateCurrentSegmentState("target", null);
     }
   };
+
+  const handleChangeManualTarget = (value) => {
+    form.setFieldsValue({
+      [`${segment.id}-region`]: null,
+      [`${segment.id}-adult`]: null,
+      [`${segment.id}-child`]: null,
+      [`${segment.id}-target`]: value,
+    });
+    updateCurrentSegmentState({
+      region: null,
+      benchmark: null,
+      adult: null,
+      child: null,
+      target: value,
+    });
+  };
+
+  useEffect(() => {
+    // TODO :: load initial value & how to save the data?
+    console.info("onLoad");
+  }, []);
 
   const renderTargetInput = (key) => {
     switch (key) {
@@ -208,6 +227,7 @@ const SetIncomeTarget = ({ segment }) => {
                 addonAfter={currentCase.currency}
                 {...InputNumberThousandFormatter}
                 // disabled={!disableTarget || !enableEditCase}
+                onChange={handleChangeManualTarget}
               />
             </Form.Item>
           </Col>
@@ -239,8 +259,8 @@ const SetIncomeTarget = ({ segment }) => {
               <Col span={8}>
                 <Form.Item
                   label="Average number of adults in the household"
-                  name={`${segment.id}-household_adult`}
-                  rules={preventNegativeValue("household_adult")}
+                  name={`${segment.id}-adult`}
+                  rules={preventNegativeValue("adult")}
                 >
                   <InputNumber
                     style={formStyle}
@@ -253,8 +273,8 @@ const SetIncomeTarget = ({ segment }) => {
               <Col span={8}>
                 <Form.Item
                   label="Average number of children in the household"
-                  name={`${segment.id}-household_children`}
-                  rules={preventNegativeValue("household_children")}
+                  name={`${segment.id}-child`}
+                  rules={preventNegativeValue("child")}
                 >
                   <InputNumber
                     style={formStyle}
@@ -274,17 +294,15 @@ const SetIncomeTarget = ({ segment }) => {
                   />
                 </Col>
               )}
-              {stepSetIncomeTargetState.incomeTarget && (
+              {segment.region && segment.target && (
                 <>
                   <Col span={24}>
                     <Card className="card-income-target-wrapper">
                       <Space size={50}>
                         <div className="income-target-value">
                           {`${
-                            stepSetIncomeTargetState.incomeTarget
-                              ? thousandFormatter(
-                                  stepSetIncomeTargetState.incomeTarget.toFixed()
-                                )
+                            segment.target
+                              ? thousandFormatter(segment.target.toFixed())
                               : 0
                           } ${currentCase.currency}`}
                         </div>
@@ -303,10 +321,10 @@ const SetIncomeTarget = ({ segment }) => {
                         <Col span={12} align="end" className="lib-source">
                           Source:{" "}
                           <a
-                            href={benchmarkState.links}
+                            href={segment.benchmark?.links}
                             target="_blank"
                             rel="noreferrer"
-                          >{`${benchmarkState.source}`}</a>
+                          >{`${segment.benchmark?.source}`}</a>
                         </Col>
                       </Row>
                     </Card>
