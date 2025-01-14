@@ -81,3 +81,39 @@
     }
   }
 }
+
+#enter-income-data {
+  .total-income-title-wrapper {
+    font-family: "RocGrotesk";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+  }
+
+  .total-income-value-wrapper {
+    font-family: "TabletGothic";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+
+    .level-text {
+      font-size: 12px;
+    }
+
+    .value-text {
+      font-family: "RocGrotesk";
+      font-size: 18px;
+    }
+  }
+
+  .ant-tag {
+    border-radius: 16px;
+    font-size: 12px;
+    font-family: "TabletGothic";
+    line-height: 18px;
+    span {
+      margin-top: 4px;
+    }
+  }
+}

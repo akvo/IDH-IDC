@@ -538,7 +538,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   };
 
   return (
-    <div>
+    <div id="set-income-target">
       <Form
         form={form}
         layout="vertical"

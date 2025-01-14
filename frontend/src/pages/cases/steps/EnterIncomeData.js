@@ -2,8 +2,33 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
 import { api } from "../../../lib";
+import { Row, Col, Space, Tag } from "antd";
+import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
+
+const renderPercentageTag = (type = "default", value = 0) => {
+  value = value.toFixed();
+  value = `${value}%`;
+
+  switch (type) {
+    case "increase":
+      return (
+        <Tag color="success" icon={<ArrowUpOutlined />}>
+          {value}
+        </Tag>
+      );
+    case "decrease":
+      return (
+        <Tag color="error" icon={<ArrowDownOutlined />}>
+          {value}
+        </Tag>
+      );
+
+    default:
+      return <Tag color="default">{value}</Tag>;
+  }
+};
 
 /**
  * STEP 2
@@ -53,7 +78,28 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   }, [currentCase.id, currentCase.case_commodities]);
   console.log(questionGroups);
 
-  return <div>EnterIncomeData {segment.name}</div>;
+  return (
+    <div id="enter-income-data">
+      <Row align="middle" gutter={[8, 8]}>
+        <Col span={14} className="total-income-title-wrapper">
+          Total Income
+        </Col>
+        <Col span={4} className="total-income-value-wrapper">
+          <Space direction="vertical">
+            <div className="level-text">Current level per year</div>
+            <div className="value-text">123.00</div>
+          </Space>
+        </Col>
+        <Col span={4} className="total-income-value-wrapper">
+          <Space direction="vertical">
+            <div className="level-text">Feasible level per year</div>
+            <div className="value-text">457.00</div>
+          </Space>
+        </Col>
+        <Col span={2}>{renderPercentageTag("increase", 20)}</Col>
+      </Row>
+    </div>
+  );
 };
 
 export default EnterIncomeData;
