@@ -17,19 +17,16 @@ import { resetCurrentCaseState } from "../store/current_case";
 import { yesNoOptions } from "../../../store/static";
 import { InputNumberThousandFormatter, selectProps, api } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { isEmpty } from "lodash";
 
 const formStyle = { width: "100%" };
 
-const calculateHouseholdSize = ({
-  household_adult = 0,
-  household_children = 0,
-}) => {
+const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
   // OECD average household size
   // first adult = 1, next adult 0.5
   // 1 child = 0.3
-  const adult_size =
-    household_adult === 1 ? 1 : 1 + (household_adult - 1) * 0.5;
-  const children_size = household_children * 0.3;
+  const adult_size = adult === 1 ? 1 : 1 + (adult - 1) * 0.5;
+  const children_size = child * 0.3;
   return adult_size + children_size;
 };
 
@@ -86,8 +83,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   );
 
   const fetchBenchmark = useCallback(
-    ({ region, onLoadInitialValue = false }) => {
-      // const regionData = { region: region };
+    ({ region }) => {
       let url = `country_region_benchmark?country_id=${currentCase.country}`;
       url = `${url}&region_id=${region}&year=${currentCase.year}`;
       api
@@ -100,41 +96,36 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
             !data?.value?.[currentCase.currency.toLowerCase()] ||
             data?.value?.[currentCase.currency.toLowerCase()] === 0
           ) {
-            const timeout = onLoadInitialValue ? 500 : 0;
             showBenchmarNotification({ currentCase });
-            setTimeout(() => {
-              // reset benchmark
-              updateCurrentSegmentState({
-                region: onLoadInitialValue ? null : region,
-                benchmark: null,
-                adult: null,
-                child: null,
-                target: null,
-              });
-            }, timeout);
+            // reset benchmark
+            updateCurrentSegmentState({
+              region: region,
+              benchmark: null,
+              adult: null,
+              child: null,
+              target: null,
+            });
             return;
           }
           //
-          const household_adult = Math.round(data.nr_adults);
-          const household_children = Math.round(
-            data.household_size - data.nr_adults
-          );
+          const adult = Math.round(data.nr_adults);
+          const child = Math.round(data.household_size - data.nr_adults);
           // setBenchmark(data);
           const defHHSize = calculateHouseholdSize({
-            household_adult,
-            household_children,
+            adult,
+            child,
           });
           // setHouseholdSize(defHHSize);
           // set hh adult and children default value
           form.setFieldsValue({
-            [`${segment.id}-adult`]: household_adult,
-            [`${segment.id}-child`]: household_children,
+            [`${segment.id}-adult`]: adult,
+            [`${segment.id}-child`]: child,
           });
           updateCurrentSegmentState({
             region: region,
             benchmark: data,
-            adult: household_adult,
-            child: household_children,
+            adult: adult,
+            child: child,
           });
           //
           const targetHH = data.household_equiv;
@@ -229,6 +220,77 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     // Additional logic for next action
   };
 
+  const handleChangeAdultChildField = (key, value) => {
+    // handle income target value when householdSize updated
+    const householdSize = calculateHouseholdSize({
+      adult: segment.adult,
+      child: segment.child,
+      [key]: value,
+    });
+    updateCurrentSegmentState({
+      [key]: value,
+    });
+
+    if (
+      segment?.benchmark &&
+      !isEmpty(segment.benchmark) &&
+      segment.benchmark !== "NA"
+    ) {
+      // show benchmark notification
+      if (
+        segment.benchmark?.value?.[currentCase?.currency?.toLowerCase()] === 0
+      ) {
+        showBenchmarNotification({ currentCase });
+        // reset benchmark
+        updateCurrentSegmentState({
+          region: null,
+          benchmark: null,
+          adult: null,
+          child: null,
+          target: null,
+        });
+        return;
+      }
+      // Use LCU if currency if not USD/EUR
+      const targetValue =
+        segment.benchmark.value?.[currentCase.currency.toLowerCase()] ||
+        segment.benchmark.value.lcu;
+      // with CPI calculation
+      // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+      if (segment.benchmark?.cpi_factor) {
+        const caseYearLIB = targetValue * (1 + segment.benchmark.cpi_factor);
+        // incorporate year multiplier
+        // const LITarget =
+        //   (householdSize / benchmark.household_equiv) * caseYearLIB * 12;
+        const LITarget =
+          (householdSize / segment.benchmark.household_equiv) * caseYearLIB;
+        updateCurrentSegmentState({
+          target: LITarget,
+        });
+        // setIncomeTarget(LITarget);
+      } else {
+        // incorporate year multiplier
+        // const LITarget =
+        //   (householdSize / benchmark.household_equiv) * targetValue * 12;
+        const LITarget =
+          (householdSize / segment.benchmark.household_equiv) * targetValue;
+        updateCurrentSegmentState({
+          target: LITarget,
+        });
+      }
+    }
+
+    if (
+      isEmpty(segment.benchmark) &&
+      segment.region &&
+      segment.benchmark !== "NA"
+    ) {
+      fetchBenchmark({
+        region: segment.region,
+      });
+    }
+  };
+
   useEffect(() => {
     if (setbackfunction) {
       setbackfunction(backFunction);
@@ -296,7 +358,9 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 >
                   <InputNumber
                     style={formStyle}
-                    // onChange={handleOnChangeHouseholdAdult}
+                    onChange={(value) =>
+                      handleChangeAdultChildField("adult", value)
+                    }
                     // disabled={!disableTarget || !enableEditCase}
                     controls={false}
                   />
@@ -310,7 +374,9 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 >
                   <InputNumber
                     style={formStyle}
-                    // onChange={handleOnChangeHouseholdChild}
+                    onChange={(value) =>
+                      handleChangeAdultChildField("child", value)
+                    }
                     // disabled={!enableEditCase}
                     controls={false}
                   />
