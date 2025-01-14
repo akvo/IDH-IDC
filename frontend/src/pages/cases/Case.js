@@ -82,7 +82,7 @@ const Case = () => {
   };
 
   useEffect(() => {
-    if (caseId && currentCase.id !== caseId) {
+    if (caseId && currentCase.id !== parseInt(caseId)) {
       setLoading(true);
       // prevent fetch the data when it's already defined
       api

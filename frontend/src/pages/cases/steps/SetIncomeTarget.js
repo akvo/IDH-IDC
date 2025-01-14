@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Form,
   Radio,
@@ -40,7 +40,10 @@ const SetIncomeTarget = ({ segment }) => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const setTargetYourself = Form.useWatch("set_target_yourself", form);
+  const setTargetYourself = Form.useWatch(
+    `${segment.id}-set_target_yourself`,
+    form
+  );
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -201,10 +204,19 @@ const SetIncomeTarget = ({ segment }) => {
     });
   };
 
-  useEffect(() => {
-    // TODO :: load initial value & how to save the data?
-    console.info("onLoad");
-  }, []);
+  const initialIncomeTargetValue = useMemo(() => {
+    const values = {};
+    Object.keys(segment).map((key) => {
+      const value = segment[key];
+      if (key === "region" && value) {
+        values[`${segment.id}-set_target_yourself`] = 0; // set income value by benchmark
+      }
+      if (["target", "region", "adult", "child"].includes(key)) {
+        values[`${segment.id}-${key}`] = value;
+      }
+    });
+    return values;
+  }, [segment]);
 
   const renderTargetInput = (key) => {
     switch (key) {
@@ -342,11 +354,16 @@ const SetIncomeTarget = ({ segment }) => {
   return (
     <div>
       {contextHolder}
-      <Form form={form} layout="vertical" autoComplete="off">
+      <Form
+        form={form}
+        layout="vertical"
+        autoComplete="off"
+        initialValues={initialIncomeTargetValue}
+      >
         <Row gutter={[12, 12]}>
           <Col span={24}>
             <Form.Item
-              name="set_target_yourself"
+              name={`${segment.id}-set_target_yourself`}
               label="Do you want to set an income target yourself?"
               rules={[
                 {
