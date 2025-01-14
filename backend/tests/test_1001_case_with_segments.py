@@ -92,6 +92,7 @@ class TestCaseWithSegmentRoute:
                     "target": None,
                     "adult": None,
                     "child": None,
+                    "number_of_farmers": 10,
                 },
                 {
                     "id": 5,
@@ -101,6 +102,7 @@ class TestCaseWithSegmentRoute:
                     "target": None,
                     "adult": None,
                     "child": None,
+                    "number_of_farmers": 8,
                 },
             ],
             "case_commodities": [
@@ -168,7 +170,7 @@ class TestCaseWithSegmentRoute:
                 {
                     "id": 4,
                     "name": "Segment 1 Name Updated",
-                    "number_of_farmers": 10,
+                    "number_of_farmers": 11,
                 },
                 {
                     "id": 5,
@@ -219,6 +221,7 @@ class TestCaseWithSegmentRoute:
                     "target": None,
                     "adult": None,
                     "child": None,
+                    "number_of_farmers": 8,
                     "answers": {},
                     "benchmark": None,
                 },
@@ -230,6 +233,7 @@ class TestCaseWithSegmentRoute:
                     "target": None,
                     "adult": None,
                     "child": None,
+                    "number_of_farmers": 11,
                     "answers": {},
                     "benchmark": None,
                 },
@@ -241,6 +245,7 @@ class TestCaseWithSegmentRoute:
                     "target": None,
                     "adult": None,
                     "child": None,
+                    "number_of_farmers": 9,
                     "answers": {},
                     "benchmark": None,
                 },

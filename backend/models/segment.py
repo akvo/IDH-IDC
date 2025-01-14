@@ -16,6 +16,7 @@ class SegmentDict(TypedDict):
     target: Optional[float]
     adult: Optional[float]
     child: Optional[float]
+    number_of_farmers: Optional[int]
 
 
 class SimplifiedSegmentDict(TypedDict):
@@ -25,6 +26,7 @@ class SimplifiedSegmentDict(TypedDict):
     target: Optional[float]
     adult: Optional[float]
     child: Optional[float]
+    number_of_farmers: Optional[int]
 
 
 class SegmentWithAnswersDict(TypedDict):
@@ -35,6 +37,7 @@ class SegmentWithAnswersDict(TypedDict):
     target: Optional[float]
     adult: Optional[float]
     child: Optional[float]
+    number_of_farmers: Optional[int]
     answers: Optional[dict]
     benchmark: Optional[LivingIncomeBenchmarkDict]
 
@@ -49,6 +52,7 @@ class Segment(Base):
     target = Column(Float, nullable=True)
     adult = Column(Float, nullable=True)
     child = Column(Float, nullable=True)
+    number_of_farmers = Column(Integer, nullable=True)
 
     case_detail = relationship(
         "Case",
@@ -71,6 +75,7 @@ class Segment(Base):
         target: Optional[float] = None,
         adult: Optional[float] = None,
         child: Optional[float] = None,
+        number_of_farmers: Optional[int] = None,
         id: Optional[int] = None,
     ):
         self.id = id
@@ -80,6 +85,7 @@ class Segment(Base):
         self.target = target
         self.adult = adult
         self.child = child
+        self.number_of_farmers = number_of_farmers
 
     def __repr__(self) -> int:
         return f"<Segment {self.id}>"
@@ -94,6 +100,7 @@ class Segment(Base):
             "target": self.target,
             "adult": self.adult,
             "child": self.child,
+            "number_of_farmers": self.number_of_farmers,
         }
 
     @property
@@ -105,6 +112,7 @@ class Segment(Base):
             "target": self.target,
             "adult": self.adult,
             "child": self.child,
+            "number_of_farmers": self.number_of_farmers,
         }
 
     @property
@@ -126,6 +134,7 @@ class Segment(Base):
             "child": self.child,
             "answers": answers,
             "benchmark": None,
+            "number_of_farmers": self.number_of_farmers,
         }
 
 
@@ -152,5 +161,5 @@ class SegmentUpdateBase(BaseModel):
 
 class CaseSettingSegmentPayload(BaseModel):
     name: str
-    number_of_farmers: int
+    number_of_farmers: Optional[int] = None
     id: Optional[int] = None

@@ -29,6 +29,7 @@ const defaultSegmentsValue = {
   target: null,
   adult: null,
   child: null,
+  number_of_farmers: null,
   answers: {},
   benchmark: defaultBenchmarkValue,
 };

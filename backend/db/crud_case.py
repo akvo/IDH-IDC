@@ -82,8 +82,9 @@ def add_case(session: Session, payload: CaseBase, user: User) -> CaseDict:
     # store segments
     if payload.segments:
         for segment in payload.segments:
-            # TODO:: add number of farmers
-            new_segment = Segment(name=segment.name)
+            new_segment = Segment(
+                name=segment.name, number_of_farmers=segment.number_of_farmers
+            )
             case.case_segments.append(new_segment)
     session.add(case)
     session.commit()
@@ -254,7 +255,6 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
     # handle update segments
     if payload.segments:
         for segment in payload.segments:
-            # TODO:: add number of farmers
             prev_segment = (
                 session.query(Segment)
                 .filter(
@@ -268,11 +268,15 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
             if prev_segment:
                 # update prev segment
                 prev_segment.name = segment.name
+                prev_segment.number_of_farmers = segment.number_of_farmers
                 session.commit()
                 session.flush()
                 session.refresh(prev_segment)
             else:
-                new_segment = Segment(name=segment.name)
+                new_segment = Segment(
+                    name=segment.name,
+                    number_of_farmers=segment.number_of_farmers,
+                )
                 case.case_segments.append(new_segment)
     session.commit()
     session.flush()

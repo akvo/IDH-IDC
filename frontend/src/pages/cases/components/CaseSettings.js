@@ -75,7 +75,7 @@ const CaseSettings = ({
           ? currentCase.segments.map((s) => ({
               id: s.id,
               name: s.name,
-              number_of_farmers: null,
+              number_of_farmers: s.number_of_farmers,
             }))
           : [""],
       };
