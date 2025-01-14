@@ -8,6 +8,7 @@ import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/landing";
 import { Login, ResetPassword } from "./pages/login";
+import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome } from "./pages/welcome";
@@ -135,8 +136,15 @@ const App = () => {
               />
               <Route exact path="/home" element={<Home />} />
               <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/cases/new" element={<Case />} />
-              <Route exact path="/cases/:caseId" element={<Case />} />
+              <Route exact path="/case/:caseId/:step" element={<Case />} />
+              {/*
+                TODO :: Delete later
+                Old Case Page
+              */}
+              <Route exact path="/old-cases" element={<OldCases />} />
+              <Route exact path="/old-cases/new" element={<OldCase />} />
+              <Route exact path="/old-cases/:caseId" element={<OldCase />} />
+              {/* EOL Old Case */}
             </Route>
           ) : (
             ""

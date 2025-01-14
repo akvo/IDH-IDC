@@ -211,7 +211,7 @@ test.todo("it should");
 
 //     const casesCardMenuButton = getByTestId("card-menu-cases-button");
 //     fireEvent.click(casesCardMenuButton);
-//     expect(mockedUseNavigate).toHaveBeenCalledWith("/cases");
+//     expect(mockedUseNavigate).toHaveBeenCalledWith("/old-cases");
 //   });
 
 //   it("should go to explore studies page if Explore Studies menu clicked", () => {

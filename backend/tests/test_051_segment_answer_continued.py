@@ -53,6 +53,7 @@ class TestSegmentAnswerRouteContinued:
                 "target": 2000.0,
                 "adult": 6.0,
                 "child": 0.0,
+                "number_of_farmers": None,
                 "answers": {},
                 "benchmark": None,
             },
@@ -64,6 +65,7 @@ class TestSegmentAnswerRouteContinued:
                 "target": 3000.0,
                 "adult": 4.0,
                 "child": 2.0,
+                "number_of_farmers": None,
                 "answers": {
                     "current-1-1": 10000.0,
                     "current-1-2": None,
@@ -82,6 +84,7 @@ class TestSegmentAnswerRouteContinued:
                 "target": 2000.0,
                 "adult": 5.0,
                 "child": 0.0,
+                "number_of_farmers": None,
                 "answers": {
                     "current-1-1": 100.0,
                     "feasible-1-1": 100.0,
@@ -149,6 +152,7 @@ class TestSegmentAnswerRouteContinued:
                     "target": 2000.0,
                     "adult": 6.0,
                     "child": 0.0,
+                    "number_of_farmers": None,
                     "answers": {},
                     "benchmark": None,
                 },
@@ -160,6 +164,7 @@ class TestSegmentAnswerRouteContinued:
                     "target": 3000.0,
                     "adult": 4.0,
                     "child": 2.0,
+                    "number_of_farmers": None,
                     "answers": {
                         "current-1-1": 10000.0,
                         "current-1-2": None,
@@ -178,6 +183,7 @@ class TestSegmentAnswerRouteContinued:
                     "target": 2000.0,
                     "adult": 5.0,
                     "child": 0.0,
+                    "number_of_farmers": None,
                     "answers": {
                         "current-1-1": 100.0,
                         "current-1-2": 200.0,

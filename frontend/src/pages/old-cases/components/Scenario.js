@@ -28,7 +28,7 @@ import {
   selectProps,
   Step,
   commodities,
-} from "./";
+} from ".";
 import { ChartScenarioModeling } from "../visualizations";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { SaveAsImageButton, ShowLabelButton } from "../../../components/utils";

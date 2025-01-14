@@ -49,7 +49,7 @@ const GetStarted = () => {
         </Space>
         <div className="button-wrapper">
           {loggedIn ? (
-            <Link to="/cases" className="button button-green-fill">
+            <Link to="/old-cases" className="button button-green-fill">
               Go to my cases
             </Link>
           ) : (

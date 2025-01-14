@@ -21,7 +21,12 @@ from models.case_commodity import (
     SimplifiedCaseCommodityDict,
     CaseCommodityType,
 )
-from models.segment import Segment, SegmentDict, SegmentWithAnswersDict
+from models.segment import (
+    Segment,
+    SegmentDict,
+    SegmentWithAnswersDict,
+    CaseSettingSegmentPayload,
+)
 from models.case_tag import CaseTag
 
 
@@ -336,6 +341,7 @@ class CaseBase(BaseModel):
     other_commodities: Optional[List[OtherCommoditysBase]] = None
     tags: Optional[List[int]] = None
     company: Optional[int] = None
+    segments: Optional[List[CaseSettingSegmentPayload]] = None
 
 
 class PaginatedCaseResponse(BaseModel):

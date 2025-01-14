@@ -1,0 +1,610 @@
+@import "../../variables.scss";
+
+#case {
+  h2 {
+    font-family: "RocGrotesk" !important;
+  }
+
+  .case-content {
+    margin-top: 2rem;
+
+    .case-title-wrapper {
+      border-radius: 20px;
+      background: $primary-color;
+      padding-bottom: 24px;
+      color: #fff;
+      min-height: 110px;
+
+      h2,
+      p {
+        line-height: 0.75rem;
+        width: 90%;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .case-title-icon {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        border-radius: 0 0 20px 0;
+      }
+    }
+
+    .case-detail-card-wrapper {
+      border-radius: 20px;
+      .ant-card-head {
+        padding: 20px 24px 12px 24px;
+      }
+
+      .case-detail-child-card-wrapper {
+        border: 1px solid #e9e9e9;
+
+        .ant-card-head {
+          padding: 10px 20px;
+          background: $primary-color;
+          color: #fff;
+          min-height: $card-head-min-height;
+
+          .ant-card-head-title {
+            font-size: 0.9rem;
+          }
+
+          .ant-switch {
+            background: $muted-color;
+          }
+
+          .ant-switch-checked {
+            background: $yellow-color;
+          }
+        }
+      }
+    }
+
+    .ant-card-head-title {
+      font-family: "TabletGothic";
+      font-size: 1.2rem;
+    }
+
+    .chart-container {
+      padding: 10px 20px 10px 20px;
+
+      .ant-card-head {
+        padding: 0;
+      }
+
+      .ant-card-body {
+        padding: 0px;
+      }
+    }
+
+    .income-driver-dashboard {
+      .income-driver-content {
+        .card-alert-box {
+          margin-bottom: 0 !important;
+          padding: 20px 24px;
+        }
+      }
+    }
+
+    .income-driver-dashboard {
+      margin-bottom: 1rem;
+      .information-box {
+        border-radius: 4px;
+        background: #cce0df;
+        h3 {
+          text-align: center;
+          background: transparent !important;
+        }
+        .information-box {
+          background: #00625f;
+          color: #fff;
+        }
+      }
+    }
+
+    .income-driver-dashboard,
+    .segment-group {
+      .segment-child-wrapper {
+        border: 1px solid #e9e9e9;
+        border-radius: 20px;
+
+        .ant-card-head {
+          background: $primary-color;
+          color: #fff;
+          padding: 10px 20px 0 20px;
+          min-height: $card-head-min-height;
+        }
+      }
+      .ant-card-head {
+        padding: 0px;
+        padding-left: 16px;
+
+        h3 {
+          font-size: 24px;
+          margin: -1px;
+          padding: 10px 24px;
+          small {
+            position: absolute;
+            right: 24px;
+            top: 16px;
+            cursor: pointer;
+          }
+        }
+        // handle scenario modeling page
+        .scenario-header-wrapper {
+          padding: 10px 24px;
+          h3 {
+            padding: 0;
+          }
+        }
+        p {
+          font-size: 14px;
+          font-weight: normal;
+        }
+        // handle scenario modeling page
+        margin-bottom: 0px;
+        .ant-card-extra {
+          padding: 10px 24px;
+        }
+        .card-extra-wrapper {
+          margin-top: 15px;
+        }
+      }
+      .ant-card-body {
+        padding: 0px;
+        .total-diversified-income {
+          margin-left: -4px;
+          margin-right: -4px;
+          row-gap: 8px;
+          background: white;
+          padding-left: 8px;
+          // padding-right: 8px;
+        }
+        .ant-card-grid {
+          padding: 10px 20px;
+          box-shadow: none;
+          h2 {
+            &.section-title {
+              // background: #e6f7ff;
+              font-size: 0.9rem;
+              margin: -10px -24px 0 -24px;
+              padding: 10px 24px;
+              position: relative;
+              width: calc(100% + 48px);
+              div {
+                position: absolute;
+                right: 24px;
+                top: calc(50% - 9px);
+              }
+            }
+          }
+          h3 {
+            background: #ffffff;
+            font-size: 14px;
+            padding: 10px 24px;
+            font-weight: bold;
+            margin: 0px;
+            &.diversified-income-title {
+              padding: 22px 0 22px 40px !important;
+            }
+          }
+          h4 {
+            small {
+              &.unit {
+                position: absolute;
+                right: 0;
+                top: 22px;
+              }
+            }
+          }
+          .percentage-wrapper {
+            font-size: 0.8rem;
+            .ceret-up {
+              color: green;
+            }
+            .ceret-down {
+              color: red;
+            }
+          }
+        }
+        .ant-input-number-disabled {
+          color: #666;
+        }
+      }
+    }
+
+    .card-subtitle {
+      padding: 10px 0;
+    }
+    .ant-card-body {
+      padding-bottom: 0px;
+    }
+    .timeline-container {
+      padding: 2rem 5.5rem;
+      margin-left: -$default-padding-size;
+      position: fixed;
+      // top: 171px;
+      top: 129px;
+      width: 100%;
+      z-index: 100;
+      background-color: $bg-color-grey;
+    }
+  }
+  h3 {
+    margin: 0px -24px 10px;
+    padding: 0px 24px 10px;
+    font-weight: normal;
+  }
+  h4 {
+    margin: 10px 0px;
+  }
+  .ant-timeline-item {
+    cursor: pointer;
+  }
+
+  .ant-tabs {
+    border-radius: 20px;
+    background: #fff;
+    padding: 10px 0 20px 0;
+  }
+
+  .ant-tabs-nav-wrap {
+    border-radius: 20px;
+    background: #fff;
+    padding: 10px 1.5rem 0px;
+    .ant-tabs-tab-btn {
+      font-family: "TabletGothicBold";
+      font-size: 1rem;
+      // background: #fff;
+      text-shadow: none;
+    }
+  }
+
+  .ant-tabs-nav .ant-tabs-tab-active {
+    border-top: 1px solid #cfcfcf;
+    border-left: 1px solid #cfcfcf;
+    border-right: 1px solid #cfcfcf;
+  }
+
+  .pending-dot {
+    .ant-steps-item-icon {
+      background: $yellow-color;
+    }
+  }
+  .anticon {
+    &.finished-dot {
+      // position: absolute;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      left: 1px;
+      bottom: -4px;
+      color: #26605f;
+    }
+  }
+  .current-feasible-field {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .data-fields-title {
+    background: $primary-color;
+  }
+  .binning-input {
+    width: 100% !important;
+  }
+
+  #income-driver-dashboard {
+    .ant-tabs {
+      background: none;
+    }
+    .ant-tabs-nav-wrap {
+      background: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+    }
+    .ant-tabs-tab-btn {
+      background: none !important;
+    }
+    .ant-tabs-nav .ant-tabs-tab-active {
+      border-top: 1px solid transparent;
+      border-left: 1px solid transparent;
+      border-right: 1px solid transparent;
+    }
+  }
+
+  #sensitivity-analysis {
+    .ant-form-item {
+      margin-bottom: 0px;
+    }
+
+    .info-icon {
+      color: #fff;
+    }
+
+    .settings-wrapper {
+      h2 {
+        color: #00403e;
+        font-family: "RocGrotesk";
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 48px;
+        letter-spacing: -0.8px;
+      }
+
+      p {
+        color: #000;
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 28px; /* 175% */
+      }
+
+      .settings-info-wrapper {
+        .number {
+          color: #00625f;
+          text-align: center;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 28px;
+          letter-spacing: -0.28px;
+
+          padding: 4px 8px;
+          background: $yellow-color;
+          border-radius: 100px 70px 100px 70px;
+
+          &.small {
+            background: #fef4ed;
+            padding: 2px 6px;
+            font-size: 14px;
+            font-weight: normal;
+          }
+        }
+
+        .title {
+          color: #00625f;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 28px;
+          letter-spacing: -0.336px;
+          &.small {
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 24px;
+          }
+        }
+
+        .description {
+          color: #000;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 24px;
+          padding-left: 36px;
+          &.small {
+            padding-left: 28px;
+          }
+        }
+
+        .ant-input-number-group-addon {
+          background: #fafafa !important;
+        }
+      }
+    }
+
+    .income-driver-table {
+      table {
+        border-radius: 20px;
+
+        th,
+        td {
+          font-family: "TabletGothic";
+          // background: $secondary-color;
+          border: none;
+          padding: 8px 20px;
+        }
+        th {
+          border-bottom: solid $primary-color 1px;
+          &::before {
+            display: none;
+          }
+        }
+        tfoot.ant-table-summary {
+          // background: $secondary-color;
+          td {
+            // background: $secondary-color;
+            border-top: solid $primary-color 1px;
+            font-family: "TabletGothic";
+
+            &:first-child {
+              border-bottom-left-radius: 20px;
+            }
+            &:last-child {
+              border-bottom-right-radius: 20px;
+            }
+          }
+        }
+      }
+    }
+
+    .binning-chart-info-wrapper {
+      color: #000;
+      padding-top: 20px;
+
+      .segment {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .label {
+        font-size: 18px;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .ant-steps-item-title {
+    cursor: pointer;
+    font-size: 16px;
+  }
+  // .ant-steps-item-title:after {
+  //   background-color: #053fff !important;
+  //   border: 1px solid #053fff !important;
+  // }
+
+  #scenario-modeling {
+    font-family: "TabletGothic";
+
+    .scenario-tabs-container {
+      .ant-tabs-nav .ant-tabs-tab {
+        border: 1px solid #cfcfcf;
+      }
+      .ant-tabs-nav .ant-tabs-tab-active {
+        border-bottom: none;
+      }
+    }
+
+    // .scenario-segment-tabs-container {
+    //   .ant-tabs-nav .ant-tabs-tab {
+    //     border-top: none;
+    //     border-left: none;
+    //     border-right: none;
+    //   }
+    // }
+
+    .scenario-field-item {
+      margin-bottom: 0px;
+    }
+
+    .scenario-information-wrapper {
+      .label {
+        margin-bottom: 5px;
+      }
+    }
+
+    .scenario-step-wrapper {
+      padding: 20px 0;
+
+      .number {
+        color: #00625f;
+        text-align: center;
+        font-family: "RocGrotesk";
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 28px;
+        letter-spacing: -0.28px;
+
+        padding: 4px 8px;
+        background: $yellow-color;
+        border-radius: 100px 70px 100px 70px;
+      }
+
+      .title {
+        color: #00625f;
+        font-family: "RocGrotesk";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 28px;
+        letter-spacing: -0.336px;
+      }
+    }
+  }
+
+  #income-overview-chart {
+    .income-overview-chart-wrapper {
+      padding: 0 20px;
+    }
+  }
+
+  .chart-title {
+    margin: 0px 0px -10px 0px;
+    padding: 0px 24px 10px 0;
+  }
+
+  .chart-card-wrapper {
+    border-radius: 20px;
+    border: 1px solid #e9e9e9;
+
+    .ant-card-head {
+      padding: 10px 20px;
+      background: $primary-color;
+      color: #fff;
+      min-height: $card-head-min-height;
+    }
+
+    .ant-card-head-title {
+      font-size: 0.9rem !important;
+    }
+
+    .ant-card-body {
+      padding: 0 20px !important;
+    }
+
+    &.with-padding {
+      .ant-card-body {
+        padding: 20px !important;
+      }
+    }
+
+    &.has-segments-button {
+      .ant-card-body {
+        padding: 20px !important;
+      }
+    }
+  }
+
+  .info-card-wrapper {
+    border-radius: 20px;
+    border: 1px solid #e9e9e9;
+
+    .ant-card-head {
+      padding: 10px 20px;
+      background: $primary-color;
+      color: #fff;
+      min-height: $card-head-min-height;
+    }
+
+    .ant-card-head-title {
+      font-size: 0.9rem !important;
+    }
+
+    .ant-card-body {
+      padding: 20px !important;
+    }
+
+    &.no-padding {
+      .ant-card-body {
+        padding: 10px 0 !important;
+      }
+    }
+
+    &.head-only {
+      .ant-card-body {
+        padding: 0 !important;
+      }
+
+      .ant-card-head {
+        border-radius: 20px;
+      }
+    }
+  }
+
+  .benchmark-info-child-wrapper {
+    font-family: "TabletGothic";
+  }
+
+  h2.income-target-value {
+    font-family: "TabletGothicBold" !important;
+  }
+}

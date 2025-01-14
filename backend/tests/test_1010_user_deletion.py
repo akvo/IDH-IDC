@@ -50,7 +50,8 @@ class TestUserDeletion:
                 "id": 1,
                 "email": "super_admin@akvo.org",
                 "cases": [
-                    {"label": "Bali Coffee Production (Private)", "value": 2}
+                    {"label": "Bali Coffee Production (Private)", "value": 2},
+                    {"label": "Bali Rice and Corn with Segment", "value": 12},
                 ],
             }
         }

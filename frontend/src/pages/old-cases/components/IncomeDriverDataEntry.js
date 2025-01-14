@@ -5,7 +5,7 @@ import {
   DataFields,
   generateSegmentPayloads,
   removeUndefinedObjectValue,
-} from "./";
+} from ".";
 import { api } from "../../../lib";
 import { orderBy, isEqual } from "lodash";
 

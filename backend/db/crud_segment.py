@@ -3,8 +3,11 @@ from typing import List
 from fastapi import HTTPException, status
 
 from models.segment import (
-    Segment, SegmentBase, SegmentDict, SegmentUpdateBase,
-    SegmentWithAnswersDict
+    Segment,
+    SegmentBase,
+    SegmentDict,
+    SegmentUpdateBase,
+    SegmentWithAnswersDict,
 )
 from models.segment_answer import SegmentAnswer
 
@@ -44,7 +47,7 @@ def get_segment_by_id(session: Session, id: int) -> SegmentDict:
     if not segment:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Segment {id} not found"
+            detail=f"Segment {id} not found",
         )
     return segment
 
@@ -93,8 +96,7 @@ def delete_segment(session: Session, id: int):
     segment = get_segment_by_id(session=session, id=id)
     # delete segment answers
     segment_answers = (
-        session.query(SegmentAnswer)
-        .filter(SegmentAnswer.segment == id).all()
+        session.query(SegmentAnswer).filter(SegmentAnswer.segment == id).all()
     )
     for sa in segment_answers:
         session.delete(sa)
@@ -110,6 +112,6 @@ def get_segments_by_case_id(
     if not segments:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Segments with case {case_id} not found"
+            detail=f"Segments with case {case_id} not found",
         )
     return segments
