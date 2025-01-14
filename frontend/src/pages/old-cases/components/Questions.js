@@ -16,7 +16,7 @@ import {
   CaretUpFilled,
   InfoCircleTwoTone,
 } from "@ant-design/icons";
-import { InputNumberThousandFormatter, indentSize, commodities } from "./";
+import { InputNumberThousandFormatter, indentSize, commodities } from ".";
 import orderBy from "lodash/orderBy";
 
 const commoditiesBreakdown = ["secondary", "tertiary"];

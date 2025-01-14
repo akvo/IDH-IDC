@@ -40,33 +40,33 @@ class SegmentWithAnswersDict(TypedDict):
 
 
 class Segment(Base):
-    __tablename__ = 'segment'
+    __tablename__ = "segment"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    case = Column(Integer, ForeignKey('case.id'))
-    region = Column(Integer, ForeignKey('region.id'), nullable=True)
+    case = Column(Integer, ForeignKey("case.id"))
+    region = Column(Integer, ForeignKey("region.id"), nullable=True)
     name = Column(String, nullable=False)
     target = Column(Float, nullable=True)
     adult = Column(Float, nullable=True)
     child = Column(Float, nullable=True)
 
     case_detail = relationship(
-        'Case',
+        "Case",
         cascade="all, delete",
         passive_deletes=True,
-        back_populates='case_segments'
+        back_populates="case_segments",
     )
     segment_answers = relationship(
-        'SegmentAnswer',
+        "SegmentAnswer",
         cascade="all, delete",
         passive_deletes=True,
-        backref='segment_detail'
+        backref="segment_detail",
     )
 
     def __init__(
         self,
         name: str,
-        case: int,
+        case: Optional[int] = None,
         region: Optional[int] = None,
         target: Optional[float] = None,
         adult: Optional[float] = None,
@@ -148,3 +148,9 @@ class SegmentUpdateBase(BaseModel):
     adult: Optional[float] = None
     child: Optional[float] = None
     answers: Optional[List[SegmentAnswerBase]] = []
+
+
+class CaseSettingSegmentPayload(BaseModel):
+    name: str
+    number_of_farmers: int
+    id: Optional[int] = None

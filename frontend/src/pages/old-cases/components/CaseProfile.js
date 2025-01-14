@@ -36,7 +36,7 @@ import {
   yesNoOptions,
   DebounceSelect,
   removeUndefinedObjectValue,
-} from "./";
+} from ".";
 import { api } from "../../../lib";
 import { UIState, UserState } from "../../../store";
 import isEmpty from "lodash/isEmpty";
@@ -935,7 +935,7 @@ const CaseProfile = ({
                 <Col span={12}>
                   <Button
                     className="button button-submit button-secondary"
-                    onClick={() => navigate("/cases")}
+                    onClick={() => navigate("/old-cases")}
                   >
                     Cancel
                   </Button>

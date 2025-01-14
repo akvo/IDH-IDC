@@ -35,7 +35,7 @@ import {
   IncomeDriverForm,
   IncomeDriverTarget,
   InputNumberThousandFormatter,
-} from "./";
+} from ".";
 import Chart from "../../../components/chart";
 import { SaveAsImageButton, ShowLabelButton } from "../../../components/utils";
 import { api } from "../../../lib";

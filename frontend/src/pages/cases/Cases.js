@@ -1,7 +1,22 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { ContentLayout, TableContent } from "../../components/layout";
-import { Link, useSearchParams } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import "./cases.scss";
+import { ContentLayout } from "../../components/layout";
+import { commodityOptions } from "../../store/static";
+import { DebounceSelect, CaseFilter, CaseSettings } from "./components";
 import {
+  Row,
+  Col,
+  Button,
+  Table,
+  Input,
+  Space,
+  Popconfirm,
+  message,
+  Dropdown,
+} from "antd";
+import {
+  PlusOutlined,
+  FilterOutlined,
   EditOutlined,
   UserSwitchOutlined,
   SaveOutlined,
@@ -9,22 +24,14 @@ import {
   EyeOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { api } from "../../lib";
+import { Link, useSearchParams } from "react-router-dom";
 import { UIState, UserState } from "../../store";
-import {
-  Select,
-  Space,
-  Button,
-  Row,
-  Col,
-  Popconfirm,
-  message,
-  Input,
-  InputNumber,
-} from "antd";
-import { selectProps, DebounceSelect } from "./components";
+import { api } from "../../lib";
 import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
+import { stepPath } from "./store";
+
+const { Search } = Input;
 
 const perPage = 10;
 const defData = {
@@ -33,10 +40,21 @@ const defData = {
   total: 0,
   total_page: 1,
 };
-const filterProps = {
-  ...selectProps,
-  style: { width: window.innerHeight * 0.175 },
-};
+
+const caseSelectorItems = [
+  {
+    key: "all-cases",
+    label: "All cases",
+    type: "default",
+    onClick: () => console.info("1"),
+  },
+  {
+    key: "my-cases",
+    label: "My cases",
+    type: "text",
+    onClick: () => console.info("2"),
+  },
+];
 
 const Cases = () => {
   const [searchParams] = useSearchParams();
@@ -46,11 +64,15 @@ const Cases = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState(null);
   const [data, setData] = useState(defData);
-  const [country, setCountry] = useState(null);
-  const [commodity, setCommodity] = useState(null);
-  const [tags, setTags] = useState([]);
-  const [email, setEmail] = useState(caseOwner || null);
-  const [year, setYear] = useState(null);
+  const [filters, setFilters] = useState({
+    country: null,
+    commodity: null,
+    tags: [],
+    email: caseOwner || null,
+    year: null,
+  });
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
 
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
@@ -67,105 +89,20 @@ const Cases = () => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const isCaseCreator = useMemo(() => {
-    if (adminRole.includes(userRole)) {
-      return true;
-    }
-    if (userInternal) {
-      return true;
-    }
-    return false;
-  }, [userRole, userInternal]);
-
-  useEffect(() => {
-    if (userID || refresh) {
-      setLoading(true);
-      let url = `case?page=${currentPage}&limit=${perPage}`;
-      if (search) {
-        url = `${url}&search=${search}`;
-      }
-      if (country) {
-        url = `${url}&country=${country}`;
-      }
-      if (commodity) {
-        url = `${url}&focus_commodity=${commodity}`;
-      }
-      if (!isEmpty(tags)) {
-        const tagQuery = tags.join("&tags=");
-        url = `${url}&tags=${tagQuery}`;
-      }
-      if (email) {
-        url = `${url}&email=${email}`;
-      }
-      if (year) {
-        url = `${url}&year=${year}`;
-      }
-      api
-        .get(url)
-        .then((res) => {
-          setData(res.data);
-        })
-        .catch((e) => {
-          console.error(e.response);
-          const { status } = e.response;
-          if (status === 404) {
-            setData(defData);
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-          setRefresh(false);
-        });
-    }
-  }, [
-    currentPage,
-    search,
-    userID,
-    commodity,
-    country,
-    tags,
-    refresh,
-    year,
-    email,
-  ]);
-
-  const fetchUsers = (searchValue) => {
-    return api
-      .get(`user/search_dropdown?search=${searchValue}`)
-      .then((res) => res.data);
-  };
-
-  const handleOnUpdateCaseOwner = (caseRecord) => {
-    api
-      .put(`update_case_owner/${caseRecord.id}?user_id=${selectedUser.value}`)
-      .then(() => {
-        setRefresh(true);
-        setShowChangeOwnerForm(null);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  };
-
-  const onConfirmDelete = (record) => {
-    api
-      .delete(`case/${record.id}`)
-      .then(() => {
-        setRefresh(true);
-        messageApi.open({
-          type: "success",
-          content: "Case deleted successfully.",
-        });
-      })
-      .catch(() => {
-        messageApi.open({
-          type: "error",
-          content: "Failed! Something went wrong.",
-        });
-      });
+  const searchProps = {
+    placeholder: "Find Case",
+    style: { width: 575 },
+    onSearch: (value) => setSearch(value),
   };
 
   const columns = [
+    {
+      title: "Case Name",
+      dataIndex: "name",
+      key: "case",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.name.localeCompare(b.name),
+    },
     {
       title: "Country",
       dataIndex: "country",
@@ -175,17 +112,10 @@ const Cases = () => {
       sorter: (a, b) => a.country.localeCompare(b.country),
     },
     {
-      title: "Case Name",
-      dataIndex: "name",
-      key: "case",
-      defaultSortOrder: "descend",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
       title: "Primary Commodity",
       key: "primary_commodity",
       render: (record) => {
-        const findPrimaryCommodity = commodityOptios.find(
+        const findPrimaryCommodity = commodityOptions.find(
           (co) => co.value === record.focus_commodity
         );
         if (!findPrimaryCommodity?.label) {
@@ -211,9 +141,9 @@ const Cases = () => {
       },
     },
     {
-      title: "Year",
-      dataIndex: "year",
-      key: "year",
+      title: "Date",
+      dataIndex: "created_at",
+      key: "created_at",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.year - b.year,
     },
@@ -274,11 +204,12 @@ const Cases = () => {
       },
     },
     {
+      title: "Actions",
       key: "action",
       width: "5%",
       align: "center",
       render: (text, record) => {
-        const caseDetailURL = `/cases/${record.id}`;
+        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
         const EditButton = (
           <Link to={caseDetailURL}>
             <EditOutlined />
@@ -329,55 +260,98 @@ const Cases = () => {
     },
   ];
 
-  const onSearch = (value) => setSearch(value);
+  useEffect(() => {
+    if (userID || refresh) {
+      const { country, commodity, tags, year, email } = filters;
+      setLoading(true);
+      let url = `case?page=${currentPage}&limit=${perPage}`;
+      if (search) {
+        url = `${url}&search=${search}`;
+      }
+      if (country) {
+        url = `${url}&country=${country}`;
+      }
+      if (commodity) {
+        url = `${url}&focus_commodity=${commodity}`;
+      }
+      if (!isEmpty(tags)) {
+        const tagQuery = tags.join("&tags=");
+        url = `${url}&tags=${tagQuery}`;
+      }
+      if (email) {
+        url = `${url}&email=${email}`;
+      }
+      if (year) {
+        url = `${url}&year=${year}`;
+      }
+      api
+        .get(url)
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((e) => {
+          console.error(e.response);
+          const { status } = e.response;
+          if (status === 404) {
+            setData(defData);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+          setRefresh(false);
+        });
+    }
+  }, [currentPage, userID, refresh, search, filters]);
 
-  const countryOptions = window.master.countries;
-  const commodityOptios = window.master.commodity_categories
-    .flatMap((c) => c.commodities)
-    .map((c) => ({ label: c.name, value: c.id }));
+  const isCaseCreator = useMemo(() => {
+    if (adminRole.includes(userRole)) {
+      return true;
+    }
+    if (userInternal) {
+      return true;
+    }
+    return false;
+  }, [userRole, userInternal]);
 
-  const otherFilters = (
-    <Space>
-      <Select
-        {...filterProps}
-        key="1"
-        options={countryOptions}
-        placeholder="Country"
-        value={country}
-        onChange={setCountry}
-      />
-      <Select
-        {...filterProps}
-        key="2"
-        options={commodityOptios}
-        placeholder="Primary Commodity"
-        value={commodity}
-        onChange={setCommodity}
-      />
-      <Select
-        {...filterProps}
-        key="3"
-        options={tagOptions}
-        placeholder="Tags"
-        mode="multiple"
-        value={tags}
-        onChange={setTags}
-      />
-      <Input
-        key="4"
-        placeholder="Case owner email"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-      />
-      <InputNumber
-        key="5"
-        placeholder="Year"
-        controls={false}
-        onChange={setYear}
-        value={year}
-      />
-    </Space>
-  );
+  const fetchUsers = (searchValue) => {
+    return api
+      .get(`user/search_dropdown?search=${searchValue}`)
+      .then((res) => res.data);
+  };
+
+  const handleOnUpdateCaseOwner = (caseRecord) => {
+    api
+      .put(`update_case_owner/${caseRecord.id}?user_id=${selectedUser.value}`)
+      .then(() => {
+        setRefresh(true);
+        setShowChangeOwnerForm(null);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  };
+
+  const onConfirmDelete = (record) => {
+    api
+      .delete(`case/${record.id}`)
+      .then(() => {
+        setRefresh(true);
+        messageApi.open({
+          type: "success",
+          content: "Case deleted successfully.",
+        });
+      })
+      .catch(() => {
+        messageApi.open({
+          type: "error",
+          content: "Failed! Something went wrong.",
+        });
+      });
+  };
+
+  const handleApplyFilters = ({ country, commodity, tags, year }) => {
+    setFilters((prev) => ({ ...prev, country, commodity, tags, year }));
+  };
 
   return (
     <ContentLayout
@@ -387,34 +361,83 @@ const Cases = () => {
       ]}
       title="Cases"
       wrapperId="case"
+      titleRighContent={
+        <Space>
+          <Search className="search" allowClear {...searchProps} />
+          <Dropdown
+            trigger="click"
+            placement="bottomRight"
+            dropdownRender={() => (
+              <CaseFilter
+                filters={filters}
+                handleApplyFilters={handleApplyFilters}
+                handleClose={() => setDropdownOpen(false)}
+              />
+            )}
+            open={dropdownOpen}
+          >
+            <Button
+              className="button-ghost"
+              icon={<FilterOutlined />}
+              onClick={() => setDropdownOpen(true)}
+            >
+              Filter
+            </Button>
+          </Dropdown>
+          {isCaseCreator && (
+            <Button
+              className="button-green-fill"
+              icon={<PlusOutlined />}
+              onClick={() => setCaseSettingModalVisible(true)}
+            >
+              Create new case
+            </Button>
+          )}
+        </Space>
+      }
     >
       {contextHolder}
-      <TableContent
-        title="All Cases"
-        dataSource={data.data}
-        columns={columns}
-        searchProps={{
-          placeholder: "Find Case",
-          style: { width: 375 },
-          onSearch: onSearch,
-        }}
-        buttonProps={
-          isCaseCreator
-            ? {
-                text: "New Case",
-                to: "/cases/new",
-              }
-            : {}
-        }
-        loading={loading}
-        paginationProps={{
-          current: currentPage,
-          pageSize: perPage,
-          total: data.total,
-          onChange: (page) => setCurrentPage(page),
-        }}
-        otherFilters={otherFilters}
-        showTotalPagination={true}
+      <Row gutter={[12, 12]} style={{ paddingBottom: 16 }}>
+        {caseSelectorItems.map((cs) => (
+          <Col key={cs.key}>
+            <Button type={cs.type}>{cs.label}</Button>
+          </Col>
+        ))}
+      </Row>
+      <Row className="table-content-container">
+        <Col span={24}>
+          <Table
+            rowKey="id"
+            className="table-content-wrapper"
+            columns={columns}
+            dataSource={data.data}
+            loading={loading}
+            pagination={{
+              current: currentPage,
+              pageSize: perPage,
+              total: data.total,
+              onChange: (page) => setCurrentPage(page),
+              showSizeChanger: false,
+              showTotal: (total) => (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    marginLeft: "14px",
+                  }}
+                >
+                  Total Case: {total}
+                </div>
+              ),
+            }}
+          />
+        </Col>
+      </Row>
+
+      <CaseSettings
+        open={caseSettingModalVisible}
+        handleCancel={() => setCaseSettingModalVisible(false)}
+        enableEditCase={true}
       />
     </ContentLayout>
   );

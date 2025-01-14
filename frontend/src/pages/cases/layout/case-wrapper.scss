@@ -1,0 +1,105 @@
+@import "../../../variables.scss";
+
+#case-detail {
+  .case-sidebar-container {
+    border-right: 1px solid #e1e0da;
+    background: #fff;
+    box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08),
+      0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+    height: 95vh;
+    padding: 24px 32px;
+    z-index: 2;
+
+    .case-step-wrapper {
+      .ant-steps-item {
+        // not active
+        .ant-steps-item-tail::after {
+          border: 1px solid #e1e0da;
+        }
+
+        .ant-steps-item-icon {
+          border: 1px solid #e3e3e3;
+
+          .ant-steps-icon {
+            color: #979797;
+            text-align: center;
+            font-family: "RocGrotesk";
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 24px;
+          }
+        }
+
+        .ant-steps-item-title {
+          font-family: "RocGrotesk";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 24px;
+        }
+        .ant-steps-item-description {
+          color: #475467;
+          font-family: "TabletGothic";
+          font-size: 13px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 24px;
+        }
+
+        // when active
+        &.ant-steps-item-active {
+          .ant-steps-item-tail::after {
+            border: 1px solid $primary-color;
+          }
+
+          .ant-steps-item-icon {
+            border: 1px solid $primary-color;
+            box-shadow: 0 0 2px 4px rgba(203, 244, 220, 1);
+            background: #eaf2f2;
+
+            .ant-steps-icon {
+              color: $primary-color;
+            }
+          }
+        }
+
+        // when finished
+        &.ant-steps-item-finish {
+          .ant-steps-item-icon {
+            border: 1px solid #48d985;
+            background: #48d985;
+
+            .ant-steps-icon {
+              color: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .case-content-container {
+    // rewrite content layout css for this page
+    .ant-breadcrumb {
+      padding: 0px 32px;
+    }
+
+    .content-wrapper,
+    .title-wrapper {
+      padding: 10px 32px !important;
+    }
+  }
+
+  .case-button-wrapper {
+    background: #fff;
+    border-top: 1px solid #e1e0da;
+    padding: 24px;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    margin-top: 24px;
+    z-index: 1;
+  }
+}
