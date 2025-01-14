@@ -9,7 +9,7 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { CaseSettings } from "../components";
-import { stepPath } from "../store";
+import { stepPath, CaseUIState } from "../store";
 
 const { Sider, Content } = Layout;
 
@@ -63,6 +63,7 @@ const CaseSidebar = ({ step, caseId }) => {
 };
 
 const CaseWrapper = ({ children, step, caseId, currentCase }) => {
+  const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
 
   // Use refs to store the functions
@@ -119,10 +120,19 @@ const CaseWrapper = ({ children, step, caseId, currentCase }) => {
       {/* Next Back Button */}
       <Col span={24} align="end" className="case-button-wrapper">
         <Space>
-          <Button onClick={handleBack} className="button-green">
+          <Button
+            disabled={caseButtonState.loading}
+            onClick={handleBack}
+            className="button-green"
+          >
             <ArrowLeftOutlined /> Back
           </Button>
-          <Button onClick={handleNext} className="button-green-fill">
+          <Button
+            loading={caseButtonState.loading}
+            disabled={caseButtonState.loading}
+            onClick={handleNext}
+            className="button-green-fill"
+          >
             Next <ArrowRightOutlined />
           </Button>
         </Space>

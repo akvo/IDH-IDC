@@ -3,7 +3,12 @@ import { Spin, Tabs } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../lib";
-import { CurrentCaseState, stepPath, CaseUIState } from "./store";
+import {
+  CurrentCaseState,
+  stepPath,
+  CaseUIState,
+  PrevCaseState,
+} from "./store";
 import {
   SetIncomeTarget,
   EnterIncomeData,
@@ -99,6 +104,7 @@ const Case = () => {
         .then((res) => {
           const { data } = res;
           CurrentCaseState.update((s) => ({ ...s, ...data }));
+          PrevCaseState.update((s) => ({ ...s, ...data }));
         })
         .catch((e) => {
           console.error("Error fetching case data", e);

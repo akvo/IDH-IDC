@@ -17,3 +17,4 @@ export const stepPath = {
 
 export { default as CurrentCaseState } from "./current_case";
 export { default as CaseUIState } from "./case_ui";
+export { default as PrevCaseState } from "./prev_case";

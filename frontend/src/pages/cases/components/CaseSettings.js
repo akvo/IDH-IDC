@@ -8,7 +8,12 @@ import {
   api,
 } from "../../../lib";
 import dayjs from "dayjs";
-import { CaseUIState, CurrentCaseState, stepPath } from "../store";
+import {
+  CaseUIState,
+  CurrentCaseState,
+  PrevCaseState,
+  stepPath,
+} from "../store";
 import { isEqual } from "lodash";
 
 const CaseSettings = ({
@@ -231,6 +236,10 @@ const CaseSettings = ({
         setPrevCaseSettingValue(filteredCurrentValue);
         const { data } = res;
         CurrentCaseState.update((s) => ({
+          ...s,
+          ...data,
+        }));
+        PrevCaseState.update((s) => ({
           ...s,
           ...data,
         }));

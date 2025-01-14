@@ -12,12 +12,22 @@ import {
   message,
   Alert,
 } from "antd";
-import { CurrentCaseState, CaseUIState } from "../store";
+import {
+  CurrentCaseState,
+  CaseUIState,
+  PrevCaseState,
+  stepPath,
+} from "../store";
 import { resetCurrentCaseState } from "../store/current_case";
 import { yesNoOptions } from "../../../store/static";
-import { InputNumberThousandFormatter, selectProps, api } from "../../../lib";
+import {
+  InputNumberThousandFormatter,
+  selectProps,
+  api,
+  removeUndefinedObjectValue,
+} from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 
 const formStyle = { width: "100%" };
 
@@ -34,6 +44,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const currentCase = CurrentCaseState.useState((s) => s);
+  const prevCaseSegments = PrevCaseState.useState((s) => s?.segments || []);
   const stepSetIncomeTargetState = CaseUIState.useState(
     (s) => s.stepSetIncomeTarget
   );
@@ -42,6 +53,20 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     form
   );
   const [messageApi, contextHolder] = message.useMessage();
+
+  const initialIncomeTargetValue = useMemo(() => {
+    const values = {};
+    Object.keys(segment).map((key) => {
+      const value = segment[key];
+      if (key === "region" && value) {
+        values[`${segment.id}-set_target_yourself`] = 0; // set income value by benchmark
+      }
+      if (["target", "region", "adult", "child"].includes(key)) {
+        values[`${segment.id}-${key}`] = value;
+      }
+    });
+    return values;
+  }, [segment]);
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -60,17 +85,12 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     [segment.id]
   );
 
-  const preventNegativeValue = (fieldName) => [
-    () => ({
-      validator(_, value) {
-        if (value >= 0) {
-          return Promise.resolve();
-        }
-        form.setFieldValue(fieldName, null);
-        return Promise.reject(new Error("Negative value not allowed"));
-      },
-    }),
-  ];
+  const upateCaseButtonState = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      caseButton: value,
+    }));
+  };
 
   const showBenchmarNotification = useCallback(
     ({ currentCase }) => {
@@ -172,11 +192,23 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     ]
   );
 
+  const preventNegativeValue = (fieldName) => [
+    () => ({
+      validator(_, value) {
+        if (value >= 0) {
+          return Promise.resolve();
+        }
+        form.setFieldValue(fieldName, null);
+        return Promise.reject(new Error("Negative value not allowed"));
+      },
+    }),
+  ];
+
   const handleRegionChange = (value) => {
     if (value) {
       fetchBenchmark({ region: value });
     } else {
-      updateCurrentSegmentState("target", null);
+      updateCurrentSegmentState({ target: null });
     }
   };
 
@@ -194,30 +226,6 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
       child: null,
       target: value,
     });
-  };
-
-  const initialIncomeTargetValue = useMemo(() => {
-    const values = {};
-    Object.keys(segment).map((key) => {
-      const value = segment[key];
-      if (key === "region" && value) {
-        values[`${segment.id}-set_target_yourself`] = 0; // set income value by benchmark
-      }
-      if (["target", "region", "adult", "child"].includes(key)) {
-        values[`${segment.id}-${key}`] = value;
-      }
-    });
-    return values;
-  }, [segment]);
-
-  const backFunction = useCallback(() => {
-    resetCurrentCaseState();
-    navigate("/cases");
-  }, [navigate]);
-
-  const nextFunction = () => {
-    console.log("Next function executed");
-    // Additional logic for next action
   };
 
   const handleChangeAdultChildField = (key, value) => {
@@ -291,6 +299,95 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     }
   };
 
+  const handleSaveSegment = useCallback(() => {
+    if (!isEmpty(currentCase.segments)) {
+      // detect is payload updated
+      const isUpdated =
+        prevCaseSegments
+          .map((prev) => {
+            prev = {
+              ...prev,
+              answers: removeUndefinedObjectValue(prev?.answers || []),
+            };
+            let findPayload = currentCase.segments.find(
+              (curr) => curr.id === prev.id
+            );
+            if (!findPayload) {
+              // handle deleted segment
+              return true;
+            }
+            findPayload = {
+              ...findPayload,
+              answers: removeUndefinedObjectValue(findPayload?.answers || []),
+            };
+            const equal = isEqual(
+              removeUndefinedObjectValue(prev),
+              removeUndefinedObjectValue(findPayload)
+            );
+            return !equal;
+          })
+          .filter((x) => x)?.length > 0;
+
+      const payloads = currentCase.segments.map((curr) => ({
+        id: curr.id,
+        name: curr.name,
+        case: curr.case,
+        region: curr.region,
+        target: curr.target,
+        adult: curr.adult,
+        child: curr.child,
+        answers: [],
+      }));
+      upateCaseButtonState({ loading: true });
+      api
+        .put(`/segment?updated=${isUpdated}`, payloads)
+        .then((res) => {
+          const { data } = res;
+          PrevCaseState.update((s) => ({
+            ...s,
+            segments: data,
+          }));
+          messageApi.open({
+            type: "success",
+            content: "Income target saved successfully.",
+          });
+          setTimeout(() => {
+            navigate(`/case/${currentCase.id}/${stepPath.step2.label}`);
+          }, 100);
+        })
+        .catch((e) => {
+          console.error(e);
+          const { status, data } = e.response;
+          let errorText = "Failed to save income target.";
+          if (status === 403) {
+            errorText = data.detail;
+          }
+          messageApi.open({
+            type: "error",
+            content: errorText,
+          });
+        })
+        .finally(() => {
+          upateCaseButtonState({ loading: false });
+        });
+    }
+  }, [
+    currentCase.id,
+    currentCase.segments,
+    prevCaseSegments,
+    messageApi,
+    navigate,
+  ]);
+
+  const backFunction = useCallback(() => {
+    resetCurrentCaseState();
+    navigate("/cases");
+  }, [navigate]);
+
+  const nextFunction = useCallback(() => {
+    handleSaveSegment();
+  }, [handleSaveSegment]);
+
   useEffect(() => {
     if (setbackfunction) {
       setbackfunction(backFunction);
@@ -298,7 +395,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     if (setnextfunction) {
       setnextfunction(nextFunction);
     }
-  }, [setbackfunction, setnextfunction, backFunction]);
+  }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
 
   const renderTargetInput = (key) => {
     switch (key) {
@@ -439,7 +536,6 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
 
   return (
     <div>
-      {contextHolder}
       <Form
         form={form}
         layout="vertical"
@@ -464,6 +560,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
           {renderTargetInput(setTargetYourself)}
         </Row>
       </Form>
+      {contextHolder}
     </div>
   );
 };

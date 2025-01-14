@@ -1,6 +1,9 @@
 import { Store } from "pullstate";
 
 const defaultCaseUIState = {
+  caseButton: {
+    loading: false,
+  },
   secondary: {
     enable: false,
     disableAreaSizeField: true,
