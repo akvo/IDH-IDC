@@ -4,6 +4,8 @@ import {
   disableLandUnitFieldForCommodityTypes,
   disableIncomeDriversFieldForCommodityTypes,
 } from "../store/static";
+import { Tag } from "antd";
+import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 
 export const flatten = (data, parent = null) => {
   let flatData = [];
@@ -160,6 +162,29 @@ export const getFieldDisableStatusForCommodity = (commodity) => {
       ? true
       : false;
   return { disableLandUnitField, disableDataOnIncomeDriverField };
+};
+
+export const renderPercentageTag = (type = "default", value = 0) => {
+  value = value % 1 !== 0 || value === 0 ? value.toFixed(2) : value.toFixed();
+  value = `${value}%`;
+
+  switch (type) {
+    case "increase":
+      return (
+        <Tag color="success" icon={<ArrowUpOutlined />}>
+          {value}
+        </Tag>
+      );
+    case "decrease":
+      return (
+        <Tag color="error" icon={<ArrowDownOutlined />}>
+          {value}
+        </Tag>
+      );
+
+    default:
+      return <Tag color="default">{value}</Tag>;
+  }
 };
 
 export { default as api } from "./api";
