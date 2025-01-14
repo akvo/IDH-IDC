@@ -13,6 +13,12 @@ import {
 } from "./steps";
 import "./steps/steps.scss";
 
+const Loading = () => (
+  <div className="loading-container">
+    <Spin />
+  </div>
+);
+
 const renderPage = (key, navigate) => {
   switch (key) {
     case stepPath.step1.label:
@@ -42,26 +48,29 @@ const renderPage = (key, navigate) => {
   }
 };
 
-const SegmentTabsWrapper = ({ children }) => {
+const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
 
   const segmentTabItems = useMemo(() => {
     return currentCase.segments.map((segment) => ({
       label: segment.name,
       key: segment.id,
-      children: React.cloneElement(children, { segment }),
+      children: React.cloneElement(children, {
+        segment,
+        setbackfunction,
+        setnextfunction,
+      }),
     }));
-  }, [currentCase, children]);
+  }, [currentCase, children, setbackfunction, setnextfunction]);
 
   return (
-    <div id="step1">
-      <Tabs
-        className="step-segment-tabs-container"
-        type="card"
-        items={segmentTabItems}
-        tabBarGutter={5}
-      />
-    </div>
+    <Tabs
+      id="steps"
+      className="step-segment-tabs-container"
+      type="card"
+      items={segmentTabItems}
+      tabBarGutter={5}
+    />
   );
 };
 
@@ -125,13 +134,7 @@ const Case = () => {
 
   return (
     <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
-      {loading ? (
-        <div className="loading-container">
-          <Spin />
-        </div>
-      ) : (
-        renderPage(step, navigate)
-      )}
+      {loading ? <Loading /> : renderPage(step, navigate)}
     </CaseWrapper>
   );
 };

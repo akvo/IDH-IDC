@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Form,
   Radio,
@@ -12,6 +13,7 @@ import {
   Alert,
 } from "antd";
 import { CurrentCaseState, CaseUIState } from "../store";
+import { resetCurrentCaseState } from "../store/current_case";
 import { yesNoOptions } from "../../../store/static";
 import { InputNumberThousandFormatter, selectProps, api } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
@@ -31,19 +33,18 @@ const calculateHouseholdSize = ({
   return adult_size + children_size;
 };
 
-const SetIncomeTarget = ({ segment }) => {
+const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const currentCase = CurrentCaseState.useState((s) => s);
   const stepSetIncomeTargetState = CaseUIState.useState(
     (s) => s.stepSetIncomeTarget
   );
-
-  const [messageApi, contextHolder] = message.useMessage();
-
   const setTargetYourself = Form.useWatch(
     `${segment.id}-set_target_yourself`,
     form
   );
+  const [messageApi, contextHolder] = message.useMessage();
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -217,6 +218,25 @@ const SetIncomeTarget = ({ segment }) => {
     });
     return values;
   }, [segment]);
+
+  const backFunction = useCallback(() => {
+    resetCurrentCaseState();
+    navigate("/cases");
+  }, [navigate]);
+
+  const nextFunction = () => {
+    console.log("Next function executed");
+    // Additional logic for next action
+  };
+
+  useEffect(() => {
+    if (setbackfunction) {
+      setbackfunction(backFunction);
+    }
+    if (setnextfunction) {
+      setnextfunction(nextFunction);
+    }
+  }, [setbackfunction, setnextfunction, backFunction]);
 
   const renderTargetInput = (key) => {
     switch (key) {

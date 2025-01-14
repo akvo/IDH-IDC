@@ -62,4 +62,8 @@ const defaultCurrentCaseState = {
 
 const CurrentCaseState = new Store(defaultCurrentCaseState);
 
+export const resetCurrentCaseState = () => {
+  CurrentCaseState.update(() => defaultCurrentCaseState);
+};
+
 export default CurrentCaseState;
