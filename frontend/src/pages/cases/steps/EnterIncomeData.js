@@ -1,34 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
-import { api } from "../../../lib";
-import { Row, Col, Space, Tag } from "antd";
-import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { api, renderPercentageTag } from "../../../lib";
+import { Row, Col, Space } from "antd";
+import { EnterIncomeDataForm } from "../components";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
-
-const renderPercentageTag = (type = "default", value = 0) => {
-  value = value.toFixed();
-  value = `${value}%`;
-
-  switch (type) {
-    case "increase":
-      return (
-        <Tag color="success" icon={<ArrowUpOutlined />}>
-          {value}
-        </Tag>
-      );
-    case "decrease":
-      return (
-        <Tag color="error" icon={<ArrowDownOutlined />}>
-          {value}
-        </Tag>
-      );
-
-    default:
-      return <Tag color="default">{value}</Tag>;
-  }
-};
 
 /**
  * STEP 2
@@ -36,7 +13,7 @@ const renderPercentageTag = (type = "default", value = 0) => {
 const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
-  const [questionGroups, setQuestionGroups] = useState([]);
+  const [incomeDataDrivers, setIncomeDataDrivers] = useState([]);
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
@@ -69,17 +46,33 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
 
       api.get(`/questions/${currentCase.id}`).then((res) => {
         const { data } = res;
-        const dataTmp = reorderedCaseCommodities
-          .map((cc) => data.find((d) => d.commodity_id === cc.commodity))
-          .filter((x) => x);
-        setQuestionGroups(dataTmp);
+        const dataTmp = [];
+        const diversifiedGroupTmp = [];
+        // regroup the questions to follow new design format
+        reorderedCaseCommodities.forEach((cc) => {
+          const tmp = data.find((d) => d.commodity_id === cc.commodity);
+          if (cc.commodity_type === "focus") {
+            dataTmp.push({
+              groupName: "Primary Commodity",
+              questionGroups: [tmp],
+            });
+          } else {
+            diversifiedGroupTmp.push(tmp);
+          }
+        });
+        // add diversified group
+        dataTmp.push({
+          groupName: "Diversified Income",
+          questionGroups: diversifiedGroupTmp,
+        });
+        setIncomeDataDrivers(dataTmp);
       });
     }
   }, [currentCase.id, currentCase.case_commodities]);
-  console.log(questionGroups);
 
   return (
     <div id="enter-income-data">
+      {/* Header */}
       <Row align="middle" gutter={[8, 8]}>
         <Col span={14} className="total-income-title-wrapper">
           Total Income
@@ -96,8 +89,22 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
             <div className="value-text">457.00</div>
           </Space>
         </Col>
-        <Col span={2}>{renderPercentageTag("increase", 20)}</Col>
+        <Col span={2} className="percentage-tag-wrapper">
+          {renderPercentageTag("increase", 20)}
+        </Col>
       </Row>
+
+      {/* Questions */}
+      <div className="income-questions-wrapper">
+        {incomeDataDrivers.map((driver, driverIndex) => (
+          <EnterIncomeDataForm
+            key={driverIndex}
+            driver={driver}
+            driverIndex={driverIndex}
+            segment={segment}
+          />
+        ))}
+      </div>
     </div>
   );
 };

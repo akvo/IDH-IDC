@@ -107,13 +107,26 @@
     }
   }
 
-  .ant-tag {
-    border-radius: 16px;
-    font-size: 12px;
-    font-family: "TabletGothic";
-    line-height: 18px;
-    span {
-      margin-top: 4px;
+  .percentage-tag-wrapper {
+    .ant-tag {
+      border-radius: 16px;
+      font-size: 12px;
+      font-family: "TabletGothic";
+      line-height: 18px;
+      font-weight: normal;
+      span {
+        margin-top: 4px;
+      }
+    }
+  }
+
+  .income-questions-wrapper {
+    padding: 24px 0;
+
+    .ant-card {
+      .ant-card-head {
+        padding: 0;
+      }
     }
   }
 }

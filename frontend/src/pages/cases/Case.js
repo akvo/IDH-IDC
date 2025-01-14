@@ -15,8 +15,8 @@ import {
   UnderstandIncomeGap,
   AssessImpactMitigationStrategies,
   ClosingGap,
-  EnterIncomeDataVisual,
 } from "./steps";
+import { EnterIncomeDataVisual } from "./components";
 import "./steps/steps.scss";
 
 const Loading = () => (
