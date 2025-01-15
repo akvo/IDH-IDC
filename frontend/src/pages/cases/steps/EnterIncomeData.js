@@ -78,6 +78,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         // regroup the questions to follow new design format
         reorderedCaseCommodities.forEach((cc) => {
           const tmp = data.find((d) => d.commodity_id === cc.commodity);
+          tmp["currency"] = currentCase.currency;
           tmp["questions"] = addLevelIntoQuestions({
             questions: tmp.questions,
           });
@@ -98,7 +99,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         setIncomeDataDrivers(dataTmp);
       });
     }
-  }, [currentCase.id, currentCase.case_commodities]);
+  }, [currentCase.id, currentCase.case_commodities, currentCase.currency]);
 
   return (
     <div id="enter-income-data">

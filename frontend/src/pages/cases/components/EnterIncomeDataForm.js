@@ -1,31 +1,50 @@
 import React, { useMemo, useState } from "react";
-import { Card, Row, Col, Space, Button } from "antd";
-import { renderPercentageTag } from "../../../lib";
+import { Card, Row, Col, Space, Button, Form, InputNumber } from "antd";
 import { orderBy } from "lodash";
 import { RightOutlined, DownOutlined } from "@ant-design/icons";
+import {
+  renderPercentageTag,
+  InputNumberThousandFormatter,
+} from "../../../lib";
+import { commodities } from "../../../store/static";
 
-export const indentSize = 32;
+const indentSize = 32;
+const commoditiesBreakdown = ["secondary", "tertiary"];
 
-const EnterIncomeDataQuestions = ({ question, rowColSpanSize }) => {
+const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
   const [collapsed, setCollapsed] = useState(
     question.question_type !== "aggregator"
   );
 
-  const isCollapsible = useMemo(() => {
-    return (
-      question.question_type === "question" && question.childrens.length > 0
-    );
-  }, [question.question_type, question.childrens]);
+  const fieldKey = `${group.id}-${question.id}`;
 
-  const hidden = useMemo(() => {
-    if (question.question_type === "diversified") {
-      return false;
-    }
-    if (question.question_type === "aggregator") {
-      return true;
-    }
-    return false;
-  }, [question.question_type]);
+  const checkFocus = group.commodity_type === "focus";
+
+  const checkBreakdownValue =
+    commoditiesBreakdown.includes(group.commodity_type) && group.breakdown;
+
+  const hidden =
+    (question.question_type === "aggregator" && checkFocus) ||
+    (question.question_type === "aggregator" && checkBreakdownValue);
+
+  const isCollapsible =
+    question.question_type === "question" && question.childrens.length > 0;
+
+  const unitName = useMemo(
+    () =>
+      question.unit
+        .split("/")
+        .map((u) => u.trim())
+        .map((u) =>
+          u === "crop"
+            ? commodities
+                .find((c) => c.id === group?.commodity_id)
+                ?.name?.toLowerCase() || ""
+            : group?.[u]
+        )
+        .join(" / "),
+    [question.unit, group]
+  );
 
   return (
     <>
@@ -40,7 +59,10 @@ const EnterIncomeDataQuestions = ({ question, rowColSpanSize }) => {
         <Col
           span={rowColSpanSize.label}
           style={{
-            paddingLeft: isCollapsible ? indentSize * (question.level - 1) : 10,
+            paddingLeft:
+              !isCollapsible && question.level === 1
+                ? 10
+                : indentSize * (question.level - 1),
           }}
         >
           <Space size="small" align="center">
@@ -60,8 +82,7 @@ const EnterIncomeDataQuestions = ({ question, rowColSpanSize }) => {
             )}
             {!hidden ? (
               <div>
-                {question.text}
-                {/* <small>({unitName})</small> */}
+                {question.text} <small>({unitName})</small>
               </div>
             ) : null}
             {/* {infoText.length && !hidden ? (
@@ -74,14 +95,44 @@ const EnterIncomeDataQuestions = ({ question, rowColSpanSize }) => {
             ) : null} */}
           </Space>
         </Col>
-        <Col span={rowColSpanSize.value}></Col>
-        <Col span={rowColSpanSize.value}></Col>
-        <Col span={rowColSpanSize.percentage}></Col>
+        <Col span={rowColSpanSize.value}>
+          <Form.Item
+            name={`current-${fieldKey}`}
+            className="current-feasible-field"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              controls={false}
+              // disabled={disableInput}
+              {...InputNumberThousandFormatter}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={rowColSpanSize.value}>
+          <Form.Item
+            name={`feasible-${fieldKey}`}
+            className="current-feasible-field"
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              controls={false}
+              // disabled={disableInput}
+              {...InputNumberThousandFormatter}
+            />
+          </Form.Item>
+        </Col>
+        <Col
+          span={rowColSpanSize.percentage}
+          className="percentage-tag-wrapper"
+        >
+          {renderPercentageTag("increase", 10)}
+        </Col>
       </Row>
-      {!collapsed
+      {!collapsed && (checkFocus || checkBreakdownValue)
         ? orderBy(question.childrens, ["id"]).map((child) => (
             <EnterIncomeDataQuestions
               key={child.id}
+              group={group}
               question={child}
               rowColSpanSize={rowColSpanSize}
             />
@@ -91,7 +142,14 @@ const EnterIncomeDataQuestions = ({ question, rowColSpanSize }) => {
   );
 };
 
-const EnterIncomeDataDriver = ({ group, showSectionTitle, rowColSpanSize }) => {
+const EnterIncomeDataDriver = ({
+  segment,
+  group,
+  showSectionTitle,
+  rowColSpanSize,
+}) => {
+  const [form] = Form.useForm();
+
   const sectionTitle = useMemo(() => {
     if (group.commodity_type === "secondary") {
       return `Secondary Commodity (${group.commodity_name})`;
@@ -127,21 +185,34 @@ const EnterIncomeDataDriver = ({ group, showSectionTitle, rowColSpanSize }) => {
         </Col>
       )}
       <Col span={24}>
-        {group?.questions
-          ? orderBy(group.questions, ["id"]).map((question) => (
-              <EnterIncomeDataQuestions
-                key={question.id}
-                question={question}
-                rowColSpanSize={rowColSpanSize}
-              />
-            ))
-          : ""}
+        <Form
+          name={`enter-income-data-${segment.id}-${group.id}`}
+          layout="vertical"
+          form={form}
+          // onValuesChange={onValuesChange}
+        >
+          {group?.questions
+            ? orderBy(group.questions, ["id"]).map((question) => (
+                <EnterIncomeDataQuestions
+                  key={question.id}
+                  group={group}
+                  question={question}
+                  rowColSpanSize={rowColSpanSize}
+                />
+              ))
+            : ""}
+        </Form>
       </Col>
     </Row>
   );
 };
 
-const EnterIncomeDataForm = ({ driverIndex, driver, rowColSpanSize }) => {
+const EnterIncomeDataForm = ({
+  segment,
+  driverIndex,
+  driver,
+  rowColSpanSize,
+}) => {
   const cardTitle = useMemo(() => {
     if (driverIndex === 0) {
       return `${driver.groupName} (${driver.questionGroups[0].commodity_name})`;
@@ -175,6 +246,7 @@ const EnterIncomeDataForm = ({ driverIndex, driver, rowColSpanSize }) => {
       {driver.questionGroups.map((group, groupIndex) => (
         <EnterIncomeDataDriver
           key={`${driverIndex}-${groupIndex}`}
+          segment={segment}
           group={group}
           showSectionTitle={driverIndex > 0}
           rowColSpanSize={rowColSpanSize}
