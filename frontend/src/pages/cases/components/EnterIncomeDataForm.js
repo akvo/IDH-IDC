@@ -1,7 +1,21 @@
 import React, { useMemo, useState } from "react";
-import { Card, Row, Col, Space, Button, Form, InputNumber } from "antd";
+import {
+  Card,
+  Row,
+  Col,
+  Space,
+  Button,
+  Form,
+  InputNumber,
+  Tooltip,
+} from "antd";
 import { orderBy } from "lodash";
-import { RightOutlined, DownOutlined } from "@ant-design/icons";
+import {
+  DownOutlined,
+  InfoCircleOutlined,
+  LockOutlined,
+  UpOutlined,
+} from "@ant-design/icons";
 import {
   renderPercentageTag,
   InputNumberThousandFormatter,
@@ -29,6 +43,15 @@ const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
 
   const isCollapsible =
     question.question_type === "question" && question.childrens.length > 0;
+
+  const disableInput = isCollapsible && !collapsed;
+  // const disableInput = !enableEditCase
+  //   ? true
+  //   : checkFocus
+  //   ? disabled
+  //   : checkBreakdownValue
+  //   ? disabled
+  //   : checkBreakdownValue;
 
   const unitName = useMemo(
     () =>
@@ -65,35 +88,41 @@ const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
                 : indentSize * (question.level - 1),
           }}
         >
-          <Space size="small" align="center">
-            {isCollapsible && (
-              <Button
-                type="link"
-                size="small"
-                onClick={() => setCollapsed(!collapsed)}
-                icon={
-                  collapsed ? (
-                    <RightOutlined style={{ fontSize: 12 }} />
-                  ) : (
-                    <DownOutlined style={{ fontSize: 12 }} />
-                  )
-                }
-              />
+          <Row align="middle">
+            <Col span={23}>
+              <Space size="small" align="center">
+                {isCollapsible && (
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={() => setCollapsed(!collapsed)}
+                    icon={
+                      collapsed ? (
+                        <DownOutlined style={{ fontSize: 12 }} />
+                      ) : (
+                        <UpOutlined style={{ fontSize: 12 }} />
+                      )
+                    }
+                  />
+                )}
+                {!hidden ? (
+                  <div>
+                    {question.text} <small>({unitName})</small>
+                  </div>
+                ) : null}
+                {question?.description && !hidden ? (
+                  <Tooltip title={question.description} placement="right">
+                    <InfoCircleOutlined style={{ fontSize: 14 }} />
+                  </Tooltip>
+                ) : null}
+              </Space>
+            </Col>
+            {disableInput && (
+              <Col span={1} align="end">
+                <LockOutlined style={{ fontSize: 14 }} />
+              </Col>
             )}
-            {!hidden ? (
-              <div>
-                {question.text} <small>({unitName})</small>
-              </div>
-            ) : null}
-            {/* {infoText.length && !hidden ? (
-              <Tooltip title={infoText}>
-                <InfoCircleTwoTone
-                  twoToneColor="#1677ff"
-                  style={{ marginBottom: "6px" }}
-                />
-              </Tooltip>
-            ) : null} */}
-          </Space>
+          </Row>
         </Col>
         <Col span={rowColSpanSize.value}>
           <Form.Item
@@ -103,7 +132,7 @@ const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
             <InputNumber
               style={{ width: "100%" }}
               controls={false}
-              // disabled={disableInput}
+              disabled={disableInput}
               {...InputNumberThousandFormatter}
             />
           </Form.Item>
@@ -116,7 +145,7 @@ const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
             <InputNumber
               style={{ width: "100%" }}
               controls={false}
-              // disabled={disableInput}
+              disabled={disableInput}
               {...InputNumberThousandFormatter}
             />
           </Form.Item>
