@@ -41,6 +41,8 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const [incomeDataDrivers, setIncomeDataDrivers] = useState([]);
+  const [sectionTotalValues, setSectionTotalValues] = useState({});
+  console.log(sectionTotalValues);
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
@@ -141,6 +143,8 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
               driverIndex={driverIndex}
               segment={segment}
               rowColSpanSize={rowColSpanSize}
+              sectionTotalValues={sectionTotalValues}
+              setSectionTotalValues={setSectionTotalValues}
             />
           </Col>
         ))}
