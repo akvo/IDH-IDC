@@ -23,6 +23,7 @@
       background: #fff;
       padding: 20px 24px;
       border-radius: 0 20px 20px 20px;
+      margin-bottom: 100px;
     }
   }
 }
@@ -83,27 +84,31 @@
 }
 
 #enter-income-data {
-  .total-income-title-wrapper {
-    font-family: "RocGrotesk";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 32px;
-  }
+  .total-income-container {
+    padding: 14px 20px;
 
-  .total-income-value-wrapper {
-    font-family: "TabletGothic";
-    font-style: normal;
-    font-weight: 700;
-    line-height: 22px;
-
-    .level-text {
-      font-size: 12px;
+    .total-income-title-wrapper {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
     }
 
-    .value-text {
-      font-family: "RocGrotesk";
-      font-size: 18px;
+    .total-income-value-wrapper {
+      font-family: "TabletGothic";
+      font-style: normal;
+      font-weight: 700;
+      line-height: 22px;
+
+      .level-text {
+        font-size: 12px;
+      }
+
+      .value-text {
+        font-family: "RocGrotesk";
+        font-size: 18px;
+      }
     }
   }
 
@@ -125,7 +130,55 @@
 
     .ant-card {
       .ant-card-head {
+        padding: 14px 20px;
+        border-radius: 20px 20px 0px 0px;
+        border: 1px solid #e5e5e5;
+        background: #f2f2f2;
+
+        .title-text {
+          font-family: "RocGrotesk";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+        }
+
+        .value-text {
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+        }
+      }
+
+      .ant-card-body {
         padding: 0;
+        border-radius: 0px 0px 20px 20px;
+        border: 1px solid #e9e9e9;
+      }
+    }
+
+    .section-title-wrapper {
+      border-top: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 20px;
+      width: 100%;
+
+      .title-text {
+        font-family: "RocGrotesk";
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 157.15%;
+      }
+
+      .value-text {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 157.15%;
       }
     }
   }

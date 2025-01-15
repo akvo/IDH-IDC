@@ -30,8 +30,6 @@ export const selectProps = {
   },
 };
 
-export const indentSize = 37.5;
-
 export const regexQuestionId = /#(\d+)/;
 
 export const getFunctionDefaultValue = (question, prefix, values = []) => {

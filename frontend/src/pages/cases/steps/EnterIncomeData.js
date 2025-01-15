@@ -6,6 +6,33 @@ import { Row, Col, Space } from "antd";
 import { EnterIncomeDataForm } from "../components";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
+const rowColSpanSize = {
+  gutter: [8, 8],
+  label: 11,
+  value: 5,
+  percentage: 3,
+};
+
+const addLevelIntoQuestions = ({ questions, level = 0 }) => {
+  return questions.map((q) => {
+    if (q.childrens.length) {
+      q["childrens"] = addLevelIntoQuestions({
+        questions: q.childrens,
+        level: level + 1,
+      });
+    }
+    if (!q.parent) {
+      return {
+        ...q,
+        level: 0,
+      };
+    }
+    return {
+      ...q,
+      level: level,
+    };
+  });
+};
 
 /**
  * STEP 2
@@ -51,13 +78,16 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         // regroup the questions to follow new design format
         reorderedCaseCommodities.forEach((cc) => {
           const tmp = data.find((d) => d.commodity_id === cc.commodity);
+          tmp["questions"] = addLevelIntoQuestions({
+            questions: tmp.questions,
+          });
           if (cc.commodity_type === "focus") {
             dataTmp.push({
               groupName: "Primary Commodity",
-              questionGroups: [tmp],
+              questionGroups: [{ ...cc, ...tmp }],
             });
           } else {
-            diversifiedGroupTmp.push(tmp);
+            diversifiedGroupTmp.push({ ...cc, ...tmp });
           }
         });
         // add diversified group
@@ -73,38 +103,47 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   return (
     <div id="enter-income-data">
       {/* Header */}
-      <Row align="middle" gutter={[8, 8]}>
-        <Col span={14} className="total-income-title-wrapper">
+      <Row
+        align="middle"
+        gutter={rowColSpanSize.gutter}
+        className="total-income-container"
+      >
+        <Col span={rowColSpanSize.label} className="total-income-title-wrapper">
           Total Income
         </Col>
-        <Col span={4} className="total-income-value-wrapper">
+        <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
             <div className="level-text">Current level per year</div>
             <div className="value-text">123.00</div>
           </Space>
         </Col>
-        <Col span={4} className="total-income-value-wrapper">
+        <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
             <div className="level-text">Feasible level per year</div>
             <div className="value-text">457.00</div>
           </Space>
         </Col>
-        <Col span={2} className="percentage-tag-wrapper">
+        <Col
+          span={rowColSpanSize.percentage}
+          className="percentage-tag-wrapper"
+        >
           {renderPercentageTag("increase", 20)}
         </Col>
       </Row>
 
       {/* Questions */}
-      <div className="income-questions-wrapper">
+      <Row className="income-questions-wrapper" gutter={[20, 20]}>
         {incomeDataDrivers.map((driver, driverIndex) => (
-          <EnterIncomeDataForm
-            key={driverIndex}
-            driver={driver}
-            driverIndex={driverIndex}
-            segment={segment}
-          />
+          <Col span={24} key={driverIndex}>
+            <EnterIncomeDataForm
+              driver={driver}
+              driverIndex={driverIndex}
+              segment={segment}
+              rowColSpanSize={rowColSpanSize}
+            />
+          </Col>
         ))}
-      </div>
+      </Row>
     </div>
   );
 };
