@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
-import { api, renderPercentageTag } from "../../../lib";
+import { api, determineDecimalRound, renderPercentageTag } from "../../../lib";
 import { Row, Col, Space } from "antd";
 import { EnterIncomeDataForm } from "../components";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const rowColSpanSize = {
@@ -42,7 +43,6 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const [incomeDataDrivers, setIncomeDataDrivers] = useState([]);
   const [sectionTotalValues, setSectionTotalValues] = useState({});
-  console.log(sectionTotalValues);
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
@@ -60,6 +60,21 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
       setnextfunction(nextFunction);
     }
   }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
+
+  const totalIncome = useMemo(() => {
+    const current = Object.keys(sectionTotalValues).map((key) => {
+      const value = sectionTotalValues?.[key]?.current || 0;
+      return value;
+    });
+    const feasible = Object.keys(sectionTotalValues).map((key) => {
+      const value = sectionTotalValues?.[key]?.feasible || 0;
+      return value;
+    });
+    return {
+      current: current.reduce((a, b) => a + b),
+      feasible: feasible.reduce((a, b) => a + b),
+    };
+  }, [sectionTotalValues]);
 
   // Fetch questions for income data entry
   useEffect(() => {
@@ -117,13 +132,23 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
             <div className="level-text">Current level per year</div>
-            <div className="value-text">123.00</div>
+            <div className="value-text">
+              {thousandFormatter(
+                totalIncome.current,
+                determineDecimalRound(totalIncome.current)
+              )}
+            </div>
           </Space>
         </Col>
         <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
             <div className="level-text">Feasible level per year</div>
-            <div className="value-text">457.00</div>
+            <div className="value-text">
+              {thousandFormatter(
+                totalIncome.feasible,
+                determineDecimalRound(totalIncome.feasible)
+              )}
+            </div>
           </Space>
         </Col>
         <Col

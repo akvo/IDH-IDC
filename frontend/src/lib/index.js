@@ -32,6 +32,8 @@ export const selectProps = {
 
 export const regexQuestionId = /#(\d+)/;
 
+export const determineDecimalRound = (value) => (value % 1 === 0 ? 0 : 2);
+
 export const getFunctionDefaultValue = (question, prefix, values = []) => {
   const function_name = question?.default_value?.split(" ");
   if (!function_name) {

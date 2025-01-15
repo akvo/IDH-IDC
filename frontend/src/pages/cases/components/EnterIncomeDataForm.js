@@ -21,9 +21,11 @@ import {
   InputNumberThousandFormatter,
   flatten,
   getFunctionDefaultValue,
+  determineDecimalRound,
 } from "../../../lib";
 import { commodities } from "../../../store/static";
 import { CurrentCaseState } from "../store";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const indentSize = 32;
 const commoditiesBreakdown = ["secondary", "tertiary"];
@@ -184,8 +186,11 @@ const EnterIncomeDataDriver = ({
   setSectionTotalValues,
 }) => {
   const [form] = Form.useForm();
-  const currentCase = CurrentCaseState.useState((s) => s);
-  // TODO :: load answer value
+
+  const sectionCurrentValue =
+    sectionTotalValues?.[group.commodity_type]?.current || 0;
+  const sectionFeasibleValue =
+    sectionTotalValues?.[group.commodity_type]?.feasible || 0;
 
   const sectionTitle = useMemo(() => {
     if (group.commodity_type === "secondary") {
@@ -311,7 +316,7 @@ const EnterIncomeDataDriver = ({
     const parentQuestionField = `${fieldKey}-${question.parent}`;
     if (parentQuestion) {
       form.setFieldValue(parentQuestionField, sumAllChildrensValues);
-      updateSectionTotalValues(sumAllChildrensValues);
+      updateSectionTotalValues(fieldName, sumAllChildrensValues);
     }
 
     // Recursively update the parent's parent if necessary
@@ -336,10 +341,16 @@ const EnterIncomeDataDriver = ({
               {sectionTitle}
             </Col>
             <Col span={rowColSpanSize.value} className="value-text">
-              123.00
+              {thousandFormatter(
+                sectionCurrentValue,
+                determineDecimalRound(sectionCurrentValue)
+              )}
             </Col>
             <Col span={rowColSpanSize.value} className="value-text">
-              457.99
+              {thousandFormatter(
+                sectionFeasibleValue,
+                determineDecimalRound(sectionFeasibleValue)
+              )}
             </Col>
             <Col
               span={rowColSpanSize.percentage}
@@ -389,6 +400,21 @@ const EnterIncomeDataForm = ({
     return driver.groupName;
   }, [driver.groupName, driver.questionGroups, driverIndex]);
 
+  const commodityTypes = driver.questionGroups.map((qg) => qg.commodity_type);
+
+  const totalValues = useMemo(() => {
+    const totalCurrentValues = commodityTypes.map(
+      (ct) => sectionTotalValues?.[ct]?.current || 0
+    );
+    const totalFeasibleValues = commodityTypes.map(
+      (ct) => sectionTotalValues?.[ct]?.feasible || 0
+    );
+    return {
+      current: totalCurrentValues.reduce((a, b) => a + b),
+      feasible: totalFeasibleValues.reduce((a, b) => a + b),
+    };
+  }, [sectionTotalValues, commodityTypes]);
+
   return (
     <Card
       title={
@@ -398,10 +424,16 @@ const EnterIncomeDataForm = ({
             {cardTitle}
           </Col>
           <Col span={rowColSpanSize.value} className="value-text">
-            123.00
+            {thousandFormatter(
+              totalValues.current,
+              determineDecimalRound(totalValues.current)
+            )}
           </Col>
           <Col span={rowColSpanSize.value} className="value-text">
-            457.00
+            {thousandFormatter(
+              totalValues.feasible,
+              determineDecimalRound(totalValues.feasible)
+            )}
           </Col>
           <Col
             span={rowColSpanSize.percentage}
