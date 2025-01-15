@@ -1,10 +1,16 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
-import { api, determineDecimalRound, renderPercentageTag } from "../../../lib";
+import {
+  api,
+  calculateIncomePercentage,
+  determineDecimalRound,
+  renderPercentageTag,
+} from "../../../lib";
 import { Row, Col, Space } from "antd";
 import { EnterIncomeDataForm } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { isEmpty } from "lodash";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const rowColSpanSize = {
@@ -62,17 +68,35 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
 
   const totalIncome = useMemo(() => {
-    const current = Object.keys(sectionTotalValues).map((key) => {
-      const value = sectionTotalValues?.[key]?.current || 0;
-      return value;
-    });
-    const feasible = Object.keys(sectionTotalValues).map((key) => {
-      const value = sectionTotalValues?.[key]?.feasible || 0;
-      return value;
-    });
+    if (isEmpty(sectionTotalValues)) {
+      return {
+        current: 0,
+        feasible: 0,
+        percentage: {
+          type: "default",
+          value: 0,
+        },
+      };
+    }
+    const current = Object.keys(sectionTotalValues)
+      .map((key) => {
+        const value = sectionTotalValues?.[key]?.current || 0;
+        return value;
+      })
+      .reduce((a, b) => a + b);
+    const feasible = Object.keys(sectionTotalValues)
+      .map((key) => {
+        const value = sectionTotalValues?.[key]?.feasible || 0;
+        return value;
+      })
+      .reduce((a, b) => a + b);
+    const percentage = calculateIncomePercentage({ current, feasible });
     return {
-      current: current.reduce((a, b) => a + b),
-      feasible: feasible.reduce((a, b) => a + b),
+      current,
+      feasible,
+      percentage: {
+        ...percentage,
+      },
     };
   }, [sectionTotalValues]);
 
@@ -155,7 +179,10 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
           span={rowColSpanSize.percentage}
           className="percentage-tag-wrapper"
         >
-          {renderPercentageTag("increase", 20)}
+          {renderPercentageTag(
+            totalIncome.percentage.type,
+            totalIncome.percentage.value
+          )}
         </Col>
       </Row>
 

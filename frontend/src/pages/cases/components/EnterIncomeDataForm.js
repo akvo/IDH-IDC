@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Card,
   Row,
@@ -9,7 +9,7 @@ import {
   InputNumber,
   Tooltip,
 } from "antd";
-import { orderBy } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 import {
   DownOutlined,
   InfoCircleOutlined,
@@ -22,6 +22,7 @@ import {
   flatten,
   getFunctionDefaultValue,
   determineDecimalRound,
+  calculateIncomePercentage,
 } from "../../../lib";
 import { commodities } from "../../../store/static";
 import { CurrentCaseState } from "../store";
@@ -30,13 +31,27 @@ import { thousandFormatter } from "../../../components/chart/options/common";
 const indentSize = 32;
 const commoditiesBreakdown = ["secondary", "tertiary"];
 
-const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
+const EnterIncomeDataQuestions = ({
+  form,
+  group,
+  question,
+  rowColSpanSize,
+}) => {
   const [collapsed, setCollapsed] = useState(
     question.question_type !== "aggregator"
   );
 
   // fieldKey format: [case_commodity]-[question_id]
   const fieldKey = `${group.id}-${question.id}`;
+  const currentValue = Form.useWatch(`current-${fieldKey}`, form);
+  const feasibleValue = Form.useWatch(`feasible-${fieldKey}`, form);
+
+  const percentage = useMemo(() => {
+    return calculateIncomePercentage({
+      current: currentValue,
+      feasible: feasibleValue,
+    });
+  }, [currentValue, feasibleValue]);
 
   const checkFocus = group.commodity_type === "focus";
 
@@ -160,7 +175,7 @@ const EnterIncomeDataQuestions = ({ group, question, rowColSpanSize }) => {
           span={rowColSpanSize.percentage}
           className="percentage-tag-wrapper"
         >
-          {renderPercentageTag("increase", 10)}
+          {renderPercentageTag(percentage.type, percentage.value)}
         </Col>
       </Row>
       {!collapsed && (checkFocus || checkBreakdownValue)
@@ -191,6 +206,13 @@ const EnterIncomeDataDriver = ({
     sectionTotalValues?.[group.commodity_type]?.current || 0;
   const sectionFeasibleValue =
     sectionTotalValues?.[group.commodity_type]?.feasible || 0;
+
+  const sectionPercentage = useMemo(() => {
+    return calculateIncomePercentage({
+      current: sectionCurrentValue,
+      feasible: sectionFeasibleValue,
+    });
+  }, [sectionCurrentValue, sectionFeasibleValue]);
 
   const sectionTitle = useMemo(() => {
     if (group.commodity_type === "secondary") {
@@ -269,17 +291,17 @@ const EnterIncomeDataDriver = ({
       (q) => q.id === parseInt(questionId)
     );
     const parentQuestion = flattenQuestionList.find(
-      (q) => q.id === question.parent
+      (q) => q.id === question?.parent
     );
 
     // Handle aggregator questions
-    if (!question.parent && question.question_type === "aggregator") {
+    if (!question?.parent && question?.question_type === "aggregator") {
       updateSectionTotalValues(fieldName, changedValue[key]);
       return;
     }
 
     // Handle diversified questions
-    if (!question.parent && question.question_type === "diversified") {
+    if (!question?.parent && question?.question_type === "diversified") {
       const diversifiedQuestions = flattenQuestionList.filter(
         (q) => q.question_type === "diversified"
       );
@@ -296,7 +318,7 @@ const EnterIncomeDataDriver = ({
 
     // Gather all children question values
     const childrenQuestions = flattenQuestionList.filter(
-      (q) => q.parent === question.parent
+      (q) => q.parent === question?.parent
     );
     const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
     const allChildrensValues = allChildrensIds.reduce((acc, id) => {
@@ -313,7 +335,7 @@ const EnterIncomeDataDriver = ({
       : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
 
     // Update the parent question value
-    const parentQuestionField = `${fieldKey}-${question.parent}`;
+    const parentQuestionField = `${fieldKey}-${question?.parent}`;
     if (parentQuestion) {
       form.setFieldValue(parentQuestionField, sumAllChildrensValues);
       updateSectionTotalValues(fieldName, sumAllChildrensValues);
@@ -330,6 +352,19 @@ const EnterIncomeDataDriver = ({
     // Update the current segment state with all values
     updateCurrentSegmentState({ answers: allValues });
   };
+
+  useEffect(() => {
+    // recalculate totalValues onLoad initial data
+    if (!isEmpty(segment.answers)) {
+      setTimeout(() => {
+        Object.keys(segment.answers).forEach((key) => {
+          const value = segment.answers[key];
+          onValuesChange({ [key]: value }, form.getFieldsValue());
+        });
+      }, 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Row align="middle">
@@ -356,7 +391,10 @@ const EnterIncomeDataDriver = ({
               span={rowColSpanSize.percentage}
               className="percentage-tag-wrapper"
             >
-              {renderPercentageTag("default", 0)}
+              {renderPercentageTag(
+                sectionPercentage.type,
+                sectionPercentage.value
+              )}
             </Col>
           </Row>
         </Col>
@@ -373,6 +411,7 @@ const EnterIncomeDataDriver = ({
             ? orderBy(group.questions, ["id"]).map((question) => (
                 <EnterIncomeDataQuestions
                   key={question.id}
+                  form={form}
                   group={group}
                   question={question}
                   rowColSpanSize={rowColSpanSize}
@@ -403,15 +442,22 @@ const EnterIncomeDataForm = ({
   const commodityTypes = driver.questionGroups.map((qg) => qg.commodity_type);
 
   const totalValues = useMemo(() => {
-    const totalCurrentValues = commodityTypes.map(
-      (ct) => sectionTotalValues?.[ct]?.current || 0
-    );
-    const totalFeasibleValues = commodityTypes.map(
-      (ct) => sectionTotalValues?.[ct]?.feasible || 0
-    );
+    const current = commodityTypes
+      .map((ct) => sectionTotalValues?.[ct]?.current || 0)
+      .reduce((a, b) => a + b);
+    const feasible = commodityTypes
+      .map((ct) => sectionTotalValues?.[ct]?.feasible || 0)
+      .reduce((a, b) => a + b);
+    const percentage = calculateIncomePercentage({
+      current,
+      feasible,
+    });
     return {
-      current: totalCurrentValues.reduce((a, b) => a + b),
-      feasible: totalFeasibleValues.reduce((a, b) => a + b),
+      current,
+      feasible,
+      percentage: {
+        ...percentage,
+      },
     };
   }, [sectionTotalValues, commodityTypes]);
 
@@ -439,7 +485,10 @@ const EnterIncomeDataForm = ({
             span={rowColSpanSize.percentage}
             className="percentage-tag-wrapper"
           >
-            {renderPercentageTag("default", 0)}
+            {renderPercentageTag(
+              totalValues.percentage.type,
+              totalValues.percentage.value
+            )}
           </Col>
         </Row>
       }

@@ -164,8 +164,22 @@ export const getFieldDisableStatusForCommodity = (commodity) => {
   return { disableLandUnitField, disableDataOnIncomeDriverField };
 };
 
+export const calculateIncomePercentage = ({ current, feasible }) => {
+  if (current && feasible) {
+    const percent = (feasible / current - 1) * 100;
+    return {
+      type: percent === 0 ? "default" : percent > 0 ? "increase" : "decrease",
+      value: percent,
+    };
+  }
+  return {
+    type: "default",
+    value: 0,
+  };
+};
+
 export const renderPercentageTag = (type = "default", value = 0) => {
-  value = value % 1 !== 0 || value === 0 ? value.toFixed(2) : value.toFixed();
+  value = value % 1 !== 0 || value === 0 ? value.toFixed(2) : value;
   value = `${value}%`;
 
   switch (type) {
