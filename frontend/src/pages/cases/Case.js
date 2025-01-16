@@ -57,6 +57,7 @@ const renderPage = (key, navigate) => {
 
 const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
+  const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const childrenCount = React.Children.count(children);
 
   const segmentTabItems = useMemo(() => {
@@ -96,6 +97,16 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
           type="card"
           items={segmentTabItems}
           tabBarGutter={5}
+          activeKey={activeSegmentId || currentCase?.segments?.[0]?.id || null}
+          onChange={(val) => {
+            CaseUIState.update((s) => ({
+              ...s,
+              general: {
+                ...s.general,
+                activeSegmentId: val,
+              },
+            }));
+          }}
         />
       </Col>
       {childrenCount > 1 &&

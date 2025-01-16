@@ -3,6 +3,7 @@ import { Store } from "pullstate";
 const defaultCaseUIState = {
   general: {
     enableEditCase: true,
+    activeSegmentId: null,
   },
   caseButton: {
     loading: false,
