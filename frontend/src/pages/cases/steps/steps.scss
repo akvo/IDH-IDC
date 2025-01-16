@@ -192,9 +192,14 @@
   padding: 40px 0;
 
   .income-target-wrapper {
+    padding: 0;
     border-radius: 20px;
     background: #01625f;
     color: #fff;
+
+    .ant-card-body {
+      padding: 12px 24px;
+    }
 
     .label {
       font-family: "TabletGothic";

@@ -389,3 +389,43 @@
   font-family: "TabletGothic" !important;
   font-size: 12px;
 }
+
+.visual-card-wrapper {
+  padding: 0;
+  border-radius: 20px;
+
+  .ant-card-head {
+    padding: 12px 24px;
+    background: #dfdfdf;
+    border-radius: 20px 20px 0px 0px;
+
+    .title {
+      font-family: "RocGrotesk";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 157.15%;
+    }
+
+    .button-export {
+      border: 1px solid #01625f;
+      font-weight: 600;
+      font-size: 12px;
+      background: transparent;
+      color: #01625f;
+      border-radius: 40px;
+
+      &:hover {
+        background: #01625f;
+        border: 1px solid #fff;
+        color: #fff;
+      }
+    }
+  }
+
+  .ant-card-body {
+    padding: 18px 24px;
+    border-radius: 0px 0px 20px 20px;
+    background: #fff;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Card, Row, Col, Space } from "antd";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { VisualCardWrapper } from ".";
 
 const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
@@ -34,10 +35,14 @@ const EnterIncomeDataVisual = () => {
         </Card>
       </Col>
       <Col span={24}>
-        <Card>Household Income Bar Chart</Card>
+        <VisualCardWrapper title="Household Income">
+          Household Income Bar Chart
+        </VisualCardWrapper>
       </Col>
       <Col span={24}>
-        <Card>Household Income Table</Card>
+        <VisualCardWrapper title="Household Income">
+          Household Income Table
+        </VisualCardWrapper>
       </Col>
     </Row>
   );
