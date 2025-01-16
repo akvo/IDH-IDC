@@ -40,6 +40,9 @@ const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
   return adult_size + children_size;
 };
 
+/**
+ * STEP 1
+ */
 const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
@@ -535,7 +538,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   };
 
   return (
-    <div>
+    <div id="set-income-target">
       <Form
         form={form}
         layout="vertical"

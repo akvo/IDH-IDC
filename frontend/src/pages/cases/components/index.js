@@ -16,3 +16,5 @@ export { default as CaseFilter } from "./CaseFilter";
 export { default as CaseSettings } from "./CaseSettings";
 export { default as SegmentForm } from "./SegmentForm";
 export { default as CaseForm } from "./CaseForm";
+export { default as EnterIncomeDataVisual } from "./EnterIncomeDataVisual";
+export { default as EnterIncomeDataForm } from "./EnterIncomeDataForm";

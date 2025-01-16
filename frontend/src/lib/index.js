@@ -4,6 +4,8 @@ import {
   disableLandUnitFieldForCommodityTypes,
   disableIncomeDriversFieldForCommodityTypes,
 } from "../store/static";
+import { Tag } from "antd";
+import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 
 export const flatten = (data, parent = null) => {
   let flatData = [];
@@ -28,9 +30,9 @@ export const selectProps = {
   },
 };
 
-export const indentSize = 37.5;
-
 export const regexQuestionId = /#(\d+)/;
+
+export const determineDecimalRound = (value) => (value % 1 === 0 ? 0 : 2);
 
 export const getFunctionDefaultValue = (question, prefix, values = []) => {
   const function_name = question?.default_value?.split(" ");
@@ -160,6 +162,43 @@ export const getFieldDisableStatusForCommodity = (commodity) => {
       ? true
       : false;
   return { disableLandUnitField, disableDataOnIncomeDriverField };
+};
+
+export const calculateIncomePercentage = ({ current, feasible }) => {
+  if (current && feasible) {
+    const percent = (feasible / current - 1) * 100;
+    return {
+      type: percent === 0 ? "default" : percent > 0 ? "increase" : "decrease",
+      value: percent,
+    };
+  }
+  return {
+    type: "default",
+    value: 0,
+  };
+};
+
+export const renderPercentageTag = (type = "default", value = 0) => {
+  value = value % 1 !== 0 || value === 0 ? value.toFixed(2) : value;
+  value = `${value}%`;
+
+  switch (type) {
+    case "increase":
+      return (
+        <Tag color="success" icon={<ArrowUpOutlined />}>
+          {value}
+        </Tag>
+      );
+    case "decrease":
+      return (
+        <Tag color="error" icon={<ArrowDownOutlined />}>
+          {value}
+        </Tag>
+      );
+
+    default:
+      return <Tag color="default">{value}</Tag>;
+  }
 };
 
 export { default as api } from "./api";

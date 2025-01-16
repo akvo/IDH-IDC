@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Spin, Tabs } from "antd";
+import { Spin, Tabs, Row, Col } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../lib";
@@ -16,6 +16,7 @@ import {
   AssessImpactMitigationStrategies,
   ClosingGap,
 } from "./steps";
+import { EnterIncomeDataVisual } from "./components";
 import "./steps/steps.scss";
 
 const Loading = () => (
@@ -35,7 +36,8 @@ const renderPage = (key, navigate) => {
     case stepPath.step2.label:
       return (
         <SegmentTabsWrapper>
-          <EnterIncomeData />
+          <EnterIncomeData key="left" />
+          <EnterIncomeDataVisual key="right" />
         </SegmentTabsWrapper>
       );
     case stepPath.step3.label:
@@ -55,27 +57,58 @@ const renderPage = (key, navigate) => {
 
 const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
+  const childrenCount = React.Children.count(children);
 
   const segmentTabItems = useMemo(() => {
     return currentCase.segments.map((segment) => ({
       label: segment.name,
       key: segment.id,
-      children: React.cloneElement(children, {
-        segment,
-        setbackfunction,
-        setnextfunction,
-      }),
+      children:
+        childrenCount === 1
+          ? React.Children.map(children, (child) =>
+              React.isValidElement(child)
+                ? React.cloneElement(child, {
+                    segment,
+                    setbackfunction,
+                    setnextfunction,
+                  })
+                : null
+            )
+          : React.Children.map(children, (child) =>
+              child.key === "left"
+                ? React.isValidElement(child)
+                  ? React.cloneElement(child, {
+                      segment,
+                      setbackfunction,
+                      setnextfunction,
+                    })
+                  : null
+                : null
+            ),
     }));
-  }, [currentCase, children, setbackfunction, setnextfunction]);
+  }, [currentCase, children, setbackfunction, setnextfunction, childrenCount]);
 
   return (
-    <Tabs
-      id="steps"
-      className="step-segment-tabs-container"
-      type="card"
-      items={segmentTabItems}
-      tabBarGutter={5}
-    />
+    <Row id="steps" gutter={[20, 20]}>
+      <Col span={childrenCount === 1 ? 24 : 17}>
+        <Tabs
+          className="step-segment-tabs-container"
+          type="card"
+          items={segmentTabItems}
+          tabBarGutter={5}
+        />
+      </Col>
+      {childrenCount > 1 &&
+        React.Children.map(children, (child, index) =>
+          child.key === "right" ? (
+            React.isValidElement(child) ? (
+              <Col key={index} span={7}>
+                {child}
+              </Col>
+            ) : null
+          ) : null
+        )}
+    </Row>
   );
 };
 
