@@ -8,7 +8,7 @@ const VisualCardWrapper = ({ children, title }) => {
       className="visual-card-wrapper"
       title={
         <Row align="middle" gutter={[8, 8]}>
-          <Col span={19}>
+          <Col span={18}>
             <Space align="center">
               <div className="title">{title}</div>
               <div>
@@ -16,7 +16,7 @@ const VisualCardWrapper = ({ children, title }) => {
               </div>
             </Space>
           </Col>
-          <Col span={5} align="end">
+          <Col span={6} align="end">
             <Button size="small" className="button-export">
               Export
             </Button>

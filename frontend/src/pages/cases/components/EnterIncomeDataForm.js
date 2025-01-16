@@ -218,10 +218,10 @@ const EnterIncomeDataDriver = ({
     return "Other Diversified Income";
   }, [group.commodity_type, group.commodity_name]);
 
-  const flattenQuestionList = useMemo(
-    () => (!group ? [] : flatten(group.questions)),
-    [group]
-  );
+  const flattenQuestionList = useMemo(() => {
+    const questions = !group ? [] : flatten(group.questions);
+    return questions;
+  }, [group]);
 
   const updateCurrentSegmentState = (updatedSegmentValue) => {
     CurrentCaseState.update((s) => {

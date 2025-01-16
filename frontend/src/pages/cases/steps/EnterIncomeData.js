@@ -5,6 +5,7 @@ import {
   CurrentCaseState,
   PrevCaseState,
   CaseUIState,
+  CaseVisualState,
 } from "../store";
 import {
   api,
@@ -12,6 +13,7 @@ import {
   determineDecimalRound,
   renderPercentageTag,
   removeUndefinedObjectValue,
+  flatten,
 } from "../../../lib";
 import { Row, Col, Space, message } from "antd";
 import { EnterIncomeDataForm } from "../components";
@@ -250,7 +252,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         const dataTmp = [];
         const diversifiedGroupTmp = [];
         // regroup the questions to follow new design format
-        reorderedCaseCommodities.forEach((cc) => {
+        const questionGroupsTmp = reorderedCaseCommodities.map((cc) => {
           const tmp = data.find((d) => d.commodity_id === cc.commodity);
           tmp["currency"] = currentCase.currency;
           tmp["questions"] = addLevelIntoQuestions({
@@ -264,6 +266,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
           } else {
             diversifiedGroupTmp.push({ ...cc, ...tmp });
           }
+          return { ...cc, ...tmp };
         });
         // add diversified group
         dataTmp.push({
@@ -271,6 +274,23 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
           questionGroups: diversifiedGroupTmp,
         });
         setIncomeDataDrivers(dataTmp);
+        // eol
+
+        // get totalIncomeQuestion
+        const qs = questionGroupsTmp.flatMap((group) => {
+          if (!group) {
+            return [];
+          }
+          const questions = flatten(group.questions).filter((q) => !q.parent);
+          // group id is case commodity id
+          return questions.map((q) => `${group.id}-${q.id}`);
+        });
+        CaseVisualState.update((s) => ({
+          ...s,
+          questionGroups: questionGroupsTmp,
+          totalIncomeQuestions: qs,
+        }));
+        // eol
       });
     }
   }, [currentCase.id, currentCase.case_commodities, currentCase.currency]);
