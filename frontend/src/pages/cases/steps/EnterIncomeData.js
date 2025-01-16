@@ -1,16 +1,22 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { stepPath, CurrentCaseState, PrevCaseState } from "../store";
+import {
+  stepPath,
+  CurrentCaseState,
+  PrevCaseState,
+  CaseUIState,
+} from "../store";
 import {
   api,
   calculateIncomePercentage,
   determineDecimalRound,
   renderPercentageTag,
+  removeUndefinedObjectValue,
 } from "../../../lib";
-import { Row, Col, Space } from "antd";
+import { Row, Col, Space, message } from "antd";
 import { EnterIncomeDataForm } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { isEmpty } from "lodash";
+import { isEmpty, isEqual } from "lodash";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const rowColSpanSize = {
@@ -76,24 +82,106 @@ const generateSegmentAnswersPayload = ({
 const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
-  const prevCaseSegments = PrevCaseState.useState((s) => s);
+  const prevCaseSegments = PrevCaseState.useState((s) => s.segments);
   const [incomeDataDrivers, setIncomeDataDrivers] = useState([]);
   const [sectionTotalValues, setSectionTotalValues] = useState({});
 
-  const handleSaveIncomeData = () => {
-    const allAnswers = currentCase?.segments?.flatMap((s) => s.answers);
-    if (allAnswers.length) {
-      const segmentPayloads = currentCase.segments.map((s) => {
-        if (!isEmpty(s?.answers)) {
-          const answerPayload = generateSegmentAnswersPayload({ ...s });
-          return { ...s, answers: answerPayload };
-        }
-        return s;
-      });
-      console.log(segmentPayloads);
-    }
-    // TODO :: Handle post/put to segment-answer or segment endpoint with answer value
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const upateCaseButtonState = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      caseButton: value,
+    }));
   };
+
+  const handleSaveIncomeData = useCallback(() => {
+    const allAnswers = currentCase?.segments?.flatMap((s) => s.answers);
+    if (!isEmpty(allAnswers)) {
+      // detect is payload updated
+      const isUpdated =
+        prevCaseSegments
+          .map((prev) => {
+            prev = {
+              ...prev,
+              answers: removeUndefinedObjectValue(prev?.answers || {}),
+            };
+            let findPayload = currentCase.segments.find(
+              (curr) => curr.id === prev.id
+            );
+            if (!findPayload) {
+              // handle deleted segment
+              return true;
+            }
+            findPayload = {
+              ...findPayload,
+              answers: removeUndefinedObjectValue(findPayload?.answers || {}),
+            };
+            const equal = isEqual(
+              removeUndefinedObjectValue(prev),
+              removeUndefinedObjectValue(findPayload)
+            );
+            return !equal;
+          })
+          .filter((x) => x)?.length > 0;
+
+      const segmentPayloads = currentCase.segments.map((s) => {
+        let answerPayload = [];
+        if (!isEmpty(s?.answers)) {
+          answerPayload = generateSegmentAnswersPayload({ ...s });
+        }
+        return {
+          id: s.id,
+          name: s.name,
+          case: s.case,
+          region: s.region,
+          target: s.target,
+          adult: s.adult,
+          child: s.child,
+          answers: answerPayload,
+        };
+      });
+
+      upateCaseButtonState({ loading: true });
+      api
+        .put(`/segment?updated=${isUpdated}`, segmentPayloads)
+        .then((res) => {
+          const { data } = res;
+          PrevCaseState.update((s) => ({
+            ...s,
+            segments: data,
+          }));
+          messageApi.open({
+            type: "success",
+            content: "Income data saved successfully.",
+          });
+          setTimeout(() => {
+            navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
+          }, 100);
+        })
+        .catch((e) => {
+          console.error(e);
+          const { status, data } = e.response;
+          let errorText = "Failed to save income data.";
+          if (status === 403) {
+            errorText = data.detail;
+          }
+          messageApi.open({
+            type: "error",
+            content: errorText,
+          });
+        })
+        .finally(() => {
+          upateCaseButtonState({ loading: false });
+        });
+    }
+  }, [
+    currentCase.id,
+    currentCase.segments,
+    messageApi,
+    navigate,
+    prevCaseSegments,
+  ]);
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
@@ -101,9 +189,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
 
   const nextFunction = useCallback(() => {
     handleSaveIncomeData();
-    return;
-    navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
-  }, [navigate, currentCase.id]);
+  }, [handleSaveIncomeData]);
 
   useEffect(() => {
     if (setbackfunction) {
@@ -248,6 +334,8 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
           </Col>
         ))}
       </Row>
+
+      {contextHolder}
     </div>
   );
 };
