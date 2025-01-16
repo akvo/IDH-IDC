@@ -426,4 +426,14 @@
     border-radius: 0px 0px 20px 20px;
     background: #fff;
   }
+
+  &.bordered {
+    .ant-card-head {
+      border: 1px solid #dfdfdf;
+    }
+    .ant-card-body {
+      border: 1px solid #dfdfdf;
+      border-top: none;
+    }
+  }
 }
