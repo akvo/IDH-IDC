@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
-import { Card, Row, Col } from "antd";
+import { Card, Row, Col, Space } from "antd";
 import { CaseUIState, CurrentCaseState } from "../store";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
@@ -18,9 +19,19 @@ const EnterIncomeDataVisual = () => {
   }
 
   return (
-    <Row gutter={[20, 20]}>
+    <Row gutter={[20, 20]} className="income-data-visual-container">
       <Col span={24}>
-        <Card>{currentSegment.target}</Card>
+        <Card className="income-target-wrapper">
+          <Space direction="vertical">
+            <div className="label">Living income benchmark for a household</div>
+            <Space align="center">
+              <div className="value">
+                {thousandFormatter(currentSegment.target, 2)}
+              </div>
+              <div className="label"> / year</div>
+            </Space>
+          </Space>
+        </Card>
       </Col>
       <Col span={24}>
         <Card>Household Income Bar Chart</Card>

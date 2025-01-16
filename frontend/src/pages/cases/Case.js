@@ -18,6 +18,7 @@ import {
 } from "./steps";
 import { EnterIncomeDataVisual } from "./components";
 import "./steps/steps.scss";
+import { isEmpty } from "lodash";
 
 const Loading = () => (
   <div className="loading-container">
@@ -59,6 +60,19 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const childrenCount = React.Children.count(children);
+
+  // set default active segmentId
+  useEffect(() => {
+    if (!activeSegmentId && !isEmpty(currentCase.segments)) {
+      CaseUIState.update((s) => ({
+        ...s,
+        general: {
+          ...s.general,
+          activeSegmentId: currentCase.segments?.[0]?.id || null,
+        },
+      }));
+    }
+  }, [activeSegmentId, currentCase.segments]);
 
   const segmentTabItems = useMemo(() => {
     return currentCase.segments.map((segment) => ({

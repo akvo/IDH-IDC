@@ -187,3 +187,29 @@
     }
   }
 }
+
+.income-data-visual-container {
+  padding: 40px 0;
+
+  .income-target-wrapper {
+    border-radius: 20px;
+    background: #01625f;
+    color: #fff;
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .value {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+  }
+}
