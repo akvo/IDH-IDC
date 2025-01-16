@@ -1,6 +1,9 @@
 import { Store } from "pullstate";
 
 const defaultCaseUIState = {
+  general: {
+    enableEditCase: true,
+  },
   caseButton: {
     loading: false,
   },

@@ -16,16 +16,13 @@ import {
 } from "../store";
 import { isEqual } from "lodash";
 
-const CaseSettings = ({
-  enableEditCase = true,
-  open = false,
-  handleCancel = () => {},
-}) => {
+const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { secondary, tertiary } = CaseUIState.useState((s) => s);
+  const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
+  const { enableEditCase } = general;
 
   const [prevCaseSettingValue, setPrevCaseSettingValue] = useState({});
   const [formData, setFormData] = useState({ segments: [""] });

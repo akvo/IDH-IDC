@@ -159,12 +159,13 @@ const SecondaryForm = ({
   );
 };
 
-const CaseForm = ({ enableEditCase, updateCurrentCase = () => {} }) => {
+const CaseForm = ({ updateCurrentCase = () => {} }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { secondary, tertiary } = CaseUIState.useState((s) => s);
+  const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
+  const { enableEditCase } = general;
 
   const updateCaseUI = (key, value) => {
     CaseUIState.update((s) => ({

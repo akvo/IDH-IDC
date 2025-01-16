@@ -437,7 +437,6 @@ const Cases = () => {
       <CaseSettings
         open={caseSettingModalVisible}
         handleCancel={() => setCaseSettingModalVisible(false)}
-        enableEditCase={true}
       />
     </ContentLayout>
   );

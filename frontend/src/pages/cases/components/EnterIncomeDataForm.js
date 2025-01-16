@@ -25,7 +25,7 @@ import {
   calculateIncomePercentage,
 } from "../../../lib";
 import { commodities } from "../../../store/static";
-import { CurrentCaseState } from "../store";
+import { CaseUIState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
 const indentSize = 32;
@@ -37,6 +37,7 @@ const EnterIncomeDataQuestions = ({
   question,
   rowColSpanSize,
 }) => {
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const [collapsed, setCollapsed] = useState(
     question.question_type !== "aggregator"
   );
@@ -65,14 +66,7 @@ const EnterIncomeDataQuestions = ({
   const isCollapsible =
     question.question_type === "question" && question.childrens.length > 0;
 
-  const disableInput = isCollapsible && !collapsed;
-  // const disableInput = !enableEditCase
-  //   ? true
-  //   : checkFocus
-  //   ? disabled
-  //   : checkBreakdownValue
-  //   ? disabled
-  //   : checkBreakdownValue;
+  const disableInput = !enableEditCase ? true : isCollapsible && !collapsed;
 
   const unitName = useMemo(
     () =>

@@ -46,6 +46,7 @@ const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
 const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
   const prevCaseSegments = PrevCaseState.useState((s) => s?.segments || []);
   const stepSetIncomeTargetState = CaseUIState.useState(
@@ -420,7 +421,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 controls={false}
                 addonAfter={currentCase.currency}
                 {...InputNumberThousandFormatter}
-                // disabled={!disableTarget || !enableEditCase}
+                disabled={!enableEditCase}
                 onChange={handleChangeManualTarget}
               />
             </Form.Item>
@@ -438,7 +439,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                   <Select
                     style={formStyle}
                     options={stepSetIncomeTargetState.regionOptions}
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     loading={stepSetIncomeTargetState.regionOptionLoading}
                     placeholder={
                       stepSetIncomeTargetState.regionOptionStatus === 404
@@ -461,7 +462,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                     onChange={(value) =>
                       handleChangeAdultChildField("adult", value)
                     }
-                    // disabled={!disableTarget || !enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                   />
                 </Form.Item>
@@ -477,7 +478,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                     onChange={(value) =>
                       handleChangeAdultChildField("child", value)
                     }
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                   />
                 </Form.Item>
