@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { stepPath, CurrentCaseState } from "../store";
+import { stepPath, CurrentCaseState, PrevCaseState } from "../store";
 import {
   api,
   calculateIncomePercentage,
@@ -41,20 +41,67 @@ const addLevelIntoQuestions = ({ questions, level = 0 }) => {
   });
 };
 
+const generateSegmentAnswersPayload = ({
+  id: segmentId,
+  answers: answerValues,
+}) => {
+  // Use reduce to accumulate answers grouped by question ID
+  const groupedAnswers = Object.keys(answerValues).reduce((acc, key) => {
+    const [fieldName, caseCommodityId, questionId] = key.split("-");
+    const questionKey = `${caseCommodityId}-${questionId}`;
+
+    if (!acc[questionKey]) {
+      acc[questionKey] = {
+        case_commodity: parseInt(caseCommodityId),
+        question: parseInt(questionId),
+        segment: segmentId,
+      };
+    }
+
+    if (fieldName === "current") {
+      acc[questionKey].current_value = answerValues[key] || null;
+    } else if (fieldName === "feasible") {
+      acc[questionKey].feasible_value = answerValues[key] || null;
+    }
+
+    return acc;
+  }, {});
+  // Convert the grouped object into an array
+  return Object.values(groupedAnswers);
+};
+
 /**
  * STEP 2
  */
 const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
+  const prevCaseSegments = PrevCaseState.useState((s) => s);
   const [incomeDataDrivers, setIncomeDataDrivers] = useState([]);
   const [sectionTotalValues, setSectionTotalValues] = useState({});
+
+  const handleSaveIncomeData = () => {
+    const allAnswers = currentCase?.segments?.flatMap((s) => s.answers);
+    if (allAnswers.length) {
+      const segmentPayloads = currentCase.segments.map((s) => {
+        if (!isEmpty(s?.answers)) {
+          const answerPayload = generateSegmentAnswersPayload({ ...s });
+          return { ...s, answers: answerPayload };
+        }
+        return s;
+      });
+      console.log(segmentPayloads);
+    }
+    // TODO :: Handle post/put to segment-answer or segment endpoint with answer value
+  };
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
   }, [navigate, currentCase.id]);
 
   const nextFunction = useCallback(() => {
+    handleSaveIncomeData();
+    return;
     navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
   }, [navigate, currentCase.id]);
 

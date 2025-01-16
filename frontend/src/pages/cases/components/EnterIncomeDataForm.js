@@ -243,32 +243,6 @@ const EnterIncomeDataDriver = ({
     });
   };
 
-  // Use reduce to accumulate answers grouped by question ID
-  // TODO :: Transform to this type of value on post/put
-  // const groupedAnswers = Object.keys(allValues).reduce((acc, key) => {
-  //   const [fieldName, caseCommodityId, questionId] = key.split("-");
-  //   const questionKey = `${caseCommodityId}-${questionId}`;
-
-  //   if (!acc[questionKey]) {
-  //     acc[questionKey] = {
-  //       case_commodity: parseInt(caseCommodityId, 10),
-  //       question: parseInt(questionId),
-  //       segment: segment.id,
-  //     };
-  //   }
-
-  //   if (fieldName === "current") {
-  //     acc[questionKey].current_value = allValues[key] || null;
-  //   } else if (fieldName === "feasible") {
-  //     acc[questionKey].feasible_value = allValues[key] || null;
-  //   }
-
-  //   return acc;
-  // }, {});
-  // // Convert the grouped object into an array
-  // const answers = Object.values(groupedAnswers);
-  // eol TODO
-
   // Helper function to update section total values
   const updateSectionTotalValues = (fieldName, value) => {
     setSectionTotalValues((prev) => ({
@@ -350,7 +324,9 @@ const EnterIncomeDataDriver = ({
     }
 
     // Update the current segment state with all values
-    updateCurrentSegmentState({ answers: allValues });
+    updateCurrentSegmentState({
+      answers: { ...segment?.answers, ...allValues },
+    });
   };
 
   useEffect(() => {
