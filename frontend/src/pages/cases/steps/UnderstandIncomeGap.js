@@ -2,7 +2,11 @@ import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
 import { Row, Col, Card, Space } from "antd";
-import { VisualCardWrapper } from "../components";
+import {
+  ChartIncomeGap,
+  CompareIncomeGap,
+  ChartIncomeDriverAcrossSegments,
+} from "../visuals";
 
 /**
  * STEP 3
@@ -48,29 +52,13 @@ const UnderstandIncomeGap = ({ setbackfunction, setnextfunction }) => {
       </Col>
       {/* Chart */}
       <Col span={24}>
-        <Card className="card-visual-wrapper">
-          <Row gutter={[20, 20]} align="middle">
-            <Col span={16}>
-              <VisualCardWrapper title="Income gap" bordered>
-                Chart
-              </VisualCardWrapper>
-            </Col>
-            <Col span={8}>
-              <Space direction="vertical">
-                <div className="section-title">
-                  What is the current income of the farmers and their income
-                  gap?
-                </div>
-                <div className="section-description">
-                  This graph helps you explore the composition of household
-                  income and identify the gap between current income and the
-                  income target. Use it to uncover variations across segments
-                  and consider where tailored strategies might be needed.
-                </div>
-              </Space>
-            </Col>
-          </Row>
-        </Card>
+        <ChartIncomeGap />
+      </Col>
+      <Col span={24}>
+        <CompareIncomeGap />
+      </Col>
+      <Col span={24}>
+        <ChartIncomeDriverAcrossSegments />
       </Col>
       {/* EOL Chart */}
     </Row>

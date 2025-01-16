@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Card, Row, Col, Space, Tag } from "antd";
 import { CaseUIState, CurrentCaseState, CaseVisualState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { VisualCardWrapper } from ".";
+import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 
 const EnterIncomeDataVisual = () => {

@@ -16,7 +16,7 @@ import {
   AssessImpactMitigationStrategies,
   ClosingGap,
 } from "./steps";
-import { EnterIncomeDataVisual } from "./components";
+import { EnterIncomeDataVisual } from "./visuals";
 import "./steps/steps.scss";
 import { isEmpty } from "lodash";
 
