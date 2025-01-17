@@ -9,6 +9,7 @@ import {
   Easing,
   LabelStyle,
   NoData,
+  formatNumberToString,
 } from "../../../components/chart/options/common";
 import isEmpty from "lodash/isEmpty";
 
@@ -106,7 +107,9 @@ export const getColumnStackBarOptions = ({
       nameLocation: "middle",
       nameGap: 75,
       axisLabel: {
-        formatter: (e) => thousandFormatter(e),
+        formatter: function (value) {
+          return formatNumberToString(value);
+        },
         ...TextStyle,
         color: "#9292ab",
       },

@@ -175,7 +175,9 @@ const Case = () => {
 
   const [loading, setLoading] = useState(false);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const questionGroups = CaseVisualState.useState((s) => s.questionGroups);
+  const { questionGroups, totalIncomeQuestions } = CaseVisualState.useState(
+    (s) => s
+  );
 
   const updateStepIncomeTargetState = (key, value) => {
     CaseUIState.update((s) => {
@@ -370,6 +372,15 @@ const Case = () => {
           };
         });
 
+        const totalCurrentIncomeAnswer = totalIncomeQuestions
+          .map((qs) => segment.answers[`current-${qs}`])
+          .filter((a) => a)
+          .reduce((acc, a) => acc + a, 0);
+        const totalFeasibleIncomeAnswer = totalIncomeQuestions
+          .map((qs) => segment.answers[`feasible-${qs}`])
+          .filter((a) => a)
+          .reduce((acc, a) => acc + a, 0);
+
         const totalCostFeasible = remappedAnswers
           .filter((a) => a.feasibleCost)
           .reduce((acc, curr) => acc + curr.value, 0);
@@ -419,6 +430,8 @@ const Case = () => {
 
         return {
           ...segment,
+          total_current_income: totalCurrentIncomeAnswer,
+          total_feasible_income: totalFeasibleIncomeAnswer,
           total_feasible_cost: -totalCostFeasible,
           total_current_cost: -totalCostCurrent,
           total_feasible_focus_income: totalFeasibleFocusIncome,
@@ -439,7 +452,12 @@ const Case = () => {
         dashboardData: orderBy(mappedData, ["id"]),
       }));
     }
-  }, [currentCase.segments, currentCase.case_commodities, questionGroups]);
+  }, [
+    currentCase.segments,
+    currentCase.case_commodities,
+    questionGroups,
+    totalIncomeQuestions,
+  ]);
 
   return (
     <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
