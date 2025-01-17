@@ -94,7 +94,7 @@ const ContentLayout = ({
             justify="start"
             className="title-wrapper"
           >
-            <Col span={titleRighContent ? 12 : 24}>
+            <Col span={titleRighContent ? 8 : 24}>
               {title ? (
                 <div data-testid="title" className="title">
                   {title}
@@ -111,9 +111,11 @@ const ContentLayout = ({
               )}
             </Col>
             {titleRighContent && (
-              <Col span={12}>
-                <Row justify="end">
-                  <Col>{titleRighContent}</Col>
+              <Col span={16}>
+                <Row>
+                  <Col span={24} align="end">
+                    {titleRighContent}
+                  </Col>
                 </Row>
               </Col>
             )}

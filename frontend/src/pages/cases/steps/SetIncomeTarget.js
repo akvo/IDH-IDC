@@ -72,6 +72,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
       }
     });
     return values;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateCurrentSegmentState = useCallback(
