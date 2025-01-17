@@ -4,6 +4,7 @@ const defaultCaseVisualState = {
   questionGroups: [],
   totalIncomeQuestions: [],
   incomeDataDrivers: [],
+  dashboardData: [],
 };
 
 const CaseVisualState = new Store(defaultCaseVisualState);

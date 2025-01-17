@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Spin, Tabs, Row, Col } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
-import { api, flatten } from "../../lib";
+import { api, flatten, getFunctionDefaultValue } from "../../lib";
 import {
   CurrentCaseState,
   stepPath,
@@ -19,9 +19,17 @@ import {
 } from "./steps";
 import { EnterIncomeDataVisual } from "./visualizations";
 import "./steps/steps.scss";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
+import { customFormula } from "../../lib/formula";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
+const masterCommodityCategories = window.master?.commodity_categories || [];
+const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
+  const commodities = curr.commodities.reduce((a, c) => {
+    return { ...a, [c.id]: c.name };
+  }, {});
+  return { ...acc, ...commodities };
+}, {});
 
 const Loading = () => (
   <div className="loading-container">
@@ -167,6 +175,7 @@ const Case = () => {
 
   const [loading, setLoading] = useState(false);
   const currentCase = CurrentCaseState.useState((s) => s);
+  const questionGroups = CaseVisualState.useState((s) => s.questionGroups);
 
   const updateStepIncomeTargetState = (key, value) => {
     CaseUIState.update((s) => {
@@ -261,8 +270,8 @@ const Case = () => {
     }
   }, [currentCase.id, currentCase.case_commodities, currentCase.currency]);
 
+  // fetch region data
   useEffect(() => {
-    // fetch region data
     if (currentCase?.country) {
       updateStepIncomeTargetState("regionOptionLoading", true);
       api
@@ -280,6 +289,157 @@ const Case = () => {
         });
     }
   }, [currentCase?.country]);
+
+  // generate dashboard data
+  useEffect(() => {
+    if (!isEmpty(currentCase?.segments) && !isEmpty(questionGroups)) {
+      // generate questions
+      const flattenedQuestionGroups = questionGroups.flatMap((group) => {
+        const questions = group ? flatten(group.questions) : [];
+        return questions.map((q) => ({
+          ...q,
+          commodity_id: group.commodity_id,
+        }));
+      });
+      const totalCommodityQuestions = flattenedQuestionGroups.filter(
+        (q) => q.question_type === "aggregator"
+      );
+      const costQuestions = flattenedQuestionGroups.filter((q) =>
+        q.text.toLowerCase().includes("cost")
+      );
+      // eol generate questions
+
+      const mappedData = currentCase.segments.map((segment) => {
+        const answers = isEmpty(segment?.answers) ? {} : segment.answers;
+        const remappedAnswers = Object.keys(answers).map((key) => {
+          const [fieldKey, caseCommodityId, questionId] = key.split("-");
+          const commodity = currentCase.case_commodities.find(
+            (cc) => cc.id === parseInt(caseCommodityId)
+          );
+          const commodityFocus = commodity.commodity_type === "focus";
+          const totalCommodityValue = totalCommodityQuestions.find(
+            (q) => q.id === parseInt(questionId)
+          );
+          const cost = costQuestions.find(
+            (q) =>
+              q.id === parseInt(questionId) &&
+              q.parent === 1 &&
+              q.commodityId === commodity.id
+          );
+          const question = flattenedQuestionGroups.find(
+            (q) =>
+              q.id === parseInt(questionId) && q.commodity_id === commodity.id
+          );
+          const totalOtherDiversifiedIncome =
+            question?.question_type === "diversified" && !question.parent;
+          return {
+            name: fieldKey,
+            question: question,
+            commodityFocus: commodityFocus,
+            commodityType: commodity.commodity_type,
+            caseCommodityId: parseInt(caseCommodityId),
+            commodityId: commodity.id,
+            commodityName: commodityNames[commodity.id],
+            questionId: parseInt(questionId),
+            value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
+            isTotalFeasibleFocusIncome:
+              totalCommodityValue && commodityFocus && fieldKey === "feasible"
+                ? true
+                : false,
+            isTotalFeasibleDiversifiedIncome:
+              totalCommodityValue && !commodityFocus && fieldKey === "feasible"
+                ? true
+                : totalOtherDiversifiedIncome && fieldKey === "feasible"
+                ? true
+                : false,
+            isTotalCurrentFocusIncome:
+              totalCommodityValue && commodityFocus && fieldKey === "current"
+                ? true
+                : false,
+            isTotalCurrentDiversifiedIncome:
+              totalCommodityValue && !commodityFocus && fieldKey === "current"
+                ? true
+                : totalOtherDiversifiedIncome && fieldKey === "current"
+                ? true
+                : false,
+            feasibleCost:
+              cost && answers[key] && fieldKey === "feasible" ? true : false,
+            currentCost:
+              cost && answers[key] && fieldKey === "current" ? true : false,
+            costName: cost ? cost.text : "",
+          };
+        });
+
+        const totalCostFeasible = remappedAnswers
+          .filter((a) => a.feasibleCost)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalCostCurrent = remappedAnswers
+          .filter((a) => a.currentCost)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalFeasibleFocusIncome = remappedAnswers
+          .filter((a) => a.isTotalFeasibleFocusIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalFeasibleDiversifiedIncome = remappedAnswers
+          .filter((a) => a.isTotalFeasibleDiversifiedIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalCurrentFocusIncome = remappedAnswers
+          .filter((a) => a.isTotalCurrentFocusIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalCurrentDiversifiedIncome = remappedAnswers
+          .filter((a) => a.isTotalCurrentDiversifiedIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+
+        const focusCommodityAnswers = remappedAnswers
+          .filter((a) => a.commodityType === "focus")
+          .map((a) => ({
+            id: `${a.name}-${a.questionId}`,
+            value: a.value,
+          }));
+
+        const currentRevenueFocusCommodity = getFunctionDefaultValue(
+          { default_value: customFormula.revenue_focus_commodity },
+          "current",
+          focusCommodityAnswers
+        );
+        const feasibleRevenueFocusCommodity = getFunctionDefaultValue(
+          { default_value: customFormula.revenue_focus_commodity },
+          "feasible",
+          focusCommodityAnswers
+        );
+        const currentFocusCommodityCoP = getFunctionDefaultValue(
+          { default_value: customFormula.focus_commodity_cost_of_production },
+          "current",
+          focusCommodityAnswers
+        );
+        const feasibleFocusCommodityCoP = getFunctionDefaultValue(
+          { default_value: customFormula.focus_commodity_cost_of_production },
+          "feasible",
+          focusCommodityAnswers
+        );
+
+        return {
+          ...segment,
+          total_feasible_cost: -totalCostFeasible,
+          total_current_cost: -totalCostCurrent,
+          total_feasible_focus_income: totalFeasibleFocusIncome,
+          total_feasible_diversified_income: totalFeasibleDiversifiedIncome,
+          total_current_focus_income: totalCurrentFocusIncome,
+          total_current_diversified_income: totalCurrentDiversifiedIncome,
+          total_current_revenue_focus_commodity: currentRevenueFocusCommodity,
+          total_feasible_revenue_focus_commodity: feasibleRevenueFocusCommodity,
+          total_current_focus_commodity_cost_of_production:
+            currentFocusCommodityCoP,
+          total_feasible_focus_commodity_cost_of_production:
+            feasibleFocusCommodityCoP,
+          answers: answers,
+        };
+      });
+      CaseVisualState.update((s) => ({
+        ...s,
+        dashboardData: orderBy(mappedData, ["id"]),
+      }));
+    }
+  }, [currentCase.segments, currentCase.case_commodities, questionGroups]);
 
   return (
     <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
