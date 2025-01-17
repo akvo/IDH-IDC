@@ -274,4 +274,66 @@
       line-height: 157.15%;
     }
   }
+
+  .compare-income-gap-table-wrapper {
+    .ant-table {
+      border: 1px solid #eaecf0;
+      border-radius: 20px;
+
+      .ant-table-thead {
+        background: #01625f;
+        border-radius: 40px;
+
+        // top-left
+        tr:first-child > *:first-child {
+          border-start-start-radius: 20px;
+        }
+
+        // top-right
+        tr:last-child > *:last-child {
+          border-start-end-radius: 20px;
+        }
+
+        .ant-table-cell {
+          color: #fff;
+          background: transparent;
+          font-family: "RocGrotesk";
+          font-size: 13px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+
+          &::before {
+            display: none;
+          }
+        }
+      }
+
+      .ant-table-tbody {
+        /* Style for even odd rows */
+        tr:nth-child(even) {
+          background-color: rgba(242, 242, 242, 0.5);
+        }
+        tr:nth-child(odd) {
+          background-color: #ffffff;
+        }
+        // bottom-left
+        tr:last-child > *:first-child {
+          border-end-start-radius: 20px;
+        }
+        // bottom-right
+        tr:last-child > *:last-child {
+          border-end-end-radius: 20px;
+        }
+
+        .ant-table-cell {
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px;
+        }
+      }
+    }
+  }
 }
