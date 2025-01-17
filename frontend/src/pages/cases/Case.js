@@ -95,16 +95,14 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
 
   // set default active segmentId
   useEffect(() => {
-    if (!activeSegmentId && !isEmpty(currentCase.segments)) {
-      CaseUIState.update((s) => ({
-        ...s,
-        general: {
-          ...s.general,
-          activeSegmentId: currentCase.segments?.[0]?.id || null,
-        },
-      }));
-    }
-  }, [activeSegmentId, currentCase.segments]);
+    CaseUIState.update((s) => ({
+      ...s,
+      general: {
+        ...s.general,
+        activeSegmentId: currentCase.segments?.[0]?.id || null,
+      },
+    }));
+  }, [currentCase.segments]);
 
   const segmentTabItems = useMemo(() => {
     return currentCase.segments.map((segment) => ({
@@ -133,7 +131,13 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
                 : null
             ),
     }));
-  }, [currentCase, children, setbackfunction, setnextfunction, childrenCount]);
+  }, [
+    currentCase.segments,
+    children,
+    setbackfunction,
+    setnextfunction,
+    childrenCount,
+  ]);
 
   return (
     <Row id="steps" gutter={[20, 20]}>
@@ -285,6 +289,7 @@ const Case = () => {
         .catch((e) => {
           const { status } = e.response;
           updateStepIncomeTargetState("regionOptionStatus", status);
+          updateStepIncomeTargetState("regionOptions", []);
         })
         .finally(() => {
           updateStepIncomeTargetState("regionOptionLoading", false);

@@ -18,7 +18,6 @@ import {
   PrevCaseState,
   stepPath,
 } from "../store";
-import { resetCurrentCaseState } from "../store/current_case";
 import { yesNoOptions } from "../../../store/static";
 import {
   InputNumberThousandFormatter,
@@ -384,7 +383,6 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   ]);
 
   const backFunction = useCallback(() => {
-    resetCurrentCaseState();
     navigate("/cases");
   }, [navigate]);
 

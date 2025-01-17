@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./case-wrapper.scss";
 import { useNavigate } from "react-router-dom";
-import { Row, Col, Steps, Layout, Affix, Button, Space } from "antd";
+import { Row, Col, Steps, Layout, Affix, Button, Space, Alert } from "antd";
 import { ContentLayout } from "../../../components/layout";
 import {
   ArrowLeftOutlined,
@@ -107,10 +107,18 @@ const CaseWrapper = ({ children, step, caseId, currentCase }) => {
                   </Button>
                 }
               >
-                {React.cloneElement(children, {
-                  setbackfunction: (fn) => (backFunctionRef.current = fn),
-                  setnextfunction: (fn) => (nextFunctionRef.current = fn),
-                })}
+                {currentCase.segments.filter((s) => s.id).length ? (
+                  React.cloneElement(children, {
+                    setbackfunction: (fn) => (backFunctionRef.current = fn),
+                    setnextfunction: (fn) => (nextFunctionRef.current = fn),
+                  })
+                ) : (
+                  // Show alert if current case doesn't have any segments
+                  <Alert
+                    message="Unable to load the page. Please add segments in the Case settings first."
+                    type="warning"
+                  />
+                )}
               </ContentLayout>
             </Content>
           </Col>

@@ -30,6 +30,7 @@ import { api } from "../../lib";
 import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
 import { stepPath } from "./store";
+import { resetCurrentCaseState } from "./store/current_case";
 
 const { Search } = Input;
 
@@ -259,6 +260,11 @@ const Cases = () => {
       },
     },
   ];
+
+  useEffect(() => {
+    // reset currentCase state
+    resetCurrentCaseState();
+  }, []);
 
   useEffect(() => {
     if (userID || refresh) {
