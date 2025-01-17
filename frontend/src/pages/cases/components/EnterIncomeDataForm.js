@@ -195,6 +195,7 @@ const EnterIncomeDataDriver = ({
   setSectionTotalValues,
 }) => {
   const [form] = Form.useForm();
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   const sectionCurrentValue =
     sectionTotalValues?.[group.commodity_type]?.current || 0;
@@ -238,11 +239,11 @@ const EnterIncomeDataDriver = ({
   };
 
   // Helper function to update section total values
-  const updateSectionTotalValues = (fieldName, value) => {
+  const updateSectionTotalValues = (commodity_type, fieldName, value) => {
     setSectionTotalValues((prev) => ({
       ...prev,
-      [group.commodity_type]: {
-        ...prev?.[group.commodity_type],
+      [commodity_type]: {
+        ...prev?.[commodity_type],
         [fieldName]: value,
       },
     }));
@@ -256,13 +257,59 @@ const EnterIncomeDataDriver = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleQuestionType = (
+    question,
+    commodity,
+    fieldName,
+    values,
+    fieldKey
+  ) => {
+    if (!question?.parent) {
+      if (question?.question_type === "aggregator") {
+        updateSectionTotalValues(commodity.commodity_type, fieldName, values);
+      } else if (question?.question_type === "diversified") {
+        const diversifiedQuestions = flattenQuestionList.filter(
+          (q) => q.question_type === "diversified"
+        );
+        const diversifiedQids = diversifiedQuestions.map(
+          (q) => `${fieldKey}-${q.id}`
+        );
+        const sumAllDiversifiedValues = diversifiedQids.reduce((acc, id) => {
+          const value = values?.[id];
+          return value ? acc + value : acc;
+        }, 0);
+        updateSectionTotalValues(
+          commodity.commodity_type,
+          fieldName,
+          sumAllDiversifiedValues
+        );
+      }
+    }
+  };
+
+  const calculateChildrenValues = (question, fieldKey, values) => {
+    const childrenQuestions = flattenQuestionList.filter(
+      (q) => q.parent === question?.parent
+    );
+    const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
+    return allChildrensIds.reduce((acc, id) => {
+      const value = values?.[id];
+      if (value) {
+        acc.push({ id, value });
+      }
+      return acc;
+    }, []);
+  };
+
   const onValuesChange = (changedValue, allValues) => {
-    // Extract the key and parse its components
     const key = Object.keys(changedValue)[0];
     const [fieldName, caseCommodityId, questionId] = key.split("-");
     const fieldKey = `${fieldName}-${caseCommodityId}`;
 
-    // Find the current question and its parent
+    const commodity = currentCase.case_commodities.find(
+      (cc) => cc.id === parseInt(caseCommodityId)
+    );
+
     const question = flattenQuestionList.find(
       (q) => q.id === parseInt(questionId)
     );
@@ -270,62 +317,27 @@ const EnterIncomeDataDriver = ({
       (q) => q.id === question?.parent
     );
 
-    // Handle aggregator questions
-    if (!question?.parent && question?.question_type === "aggregator") {
-      updateSectionTotalValues(fieldName, changedValue[key]);
-      // Update the current segment state with all values
-      updateCurrentSegmentState({
-        answers: { ...segment?.answers, ...allValues },
-      });
-      return;
-    }
+    handleQuestionType(question, commodity, fieldName, allValues, fieldKey);
 
-    // Handle diversified questions
-    if (!question?.parent && question?.question_type === "diversified") {
-      const diversifiedQuestions = flattenQuestionList.filter(
-        (q) => q.question_type === "diversified"
-      );
-      const diversifiedQids = diversifiedQuestions.map(
-        (q) => `${fieldKey}-${q.id}`
-      );
-      const sumAllDiversifiedValues = diversifiedQids.reduce((acc, id) => {
-        const value = allValues?.[id];
-        return value ? acc + value : acc;
-      }, 0);
-      updateSectionTotalValues(fieldName, sumAllDiversifiedValues);
-      // Update the current segment state with all values
-      updateCurrentSegmentState({
-        answers: { ...segment?.answers, ...allValues },
-      });
-      return;
-    }
-
-    // Gather all children question values
-    const childrenQuestions = flattenQuestionList.filter(
-      (q) => q.parent === question?.parent
+    const allChildrensValues = calculateChildrenValues(
+      question,
+      fieldKey,
+      allValues
     );
-    const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
-    const allChildrensValues = allChildrensIds.reduce((acc, id) => {
-      const value = allValues?.[id];
-      if (value) {
-        acc.push({ id, value });
-      }
-      return acc;
-    }, []);
-
-    // Calculate sum of children's values
     const sumAllChildrensValues = parentQuestion?.default_value
       ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
       : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
 
-    // Update the parent question value
     const parentQuestionField = `${fieldKey}-${question?.parent}`;
     if (parentQuestion) {
       form.setFieldValue(parentQuestionField, sumAllChildrensValues);
-      updateSectionTotalValues(fieldName, sumAllChildrensValues);
+      updateSectionTotalValues(
+        commodity.commodity_type,
+        fieldName,
+        sumAllChildrensValues
+      );
     }
 
-    // Recursively update the parent's parent if necessary
     if (parentQuestion?.parent) {
       onValuesChange(
         { [parentQuestionField]: sumAllChildrensValues },
@@ -333,83 +345,67 @@ const EnterIncomeDataDriver = ({
       );
     }
 
-    // Update the current segment state with all values
     updateCurrentSegmentState({
       answers: { ...segment?.answers, ...allValues },
     });
   };
 
   useEffect(() => {
-    // recalculate totalValues onLoad initial data
     if (!isEmpty(initialDriverValues)) {
+      const onLoad = ({ key }) => {
+        const [fieldName, caseCommodityId, questionId] = key.split("-");
+        const fieldKey = `${fieldName}-${caseCommodityId}`;
+
+        const commodity = currentCase.case_commodities.find(
+          (cc) => cc.id === parseInt(caseCommodityId)
+        );
+
+        const question = flattenQuestionList.find(
+          (q) => q.id === parseInt(questionId)
+        );
+        const parentQuestion = flattenQuestionList.find(
+          (q) => q.id === question?.parent
+        );
+
+        handleQuestionType(
+          question,
+          commodity,
+          fieldName,
+          initialDriverValues,
+          fieldKey
+        );
+
+        const allChildrensValues = calculateChildrenValues(
+          question,
+          fieldKey,
+          initialDriverValues
+        );
+        const sumAllChildrensValues = parentQuestion?.default_value
+          ? getFunctionDefaultValue(
+              parentQuestion,
+              fieldKey,
+              allChildrensValues
+            )
+          : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+
+        const parentQuestionField = `${fieldKey}-${question?.parent}`;
+        if (parentQuestion) {
+          form.setFieldValue(parentQuestionField, sumAllChildrensValues);
+          updateSectionTotalValues(
+            commodity.commodity_type,
+            fieldName,
+            sumAllChildrensValues
+          );
+        }
+
+        if (parentQuestion?.parent) {
+          onLoad({ key: parentQuestionField });
+        }
+      };
+
       setTimeout(() => {
         Object.keys(initialDriverValues).forEach((key) => {
-          const [fieldName, caseCommodityId, questionId] = key.split("-");
-          const fieldKey = `${fieldName}-${caseCommodityId}`;
-
-          // Find the current question and its parent
-          const question = flattenQuestionList.find(
-            (q) => q.id === parseInt(questionId)
-          );
-          const parentQuestion = flattenQuestionList.find(
-            (q) => q.id === question?.parent
-          );
-
-          // Handle aggregator questions
-          if (!question?.parent && question?.question_type === "aggregator") {
-            updateSectionTotalValues(fieldName, initialDriverValues[key]);
-            return;
-          }
-
-          // Handle diversified questions
-          if (!question?.parent && question?.question_type === "diversified") {
-            const diversifiedQuestions = flattenQuestionList.filter(
-              (q) => q.question_type === "diversified"
-            );
-            const diversifiedQids = diversifiedQuestions.map(
-              (q) => `${fieldKey}-${q.id}`
-            );
-            const sumAllDiversifiedValues = diversifiedQids.reduce(
-              (acc, id) => {
-                const value = initialDriverValues?.[id];
-                return value ? acc + value : acc;
-              },
-              0
-            );
-            updateSectionTotalValues(fieldName, sumAllDiversifiedValues);
-            return;
-          }
-
-          // Gather all children question values
-          const childrenQuestions = flattenQuestionList.filter(
-            (q) => q.parent === question?.parent
-          );
-          const allChildrensIds = childrenQuestions.map(
-            (q) => `${fieldKey}-${q.id}`
-          );
-          const allChildrensValues = allChildrensIds.reduce((acc, id) => {
-            const value = initialDriverValues?.[id];
-            if (value) {
-              acc.push({ id, value });
-            }
-            return acc;
-          }, []);
-
-          // Calculate sum of children's values
-          const sumAllChildrensValues = parentQuestion?.default_value
-            ? getFunctionDefaultValue(
-                parentQuestion,
-                fieldKey,
-                allChildrensValues
-              )
-            : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-
-          // Update the parent question value
-          const parentQuestionField = `${fieldKey}-${question?.parent}`;
-          if (parentQuestion) {
-            form.setFieldValue(parentQuestionField, sumAllChildrensValues);
-            updateSectionTotalValues(fieldName, sumAllChildrensValues);
-          }
+          onLoad({ key });
         });
       }, 500);
     }

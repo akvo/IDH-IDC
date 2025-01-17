@@ -66,6 +66,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const incomeDataDrivers = CaseVisualState.useState(
     (s) => s.incomeDataDrivers
   );
+  // TODO :: Wrong calculation on my totalIncome
 
   const [messageApi, contextHolder] = message.useMessage();
 
