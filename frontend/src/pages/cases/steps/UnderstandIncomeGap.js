@@ -6,7 +6,7 @@ import {
   ChartIncomeGap,
   CompareIncomeGap,
   ChartIncomeDriverAcrossSegments,
-} from "../visuals";
+} from "../visualizations";
 
 /**
  * STEP 3

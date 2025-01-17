@@ -2,12 +2,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Spin, Tabs, Row, Col } from "antd";
 import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
-import { api } from "../../lib";
+import { api, flatten } from "../../lib";
 import {
   CurrentCaseState,
   stepPath,
   CaseUIState,
   PrevCaseState,
+  CaseVisualState,
 } from "./store";
 import {
   SetIncomeTarget,
@@ -16,15 +17,38 @@ import {
   AssessImpactMitigationStrategies,
   ClosingGap,
 } from "./steps";
-import { EnterIncomeDataVisual } from "./visuals";
+import { EnterIncomeDataVisual } from "./visualizations";
 import "./steps/steps.scss";
 import { isEmpty } from "lodash";
+
+const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 
 const Loading = () => (
   <div className="loading-container">
     <Spin />
   </div>
 );
+
+const addLevelIntoQuestions = ({ questions, level = 0 }) => {
+  return questions.map((q) => {
+    if (q.childrens.length) {
+      q["childrens"] = addLevelIntoQuestions({
+        questions: q.childrens,
+        level: level + 1,
+      });
+    }
+    if (!q.parent) {
+      return {
+        ...q,
+        level: 0,
+      };
+    }
+    return {
+      ...q,
+      level: level,
+    };
+  });
+};
 
 const renderPage = (key, navigate) => {
   switch (key) {
@@ -153,6 +177,7 @@ const Case = () => {
     });
   };
 
+  // Fetch case details
   useEffect(() => {
     if (caseId && currentCase.id !== parseInt(caseId)) {
       setLoading(true);
@@ -175,6 +200,66 @@ const Case = () => {
         });
     }
   }, [caseId, currentCase.id, navigate]);
+
+  // Fetch questions for income data entry
+  useEffect(() => {
+    if (currentCase?.id && currentCase?.case_commodities?.length) {
+      const reorderedCaseCommodities = commodityOrder
+        .map((co) => {
+          const findCommodity = currentCase.case_commodities.find(
+            (cc) => cc.commodity_type === co
+          );
+          return findCommodity;
+        })
+        .filter((x) => x);
+
+      api.get(`/questions/${currentCase.id}`).then((res) => {
+        const { data } = res;
+        const incomeDataDriversTmp = [];
+        const diversifiedGroupTmp = [];
+        // regroup the questions to follow new design format
+        const questionGroupsTmp = reorderedCaseCommodities.map((cc) => {
+          const tmp = data.find((d) => d.commodity_id === cc.commodity);
+          tmp["currency"] = currentCase.currency;
+          tmp["questions"] = addLevelIntoQuestions({
+            questions: tmp.questions,
+          });
+          if (cc.commodity_type === "focus") {
+            incomeDataDriversTmp.push({
+              groupName: "Primary Commodity",
+              questionGroups: [{ ...cc, ...tmp }],
+            });
+          } else {
+            diversifiedGroupTmp.push({ ...cc, ...tmp });
+          }
+          return { ...cc, ...tmp };
+        });
+        // add diversified group
+        incomeDataDriversTmp.push({
+          groupName: "Diversified Income",
+          questionGroups: diversifiedGroupTmp,
+        });
+        // eol
+
+        // get totalIncomeQuestion
+        const qs = questionGroupsTmp.flatMap((group) => {
+          if (!group) {
+            return [];
+          }
+          const questions = flatten(group.questions).filter((q) => !q.parent);
+          // group id is case commodity id
+          return questions.map((q) => `${group.id}-${q.id}`);
+        });
+        CaseVisualState.update((s) => ({
+          ...s,
+          questionGroups: questionGroupsTmp,
+          totalIncomeQuestions: qs,
+          incomeDataDrivers: incomeDataDriversTmp,
+        }));
+        // eol
+      });
+    }
+  }, [currentCase.id, currentCase.case_commodities, currentCase.currency]);
 
   useEffect(() => {
     // fetch region data
