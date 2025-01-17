@@ -93,17 +93,6 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const childrenCount = React.Children.count(children);
 
-  // set default active segmentId
-  useEffect(() => {
-    CaseUIState.update((s) => ({
-      ...s,
-      general: {
-        ...s.general,
-        activeSegmentId: currentCase.segments?.[0]?.id || null,
-      },
-    }));
-  }, [currentCase.segments]);
-
   const segmentTabItems = useMemo(() => {
     return currentCase.segments.map((segment) => ({
       label: segment.name,
@@ -203,6 +192,14 @@ const Case = () => {
           const { data } = res;
           CurrentCaseState.update((s) => ({ ...s, ...data }));
           PrevCaseState.update((s) => ({ ...s, ...data }));
+          // set default active segmentId
+          CaseUIState.update((s) => ({
+            ...s,
+            general: {
+              ...s.general,
+              activeSegmentId: data.segments?.[0]?.id || null,
+            },
+          }));
         })
         .catch((e) => {
           console.error("Error fetching case data", e);
@@ -378,11 +375,11 @@ const Case = () => {
         });
 
         const totalCurrentIncomeAnswer = totalIncomeQuestions
-          .map((qs) => segment.answers[`current-${qs}`])
+          .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
           .filter((a) => a)
           .reduce((acc, a) => acc + a, 0);
         const totalFeasibleIncomeAnswer = totalIncomeQuestions
-          .map((qs) => segment.answers[`feasible-${qs}`])
+          .map((qs) => segment?.answers?.[`feasible-${qs}`] || 0)
           .filter((a) => a)
           .reduce((acc, a) => acc + a, 0);
 

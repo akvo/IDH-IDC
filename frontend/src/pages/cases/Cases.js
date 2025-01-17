@@ -368,7 +368,7 @@ const Cases = () => {
       title="Cases"
       wrapperId="case"
       titleRighContent={
-        <Space>
+        <Space wrap>
           <Search className="search" allowClear {...searchProps} />
           <Dropdown
             trigger="click"

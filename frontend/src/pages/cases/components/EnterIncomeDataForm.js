@@ -248,6 +248,14 @@ const EnterIncomeDataDriver = ({
     }));
   };
 
+  const initialDriverValues = useMemo(() => {
+    if (!isEmpty(segment?.answers)) {
+      return segment.answers;
+    }
+    return {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const onValuesChange = (changedValue, allValues) => {
     // Extract the key and parse its components
     const key = Object.keys(changedValue)[0];
@@ -325,11 +333,12 @@ const EnterIncomeDataDriver = ({
 
   useEffect(() => {
     // recalculate totalValues onLoad initial data
-    if (!isEmpty(segment.answers)) {
+    if (!isEmpty(initialDriverValues)) {
       setTimeout(() => {
-        Object.keys(segment.answers).forEach((key) => {
-          const value = segment.answers[key];
-          onValuesChange({ [key]: value }, form.getFieldsValue());
+        Object.keys(initialDriverValues).forEach((key) => {
+          const value = initialDriverValues[key];
+          // TODO :: Fix this onLoad function, this make the initial value rerender into 0 onLoad
+          // onValuesChange({ [key]: value }, form.getFieldsValue());
         });
       }, 500);
     }
@@ -375,7 +384,7 @@ const EnterIncomeDataDriver = ({
           layout="vertical"
           form={form}
           onValuesChange={onValuesChange}
-          initialValues={segment?.answers ? segment.answers : {}}
+          initialValues={initialDriverValues}
         >
           {group?.questions
             ? orderBy(group.questions, ["id"]).map((question) => (

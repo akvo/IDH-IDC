@@ -279,6 +279,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       onCancel={handleCancel}
       width="65%"
       className="case-settings-modal-container"
+      maskClosable={false}
     >
       {contextHolder}
       <Form

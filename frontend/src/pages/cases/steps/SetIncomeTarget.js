@@ -61,15 +61,18 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     const values = {};
     Object.keys(segment).map((key) => {
       const value = segment[key];
-      if (key === "region" && value) {
+      if (key === "region" && value && segment.target !== null) {
         values[`${segment.id}-set_target_yourself`] = 0; // set income value by benchmark
+      }
+      if (key === "region" && !value && segment.target !== null) {
+        values[`${segment.id}-set_target_yourself`] = 1; // set income value by manual
       }
       if (["target", "region", "adult", "child"].includes(key)) {
         values[`${segment.id}-${key}`] = value;
       }
     });
     return values;
-  }, [segment]);
+  }, []);
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -216,18 +219,18 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   };
 
   const handleChangeManualTarget = (value) => {
-    form.setFieldsValue({
-      [`${segment.id}-region`]: null,
-      [`${segment.id}-adult`]: null,
-      [`${segment.id}-child`]: null,
-      [`${segment.id}-target`]: value,
-    });
     updateCurrentSegmentState({
       region: null,
       benchmark: null,
       adult: null,
       child: null,
       target: value,
+    });
+    form.setFieldsValue({
+      [`${segment.id}-region`]: null,
+      [`${segment.id}-adult`]: null,
+      [`${segment.id}-child`]: null,
+      [`${segment.id}-target`]: value,
     });
   };
 
