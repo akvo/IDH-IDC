@@ -5,6 +5,7 @@ import {
   CurrentCaseState,
   PrevCaseState,
   CaseUIState,
+  CaseVisualState,
 } from "../store";
 import {
   api,
@@ -18,33 +19,11 @@ import { EnterIncomeDataForm } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
 
-const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const rowColSpanSize = {
   gutter: [8, 8],
   label: 11,
   value: 5,
   percentage: 3,
-};
-
-const addLevelIntoQuestions = ({ questions, level = 0 }) => {
-  return questions.map((q) => {
-    if (q.childrens.length) {
-      q["childrens"] = addLevelIntoQuestions({
-        questions: q.childrens,
-        level: level + 1,
-      });
-    }
-    if (!q.parent) {
-      return {
-        ...q,
-        level: 0,
-      };
-    }
-    return {
-      ...q,
-      level: level,
-    };
-  });
 };
 
 const generateSegmentAnswersPayload = ({
@@ -83,8 +62,10 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const prevCaseSegments = PrevCaseState.useState((s) => s.segments);
-  const [incomeDataDrivers, setIncomeDataDrivers] = useState([]);
   const [sectionTotalValues, setSectionTotalValues] = useState({});
+  const incomeDataDrivers = CaseVisualState.useState(
+    (s) => s.incomeDataDrivers
+  );
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -104,6 +85,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
           .map((prev) => {
             prev = {
               ...prev,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(prev?.answers || {}),
             };
             let findPayload = currentCase.segments.find(
@@ -115,6 +97,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
             }
             findPayload = {
               ...findPayload,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(findPayload?.answers || {}),
             };
             const equal = isEqual(
@@ -232,48 +215,6 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
       },
     };
   }, [sectionTotalValues]);
-
-  // Fetch questions for income data entry
-  useEffect(() => {
-    if (currentCase?.id && currentCase?.case_commodities?.length) {
-      const reorderedCaseCommodities = commodityOrder
-        .map((co) => {
-          const findCommodity = currentCase.case_commodities.find(
-            (cc) => cc.commodity_type === co
-          );
-          return findCommodity;
-        })
-        .filter((x) => x);
-
-      api.get(`/questions/${currentCase.id}`).then((res) => {
-        const { data } = res;
-        const dataTmp = [];
-        const diversifiedGroupTmp = [];
-        // regroup the questions to follow new design format
-        reorderedCaseCommodities.forEach((cc) => {
-          const tmp = data.find((d) => d.commodity_id === cc.commodity);
-          tmp["currency"] = currentCase.currency;
-          tmp["questions"] = addLevelIntoQuestions({
-            questions: tmp.questions,
-          });
-          if (cc.commodity_type === "focus") {
-            dataTmp.push({
-              groupName: "Primary Commodity",
-              questionGroups: [{ ...cc, ...tmp }],
-            });
-          } else {
-            diversifiedGroupTmp.push({ ...cc, ...tmp });
-          }
-        });
-        // add diversified group
-        dataTmp.push({
-          groupName: "Diversified Income",
-          questionGroups: diversifiedGroupTmp,
-        });
-        setIncomeDataDrivers(dataTmp);
-      });
-    }
-  }, [currentCase.id, currentCase.case_commodities, currentCase.currency]);
 
   return (
     <div id="enter-income-data">

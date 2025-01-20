@@ -18,7 +18,6 @@ import {
   PrevCaseState,
   stepPath,
 } from "../store";
-import { resetCurrentCaseState } from "../store/current_case";
 import { yesNoOptions } from "../../../store/static";
 import {
   InputNumberThousandFormatter,
@@ -46,6 +45,7 @@ const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
 const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
   const prevCaseSegments = PrevCaseState.useState((s) => s?.segments || []);
   const stepSetIncomeTargetState = CaseUIState.useState(
@@ -61,15 +61,19 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     const values = {};
     Object.keys(segment).map((key) => {
       const value = segment[key];
-      if (key === "region" && value) {
+      if (key === "region" && value && segment.target !== null) {
         values[`${segment.id}-set_target_yourself`] = 0; // set income value by benchmark
+      }
+      if (key === "region" && !value && segment.target !== null) {
+        values[`${segment.id}-set_target_yourself`] = 1; // set income value by manual
       }
       if (["target", "region", "adult", "child"].includes(key)) {
         values[`${segment.id}-${key}`] = value;
       }
     });
     return values;
-  }, [segment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -216,18 +220,18 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   };
 
   const handleChangeManualTarget = (value) => {
-    form.setFieldsValue({
-      [`${segment.id}-region`]: null,
-      [`${segment.id}-adult`]: null,
-      [`${segment.id}-child`]: null,
-      [`${segment.id}-target`]: value,
-    });
     updateCurrentSegmentState({
       region: null,
       benchmark: null,
       adult: null,
       child: null,
       target: value,
+    });
+    form.setFieldsValue({
+      [`${segment.id}-region`]: null,
+      [`${segment.id}-adult`]: null,
+      [`${segment.id}-child`]: null,
+      [`${segment.id}-target`]: value,
     });
   };
 
@@ -310,6 +314,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
           .map((prev) => {
             prev = {
               ...prev,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(prev?.answers || {}),
             };
             let findPayload = currentCase.segments.find(
@@ -321,6 +326,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
             }
             findPayload = {
               ...findPayload,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(findPayload?.answers || {}),
             };
             const equal = isEqual(
@@ -383,7 +389,6 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   ]);
 
   const backFunction = useCallback(() => {
-    resetCurrentCaseState();
     navigate("/cases");
   }, [navigate]);
 
@@ -420,7 +425,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 controls={false}
                 addonAfter={currentCase.currency}
                 {...InputNumberThousandFormatter}
-                // disabled={!disableTarget || !enableEditCase}
+                disabled={!enableEditCase}
                 onChange={handleChangeManualTarget}
               />
             </Form.Item>
@@ -438,7 +443,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                   <Select
                     style={formStyle}
                     options={stepSetIncomeTargetState.regionOptions}
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     loading={stepSetIncomeTargetState.regionOptionLoading}
                     placeholder={
                       stepSetIncomeTargetState.regionOptionStatus === 404
@@ -461,7 +466,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                     onChange={(value) =>
                       handleChangeAdultChildField("adult", value)
                     }
-                    // disabled={!disableTarget || !enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                   />
                 </Form.Item>
@@ -477,7 +482,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                     onChange={(value) =>
                       handleChangeAdultChildField("child", value)
                     }
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                   />
                 </Form.Item>
@@ -557,7 +562,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 },
               ]}
             >
-              <Radio.Group options={yesNoOptions} />
+              <Radio.Group options={yesNoOptions} disabled={!enableEditCase} />
             </Form.Item>
           </Col>
           {renderTargetInput(setTargetYourself)}

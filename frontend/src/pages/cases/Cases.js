@@ -30,6 +30,7 @@ import { api } from "../../lib";
 import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
 import { stepPath } from "./store";
+import { resetCurrentCaseState } from "./store/current_case";
 
 const { Search } = Input;
 
@@ -261,6 +262,11 @@ const Cases = () => {
   ];
 
   useEffect(() => {
+    // reset currentCase state
+    resetCurrentCaseState();
+  }, []);
+
+  useEffect(() => {
     if (userID || refresh) {
       const { country, commodity, tags, year, email } = filters;
       setLoading(true);
@@ -362,7 +368,7 @@ const Cases = () => {
       title="Cases"
       wrapperId="case"
       titleRighContent={
-        <Space>
+        <Space wrap>
           <Search className="search" allowClear {...searchProps} />
           <Dropdown
             trigger="click"
@@ -437,7 +443,6 @@ const Cases = () => {
       <CaseSettings
         open={caseSettingModalVisible}
         handleCancel={() => setCaseSettingModalVisible(false)}
-        enableEditCase={true}
       />
     </ContentLayout>
   );

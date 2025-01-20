@@ -25,7 +25,7 @@ import {
   calculateIncomePercentage,
 } from "../../../lib";
 import { commodities } from "../../../store/static";
-import { CurrentCaseState } from "../store";
+import { CaseUIState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
 const indentSize = 32;
@@ -37,6 +37,7 @@ const EnterIncomeDataQuestions = ({
   question,
   rowColSpanSize,
 }) => {
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const [collapsed, setCollapsed] = useState(
     question.question_type !== "aggregator"
   );
@@ -65,14 +66,7 @@ const EnterIncomeDataQuestions = ({
   const isCollapsible =
     question.question_type === "question" && question.childrens.length > 0;
 
-  const disableInput = isCollapsible && !collapsed;
-  // const disableInput = !enableEditCase
-  //   ? true
-  //   : checkFocus
-  //   ? disabled
-  //   : checkBreakdownValue
-  //   ? disabled
-  //   : checkBreakdownValue;
+  const disableInput = !enableEditCase ? true : isCollapsible && !collapsed;
 
   const unitName = useMemo(
     () =>
@@ -201,6 +195,7 @@ const EnterIncomeDataDriver = ({
   setSectionTotalValues,
 }) => {
   const [form] = Form.useForm();
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   const sectionCurrentValue =
     sectionTotalValues?.[group.commodity_type]?.current || 0;
@@ -224,10 +219,10 @@ const EnterIncomeDataDriver = ({
     return "Other Diversified Income";
   }, [group.commodity_type, group.commodity_name]);
 
-  const flattenQuestionList = useMemo(
-    () => (!group ? [] : flatten(group.questions)),
-    [group]
-  );
+  const flattenQuestionList = useMemo(() => {
+    const questions = !group ? [] : flatten(group.questions);
+    return questions;
+  }, [group]);
 
   const updateCurrentSegmentState = (updatedSegmentValue) => {
     CurrentCaseState.update((s) => {
@@ -244,23 +239,77 @@ const EnterIncomeDataDriver = ({
   };
 
   // Helper function to update section total values
-  const updateSectionTotalValues = (fieldName, value) => {
+  const updateSectionTotalValues = (commodity_type, fieldName, value) => {
     setSectionTotalValues((prev) => ({
       ...prev,
-      [group.commodity_type]: {
-        ...prev?.[group.commodity_type],
+      [commodity_type]: {
+        ...prev?.[commodity_type],
         [fieldName]: value,
       },
     }));
   };
 
+  const initialDriverValues = useMemo(() => {
+    if (!isEmpty(segment?.answers)) {
+      return segment.answers;
+    }
+    return {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleQuestionType = (
+    question,
+    commodity,
+    fieldName,
+    values,
+    fieldKey
+  ) => {
+    if (!question?.parent) {
+      if (question?.question_type === "aggregator") {
+        updateSectionTotalValues(commodity.commodity_type, fieldName, values);
+      } else if (question?.question_type === "diversified") {
+        const diversifiedQuestions = flattenQuestionList.filter(
+          (q) => q.question_type === "diversified"
+        );
+        const diversifiedQids = diversifiedQuestions.map(
+          (q) => `${fieldKey}-${q.id}`
+        );
+        const sumAllDiversifiedValues = diversifiedQids.reduce((acc, id) => {
+          const value = values?.[id];
+          return value ? acc + value : acc;
+        }, 0);
+        updateSectionTotalValues(
+          commodity.commodity_type,
+          fieldName,
+          sumAllDiversifiedValues
+        );
+      }
+    }
+  };
+
+  const calculateChildrenValues = (question, fieldKey, values) => {
+    const childrenQuestions = flattenQuestionList.filter(
+      (q) => q.parent === question?.parent
+    );
+    const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
+    return allChildrensIds.reduce((acc, id) => {
+      const value = values?.[id];
+      if (value) {
+        acc.push({ id, value });
+      }
+      return acc;
+    }, []);
+  };
+
   const onValuesChange = (changedValue, allValues) => {
-    // Extract the key and parse its components
     const key = Object.keys(changedValue)[0];
     const [fieldName, caseCommodityId, questionId] = key.split("-");
     const fieldKey = `${fieldName}-${caseCommodityId}`;
 
-    // Find the current question and its parent
+    const commodity = currentCase.case_commodities.find(
+      (cc) => cc.id === parseInt(caseCommodityId)
+    );
+
     const question = flattenQuestionList.find(
       (q) => q.id === parseInt(questionId)
     );
@@ -268,54 +317,27 @@ const EnterIncomeDataDriver = ({
       (q) => q.id === question?.parent
     );
 
-    // Handle aggregator questions
-    if (!question?.parent && question?.question_type === "aggregator") {
-      updateSectionTotalValues(fieldName, changedValue[key]);
-      return;
-    }
+    handleQuestionType(question, commodity, fieldName, allValues, fieldKey);
 
-    // Handle diversified questions
-    if (!question?.parent && question?.question_type === "diversified") {
-      const diversifiedQuestions = flattenQuestionList.filter(
-        (q) => q.question_type === "diversified"
-      );
-      const diversifiedQids = diversifiedQuestions.map(
-        (q) => `${fieldKey}-${q.id}`
-      );
-      const sumAllDiversifiedValues = diversifiedQids.reduce((acc, id) => {
-        const value = allValues?.[id];
-        return value ? acc + value : acc;
-      }, 0);
-      updateSectionTotalValues(fieldName, sumAllDiversifiedValues);
-      return;
-    }
-
-    // Gather all children question values
-    const childrenQuestions = flattenQuestionList.filter(
-      (q) => q.parent === question?.parent
+    const allChildrensValues = calculateChildrenValues(
+      question,
+      fieldKey,
+      allValues
     );
-    const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
-    const allChildrensValues = allChildrensIds.reduce((acc, id) => {
-      const value = allValues?.[id];
-      if (value) {
-        acc.push({ id, value });
-      }
-      return acc;
-    }, []);
-
-    // Calculate sum of children's values
     const sumAllChildrensValues = parentQuestion?.default_value
       ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
       : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
 
-    // Update the parent question value
     const parentQuestionField = `${fieldKey}-${question?.parent}`;
     if (parentQuestion) {
       form.setFieldValue(parentQuestionField, sumAllChildrensValues);
-      updateSectionTotalValues(fieldName, sumAllChildrensValues);
+      updateSectionTotalValues(
+        commodity.commodity_type,
+        fieldName,
+        sumAllChildrensValues
+      );
     }
 
-    // Recursively update the parent's parent if necessary
     if (parentQuestion?.parent) {
       onValuesChange(
         { [parentQuestionField]: sumAllChildrensValues },
@@ -323,24 +345,72 @@ const EnterIncomeDataDriver = ({
       );
     }
 
-    // Update the current segment state with all values
     updateCurrentSegmentState({
-      answers: { ...segment?.answers, ...allValues },
+      answers: { ...segment?.answers, ...form.getFieldsValue() },
     });
   };
 
   useEffect(() => {
-    // recalculate totalValues onLoad initial data
-    if (!isEmpty(segment.answers)) {
+    if (!isEmpty(initialDriverValues)) {
+      const onLoad = ({ key }) => {
+        const [fieldName, caseCommodityId, questionId] = key.split("-");
+        const fieldKey = `${fieldName}-${caseCommodityId}`;
+
+        const commodity = currentCase.case_commodities.find(
+          (cc) => cc.id === parseInt(caseCommodityId)
+        );
+
+        const question = flattenQuestionList.find(
+          (q) => q.id === parseInt(questionId)
+        );
+        const parentQuestion = flattenQuestionList.find(
+          (q) => q.id === question?.parent
+        );
+
+        handleQuestionType(
+          question,
+          commodity,
+          fieldName,
+          initialDriverValues,
+          fieldKey
+        );
+
+        const allChildrensValues = calculateChildrenValues(
+          question,
+          fieldKey,
+          initialDriverValues
+        );
+        const sumAllChildrensValues = parentQuestion?.default_value
+          ? getFunctionDefaultValue(
+              parentQuestion,
+              fieldKey,
+              allChildrensValues
+            )
+          : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+
+        const parentQuestionField = `${fieldKey}-${question?.parent}`;
+        if (parentQuestion) {
+          form.setFieldValue(parentQuestionField, sumAllChildrensValues);
+          updateSectionTotalValues(
+            commodity.commodity_type,
+            fieldName,
+            sumAllChildrensValues
+          );
+        }
+
+        if (parentQuestion?.parent) {
+          onLoad({ key: parentQuestionField });
+        }
+      };
+
       setTimeout(() => {
-        Object.keys(segment.answers).forEach((key) => {
-          const value = segment.answers[key];
-          onValuesChange({ [key]: value }, form.getFieldsValue());
+        Object.keys(initialDriverValues).forEach((key) => {
+          onLoad({ key });
         });
       }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialDriverValues]);
 
   return (
     <Row align="middle">
@@ -377,11 +447,11 @@ const EnterIncomeDataDriver = ({
       )}
       <Col span={24}>
         <Form
+          form={form}
           name={`enter-income-data-${segment.id}-${group.id}`}
           layout="vertical"
-          form={form}
           onValuesChange={onValuesChange}
-          initialValues={segment?.answers ? segment.answers : {}}
+          initialValues={initialDriverValues}
         >
           {group?.questions
             ? orderBy(group.questions, ["id"]).map((question) => (

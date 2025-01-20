@@ -1,17 +1,17 @@
+import { isEmpty } from "lodash";
 import {
-  incomeTargetChartOption,
   Legend,
-  Color,
   TextStyle,
-  thousandFormatter,
   AxisLabelFormatter,
+  LabelStyle,
+  incomeTargetChartOption,
+  Color,
   backgroundColor,
   Easing,
-  LabelStyle,
   NoData,
   formatNumberToString,
-} from "../../../components/chart/options/common";
-import isEmpty from "lodash/isEmpty";
+  thousandFormatter,
+} from "../options/common";
 
 export const getColumnStackBarOptions = ({
   xAxis = { name: "", axisLabel: {} },
@@ -140,15 +140,3 @@ export const getColumnStackBarOptions = ({
   };
   return options;
 };
-
-export { default as ChartBigImpact } from "./ChartBigImpact";
-export { default as ChartBinningHeatmap } from "./ChartBinningHeatmap";
-export { default as ChartCurrentFeasible } from "./ChartCurrentFeasible";
-export { default as ChartIncomeGap } from "./ChartIncomeGap";
-export { default as ChartMonetaryContribution } from "./ChartMonetaryContribution";
-export { default as SegmentSelector } from "./SegmentSelector";
-export { default as ChartExploreBreakdownDrivers } from "./ChartExploreBreakdownDrivers";
-export { default as DriverDropdown } from "./DriverDropdown";
-export { default as ChartIncomeLevelPerCommodities } from "./ChartIncomeLevelPerCommodities";
-export { default as ChartScenarioModeling } from "./ChartScenarioModeling";
-export { default as ChartSensitivityAnalysisLine } from "./ChartSensitivityAnalysisLine";

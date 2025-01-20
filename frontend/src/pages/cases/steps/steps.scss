@@ -187,3 +187,180 @@
     }
   }
 }
+
+.income-data-visual-container {
+  padding: 40px 0;
+
+  .income-target-wrapper {
+    padding: 0;
+    border-radius: 20px;
+    background: #01625f;
+    color: #fff;
+
+    .ant-card-body {
+      padding: 12px 24px;
+    }
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .value {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+  }
+}
+
+#understand-income-gap,
+#assess-impact-mitigation-strategies {
+  margin-bottom: 100px;
+
+  .header-wrapper {
+    .title {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 40px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 52px;
+    }
+
+    .description {
+      font-family: "TabletGothic";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 28px;
+      letter-spacing: -0.32px;
+    }
+  }
+
+  .card-section-wrapper {
+    border-radius: 20px;
+    background: #01625f;
+    color: #fff;
+    font-family: "RocGrotesk";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+  }
+
+  .card-content-wrapper {
+    border-radius: 20px;
+  }
+
+  .card-visual-wrapper {
+    border-radius: 20px;
+
+    .section-title {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .section-description {
+      // color: #454545;
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+  }
+
+  .compare-income-gap-table-wrapper {
+    .ant-table {
+      border: 1px solid #eaecf0;
+      border-radius: 20px;
+
+      .ant-table-thead {
+        background: #01625f;
+        border-radius: 40px;
+
+        // top-left
+        tr:first-child > *:first-child {
+          border-start-start-radius: 20px;
+        }
+
+        // top-right
+        tr:last-child > *:last-child {
+          border-start-end-radius: 20px;
+        }
+
+        .ant-table-cell {
+          color: #fff;
+          background: transparent;
+          font-family: "RocGrotesk";
+          font-size: 13px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+
+          &::before {
+            display: none;
+          }
+        }
+      }
+
+      .ant-table-tbody {
+        /* Style for even odd rows */
+        tr:nth-child(even) {
+          background-color: rgba(242, 242, 242, 0.5);
+        }
+        tr:nth-child(odd) {
+          background-color: #ffffff;
+        }
+        // bottom-left
+        tr:last-child > *:first-child {
+          border-end-start-radius: 20px;
+        }
+        // bottom-right
+        tr:last-child > *:last-child {
+          border-end-end-radius: 20px;
+        }
+
+        .ant-table-cell {
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px;
+        }
+      }
+    }
+  }
+}
+
+#assess-impact-mitigation-strategies {
+  .ant-carousel {
+    .slick-dots {
+      li {
+        width: fit-content;
+        button {
+          mix-blend-mode: multiply;
+          border-radius: 4px;
+          background: #818080;
+          width: 8px;
+          height: 8px;
+        }
+        &.slick-active {
+          button {
+            background: #01625f !important;
+          }
+        }
+      }
+    }
+  }
+}

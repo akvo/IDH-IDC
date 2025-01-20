@@ -10,6 +10,7 @@ import {
   Legend,
   thousandFormatter,
   LabelStyle,
+  formatNumberToString,
 } from "./common";
 import { sortBy, isEmpty, groupBy, orderBy } from "lodash";
 
@@ -148,6 +149,9 @@ const ColumnBar = ({
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",
+        formatter: function (value) {
+          return formatNumberToString(value);
+        },
       },
     },
     [horizontal ? "yAxis" : "xAxis"]: {

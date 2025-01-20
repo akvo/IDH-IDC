@@ -9,6 +9,7 @@ import {
   axisTitle,
   NoData,
   thousandFormatter,
+  formatNumberToString,
 } from "./common";
 import { sortBy, isEmpty, sumBy } from "lodash";
 
@@ -68,6 +69,9 @@ const Bar = ({
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",
+        formatter: function (value) {
+          return formatNumberToString(value);
+        },
       },
     },
     [horizontal ? "yAxis" : "xAxis"]: {
