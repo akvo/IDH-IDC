@@ -1,30 +1,25 @@
-import React, { useState, useEffect, useMemo } from "react";
-import Chart from "../../../components/chart";
-import {
-  LabelStyle,
-  thousandFormatter,
-} from "../../../components/chart/options/common";
-import { SegmentSelector } from "./";
-import { getFunctionDefaultValue } from "../components";
+import React, { useState, useMemo } from "react";
+import { Card, Col, Row, Space } from "antd";
+import { VisualCardWrapper } from "../components";
 import {
   TextStyle,
   AxisLabelFormatter,
   Legend,
+  LabelStyle,
+  thousandFormatter,
+  formatNumberToString,
 } from "../../../components/chart/options/common";
 import { sum } from "lodash";
+import Chart from "../../../components/chart";
+import { getFunctionDefaultValue } from "../../../lib";
+import { SegmentSelector } from "../components";
+import { CaseVisualState, CurrentCaseState } from "../store";
 
-const ChartMonetaryContribution = ({
-  dashboardData,
-  currentCase,
-  showLabel = false,
-}) => {
+const ChartMonetaryImpactOnIncome = ({ showLabel = false }) => {
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+  const currentCase = CurrentCaseState.useState((s) => s);
+
   const [selectedSegment, setSelectedSegment] = useState(null);
-
-  useEffect(() => {
-    if (dashboardData.length > 0) {
-      setSelectedSegment(dashboardData[0].id);
-    }
-  }, [dashboardData]);
 
   const chartData = useMemo(() => {
     const data = dashboardData.find((d) => d.id === selectedSegment);
@@ -223,8 +218,8 @@ const ChartMonetaryContribution = ({
       grid: {
         show: true,
         containLabel: true,
-        left: 80,
-        right: 50,
+        left: 65,
+        right: 30,
         label: {
           color: "#222",
           ...TextStyle,
@@ -260,6 +255,9 @@ const ChartMonetaryContribution = ({
         axisLabel: {
           ...TextStyle,
           color: "#9292ab",
+          formatter: function (value) {
+            return formatNumberToString(value);
+          },
         },
       },
       series: series,
@@ -267,15 +265,51 @@ const ChartMonetaryContribution = ({
   }, [dashboardData, selectedSegment, currentCase.currency, showLabel]);
 
   return (
-    <div>
-      <SegmentSelector
-        dashboardData={dashboardData}
-        selectedSegment={selectedSegment}
-        setSelectedSegment={setSelectedSegment}
-      />
-      <Chart wrapper={false} type="BAR" override={chartData} />
-    </div>
+    <Card className="card-visual-wrapper">
+      <Row gutter={[20, 20]} align="middle">
+        <Col span={16}>
+          <VisualCardWrapper
+            title="Monetary impact of each driver to income"
+            bordered
+          >
+            <Row gutter={[20, 20]}>
+              <Col span={24}>
+                <SegmentSelector
+                  selectedSegment={selectedSegment}
+                  setSelectedSegment={setSelectedSegment}
+                />
+              </Col>
+              <Col span={24}>
+                <Chart wrapper={false} type="BAR" override={chartData} />
+              </Col>
+            </Row>
+          </VisualCardWrapper>
+        </Col>
+        <Col span={8}>
+          <Space direction="vertical">
+            <div className="section-title">
+              What is the monetary impact of each income driver as we move
+              income drivers from their current to feasible levels?
+            </div>
+            <div className="section-description">
+              This waterfall chart visually illustrates how adjustments in
+              income drivers influence the transition from the current income
+              level to a feasible income level. Each element represents how
+              income changes resulting from changing an income driver from its
+              current to its feasible level, keeping the other income drivers at
+              their current levels. Insights: The graph serves to clarify which
+              income drivers have the most significant impact on increasing
+              household income levels. The values do not add up to the feasible
+              income level because some income drivers are interconnected and in
+              this graph we only assess the change in income caused by changing
+              one income driver to its feasible levels, while the others remain
+              at their current levels.
+            </div>
+          </Space>
+        </Col>
+      </Row>
+    </Card>
   );
 };
 
-export default ChartMonetaryContribution;
+export default ChartMonetaryImpactOnIncome;

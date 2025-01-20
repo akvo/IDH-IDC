@@ -1,31 +1,30 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { Spin, Tabs, Row, Col } from "antd";
+import { CaseWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
-import { ContentLayout } from "../../components/layout";
+import { api, flatten, getFunctionDefaultValue } from "../../lib";
 import {
-  SideMenu,
-  CaseProfile,
-  IncomeDriverDataEntry,
-  IncomeDriverDashboard,
-  getFunctionDefaultValue,
-  customFormula,
-} from "./components";
-import { Row, Col, Spin, Card, Alert } from "antd";
-import "./cases.scss";
-import { api, flatten } from "../../lib";
-import { CaseTitleIcon } from "../../lib/icon";
-import dayjs from "dayjs";
-import isEmpty from "lodash/isEmpty";
-import orderBy from "lodash/orderBy";
+  CurrentCaseState,
+  stepPath,
+  CaseUIState,
+  PrevCaseState,
+  CaseVisualState,
+} from "./store";
 import { UserState } from "../../store";
+import {
+  SetIncomeTarget,
+  EnterIncomeData,
+  UnderstandIncomeGap,
+  AssessImpactMitigationStrategies,
+  ClosingGap,
+} from "./steps";
+import { EnterIncomeDataVisual } from "./visualizations";
+import "./steps/steps.scss";
+import { isEmpty, orderBy } from "lodash";
+import { customFormula } from "../../lib/formula";
 import { adminRole } from "../../store/static";
 
-const pageDependencies = {
-  "Income Driver Data Entry": ["Case Profile"],
-  "Income Driver Dashboard": ["Case Profile", "Income Driver Data Entry"],
-};
-
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
-
 const masterCommodityCategories = window.master?.commodity_categories || [];
 const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   const commodities = curr.commodities.reduce((a, c) => {
@@ -34,478 +33,489 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   return { ...acc, ...commodities };
 }, {});
 
-const options = {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
+const Loading = () => (
+  <div className="loading-container">
+    <Spin />
+  </div>
+);
+
+const addLevelIntoQuestions = ({ questions, level = 0 }) => {
+  return questions.map((q) => {
+    if (q.childrens.length) {
+      q["childrens"] = addLevelIntoQuestions({
+        questions: q.childrens,
+        level: level + 1,
+      });
+    }
+    if (!q.parent) {
+      return {
+        ...q,
+        level: 0,
+      };
+    }
+    return {
+      ...q,
+      level: level,
+    };
+  });
+};
+
+const renderPage = (key, navigate) => {
+  switch (key) {
+    case stepPath.step1.label:
+      return (
+        <SegmentTabsWrapper>
+          <SetIncomeTarget />
+        </SegmentTabsWrapper>
+      );
+    case stepPath.step2.label:
+      return (
+        <SegmentTabsWrapper>
+          <EnterIncomeData key="left" />
+          <EnterIncomeDataVisual key="right" />
+        </SegmentTabsWrapper>
+      );
+    case stepPath.step3.label:
+      return <UnderstandIncomeGap />;
+    case stepPath.step4.label:
+      return <AssessImpactMitigationStrategies />;
+    case stepPath.step5.label:
+      return (
+        <SegmentTabsWrapper>
+          <ClosingGap />
+        </SegmentTabsWrapper>
+      );
+    default:
+      return navigate("/not-found");
+  }
+};
+
+const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const { activeSegmentId } = CaseUIState.useState((s) => s.general);
+  const childrenCount = React.Children.count(children);
+
+  const segmentTabItems = useMemo(() => {
+    return currentCase.segments.map((segment) => ({
+      label: segment.name,
+      key: segment.id,
+      children:
+        childrenCount === 1
+          ? React.Children.map(children, (child) =>
+              React.isValidElement(child)
+                ? React.cloneElement(child, {
+                    segment,
+                    setbackfunction,
+                    setnextfunction,
+                  })
+                : null
+            )
+          : React.Children.map(children, (child) =>
+              child.key === "left"
+                ? React.isValidElement(child)
+                  ? React.cloneElement(child, {
+                      segment,
+                      setbackfunction,
+                      setnextfunction,
+                    })
+                  : null
+                : null
+            ),
+    }));
+  }, [
+    currentCase.segments,
+    children,
+    setbackfunction,
+    setnextfunction,
+    childrenCount,
+  ]);
+
+  return (
+    <Row id="steps" gutter={[20, 20]}>
+      <Col span={childrenCount === 1 ? 24 : 16}>
+        <Tabs
+          className="step-segment-tabs-container"
+          type="card"
+          items={segmentTabItems}
+          tabBarGutter={5}
+          activeKey={activeSegmentId || currentCase?.segments?.[0]?.id || null}
+          onChange={(val) => {
+            CaseUIState.update((s) => ({
+              ...s,
+              general: {
+                ...s.general,
+                activeSegmentId: val,
+              },
+            }));
+          }}
+        />
+      </Col>
+      {childrenCount > 1 &&
+        React.Children.map(children, (child, index) =>
+          child.key === "right" ? (
+            React.isValidElement(child) ? (
+              <Col key={index} span={8}>
+                {child}
+              </Col>
+            ) : null
+          ) : null
+        )}
+    </Row>
+  );
 };
 
 const Case = () => {
-  const { caseId } = useParams();
   const navigate = useNavigate();
-  const [caseTitle, setCaseTitle] = useState("New Case");
-  const [caseDescription, setCaseDescription] = useState(null);
-  const [page, setPage] = useState("Case Profile");
-  const [formData, setFormData] = useState({});
-  const [finished, setFinished] = useState([]);
-  const [commodityList, setCommodityList] = useState([]);
-  const [caseData, setCaseData] = useState([]);
-  const [questionGroups, setQuestionGroups] = useState([]);
-  const [currentCaseId, setCurrentCaseId] = useState(null);
+  const { caseId, step } = useParams();
+
   const [loading, setLoading] = useState(false);
-  const [initialOtherCommodityTypes, setInitialCommodityTypes] = useState([]);
-  const [currentCase, setCurrentCase] = useState({});
-  const showCaseTitle = false; // don't show title for now
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const { questionGroups, totalIncomeQuestions } = CaseVisualState.useState(
+    (s) => s
+  );
+  const userState = UserState.useState((s) => s);
 
-  const {
-    role: userRole,
-    internal_user: userInternal,
-    case_access: userCaseAccess,
-    email: userEmail,
-  } = UserState.useState((s) => s);
+  const updateStepIncomeTargetState = (key, value) => {
+    CaseUIState.update((s) => {
+      s.stepSetIncomeTarget = {
+        ...s.stepSetIncomeTarget,
+        [key]: value,
+      };
+    });
+  };
 
-  const enableEditCase = useMemo(() => {
-    const caseIdParam = caseId ? caseId : currentCaseId;
-    if (adminRole.includes(userRole)) {
-      return true;
-    }
-    // allow internal user to create new case
-    if (userInternal && !caseIdParam) {
-      return true;
-    }
-    // check user access
-    const userPermission = userCaseAccess.find(
-      (a) => a.case === parseInt(caseIdParam)
-    )?.permission;
-    // allow internal user case owner to edit case
-    if (userInternal && currentCase?.created_by === userEmail) {
-      return true;
-    }
-    if ((userInternal && !userPermission) || userPermission === "view") {
+  // check for enableEditCase
+  useEffect(() => {
+    const checkEnableEditCase = () => {
+      if (adminRole.includes(userState?.role)) {
+        return true;
+      }
+      // allow internal user to create new case
+      if (userState?.internal_user && !caseId) {
+        return true;
+      }
+      // check user access
+      const userPermission = userState.case_access.find(
+        (a) => a.case === parseInt(caseId)
+      )?.permission;
+      // allow internal user case owner to edit case
+      if (
+        userState?.internal_user &&
+        currentCase?.created_by === userState?.email
+      ) {
+        return true;
+      }
+      if (
+        (userState?.internal_user && !userPermission) ||
+        userPermission === "view"
+      ) {
+        return false;
+      }
+      if (userPermission === "edit") {
+        return true;
+      }
       return false;
-    }
-    if (userPermission === "edit") {
-      return true;
-    }
-    return false;
+    };
+    CaseUIState.update((s) => ({
+      ...s,
+      general: {
+        ...s.general,
+        enableEditCase: checkEnableEditCase,
+      },
+    }));
   }, [
     caseId,
-    currentCaseId,
-    userRole,
-    userEmail,
-    userCaseAccess,
-    userInternal,
+    userState?.internal_user,
+    userState?.email,
+    userState?.case_access,
+    userState?.role,
     currentCase?.created_by,
   ]);
 
+  // Fetch case details
   useEffect(() => {
-    if (caseId && caseData.length) {
-      setFinished(["Case Profile", "Income Driver Data Entry"]);
-    }
-  }, [caseData, caseId]);
-
-  const totalIncomeQuestion = useMemo(() => {
-    const qs = questionGroups.map((group) => {
-      if (!group) {
-        return [];
-      }
-      const questions = flatten(group.questions).filter((q) => !q.parent);
-      const commodity = commodityList.find(
-        (c) => c.commodity === group.commodity_id
-      );
-      return questions.map((q) => `${commodity.case_commodity}-${q.id}`);
-    });
-    return qs.flatMap((q) => q);
-  }, [questionGroups, commodityList]);
-
-  const costQuestions = useMemo(() => {
-    const qs = questionGroups.map((group) => {
-      if (!group) {
-        return [];
-      }
-      const questions = flatten(group.questions).filter((q) =>
-        q.text.toLowerCase().includes("cost")
-      );
-      return questions.map((q) => ({
-        ...q,
-        commodityId: group.commodity_id,
-      }));
-    });
-    return qs.flatMap((q) => q);
-  }, [questionGroups]);
-
-  const flattenedQuestionGroups = useMemo(() => {
-    const qg = questionGroups.map((group) => {
-      const questions = group ? flatten(group.questions) : [];
-      return questions.map((q) => ({
-        ...q,
-        commodityId: group.commodity_id,
-      }));
-    });
-    return qg.flatMap((q) => q);
-  }, [questionGroups]);
-
-  const dashboardData = useMemo(() => {
-    const mappedData = caseData.map((d) => {
-      const answers = Object.keys(d.answers).map((k) => {
-        const [dataType, caseCommodityId, questionId] = k.split("-");
-        const commodity = commodityList.find(
-          (x) => x.case_commodity === parseInt(caseCommodityId)
-        );
-        const commodityId = commodity.commodity;
-        const commodityFocus =
-          commodity.commodity_type === "focus" ? true : false;
-        const totalCommodityQuestion = questionGroups
-          .map((group) => {
-            if (!group) {
-              return [];
-            }
-            const questions = flatten(group.questions).filter(
-              (q) => !q.parent && q.question_type === "aggregator"
-            );
-            return questions;
-          })
-          .flatMap((q) => q);
-
-        const totalCommodityValue = totalCommodityQuestion.find(
-          (q) => q.id === parseInt(questionId)
-        );
-        const cost = costQuestions.find(
-          (q) =>
-            q.id === parseInt(questionId) &&
-            q.parent === 1 &&
-            q.commodityId === commodityId
-        );
-        const question = flattenedQuestionGroups.find(
-          (q) => q.id === parseInt(questionId) && q.commodityId === commodityId
-        );
-        const totalOtherDiversifiedIncome =
-          question?.question_type === "diversified" && !question.parent;
-        return {
-          name: dataType,
-          question: question,
-          commodityFocus: commodityFocus,
-          commodityType: commodity.commodity_type,
-          caseCommodityId: parseInt(caseCommodityId),
-          commodityId: parseInt(commodityId),
-          commodityName: commodityNames[commodityId],
-          questionId: parseInt(questionId),
-          value: d.answers?.[k] || 0, // if not found set as 0 to calculated inside array reduce
-          isTotalFeasibleFocusIncome:
-            totalCommodityValue && commodityFocus && dataType === "feasible"
-              ? true
-              : false,
-          isTotalFeasibleDiversifiedIncome:
-            totalCommodityValue && !commodityFocus && dataType === "feasible"
-              ? true
-              : totalOtherDiversifiedIncome && dataType === "feasible"
-              ? true
-              : false,
-          isTotalCurrentFocusIncome:
-            totalCommodityValue && commodityFocus && dataType === "current"
-              ? true
-              : false,
-          isTotalCurrentDiversifiedIncome:
-            totalCommodityValue && !commodityFocus && dataType === "current"
-              ? true
-              : totalOtherDiversifiedIncome && dataType === "current"
-              ? true
-              : false,
-          feasibleCost:
-            cost && d.answers[k] && dataType === "feasible" ? true : false,
-          currentCost:
-            cost && d.answers[k] && dataType === "current" ? true : false,
-          costName: cost ? cost.text : "",
-        };
-      });
-      const totalCostFeasible = answers
-        .filter((a) => a.feasibleCost)
-        .reduce((acc, curr) => acc + curr.value, 0);
-      const totalCostCurrent = answers
-        .filter((a) => a.currentCost)
-        .reduce((acc, curr) => acc + curr.value, 0);
-      const totalFeasibleFocusIncome = answers
-        .filter((a) => a.isTotalFeasibleFocusIncome)
-        .reduce((acc, curr) => acc + curr.value, 0);
-      const totalFeasibleDiversifiedIncome = answers
-        .filter((a) => a.isTotalFeasibleDiversifiedIncome)
-        .reduce((acc, curr) => acc + curr.value, 0);
-      const totalCurrentFocusIncome = answers
-        .filter((a) => a.isTotalCurrentFocusIncome)
-        .reduce((acc, curr) => acc + curr.value, 0);
-      const totalCurrentDiversifiedIncome = answers
-        .filter((a) => a.isTotalCurrentDiversifiedIncome)
-        .reduce((acc, curr) => acc + curr.value, 0);
-
-      const focusCommodityAnswers = answers
-        .filter((a) => a.commodityType === "focus")
-        .map((a) => ({
-          id: `${a.name}-${a.questionId}`,
-          value: a.value,
-        }));
-
-      const currentRevenueFocusCommodity = getFunctionDefaultValue(
-        { default_value: customFormula.revenue_focus_commodity },
-        "current",
-        focusCommodityAnswers
-      );
-      const feasibleRevenueFocusCommodity = getFunctionDefaultValue(
-        { default_value: customFormula.revenue_focus_commodity },
-        "feasible",
-        focusCommodityAnswers
-      );
-      const currentFocusCommodityCoP = getFunctionDefaultValue(
-        { default_value: customFormula.focus_commodity_cost_of_production },
-        "current",
-        focusCommodityAnswers
-      );
-      const feasibleFocusCommodityCoP = getFunctionDefaultValue(
-        { default_value: customFormula.focus_commodity_cost_of_production },
-        "feasible",
-        focusCommodityAnswers
-      );
-
-      return {
-        ...d,
-        total_feasible_cost: -totalCostFeasible,
-        total_current_cost: -totalCostCurrent,
-        total_feasible_focus_income: totalFeasibleFocusIncome,
-        total_feasible_diversified_income: totalFeasibleDiversifiedIncome,
-        total_current_focus_income: totalCurrentFocusIncome,
-        total_current_diversified_income: totalCurrentDiversifiedIncome,
-        total_current_revenue_focus_commodity: currentRevenueFocusCommodity,
-        total_feasible_revenue_focus_commodity: feasibleRevenueFocusCommodity,
-        total_current_focus_commodity_cost_of_production:
-          currentFocusCommodityCoP,
-        total_feasible_focus_commodity_cost_of_production:
-          feasibleFocusCommodityCoP,
-        answers: answers,
-      };
-    });
-    return orderBy(mappedData, ["id", "key"]);
-  }, [
-    caseData,
-    commodityList,
-    costQuestions,
-    questionGroups,
-    flattenedQuestionGroups,
-  ]);
-
-  useEffect(() => {
-    if (caseId && isEmpty(formData) && !loading) {
-      setCurrentCaseId(caseId);
+    if (caseId && currentCase.id !== parseInt(caseId)) {
       setLoading(true);
+      // prevent fetch the data when it's already defined
       api
         .get(`case/${caseId}`)
         .then((res) => {
           const { data } = res;
-          setCurrentCase(data);
-          setCaseTitle(data.name);
-          setCaseDescription(data.description);
-          // set other commodities type
-          setInitialCommodityTypes(
-            data.case_commodities.map((x) => x.commodity_type)
-          );
-          // set commodity list and order by id to match
-          // focus, secondary, tertiary, diversified order
-          const commodities = commodityOrder
-            .map((co) => {
-              const temp = data.case_commodities.find(
-                (d) => d.commodity_type === co
-              );
-              if (!temp) {
-                return false;
-              }
-              return {
-                ...temp,
-                currency: data.currency,
-                case_commodity: temp.id,
-              };
-            })
-            .filter((x) => x);
-          setCommodityList(commodities);
-          // focus commodity
-          const focusCommodityValue = {
-            name: data.name,
-            description: data.description,
-            private: data?.private || false,
-            tags: data?.tags || [],
-            country: data.country,
-            focus_commodity: data.focus_commodity,
-            year: dayjs(String(data.year)),
-            currency: data.currency,
-            area_size_unit: data.area_size_unit,
-            volume_measurement_unit: data.volume_measurement_unit,
-            reporting_period: data.reporting_period,
-            company: data.company,
-          };
-          // secondary
-          let secondaryCommodityValue = {};
-          const secondaryCommodityTmp = data.case_commodities.find(
-            (val) => val.commodity_type === "secondary"
-          );
-          if (secondaryCommodityTmp) {
-            Object.keys(secondaryCommodityTmp).forEach((key) => {
-              let val = secondaryCommodityTmp[key];
-              if (key === "breakdown") {
-                val = val ? 1 : 0;
-              }
-              secondaryCommodityValue = {
-                ...secondaryCommodityValue,
-                [`1-${key}`]: val,
-              };
-            });
-          }
-          // tertiary
-          let tertiaryCommodityValue = {};
-          const tertiaryCommodityTmp = data.case_commodities.find(
-            (val) => val.commodity_type === "tertiary"
-          );
-          if (tertiaryCommodityTmp) {
-            Object.keys(tertiaryCommodityTmp).forEach((key) => {
-              let val = tertiaryCommodityTmp[key];
-              if (key === "breakdown") {
-                val = val ? 1 : 0;
-              }
-              tertiaryCommodityValue = {
-                ...tertiaryCommodityValue,
-                [`2-${key}`]: val,
-              };
-            });
-          }
-          // set initial value
-          setFormData({
-            ...focusCommodityValue,
-            ...secondaryCommodityValue,
-            ...tertiaryCommodityValue,
-          });
+          CurrentCaseState.update((s) => ({ ...s, ...data }));
+          PrevCaseState.update((s) => ({ ...s, ...data }));
+          // set default active segmentId
+          CaseUIState.update((s) => ({
+            ...s,
+            general: {
+              ...s.general,
+              activeSegmentId: data.segments?.[0]?.id || null,
+            },
+          }));
         })
         .catch((e) => {
-          console.error("Error fetching case profile data", e);
+          console.error("Error fetching case data", e);
           navigate("/not-found");
         })
         .finally(() => {
           setTimeout(() => {
             setLoading(false);
-            setFinished(["Case Profile"]);
           }, 100);
         });
     }
-  }, [caseId, formData, loading, navigate]);
+  }, [caseId, currentCase.id, navigate]);
 
-  const setActive = (selected) => {
-    if (finished.includes(selected)) {
-      setPage(selected);
-    } else {
-      const dependencies = pageDependencies[selected];
-      if (dependencies) {
-        if (dependencies.every((dependency) => finished.includes(dependency))) {
-          setPage(selected);
-        }
-      }
+  // Fetch questions for income data entry
+  useEffect(() => {
+    if (currentCase?.id && currentCase?.case_commodities?.length) {
+      const reorderedCaseCommodities = commodityOrder
+        .map((co) => {
+          const findCommodity = currentCase.case_commodities.find(
+            (cc) => cc.commodity_type === co
+          );
+          return findCommodity;
+        })
+        .filter((x) => x);
+
+      api.get(`/questions/${currentCase.id}`).then((res) => {
+        const { data } = res;
+        const incomeDataDriversTmp = [];
+        const diversifiedGroupTmp = [];
+        // regroup the questions to follow new design format
+        const questionGroupsTmp = reorderedCaseCommodities.map((cc) => {
+          const tmp = data.find((d) => d.commodity_id === cc.commodity);
+          tmp["currency"] = currentCase.currency;
+          tmp["questions"] = addLevelIntoQuestions({
+            questions: tmp.questions,
+          });
+          if (cc.commodity_type === "focus") {
+            incomeDataDriversTmp.push({
+              groupName: "Primary Commodity",
+              questionGroups: [{ ...cc, ...tmp }],
+            });
+          } else {
+            diversifiedGroupTmp.push({ ...cc, ...tmp });
+          }
+          return { ...cc, ...tmp };
+        });
+        // add diversified group
+        incomeDataDriversTmp.push({
+          groupName: "Diversified Income",
+          questionGroups: diversifiedGroupTmp,
+        });
+        // eol
+
+        // get totalIncomeQuestion
+        const qs = questionGroupsTmp.flatMap((group) => {
+          if (!group) {
+            return [];
+          }
+          const questions = flatten(group.questions).filter((q) => !q.parent);
+          // group id is case commodity id
+          return questions.map((q) => `${group.id}-${q.id}`);
+        });
+        CaseVisualState.update((s) => ({
+          ...s,
+          questionGroups: questionGroupsTmp,
+          totalIncomeQuestions: qs,
+          incomeDataDrivers: incomeDataDriversTmp,
+        }));
+        // eol
+      });
     }
-  };
+  }, [currentCase.id, currentCase.case_commodities, currentCase.currency]);
+
+  // fetch region data
+  useEffect(() => {
+    if (currentCase?.country) {
+      updateStepIncomeTargetState("regionOptionLoading", true);
+      api
+        .get(`region/options?country_id=${currentCase.country}`)
+        .then((res) => {
+          updateStepIncomeTargetState("regionOptionStatus", 200);
+          updateStepIncomeTargetState("regionOptions", res.data);
+        })
+        .catch((e) => {
+          const { status } = e.response;
+          updateStepIncomeTargetState("regionOptionStatus", status);
+          updateStepIncomeTargetState("regionOptions", []);
+        })
+        .finally(() => {
+          updateStepIncomeTargetState("regionOptionLoading", false);
+        });
+    }
+  }, [currentCase?.country]);
+
+  // generate dashboard data
+  useEffect(() => {
+    if (!isEmpty(currentCase?.segments) && !isEmpty(questionGroups)) {
+      // generate questions
+      const flattenedQuestionGroups = questionGroups.flatMap((group) => {
+        const questions = group ? flatten(group.questions) : [];
+        return questions.map((q) => ({
+          ...q,
+          commodity_id: group.commodity_id,
+        }));
+      });
+      const totalCommodityQuestions = flattenedQuestionGroups.filter(
+        (q) => q.question_type === "aggregator"
+      );
+      const costQuestions = flattenedQuestionGroups.filter((q) =>
+        q.text.toLowerCase().includes("cost")
+      );
+      // eol generate questions
+      const mappedData = currentCase.segments.map((segment) => {
+        const answers = isEmpty(segment?.answers) ? {} : segment.answers;
+        const remappedAnswers = Object.keys(answers).map((key) => {
+          const [fieldKey, caseCommodityId, questionId] = key.split("-");
+          const commodity = currentCase.case_commodities.find(
+            (cc) => cc.id === parseInt(caseCommodityId)
+          );
+          const commodityFocus = commodity.commodity_type === "focus";
+          const totalCommodityValue = totalCommodityQuestions.find(
+            (q) => q.id === parseInt(questionId)
+          );
+          const cost = costQuestions.find(
+            (q) =>
+              q.id === parseInt(questionId) &&
+              q.parent === 1 &&
+              q.commodityId === commodity.commodity
+          );
+          const question = flattenedQuestionGroups.find(
+            (q) =>
+              q.id === parseInt(questionId) &&
+              q.commodity_id === commodity.commodity
+          );
+          const totalOtherDiversifiedIncome =
+            question?.question_type === "diversified" && !question.parent;
+          return {
+            name: fieldKey,
+            question: question,
+            commodityFocus: commodityFocus,
+            commodityType: commodity.commodity_type,
+            caseCommodityId: parseInt(caseCommodityId),
+            commodityId: commodity.commodity,
+            commodityName: commodityNames[commodity.commodity],
+            questionId: parseInt(questionId),
+            value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
+            isTotalFeasibleFocusIncome:
+              totalCommodityValue && commodityFocus && fieldKey === "feasible"
+                ? true
+                : false,
+            isTotalFeasibleDiversifiedIncome:
+              totalCommodityValue && !commodityFocus && fieldKey === "feasible"
+                ? true
+                : totalOtherDiversifiedIncome && fieldKey === "feasible"
+                ? true
+                : false,
+            isTotalCurrentFocusIncome:
+              totalCommodityValue && commodityFocus && fieldKey === "current"
+                ? true
+                : false,
+            isTotalCurrentDiversifiedIncome:
+              totalCommodityValue && !commodityFocus && fieldKey === "current"
+                ? true
+                : totalOtherDiversifiedIncome && fieldKey === "current"
+                ? true
+                : false,
+            feasibleCost:
+              cost && answers[key] && fieldKey === "feasible" ? true : false,
+            currentCost:
+              cost && answers[key] && fieldKey === "current" ? true : false,
+            costName: cost ? cost.text : "",
+          };
+        });
+
+        const totalCurrentIncomeAnswer = totalIncomeQuestions
+          .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
+          .filter((a) => a)
+          .reduce((acc, a) => acc + a, 0);
+        const totalFeasibleIncomeAnswer = totalIncomeQuestions
+          .map((qs) => segment?.answers?.[`feasible-${qs}`] || 0)
+          .filter((a) => a)
+          .reduce((acc, a) => acc + a, 0);
+
+        const totalCostFeasible = remappedAnswers
+          .filter((a) => a.feasibleCost)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalCostCurrent = remappedAnswers
+          .filter((a) => a.currentCost)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalFeasibleFocusIncome = remappedAnswers
+          .filter((a) => a.isTotalFeasibleFocusIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalFeasibleDiversifiedIncome = remappedAnswers
+          .filter((a) => a.isTotalFeasibleDiversifiedIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalCurrentFocusIncome = remappedAnswers
+          .filter((a) => a.isTotalCurrentFocusIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+        const totalCurrentDiversifiedIncome = remappedAnswers
+          .filter((a) => a.isTotalCurrentDiversifiedIncome)
+          .reduce((acc, curr) => acc + curr.value, 0);
+
+        const focusCommodityAnswers = remappedAnswers
+          .filter((a) => a.commodityType === "focus")
+          .map((a) => ({
+            id: `${a.name}-${a.questionId}`,
+            value: a.value,
+          }));
+
+        const currentRevenueFocusCommodity = getFunctionDefaultValue(
+          { default_value: customFormula.revenue_focus_commodity },
+          "current",
+          focusCommodityAnswers
+        );
+        const feasibleRevenueFocusCommodity = getFunctionDefaultValue(
+          { default_value: customFormula.revenue_focus_commodity },
+          "feasible",
+          focusCommodityAnswers
+        );
+        const currentFocusCommodityCoP = getFunctionDefaultValue(
+          { default_value: customFormula.focus_commodity_cost_of_production },
+          "current",
+          focusCommodityAnswers
+        );
+        const feasibleFocusCommodityCoP = getFunctionDefaultValue(
+          { default_value: customFormula.focus_commodity_cost_of_production },
+          "feasible",
+          focusCommodityAnswers
+        );
+
+        return {
+          ...segment,
+          total_current_income: totalCurrentIncomeAnswer,
+          total_feasible_income: totalFeasibleIncomeAnswer,
+          total_feasible_cost: -totalCostFeasible,
+          total_current_cost: -totalCostCurrent,
+          total_feasible_focus_income: totalFeasibleFocusIncome,
+          total_feasible_diversified_income: totalFeasibleDiversifiedIncome,
+          total_current_focus_income: totalCurrentFocusIncome,
+          total_current_diversified_income: totalCurrentDiversifiedIncome,
+          total_current_revenue_focus_commodity: currentRevenueFocusCommodity,
+          total_feasible_revenue_focus_commodity: feasibleRevenueFocusCommodity,
+          total_current_focus_commodity_cost_of_production:
+            currentFocusCommodityCoP,
+          total_feasible_focus_commodity_cost_of_production:
+            feasibleFocusCommodityCoP,
+          answers: remappedAnswers,
+        };
+      });
+      CaseVisualState.update((s) => ({
+        ...s,
+        dashboardData: orderBy(mappedData, ["id"]),
+      }));
+    }
+  }, [
+    currentCase.segments,
+    currentCase.case_commodities,
+    questionGroups,
+    totalIncomeQuestions,
+  ]);
 
   return (
-    <ContentLayout
-      breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
-        { title: "Cases", href: "/cases" },
-        { title: caseTitle },
-      ]}
-      breadcrumbRightContent={
-        currentCase.updated_by
-          ? `Last update by ${currentCase?.updated_by} ${
-              currentCase?.updated_at
-                ? `on ${new Date(currentCase?.updated_at).toLocaleString(
-                    "en-US",
-                    options
-                  )}`
-                : ""
-            }`
-          : null
-      }
-      wrapperId="case"
-    >
-      {loading ? (
-        <div className="loading-container">
-          <Spin />
-        </div>
-      ) : (
-        <Row gutter={[16, 16]} className="case-content">
-          <SideMenu active={page} setActive={setActive} finished={finished} />
-          {/* Banner for Viewer */}
-          {!enableEditCase && (
-            <Col span={24} style={{ paddingTop: 5 }}>
-              <Alert
-                type="warning"
-                message="You are a viewer for this cases. You are able to view the data to encourage cross-learning and consultation . Please contact the case owner before downloading any data from the case."
-              />
-            </Col>
-          )}
-          {/* EOL Banner for Viewer */}
-          {showCaseTitle && (
-            <Col span={24}>
-              <Card className="case-title-wrapper" id="case-title">
-                <h2>{caseTitle}</h2>
-                {caseDescription ? <p>{caseDescription}</p> : null}
-                <div className="case-title-icon">
-                  <CaseTitleIcon height={110} />
-                </div>
-              </Card>
-            </Col>
-          )}
-          <Col span={24}>
-            {page === "Case Profile" && (
-              <CaseProfile
-                setCaseTitle={setCaseTitle}
-                setCaseDescription={setCaseDescription}
-                formData={formData}
-                setFormData={setFormData}
-                finished={finished}
-                setFinished={setFinished}
-                setPage={setPage}
-                commodityList={commodityList}
-                setCommodityList={setCommodityList}
-                currentCaseId={currentCaseId}
-                setCurrentCaseId={setCurrentCaseId}
-                initialOtherCommodityTypes={initialOtherCommodityTypes}
-                setCurrentCase={setCurrentCase}
-                currentCase={currentCase}
-                enableEditCase={enableEditCase}
-              />
-            )}
-            {page === "Income Driver Data Entry" && (
-              <IncomeDriverDataEntry
-                commodityList={commodityList}
-                currentCaseId={currentCaseId}
-                currentCase={currentCase}
-                setCaseData={setCaseData}
-                totalIncomeQuestion={totalIncomeQuestion}
-                questionGroups={questionGroups}
-                setQuestionGroups={setQuestionGroups}
-                dashboardData={dashboardData}
-                finished={finished}
-                setFinished={setFinished}
-                setPage={setPage}
-                enableEditCase={enableEditCase}
-              />
-            )}
-            {page === "Income Driver Dashboard" && (
-              <IncomeDriverDashboard
-                questionGroups={questionGroups}
-                commodityList={commodityList}
-                currentCaseId={currentCaseId}
-                currentCase={currentCase}
-                dashboardData={dashboardData}
-                setPage={setPage}
-                enableEditCase={enableEditCase}
-              />
-            )}
-          </Col>
-        </Row>
-      )}
-    </ContentLayout>
+    <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
+      {loading ? <Loading /> : renderPage(step, navigate)}
+    </CaseWrapper>
   );
 };
 

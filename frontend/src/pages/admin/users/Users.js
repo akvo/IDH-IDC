@@ -14,7 +14,7 @@ import {
   List,
   message,
 } from "antd";
-import { selectProps } from "../../cases/components";
+import { selectProps } from "../../old-cases/components";
 import "./user.scss";
 
 const perPage = 10;
@@ -131,7 +131,7 @@ const Users = () => {
             ),
             okText: "Go to cases",
             onOk: () => {
-              const URL = `/cases?owner=${user.email}`;
+              const URL = `/old-cases?owner=${user.email}`;
               window.open(URL, "_blank");
             },
             cancelText: "Cancel",

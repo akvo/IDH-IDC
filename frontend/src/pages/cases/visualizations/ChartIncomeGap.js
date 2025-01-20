@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
+import { Card, Col, Row, Space } from "antd";
+import { VisualCardWrapper } from "../components";
+import { CaseVisualState, CurrentCaseState } from "../store";
 import Chart from "../../../components/chart";
-import { getColumnStackBarOptions } from ".";
+import { getColumnStackBarOptions } from "../../../components/chart/lib";
 
 const seriesTmp = [
   {
@@ -41,7 +44,10 @@ const seriesTmp = [
   },
 ];
 
-const ChartIncomeGap = ({ dashboardData, currentCase, showLabel = false }) => {
+const ChartIncomeGap = () => {
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+
   const chartData = useMemo(() => {
     return seriesTmp.map((tmp) => {
       const data = dashboardData.map((d) => {
@@ -73,17 +79,38 @@ const ChartIncomeGap = ({ dashboardData, currentCase, showLabel = false }) => {
   }, [dashboardData]);
 
   return (
-    <Chart
-      wrapper={false}
-      type="BAR"
-      loading={!chartData.length}
-      override={getColumnStackBarOptions({
-        series: chartData,
-        origin: dashboardData,
-        yAxis: { name: `Income (${currentCase.currency})` },
-        showLabel: showLabel,
-      })}
-    />
+    <Card className="card-visual-wrapper">
+      <Row gutter={[20, 20]} align="middle">
+        <Col span={16}>
+          <VisualCardWrapper title="Income gap" bordered>
+            <Chart
+              wrapper={false}
+              type="BAR"
+              loading={!chartData.length}
+              override={getColumnStackBarOptions({
+                series: chartData,
+                origin: dashboardData,
+                yAxis: { name: `Income (${currentCase.currency})` },
+                // showLabel: showLabel,
+              })}
+            />
+          </VisualCardWrapper>
+        </Col>
+        <Col span={8}>
+          <Space direction="vertical">
+            <div className="section-title">
+              What is the current income of the farmers and their income gap?
+            </div>
+            <div className="section-description">
+              This graph helps you explore the composition of household income
+              and identify the gap between current income and the income target.
+              Use it to uncover variations across segments and consider where
+              tailored strategies might be needed.
+            </div>
+          </Space>
+        </Col>
+      </Row>
+    </Card>
   );
 };
 

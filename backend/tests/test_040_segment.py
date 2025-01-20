@@ -50,6 +50,9 @@ class TestSegmentRoute:
                 "target": 1000.0,
                 "adult": 2.0,
                 "child": 3.0,
+                "number_of_farmers": None,
+                "answers": {},
+                "benchmark": None,
             }
         ]
         # with admin user cred
@@ -102,6 +105,9 @@ class TestSegmentRoute:
                 "target": 2000.0,
                 "adult": 3.0,
                 "child": 2.0,
+                "number_of_farmers": None,
+                "answers": {},
+                "benchmark": None,
             },
             {
                 "id": res[1]["id"],
@@ -111,6 +117,14 @@ class TestSegmentRoute:
                 "target": 3000.0,
                 "adult": 4.0,
                 "child": 2.0,
+                "number_of_farmers": None,
+                "answers": {
+                    "current-1-1": 10000.0,
+                    "current-1-2": None,
+                    "feasible-1-1": None,
+                    "feasible-1-2": None,
+                },
+                "benchmark": None,
             },
         ]
 
@@ -152,6 +166,9 @@ class TestSegmentRoute:
                 "target": 2000.0,
                 "adult": 4.0,
                 "child": 2.0,
+                "number_of_farmers": None,
+                "answers": {},
+                "benchmark": None,
             }
         ]
         # with admin user cred
@@ -222,6 +239,9 @@ class TestSegmentRoute:
                 "target": 2000.0,
                 "adult": 5.0,
                 "child": 0.0,
+                "number_of_farmers": None,
+                "answers": {},
+                "benchmark": None,
             },
             {
                 "id": 2,
@@ -231,6 +251,9 @@ class TestSegmentRoute:
                 "target": 2000.0,
                 "adult": 6.0,
                 "child": 0.0,
+                "number_of_farmers": None,
+                "answers": {},
+                "benchmark": None,
             },
             {
                 "id": 3,
@@ -240,5 +263,15 @@ class TestSegmentRoute:
                 "target": 3000.0,
                 "adult": 4.0,
                 "child": 2.0,
+                "number_of_farmers": None,
+                "answers": {
+                    "current-1-1": 10000.0,
+                    "current-1-2": None,
+                    "current-1-3": None,
+                    "feasible-1-1": None,
+                    "feasible-1-2": None,
+                    "feasible-1-3": 500.0,
+                },
+                "benchmark": None,
             },
         ]
