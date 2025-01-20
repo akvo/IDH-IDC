@@ -66,7 +66,6 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const incomeDataDrivers = CaseVisualState.useState(
     (s) => s.incomeDataDrivers
   );
-  // TODO :: Wrong calculation on my totalIncome
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -86,6 +85,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
           .map((prev) => {
             prev = {
               ...prev,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(prev?.answers || {}),
             };
             let findPayload = currentCase.segments.find(
@@ -97,6 +97,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
             }
             findPayload = {
               ...findPayload,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(findPayload?.answers || {}),
             };
             const equal = isEqual(

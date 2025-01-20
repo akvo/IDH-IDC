@@ -363,7 +363,6 @@ const Case = () => {
         q.text.toLowerCase().includes("cost")
       );
       // eol generate questions
-
       const mappedData = currentCase.segments.map((segment) => {
         const answers = isEmpty(segment?.answers) ? {} : segment.answers;
         const remappedAnswers = Object.keys(answers).map((key) => {
@@ -379,11 +378,12 @@ const Case = () => {
             (q) =>
               q.id === parseInt(questionId) &&
               q.parent === 1 &&
-              q.commodityId === commodity.id
+              q.commodityId === commodity.commodity
           );
           const question = flattenedQuestionGroups.find(
             (q) =>
-              q.id === parseInt(questionId) && q.commodity_id === commodity.id
+              q.id === parseInt(questionId) &&
+              q.commodity_id === commodity.commodity
           );
           const totalOtherDiversifiedIncome =
             question?.question_type === "diversified" && !question.parent;
@@ -393,8 +393,8 @@ const Case = () => {
             commodityFocus: commodityFocus,
             commodityType: commodity.commodity_type,
             caseCommodityId: parseInt(caseCommodityId),
-            commodityId: commodity.id,
-            commodityName: commodityNames[commodity.id],
+            commodityId: commodity.commodity,
+            commodityName: commodityNames[commodity.commodity],
             questionId: parseInt(questionId),
             value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
             isTotalFeasibleFocusIncome:
@@ -497,7 +497,7 @@ const Case = () => {
             currentFocusCommodityCoP,
           total_feasible_focus_commodity_cost_of_production:
             feasibleFocusCommodityCoP,
-          answers: answers,
+          answers: remappedAnswers,
         };
       });
       CaseVisualState.update((s) => ({

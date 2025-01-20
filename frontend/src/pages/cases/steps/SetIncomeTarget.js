@@ -314,6 +314,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
           .map((prev) => {
             prev = {
               ...prev,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(prev?.answers || {}),
             };
             let findPayload = currentCase.segments.find(
@@ -325,6 +326,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
             }
             findPayload = {
               ...findPayload,
+              benchmark: null, // set to null
               answers: removeUndefinedObjectValue(findPayload?.answers || {}),
             };
             const equal = isEqual(

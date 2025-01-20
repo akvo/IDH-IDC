@@ -346,7 +346,7 @@ const EnterIncomeDataDriver = ({
     }
 
     updateCurrentSegmentState({
-      answers: { ...segment?.answers, ...allValues },
+      answers: { ...segment?.answers, ...form.getFieldsValue() },
     });
   };
 
@@ -447,9 +447,9 @@ const EnterIncomeDataDriver = ({
       )}
       <Col span={24}>
         <Form
+          form={form}
           name={`enter-income-data-${segment.id}-${group.id}`}
           layout="vertical"
-          form={form}
           onValuesChange={onValuesChange}
           initialValues={initialDriverValues}
         >

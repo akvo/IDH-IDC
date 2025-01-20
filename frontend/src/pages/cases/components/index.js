@@ -6,3 +6,5 @@ export { default as SegmentForm } from "./SegmentForm";
 export { default as CaseForm } from "./CaseForm";
 export { default as EnterIncomeDataForm } from "./EnterIncomeDataForm";
 export { default as VisualCardWrapper } from "./VisualCardWrapper";
+export { default as SegmentSelector } from "./SegmentSelector";
+export { default as IncomeDriversDropdown } from "./IncomeDriversDropdown";
