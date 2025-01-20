@@ -108,10 +108,12 @@ const CaseWrapper = ({ children, step, caseId, currentCase }) => {
                 }
               >
                 {currentCase.segments.filter((s) => s.id).length ? (
-                  React.cloneElement(children, {
-                    setbackfunction: (fn) => (backFunctionRef.current = fn),
-                    setnextfunction: (fn) => (nextFunctionRef.current = fn),
-                  })
+                  React.isValidElement(children) ? (
+                    React.cloneElement(children, {
+                      setbackfunction: (fn) => (backFunctionRef.current = fn),
+                      setnextfunction: (fn) => (nextFunctionRef.current = fn),
+                    })
+                  ) : null
                 ) : (
                   // Show alert if current case doesn't have any segments
                   <Alert

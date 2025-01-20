@@ -1,28 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React from "react";
 import { Row, Col, Card, Space, Button } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { SegmentSelector, IncomeDriversDropdown } from "../components";
-import { CaseVisualState } from "../store";
 
-const VisualCardWrapper = ({
-  children,
-  title,
-  bordered = false,
-  showSegmentSelector = false,
-  showIncomeDriversDropdown = false,
-}) => {
-  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
-
-  const [selectedSegment, setSelectedSegment] = useState(null);
-  const [selectedDriver, setSelectedDriver] = useState(null);
-
-  const selectedSegmentData = useMemo(() => {
-    if (!selectedSegment || !dashboardData.length) {
-      return null;
-    }
-    return dashboardData.find((d) => d.id === selectedSegment);
-  }, [dashboardData, selectedSegment]);
-
+const VisualCardWrapper = ({ children, title, bordered = false }) => {
   return (
     <Card
       className={`visual-card-wrapper ${bordered ? "bordered" : ""}`}
@@ -44,22 +24,7 @@ const VisualCardWrapper = ({
         </Row>
       }
     >
-      <Row gutter={[20, 20]}>
-        {showSegmentSelector && (
-          <Col span={24}>
-            <SegmentSelector
-              selectedSegment={selectedSegment}
-              setSelectedSegment={setSelectedSegment}
-            />
-          </Col>
-        )}
-        {showIncomeDriversDropdown && (
-          <Col span={24}>
-            <IncomeDriversDropdown selectedSegmentData={selectedSegmentData} />
-          </Col>
-        )}
-        <Col span={24}>{children}</Col>
-      </Row>
+      {children}
     </Card>
   );
 };

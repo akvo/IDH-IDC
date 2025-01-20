@@ -9,7 +9,7 @@ const SegmentSelector = ({ selectedSegment, setSelectedSegment }) => {
     if (!selectedSegment && dashboardData?.length > 0) {
       setSelectedSegment(dashboardData[0].id);
     }
-  }, [selectedSegment, dashboardData]);
+  }, [selectedSegment, dashboardData, setSelectedSegment]);
 
   const handleChangeSegmentSelector = (e) => {
     const value = e.target.value;

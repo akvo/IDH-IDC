@@ -3,7 +3,7 @@ import { Card, Col, Row, Space } from "antd";
 import { VisualCardWrapper } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import Chart from "../../../components/chart";
-import { getColumnStackBarOptions } from "../../old-cases/visualizations";
+import { getColumnStackBarOptions } from "../../../components/chart/lib";
 
 const seriesTmp = [
   {
