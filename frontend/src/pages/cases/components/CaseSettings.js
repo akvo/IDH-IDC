@@ -274,6 +274,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       onOk={() => form.submit()}
       okButtonProps={{
         loading: isSaving,
+        disabled: !enableEditCase,
       }}
       okText="Save case"
       onCancel={handleCancel}

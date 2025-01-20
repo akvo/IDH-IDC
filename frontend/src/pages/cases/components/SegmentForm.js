@@ -1,9 +1,13 @@
 import React from "react";
 import { Form, Card, Button, Row, Col, Input, InputNumber } from "antd";
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import { CaseUIState } from "../store";
+
+const MAX_SEGMENT = 5;
 
 const SegmentForm = () => {
-  const MAX_SEGMENT = 5;
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
+
   return (
     <Form.List name="segments">
       {(fields, { add, remove }) => (
@@ -19,6 +23,7 @@ const SegmentForm = () => {
                     type="icon"
                     icon={<CloseOutlined />}
                     onClick={() => remove(name)}
+                    disabled={!enableEditCase}
                   />
                 ) : null
               }
@@ -39,7 +44,11 @@ const SegmentForm = () => {
                       },
                     ]}
                   >
-                    <Input width="100%" placeholder="Segment name" />
+                    <Input
+                      width="100%"
+                      placeholder="Segment name"
+                      disabled={!enableEditCase}
+                    />
                   </Form.Item>
                 </Col>
                 <Col span={10}>
@@ -48,6 +57,7 @@ const SegmentForm = () => {
                       placeholder="Number of farmers"
                       controls={false}
                       style={{ width: "100%" }}
+                      disabled={!enableEditCase}
                     />
                   </Form.Item>
                 </Col>
@@ -61,6 +71,7 @@ const SegmentForm = () => {
                 onClick={() => add()}
                 block
                 icon={<PlusOutlined />}
+                disabled={!enableEditCase}
               >
                 Add another segment
               </Button>

@@ -10,6 +10,7 @@ import {
   PrevCaseState,
   CaseVisualState,
 } from "./store";
+import { UserState } from "../../store";
 import {
   SetIncomeTarget,
   EnterIncomeData,
@@ -21,6 +22,7 @@ import { EnterIncomeDataVisual } from "./visualizations";
 import "./steps/steps.scss";
 import { isEmpty, orderBy } from "lodash";
 import { customFormula } from "../../lib/formula";
+import { adminRole } from "../../store/static";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const masterCommodityCategories = window.master?.commodity_categories || [];
@@ -171,6 +173,7 @@ const Case = () => {
   const { questionGroups, totalIncomeQuestions } = CaseVisualState.useState(
     (s) => s
   );
+  const userState = UserState.useState((s) => s);
 
   const updateStepIncomeTargetState = (key, value) => {
     CaseUIState.update((s) => {
@@ -180,6 +183,54 @@ const Case = () => {
       };
     });
   };
+
+  // check for enableEditCase
+  useEffect(() => {
+    const checkEnableEditCase = () => {
+      if (adminRole.includes(userState?.role)) {
+        return true;
+      }
+      // allow internal user to create new case
+      if (userState?.internal_user && !caseId) {
+        return true;
+      }
+      // check user access
+      const userPermission = userState.case_access.find(
+        (a) => a.case === parseInt(caseId)
+      )?.permission;
+      // allow internal user case owner to edit case
+      if (
+        userState?.internal_user &&
+        currentCase?.created_by === userState?.email
+      ) {
+        return true;
+      }
+      if (
+        (userState?.internal_user && !userPermission) ||
+        userPermission === "view"
+      ) {
+        return false;
+      }
+      if (userPermission === "edit") {
+        return true;
+      }
+      return false;
+    };
+    CaseUIState.update((s) => ({
+      ...s,
+      general: {
+        ...s.general,
+        enableEditCase: checkEnableEditCase,
+      },
+    }));
+  }, [
+    caseId,
+    userState?.internal_user,
+    userState?.email,
+    userState?.case_access,
+    userState?.role,
+    currentCase?.created_by,
+  ]);
 
   // Fetch case details
   useEffect(() => {

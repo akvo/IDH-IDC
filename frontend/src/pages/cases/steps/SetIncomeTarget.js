@@ -560,7 +560,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 },
               ]}
             >
-              <Radio.Group options={yesNoOptions} />
+              <Radio.Group options={yesNoOptions} disabled={!enableEditCase} />
             </Form.Item>
           </Col>
           {renderTargetInput(setTargetYourself)}
