@@ -219,7 +219,8 @@
   }
 }
 
-#understand-income-gap {
+#understand-income-gap,
+#assess-impact-mitigation-strategies {
   margin-bottom: 100px;
 
   .header-wrapper {
@@ -332,6 +333,28 @@
           font-style: normal;
           font-weight: 400;
           line-height: 20px;
+        }
+      }
+    }
+  }
+}
+
+#assess-impact-mitigation-strategies {
+  .ant-carousel {
+    .slick-dots {
+      li {
+        width: fit-content;
+        button {
+          mix-blend-mode: multiply;
+          border-radius: 4px;
+          background: #818080;
+          width: 8px;
+          height: 8px;
+        }
+        &.slick-active {
+          button {
+            background: #01625f !important;
+          }
         }
       }
     }
