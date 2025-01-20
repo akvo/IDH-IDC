@@ -1,0 +1,366 @@
+@import "../../../variables.scss";
+
+.step-segment-tabs-container {
+  &.ant-tabs {
+    .ant-tabs-nav {
+      margin: 0;
+
+      .ant-tabs-nav-wrap {
+        .ant-tabs-nav-list {
+          .ant-tabs-tab {
+            border-radius: 15px 15px 0 0 !important;
+            background: #e1e0e0;
+
+            &.ant-tabs-tab-active {
+              background: #fff;
+            }
+          }
+        }
+      }
+    }
+
+    .ant-tabs-content {
+      background: #fff;
+      padding: 20px 24px;
+      border-radius: 0 20px 20px 20px;
+      margin-bottom: 100px;
+    }
+  }
+}
+
+.card-income-target-wrapper {
+  font-family: "TabletGothic";
+  background: $primary-color;
+  color: #fff;
+  border-radius: 20px;
+
+  .ant-card-body {
+    padding: 20px;
+
+    .income-target-value {
+      font-family: "RocGrotesk";
+      font-weight: bold;
+      font-size: 22px;
+    }
+
+    .income-target-text {
+      max-width: 225px;
+    }
+  }
+}
+
+.card-lib-wrapper {
+  background: #f2f2f2;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+
+  .ant-card-body {
+    padding: 20px;
+
+    .lib-text,
+    .lib-source {
+      font-family: "TabletGothic" !important;
+    }
+
+    .lib-text {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .lib-source {
+      font-size: 14px;
+      font-weight: 400;
+
+      a {
+        color: #000;
+        text-decoration-line: underline;
+        text-decoration-style: solid;
+        text-decoration-skip-ink: none;
+        text-decoration-thickness: auto;
+        text-underline-offset: auto;
+      }
+    }
+  }
+}
+
+#enter-income-data {
+  .total-income-container {
+    padding: 14px 20px;
+
+    .total-income-title-wrapper {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .total-income-value-wrapper {
+      font-family: "TabletGothic";
+      font-style: normal;
+      font-weight: 700;
+      line-height: 22px;
+
+      .level-text {
+        font-size: 12px;
+      }
+
+      .value-text {
+        font-family: "RocGrotesk";
+        font-size: 18px;
+      }
+    }
+  }
+
+  .percentage-tag-wrapper {
+    .ant-tag {
+      border-radius: 16px;
+      font-size: 12px;
+      font-family: "TabletGothic";
+      line-height: 18px;
+      font-weight: normal;
+      span {
+        margin-top: 4px;
+      }
+    }
+  }
+
+  .income-questions-wrapper {
+    padding: 24px 0;
+
+    .ant-card {
+      .ant-card-head {
+        padding: 14px 20px;
+        border-radius: 20px 20px 0px 0px;
+        border: 1px solid #e5e5e5;
+        background: #f2f2f2;
+
+        .title-text {
+          font-family: "RocGrotesk";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+        }
+
+        .value-text {
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+        }
+      }
+
+      .ant-card-body {
+        padding: 0;
+        border-radius: 0px 0px 20px 20px;
+        border: 1px solid #e9e9e9;
+      }
+    }
+
+    .section-title-wrapper {
+      border-top: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 20px;
+      width: 100%;
+
+      .title-text {
+        font-family: "RocGrotesk";
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 157.15%;
+      }
+
+      .value-text {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 157.15%;
+      }
+    }
+
+    .current-feasible-field {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+.income-data-visual-container {
+  padding: 40px 0;
+
+  .income-target-wrapper {
+    padding: 0;
+    border-radius: 20px;
+    background: #01625f;
+    color: #fff;
+
+    .ant-card-body {
+      padding: 12px 24px;
+    }
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .value {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+  }
+}
+
+#understand-income-gap,
+#assess-impact-mitigation-strategies {
+  margin-bottom: 100px;
+
+  .header-wrapper {
+    .title {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 40px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 52px;
+    }
+
+    .description {
+      font-family: "TabletGothic";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 28px;
+      letter-spacing: -0.32px;
+    }
+  }
+
+  .card-section-wrapper {
+    border-radius: 20px;
+    background: #01625f;
+    color: #fff;
+    font-family: "RocGrotesk";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+  }
+
+  .card-content-wrapper {
+    border-radius: 20px;
+  }
+
+  .card-visual-wrapper {
+    border-radius: 20px;
+
+    .section-title {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .section-description {
+      // color: #454545;
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+  }
+
+  .compare-income-gap-table-wrapper {
+    .ant-table {
+      border: 1px solid #eaecf0;
+      border-radius: 20px;
+
+      .ant-table-thead {
+        background: #01625f;
+        border-radius: 40px;
+
+        // top-left
+        tr:first-child > *:first-child {
+          border-start-start-radius: 20px;
+        }
+
+        // top-right
+        tr:last-child > *:last-child {
+          border-start-end-radius: 20px;
+        }
+
+        .ant-table-cell {
+          color: #fff;
+          background: transparent;
+          font-family: "RocGrotesk";
+          font-size: 13px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+
+          &::before {
+            display: none;
+          }
+        }
+      }
+
+      .ant-table-tbody {
+        /* Style for even odd rows */
+        tr:nth-child(even) {
+          background-color: rgba(242, 242, 242, 0.5);
+        }
+        tr:nth-child(odd) {
+          background-color: #ffffff;
+        }
+        // bottom-left
+        tr:last-child > *:first-child {
+          border-end-start-radius: 20px;
+        }
+        // bottom-right
+        tr:last-child > *:last-child {
+          border-end-end-radius: 20px;
+        }
+
+        .ant-table-cell {
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 20px;
+        }
+      }
+    }
+  }
+}
+
+#assess-impact-mitigation-strategies {
+  .ant-carousel {
+    .slick-dots {
+      li {
+        width: fit-content;
+        button {
+          mix-blend-mode: multiply;
+          border-radius: 4px;
+          background: #818080;
+          width: 8px;
+          height: 8px;
+        }
+        &.slick-active {
+          button {
+            background: #01625f !important;
+          }
+        }
+      }
+    }
+  }
+}

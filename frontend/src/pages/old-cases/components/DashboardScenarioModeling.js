@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Card, Select, Tabs, Space } from "antd";
-import { Scenario, Step } from "./";
+import { Scenario, Step } from ".";
 import { orderBy } from "lodash";
 import { PlusCircleFilled } from "@ant-design/icons";
 

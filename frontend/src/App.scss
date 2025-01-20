@@ -41,10 +41,25 @@
     font-weight: 700;
   }
 
+  .button-green-transparent {
+    border: 2px solid $primary-color;
+    border-radius: 20px;
+    color: $primary-color;
+    font-weight: 700;
+    background: transparent;
+  }
+
   .button-green-fill {
     background: $primary-color;
     border-radius: 20px;
     color: #ffffff !important;
+    font-weight: 700;
+  }
+
+  .button-ghost {
+    background: transparent;
+    border-radius: 20px;
+    border-color: #000;
     font-weight: 700;
   }
   // EOL global css setting
@@ -55,7 +70,8 @@
     padding: 0.5rem $default-padding-size;
     display: flex;
     align-items: center;
-    box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
+    box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.08);
+    z-index: 999 !important;
 
     .title {
       margin-left: $default-padding-size;
@@ -183,12 +199,17 @@
           color: #8c8c8c;
         }
 
-        .title {
+        .title-wrapper {
           padding: 0 $default-padding-size;
+          padding-top: 14px;
+        }
+
+        .title {
           font-family: "TabletGothicBold";
           font-size: 1.5rem;
           font-weight: 600;
           padding-top: 4px;
+          color: $primary-color;
         }
 
         .subTitle {
@@ -367,4 +388,52 @@
   background-color: #1b625f !important;
   font-family: "TabletGothic" !important;
   font-size: 12px;
+}
+
+.visual-card-wrapper {
+  padding: 0;
+  border-radius: 20px;
+
+  .ant-card-head {
+    padding: 12px 24px;
+    background: #dfdfdf;
+    border-radius: 20px 20px 0px 0px;
+
+    .title {
+      font-family: "RocGrotesk";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 157.15%;
+    }
+
+    .button-export {
+      border: 1px solid #01625f;
+      font-weight: 600;
+      font-size: 12px;
+      background: transparent;
+      color: #01625f;
+      border-radius: 40px;
+
+      &:hover {
+        border: 2px solid #01625f;
+      }
+    }
+  }
+
+  .ant-card-body {
+    padding: 18px 24px;
+    border-radius: 0px 0px 20px 20px;
+    background: #fff;
+  }
+
+  &.bordered {
+    .ant-card-head {
+      border: 1px solid #dfdfdf;
+    }
+    .ant-card-body {
+      border: 1px solid #dfdfdf;
+      border-top: none;
+    }
+  }
 }

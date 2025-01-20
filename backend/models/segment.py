@@ -16,6 +16,7 @@ class SegmentDict(TypedDict):
     target: Optional[float]
     adult: Optional[float]
     child: Optional[float]
+    number_of_farmers: Optional[int]
 
 
 class SimplifiedSegmentDict(TypedDict):
@@ -25,6 +26,7 @@ class SimplifiedSegmentDict(TypedDict):
     target: Optional[float]
     adult: Optional[float]
     child: Optional[float]
+    number_of_farmers: Optional[int]
 
 
 class SegmentWithAnswersDict(TypedDict):
@@ -35,42 +37,45 @@ class SegmentWithAnswersDict(TypedDict):
     target: Optional[float]
     adult: Optional[float]
     child: Optional[float]
+    number_of_farmers: Optional[int]
     answers: Optional[dict]
     benchmark: Optional[LivingIncomeBenchmarkDict]
 
 
 class Segment(Base):
-    __tablename__ = 'segment'
+    __tablename__ = "segment"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    case = Column(Integer, ForeignKey('case.id'))
-    region = Column(Integer, ForeignKey('region.id'), nullable=True)
+    case = Column(Integer, ForeignKey("case.id"))
+    region = Column(Integer, ForeignKey("region.id"), nullable=True)
     name = Column(String, nullable=False)
     target = Column(Float, nullable=True)
     adult = Column(Float, nullable=True)
     child = Column(Float, nullable=True)
+    number_of_farmers = Column(Integer, nullable=True)
 
     case_detail = relationship(
-        'Case',
+        "Case",
         cascade="all, delete",
         passive_deletes=True,
-        back_populates='case_segments'
+        back_populates="case_segments",
     )
     segment_answers = relationship(
-        'SegmentAnswer',
+        "SegmentAnswer",
         cascade="all, delete",
         passive_deletes=True,
-        backref='segment_detail'
+        backref="segment_detail",
     )
 
     def __init__(
         self,
         name: str,
-        case: int,
+        case: Optional[int] = None,
         region: Optional[int] = None,
         target: Optional[float] = None,
         adult: Optional[float] = None,
         child: Optional[float] = None,
+        number_of_farmers: Optional[int] = None,
         id: Optional[int] = None,
     ):
         self.id = id
@@ -80,6 +85,7 @@ class Segment(Base):
         self.target = target
         self.adult = adult
         self.child = child
+        self.number_of_farmers = number_of_farmers
 
     def __repr__(self) -> int:
         return f"<Segment {self.id}>"
@@ -94,6 +100,7 @@ class Segment(Base):
             "target": self.target,
             "adult": self.adult,
             "child": self.child,
+            "number_of_farmers": self.number_of_farmers,
         }
 
     @property
@@ -105,6 +112,7 @@ class Segment(Base):
             "target": self.target,
             "adult": self.adult,
             "child": self.child,
+            "number_of_farmers": self.number_of_farmers,
         }
 
     @property
@@ -126,6 +134,7 @@ class Segment(Base):
             "child": self.child,
             "answers": answers,
             "benchmark": None,
+            "number_of_farmers": self.number_of_farmers,
         }
 
 
@@ -148,3 +157,9 @@ class SegmentUpdateBase(BaseModel):
     adult: Optional[float] = None
     child: Optional[float] = None
     answers: Optional[List[SegmentAnswerBase]] = []
+
+
+class CaseSettingSegmentPayload(BaseModel):
+    name: str
+    number_of_farmers: Optional[int] = None
+    id: Optional[int] = None

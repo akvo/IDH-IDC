@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col } from "antd";
-import { SegmentSelector } from "./";
+import { SegmentSelector } from ".";
 import { getFunctionDefaultValue } from "../components";
 import { orderBy } from "lodash";
 import Chart from "../../../components/chart";
