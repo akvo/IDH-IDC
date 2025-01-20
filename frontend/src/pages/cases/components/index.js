@@ -8,3 +8,4 @@ export { default as EnterIncomeDataForm } from "./EnterIncomeDataForm";
 export { default as VisualCardWrapper } from "./VisualCardWrapper";
 export { default as SegmentSelector } from "./SegmentSelector";
 export { default as IncomeDriversDropdown } from "./IncomeDriversDropdown";
+export { default as BinningDriverForm } from "./BinningDriverForm";
