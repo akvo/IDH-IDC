@@ -12,7 +12,6 @@ from middleware import verify_case_editor, verify_case_viewer
 from db.connection import get_session
 from models.segment import (
     SegmentBase,
-    SegmentDict,
     SegmentUpdateBase,
     SegmentWithAnswersDict,
 )
@@ -24,7 +23,7 @@ segment_route = APIRouter()
 
 @segment_route.post(
     "/segment",
-    response_model=List[SegmentDict],
+    response_model=List[SegmentWithAnswersDict],
     summary="create segment",
     name="segment:create",
     tags=["Segment"],
@@ -45,12 +44,12 @@ def create_segment(
             session=session, case_id=case_id, user_id=user.id
         )
     segments = crud_segment.add_segment(session=session, payloads=payload)
-    return [s.serialize for s in segments]
+    return [s.serialize_with_answers for s in segments]
 
 
 @segment_route.put(
     "/segment",
-    response_model=List[SegmentDict],
+    response_model=List[SegmentWithAnswersDict],
     summary="update segment",
     name="segment:update",
     tags=["Segment"],
@@ -71,7 +70,7 @@ def update_segment(
         crud_case.case_updated_by(
             session=session, case_id=case_id, user_id=user.id
         )
-    return [s.serialize for s in segments]
+    return [s.serialize_with_answers for s in segments]
 
 
 @segment_route.delete(
