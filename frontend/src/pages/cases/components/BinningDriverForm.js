@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Row, Col, Form, Select, InputNumber } from "antd";
 import { InputNumberThousandFormatter } from "../../../lib";
 import { selectProps } from "../../../lib";
@@ -9,7 +9,67 @@ const binningDriverFormStyles = {
   },
 };
 
-const BinningDriverForm = ({ segment, hidden }) => {
+const generateDriverOptions = (drivers, selected, excludes) => {
+  const options = selected.filter((s) => excludes.includes(s.name));
+  return drivers.map((d) => ({
+    ...d,
+    disabled: options.find((o) => o.value === d.value),
+  }));
+};
+
+const BinningDriverForm = ({
+  segment,
+  selectedSegment,
+  hidden,
+  dataSource = [],
+  selected = [],
+}) => {
+  const drivers = useMemo(() => {
+    if (!selectedSegment) {
+      return [];
+    }
+    // filter drivers to include in BinningForm options
+    const res = dataSource
+      .filter(
+        (d) =>
+          !["Total Primary Income", "Total Income", "Income Target"].includes(
+            d.name
+          )
+      )
+      .map((x) => {
+        return {
+          value: x.name,
+          label: x.name,
+          unitName: x.unitName,
+        };
+      });
+    return res;
+  }, [selectedSegment, dataSource]);
+
+  const options = useMemo(() => {
+    if (!selected.length) {
+      return {
+        "binning-driver-name": drivers,
+        "x-axis-driver": drivers,
+        "y-axis-driver": drivers,
+      };
+    }
+    return {
+      "binning-driver-name": generateDriverOptions(drivers, selected, [
+        "x-axis-driver",
+        "y-axis-driver",
+      ]),
+      "x-axis-driver": generateDriverOptions(drivers, selected, [
+        "binning-driver-name",
+        "y-axis-driver",
+      ]),
+      "y-axis-driver": generateDriverOptions(drivers, selected, [
+        "binning-driver-name",
+        "x-axis-driver",
+      ]),
+    };
+  }, [drivers, selected]);
+
   return (
     <Row gutter={[20, 20]} style={{ display: hidden ? "none" : "" }}>
       <Col span={24}>
@@ -23,7 +83,7 @@ const BinningDriverForm = ({ segment, hidden }) => {
               <Select
                 className="binning-input"
                 {...selectProps}
-                // options={options["x-axis-driver"]}
+                options={options["x-axis-driver"]}
                 // disabled={!enableEditCase}
                 placeholder="Select driver"
               />
@@ -70,7 +130,7 @@ const BinningDriverForm = ({ segment, hidden }) => {
               <Select
                 className="binning-input"
                 {...selectProps}
-                // options={options["y-axis-driver"]}
+                options={options["y-axis-driver"]}
                 // disabled={!enableEditCase}
                 placeholder="Select driver"
               />
@@ -117,7 +177,7 @@ const BinningDriverForm = ({ segment, hidden }) => {
               <Select
                 className="binning-input"
                 {...selectProps}
-                // options={options["binning-driver-name"]}
+                options={options["binning-driver-name"]}
                 // disabled={!enableEditCase}
                 placeholder="Select driver"
               />
