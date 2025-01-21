@@ -6,6 +6,7 @@ import {
   ChartBiggestImpactOnIncome,
   ChartMonetaryImpactOnIncome,
   ChartBinningDriversSensitivityAnalysis,
+  ChartBinningHeatmapSensitivityAnalysis,
 } from "../visualizations";
 import { BinningDriverForm, SegmentSelector } from "../components";
 import { map, groupBy } from "lodash";
@@ -301,6 +302,18 @@ const AssessImpactMitigationStrategies = ({
                     data={sensitivityAnalysis.config}
                     origin={dataSource}
                     setAdjustTargetVisible={() => {}}
+                  />
+                ) : null
+              )}
+            </Col>
+            <Col span={24}>
+              {dashboardData.map((segment) =>
+                selectedSegment === segment.id ? (
+                  <ChartBinningHeatmapSensitivityAnalysis
+                    key={segment.id}
+                    segment={segment}
+                    data={sensitivityAnalysis.config}
+                    origin={dataSource}
                   />
                 ) : null
               )}

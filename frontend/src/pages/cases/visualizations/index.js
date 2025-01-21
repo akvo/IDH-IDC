@@ -6,3 +6,4 @@ export { default as ChartExploreIncomeDriverBreakdown } from "./ChartExploreInco
 export { default as ChartBiggestImpactOnIncome } from "./ChartBiggestImpactOnIncome";
 export { default as ChartMonetaryImpactOnIncome } from "./ChartMonetaryImpactOnIncome";
 export { default as ChartBinningDriversSensitivityAnalysis } from "./ChartBinningDriversSensitivityAnalysis";
+export { default as ChartBinningHeatmapSensitivityAnalysis } from "./ChartBinningHeatmapSensitivityAnalysis";
