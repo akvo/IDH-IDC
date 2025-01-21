@@ -17,6 +17,8 @@ import {
   Select,
   Switch,
   message,
+  Modal,
+  InputNumber,
 } from "antd";
 import {
   ChartBiggestImpactOnIncome,
@@ -25,10 +27,14 @@ import {
   ChartBinningHeatmapSensitivityAnalysis,
 } from "../visualizations";
 import { BinningDriverForm, SegmentSelector } from "../components";
-import { map, groupBy, isEqual } from "lodash";
+import { map, groupBy, isEqual, isEmpty } from "lodash";
 import { commodities } from "../../../store/static";
 import { selectProps, api } from "../../../lib";
-import { removeUndefinedObjectValue } from "../../../lib";
+import {
+  removeUndefinedObjectValue,
+  InputNumberThousandFormatter,
+} from "../../../lib";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 /**
  * STEP 4
@@ -46,7 +52,38 @@ const AssessImpactMitigationStrategies = ({
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [percentageSensitivity, setPercentageSensitivity] = useState(true);
+  const [adjustedValues, setAdjustedValues] = useState({});
+
   const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(() => {
+    if (!isEmpty(sensitivityAnalysis?.config)) {
+      setAdjustedValues(
+        Object.keys(sensitivityAnalysis?.config)
+          .filter((x) => x.includes("adjusted-target"))
+          .map((x) => ({ [x]: sensitivityAnalysis.config[x] }))
+          .reduce((a, c) => ({ ...a, ...c }), {})
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const adustedTargetChange = useMemo(() => {
+    if (percentageSensitivity) {
+      const res =
+        adjustedValues?.[
+          `${selectedSegment}_absolute-increase_adjusted-target`
+        ] || 0;
+      return thousandFormatter(res, 2);
+    }
+    const res =
+      adjustedValues?.[
+        `${selectedSegment}_percentage-increase_adjusted-target`
+      ] || 0;
+    return `${res}%`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSegment, percentageSensitivity, adjustedValues]);
 
   const handleSaveVisualization = useCallback(() => {
     if (!enableEditCase) {
@@ -303,6 +340,14 @@ const AssessImpactMitigationStrategies = ({
     form.setFieldsValue(filteredValues);
   };
 
+  const onChangePercentage = (value) => {
+    if (value === "percentage") {
+      setPercentageSensitivity(true);
+    } else {
+      setPercentageSensitivity(false);
+    }
+  };
+
   return (
     <Row id="assess-impact-mitigation-strategies" gutter={[24, 24]}>
       {contextHolder}
@@ -450,6 +495,129 @@ const AssessImpactMitigationStrategies = ({
           </Row>
         </Card>
       </Col>
+
+      <Modal
+        title="Adjust your income target"
+        open={true}
+        width="60%"
+        className="adjust-income-target-modal-container"
+      >
+        <div className="description">
+          It might be interesting to change your income target after inspecting
+          the graphs below to observe how the results vary. If you do not adjust
+          the target, we will use the current target value for the calculations
+        </div>
+        <Row
+          align="middle"
+          gutter={[20, 20]}
+          className="adjust-income-target-step-wrapper"
+        >
+          <Col span={24}>
+            <Space className="step-wrapper" align="center">
+              <div className="number">1.</div>
+              <div className="label">Explore graphs</div>
+            </Space>
+          </Col>
+          <Col span={24}>
+            <Space className="step-wrapper" align="center">
+              <div className="number">2.</div>
+              <div className="label">Changing target</div>
+            </Space>
+            <div className="description">
+              If you like to change the target, Please choose whether you would
+              like to express the changes in current values using percentages or
+              absolute values.
+            </div>
+            <div className="description">
+              <Row>
+                <Col span={8}>
+                  <Select
+                    style={{ width: "100%" }}
+                    options={[
+                      {
+                        label: "Percentage",
+                        value: "percentage",
+                      },
+                      {
+                        label: "Absolute",
+                        value: "absolute",
+                      },
+                    ]}
+                    onChange={onChangePercentage}
+                    value={percentageSensitivity ? "percentage" : "absolute"}
+                  />
+                </Col>
+              </Row>
+            </div>
+          </Col>
+          <Col span={24}>
+            <Space className="step-wrapper" align="center">
+              <div className="number">3.</div>
+              <div className="label">Adjust current values below</div>
+            </Space>
+            <div className="description">
+              <Row gutter={[20, 20]} align="start">
+                <Col span={7}>
+                  <div className="title">Current Target</div>
+                  <div
+                    className="title"
+                    style={{
+                      fontWeight: "700",
+                    }}
+                  >
+                    {/* {tableSummaryValue?.current
+                      ? thousandFormatter(tableSummaryValue.current)
+                      : 0}{" "}
+                    <small>({tableSummaryValue?.unitName})</small> */}
+                  </div>
+                </Col>
+                <Col span={10}>
+                  <div className="title">
+                    {percentageSensitivity ? "% Change" : "Adjusted Target"}
+                  </div>
+                  {["absolute", "percentage"].map((qtype) => (
+                    <div
+                      key={qtype}
+                      style={{
+                        display:
+                          qtype !== "percentage" && percentageSensitivity
+                            ? "none"
+                            : qtype === "percentage" && !percentageSensitivity
+                            ? "none"
+                            : "",
+                      }}
+                    >
+                      <InputNumber
+                        style={{
+                          width: qtype === "percentage" ? "150px" : "75%",
+                        }}
+                        addonAfter={qtype === "percentage" ? "%" : ""}
+                        {...InputNumberThousandFormatter}
+                        onChange={(value) => onAdjustTarget(value, qtype)}
+                        value={
+                          percentageSensitivity
+                            ? adjustedValues?.[
+                                `${selectedSegment}_percentage-increase_adjusted-target`
+                              ]
+                            : adjustedValues?.[
+                                `${selectedSegment}_adjusted-target`
+                              ]
+                        }
+                      />
+                    </div>
+                  ))}
+                </Col>
+                <Col span={7}>
+                  <div className="title small">
+                    {percentageSensitivity ? "Adjusted Target" : "% Change"}
+                  </div>
+                  <div className="title small">{adustedTargetChange}</div>
+                </Col>
+              </Row>
+            </div>
+          </Col>
+        </Row>
+      </Modal>
       {/* EOL Adjust Income Target */}
     </Row>
   );
