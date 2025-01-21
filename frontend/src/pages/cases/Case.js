@@ -512,6 +512,49 @@ const Case = () => {
     totalIncomeQuestions,
   ]);
 
+  // Fetch visualizaton config for sensitivity analysis and scenario modeling page
+  useEffect(() => {
+    if (currentCase.id) {
+      api.get(`visualization/case/${currentCase.id}`).then((res) => {
+        const { data } = res;
+        // Sensitivity analysis
+        const sensitivityAnalysisTmp = data.find(
+          (v) => v.tab === "sensitivity_analysis"
+        );
+        if (!isEmpty(sensitivityAnalysisTmp)) {
+          CaseVisualState.update((s) => ({
+            ...s,
+            sensitivityAnalysis: {
+              ...s.sensitivityAnalysis,
+              ...sensitivityAnalysisTmp,
+            },
+            prevSensitivityAnalysis: {
+              ...s.prevSensitivityAnalysis,
+              ...sensitivityAnalysisTmp,
+            },
+          }));
+        }
+        // Scenario modeling
+        const scenarioModelingTmp = data.find(
+          (v) => v.tab === "scenario_modeling"
+        );
+        if (!isEmpty(scenarioModelingTmp)) {
+          CaseVisualState.update((s) => ({
+            ...s,
+            scenarioModeling: {
+              ...s.scenarioModeling,
+              ...scenarioModelingTmp,
+            },
+            prevSensitivityAnalysis: {
+              ...s.prevScenarioModeling,
+              ...scenarioModelingTmp,
+            },
+          }));
+        }
+      });
+    }
+  }, [currentCase.id]);
+
   return (
     <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
       {loading ? <Loading /> : renderPage(step, navigate)}

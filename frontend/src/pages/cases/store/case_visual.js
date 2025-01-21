@@ -30,6 +30,14 @@ const defaultCaseVisualState = {
       scenarioData: [defaultScenarioData],
     },
   },
+  prevScenarioModeling: {
+    case: null,
+    tab: "scenario_modeling",
+    config: {
+      percentage: true,
+      scenarioData: [defaultScenarioData],
+    },
+  },
 };
 
 const CaseVisualState = new Store(defaultCaseVisualState);
