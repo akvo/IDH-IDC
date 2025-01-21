@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { stepPath, CurrentCaseState, CaseVisualState } from "../store";
+import {
+  stepPath,
+  CurrentCaseState,
+  CaseVisualState,
+  CaseUIState,
+} from "../store";
 import {
   Row,
   Col,
@@ -11,6 +16,7 @@ import {
   Button,
   Select,
   Switch,
+  message,
 } from "antd";
 import {
   ChartBiggestImpactOnIncome,
@@ -19,9 +25,10 @@ import {
   ChartBinningHeatmapSensitivityAnalysis,
 } from "../visualizations";
 import { BinningDriverForm, SegmentSelector } from "../components";
-import { map, groupBy } from "lodash";
+import { map, groupBy, isEqual } from "lodash";
 import { commodities } from "../../../store/static";
-import { selectProps } from "../../../lib";
+import { selectProps, api } from "../../../lib";
+import { removeUndefinedObjectValue } from "../../../lib";
 
 /**
  * STEP 4
@@ -34,19 +41,85 @@ const AssessImpactMitigationStrategies = ({
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
-  const sensitivityAnalysis = CaseVisualState.useState(
-    (s) => s.sensitivityAnalysis
-  );
+  const { sensitivityAnalysis, prevSensitivityAnalysis } =
+    CaseVisualState.useState((s) => s);
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handleSaveVisualization = useCallback(() => {
+    if (!enableEditCase) {
+      return;
+    }
+
+    CaseUIState.update((s) => ({
+      ...s,
+      caseButton: {
+        loading: true,
+      },
+    }));
+    const payloads = [sensitivityAnalysis];
+    // sensitivity analysis
+    const isBinningDataUpdated = !isEqual(
+      removeUndefinedObjectValue(prevSensitivityAnalysis?.config),
+      removeUndefinedObjectValue(sensitivityAnalysis?.config)
+    );
+    // Save
+    api
+      .post(`visualization?updated=${isBinningDataUpdated}`, payloads)
+      .then(() => {
+        CaseVisualState.update((s) => ({
+          ...s,
+          prevSensitivityAnalysis: {
+            ...sensitivityAnalysis,
+          },
+        }));
+        messageApi.open({
+          type: "success",
+          content: "Assess impact of mitigation strategies saved successfully.",
+        });
+        setTimeout(() => {
+          navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
+        }, 100);
+      })
+      .catch((e) => {
+        console.error(e);
+        const { status, data } = e.response;
+        let errorText =
+          "Failed to save assess impact of mitigation strategies.";
+        if (status === 403) {
+          errorText = data.detail;
+        }
+        messageApi.open({
+          type: "error",
+          content: errorText,
+        });
+      })
+      .finally(() => {
+        CaseUIState.update((s) => ({
+          ...s,
+          caseButton: {
+            loading: false,
+          },
+        }));
+      });
+  }, [
+    currentCase.id,
+    enableEditCase,
+    messageApi,
+    navigate,
+    prevSensitivityAnalysis,
+    sensitivityAnalysis,
+  ]);
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
   }, [navigate, currentCase.id]);
 
   const nextFunction = useCallback(() => {
-    navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
-  }, [navigate, currentCase.id]);
+    handleSaveVisualization();
+  }, [handleSaveVisualization]);
 
   const updateCaseVisualSensitivityAnalysisState = (updatedValue) => {
     CaseVisualState.update((s) => ({
@@ -232,6 +305,7 @@ const AssessImpactMitigationStrategies = ({
 
   return (
     <Row id="assess-impact-mitigation-strategies" gutter={[24, 24]}>
+      {contextHolder}
       <Col span={24} className="header-wrapper">
         <Space direction="vertical">
           <div className="title">Explanatory text</div>

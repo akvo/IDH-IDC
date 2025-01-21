@@ -17,6 +17,11 @@ const defaultCaseVisualState = {
     tab: "sensitivity_analysis",
     config: {},
   },
+  prevSensitivityAnalysis: {
+    case: null,
+    tab: "sensitivity_analysis",
+    config: {},
+  },
   scenarioModeling: {
     case: null,
     tab: "scenario_modeling",
