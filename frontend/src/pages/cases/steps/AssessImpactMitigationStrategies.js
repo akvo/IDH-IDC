@@ -5,6 +5,7 @@ import { Row, Col, Card, Space, Carousel, Form } from "antd";
 import {
   ChartBiggestImpactOnIncome,
   ChartMonetaryImpactOnIncome,
+  ChartBinningDriversSensitivityAnalysis,
 } from "../visualizations";
 import { BinningDriverForm, SegmentSelector } from "../components";
 import { map, groupBy } from "lodash";
@@ -21,9 +22,9 @@ const AssessImpactMitigationStrategies = ({
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
-  // const sensitivityAnalysis = CaseVisualState.useState(
-  //   (s) => s.sensitivityAnalysis
-  // );
+  const sensitivityAnalysis = CaseVisualState.useState(
+    (s) => s.sensitivityAnalysis
+  );
 
   const [selectedSegment, setSelectedSegment] = useState(null);
 
@@ -125,6 +126,41 @@ const AssessImpactMitigationStrategies = ({
     ];
   }, [selectedSegment, dashboardData, currentCase?.case_commodities]);
 
+  const binningValues = useMemo(() => {
+    const allBining = Object.keys(sensitivityAnalysis.config);
+    const groupBinning = Object.keys(
+      groupBy(allBining, (b) => b.split("_")[0])
+    ).map((g) => {
+      const binning = allBining.filter((b) => b.split("_")[0] === g);
+      const binningValue = binning.reduce((acc, b) => {
+        const value = sensitivityAnalysis?.config?.[b];
+        return {
+          ...acc,
+          [b.split("_")[1]]: value,
+        };
+      }, {});
+      const selected = [
+        "x-axis-driver",
+        "y-axis-driver",
+        "binning-driver-name",
+      ];
+      return {
+        id: parseInt(g),
+        binning: binning,
+        values: binningValue,
+        selected: selected
+          .map((s) => {
+            return {
+              name: s,
+              value: binningValue?.[s],
+            };
+          })
+          .filter((s) => s),
+      };
+    });
+    return groupBinning;
+  }, [sensitivityAnalysis.config]);
+
   const onSensitivityAnalysisValuesChange = (changedValue, allValues) => {
     const objectName = Object.keys(changedValue)[0];
     const [segmentId, valueName] = objectName.split("_");
@@ -166,11 +202,20 @@ const AssessImpactMitigationStrategies = ({
         [`${segmentId}_binning-feasible-value`]: dataValue?.feasible,
       };
     }
+    const filteredValues = Object.entries(allValues).reduce(
+      (acc, [key, value]) => {
+        if (typeof value !== "undefined" && value !== null) {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {}
+    );
     updateCaseVisualSensitivityAnalysisState({
       case: currentCase.id,
-      config: allValues,
+      config: filteredValues,
     });
-    form.setFieldsValue(allValues);
+    form.setFieldsValue(filteredValues);
   };
 
   return (
@@ -215,6 +260,7 @@ const AssessImpactMitigationStrategies = ({
       <Col span={24}>
         <Card className="card-content-wrapper">
           <Row gutter={[20, 20]}>
+            {/* Binning Form */}
             <Col span={24}>
               <SegmentSelector
                 selectedSegment={selectedSegment}
@@ -227,7 +273,7 @@ const AssessImpactMitigationStrategies = ({
                 layout="vertical"
                 form={form}
                 onValuesChange={onSensitivityAnalysisValuesChange}
-                // initialValues={binningData}
+                initialValues={sensitivityAnalysis?.config || {}}
               >
                 {dashboardData.map((segment, key) => (
                   <BinningDriverForm
@@ -235,15 +281,31 @@ const AssessImpactMitigationStrategies = ({
                     selectedSegment={selectedSegment}
                     segment={segment}
                     dataSource={dataSource}
-                    // selected={
-                    //   binningValues.find((b) => b.id === segment.id)?.selected
-                    // }
+                    selected={
+                      binningValues.find((b) => b.id === segment.id)?.selected
+                    }
                     hidden={selectedSegment !== segment.id}
-                    // enableEditCase={enableEditCase}
                   />
                 ))}
               </Form>
             </Col>
+            {/* EOL Binning Form */}
+
+            {/* Sensitivity Analysis Chart */}
+            <Col span={24}>
+              {dashboardData.map((segment) =>
+                selectedSegment === segment.id ? (
+                  <ChartBinningDriversSensitivityAnalysis
+                    key={segment.id}
+                    segment={segment}
+                    data={sensitivityAnalysis.config}
+                    origin={dataSource}
+                    setAdjustTargetVisible={() => {}}
+                  />
+                ) : null
+              )}
+            </Col>
+            {/* EOL Sensitivity Analysis Chart */}
           </Row>
         </Card>
       </Col>

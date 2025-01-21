@@ -5,3 +5,4 @@ export { default as ChartIncomeDriverAcrossSegments } from "./ChartIncomeDriverA
 export { default as ChartExploreIncomeDriverBreakdown } from "./ChartExploreIncomeDriverBreakdown";
 export { default as ChartBiggestImpactOnIncome } from "./ChartBiggestImpactOnIncome";
 export { default as ChartMonetaryImpactOnIncome } from "./ChartMonetaryImpactOnIncome";
+export { default as ChartBinningDriversSensitivityAnalysis } from "./ChartBinningDriversSensitivityAnalysis";

@@ -261,6 +261,12 @@
   .card-visual-wrapper {
     border-radius: 20px;
 
+    &.no-padding {
+      .ant-card-body {
+        padding: 0;
+      }
+    }
+
     .section-title {
       color: #01625f;
       font-family: "RocGrotesk";
