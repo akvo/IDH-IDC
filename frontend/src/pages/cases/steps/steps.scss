@@ -481,5 +481,29 @@
         line-height: 157.15%;
       }
     }
+
+    .input-label {
+      color: #4f4f4f;
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      padding: 5px 0;
+    }
+
+    .current-target-wrapper,
+    .adjusted-target-wrapper {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 157.15%;
+
+      border-radius: 14px;
+      background: #eaf2f2;
+      padding: 5px 20px;
+    }
   }
 }

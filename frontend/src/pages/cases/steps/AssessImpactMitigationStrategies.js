@@ -33,6 +33,7 @@ import { selectProps, api } from "../../../lib";
 import {
   removeUndefinedObjectValue,
   InputNumberThousandFormatter,
+  determineDecimalRound,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
@@ -84,6 +85,14 @@ const AssessImpactMitigationStrategies = ({
     return `${res}%`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment, percentageSensitivity, adjustedValues]);
+
+  const currentSegmentDetail = useMemo(() => {
+    if (selectedSegment && currentCase?.segments?.length) {
+      const res = currentCase.segments.find((s) => s.id === selectedSegment);
+      return res;
+    }
+    return null;
+  }, [currentCase?.segments, selectedSegment]);
 
   const handleSaveVisualization = useCallback(() => {
     if (!enableEditCase) {
@@ -558,21 +567,19 @@ const AssessImpactMitigationStrategies = ({
             <div className="description">
               <Row gutter={[20, 20]} align="start">
                 <Col span={7}>
-                  <div className="title">Current Target</div>
-                  <div
-                    className="title"
-                    style={{
-                      fontWeight: "700",
-                    }}
-                  >
-                    {/* {tableSummaryValue?.current
-                      ? thousandFormatter(tableSummaryValue.current)
+                  <div className="input-label">Current Target</div>
+                  <div className="current-target-wrapper">
+                    {currentSegmentDetail
+                      ? thousandFormatter(
+                          currentSegmentDetail.target,
+                          determineDecimalRound(currentSegmentDetail.target)
+                        )
                       : 0}{" "}
-                    <small>({tableSummaryValue?.unitName})</small> */}
+                    <small>({currentCase?.currency})</small>
                   </div>
                 </Col>
                 <Col span={10}>
-                  <div className="title">
+                  <div className="input-label">
                     {percentageSensitivity ? "% Change" : "Adjusted Target"}
                   </div>
                   {["absolute", "percentage"].map((qtype) => (
@@ -589,11 +596,12 @@ const AssessImpactMitigationStrategies = ({
                     >
                       <InputNumber
                         style={{
-                          width: qtype === "percentage" ? "150px" : "75%",
+                          width: "90%",
                         }}
                         addonAfter={qtype === "percentage" ? "%" : ""}
                         {...InputNumberThousandFormatter}
-                        onChange={(value) => onAdjustTarget(value, qtype)}
+                        controls={false}
+                        // onChange={(value) => onAdjustTarget(value, qtype)}
                         value={
                           percentageSensitivity
                             ? adjustedValues?.[
@@ -608,10 +616,12 @@ const AssessImpactMitigationStrategies = ({
                   ))}
                 </Col>
                 <Col span={7}>
-                  <div className="title small">
+                  <div className="input-label">
                     {percentageSensitivity ? "Adjusted Target" : "% Change"}
                   </div>
-                  <div className="title small">{adustedTargetChange}</div>
+                  <div className="adjusted-target-wrapper">
+                    {adustedTargetChange}
+                  </div>
                 </Col>
               </Row>
             </div>
