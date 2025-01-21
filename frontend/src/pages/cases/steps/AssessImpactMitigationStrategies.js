@@ -1,7 +1,17 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState, CaseVisualState } from "../store";
-import { Row, Col, Card, Space, Carousel, Form } from "antd";
+import {
+  Row,
+  Col,
+  Card,
+  Space,
+  Carousel,
+  Form,
+  Button,
+  Select,
+  Switch,
+} from "antd";
 import {
   ChartBiggestImpactOnIncome,
   ChartMonetaryImpactOnIncome,
@@ -11,6 +21,7 @@ import {
 import { BinningDriverForm, SegmentSelector } from "../components";
 import { map, groupBy } from "lodash";
 import { commodities } from "../../../store/static";
+import { selectProps } from "../../../lib";
 
 /**
  * STEP 4
@@ -323,6 +334,49 @@ const AssessImpactMitigationStrategies = ({
         </Card>
       </Col>
       {/* EOL Sensitivity Analysis */}
+
+      {/* #3 Adjust Income Target */}
+      <Col span={24}>
+        <Card className="card-section-wrapper adjust-income-target-wrapper">
+          <Row gutter={[20, 20]} align="middle">
+            <Col span={24}>
+              <div className="title">When do we reach the target?</div>
+            </Col>
+            <Col span={12}>
+              <div className="description">
+                Based on the selected drivers that are open to change, we run an
+                optimization model to search for the minimum required changes in
+                order to reach the income target.
+              </div>
+            </Col>
+            <Col span={12}>
+              <Space direction="vertical">
+                <div className="label">
+                  Select the (sub)drivers that you want to include in further
+                  analysis:
+                </div>
+                <Select
+                  {...selectProps}
+                  options={[]}
+                  placeholder="Select driver"
+                />
+              </Space>
+            </Col>
+            <Col span={12}>
+              <Button className="button-ghost-white">
+                Adjust your income target
+              </Button>
+            </Col>
+            <Col span={12}>
+              <Space align="center">
+                <Switch />
+                <div className="label">Stay within feasible ranges?</div>
+              </Space>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+      {/* EOL Adjust Income Target */}
     </Row>
   );
 };

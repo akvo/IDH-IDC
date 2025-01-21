@@ -369,4 +369,60 @@
       }
     }
   }
+
+  .adjust-income-target-wrapper {
+    .title {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .description {
+      font-family: "TabletGothic";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .ant-select {
+      font-weight: normal;
+    }
+
+    .button-ghost-white {
+      border-radius: 40px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px;
+
+      &:hover {
+        border: 1px solid #48d985;
+        color: #48d985;
+      }
+    }
+
+    .ant-switch {
+      background: $muted-color;
+    }
+
+    .ant-switch-checked {
+      background: $light-green;
+    }
+  }
 }
