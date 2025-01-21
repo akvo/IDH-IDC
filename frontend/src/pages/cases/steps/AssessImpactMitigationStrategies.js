@@ -53,11 +53,13 @@ const AssessImpactMitigationStrategies = ({
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [showAdjustIncomeModal, setShowAdjustIncomeModal] = useState(false);
   const [percentageSensitivity, setPercentageSensitivity] = useState(true);
   const [adjustedValues, setAdjustedValues] = useState({});
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  // initial load adjusted income target
   useEffect(() => {
     if (!isEmpty(sensitivityAnalysis?.config)) {
       setAdjustedValues(
@@ -158,6 +160,56 @@ const AssessImpactMitigationStrategies = ({
     prevSensitivityAnalysis,
     sensitivityAnalysis,
   ]);
+
+  const onAdjustTarget = (value, qtype) => {
+    const currentValue = currentSegmentDetail?.target
+      ? parseFloat(currentSegmentDetail.target)
+      : 0;
+    let newValue = {};
+    let adjustedTarget = 0;
+    if (qtype === "percentage" && percentageSensitivity) {
+      const absoluteValue = value ? (currentValue * value) / 100 : 0;
+      adjustedTarget = value ? (absoluteValue + currentValue).toFixed(2) : 0;
+      newValue = {
+        ...newValue,
+        [`${selectedSegment}_absolute-increase_adjusted-target`]:
+          parseFloat(adjustedTarget),
+        [`${selectedSegment}_percentage-increase_adjusted-target`]: value,
+      };
+    }
+    if (qtype === "absolute" && !percentageSensitivity) {
+      adjustedTarget = value || 0;
+      const absoluteChanged = value - currentValue;
+      const percentage = currentValue ? absoluteChanged / currentValue : 0;
+      const percentageIncrease = (percentage * 100).toFixed(2);
+      newValue = {
+        ...newValue,
+        [`${selectedSegment}_percentage-increase_adjusted-target`]:
+          parseFloat(percentageIncrease),
+        [`${selectedSegment}_absolute-increase_adjusted-target`]:
+          absoluteChanged,
+      };
+    }
+    newValue = {
+      ...newValue,
+      [`${selectedSegment}_adjusted-target`]: parseFloat(adjustedTarget),
+    };
+    setAdjustedValues((prev) => ({ ...prev, ...newValue }));
+  };
+
+  const handleOnSaveAdjustIncomeTarget = () => {
+    CaseVisualState.update((s) => ({
+      ...s,
+      sensitivityAnalysis: {
+        ...s.sensitivityAnalysis,
+        config: {
+          ...s.sensitivityAnalysis.config,
+          ...adjustedValues,
+        },
+      },
+    }));
+    setShowAdjustIncomeModal(false);
+  };
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
@@ -491,7 +543,10 @@ const AssessImpactMitigationStrategies = ({
               </Space>
             </Col>
             <Col span={12}>
-              <Button className="button-ghost-white">
+              <Button
+                className="button-ghost-white"
+                onClick={() => setShowAdjustIncomeModal(true)}
+              >
                 Adjust your income target
               </Button>
             </Col>
@@ -507,9 +562,18 @@ const AssessImpactMitigationStrategies = ({
 
       <Modal
         title="Adjust your income target"
-        open={true}
+        open={showAdjustIncomeModal}
+        onOk={handleOnSaveAdjustIncomeTarget}
+        okButtonProps={{
+          disabled: !enableEditCase,
+        }}
+        okText="Save income target"
+        onCancel={() => setShowAdjustIncomeModal(false)}
         width="60%"
         className="adjust-income-target-modal-container"
+        maskClosable={false}
+        cancelText={null}
+        footer={(_, { OkBtn }) => <OkBtn />}
       >
         <div className="description">
           It might be interesting to change your income target after inspecting
@@ -601,7 +665,7 @@ const AssessImpactMitigationStrategies = ({
                         addonAfter={qtype === "percentage" ? "%" : ""}
                         {...InputNumberThousandFormatter}
                         controls={false}
-                        // onChange={(value) => onAdjustTarget(value, qtype)}
+                        onChange={(value) => onAdjustTarget(value, qtype)}
                         value={
                           percentageSensitivity
                             ? adjustedValues?.[
