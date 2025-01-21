@@ -545,7 +545,7 @@ const Case = () => {
               ...s.scenarioModeling,
               ...scenarioModelingTmp,
             },
-            prevSensitivityAnalysis: {
+            prevScenarioModeling: {
               ...s.prevScenarioModeling,
               ...scenarioModelingTmp,
             },
