@@ -9,183 +9,76 @@ import { thousandFormatter } from "../../../components/chart/options/common";
 import { SegmentTabsWrapper } from "../layout";
 
 // TODO :: The driver will be a dropdown list that include the sub drivers
+const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
 const Question = ({
-  id,
-  parent,
-  question_type,
-  text,
-  commodity,
-  childrens,
   segment,
-  percentage,
-  unit,
   form,
-  enableEditCase,
-  refreshCurrentIncrease,
+  qtype = "percentage",
+  percentage = true,
 }) => {
-  const { commodity_name, commodity_type, case_commodity, currency } =
-    commodity;
-
-  // custom fieldName for grouped diversified
-  const fieldName = `${case_commodity}-${id}`;
-
-  const disableTotalIncomeFocusCommodityField = !enableEditCase
-    ? true
-    : !parent && question_type === "aggregator" && commodity_type === "focus";
-
-  const unitName = useMemo(() => {
-    return unit
-      .split("/")
-      .map((u) => u.trim())
-      .map((u) =>
-        u === "crop"
-          ? commodities
-              .find((c) => c.id === commodity?.commodity)
-              ?.name?.toLowerCase() || ""
-          : commodity?.[u]
-      )
-      .join(" / ");
-  }, [unit, commodity]);
-
-  const answer = useMemo(() => {
-    // handle grouped diversified value
-    if (id === "diversified") {
-      const answers = childrens
-        .map((c) => {
-          const answerKey = `current-${c.case_commodity}-${c.id}`;
-          return {
-            question_id: c.id,
-            value: segment?.answers?.[answerKey],
-          };
-        })
-        .filter((x) => x);
-      return {
-        ...answers[0],
-        id: id,
-        question: childrens.map((c) => ({
-          ...c,
-          value: answers.find((a) => a.question_id === c.id)?.value || 0,
-        })),
-        value: answers.reduce((res, cur) => res + cur.value, 0),
-      };
-    }
-    const answerKey = `current-${case_commodity}-${id}`;
-    console.log(answerKey);
-    return {
-      question_id: id,
-      value: segment?.answers?.[answerKey],
-    };
-  }, [segment, id, case_commodity, childrens]);
-  console.log(answer);
-
-  const answerValue = useMemo(() => {
-    if (!answer?.value) {
-      return "";
-    }
-    let value = answer.value;
-    if (value < 100) {
-      value = value?.toFixed(2);
-    } else {
-      value = value?.toFixed();
-    }
-    return thousandFormatter(value);
-  }, [answer]);
-
-  const currentIncrease = useMemo(() => {
-    let value = 0;
-    if (percentage) {
-      value = form.getFieldValue(`absolute-${fieldName}`) || "-";
-    } else {
-      value = form.getFieldValue(`percentage-${fieldName}`) || "-";
-    }
-    return !isNaN(value) ? value : 0;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form, case_commodity, id, percentage, refreshCurrentIncrease]);
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   return (
-    <>
-      <Row
-        gutter={[5, 5]}
-        align="middle"
-        display={
-          question_type === "aggregator" && commodity_type === "focus"
-            ? "none"
-            : ""
-        }
-      >
-        <Col span={9}>
-          {!parent && question_type === "aggregator" ? (
-            <h4>
-              Total Income from {commodity_name} <small>({currency})</small>
-            </h4>
-          ) : question_type === "diversified" ? (
-            <h4>
-              {commodity_name} <small>({currency})</small>
-            </h4>
-          ) : (
-            <h4>
-              {text} <small>({unitName})</small>
-            </h4>
-          )}
-        </Col>
-        <Col span={5}>
-          {["absolute", "percentage"].map((qtype) => (
-            <Form.Item
-              key={`${qtype}-${fieldName}`}
-              name={`${qtype}-${fieldName}`}
-              className="scenario-field-item"
+    <Row
+      gutter={[5, 5]}
+      align="middle"
+      style={{ marginTop: 10 }}
+      // display={
+      //   question_type === "aggregator" && commodity_type === "focus"
+      //     ? "none"
+      //     : ""
+      // }
+    >
+      <Col span={9}>
+        <Select
+          {...selectProps}
+          placeholder="Select driver"
+          options={[{ label: "TEST", value: 1 }]}
+          optionRender={(index) => <div key={index}>Option {index}</div>}
+        />
+      </Col>
+      <Col span={5}>
+        {["absolute", "percentage"].map((qtype, index) => (
+          <Form.Item
+            key={`${qtype}-${index}`}
+            // name={`${qtype}-${fieldName}`}
+            className="scenario-field-item"
+            style={{
+              display:
+                qtype !== "percentage" && percentage
+                  ? "none"
+                  : qtype === "percentage" && !percentage
+                  ? "none"
+                  : "",
+            }}
+          >
+            <InputNumber
               style={{
-                display:
-                  qtype !== "percentage" && percentage
-                    ? "none"
-                    : qtype === "percentage" && !percentage
-                    ? "none"
-                    : "",
+                width: "100%",
               }}
-            >
-              <InputNumber
-                style={{
-                  width: "100%",
-                }}
-                controls={false}
-                addonAfter={qtype === "percentage" ? "%" : ""}
-                disabled={disableTotalIncomeFocusCommodityField}
-                {...InputNumberThousandFormatter}
-              />
-            </Form.Item>
-          ))}
-        </Col>
-        <Col span={6} align="end">
-          {answerValue}
-        </Col>
-        <Col span={4} align="end">
-          {percentage
-            ? thousandFormatter(currentIncrease)
-            : `${currentIncrease} %`}
-        </Col>
-      </Row>
-      {/* Render questions */}
-      {!parent && commodity_type === "focus"
-        ? orderBy(childrens, ["id"]).map((child) => (
-            <Question
-              key={`scenario-${segment.id}-${case_commodity}-${child.id}`}
-              commodity={commodity}
-              percentage={percentage}
-              segment={segment}
-              form={form}
-              {...child}
-              enableEditCase={enableEditCase}
-              // refreshCurrentIncrease={refreshCurrentIncrease}
+              controls={false}
+              // addonAfter={qtype === "percentage" ? "%" : ""}
+              // disabled={disableTotalIncomeFocusCommodityField}
+              {...InputNumberThousandFormatter}
             />
-          ))
-        : null}
-    </>
+          </Form.Item>
+        ))}
+      </Col>
+      <Col span={6} align="end">
+        0
+      </Col>
+      <Col span={4} align="end">
+        {/* {percentage
+            ? thousandFormatter(currentIncrease)
+            : `${currentIncrease} %`} */}
+        0
+      </Col>
+    </Row>
   );
 };
 
-const ScenarioModelingForm = ({ currentScenarioData }) => {
-  const [scenarioDetailForm] = Form.useForm();
+const ScenariIncomeoDriverAndChart = ({ segment }) => {
   const [scenarioDriversForm] = Form.useForm();
 
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
@@ -193,8 +86,6 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
   const { questionGroups, scenarioModeling } = CaseVisualState.useState(
     (s) => s
   );
-
-  const segment = currentCase.segments[0];
 
   const commodityQuestions = useMemo(() => {
     // Focus
@@ -275,6 +166,92 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
   }, [currentCase.case_commodities, questionGroups]);
 
   return (
+    <Row
+      align="middle"
+      gutter={[20, 20]}
+      className="income-driver-form-container"
+    >
+      <Col span={10}>
+        <Row
+          gutter={[50, 50]}
+          align="middle"
+          className="income-driver-form-section"
+        >
+          <Col span={24}>
+            <div className="title">
+              You can select up to 5 variables to change
+            </div>
+            <div className="description">
+              Make sure that you select variables you can influence/are within
+              your control.
+            </div>
+          </Col>
+          <Col span={24}>
+            <Form
+              layout="vertical"
+              name="scenario-modeling-income-driver-form"
+              form={scenarioDriversForm}
+            >
+              <Row gutter={[5, 5]} align="middle">
+                <Col span={9}>Income Driver</Col>
+                <Col span={5}>New Value</Col>
+                <Col span={6} align="end">
+                  Current Value
+                </Col>
+                <Col span={4} align="end">
+                  Change
+                </Col>
+              </Row>
+              {MAX_VARIABLES.map((index) => (
+                <Question
+                  key={`scenario-${segment.id}-${index}`}
+                  // commodity={commodity}
+                  // percentage={percentage}
+                  segment={segment}
+                  form={scenarioDriversForm}
+                  // enableEditCase={enableEditCase}
+                  // {...child}
+                  // refreshCurrentIncrease={refreshCurrentIncrease}
+                />
+              ))}
+              {/* {commodityQuestions.map((c) => (
+                <div key={c.commodity_id}>
+                  {orderBy(c.questions, ["id"]).map((question) => (
+                    <Question
+                      key={`scenario-${segment.id}-${c.case_commodity}-${question.id}`}
+                      // form={form}
+                      segment={segment}
+                      commodity={c}
+                      percentage={scenarioModeling?.config?.percentage || false}
+                      {...question}
+                      enableEditCase={enableEditCase}
+                      form={scenarioDriversForm}
+                      // refreshCurrentIncrease={refreshCurrentIncrease}
+                    />
+                  ))}
+                </div>
+              ))} */}
+            </Form>
+          </Col>
+        </Row>
+      </Col>
+      <Col span={14}>
+        <VisualCardWrapper
+          title="Optimal driver values to reach your target"
+          bordered
+        >
+          Chart
+        </VisualCardWrapper>
+      </Col>
+    </Row>
+  );
+};
+
+const ScenarioModelingForm = ({ currentScenarioData }) => {
+  const [scenarioDetailForm] = Form.useForm();
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
+
+  return (
     <Row gutter={[20, 20]} className="scenario-modeling-form-container">
       {/* Scenario Details Form */}
       <Col span={24}>
@@ -314,75 +291,7 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
       {/* Scenario Income Drivers & Chart */}
       <Col span={24}>
         <SegmentTabsWrapper>
-          <Row
-            align="middle"
-            gutter={[20, 20]}
-            className="income-driver-form-container"
-          >
-            <Col span={10}>
-              <Row
-                gutter={[50, 50]}
-                align="middle"
-                className="income-driver-form-section"
-              >
-                <Col span={24}>
-                  <div className="title">
-                    You can select up to 5 variables to change
-                  </div>
-                  <div className="description">
-                    Make sure that you select variables you can influence/are
-                    within your control.
-                  </div>
-                </Col>
-                {/* TODO:: Add segment selector/tabs */}
-                <Col span={24}>
-                  <Form
-                    layout="vertical"
-                    name="scenario-modeling-income-driver-form"
-                    form={scenarioDriversForm}
-                  >
-                    <Row gutter={[5, 5]} align="middle">
-                      <Col span={9}>Income Driver</Col>
-                      <Col span={5}>New Value</Col>
-                      <Col span={6} align="end">
-                        Current Value
-                      </Col>
-                      <Col span={4} align="end">
-                        Change
-                      </Col>
-                    </Row>
-                    {commodityQuestions.map((c) => (
-                      <div key={c.commodity_id}>
-                        {orderBy(c.questions, ["id"]).map((question) => (
-                          <Question
-                            key={`scenario-${segment.id}-${c.case_commodity}-${question.id}`}
-                            // form={form}
-                            segment={segment}
-                            commodity={c}
-                            percentage={
-                              scenarioModeling?.config?.percentage || false
-                            }
-                            {...question}
-                            enableEditCase={enableEditCase}
-                            form={scenarioDriversForm}
-                            // refreshCurrentIncrease={refreshCurrentIncrease}
-                          />
-                        ))}
-                      </div>
-                    ))}
-                  </Form>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={14}>
-              <VisualCardWrapper
-                title="Optimal driver values to reach your target"
-                bordered
-              >
-                Chart
-              </VisualCardWrapper>
-            </Col>
-          </Row>
+          <ScenariIncomeoDriverAndChart />
         </SegmentTabsWrapper>
       </Col>
       {/* EOL Scenario Income Drivers & Chart */}

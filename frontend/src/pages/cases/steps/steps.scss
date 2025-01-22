@@ -10,6 +10,9 @@
           .ant-tabs-tab {
             border-radius: 15px 15px 0 0 !important;
             background: #e1e0e0;
+            border-left: 1px solid #e1e0e0;
+            border-top: 1px solid #e1e0e0;
+            border-right: 1px solid #e1e0e0;
 
             &.ant-tabs-tab-active {
               background: #fff;
@@ -24,6 +27,9 @@
       padding: 20px 24px;
       border-radius: 0 20px 20px 20px;
       margin-bottom: 100px;
+      border-left: 1px solid #e1e0e0;
+      border-bottom: 1px solid #e1e0e0;
+      border-right: 1px solid #e1e0e0;
     }
   }
 }
