@@ -220,7 +220,8 @@
 }
 
 #understand-income-gap,
-#assess-impact-mitigation-strategies {
+#assess-impact-mitigation-strategies,
+#closing-gap {
   margin-bottom: 100px;
 
   .header-wrapper {
@@ -252,6 +253,10 @@
     font-style: normal;
     font-weight: 700;
     line-height: 32px;
+
+    .ant-card-body {
+      padding: 20px;
+    }
   }
 
   .card-content-wrapper {
@@ -504,6 +509,56 @@
       border-radius: 14px;
       background: #eaf2f2;
       padding: 5px 20px;
+    }
+  }
+}
+
+#closing-gap {
+  .card-section-wrapper {
+    .step-wrapper {
+      font-size: 20px;
+      font-family: "RocGrotesk";
+      font-style: normal;
+      line-height: 32px;
+      font-weight: 700;
+
+      .number {
+        padding: 2px 8px;
+        background: #ffc505;
+        border-radius: 70% 100% 100% 70%;
+
+        color: #01625f;
+      }
+
+      .label {
+        color: #fff;
+      }
+    }
+
+    .button-add-scenario {
+      border-radius: 40px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+      &:hover {
+        border: 1px solid #48d985;
+        color: #48d985;
+      }
+    }
+  }
+
+  .income-driver-form-container {
+    .income-driver-form-section {
+      .title {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px;
+      }
     }
   }
 }
