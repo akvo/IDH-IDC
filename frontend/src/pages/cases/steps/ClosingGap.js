@@ -5,7 +5,7 @@ import { stepPath, CurrentCaseState } from "../store";
 /**
  * STEP 5
  */
-const ClosingGap = ({ segment, setbackfunction, setnextfunction }) => {
+const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
 
@@ -26,7 +26,7 @@ const ClosingGap = ({ segment, setbackfunction, setnextfunction }) => {
     }
   }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
 
-  return <div>ClosingGap {segment.name}</div>;
+  return <div>ClosingGap</div>;
 };
 
 export default ClosingGap;
