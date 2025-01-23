@@ -466,10 +466,34 @@ const Case = () => {
             scenarioModeling: {
               ...s.scenarioModeling,
               ...scenarioModelingTmp,
+              config: {
+                ...scenarioModelingTmp.config,
+                scenarioData: scenarioModelingTmp.config.scenarioData.map(
+                  (x) => ({
+                    ...x,
+                    percentage:
+                      typeof x?.percentage !== "undefined"
+                        ? x.percentage
+                        : scenarioModelingTmp.config.percentage,
+                  })
+                ),
+              },
             },
             prevScenarioModeling: {
               ...s.prevScenarioModeling,
               ...scenarioModelingTmp,
+              config: {
+                ...scenarioModelingTmp.config,
+                scenarioData: scenarioModelingTmp.config.scenarioData.map(
+                  (x) => ({
+                    ...x,
+                    percentage:
+                      typeof x?.percentage !== "undefined"
+                        ? x.percentage
+                        : scenarioModelingTmp.config.percentage,
+                  })
+                ),
+              },
             },
           }));
         }

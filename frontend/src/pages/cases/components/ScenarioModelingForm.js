@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Row, Col, Form, Input, Select, InputNumber, TreeSelect } from "antd";
-import { CaseUIState, CurrentCaseState, CaseVisualState } from "../store";
+import { CaseUIState, CaseVisualState } from "../store";
 import { selectProps, InputNumberThousandFormatter } from "../../../lib";
 import { VisualCardWrapper } from "./";
 import { SegmentTabsWrapper } from "../layout";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
-// TODO :: The driver will be a dropdown list that include the sub drivers
 const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
 const generateDriverOptions = ({ group, questions }) => {
@@ -16,25 +16,25 @@ const generateDriverOptions = ({ group, questions }) => {
   }));
 };
 
-const Question = ({
-  index,
-  segment,
-  form,
-  qtype = "percentage",
-  percentage = true,
-}) => {
+const Question = ({ index, segment, percentage }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+  const [newValue, setNewValue] = useState(null);
+
+  const fieldName = `${segment.id}-${index}`;
 
   const incomeDriverOptions = useMemo(() => {
     const options = incomeDataDrivers.map((driver) => {
       return {
         value: driver.groupName,
         title: driver.groupName,
+        disabled: true,
         children: driver.questionGroups.map((qg) => {
           return {
             value: `${qg.commodity_name}-${qg.id}`,
             label: qg.commodity_name,
+            disabled: true,
             children: generateDriverOptions({
               group: qg,
               questions: qg.questions,
@@ -46,15 +46,36 @@ const Question = ({
     return options;
   }, [incomeDataDrivers]);
 
+  const onChangeDriver = (value) => {
+    const field = value.split("#")[1];
+    setSelectedDriver(field);
+  };
+
+  const currentValue = useMemo(() => {
+    if (selectedDriver) {
+      return segment?.answers?.[`current-${selectedDriver}`];
+    }
+    return 0;
+  }, [segment.answers, selectedDriver]);
+
+  const currentIncrease = useMemo(() => {
+    if (percentage) {
+      const value = currentValue * (newValue / 100);
+      return newValue ? currentValue + value : 0;
+    }
+    const percent = newValue
+      ? ((newValue - currentValue) / currentValue) * 100
+      : 0;
+    return isNaN(percent) ? 0 : percent.toFixed(2);
+  }, [percentage, newValue, currentValue]);
+
   return (
     <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
-      <Col span={9}>
-        <Form.Item
-          className="scenario-field-item"
-          name={`scenario_driver-${segment.id}-${index}`}
-        >
+      <Col span={8}>
+        <Form.Item className="scenario-field-item" name={`driver-${fieldName}`}>
           <TreeSelect
-            {...selectProps}
+            showSearch
+            allowClear
             style={{
               width: "100%",
             }}
@@ -64,55 +85,63 @@ const Question = ({
               overflow: "auto",
             }}
             placeholder="Select driver"
-            // onChange={onChange}
+            onChange={onChangeDriver}
             treeData={incomeDriverOptions}
             disabled={!enableEditCase}
           />
         </Form.Item>
       </Col>
-      <Col span={5}>
-        {["absolute", "percentage"].map((qtype, index) => (
-          <Form.Item
-            key={`${qtype}-${index}`}
-            // name={`${qtype}-${fieldName}`}
-            className="scenario-field-item"
-            style={{
-              display:
-                qtype !== "percentage" && percentage
-                  ? "none"
-                  : qtype === "percentage" && !percentage
-                  ? "none"
-                  : "",
-            }}
-          >
-            <InputNumber
+      <Col span={6}>
+        {["absolute", "percentage"].map((qtype) => {
+          return (
+            <Form.Item
+              key={`${qtype}-${fieldName}`}
+              name={`${qtype}-${fieldName}`}
+              className="scenario-field-item"
               style={{
-                width: "100%",
+                display:
+                  qtype !== "percentage" && percentage
+                    ? "none"
+                    : qtype === "percentage" && !percentage
+                    ? "none"
+                    : "",
               }}
-              controls={false}
-              // addonAfter={qtype === "percentage" ? "%" : ""}
-              // disabled={disableTotalIncomeFocusCommodityField}
-              {...InputNumberThousandFormatter}
-              disabled={!enableEditCase}
-            />
-          </Form.Item>
-        ))}
+            >
+              <InputNumber
+                style={{
+                  width: "100%",
+                }}
+                controls={false}
+                addonAfter={percentage ? "%" : ""}
+                {...InputNumberThousandFormatter}
+                disabled={!enableEditCase}
+                onChange={(val) => setNewValue(val)}
+              />
+            </Form.Item>
+          );
+        })}
       </Col>
       <Col span={6} align="end">
-        0
+        {thousandFormatter(currentValue, 2)}
       </Col>
       <Col span={4} align="end">
-        {/* {percentage
-            ? thousandFormatter(currentIncrease)
-            : `${currentIncrease} %`} */}
-        0
+        {percentage
+          ? thousandFormatter(currentIncrease)
+          : `${currentIncrease} %`}
       </Col>
     </Row>
   );
 };
 
-const ScenariIncomeoDriverAndChart = ({ segment }) => {
+const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
   const [scenarioDriversForm] = Form.useForm();
+
+  const onScenarioModelingIncomeDriverFormValuesChange = (
+    changedValue,
+    allValues
+  ) => {
+    console.info(changedValue, allValues);
+  };
 
   return (
     <Row
@@ -120,7 +149,7 @@ const ScenariIncomeoDriverAndChart = ({ segment }) => {
       gutter={[20, 20]}
       className="income-driver-form-container"
     >
-      <Col span={10}>
+      <Col span={12}>
         <Row
           gutter={[50, 50]}
           align="middle"
@@ -140,10 +169,11 @@ const ScenariIncomeoDriverAndChart = ({ segment }) => {
               layout="vertical"
               name="scenario-modeling-income-driver-form"
               form={scenarioDriversForm}
+              onValuesChange={onScenarioModelingIncomeDriverFormValuesChange}
             >
               <Row gutter={[5, 5]} align="middle">
-                <Col span={9}>Income Driver</Col>
-                <Col span={5}>New Value</Col>
+                <Col span={8}>Income Driver</Col>
+                <Col span={6}>New Value</Col>
                 <Col span={6} align="end">
                   Current Value
                 </Col>
@@ -151,20 +181,22 @@ const ScenariIncomeoDriverAndChart = ({ segment }) => {
                   Change
                 </Col>
               </Row>
-              {MAX_VARIABLES.map((index) => (
-                <Question
-                  key={`scenario-${segment.id}-${index}`}
-                  index={index}
-                  // percentage={percentage}
-                  segment={segment}
-                  form={scenarioDriversForm}
-                />
-              ))}
+              {MAX_VARIABLES.map((index) => {
+                return (
+                  <Question
+                    key={`scenario-${currentScenarioData.key}-${segment.id}-${index}`}
+                    index={index}
+                    segment={segment}
+                    form={scenarioDriversForm}
+                    {...currentScenarioData}
+                  />
+                );
+              })}
             </Form>
           </Col>
         </Row>
       </Col>
-      <Col span={14}>
+      <Col span={12}>
         <VisualCardWrapper
           title="Optimal driver values to reach your target"
           bordered
@@ -180,6 +212,29 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
   const [scenarioDetailForm] = Form.useForm();
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
+  const onScenarioDetailFormValuesChange = (changedValue) => {
+    CaseVisualState.update((s) => ({
+      ...s,
+      scenarioModeling: {
+        ...s.scenarioModeling,
+        config: {
+          ...s.scenarioModeling.config,
+          scenarioData: s.scenarioModeling.config.scenarioData.map(
+            (scenario) => {
+              if (scenario.key === currentScenarioData.key) {
+                return {
+                  ...scenario,
+                  ...changedValue,
+                };
+              }
+              return scenario;
+            }
+          ),
+        },
+      },
+    }));
+  };
+
   return (
     <Row gutter={[20, 20]} className="scenario-modeling-form-container">
       {/* Scenario Details Form */}
@@ -188,6 +243,12 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
           layout="vertical"
           name="scenario-modeling-detail-form"
           form={scenarioDetailForm}
+          onValuesChange={onScenarioDetailFormValuesChange}
+          initialValues={{
+            name: currentScenarioData?.name || null,
+            description: currentScenarioData?.description || null,
+            percentage: currentScenarioData?.percentage || true,
+          }}
         >
           <Row align="middle" gutter={[20, 20]}>
             <Col span={6}>
@@ -204,11 +265,20 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="approach" label="Choose approach">
+              <Form.Item name="percentage" label="Choose approach">
                 <Select
                   {...selectProps}
                   disabled={!enableEditCase}
-                  options={[]}
+                  options={[
+                    {
+                      label: "Percentage",
+                      value: true,
+                    },
+                    {
+                      label: "Absolute",
+                      value: false,
+                    },
+                  ]}
                 />
               </Form.Item>
             </Col>
@@ -220,7 +290,9 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
       {/* Scenario Income Drivers & Chart */}
       <Col span={24}>
         <SegmentTabsWrapper>
-          <ScenariIncomeoDriverAndChart />
+          <ScenariIncomeoDriverAndChart
+            currentScenarioData={currentScenarioData}
+          />
         </SegmentTabsWrapper>
       </Col>
       {/* EOL Scenario Income Drivers & Chart */}

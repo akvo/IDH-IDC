@@ -4,6 +4,7 @@ const defaultScenarioData = {
   key: 1,
   name: "Scenario 1",
   description: null,
+  percentage: true,
   scenarioValues: [],
 };
 
@@ -26,7 +27,6 @@ const defaultCaseVisualState = {
     case: null,
     tab: "scenario_modeling",
     config: {
-      percentage: true,
       scenarioData: [defaultScenarioData],
     },
   },
@@ -34,7 +34,6 @@ const defaultCaseVisualState = {
     case: null,
     tab: "scenario_modeling",
     config: {
-      percentage: true,
       scenarioData: [defaultScenarioData],
     },
   },
