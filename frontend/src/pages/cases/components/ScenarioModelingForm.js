@@ -1,42 +1,74 @@
 import React, { useMemo } from "react";
-import { Row, Col, Form, Input, Select, InputNumber } from "antd";
+import { Row, Col, Form, Input, Select, InputNumber, TreeSelect } from "antd";
 import { CaseUIState, CurrentCaseState, CaseVisualState } from "../store";
 import { selectProps, InputNumberThousandFormatter } from "../../../lib";
 import { VisualCardWrapper } from "./";
-import { orderBy } from "lodash";
-import { commodities } from "../../../store/static";
-import { thousandFormatter } from "../../../components/chart/options/common";
 import { SegmentTabsWrapper } from "../layout";
 
 // TODO :: The driver will be a dropdown list that include the sub drivers
 const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
+const generateDriverOptions = ({ group, questions }) => {
+  return questions.map((q) => ({
+    value: `${q.text}#${group.id}-${q.id}`, //case_commodity_id-question_id
+    label: q.text,
+    children: generateDriverOptions({ group, questions: q.childrens }),
+  }));
+};
+
 const Question = ({
+  index,
   segment,
   form,
   qtype = "percentage",
   percentage = true,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
+
+  const incomeDriverOptions = useMemo(() => {
+    const options = incomeDataDrivers.map((driver) => {
+      return {
+        value: driver.groupName,
+        title: driver.groupName,
+        children: driver.questionGroups.map((qg) => {
+          return {
+            value: `${qg.commodity_name}-${qg.id}`,
+            label: qg.commodity_name,
+            children: generateDriverOptions({
+              group: qg,
+              questions: qg.questions,
+            }),
+          };
+        }),
+      };
+    });
+    return options;
+  }, [incomeDataDrivers]);
 
   return (
-    <Row
-      gutter={[5, 5]}
-      align="middle"
-      style={{ marginTop: 10 }}
-      // display={
-      //   question_type === "aggregator" && commodity_type === "focus"
-      //     ? "none"
-      //     : ""
-      // }
-    >
+    <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
       <Col span={9}>
-        <Select
-          {...selectProps}
-          placeholder="Select driver"
-          options={[{ label: "TEST", value: 1 }]}
-          optionRender={(index) => <div key={index}>Option {index}</div>}
-        />
+        <Form.Item
+          className="scenario-field-item"
+          name={`scenario_driver-${segment.id}-${index}`}
+        >
+          <TreeSelect
+            {...selectProps}
+            style={{
+              width: "100%",
+            }}
+            // value={value}
+            dropdownStyle={{
+              maxHeight: 400,
+              overflow: "auto",
+            }}
+            placeholder="Select driver"
+            // onChange={onChange}
+            treeData={incomeDriverOptions}
+            disabled={!enableEditCase}
+          />
+        </Form.Item>
       </Col>
       <Col span={5}>
         {["absolute", "percentage"].map((qtype, index) => (
@@ -61,6 +93,7 @@ const Question = ({
               // addonAfter={qtype === "percentage" ? "%" : ""}
               // disabled={disableTotalIncomeFocusCommodityField}
               {...InputNumberThousandFormatter}
+              disabled={!enableEditCase}
             />
           </Form.Item>
         ))}
@@ -80,90 +113,6 @@ const Question = ({
 
 const ScenariIncomeoDriverAndChart = ({ segment }) => {
   const [scenarioDriversForm] = Form.useForm();
-
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
-  const currentCase = CurrentCaseState.useState((s) => s);
-  const { questionGroups, scenarioModeling } = CaseVisualState.useState(
-    (s) => s
-  );
-
-  const commodityQuestions = useMemo(() => {
-    // Focus
-    const focusQuestion = currentCase.case_commodities
-      .filter((c) => c.commodity_type === "focus")
-      .map((c) => {
-        const findQG = questionGroups.find(
-          (qg) => qg.commodity_id === c.commodity
-        );
-        // add case_commodity to questions
-        return {
-          ...c,
-          ...findQG,
-          case_commodity: c.id,
-          questions: findQG.questions.map((q) => ({
-            ...q,
-            case_commodity: c.id,
-          })),
-        };
-      });
-    // Group secondary & tertiary into diversified
-    const additionalDiversifed = currentCase.case_commodities
-      .filter(
-        (c) =>
-          c.commodity_type !== "focus" && c.commodity_type !== "diversified"
-      )
-      .flatMap((c) => {
-        const findQG = questionGroups.find(
-          (qg) => qg.commodity_id === c.commodity
-        );
-        return {
-          ...c,
-          ...findQG,
-          case_commodity: c.id,
-          questions: findQG.questions.map((q) => ({
-            ...q,
-            case_commodity: c.id,
-          })),
-        };
-      });
-    // Diversified
-    const diversified = currentCase.case_commodities.find(
-      (c) => c.commodity_type === "diversified"
-    );
-    const findDiversifiedQG = questionGroups.find(
-      (qg) => qg.commodity_id === diversified.commodity
-    );
-    const groupedDiversifiedQuestion = [
-      ...additionalDiversifed.flatMap((a) => a.questions),
-      ...findDiversifiedQG.questions.map((q) => ({
-        ...q,
-        case_commodity: diversified.id,
-      })),
-    ];
-    const diversifiedQuestion = {
-      ...diversified,
-      ...findDiversifiedQG,
-      case_commodity: [
-        diversified.id,
-        ...additionalDiversifed.map((a) => a.id),
-      ]?.join("_"),
-      questions: [
-        {
-          ...findDiversifiedQG.questions[0],
-          id: "diversified",
-          default_value: groupedDiversifiedQuestion
-            .map((x) => `#${x.id}`)
-            .join(" + "),
-          parent: null,
-          question_type: "diversified",
-          text: "Diversified Income",
-          description: "Custom question",
-          childrens: groupedDiversifiedQuestion,
-        },
-      ],
-    };
-    return [...focusQuestion, diversifiedQuestion];
-  }, [currentCase.case_commodities, questionGroups]);
 
   return (
     <Row
@@ -205,32 +154,12 @@ const ScenariIncomeoDriverAndChart = ({ segment }) => {
               {MAX_VARIABLES.map((index) => (
                 <Question
                   key={`scenario-${segment.id}-${index}`}
-                  // commodity={commodity}
+                  index={index}
                   // percentage={percentage}
                   segment={segment}
                   form={scenarioDriversForm}
-                  // enableEditCase={enableEditCase}
-                  // {...child}
-                  // refreshCurrentIncrease={refreshCurrentIncrease}
                 />
               ))}
-              {/* {commodityQuestions.map((c) => (
-                <div key={c.commodity_id}>
-                  {orderBy(c.questions, ["id"]).map((question) => (
-                    <Question
-                      key={`scenario-${segment.id}-${c.case_commodity}-${question.id}`}
-                      // form={form}
-                      segment={segment}
-                      commodity={c}
-                      percentage={scenarioModeling?.config?.percentage || false}
-                      {...question}
-                      enableEditCase={enableEditCase}
-                      form={scenarioDriversForm}
-                      // refreshCurrentIncrease={refreshCurrentIncrease}
-                    />
-                  ))}
-                </div>
-              ))} */}
             </Form>
           </Col>
         </Row>
