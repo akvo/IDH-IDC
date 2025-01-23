@@ -5,12 +5,13 @@ import { selectProps, InputNumberThousandFormatter } from "../../../lib";
 import { VisualCardWrapper } from "./";
 import { SegmentTabsWrapper } from "../layout";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { isEmpty } from "lodash";
 
 const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
 const generateDriverOptions = ({ group, questions }) => {
   return questions.map((q) => ({
-    value: `${q.text}#${group.id}-${q.id}`, //case_commodity_id-question_id
+    value: `${group.id}-${q.id}`, //case_commodity_id-question_id
     label: q.text,
     children: generateDriverOptions({ group, questions: q.childrens }),
   }));
@@ -32,7 +33,7 @@ const Question = ({ index, segment, percentage }) => {
         disabled: true,
         children: driver.questionGroups.map((qg) => {
           return {
-            value: `${qg.commodity_name}-${qg.id}`,
+            value: qg.id,
             label: qg.commodity_name,
             disabled: true,
             children: generateDriverOptions({
@@ -45,11 +46,6 @@ const Question = ({ index, segment, percentage }) => {
     });
     return options;
   }, [incomeDataDrivers]);
-
-  const onChangeDriver = (value) => {
-    const field = value.split("#")[1];
-    setSelectedDriver(field);
-  };
 
   const currentValue = useMemo(() => {
     if (selectedDriver) {
@@ -85,9 +81,10 @@ const Question = ({ index, segment, percentage }) => {
               overflow: "auto",
             }}
             placeholder="Select driver"
-            onChange={onChangeDriver}
+            onChange={(value) => setSelectedDriver(value)}
             treeData={incomeDriverOptions}
             disabled={!enableEditCase}
+            treeNodeFilterProp="label"
           />
         </Form.Item>
       </Col>
@@ -136,12 +133,47 @@ const Question = ({ index, segment, percentage }) => {
 const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
   const [scenarioDriversForm] = Form.useForm();
 
-  const onScenarioModelingIncomeDriverFormValuesChange = (
-    changedValue,
-    allValues
-  ) => {
-    console.info(changedValue, allValues);
+  const onScenarioModelingIncomeDriverFormValuesChange = (_, allNewValues) => {
+    CaseVisualState.update((s) => ({
+      ...s,
+      scenarioModeling: {
+        ...s.scenarioModeling,
+        config: {
+          ...s.scenarioModeling.config,
+          scenarioData: s.scenarioModeling.config.scenarioData.map(
+            (scenario) => {
+              if (scenario.key === currentScenarioData.key) {
+                return {
+                  ...scenario,
+                  scenarioValues: [
+                    ...scenario.scenarioValues.filter(
+                      (item) => item.segmentId !== segment.id
+                    ),
+                    {
+                      segmentId: segment.id,
+                      name: segment.name,
+                      allNewValues: allNewValues,
+                    },
+                  ],
+                };
+              }
+              return scenario;
+            }
+          ),
+        },
+      },
+    }));
   };
+
+  const initialScenarioModelingIncomeDriverValues = useMemo(() => {
+    if (currentScenarioData?.scenarioValues?.length) {
+      const values = currentScenarioData.scenarioValues.find(
+        (data) => data.segmentId === segment.id
+      );
+      return isEmpty(values) ? {} : values.allNewValues;
+    }
+    return {};
+  }, [segment.id, currentScenarioData.scenarioValues]);
 
   return (
     <Row
@@ -170,6 +202,7 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
               name="scenario-modeling-income-driver-form"
               form={scenarioDriversForm}
               onValuesChange={onScenarioModelingIncomeDriverFormValuesChange}
+              initialValues={initialScenarioModelingIncomeDriverValues}
             >
               <Row gutter={[5, 5]} align="middle">
                 <Col span={8}>Income Driver</Col>
