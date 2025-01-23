@@ -11,7 +11,7 @@ const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
 const generateDriverOptions = ({ group, questions }) => {
   return questions.map((q) => ({
-    value: `${group.id}-${q.id}`, //case_commodity_id-question_id
+    value: `${group.id}-${q.id}`,
     label: q.text,
     children: generateDriverOptions({ group, questions: q.childrens }),
   }));
@@ -26,25 +26,20 @@ const Question = ({ index, segment, percentage }) => {
   const fieldName = `${segment.id}-${index}`;
 
   const incomeDriverOptions = useMemo(() => {
-    const options = incomeDataDrivers.map((driver) => {
-      return {
-        value: driver.groupName,
-        title: driver.groupName,
+    return incomeDataDrivers.map((driver) => ({
+      value: driver.groupName,
+      title: driver.groupName,
+      disabled: true,
+      children: driver.questionGroups.map((qg) => ({
+        value: qg.id,
+        label: qg.commodity_name,
         disabled: true,
-        children: driver.questionGroups.map((qg) => {
-          return {
-            value: qg.id,
-            label: qg.commodity_name,
-            disabled: true,
-            children: generateDriverOptions({
-              group: qg,
-              questions: qg.questions,
-            }),
-          };
+        children: generateDriverOptions({
+          group: qg,
+          questions: qg.questions,
         }),
-      };
-    });
-    return options;
+      })),
+    }));
   }, [incomeDataDrivers]);
 
   const currentValue = useMemo(() => {
@@ -72,14 +67,8 @@ const Question = ({ index, segment, percentage }) => {
           <TreeSelect
             showSearch
             allowClear
-            style={{
-              width: "100%",
-            }}
-            // value={value}
-            dropdownStyle={{
-              maxHeight: 400,
-              overflow: "auto",
-            }}
+            style={{ width: "100%" }}
+            dropdownStyle={{ maxHeight: 400, overflow: "auto" }}
             placeholder="Select driver"
             onChange={(value) => setSelectedDriver(value)}
             treeData={incomeDriverOptions}
@@ -89,34 +78,30 @@ const Question = ({ index, segment, percentage }) => {
         </Form.Item>
       </Col>
       <Col span={6}>
-        {["absolute", "percentage"].map((qtype) => {
-          return (
-            <Form.Item
-              key={`${qtype}-${fieldName}`}
-              name={`${qtype}-${fieldName}`}
-              className="scenario-field-item"
-              style={{
-                display:
-                  qtype !== "percentage" && percentage
-                    ? "none"
-                    : qtype === "percentage" && !percentage
-                    ? "none"
-                    : "",
-              }}
-            >
-              <InputNumber
-                style={{
-                  width: "100%",
-                }}
-                controls={false}
-                addonAfter={percentage ? "%" : ""}
-                {...InputNumberThousandFormatter}
-                disabled={!enableEditCase}
-                onChange={(val) => setNewValue(val)}
-              />
-            </Form.Item>
-          );
-        })}
+        {["absolute", "percentage"].map((qtype) => (
+          <Form.Item
+            key={`${qtype}-${fieldName}`}
+            name={`${qtype}-${fieldName}`}
+            className="scenario-field-item"
+            style={{
+              display:
+                qtype !== "percentage" && percentage
+                  ? "none"
+                  : qtype === "percentage" && !percentage
+                  ? "none"
+                  : "",
+            }}
+          >
+            <InputNumber
+              style={{ width: "100%" }}
+              controls={false}
+              addonAfter={percentage ? "%" : ""}
+              {...InputNumberThousandFormatter}
+              disabled={!enableEditCase}
+              onChange={(val) => setNewValue(val)}
+            />
+          </Form.Item>
+        ))}
       </Col>
       <Col span={6} align="end">
         {thousandFormatter(currentValue, 2)}
@@ -199,7 +184,7 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
           <Col span={24}>
             <Form
               layout="vertical"
-              name="scenario-modeling-income-driver-form"
+              name={`scenario-modeling-income-driver-form-${segment.id}`}
               form={scenarioDriversForm}
               onValuesChange={onScenarioModelingIncomeDriverFormValuesChange}
               initialValues={initialScenarioModelingIncomeDriverValues}
@@ -214,17 +199,14 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
                   Change
                 </Col>
               </Row>
-              {MAX_VARIABLES.map((index) => {
-                return (
-                  <Question
-                    key={`scenario-${currentScenarioData.key}-${segment.id}-${index}`}
-                    index={index}
-                    segment={segment}
-                    form={scenarioDriversForm}
-                    {...currentScenarioData}
-                  />
-                );
-              })}
+              {MAX_VARIABLES.map((index) => (
+                <Question
+                  key={`scenario-${currentScenarioData.key}-${segment.id}-${index}`}
+                  index={index}
+                  segment={segment}
+                  percentage={currentScenarioData.percentage}
+                />
+              ))}
             </Form>
           </Col>
         </Row>
@@ -270,7 +252,6 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
 
   return (
     <Row gutter={[20, 20]} className="scenario-modeling-form-container">
-      {/* Scenario Details Form */}
       <Col span={24}>
         <Form
           layout="vertical"
@@ -303,14 +284,8 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
                   {...selectProps}
                   disabled={!enableEditCase}
                   options={[
-                    {
-                      label: "Percentage",
-                      value: true,
-                    },
-                    {
-                      label: "Absolute",
-                      value: false,
-                    },
+                    { label: "Percentage", value: true },
+                    { label: "Absolute", value: false },
                   ]}
                 />
               </Form.Item>
@@ -318,9 +293,7 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
           </Row>
         </Form>
       </Col>
-      {/* EOL Scenario Details Form */}
 
-      {/* Scenario Income Drivers & Chart */}
       <Col span={24}>
         <SegmentTabsWrapper>
           <ScenariIncomeoDriverAndChart
@@ -328,7 +301,6 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
           />
         </SegmentTabsWrapper>
       </Col>
-      {/* EOL Scenario Income Drivers & Chart */}
     </Row>
   );
 };
