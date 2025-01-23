@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Row, Col, Form, Select, InputNumber } from "antd";
 import { InputNumberThousandFormatter } from "../../../lib";
 import { selectProps } from "../../../lib";
+import { CaseUIState } from "../store";
 
 const binningDriverFormStyles = {
   inputNumber: {
@@ -24,6 +25,8 @@ const BinningDriverForm = ({
   dataSource = [],
   selected = [],
 }) => {
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
+
   const drivers = useMemo(() => {
     if (!selectedSegment) {
       return [];
@@ -84,7 +87,7 @@ const BinningDriverForm = ({
                 className="binning-input"
                 {...selectProps}
                 options={options["x-axis-driver"]}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 placeholder="Select driver"
               />
             </Form.Item>
@@ -97,7 +100,7 @@ const BinningDriverForm = ({
               <InputNumber
                 className="binning-input"
                 {...InputNumberThousandFormatter}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
               />
@@ -111,7 +114,7 @@ const BinningDriverForm = ({
               <InputNumber
                 className="binning-input"
                 {...InputNumberThousandFormatter}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
               />
@@ -131,7 +134,7 @@ const BinningDriverForm = ({
                 className="binning-input"
                 {...selectProps}
                 options={options["y-axis-driver"]}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 placeholder="Select driver"
               />
             </Form.Item>
@@ -144,7 +147,7 @@ const BinningDriverForm = ({
               <InputNumber
                 className="binning-input"
                 {...InputNumberThousandFormatter}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
               />
@@ -158,7 +161,7 @@ const BinningDriverForm = ({
               <InputNumber
                 className="binning-input"
                 {...InputNumberThousandFormatter}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
               />
@@ -178,7 +181,7 @@ const BinningDriverForm = ({
                 className="binning-input"
                 {...selectProps}
                 options={options["binning-driver-name"]}
-                // disabled={!enableEditCase}
+                disabled={!enableEditCase}
                 placeholder="Select driver"
               />
             </Form.Item>
@@ -193,7 +196,7 @@ const BinningDriverForm = ({
                   <InputNumber
                     className="binning-input"
                     {...InputNumberThousandFormatter}
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                     style={binningDriverFormStyles.inputNumber}
                   />
@@ -207,7 +210,7 @@ const BinningDriverForm = ({
                   <InputNumber
                     className="binning-input"
                     {...InputNumberThousandFormatter}
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                     style={binningDriverFormStyles.inputNumber}
                   />
@@ -221,7 +224,7 @@ const BinningDriverForm = ({
                   <InputNumber
                     className="binning-input"
                     {...InputNumberThousandFormatter}
-                    // disabled={!enableEditCase}
+                    disabled={!enableEditCase}
                     controls={false}
                     style={binningDriverFormStyles.inputNumber}
                   />

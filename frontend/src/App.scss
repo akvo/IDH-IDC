@@ -401,10 +401,11 @@
 
     .title {
       font-family: "RocGrotesk";
-      font-size: 16px;
+      font-size: 16px !important;
       font-style: normal;
       font-weight: 700;
       line-height: 157.15%;
+      color: #000 !important;
     }
 
     .button-export {
