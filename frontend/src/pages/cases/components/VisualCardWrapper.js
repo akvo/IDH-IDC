@@ -1,8 +1,13 @@
 import React from "react";
-import { Row, Col, Card, Space, Button } from "antd";
+import { Row, Col, Card, Space, Button, Tooltip } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
-const VisualCardWrapper = ({ children, title, bordered = false }) => {
+const VisualCardWrapper = ({
+  children,
+  title,
+  bordered = false,
+  tooltipText = null,
+}) => {
   return (
     <Card
       className={`visual-card-wrapper ${bordered ? "bordered" : ""}`}
@@ -11,9 +16,9 @@ const VisualCardWrapper = ({ children, title, bordered = false }) => {
           <Col span={18}>
             <Space align="center">
               <div className="title">{title}</div>
-              <div>
+              <Tooltip className="info-tooltip" title={tooltipText}>
                 <InfoCircleOutlined />
-              </div>
+              </Tooltip>
             </Space>
           </Col>
           <Col span={6} align="end">

@@ -307,6 +307,10 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   };
 
   const handleSaveSegment = useCallback(() => {
+    if (!enableEditCase) {
+      return;
+    }
+
     if (!isEmpty(currentCase.segments)) {
       // detect is payload updated
       const isUpdated =
@@ -386,6 +390,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
     prevCaseSegments,
     messageApi,
     navigate,
+    enableEditCase,
   ]);
 
   const backFunction = useCallback(() => {

@@ -10,6 +10,9 @@
           .ant-tabs-tab {
             border-radius: 15px 15px 0 0 !important;
             background: #e1e0e0;
+            border-left: 1px solid #e1e0e0;
+            border-top: 1px solid #e1e0e0;
+            border-right: 1px solid #e1e0e0;
 
             &.ant-tabs-tab-active {
               background: #fff;
@@ -24,6 +27,9 @@
       padding: 20px 24px;
       border-radius: 0 20px 20px 20px;
       margin-bottom: 100px;
+      border-left: 1px solid #e1e0e0;
+      border-bottom: 1px solid #e1e0e0;
+      border-right: 1px solid #e1e0e0;
     }
   }
 }
@@ -220,7 +226,8 @@
 }
 
 #understand-income-gap,
-#assess-impact-mitigation-strategies {
+#assess-impact-mitigation-strategies,
+#closing-gap {
   margin-bottom: 100px;
 
   .header-wrapper {
@@ -252,6 +259,10 @@
     font-style: normal;
     font-weight: 700;
     line-height: 32px;
+
+    .ant-card-body {
+      padding: 20px;
+    }
   }
 
   .card-content-wrapper {
@@ -260,6 +271,12 @@
 
   .card-visual-wrapper {
     border-radius: 20px;
+
+    &.no-padding {
+      .ant-card-body {
+        padding: 0;
+      }
+    }
 
     .section-title {
       color: #01625f;
@@ -361,6 +378,197 @@
           }
         }
       }
+    }
+  }
+
+  .adjust-income-target-wrapper {
+    .title {
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .description {
+      font-family: "TabletGothic";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .ant-select {
+      font-weight: normal;
+    }
+
+    .button-ghost-white {
+      border-radius: 40px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px;
+
+      &:hover {
+        border: 1px solid #48d985;
+        color: #48d985;
+      }
+    }
+
+    .ant-switch {
+      background: $muted-color;
+    }
+
+    .ant-switch-checked {
+      background: $light-green;
+    }
+  }
+}
+
+.adjust-income-target-modal-container {
+  .ant-modal-title {
+    font-family: "RocGrotesk";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
+
+  .ant-modal-body {
+    padding: 20px 0;
+  }
+
+  .description {
+    font-family: "TabletGothic";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: -0.32px;
+    margin-bottom: 10px;
+  }
+
+  .adjust-income-target-step-wrapper {
+    padding: 20px 0;
+
+    .step-wrapper {
+      width: 100%;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--light-40, #d8d8d8);
+
+      .number {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 23.056px;
+
+        background: #ffc505;
+        padding: 4px 8px;
+        border-radius: 50% 70% 70% 50%;
+      }
+
+      .label {
+        color: #01625f;
+        font-family: "TabletGothic";
+        font-size: 18px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 157.15%;
+      }
+    }
+
+    .input-label {
+      color: #4f4f4f;
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+      padding: 5px 0;
+    }
+
+    .current-target-wrapper,
+    .adjusted-target-wrapper {
+      color: #01625f;
+      font-family: "RocGrotesk";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 157.15%;
+
+      border-radius: 14px;
+      background: #eaf2f2;
+      padding: 5px 20px;
+    }
+  }
+}
+
+#closing-gap {
+  .card-section-wrapper {
+    .step-wrapper {
+      font-size: 20px;
+      font-family: "RocGrotesk";
+      font-style: normal;
+      line-height: 32px;
+      font-weight: 700;
+
+      .number {
+        padding: 2px 8px;
+        background: #ffc505;
+        border-radius: 70% 100% 100% 70%;
+
+        color: #01625f;
+      }
+
+      .label {
+        color: #fff;
+      }
+    }
+
+    .button-add-scenario {
+      border-radius: 40px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+      &:hover {
+        border: 1px solid #48d985;
+        color: #48d985;
+      }
+    }
+  }
+
+  .income-driver-form-container {
+    .income-driver-form-section {
+      .title {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px;
+      }
+    }
+
+    .scenario-field-item {
+      margin: 0 !important;
     }
   }
 }

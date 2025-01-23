@@ -66,6 +66,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   const incomeDataDrivers = CaseVisualState.useState(
     (s) => s.incomeDataDrivers
   );
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -77,6 +78,10 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   };
 
   const handleSaveIncomeData = useCallback(() => {
+    if (!enableEditCase) {
+      return;
+    }
+
     const allAnswers = currentCase?.segments?.flatMap((s) => s.answers);
     if (!isEmpty(allAnswers)) {
       // detect is payload updated
@@ -164,6 +169,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
     messageApi,
     navigate,
     prevCaseSegments,
+    enableEditCase,
   ]);
 
   const backFunction = useCallback(() => {
