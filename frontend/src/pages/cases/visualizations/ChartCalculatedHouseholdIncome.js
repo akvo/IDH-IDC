@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
@@ -9,6 +9,7 @@ const ChartCalculatedHouseholdIncome = () => {
     (s) => s.totalIncomeQuestions
   );
   const [showLabel, setShowLabel] = useState(false);
+  const elChartHHIncome = useRef(null);
 
   const chartData = useMemo(() => {
     if (!currentCase.segments.length) {
@@ -48,13 +49,15 @@ const ChartCalculatedHouseholdIncome = () => {
       title="Calculated household income"
       showLabel={showLabel}
       setShowLabel={setShowLabel}
+      exportElementRef={elChartHHIncome}
+      exportFilename="Calculated Household Income"
     >
       <Chart
         wrapper={false}
         type="COLUMN-BAR"
         data={chartData}
         loading={!chartData.length}
-        height={window.innerHeight * 0.55}
+        height={window.innerHeight * 0.35}
         extra={{
           axisTitle: { y: `Income (${currentCase.currency})` },
         }}
