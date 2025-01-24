@@ -1,17 +1,27 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Form, Input, Select, InputNumber, TreeSelect } from "antd";
-import { CaseUIState, CaseVisualState } from "../store";
+import { CaseUIState, CaseVisualState, CurrentCaseState } from "../store";
 import {
   selectProps,
   InputNumberThousandFormatter,
   flatten,
+  getFunctionDefaultValue,
 } from "../../../lib";
 import { VisualCardWrapper } from "./";
 import { SegmentTabsWrapper } from "../layout";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty } from "lodash";
+import { customFormula } from "../../../lib/formula";
 
 const MAX_VARIABLES = [0, 1, 2, 3, 4];
+
+const masterCommodityCategories = window.master?.commodity_categories || [];
+const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
+  const commodities = curr.commodities.reduce((a, c) => {
+    return { ...a, [c.id]: c.name };
+  }, {});
+  return { ...acc, ...commodities };
+}, {});
 
 const generateDriverOptions = ({ group, questions }) => {
   return questions.map((q) => ({
@@ -121,7 +131,9 @@ const Question = ({ index, segment, percentage }) => {
 
 const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
   const [scenarioDriversForm] = Form.useForm();
-  const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
+  const { incomeDataDrivers, questionGroups, totalIncomeQuestions } =
+    CaseVisualState.useState((s) => s);
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   const onScenarioModelingIncomeDriverFormValuesChange = (
     changedValue,
@@ -129,18 +141,19 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
   ) => {
     // CALCULATION :: calculate new total income based on driver change
     // assume new value is the feasible value
+    const valueKey = Object.keys(changedValue)[0];
+    const [valueField, segmentId, index] = valueKey.split("-");
 
     const driverDropdownKey = Object.keys(allNewValues).find(
       (key) =>
-        key.includes("driver") &&
+        key === `driver-${segmentId}-${index}` &&
         (allNewValues?.[key] || allNewValues?.[key] === 0)
     );
     // const [field, segmentId, index] = driverDropdownKey.split("-");
     const driverDropdownValue = allNewValues[driverDropdownKey];
-    const [caseCommodityId, questionId] = driverDropdownValue.split("-");
-
-    const valueKey = Object.keys(changedValue)[0];
-    const valueField = valueKey.split("-")[0];
+    const [caseCommodityId, questionId] = driverDropdownValue
+      ? driverDropdownValue.split("-")
+      : [];
 
     let newFeasibleValue = 0;
     const newValue = changedValue[valueKey];
@@ -192,6 +205,7 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
         return a;
       }, {});
 
+    // update segment answers for change driver
     const updatedSegment = {
       ...segment,
       answers: {
@@ -201,7 +215,159 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
       },
     };
 
-    // update segment answers for change driver
+    // generate questions
+    const flattenedQuestionGroups = questionGroups.flatMap((group) => {
+      const questions = group ? flatten(group.questions) : [];
+      return questions.map((q) => ({
+        ...q,
+        commodity_id: group.commodity_id,
+      }));
+    });
+    const totalCommodityQuestions = flattenedQuestionGroups.filter(
+      (q) => q.question_type === "aggregator"
+    );
+    const costQuestions = flattenedQuestionGroups.filter((q) =>
+      q.text.toLowerCase().includes("cost")
+    );
+
+    const updatedDasboardData = [updatedSegment].map((segment) => {
+      const answers = isEmpty(segment?.answers) ? {} : segment.answers;
+      const remappedAnswers = Object.keys(answers).map((key) => {
+        const [fieldKey, caseCommodityId, questionId] = key.split("-");
+        const commodity = currentCase.case_commodities.find(
+          (cc) => cc.id === parseInt(caseCommodityId)
+        );
+        const commodityFocus = commodity?.commodity_type === "focus";
+        const totalCommodityValue = totalCommodityQuestions.find(
+          (q) => q.id === parseInt(questionId)
+        );
+        const cost = costQuestions.find(
+          (q) =>
+            q.id === parseInt(questionId) &&
+            q.parent === 1 &&
+            q.commodityId === commodity.commodity
+        );
+        const question = flattenedQuestionGroups.find(
+          (q) =>
+            q.id === parseInt(questionId) &&
+            q.commodity_id === commodity.commodity
+        );
+        const totalOtherDiversifiedIncome =
+          question?.question_type === "diversified" && !question.parent;
+        return {
+          name: fieldKey,
+          question: question,
+          commodityFocus: commodityFocus,
+          commodityType: commodity?.commodity_type,
+          caseCommodityId: parseInt(caseCommodityId),
+          commodityId: commodity?.commodity,
+          commodityName: commodityNames?.[commodity?.commodity],
+          questionId: parseInt(questionId),
+          value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
+          isTotalFeasibleFocusIncome:
+            totalCommodityValue && commodityFocus && fieldKey === "feasible"
+              ? true
+              : false,
+          isTotalFeasibleDiversifiedIncome:
+            totalCommodityValue && !commodityFocus && fieldKey === "feasible"
+              ? true
+              : totalOtherDiversifiedIncome && fieldKey === "feasible"
+              ? true
+              : false,
+          isTotalCurrentFocusIncome:
+            totalCommodityValue && commodityFocus && fieldKey === "current"
+              ? true
+              : false,
+          isTotalCurrentDiversifiedIncome:
+            totalCommodityValue && !commodityFocus && fieldKey === "current"
+              ? true
+              : totalOtherDiversifiedIncome && fieldKey === "current"
+              ? true
+              : false,
+          feasibleCost:
+            cost && answers[key] && fieldKey === "feasible" ? true : false,
+          currentCost:
+            cost && answers[key] && fieldKey === "current" ? true : false,
+          costName: cost ? cost.text : "",
+        };
+      });
+
+      const totalCurrentIncomeAnswer = totalIncomeQuestions
+        .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
+        .filter((a) => a)
+        .reduce((acc, a) => acc + a, 0);
+      const totalFeasibleIncomeAnswer = totalIncomeQuestions
+        .map((qs) => segment?.answers?.[`feasible-${qs}`] || 0)
+        .filter((a) => a)
+        .reduce((acc, a) => acc + a, 0);
+
+      const totalCostFeasible = remappedAnswers
+        .filter((a) => a.feasibleCost)
+        .reduce((acc, curr) => acc + curr.value, 0);
+      const totalCostCurrent = remappedAnswers
+        .filter((a) => a.currentCost)
+        .reduce((acc, curr) => acc + curr.value, 0);
+      const totalFeasibleFocusIncome = remappedAnswers
+        .filter((a) => a.isTotalFeasibleFocusIncome)
+        .reduce((acc, curr) => acc + curr.value, 0);
+      const totalFeasibleDiversifiedIncome = remappedAnswers
+        .filter((a) => a.isTotalFeasibleDiversifiedIncome)
+        .reduce((acc, curr) => acc + curr.value, 0);
+      const totalCurrentFocusIncome = remappedAnswers
+        .filter((a) => a.isTotalCurrentFocusIncome)
+        .reduce((acc, curr) => acc + curr.value, 0);
+      const totalCurrentDiversifiedIncome = remappedAnswers
+        .filter((a) => a.isTotalCurrentDiversifiedIncome)
+        .reduce((acc, curr) => acc + curr.value, 0);
+
+      const focusCommodityAnswers = remappedAnswers
+        .filter((a) => a.commodityType === "focus")
+        .map((a) => ({
+          id: `${a.name}-${a.questionId}`,
+          value: a.value,
+        }));
+
+      const currentRevenueFocusCommodity = getFunctionDefaultValue(
+        { default_value: customFormula.revenue_focus_commodity },
+        "current",
+        focusCommodityAnswers
+      );
+      const feasibleRevenueFocusCommodity = getFunctionDefaultValue(
+        { default_value: customFormula.revenue_focus_commodity },
+        "feasible",
+        focusCommodityAnswers
+      );
+      const currentFocusCommodityCoP = getFunctionDefaultValue(
+        { default_value: customFormula.focus_commodity_cost_of_production },
+        "current",
+        focusCommodityAnswers
+      );
+      const feasibleFocusCommodityCoP = getFunctionDefaultValue(
+        { default_value: customFormula.focus_commodity_cost_of_production },
+        "feasible",
+        focusCommodityAnswers
+      );
+
+      return {
+        ...segment,
+        total_current_income: totalCurrentIncomeAnswer,
+        total_feasible_income: totalFeasibleIncomeAnswer,
+        total_feasible_cost: -totalCostFeasible,
+        total_current_cost: -totalCostCurrent,
+        total_feasible_focus_income: totalFeasibleFocusIncome,
+        total_feasible_diversified_income: totalFeasibleDiversifiedIncome,
+        total_current_focus_income: totalCurrentFocusIncome,
+        total_current_diversified_income: totalCurrentDiversifiedIncome,
+        total_current_revenue_focus_commodity: currentRevenueFocusCommodity,
+        total_feasible_revenue_focus_commodity: feasibleRevenueFocusCommodity,
+        total_current_focus_commodity_cost_of_production:
+          currentFocusCommodityCoP,
+        total_feasible_focus_commodity_cost_of_production:
+          feasibleFocusCommodityCoP,
+        answers: remappedAnswers,
+      };
+    });
+
     const currentScenarioValue = currentScenarioData.scenarioValues.find(
       (scenario) => scenario.segmentId === segment.id
     );
@@ -215,7 +381,7 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
           ...currentScenarioValue.allNewValues,
           ...allNewValues,
         },
-        updatedSegment,
+        updatedDasboardData,
       };
     } else {
       updatedScenarioValue = {
@@ -223,7 +389,7 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
         segmentId: segment.id,
         name: segment.name,
         allNewValues,
-        updatedSegment,
+        updatedDasboardData,
       };
     }
 
