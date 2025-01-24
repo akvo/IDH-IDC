@@ -45,7 +45,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
 
   return (
     <Row id="steps" gutter={[20, 20]}>
-      <Col span={childrenCount === 1 ? 24 : 16}>
+      <Col span={childrenCount === 1 ? 24 : 14}>
         <Tabs
           className="step-segment-tabs-container"
           type="card"
@@ -67,7 +67,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
         React.Children.map(children, (child, index) =>
           child.key === "right" ? (
             React.isValidElement(child) ? (
-              <Col key={index} span={8}>
+              <Col key={index} span={10}>
                 {child}
               </Col>
             ) : null

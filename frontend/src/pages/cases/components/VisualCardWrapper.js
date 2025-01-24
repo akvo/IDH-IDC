@@ -7,13 +7,15 @@ const VisualCardWrapper = ({
   title,
   bordered = false,
   tooltipText = null,
+  showLabel,
+  setShowLabel,
 }) => {
   return (
     <Card
       className={`visual-card-wrapper ${bordered ? "bordered" : ""}`}
       title={
-        <Row align="middle" gutter={[8, 8]}>
-          <Col span={18}>
+        <Row align="middle" gutter={[8, 8]} wrap>
+          <Col span={16}>
             <Space align="center">
               <div className="title">{title}</div>
               <Tooltip className="info-tooltip" title={tooltipText}>
@@ -21,7 +23,18 @@ const VisualCardWrapper = ({
               </Tooltip>
             </Space>
           </Col>
-          <Col span={6} align="end">
+          <Col span={8} align="end">
+            {setShowLabel ? (
+              <Button
+                size="small"
+                className="button-export"
+                onClick={() => setShowLabel((prev) => !prev)}
+              >
+                {showLabel ? "Hide" : "Show"} label
+              </Button>
+            ) : (
+              ""
+            )}
             <Button size="small" className="button-export">
               Export
             </Button>
