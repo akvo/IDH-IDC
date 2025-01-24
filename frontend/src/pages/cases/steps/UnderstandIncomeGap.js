@@ -7,6 +7,7 @@ import {
   CompareIncomeGap,
   // ChartIncomeDriverAcrossSegments,
   ChartExploreIncomeDriverBreakdown,
+  ChartIncomeLevelsForDifferentCommodities,
 } from "../visualizations";
 
 /**
@@ -62,12 +63,15 @@ const UnderstandIncomeGap = ({ setbackfunction, setnextfunction }) => {
       {/* EOL Chart */}
       <Col span={24}>
         <Card className="card-section-wrapper">
-          Understand current income and the income gap
+          Explore your income drivers
         </Card>
       </Col>
       {/* Chart */}
       <Col span={24}>
         <ChartExploreIncomeDriverBreakdown />
+      </Col>
+      <Col span={24}>
+        <ChartIncomeLevelsForDifferentCommodities />
       </Col>
       {/* EOL Chart */}
     </Row>
