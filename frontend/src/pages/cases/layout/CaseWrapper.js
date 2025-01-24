@@ -15,10 +15,8 @@ const { Sider, Content } = Layout;
 
 const sidebarItems = [
   {
-    title:
-      "Set an income target: use a living income benchmark or define the target yoruself",
-    description:
-      "Set an income target: define the target yourself or rely on a living income.",
+    title: "Set an income target",
+    description: "Use a living income benchmark or define the target yourself.",
   },
   {
     title: "Enter your income data",
