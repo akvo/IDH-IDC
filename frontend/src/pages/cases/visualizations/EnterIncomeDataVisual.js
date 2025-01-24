@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import { Card, Row, Col, Space, Tag } from "antd";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { VisualCardWrapper } from "../components";
 import ChartCalculatedHouseholdIncome from "./ChartCalculatedHouseholdIncome";
+import ExploreDataFromOtherStudiesTable from "./ExploreDataFromOtherStudiesTable";
 
 const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
@@ -39,9 +39,7 @@ const EnterIncomeDataVisual = () => {
         <ChartCalculatedHouseholdIncome />
       </Col>
       <Col span={24}>
-        <VisualCardWrapper title="Household Income">
-          Household Income Table
-        </VisualCardWrapper>
+        <ExploreDataFromOtherStudiesTable />
       </Col>
     </Row>
   );

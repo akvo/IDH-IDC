@@ -60,6 +60,7 @@ const VisualCardWrapper = ({
   setShowLabel,
   exportElementRef,
   exportFilename = "Undefined",
+  extraButtons = [],
 }) => {
   const [exportimg, setExporting] = useState(false);
 
@@ -77,9 +78,13 @@ const VisualCardWrapper = ({
           <Col span={16}>
             <Space align="center">
               <div className="title">{title}</div>
-              <Tooltip className="info-tooltip" title={tooltipText}>
-                <InfoCircleOutlined />
-              </Tooltip>
+              {tooltipText ? (
+                <Tooltip className="info-tooltip" title={tooltipText}>
+                  <InfoCircleOutlined />
+                </Tooltip>
+              ) : (
+                ""
+              )}
             </Space>
           </Col>
           <Col span={8} align="end">
@@ -94,14 +99,19 @@ const VisualCardWrapper = ({
             ) : (
               ""
             )}
-            <Button
-              size="small"
-              className="button-export"
-              onClick={handleOnClickSaveAsImage}
-              loading={exportimg}
-            >
-              Export
-            </Button>
+            {exportElementRef ? (
+              <Button
+                size="small"
+                className="button-export"
+                onClick={handleOnClickSaveAsImage}
+                loading={exportimg}
+              >
+                Export
+              </Button>
+            ) : (
+              ""
+            )}
+            {extraButtons?.length ? extraButtons.map((button) => button) : ""}
           </Col>
         </Row>
       }
