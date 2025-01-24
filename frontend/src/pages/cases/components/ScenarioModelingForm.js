@@ -1,7 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Form, Input, Select, InputNumber, TreeSelect } from "antd";
 import { CaseUIState, CaseVisualState } from "../store";
-import { selectProps, InputNumberThousandFormatter } from "../../../lib";
+import {
+  selectProps,
+  InputNumberThousandFormatter,
+  flatten,
+} from "../../../lib";
 import { VisualCardWrapper } from "./";
 import { SegmentTabsWrapper } from "../layout";
 import { thousandFormatter } from "../../../components/chart/options/common";
@@ -117,8 +121,113 @@ const Question = ({ index, segment, percentage }) => {
 
 const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
   const [scenarioDriversForm] = Form.useForm();
+  const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
 
-  const onScenarioModelingIncomeDriverFormValuesChange = (_, allNewValues) => {
+  const onScenarioModelingIncomeDriverFormValuesChange = (
+    changedValue,
+    allNewValues
+  ) => {
+    // CALCULATION :: calculate new total income based on driver change
+    // assume new value is the feasible value
+
+    const driverDropdownKey = Object.keys(allNewValues).find(
+      (key) =>
+        key.includes("driver") &&
+        (allNewValues?.[key] || allNewValues?.[key] === 0)
+    );
+    // const [field, segmentId, index] = driverDropdownKey.split("-");
+    const driverDropdownValue = allNewValues[driverDropdownKey];
+    const [caseCommodityId, questionId] = driverDropdownValue.split("-");
+
+    const valueKey = Object.keys(changedValue)[0];
+    const valueField = valueKey.split("-")[0];
+
+    let newFeasibleValue = 0;
+    const newValue = changedValue[valueKey];
+    const currentSegmentAnswer =
+      segment.answers?.[`current-${driverDropdownValue}`];
+
+    if (
+      valueField === "percentage" &&
+      typeof currentSegmentAnswer !== "undefined"
+    ) {
+      const valueTmp = currentSegmentAnswer * (newValue / 100);
+      newFeasibleValue = newValue ? currentSegmentAnswer + valueTmp : 0;
+    }
+
+    if (
+      valueField === "absolute" &&
+      typeof currentSegmentAnswer !== "undefined"
+    ) {
+      newFeasibleValue = newValue;
+    }
+
+    // Update child question feasible answer to 0 if the parent question is updated
+    const flattenIncomeDataDriversQuestions = incomeDataDrivers
+      .flatMap((driver) => (!driver ? [] : flatten(driver.questionGroups)))
+      .flatMap((group) => {
+        const childQuestions = !group ? [] : flatten(group.questions);
+        return childQuestions.map((cq) => ({
+          case_commodity: group.id,
+          ...group,
+          ...cq,
+        }));
+      }); // combine with commodity value
+
+    const findQuestion = flattenIncomeDataDriversQuestions.find(
+      (q) =>
+        q.case_commodity === parseInt(caseCommodityId) &&
+        q.id === parseInt(questionId)
+    );
+    const flattenChildrens = !findQuestion
+      ? []
+      : flatten(findQuestion.childrens);
+    const updatedChildAnswer = flattenChildrens
+      .map((q) => ({
+        key: `feasible-${caseCommodityId}-${q.id}`,
+        value: 0,
+      }))
+      .reduce((a, b) => {
+        a[b.key] = b.value;
+        return a;
+      }, {});
+
+    const updatedSegment = {
+      ...segment,
+      answers: {
+        ...segment.answers,
+        [`feasible-${driverDropdownValue}`]: newFeasibleValue,
+        ...updatedChildAnswer,
+      },
+    };
+
+    // update segment answers for change driver
+    const currentScenarioValue = currentScenarioData.scenarioValues.find(
+      (scenario) => scenario.segmentId === segment.id
+    );
+
+    let updatedScenarioValue = {};
+    if (currentScenarioValue) {
+      updatedScenarioValue = {
+        ...updatedScenarioValue,
+        ...currentScenarioValue,
+        allNewValues: {
+          ...currentScenarioValue.allNewValues,
+          ...allNewValues,
+        },
+        updatedSegment,
+      };
+    } else {
+      updatedScenarioValue = {
+        ...updatedScenarioValue,
+        segmentId: segment.id,
+        name: segment.name,
+        allNewValues,
+        updatedSegment,
+      };
+    }
+
+    // update state value
     CaseVisualState.update((s) => ({
       ...s,
       scenarioModeling: {
@@ -135,9 +244,7 @@ const ScenariIncomeoDriverAndChart = ({ segment, currentScenarioData }) => {
                       (item) => item.segmentId !== segment.id
                     ),
                     {
-                      segmentId: segment.id,
-                      name: segment.name,
-                      allNewValues: allNewValues,
+                      ...updatedScenarioValue,
                     },
                   ],
                 };
