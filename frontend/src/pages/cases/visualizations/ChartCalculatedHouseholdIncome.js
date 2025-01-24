@@ -60,6 +60,11 @@ const ChartCalculatedHouseholdIncome = () => {
         height={window.innerHeight * 0.35}
         extra={{
           axisTitle: { y: `Income (${currentCase.currency})` },
+          xAxisLabel: {
+            rotate: 45,
+            margin: 40,
+            align: "center",
+          },
         }}
         grid={{ bottom: 60, right: 5, left: 90 }}
         showLabel={showLabel}
