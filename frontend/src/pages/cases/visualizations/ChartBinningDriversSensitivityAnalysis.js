@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Card, Col, Row, Space, Image } from "antd";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
@@ -240,7 +240,8 @@ const ChartBinningDriversSensitivityAnalysis = ({
 }) => {
   const [label, setLabel] = useState(null);
   const [chartTitle, setChartTitle] = useState(null);
-  // const elLineChart = useRef(null);
+
+  const elLineChart = useRef(null);
 
   const binningData = useMemo(() => {
     if (!segment?.id) {
@@ -367,6 +368,8 @@ const ChartBinningDriversSensitivityAnalysis = ({
             title={chartTitle}
             tooltipText={lineChartTooltipText}
             bordered
+            exportElementRef={elLineChart}
+            exportFilename={chartTitle}
           >
             <Chart
               height={525}

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { Card, Col, Row, Space } from "antd";
 import { VisualCardWrapper } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
@@ -48,6 +48,9 @@ const ChartIncomeGap = () => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
 
+  const [showLabel, setShowLabel] = useState(false);
+  const chartIncomeGapRef = useRef(null);
+
   const chartData = useMemo(() => {
     return seriesTmp.map((tmp) => {
       const data = dashboardData.map((d) => {
@@ -82,7 +85,14 @@ const ChartIncomeGap = () => {
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
         <Col span={16}>
-          <VisualCardWrapper title="Income gap" bordered>
+          <VisualCardWrapper
+            title="Income gap"
+            bordered
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
+            exportElementRef={chartIncomeGapRef}
+            exportFilename="What is the current income of the farmers and their income gap?"
+          >
             <Chart
               wrapper={false}
               type="BAR"
@@ -91,7 +101,7 @@ const ChartIncomeGap = () => {
                 series: chartData,
                 origin: dashboardData,
                 yAxis: { name: `Income (${currentCase.currency})` },
-                // showLabel: showLabel,
+                showLabel: showLabel,
               })}
             />
           </VisualCardWrapper>

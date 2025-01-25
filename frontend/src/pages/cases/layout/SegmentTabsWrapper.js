@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Tabs, Row, Col } from "antd";
 import { CurrentCaseState, CaseUIState } from "../store";
 import "../steps/steps.scss";
+import { orderBy } from "lodash";
 
 const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -9,7 +10,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const childrenCount = React.Children.count(children);
 
   const segmentTabItems = useMemo(() => {
-    return currentCase.segments.map((segment) => ({
+    return orderBy(currentCase.segments, ["id"]).map((segment) => ({
       label: segment.name,
       key: segment.id,
       children:
@@ -45,7 +46,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
 
   return (
     <Row id="steps" gutter={[20, 20]}>
-      <Col span={childrenCount === 1 ? 24 : 16}>
+      <Col span={childrenCount === 1 ? 24 : 14}>
         <Tabs
           className="step-segment-tabs-container"
           type="card"
@@ -67,7 +68,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
         React.Children.map(children, (child, index) =>
           child.key === "right" ? (
             React.isValidElement(child) ? (
-              <Col key={index} span={8}>
+              <Col key={index} span={10}>
                 {child}
               </Col>
             ) : null

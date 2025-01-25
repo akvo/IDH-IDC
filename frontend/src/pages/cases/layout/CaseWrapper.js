@@ -15,10 +15,8 @@ const { Sider, Content } = Layout;
 
 const sidebarItems = [
   {
-    title:
-      "Set an income target: use a living income benchmark or define the target yoruself",
-    description:
-      "Set an income target: define the target yourself or rely on a living income.",
+    title: "Set an income target",
+    description: "Use a living income benchmark or define the target yourself.",
   },
   {
     title: "Enter your income data",
@@ -82,14 +80,14 @@ const CaseWrapper = ({ children, step, caseId, currentCase }) => {
     <Row id="case-detail" className="case-container">
       <Col span={24}>
         <Row>
-          <Col span={5}>
+          <Col span={4}>
             <Affix offsetTop={80}>
               <Sider className="case-sidebar-container" width="100%">
                 <CaseSidebar step={step} caseId={caseId} />
               </Sider>
             </Affix>
           </Col>
-          <Col span={19} className="case-content-container">
+          <Col span={20} className="case-content-container">
             <Content>
               <ContentLayout
                 breadcrumbItems={[

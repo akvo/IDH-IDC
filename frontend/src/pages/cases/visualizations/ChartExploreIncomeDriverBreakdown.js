@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Card, Col, Row, Space } from "antd";
 import { VisualCardWrapper } from "../components";
 import { getColumnStackBarOptions } from "../../../components/chart/lib";
@@ -55,6 +55,8 @@ const ChartExploreIncomeDriverBreakdown = () => {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [axisTitle, setAxisTitle] = useState(currentCase.currency);
+  const [showLabel, setShowLabel] = useState(false);
+  const chartBreakdownDriverRef = useRef(null);
 
   const selectedSegmentData = useMemo(() => {
     if (!selectedSegment || !dashboardData.length) {
@@ -294,7 +296,14 @@ const ChartExploreIncomeDriverBreakdown = () => {
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
         <Col span={16}>
-          <VisualCardWrapper title="Explore income driver breakdown" bordered>
+          <VisualCardWrapper
+            title="Explore income driver breakdown"
+            bordered
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
+            exportElementRef={chartBreakdownDriverRef}
+            exportFilename="Explore income driver breakdown"
+          >
             <Row gutter={[20, 20]}>
               <Col span={24}>
                 <SegmentSelector
@@ -321,7 +330,7 @@ const ChartExploreIncomeDriverBreakdown = () => {
                     origin: selectedSegmentData ? [selectedSegmentData] : [],
                     yAxis: { name: axisTitle },
                     grid: chartGrid(selectedDriver),
-                    // showLabel: showLabel,
+                    showLabel: showLabel,
                   })}
                 />
               </Col>

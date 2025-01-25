@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Card, Col, Row, Space } from "antd";
 import { VisualCardWrapper } from "../components";
 import { orderBy } from "lodash";
@@ -15,11 +15,11 @@ import { CaseVisualState } from "../store";
 
 const legendColors = ["#F9BC05", "#82b2b2", "#03625f"];
 
-const ChartBiggestImpactOnIncome = ({
-  showLabel = true /* TODO:: manage this later*/,
-}) => {
+const ChartBiggestImpactOnIncome = () => {
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [showLabel, setShowLabel] = useState(null);
+  const chartRef = useRef(null);
 
   const chartData = useMemo(() => {
     if (!dashboardData.length || !selectedSegment) {
@@ -185,12 +185,11 @@ const ChartBiggestImpactOnIncome = ({
         title = "Change in income driver value (%)";
       }
       if (x === "income") {
-        title =
-          "Percentage change in income with driver at feasible level,\nwhile all other drivers stay the same (%)";
+        title = "Income change (%): change only this driver";
       }
       if (x === "additional") {
         title =
-          "Percentage change in income when this driver moves\nfrom current to feasible level while all other drivers\nare at feasible level (%)";
+          "Income change (%): change this driver, other drivers are at feasible levels";
       }
       const data = transformedData.map((d) => ({
         name: d.name,
@@ -296,7 +295,15 @@ const ChartBiggestImpactOnIncome = ({
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
         <Col span={16}>
-          <VisualCardWrapper title="Biggest impact on income" bordered>
+          <VisualCardWrapper
+            title="Highest impact on income"
+            bordered
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
+            exportElementRef={chartRef}
+            exportFilename="How does income change when an income driver changes to its
+              feasible level?"
+          >
             <Row gutter={[20, 20]}>
               <Col span={24}>
                 <SegmentSelector

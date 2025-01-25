@@ -7,3 +7,4 @@ export { default as ChartBiggestImpactOnIncome } from "./ChartBiggestImpactOnInc
 export { default as ChartMonetaryImpactOnIncome } from "./ChartMonetaryImpactOnIncome";
 export { default as ChartBinningDriversSensitivityAnalysis } from "./ChartBinningDriversSensitivityAnalysis";
 export { default as ChartBinningHeatmapSensitivityAnalysis } from "./ChartBinningHeatmapSensitivityAnalysis";
+export { default as ChartIncomeLevelsForDifferentCommodities } from "./ChartIncomeLevelsForDifferentCommodities";

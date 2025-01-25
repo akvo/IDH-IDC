@@ -1,16 +1,13 @@
 import React, { useMemo } from "react";
 import { Card, Row, Col, Space, Tag } from "antd";
-import { CaseUIState, CurrentCaseState, CaseVisualState } from "../store";
+import { CaseUIState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { VisualCardWrapper } from "../components";
-import Chart from "../../../components/chart";
+import ChartCalculatedHouseholdIncome from "./ChartCalculatedHouseholdIncome";
+import ExploreDataFromOtherStudiesTable from "./ExploreDataFromOtherStudiesTable";
 
 const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const totalIncomeQuestions = CaseVisualState.useState(
-    (s) => s.totalIncomeQuestions
-  );
 
   const currentSegment = useMemo(
     () =>
@@ -18,39 +15,6 @@ const EnterIncomeDataVisual = () => {
       null,
     [currentCase.segments, activeSegmentId]
   );
-
-  const chartData = useMemo(() => {
-    if (!currentCase.segments.length) {
-      return [];
-    }
-    const res = currentCase.segments.map((item) => {
-      const answers = item.answers || {};
-      const current = totalIncomeQuestions
-        .map((qs) => answers?.[`current-${qs}`] || 0)
-        .filter((a) => a)
-        .reduce((acc, a) => acc + a, 0);
-      const feasible = totalIncomeQuestions
-        .map((qs) => answers?.[`feasible-${qs}`] || 0)
-        .filter((a) => a)
-        .reduce((acc, a) => acc + a, 0);
-      return {
-        name: item.name,
-        data: [
-          {
-            name: "Current Income",
-            value: Math.round(current),
-            color: "#03625f",
-          },
-          {
-            name: "Feasible Income",
-            value: Math.round(feasible),
-            color: "#82b2b2",
-          },
-        ],
-      };
-    });
-    return res;
-  }, [totalIncomeQuestions, currentCase.segments]);
 
   if (!currentSegment) {
     return <Tag color="error">Failed to load current segment data</Tag>;
@@ -72,25 +36,10 @@ const EnterIncomeDataVisual = () => {
         </Card>
       </Col>
       <Col span={24}>
-        <VisualCardWrapper title="Household Income">
-          <Chart
-            wrapper={false}
-            type="COLUMN-BAR"
-            data={chartData}
-            loading={!chartData.length}
-            height={window.innerHeight * 0.4}
-            extra={{
-              axisTitle: { y: `Income (${currentCase.currency})` },
-            }}
-            grid={{ bottom: 60, right: 5, left: 90 }}
-            // showLabel={showChartLabel}
-          />
-        </VisualCardWrapper>
+        <ChartCalculatedHouseholdIncome />
       </Col>
       <Col span={24}>
-        <VisualCardWrapper title="Household Income">
-          Household Income Table
-        </VisualCardWrapper>
+        <ExploreDataFromOtherStudiesTable />
       </Col>
     </Row>
   );
