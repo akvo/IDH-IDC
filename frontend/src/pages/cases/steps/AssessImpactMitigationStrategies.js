@@ -590,16 +590,10 @@ const AssessImpactMitigationStrategies = ({
           <Col span={24}>
             <Space className="step-wrapper" align="center">
               <div className="number">1.</div>
-              <div className="label">Explore graphs</div>
-            </Space>
-          </Col>
-          <Col span={24}>
-            <Space className="step-wrapper" align="center">
-              <div className="number">2.</div>
-              <div className="label">Changing target</div>
+              <div className="label">Changing the target</div>
             </Space>
             <div className="description">
-              If you like to change the target, Please choose whether you would
+              If you like to change the target, please choose whether you would
               like to express the changes in current values using percentages or
               absolute values.
             </div>
@@ -627,7 +621,7 @@ const AssessImpactMitigationStrategies = ({
           </Col>
           <Col span={24}>
             <Space className="step-wrapper" align="center">
-              <div className="number">3.</div>
+              <div className="number">2.</div>
               <div className="label">Adjust current values below</div>
             </Space>
             <div className="description">
