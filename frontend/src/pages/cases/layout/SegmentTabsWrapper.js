@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Tabs, Row, Col } from "antd";
 import { CurrentCaseState, CaseUIState } from "../store";
 import "../steps/steps.scss";
+import { orderBy } from "lodash";
 
 const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -9,7 +10,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   const childrenCount = React.Children.count(children);
 
   const segmentTabItems = useMemo(() => {
-    return currentCase.segments.map((segment) => ({
+    return orderBy(currentCase.segments, ["id"]).map((segment) => ({
       label: segment.name,
       key: segment.id,
       children:

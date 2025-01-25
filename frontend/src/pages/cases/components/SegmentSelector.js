@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Radio } from "antd";
 import { CaseVisualState } from "../store";
+import { orderBy } from "lodash";
 
 const SegmentSelector = ({ selectedSegment, setSelectedSegment }) => {
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
@@ -18,7 +19,7 @@ const SegmentSelector = ({ selectedSegment, setSelectedSegment }) => {
 
   return (
     <Radio.Group value={selectedSegment} onChange={handleChangeSegmentSelector}>
-      {dashboardData.map((d) => (
+      {orderBy(dashboardData, ["id"]).map((d) => (
         <Radio.Button key={d.id} value={d.id}>
           {d.name}
         </Radio.Button>

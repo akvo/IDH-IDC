@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Card, Col, Row, Space } from "antd";
 import { VisualCardWrapper } from "../components";
 import {
@@ -15,11 +15,13 @@ import { getFunctionDefaultValue } from "../../../lib";
 import { SegmentSelector } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
 
-const ChartMonetaryImpactOnIncome = ({ showLabel = false }) => {
+const ChartMonetaryImpactOnIncome = () => {
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
   const currentCase = CurrentCaseState.useState((s) => s);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [showLabel, setShowLabel] = useState(null);
+  const chartRef = useRef(null);
 
   const chartData = useMemo(() => {
     const data = dashboardData.find((d) => d.id === selectedSegment);
@@ -269,8 +271,12 @@ const ChartMonetaryImpactOnIncome = ({ showLabel = false }) => {
       <Row gutter={[20, 20]} align="middle">
         <Col span={16}>
           <VisualCardWrapper
-            title="Monetary impact of each driver to income"
+            title="Monetary impact of income drivers"
             bordered
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
+            exportElementRef={chartRef}
+            exportFilename="What is the monetary impact of adjusting income drivers?"
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
@@ -288,22 +294,15 @@ const ChartMonetaryImpactOnIncome = ({ showLabel = false }) => {
         <Col span={8}>
           <Space direction="vertical">
             <div className="section-title">
-              What is the monetary impact of each income driver as we move
-              income drivers from their current to feasible levels?
+              What is the monetary impact of adjusting income drivers?
             </div>
             <div className="section-description">
-              This waterfall chart visually illustrates how adjustments in
-              income drivers influence the transition from the current income
-              level to a feasible income level. Each element represents how
-              income changes resulting from changing an income driver from its
-              current to its feasible level, keeping the other income drivers at
-              their current levels. Insights: The graph serves to clarify which
-              income drivers have the most significant impact on increasing
-              household income levels. The values do not add up to the feasible
-              income level because some income drivers are interconnected and in
-              this graph we only assess the change in income caused by changing
-              one income driver to its feasible levels, while the others remain
-              at their current levels.
+              This waterfall chart shows how income shifts as each driver is
+              adjusted from current to feasible levels, while others remain
+              constant. It highlights the drivers with the biggest impact on
+              boosting household income. Note that the values don’t sum to the
+              feasible income level, as the chart focuses on the isolated effect
+              of each driver, without accounting for their interactions.
             </div>
           </Space>
         </Col>
