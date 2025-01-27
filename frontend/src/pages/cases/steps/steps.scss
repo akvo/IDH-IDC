@@ -361,6 +361,27 @@
 }
 
 #assess-impact-mitigation-strategies {
+  .carousel-container {
+    width: 100%;
+    position: relative;
+
+    .carousel-arrows-wrapper {
+      position: absolute;
+      z-index: 2;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-left: -12px;
+
+      .button-arrow-carousel {
+        border-radius: 22px;
+        background: #01625f;
+        color: #fff;
+      }
+    }
+  }
   .ant-carousel {
     .slick-dots {
       li {

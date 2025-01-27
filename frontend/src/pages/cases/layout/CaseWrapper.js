@@ -58,15 +58,17 @@ const CaseSidebar = ({ step, caseId }) => {
   )?.value;
 
   return (
-    <Steps
-      direction="vertical"
-      items={sidebarItems}
-      className="case-step-wrapper"
-      onChange={(val) =>
-        navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`)
-      }
-      current={findStepPathValue ? findStepPathValue - 1 : 1}
-    />
+    <div className="case-step-container">
+      <Steps
+        direction="vertical"
+        items={sidebarItems}
+        className="case-step-wrapper"
+        onChange={(val) =>
+          navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`)
+        }
+        current={findStepPathValue ? findStepPathValue - 1 : 1}
+      />
+    </div>
   );
 };
 
