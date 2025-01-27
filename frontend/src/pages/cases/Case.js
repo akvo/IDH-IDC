@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Spin } from "antd";
 import { CaseWrapper, SegmentTabsWrapper } from "./layout";
 import { useParams, useNavigate } from "react-router-dom";
 import { api, flatten, getFunctionDefaultValue } from "../../lib";
@@ -32,12 +31,6 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   }, {});
   return { ...acc, ...commodities };
 }, {});
-
-const Loading = () => (
-  <div className="loading-container">
-    <Spin />
-  </div>
-);
 
 const addLevelIntoQuestions = ({ questions, level = 0 }) => {
   return questions.map((q) => {
@@ -90,7 +83,7 @@ const Case = () => {
   const navigate = useNavigate();
   const { caseId, step } = useParams();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { questionGroups, totalIncomeQuestions } = CaseVisualState.useState(
     (s) => s
@@ -157,12 +150,16 @@ const Case = () => {
   // Fetch case details
   useEffect(() => {
     if (caseId && currentCase.id !== parseInt(caseId)) {
-      setLoading(true);
+      // setLoading(true);
       // prevent fetch the data when it's already defined
       api
         .get(`case/${caseId}`)
         .then((res) => {
           const { data } = res;
+          if (data?.segments?.length) {
+            // order the segments by it's ID
+            data["segments"] = orderBy(data.segments, ["id"]);
+          }
           CurrentCaseState.update((s) => ({ ...s, ...data }));
           PrevCaseState.update((s) => ({ ...s, ...data }));
           // set default active segmentId
@@ -502,8 +499,13 @@ const Case = () => {
   }, [currentCase.id]);
 
   return (
-    <CaseWrapper caseId={caseId} step={step} currentCase={currentCase}>
-      {loading ? <Loading /> : renderPage(step, navigate)}
+    <CaseWrapper
+      caseId={caseId}
+      step={step}
+      currentCase={currentCase}
+      loading={loading}
+    >
+      {renderPage(step, navigate)}
     </CaseWrapper>
   );
 };
