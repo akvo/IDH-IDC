@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import {
   stepPath,
@@ -36,6 +42,7 @@ import {
   determineDecimalRound,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 /**
  * STEP 4
@@ -56,6 +63,8 @@ const AssessImpactMitigationStrategies = ({
   const [showAdjustIncomeModal, setShowAdjustIncomeModal] = useState(false);
   const [percentageSensitivity, setPercentageSensitivity] = useState(true);
   const [adjustedValues, setAdjustedValues] = useState({});
+
+  const carouselChartRef = useRef(null);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -433,8 +442,26 @@ const AssessImpactMitigationStrategies = ({
         </Card>
       </Col>
       {/* Carousel */}
-      <Col span={24}>
-        <Carousel autoplay>
+      <Col span={24} className="carousel-container">
+        <div className="carousel-arrows-wrapper">
+          <div className="arrow-left">
+            <Button
+              className="button-arrow-carousel"
+              type="link"
+              icon={<LeftOutlined />}
+              onClick={() => carouselChartRef?.current?.prev()}
+            />
+          </div>
+          <div className="arrow-right">
+            <Button
+              className="button-arrow-carousel"
+              type="link"
+              icon={<RightOutlined />}
+              onClick={() => carouselChartRef?.current?.next()}
+            />
+          </div>
+        </div>
+        <Carousel autoplay ref={carouselChartRef}>
           <div>
             <ChartBiggestImpactOnIncome />
           </div>
