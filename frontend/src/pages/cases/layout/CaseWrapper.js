@@ -1,7 +1,17 @@
 import React, { useState, useRef } from "react";
 import "./case-wrapper.scss";
 import { useNavigate } from "react-router-dom";
-import { Row, Col, Steps, Layout, Affix, Button, Space, Alert } from "antd";
+import {
+  Row,
+  Col,
+  Steps,
+  Layout,
+  Affix,
+  Button,
+  Space,
+  Alert,
+  Spin,
+} from "antd";
 import { ContentLayout } from "../../../components/layout";
 import {
   ArrowLeftOutlined,
@@ -60,7 +70,8 @@ const CaseSidebar = ({ step, caseId }) => {
   );
 };
 
-const CaseWrapper = ({ children, step, caseId, currentCase }) => {
+// TODO :: add loading here before fetch the case details so we not use the Unable page
+const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
 
@@ -105,7 +116,11 @@ const CaseWrapper = ({ children, step, caseId, currentCase }) => {
                   </Button>
                 }
               >
-                {currentCase.segments.filter((s) => s.id).length ? (
+                {loading ? (
+                  <div className="loading-container">
+                    <Spin />
+                  </div>
+                ) : currentCase.segments.filter((s) => s.id).length ? (
                   React.isValidElement(children) ? (
                     React.cloneElement(children, {
                       setbackfunction: (fn) => (backFunctionRef.current = fn),
