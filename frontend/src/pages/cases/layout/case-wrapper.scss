@@ -9,8 +9,12 @@
     height: 95vh;
     padding: 24px 32px;
     z-index: 2;
+    overflow: auto;
 
     .case-step-wrapper {
+      min-height: 100vh;
+      padding-bottom: 75px !important;
+
       .ant-steps-item {
         // not active
         .ant-steps-item-tail::after {
@@ -94,7 +98,7 @@
   .case-button-wrapper {
     background: #fff;
     border-top: 1px solid #e1e0da;
-    padding: 24px;
+    padding: 14px 24px;
     position: fixed;
     bottom: 0;
     right: 0;

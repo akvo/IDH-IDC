@@ -57,7 +57,7 @@ const ChartCalculatedHouseholdIncome = () => {
         type="COLUMN-BAR"
         data={chartData}
         loading={!chartData.length}
-        height={window.innerHeight * 0.35}
+        height={window.innerHeight * 0.4}
         extra={{
           axisTitle: { y: `Income (${currentCase.currency})` },
           xAxisLabel: {

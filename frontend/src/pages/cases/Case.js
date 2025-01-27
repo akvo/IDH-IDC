@@ -180,6 +180,10 @@ const Case = () => {
             setLoading(false);
           }, 100);
         });
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
   }, [caseId, currentCase.id, navigate]);
 

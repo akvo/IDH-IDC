@@ -75,7 +75,7 @@ const VisualCardWrapper = ({
       className={`visual-card-wrapper ${bordered ? "bordered" : ""}`}
       title={
         <Row align="middle" gutter={[8, 8]} wrap>
-          <Col span={16}>
+          <Col span={14}>
             <Space align="center">
               <div className="title">{title}</div>
               {tooltipText ? (
@@ -87,7 +87,7 @@ const VisualCardWrapper = ({
               )}
             </Space>
           </Col>
-          <Col span={8} align="end">
+          <Col span={10} align="end">
             {setShowLabel ? (
               <Button
                 size="small"

@@ -389,8 +389,17 @@ const EnterIncomeDataDriver = ({
           : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
 
         const parentQuestionField = `${fieldKey}-${question?.parent}`;
+        const parentQuestionValue =
+          initialDriverValues?.[parentQuestionField] || 0;
+
         if (parentQuestion) {
-          form.setFieldValue(parentQuestionField, sumAllChildrensValues);
+          // use parent value if they already have value
+          const formValue =
+            parentQuestionValue || parentQuestionValue === 0
+              ? parentQuestionValue
+              : sumAllChildrensValues;
+          // EOL use parent value if they already have value
+          form.setFieldValue(parentQuestionField, formValue);
           updateSectionTotalValues(
             commodity.commodity_type,
             fieldName,
