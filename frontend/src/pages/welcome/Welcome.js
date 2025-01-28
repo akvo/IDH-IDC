@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./welcome.scss";
 import { Row, Col, Card, Button } from "antd";
 import { UserState } from "../../store";
@@ -9,6 +9,7 @@ import { api } from "../../lib";
 const Welcome = () => {
   const { fullname: username } = UserState.useState((s) => s);
   const [mapData, setMapData] = useState([]);
+  const [countryHover, setCountryHover] = useState(null);
 
   useEffect(() => {
     if (!mapData?.length) {
@@ -21,6 +22,12 @@ const Welcome = () => {
     }
   }, [mapData]);
 
+  const hoveredData = useMemo(() => {
+    const find = mapData.find((d) => d.COUNTRY === countryHover);
+    return find;
+  }, [mapData, countryHover]);
+  console.log(hoveredData);
+
   const config = {
     center: [41, 10],
     zoom: 2.3,
@@ -29,7 +36,8 @@ const Welcome = () => {
   };
 
   const tile = {
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    // url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    url: "https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png",
     maxZoom: 19,
     minZoom: 2,
     attribution: "© OpenStreetMap",
@@ -42,14 +50,14 @@ const Welcome = () => {
 
   const layer = {
     source: window.topojson,
-    // url: "/static/world_map.geojson",
     style: {
-      color: "#000",
-      weight: 0,
-      fillColor: "#EAF2F2",
-      fillOpacity: 0.5,
+      color: "#fff",
+      weight: 1,
+      dashArray: 2,
+      fillOpacity: 0.7,
     },
     color: [
+      "#EAF2F2",
       "#D0E2E2",
       "#B6D2D1",
       "#9CC2C1",
@@ -63,6 +71,10 @@ const Welcome = () => {
     mapKey: "COUNTRY",
     choropleth: "case_count",
     onClick: onClick,
+    onMouseOver: (_, props) => {
+      const country = props?.target?.feature?.properties?.COUNTRY;
+      setCountryHover(country);
+    },
   };
 
   return (
