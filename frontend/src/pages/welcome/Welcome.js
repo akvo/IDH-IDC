@@ -36,13 +36,13 @@ const Welcome = () => {
   };
 
   const onClick = (map, { target }) => {
-    console.log(map, target);
+    console.info(map, target);
     // map.fitBounds(target._bounds)
   };
 
   const layer = {
-    source: "window.topojson",
-    url: `${window.location.origin}/api/map/static/world_map.js`,
+    source: window.topojson,
+    // url: "/static/world_map.geojson",
     style: {
       color: "#000",
       weight: 0,

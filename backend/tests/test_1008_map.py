@@ -39,7 +39,7 @@ class TestMapRoute:
         assert res == [
             {
                 "case_count": 2,
-                "country": "Bali",
+                "COUNTRY": "Bali",
                 "country_id": 2,
                 "total_farmers": 28,
             }

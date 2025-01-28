@@ -52,7 +52,7 @@ def generate_config_file() -> None:
     env_js += ', client_secret:"{}"'.format(os.environ["CLIENT_SECRET"])
     env_js += "};"
     topojson = "var topojson={};".format(
-        open(f"{MASTER_DIR}/world_map.json").read()
+        open(f"{MASTER_DIR}/world_map.geojson").read()
     )
     min_js = jsmin("".join([env_js, topojson, ""]))
     business_units = session.query(BusinessUnit).all() or []

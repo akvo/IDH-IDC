@@ -7,7 +7,7 @@ Base = declarative_base()
 
 class CaseCountByCountryDict(TypedDict):
     country_id: int
-    country: str
+    COUNTRY: str
     case_count: int
     total_farmers: int
 

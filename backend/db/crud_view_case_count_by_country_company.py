@@ -21,6 +21,7 @@ def get_case_count_by_country(session: Session):
             CaseCountByCompanyAndCountry.country_id,
             CaseCountByCompanyAndCountry.country,
         )
+        .having(func.sum(CaseCountByCompanyAndCountry.case_count) != 0)
         .all()
     )
     if not results:
@@ -28,7 +29,7 @@ def get_case_count_by_country(session: Session):
     return [
         {
             "country_id": result.country_id,
-            "country": result.country,
+            "COUNTRY": result.country,
             "case_count": result.case_count,
             "total_farmers": result.total_farmers,
         }
