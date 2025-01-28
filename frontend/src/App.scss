@@ -189,6 +189,10 @@
     .content-card-container {
       background-color: $bg-color-grey;
 
+      .content-card-wrapper {
+        padding: 0px 32px;
+      }
+
       .ant-card-body {
         padding: 1.5rem 0px 0px;
 
