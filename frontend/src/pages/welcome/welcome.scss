@@ -98,4 +98,17 @@
       background: #9cd7ff;
     }
   }
+
+  .map-card-wrapper {
+    border-radius: 20px;
+    border: 1px solid #f2f2f2;
+
+    .ant-card-body {
+      padding: 0;
+
+      .leaflet-container {
+        border-radius: 20px;
+      }
+    }
+  }
 }
