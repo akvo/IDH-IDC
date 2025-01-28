@@ -1,101 +1,101 @@
 @import "../../variables.scss";
 
 #welcome {
-  &.welcome-container {
-    background-image: url("/assets/images/bg-login.png") !important;
+  padding: 24px $default-padding-size;
 
-    .right-clip-path-wrapper {
-      background-image: url("/assets/images/login-clip-path.svg") !important;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: top right;
-      height: calc(100% - 5rem);
-      width: 50%;
-      position: absolute;
-      top: 5rem;
-      right: 0;
-      bottom: 0;
-    }
+  .username-wrapper {
+    color: #01625f;
+    font-family: "RocGrotesk";
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 157.15%;
+  }
 
-    .welcome-content-wrapper {
-      padding: 1.5rem $default-padding-size;
+  .jumbotron-card-wrapper {
+    .welcome-card-wrapper {
+      padding: 10px 48px 84px 48px;
+      color: #fff;
+      border-radius: 20px;
+      background: #01625f;
 
-      .card-menu-wrapper {
-        .card-container {
-          background-color: rgba(255, 255, 255, 1);
-          border-radius: 8px;
-          box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+      .welcome-title {
+        font-family: "RocGrotesk";
+        font-size: 28px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 52px;
+      }
 
-          .ant-card-body {
-            padding: 0 !important;
-          }
-
-          .card-content-wrapper {
-            .ant-image .ant-image-img {
-              height: 5.25rem !important;
-            }
-
-            .icon-wrapper {
-              background: rgba(38, 96, 95, 0.3);
-              padding: 1.5rem 1.25rem;
-              border-radius: 8px 0 0 8px;
-              border: none;
-            }
-
-            .text-wrapper {
-              padding: 0 1.25rem 0 2rem;
-              h4 {
-                font-size: 1.5rem;
-                color: $primary-color;
-                margin: 0.3rem 0;
-              }
-              p {
-                margin: 0;
-              }
-            }
-
-            .button-wrapper {
-              padding-top: 2rem;
-            }
-          }
-        }
+      .welcome-subtitle {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 28px;
+        letter-spacing: -0.32px;
       }
     }
   }
-}
 
-#faq {
-  padding: 1rem $default-padding-size 3rem $default-padding-size;
-  background: #fff;
+  .floating-card-wrapper {
+    margin-top: -92px;
 
-  h2 {
-    color: #00403e;
-    font-family: "RocGrotesk";
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 52px;
-  }
+    .floating-card-item {
+      border-radius: 20px;
+      border: 1px solid #ddd;
 
-  .item-wrapper {
-    padding: 1.5rem 0;
-    border-bottom: 1px solid #d6d6d6;
+      .ant-card-body {
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        min-height: 12rem;
+      }
 
-    .title {
-      color: #00625f;
-      font-family: "RocGrotesk";
-      font-size: 20px;
-      font-style: normal;
-      font-weight: 700;
+      .title {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px;
+        letter-spacing: -0.36px;
+      }
+
+      .description {
+        color: #444;
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 20px;
+      }
+
+      .button-explore {
+        border-radius: 40px;
+        border: #01625f;
+        background: #01625f;
+
+        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+        color: #fff;
+        font-family: "RocGrotesk";
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+      }
     }
 
-    .description {
-      color: #00625f;
-      font-family: "TabletGothic";
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 24px;
+    .case-card-wrapper {
+      background: #eed16e;
+    }
+
+    .explore-studies-card-wrapper {
+      background: #7dd3ab;
+    }
+
+    .lib-card-wrapper {
+      background: #9cd7ff;
     }
   }
 }

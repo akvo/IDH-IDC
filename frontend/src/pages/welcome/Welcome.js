@@ -1,71 +1,91 @@
 import React from "react";
 import "./welcome.scss";
-import { Row, Col } from "antd";
-import {
-  Jumbotron,
-  GetStarted,
-  FrameworkDrivers,
-  CompareIncomeTarget,
-  ExploreStudies,
-  FooterDisclaimer,
-} from "../landing/components";
+import { Row, Col, Card, Button } from "antd";
+import { UserState } from "../../store";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
-const FAQ = () => {
-  const showItems = false;
-  const items = [
-    {
-      title: "What is Driver Calculator?",
-      description:
-        "Please provide comprehensive answers to those questions. You will save lots of time and money by eliminating the necessity to give constant support. You also will keep your clients' time cause they will quickly find the answers to all their questions.",
-    },
-    {
-      title: "How should I find out my cases?",
-      description:
-        "Please provide comprehensive answers to those questions. You will save lots of time and money.",
-    },
-    {
-      title: "How to get started?",
-      description:
-        "Please provide comprehensive answers to those questions. You will save lots of time and money by eliminating the necessity to give constant support. You also will keep your clients' time cause they will quickly find the answers to all their questions.",
-    },
-  ];
+const Welcome = () => {
+  const { fullname: username } = UserState.useState((s) => s);
 
   return (
-    <div id="faq">
-      <h2>Frequently asked questions</h2>
-      <Row className="item-wrapper">
-        <Col span={12} className="title">
-          Coming soon
-        </Col>
-      </Row>
-
-      {showItems
-        ? items.map((it, i) => (
-            <Row key={i} className="item-wrapper">
-              <Col span={12} className="title">
-                {it.title}
-              </Col>
-              <Col span={12} className="description">
-                {it.description}
-              </Col>
-            </Row>
-          ))
-        : ""}
-    </div>
-  );
-};
-
-const Welcome = ({ signOut }) => {
-  return (
-    <div>
-      <Jumbotron signOut={signOut} />
-      <GetStarted />
-      <FrameworkDrivers />
-      <CompareIncomeTarget />
-      <ExploreStudies signedIn={true} />
-      <FAQ />
-      <FooterDisclaimer />
-    </div>
+    <Row id="welcome" align="middle" gutter={[20, 20]}>
+      <Col span={24} className="username-wrapper">
+        Hello, {username}!
+      </Col>
+      <Col span={24} className="jumbotron-card-wrapper">
+        <Card className="welcome-card-wrapper">
+          <div className="welcome-title">
+            Welcome to the income driver calculator
+          </div>
+          <div className="welcome-subtitle">
+            Enter in this creative world. Discover now the latest NFTs or start
+            creating your own!
+          </div>
+        </Card>
+        <Row
+          align="middle"
+          justify="center"
+          gutter={[24, 24]}
+          className="floating-card-wrapper"
+        >
+          <Col span={7}>
+            <Card className="floating-card-item case-card-wrapper">
+              <Row gutter={[12, 12]}>
+                <Col span={24} className="title">
+                  Cases
+                </Col>
+                <Col span={24} className="description">
+                  Calculates actual household income and feasible changes in
+                  income by using input data on the 5 key drivers of household
+                  income.
+                </Col>
+                <Col span={24} align="end">
+                  <Button className="button-explore">
+                    Explore <ArrowRightOutlined />
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+          <Col span={7}>
+            <Card className="floating-card-item explore-studies-card-wrapper">
+              <Row gutter={[12, 12]}>
+                <Col span={24} className="title">
+                  Explore Studies for Insights
+                </Col>
+                <Col span={24} className="description">
+                  To make the data entry process more informed and efficient, we
+                  recommend visiting the &quot;Explore Studies&quot; section.
+                </Col>
+                <Col span={24} align="end">
+                  <Button className="button-explore">
+                    Explore <ArrowRightOutlined />
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+          <Col span={7}>
+            <Card className="floating-card-item lib-card-wrapper">
+              <Row gutter={[12, 12]}>
+                <Col span={24} className="title">
+                  Living income benchmarks
+                </Col>
+                <Col span={24} className="description">
+                  To make the data entry process more informed and efficient, we
+                  recommend visiting the &quot;Explore Studies&quot; section.
+                </Col>
+                <Col span={24} align="end">
+                  <Button className="button-explore">
+                    Explore <ArrowRightOutlined />
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+        </Row>
+      </Col>
+    </Row>
   );
 };
 
