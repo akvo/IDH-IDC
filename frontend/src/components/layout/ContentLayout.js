@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { Breadcrumb, Card, Tabs, Affix, Row, Col } from "antd";
-import { HomeOutlined, RightOutlined } from "@ant-design/icons";
+import { Breadcrumb, Card, Tabs, Affix, Row, Col, Button, Space } from "antd";
+import {
+  HomeOutlined,
+  RightOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
 import { useNavigate, Link } from "react-router-dom";
@@ -34,6 +39,9 @@ const ContentLayout = ({
   subTitle = null,
   breadcrumbRightContent = null,
   titleRighContent = null,
+  siderCollapsedButton = false,
+  siderCollapsed,
+  setSiderCollapsed,
 }) => {
   const navigate = useNavigate();
   const hasBreadcrumb = breadcrumbItems.length;
@@ -62,32 +70,46 @@ const ContentLayout = ({
     <div>
       <Affix offsetTop={80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
-          {hasBreadcrumb ? (
-            <div>
-              <Breadcrumb
-                separator={<RightOutlined />}
-                items={breadcrumbItems.map((x, bi) => ({
-                  key: bi,
-                  title: (
-                    <Link to={x.href}>
-                      {x.title.toLowerCase() === "home" ? (
-                        <HomeOutlined style={{ fontSize: "16px" }} />
-                      ) : (
-                        x.title
-                      )}
-                    </Link>
-                  ),
-                }))}
+          <Space className="content-card-wrapper" align="center">
+            {siderCollapsedButton && setSiderCollapsed && (
+              <Button
+                icon={
+                  siderCollapsed ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />
+                }
+                onClick={() => setSiderCollapsed((prev) => !prev)}
+                style={{
+                  background: "transparent",
+                  borderRadius: 0,
+                }}
               />
-              {breadcrumbRightContent && (
-                <div className="breadcrumb-right-content">
-                  {breadcrumbRightContent}
-                </div>
-              )}
-            </div>
-          ) : (
-            ""
-          )}
+            )}
+            {hasBreadcrumb ? (
+              <div>
+                <Breadcrumb
+                  separator={<RightOutlined />}
+                  items={breadcrumbItems.map((x, bi) => ({
+                    key: bi,
+                    title: (
+                      <Link to={x.href}>
+                        {x.title.toLowerCase() === "home" ? (
+                          <HomeOutlined style={{ fontSize: "16px" }} />
+                        ) : (
+                          x.title
+                        )}
+                      </Link>
+                    ),
+                  }))}
+                />
+                {breadcrumbRightContent && (
+                  <div className="breadcrumb-right-content">
+                    {breadcrumbRightContent}
+                  </div>
+                )}
+              </div>
+            ) : (
+              ""
+            )}
+          </Space>
           <Row
             gutter={[12, 12]}
             align="middle"

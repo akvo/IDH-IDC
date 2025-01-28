@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import "./case-wrapper.scss";
 import { useNavigate } from "react-router-dom";
 import {
@@ -23,35 +23,47 @@ import { stepPath, CaseUIState } from "../store";
 
 const { Sider, Content } = Layout;
 
-const sidebarItems = [
-  {
-    title: "Set an income target",
-    description: "Use a living income benchmark or define the target yourself.",
-  },
-  {
-    title: "Enter your income data",
-    description:
-      "Enter current and feasible data for the five income drivers and its subcomponents for each segment",
-  },
-  {
-    title: "Understand the income gap",
-    description:
-      "Explore the current income situation and the gap to reach your income target.",
-  },
-  {
-    title: "Assess impact of mitigation strategies",
-    description:
-      "Analyze which drivers impact income increase the most, and how to close the gap.",
-  },
-  {
-    title: "Closing the gap",
-    description:
-      "Save different scenarios to close the gap, and explore procurement practices.",
-  },
-];
-
-const CaseSidebar = ({ step, caseId }) => {
+const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const navigate = useNavigate();
+
+  const sidebarItems = useMemo(() => {
+    if (siderCollapsed) {
+      return [
+        { title: "Step 1" },
+        { title: "Step 2" },
+        { title: "Step 3" },
+        { title: "Step 4" },
+        { title: "Step 5" },
+      ];
+    }
+    return [
+      {
+        title: "Set an income target",
+        description:
+          "Use a living income benchmark or define the target yourself.",
+      },
+      {
+        title: "Enter your income data",
+        description:
+          "Enter current and feasible data for the five income drivers and its subcomponents for each segment",
+      },
+      {
+        title: "Understand the income gap",
+        description:
+          "Explore the current income situation and the gap to reach your income target.",
+      },
+      {
+        title: "Assess impact of mitigation strategies",
+        description:
+          "Analyze which drivers impact income increase the most, and how to close the gap.",
+      },
+      {
+        title: "Closing the gap",
+        description:
+          "Save different scenarios to close the gap, and explore procurement practices.",
+      },
+    ];
+  }, [siderCollapsed]);
 
   const findStepPathValue = Object.values(stepPath).find(
     (path) => path.label === step
@@ -67,15 +79,24 @@ const CaseSidebar = ({ step, caseId }) => {
           navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`)
         }
         current={findStepPathValue ? findStepPathValue - 1 : 1}
+        size="small"
       />
     </div>
   );
 };
 
-// TODO :: add loading here before fetch the case details so we not use the Unable page
 const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
+
+  const [siderCollapsed, setSiderCollapsed] = useState(false);
+
+  const layoutSize = useMemo(() => {
+    if (!siderCollapsed) {
+      return { left: 4, right: 20 };
+    }
+    return { left: 2, right: 22 };
+  }, [siderCollapsed]);
 
   // Use refs to store the functions
   const backFunctionRef = useRef(() => {});
@@ -93,16 +114,31 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     <Row id="case-detail" className="case-container">
       <Col span={24}>
         <Row>
-          <Col span={4}>
+          <Col span={layoutSize.left}>
             <Affix offsetTop={80}>
-              <Sider className="case-sidebar-container" width="100%">
-                <CaseSidebar step={step} caseId={caseId} />
+              <Sider
+                className="case-sidebar-container"
+                width="100%"
+                collapsedWidth={100}
+                collapsible={true}
+                reverseArrow={true}
+                trigger={null}
+                collapsed={siderCollapsed}
+              >
+                <CaseSidebar
+                  step={step}
+                  caseId={caseId}
+                  siderCollapsed={siderCollapsed}
+                />
               </Sider>
             </Affix>
           </Col>
-          <Col span={20} className="case-content-container">
+          <Col span={layoutSize.right} className="case-content-container">
             <Content>
               <ContentLayout
+                siderCollapsedButton={true}
+                setSiderCollapsed={setSiderCollapsed}
+                siderCollapsed={siderCollapsed}
                 breadcrumbItems={[
                   { title: "Home", href: "/welcome" },
                   { title: "Cases", href: "/cases" },
