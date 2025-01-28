@@ -38,6 +38,9 @@ logging.basicConfig(
 )
 
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MASTER_DIR = BASE_DIR + "/source/master/"
+
 JS_FILE = "./config.min.js"
 
 
@@ -48,7 +51,10 @@ def generate_config_file() -> None:
     env_js += 'client_id:"{}"'.format(os.environ["CLIENT_ID"])
     env_js += ', client_secret:"{}"'.format(os.environ["CLIENT_SECRET"])
     env_js += "};"
-    min_js = jsmin("".join([env_js, ""]))
+    topojson = "var topojson={};".format(
+        open(f"{MASTER_DIR}/world_map.json").read()
+    )
+    min_js = jsmin("".join([env_js, topojson, ""]))
     business_units = session.query(BusinessUnit).all() or []
     session.flush()
     if business_units:
