@@ -1,10 +1,46 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./welcome.scss";
-import { Row, Col, Card, Button } from "antd";
+import { Row, Col, Card, Button, Spin } from "antd";
 import { UserState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
 import { api } from "../../lib";
+
+const CustomTooltipComponent = ({ props }) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        padding: 4,
+      }}
+    >
+      <div
+        style={{
+          fontWeight: 900,
+          fontSize: 14,
+          color: "#01625F",
+          fontFamily: "RocGrotesk",
+        }}
+      >
+        {props?.name || "NA"}
+      </div>
+      <table border={0} style={{ fontSize: 12 }}>
+        <tr>
+          <td>Number of cases</td>
+          <td>:</td>
+          <td>{props?.case_count || "NA"}</td>
+        </tr>
+        <tr>
+          <td>Number of farmers</td>
+          <td>:</td>
+          <td>{isNaN(props?.total_farmers) ? "NA" : props?.total_farmers}</td>
+        </tr>
+      </table>
+    </div>
+  );
+};
 
 const Welcome = () => {
   const { fullname: username } = UserState.useState((s) => s);
@@ -26,7 +62,6 @@ const Welcome = () => {
     const find = mapData.find((d) => d.COUNTRY === countryHover);
     return find;
   }, [mapData, countryHover]);
-  console.log(hoveredData);
 
   const config = {
     center: [41, 10],
@@ -70,6 +105,11 @@ const Welcome = () => {
     ],
     mapKey: "COUNTRY",
     choropleth: "case_count",
+    tooltip: {
+      show: true,
+      showTooltipForAll: false,
+      tooltipComponent: CustomTooltipComponent,
+    },
     onClick: onClick,
     onMouseOver: (_, props) => {
       const country = props?.target?.feature?.properties?.COUNTRY;
@@ -163,7 +203,13 @@ const Welcome = () => {
       {/* Map */}
       <Col span={24}>
         <Card className="map-card-wrapper">
-          <MapView tile={tile} layer={layer} data={mapData} config={config} />
+          {mapData?.length ? (
+            <MapView tile={tile} layer={layer} data={mapData} config={config} />
+          ) : (
+            <div className="loading-container">
+              <Spin />
+            </div>
+          )}
         </Card>
       </Col>
       {/* EOL Map */}

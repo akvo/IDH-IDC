@@ -2823,10 +2823,10 @@ ajv@^8.0.0, ajv@^8.6.0, ajv@^8.9.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-akvo-charts@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/akvo-charts/-/akvo-charts-1.3.2.tgz#724e70453ea08c20eb8ecaa3f4166198d6b3440c"
-  integrity sha512-tFtrJNsPGguQMQW2PIrwvE4/Wwtu4Vnkncl7pI04wxus1si3cjKTocCL1qx2DO+CuzWCYwYCGUw0SQf1w+tiJA==
+akvo-charts@^1.3.4:
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/akvo-charts/-/akvo-charts-1.3.4.tgz#712a864a12a3a6e2d24e37225de3a7aa99b61564"
+  integrity sha512-wgyKYhN+BPmaJwMYvAKyuFrUj0EU0GYUTmpSvamYkKCtbf+bkaHQWt5rlpFmERhYc+/cUV4ftjysaKqUV+tEMg==
   dependencies:
     echarts "^5.5.1"
     leaflet "^1.9.4"
