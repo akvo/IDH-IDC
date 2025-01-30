@@ -24,12 +24,6 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       path: "/explore-studies",
       role: allUserRole,
     };
-    const procurementLibraryMenu = {
-      testid: "nav-menu-procurement-library",
-      name: "Procurement Library",
-      path: "/procurement-library",
-      role: allUserRole,
-    };
     let values = [
       // {
       //   testid: "nav-menu-calculator",
@@ -59,7 +53,6 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     if (userRole === "user" && isInternalUser) {
       values = [...values, exploreStudiesMenu];
     }
-    values = [...values, procurementLibraryMenu];
     return values;
   }, [userRole, isInternalUser]);
 
