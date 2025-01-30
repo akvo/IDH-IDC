@@ -7,6 +7,7 @@ import { MapView } from "akvo-charts";
 import { api } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import "akvo-charts/dist/index.css";
+import { Link } from "react-router-dom";
 
 const perPage = 10;
 const defData = {
@@ -193,10 +194,7 @@ const Welcome = () => {
       align: "center",
       render: () => {
         return (
-          <Button
-            size="small"
-            className="button-green-transparent button-light"
-          >
+          <Button className="button-green-transparent button-light font-roc-grotesk">
             View summary
           </Button>
         );
@@ -240,9 +238,11 @@ const Welcome = () => {
                   income.
                 </Col>
                 <Col span={24} align="end">
-                  <Button className="button-explore">
-                    Explore <ArrowRightOutlined />
-                  </Button>
+                  <Link to="/cases">
+                    <Button className="button-explore">
+                      Explore <ArrowRightOutlined />
+                    </Button>
+                  </Link>
                 </Col>
               </Row>
             </Card>
@@ -258,9 +258,11 @@ const Welcome = () => {
                   recommend visiting the &quot;Explore Studies&quot; section.
                 </Col>
                 <Col span={24} align="end">
-                  <Button className="button-explore">
-                    Explore <ArrowRightOutlined />
-                  </Button>
+                  <Link to="/explore-studies">
+                    <Button className="button-explore">
+                      Explore <ArrowRightOutlined />
+                    </Button>
+                  </Link>
                 </Col>
               </Row>
             </Card>
@@ -305,7 +307,6 @@ const Welcome = () => {
       <Col span={24} id="table-container">
         {selectedCountryId ? (
           <Table
-            size="small"
             rowKey="id"
             className="table-content-wrapper"
             columns={columns}
