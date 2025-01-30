@@ -6,6 +6,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
 import { api } from "../../lib";
 import { commodityOptions } from "../../store/static";
+import "akvo-charts/dist/index.css";
 
 const perPage = 10;
 const defData = {
