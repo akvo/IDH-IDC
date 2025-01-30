@@ -2,7 +2,7 @@
 
 #root {
   // global css setting
-  font-family: "TabletGothic";
+  font-family: "TabletGothic" !important;
 
   h1 {
     font-family: "RocGrotesk" !important;
@@ -61,6 +61,10 @@
     border-radius: 20px;
     border-color: #000;
     font-weight: 700;
+  }
+
+  .button-light {
+    font-weight: normal;
   }
   // EOL global css setting
 

@@ -1,10 +1,19 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import "./welcome.scss";
-import { Row, Col, Card, Button, Spin } from "antd";
+import { Row, Col, Card, Button, Spin, Table } from "antd";
 import { UserState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
 import { api } from "../../lib";
+import { commodityOptions } from "../../store/static";
+
+const perPage = 10;
+const defData = {
+  current: 1,
+  data: [],
+  total: 0,
+  total_page: 1,
+};
 
 const CustomTooltipComponent = ({ props }) => {
   return (
@@ -45,7 +54,11 @@ const CustomTooltipComponent = ({ props }) => {
 const Welcome = () => {
   const { fullname: username } = UserState.useState((s) => s);
   const [mapData, setMapData] = useState([]);
-  const [countryHover, setCountryHover] = useState(null);
+
+  const [selectedCountryId, setSelectedCountryId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tableLoading, setTableLoading] = useState(false);
+  const [tableData, setTableData] = useState(defData);
 
   useEffect(() => {
     if (!mapData?.length) {
@@ -58,14 +71,9 @@ const Welcome = () => {
     }
   }, [mapData]);
 
-  const hoveredData = useMemo(() => {
-    const find = mapData.find((d) => d.COUNTRY === countryHover);
-    return find;
-  }, [mapData, countryHover]);
-
   const config = {
     center: [41, 10],
-    zoom: 2.3,
+    zoom: 3,
     height: "75vh",
     width: "100%",
   };
@@ -78,9 +86,30 @@ const Welcome = () => {
     attribution: "© OpenStreetMap",
   };
 
-  const onClick = (map, { target }) => {
-    console.info(map, target);
-    // map.fitBounds(target._bounds)
+  const onClickMap = (map, { target }) => {
+    const selectedCountry = target?.feature?.properties?.COUNTRY;
+    const findMapData = mapData.find(
+      (d) => d.COUNTRY.toLowerCase() === selectedCountry.toLowerCase()
+    );
+    if (findMapData?.country_id) {
+      setTableLoading(true);
+      setSelectedCountryId(findMapData.country_id);
+      const url = `case?page=${currentPage}&limit=${perPage}&country=${findMapData.country_id}`;
+      api
+        .get(url)
+        .then((res) => {
+          setTableData(res.data);
+        })
+        .catch((e) => console.error(`Error fetching data table: ${e}`))
+        .finally(() => {
+          setTableLoading(false);
+        });
+      const tableElement = document.getElementById("table-container");
+      if (tableElement) {
+        tableElement.scrollIntoView({ behavior: "smooth" });
+      }
+      map.fitBounds(target._bounds);
+    }
   };
 
   const layer = {
@@ -110,12 +139,61 @@ const Welcome = () => {
       showTooltipForAll: false,
       tooltipComponent: CustomTooltipComponent,
     },
-    onClick: onClick,
-    onMouseOver: (_, props) => {
-      const country = props?.target?.feature?.properties?.COUNTRY;
-      setCountryHover(country);
-    },
+    onClick: onClickMap,
   };
+
+  const columns = [
+    {
+      title: "Case Name",
+      dataIndex: "name",
+      key: "case",
+      defaultSortOrder: "descend",
+    },
+    {
+      title: "Country",
+      dataIndex: "country",
+      key: "country",
+      width: "15%",
+      defaultSortOrder: "descend",
+    },
+    {
+      title: "Year",
+      dataIndex: "year",
+      key: "year",
+      width: "15%",
+      defaultSortOrder: "descend",
+    },
+    {
+      title: "Primary Commodity",
+      key: "primary_commodity",
+      width: "15%",
+      render: (record) => {
+        const findPrimaryCommodity = commodityOptions.find(
+          (co) => co.value === record.focus_commodity
+        );
+        if (!findPrimaryCommodity?.label) {
+          return "-";
+        }
+        return findPrimaryCommodity.label;
+      },
+    },
+    {
+      title: "Actions",
+      key: "action",
+      width: "15%",
+      align: "center",
+      render: () => {
+        return (
+          <Button
+            size="small"
+            className="button-green-transparent button-light"
+          >
+            View summary
+          </Button>
+        );
+      },
+    },
+  ];
 
   return (
     <Row id="welcome" align="middle" gutter={[20, 20]}>
@@ -213,6 +291,39 @@ const Welcome = () => {
         </Card>
       </Col>
       {/* EOL Map */}
+
+      {/* Table */}
+      {selectedCountryId ? (
+        <Col span={24} id="table-container">
+          <Table
+            size="small"
+            rowKey="id"
+            className="table-content-wrapper"
+            columns={columns}
+            dataSource={tableData.data}
+            loading={tableLoading}
+            pagination={{
+              current: currentPage,
+              pageSize: perPage,
+              total: tableData.total,
+              onChange: (page) => setCurrentPage(page),
+              showSizeChanger: false,
+              showTotal: (total) => (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    marginLeft: "14px",
+                  }}
+                >
+                  Total Case: {total}
+                </div>
+              ),
+            }}
+          />
+        </Col>
+      ) : null}
+      {/* EOL Table */}
     </Row>
   );
 };
