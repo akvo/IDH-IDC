@@ -82,16 +82,16 @@ const Welcome = () => {
   }, [mapLoading]);
 
   const config = {
-    center: [41, 10],
-    zoom: 3,
+    center: [0, 0],
+    zoom: 2.3,
     height: "75vh",
     width: "100%",
   };
 
   const tile = {
-    url: "https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png",
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     maxZoom: 19,
-    minZoom: 2.5,
+    minZoom: 2.3,
     attribution: "© OpenStreetMap",
   };
 
@@ -117,7 +117,7 @@ const Welcome = () => {
         if (tableElement) {
           tableElement.scrollIntoView({ behavior: "smooth" });
         }
-        map.fitBounds(target._bounds);
+        map.fitBounds(target._bounds, { animate: true });
       }, 100);
     }
   };
@@ -128,7 +128,7 @@ const Welcome = () => {
       color: "#fff",
       weight: 1.5,
       dashArray: 2,
-      fillOpacity: 0.7,
+      fillOpacity: 1,
     },
     color: [
       "#EAF2F2",
