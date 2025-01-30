@@ -8,9 +8,9 @@ from fastapi.responses import Response
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import List
+from typing_extensions import TypedDict
 
 from db.connection import get_session
-from models.view_case_count_by_country_company import CaseCountByCountryDict
 from middleware import verify_user
 from models.user import UserRole
 
@@ -19,6 +19,13 @@ map_route = APIRouter()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MASTER_DIR = BASE_DIR + "/source/master/"
+
+
+class CaseCountByCountryDict(TypedDict):
+    country_id: int
+    COUNTRY: str
+    case_count: int
+    total_farmers: int
 
 
 @map_route.get(
