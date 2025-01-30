@@ -63,6 +63,18 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     return values;
   }, [userRole, isInternalUser]);
 
+  // menu without loggin
+  const generalMenus = useMemo(() => {
+    const procurementLibraryMenu = {
+      testid: "nav-menu-procurement-library",
+      name: "Procurement Library",
+      path: "/procurement-library",
+      role: allUserRole,
+    };
+    const values = [procurementLibraryMenu];
+    return values;
+  }, []);
+
   return (
     <Header
       testid="layout-header"
@@ -101,6 +113,11 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
                     </Link>
                   ))
               : ""}
+            {generalMenus.map((x, xi) => (
+              <Link key={`nav-menu-${xi}`} data-testid={x.testid} to={x.path}>
+                {x.name}
+              </Link>
+            ))}
             {!isLoggedIn ? (
               <Link className="nav-sign-in" to="/login">
                 {" "}
