@@ -26,6 +26,7 @@ import { api } from "./lib";
 import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
+import { ProcurementLibrary } from "./pages/procurement-library";
 
 const optionRoutes = ["organisation/options", "tag/options", "company/options"];
 
@@ -195,7 +196,7 @@ const App = () => {
           <Route
             exact
             path="/procurement-library"
-            element={<NotFound signOut={signOut} />}
+            element={<ProcurementLibrary signOut={signOut} />}
           />
           {/* <Route exact path="/register" element={<Register />} /> */}
           <Route
