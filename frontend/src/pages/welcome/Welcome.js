@@ -53,6 +53,7 @@ const CustomTooltipComponent = ({ props }) => {
 
 const Welcome = () => {
   const { fullname: username } = UserState.useState((s) => s);
+  const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
 
   const [selectedCountryId, setSelectedCountryId] = useState(null);
@@ -60,16 +61,23 @@ const Welcome = () => {
   const [tableLoading, setTableLoading] = useState(false);
   const [tableData, setTableData] = useState(defData);
 
+  const tableElement = document.getElementById("table-container");
+
   useEffect(() => {
-    if (!mapData?.length) {
+    if (mapLoading) {
       api
         .get("/map/case-by-country")
         .then((res) => {
           setMapData(res.data);
         })
-        .catch((e) => console.error(`Error fetching map data: ${e}`));
+        .catch((e) => console.error(`Error fetching map data: ${e}`))
+        .finally(() =>
+          setTimeout(() => {
+            setMapLoading(false);
+          }, 100)
+        );
     }
-  }, [mapData]);
+  }, [mapLoading]);
 
   const config = {
     center: [41, 10],
@@ -79,10 +87,9 @@ const Welcome = () => {
   };
 
   const tile = {
-    // url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     url: "https://tile.openstreetmap.bzh/ca/{z}/{x}/{y}.png",
     maxZoom: 19,
-    minZoom: 2,
+    minZoom: 2.5,
     attribution: "© OpenStreetMap",
   };
 
@@ -104,11 +111,12 @@ const Welcome = () => {
         .finally(() => {
           setTableLoading(false);
         });
-      const tableElement = document.getElementById("table-container");
-      if (tableElement) {
-        tableElement.scrollIntoView({ behavior: "smooth" });
-      }
-      map.fitBounds(target._bounds);
+      setTimeout(() => {
+        if (tableElement) {
+          tableElement.scrollIntoView({ behavior: "smooth" });
+        }
+        map.fitBounds(target._bounds);
+      }, 100);
     }
   };
 
@@ -116,7 +124,7 @@ const Welcome = () => {
     source: window.topojson,
     style: {
       color: "#fff",
-      weight: 1,
+      weight: 1.5,
       dashArray: 2,
       fillOpacity: 0.7,
     },
@@ -281,7 +289,7 @@ const Welcome = () => {
       {/* Map */}
       <Col span={24}>
         <Card className="map-card-wrapper">
-          {mapData?.length ? (
+          {!mapLoading ? (
             <MapView tile={tile} layer={layer} data={mapData} config={config} />
           ) : (
             <div className="loading-container">
@@ -293,8 +301,8 @@ const Welcome = () => {
       {/* EOL Map */}
 
       {/* Table */}
-      {selectedCountryId ? (
-        <Col span={24} id="table-container">
+      <Col span={24} id="table-container">
+        {selectedCountryId ? (
           <Table
             size="small"
             rowKey="id"
@@ -321,8 +329,8 @@ const Welcome = () => {
               ),
             }}
           />
-        </Col>
-      ) : null}
+        ) : null}
+      </Col>
       {/* EOL Table */}
     </Row>
   );
