@@ -190,6 +190,11 @@ const App = () => {
           )}
           <Route exact path="/" element={<Landing signOut={signOut} />} />
           <Route exact path="/login" element={<Login />} />
+          <Route
+            exact
+            path="/procurement-library"
+            element={<NotFound signOut={signOut} />}
+          />
           {/* <Route exact path="/register" element={<Register />} /> */}
           <Route
             exact
