@@ -24,12 +24,6 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       path: "/explore-studies",
       role: allUserRole,
     };
-    const procurementLibraryMenu = {
-      testid: "nav-menu-procurement-library",
-      name: "Procurement Library",
-      path: "/procurement-library",
-      role: allUserRole,
-    };
     let values = [
       // {
       //   testid: "nav-menu-calculator",
@@ -59,9 +53,20 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     if (userRole === "user" && isInternalUser) {
       values = [...values, exploreStudiesMenu];
     }
-    values = [...values, procurementLibraryMenu];
     return values;
   }, [userRole, isInternalUser]);
+
+  // menu without loggin
+  const generalMenus = useMemo(() => {
+    const procurementLibraryMenu = {
+      testid: "nav-menu-procurement-library",
+      name: "Procurement Library",
+      path: "/procurement-library",
+      role: allUserRole,
+    };
+    const values = [procurementLibraryMenu];
+    return values;
+  }, []);
 
   return (
     <Header
@@ -101,6 +106,11 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
                     </Link>
                   ))
               : ""}
+            {generalMenus.map((x, xi) => (
+              <Link key={`nav-menu-${xi}`} data-testid={x.testid} to={x.path}>
+                {x.name}
+              </Link>
+            ))}
             {!isLoggedIn ? (
               <Link className="nav-sign-in" to="/login">
                 {" "}
