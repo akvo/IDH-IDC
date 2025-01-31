@@ -11,7 +11,7 @@ import {
   Select,
   Space,
 } from "antd";
-import { UserState } from "../../store";
+import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
 import { api, selectProps } from "../../lib";
@@ -64,7 +64,10 @@ const CustomTooltipComponent = ({ props }) => {
 };
 
 const Welcome = () => {
-  const { fullname: username } = UserState.useState((s) => s);
+  const { fullname: username, internal_user: isInternalUser } =
+    UserState.useState((s) => s);
+  const companyOptions = UIState.useState((s) => s.companyOptions);
+
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
 
@@ -326,31 +329,45 @@ const Welcome = () => {
       {/* Table */}
       <Col span={24} id="table-container">
         {selectedCountryId ? (
-          <Table
-            rowKey="id"
-            className="table-content-wrapper"
-            columns={columns}
-            dataSource={tableData.data}
-            loading={tableLoading}
-            pagination={{
-              current: currentPage,
-              pageSize: perPage,
-              total: tableData.total,
-              onChange: (page) => setCurrentPage(page),
-              showSizeChanger: false,
-              showTotal: (total) => (
-                <div
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    marginLeft: "14px",
-                  }}
-                >
-                  Total Case: {total}
-                </div>
-              ),
-            }}
-          />
+          <Row gutter={[14, 14]}>
+            {isInternalUser ? (
+              <Col span={24}>
+                <Select
+                  {...selectProps}
+                  options={companyOptions}
+                  placeholder="Select company"
+                  style={{ width: "24rem" }}
+                />
+              </Col>
+            ) : null}
+            <Col span={24}>
+              <Table
+                rowKey="id"
+                className="table-content-wrapper"
+                columns={columns}
+                dataSource={tableData.data}
+                loading={tableLoading}
+                pagination={{
+                  current: currentPage,
+                  pageSize: perPage,
+                  total: tableData.total,
+                  onChange: (page) => setCurrentPage(page),
+                  showSizeChanger: false,
+                  showTotal: (total) => (
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        marginLeft: "14px",
+                      }}
+                    >
+                      Total Case: {total}
+                    </div>
+                  ),
+                }}
+              />
+            </Col>
+          </Row>
         ) : null}
       </Col>
       {/* EOL Table */}
@@ -372,7 +389,7 @@ const Welcome = () => {
                 <Col span={12}>
                   <Space direction="vertical" style={{ width: "100%" }}>
                     <label>Scenario</label>
-                    <Select placeholder="Select scenario" {...selectProps} />
+                    <Select {...selectProps} placeholder="Select scenario" />
                   </Space>
                 </Col>
                 <Col span={12} align="end">
