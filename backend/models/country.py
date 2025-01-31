@@ -25,7 +25,9 @@ class Country(Base):
     name = Column(String, nullable=False)
 
     children = relationship("Country")
-    parent_detail = relationship("Country", remote_side=[id], overlaps="children")
+    parent_detail = relationship(
+        "Country", remote_side=[id], overlaps="children"
+    )
 
     def __init__(
         self, name: str, id: Optional[int] = None, parent: Optional[int] = None
