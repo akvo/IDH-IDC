@@ -28,27 +28,16 @@ class CaseCountByCountryDict(TypedDict):
     total_farmers: int
 
 
-@map_route.get(
-    "/map/static/world_map.js",
-    tags=["Map"],
-)
-def serve_js():
-    js_content = open(f"{MASTER_DIR}/world_map.geojson").read()
-    return Response(content=js_content, media_type="application/json")
+class CaseCountByCountryCompanyDict(TypedDict):
+    country_id: int
+    COUNTRY: str
+    case_count: int
+    total_farmers: int
+    company_id: int
+    company: str
 
 
-@map_route.get(
-    "/map/case-by-country",
-    response_model=List[CaseCountByCountryDict],
-    summary="get map value for case by country",
-    name="map:get_case_by_country",
-    tags=["Map"],
-)
-def get_case_by_country(
-    req: Request,
-    session: Session = Depends(get_session),
-    credentials: credentials = Depends(security),
-):
+def get_user_cases_and_permissions(req: Request, session: Session):
     user = verify_user(session=session, authenticated=req.state.authenticated)
 
     # Prevent external users without access to cases
@@ -88,8 +77,58 @@ def get_case_by_country(
         )
         user_cases = user_cases + [c.id for c in cases]
 
+    return show_private, user_cases
+
+
+@map_route.get(
+    "/map/static/world_map.js",
+    tags=["Map"],
+)
+def serve_js():
+    js_content = open(f"{MASTER_DIR}/world_map.geojson").read()
+    return Response(content=js_content, media_type="application/json")
+
+
+@map_route.get(
+    "/map/case-by-country",
+    response_model=List[CaseCountByCountryDict],
+    summary="Get map value for case by country",
+    name="map:get_case_by_country",
+    tags=["Map"],
+)
+def get_case_by_country(
+    req: Request,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    show_private, user_cases = get_user_cases_and_permissions(req, session)
+
     # Get all cases without pagination
     cases = crud_map.get_case_count_by_country(
+        session=session,
+        user_cases=user_cases,
+        show_private=show_private,
+    )
+
+    return cases
+
+
+@map_route.get(
+    "/map/case-by-country-and-company",
+    response_model=List[CaseCountByCountryCompanyDict],
+    summary="Get map value for case by country and company",
+    name="map:get_case_by_country_and_company",
+    tags=["Map"],
+)
+def get_case_by_country_and_company(
+    req: Request,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    show_private, user_cases = get_user_cases_and_permissions(req, session)
+
+    # Get all cases without pagination
+    cases = crud_map.get_case_count_by_country_and_company(
         session=session,
         user_cases=user_cases,
         show_private=show_private,
