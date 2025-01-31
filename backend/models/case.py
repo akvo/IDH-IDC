@@ -49,6 +49,7 @@ class CaseListDict(TypedDict):
     year: int
     created_at: str
     created_by: str
+    company: Optional[str] = None
     tags: Optional[List[int]] = []
 
 
@@ -176,6 +177,12 @@ class Case(Base):
         "User",
         foreign_keys=[updated_by],
     )
+    company_detail = relationship(
+        "Company",
+        cascade="all, delete",
+        passive_deletes=True,
+        backref="company_cases",
+    )
 
     def __init__(
         self,
@@ -259,10 +266,14 @@ class Case(Base):
             for val in self.case_commodities
             if val.commodity != self.focus_commodity
         ]
+        company = None
+        if self.company:
+            company = self.company_detail.name
         return {
             "id": self.id,
             "name": self.name,
             "country": self.country_detail.name,
+            "company": company,
             "focus_commodity": self.focus_commodity,
             "diversified_commodities_count": len(diversified_count),
             "year": self.year,

@@ -39,6 +39,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "year": 2023,
                     "diversified_commodities_count": 2,
@@ -77,6 +78,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "year": 2023,
                     "diversified_commodities_count": 2,
@@ -115,6 +117,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "year": 2023,
                     "diversified_commodities_count": 2,
@@ -153,6 +156,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "year": 2023,
                     "diversified_commodities_count": 2,
@@ -189,6 +193,7 @@ class TestCaseWithFilterRoute:
                     "id": 2,
                     "name": "Bali Coffee Production (Private)",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 1,
                     "diversified_commodities_count": 1,
                     "year": 2023,
@@ -200,6 +205,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "diversified_commodities_count": 2,
                     "year": 2023,
@@ -236,6 +242,7 @@ class TestCaseWithFilterRoute:
                     "id": 2,
                     "name": "Bali Coffee Production (Private)",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 1,
                     "diversified_commodities_count": 1,
                     "year": 2023,
@@ -247,6 +254,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "diversified_commodities_count": 2,
                     "year": 2023,
@@ -283,6 +291,7 @@ class TestCaseWithFilterRoute:
                     "id": 2,
                     "name": "Bali Coffee Production (Private)",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 1,
                     "diversified_commodities_count": 1,
                     "year": 2023,
@@ -294,6 +303,7 @@ class TestCaseWithFilterRoute:
                     "id": 1,
                     "name": "Bali Rice and Corn Production",
                     "country": "Bali",
+                    "company": None,
                     "focus_commodity": 2,
                     "diversified_commodities_count": 2,
                     "year": 2023,
@@ -305,3 +315,20 @@ class TestCaseWithFilterRoute:
             "total": 2,
             "total_page": 1,
         }
+
+    @pytest.mark.asyncio
+    async def test_get_case_filtered_by_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        res = await client.get(
+            app.url_path_for("case:get_all"),
+            params={"company": 10000},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 404
+        res = await client.get(
+            app.url_path_for("case:get_all"),
+            params={"company": 1},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 404

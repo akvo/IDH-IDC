@@ -106,6 +106,7 @@ def get_all_case(
     country: Optional[int] = None,
     email: Optional[str] = None,
     year: Optional[int] = None,
+    company: Optional[int] = None,
 ) -> List[CaseListDict]:
     case = session.query(Case)
     if not show_private:
@@ -138,6 +139,8 @@ def get_all_case(
         case = case.filter(
             cast(Case.year, TEXT).ilike("%{}%".format(f"{year}".strip()))
         )
+    if company:
+        case = case.filter(Case.company == company)
     count = case.count()
     case = case.order_by(Case.id.desc()).offset(skip).limit(limit).all()
     return PaginatedCaseData(count=count, data=case)
