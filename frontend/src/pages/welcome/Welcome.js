@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./welcome.scss";
-import { Row, Col, Card, Button, Spin, Table } from "antd";
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Spin,
+  Table,
+  Modal,
+  Select,
+  Space,
+} from "antd";
 import { UserState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
-import { api } from "../../lib";
+import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import "akvo-charts/dist/index.css";
 import { Link } from "react-router-dom";
@@ -62,6 +72,8 @@ const Welcome = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [tableLoading, setTableLoading] = useState(false);
   const [tableData, setTableData] = useState(defData);
+
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
 
   const tableElement = document.getElementById("table-container");
 
@@ -152,6 +164,11 @@ const Welcome = () => {
     onClick: onClickMap,
   };
 
+  const handleOnClickViewSummary = () => {
+    setShowSummaryModal(true);
+    // TODO :: fetch view summary data?
+  };
+
   const columns = [
     {
       title: "Case Name",
@@ -192,9 +209,12 @@ const Welcome = () => {
       key: "action",
       width: "15%",
       align: "center",
-      render: () => {
+      render: (record) => {
         return (
-          <Button className="button-green-transparent button-light font-roc-grotesk">
+          <Button
+            className="button-green-transparent button-light font-roc-grotesk"
+            onClick={() => handleOnClickViewSummary({ ...record })}
+          >
             View summary
           </Button>
         );
@@ -334,6 +354,62 @@ const Welcome = () => {
         ) : null}
       </Col>
       {/* EOL Table */}
+
+      {/* View summary modal */}
+      <Modal
+        title="View summary"
+        open={showSummaryModal}
+        onCancel={() => setShowSummaryModal(false)}
+        width="55%"
+        className="view-summary-modal-wrapper"
+        maskClosable={false}
+        footer={false}
+      >
+        <Row gutter={[20, 20]} align="middle">
+          <Col span={24}>
+            <Card className="scenario-outcome-form-wrapper">
+              <Row gutter={[12, 12]} align="top">
+                <Col span={12}>
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    <label>Scenario</label>
+                    <Select placeholder="Select scenario" {...selectProps} />
+                  </Space>
+                </Col>
+                <Col span={12} align="end">
+                  <Button className="button-download">
+                    Download scenario outcomes
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Table
+              columns={[
+                {
+                  title: "",
+                  dataIndex: "name",
+                  key: "name",
+                },
+                {
+                  title: "Current value",
+                  dataIndex: "current",
+                  key: "current",
+                  width: "25%",
+                },
+                {
+                  title: "Scenario 1",
+                  dataIndex: "scenario",
+                  key: "scenario",
+                  width: "25%",
+                },
+              ]}
+              dataSource={[]}
+            />
+          </Col>
+        </Row>
+      </Modal>
+      {/* EOL View summary modal */}
     </Row>
   );
 };
