@@ -7,7 +7,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import Response
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from typing_extensions import TypedDict
 
 from db.connection import get_session
@@ -33,8 +33,8 @@ class CaseCountByCountryCompanyDict(TypedDict):
     COUNTRY: str
     case_count: int
     total_farmers: int
-    company_id: int
-    company: str
+    company_id: Optional[int] = None
+    company: Optional[str] = None
 
 
 def get_user_cases_and_permissions(req: Request, session: Session):

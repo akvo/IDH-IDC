@@ -69,12 +69,13 @@ def get_case_count_by_country_and_company(
     if user_cases:
         case_query = case_query.filter(Case.id.in_(user_cases))
 
-    # Join with Segment, Country, and Company tables
-    # and aggregate cases and number_of_farmers by country and company
+    # Use LEFT JOIN to include cases without a company
     case_count_and_farmers_by_country_and_company = (
         case_query.join(Segment, Case.id == Segment.case)
         .join(Country, Case.country == Country.id)
-        .join(Company, Case.company == Company.id)
+        .outerjoin(
+            Company, Case.company == Company.id
+        )  # Use outerjoin to include cases with no company
         .with_entities(
             Case.country,
             Country.name.label("country_name"),
@@ -94,8 +95,8 @@ def get_case_count_by_country_and_company(
         {
             "country_id": country_id,
             "COUNTRY": country_name,
-            "company_id": company_id,
-            "company": company_name,
+            "company_id": company_id or None,
+            "company": company_name if company_name else None,
             "case_count": case_count,
             "total_farmers": total_farmers or 0,
         }
