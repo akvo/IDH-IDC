@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./welcome.scss";
 import {
   Row,
@@ -18,6 +18,7 @@ import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import "akvo-charts/dist/index.css";
 import { Link } from "react-router-dom";
+import { groupBy, map, sumBy, uniqBy, uniq } from "lodash";
 
 const perPage = 10;
 const defData = {
@@ -80,12 +81,52 @@ const Welcome = () => {
 
   const tableElement = document.getElementById("table-container");
 
+  const filteredCompanyOptions = useMemo(() => {
+    if (!mapData?.length) {
+      return [];
+    }
+    const companyIds = uniq(
+      mapData
+        .filter((d) => d.country_id === selectedCountryId) // filter by clicked country
+        .flatMap((d) => d.companies.map((c) => c.company_id))
+    );
+    return companyOptions.filter((c) => companyIds.includes(c.value));
+  }, [mapData, selectedCountryId, companyOptions]);
+
   useEffect(() => {
     if (mapLoading) {
       api
-        .get("/map/case-by-country")
+        .get("/map/case-by-country-and-company")
         .then((res) => {
-          setMapData(res.data);
+          // Group by country_id
+          const groupedData = groupBy(res.data, "country_id");
+
+          // Transform the grouped data
+          const transformedData = map(groupedData, (items, countryId) => {
+            const countryName = items[0].COUNTRY;
+            const totalCaseCount = sumBy(items, "case_count");
+            const totalFarmers = sumBy(items, "total_farmers");
+
+            // Create a unique list of companies
+            const companies = uniqBy(
+              items
+                .map((item) => ({
+                  company_id: item.company_id,
+                  company_name: item.company,
+                }))
+                .filter((x) => x?.company_id),
+              "company_id"
+            );
+
+            return {
+              country_id: parseInt(countryId),
+              COUNTRY: countryName,
+              case_count: totalCaseCount,
+              total_farmers: totalFarmers,
+              companies: companies,
+            };
+          });
+          setMapData(transformedData);
         })
         .catch((e) => console.error(`Error fetching map data: ${e}`))
         .finally(() =>
@@ -334,7 +375,7 @@ const Welcome = () => {
               <Col span={24}>
                 <Select
                   {...selectProps}
-                  options={companyOptions}
+                  options={filteredCompanyOptions}
                   placeholder="Select company"
                   style={{ width: "24rem" }}
                 />
