@@ -11,6 +11,7 @@ import { Login, ResetPassword } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
+import { Welcome as OldWelcome } from "./pages/old-welcome";
 import { Welcome } from "./pages/welcome";
 import {
   Users,
@@ -130,22 +131,23 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
           {userRole !== null ? (
             <Route element={<PrivateRoutes />}>
-              <Route
-                exact
-                path="/welcome"
-                element={<Welcome signOut={signOut} />}
-              />
+              <Route exact path="/welcome" element={<Welcome />} />
               <Route exact path="/home" element={<Home />} />
               <Route exact path="/cases" element={<Cases />} />
               <Route exact path="/case/:caseId/:step" element={<Case />} />
               {/*
                 TODO :: Delete later
-                Old Case Page
+                Old  Page
               */}
+              <Route
+                exact
+                path="/old-welcome"
+                element={<OldWelcome signOut={signOut} />}
+              />
               <Route exact path="/old-cases" element={<OldCases />} />
               <Route exact path="/old-cases/new" element={<OldCase />} />
               <Route exact path="/old-cases/:caseId" element={<OldCase />} />
-              {/* EOL Old Case */}
+              {/* EOL Case */}
             </Route>
           ) : (
             ""

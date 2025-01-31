@@ -1,0 +1,101 @@
+@import "../../variables.scss";
+
+#welcome {
+  &.welcome-container {
+    background-image: url("/assets/images/bg-login.png") !important;
+
+    .right-clip-path-wrapper {
+      background-image: url("/assets/images/login-clip-path.svg") !important;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: top right;
+      height: calc(100% - 5rem);
+      width: 50%;
+      position: absolute;
+      top: 5rem;
+      right: 0;
+      bottom: 0;
+    }
+
+    .welcome-content-wrapper {
+      padding: 1.5rem $default-padding-size;
+
+      .card-menu-wrapper {
+        .card-container {
+          background-color: rgba(255, 255, 255, 1);
+          border-radius: 8px;
+          box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+
+          .ant-card-body {
+            padding: 0 !important;
+          }
+
+          .card-content-wrapper {
+            .ant-image .ant-image-img {
+              height: 5.25rem !important;
+            }
+
+            .icon-wrapper {
+              background: rgba(38, 96, 95, 0.3);
+              padding: 1.5rem 1.25rem;
+              border-radius: 8px 0 0 8px;
+              border: none;
+            }
+
+            .text-wrapper {
+              padding: 0 1.25rem 0 2rem;
+              h4 {
+                font-size: 1.5rem;
+                color: $primary-color;
+                margin: 0.3rem 0;
+              }
+              p {
+                margin: 0;
+              }
+            }
+
+            .button-wrapper {
+              padding-top: 2rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#faq {
+  padding: 1rem $default-padding-size 3rem $default-padding-size;
+  background: #fff;
+
+  h2 {
+    color: #00403e;
+    font-family: "RocGrotesk";
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 52px;
+  }
+
+  .item-wrapper {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #d6d6d6;
+
+    .title {
+      color: #00625f;
+      font-family: "RocGrotesk";
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    .description {
+      color: #00625f;
+      font-family: "TabletGothic";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 24px;
+    }
+  }
+}

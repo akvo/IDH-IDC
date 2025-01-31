@@ -27,7 +27,8 @@ class UserCaseAccess(Base):
     user = Column(Integer, ForeignKey("user.id"), nullable=False)
     case = Column(Integer, ForeignKey("case.id"), nullable=False)
     permission = Column(
-        Enum(PermissionType, name="user_case_access_permission"), nullable=False
+        Enum(PermissionType, name="user_case_access_permission"),
+        nullable=False,
     )
 
     user_case_access_detail = relationship(

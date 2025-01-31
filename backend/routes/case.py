@@ -70,6 +70,7 @@ def get_all_case(
     focus_commodity: Optional[List[int]] = Query(None),
     email: Optional[str] = Query(None),
     year: Optional[int] = Query(None),
+    company: Optional[int] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -124,6 +125,7 @@ def get_all_case(
         show_private=show_private,
         email=email,
         year=year,
+        company=company,
     )
     if not cases:
         raise HTTPException(status_code=404, detail="Not found")
