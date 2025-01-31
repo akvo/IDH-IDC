@@ -20,6 +20,9 @@ import "akvo-charts/dist/index.css";
 import { Link } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, uniq } from "lodash";
 
+// TODO :: Map data => case which have segment (current query)
+// TODO :: Map table data => all cases that saved on case table (current query)
+
 const perPage = 10;
 const defData = {
   current: 1,
