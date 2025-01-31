@@ -151,6 +151,27 @@ const Welcome = () => {
     attribution: "© OpenStreetMap",
   };
 
+  const fetchTableData = ({ countryId, companyId = null }) => {
+    let url = `case?page=${currentPage}&limit=${perPage}&country=${countryId}`;
+    if (companyId) {
+      url += `&company=${companyId}`;
+    }
+    api
+      .get(url)
+      .then((res) => {
+        setTableData(res.data);
+      })
+      .catch((e) => console.error(`Error fetching data table: ${e}`))
+      .finally(() => {
+        setTableLoading(false);
+      });
+    setTimeout(() => {
+      if (tableElement) {
+        tableElement.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+  };
+
   const onClickMap = (map, { target }) => {
     const selectedCountry = target?.feature?.properties?.COUNTRY;
     const findMapData = mapData.find(
@@ -159,23 +180,13 @@ const Welcome = () => {
     if (findMapData?.country_id) {
       setTableLoading(true);
       setSelectedCountryId(findMapData.country_id);
-      const url = `case?page=${currentPage}&limit=${perPage}&country=${findMapData.country_id}`;
-      api
-        .get(url)
-        .then((res) => {
-          setTableData(res.data);
-        })
-        .catch((e) => console.error(`Error fetching data table: ${e}`))
-        .finally(() => {
-          setTableLoading(false);
-        });
-      setTimeout(() => {
-        if (tableElement) {
-          tableElement.scrollIntoView({ behavior: "smooth" });
-        }
-        map.fitBounds(target._bounds, { animate: true });
-      }, 100);
+      fetchTableData({ countryId: findMapData.country_id });
+      map.fitBounds(target._bounds, { animate: true });
     }
+  };
+
+  const handleOnCompanyChange = (companyId) => {
+    fetchTableData({ countryId: selectedCountryId, companyId });
   };
 
   const layer = {
@@ -213,58 +224,66 @@ const Welcome = () => {
     // TODO :: fetch view summary data?
   };
 
-  const columns = [
-    {
-      title: "Case Name",
-      dataIndex: "name",
-      key: "case",
-      defaultSortOrder: "descend",
-    },
-    {
-      title: "Country",
-      dataIndex: "country",
-      key: "country",
-      width: "15%",
-      defaultSortOrder: "descend",
-    },
-    {
-      title: "Year",
-      dataIndex: "year",
-      key: "year",
-      width: "15%",
-      defaultSortOrder: "descend",
-    },
-    {
-      title: "Primary Commodity",
-      key: "primary_commodity",
-      width: "15%",
-      render: (record) => {
-        const findPrimaryCommodity = commodityOptions.find(
-          (co) => co.value === record.focus_commodity
-        );
-        if (!findPrimaryCommodity?.label) {
-          return "-";
-        }
-        return findPrimaryCommodity.label;
+  const columns = useMemo(() => {
+    return [
+      {
+        title: "Case Name",
+        dataIndex: "name",
+        key: "case",
       },
-    },
-    {
-      title: "Actions",
-      key: "action",
-      width: "15%",
-      align: "center",
-      render: (record) => {
-        return (
-          <Button
-            className="button-green-transparent button-light font-roc-grotesk"
-            onClick={() => handleOnClickViewSummary({ ...record })}
-          >
-            View summary
-          </Button>
-        );
+      {
+        title: "Country",
+        dataIndex: "country",
+        key: "country",
+        width: "15%",
       },
-    },
-  ];
+      isInternalUser
+        ? {
+            title: "Company",
+            dataIndex: "company",
+            key: "company",
+            width: "15%",
+            render: (text) => text || "N/A",
+          }
+        : "",
+      {
+        title: "Year",
+        dataIndex: "year",
+        key: "year",
+        width: "15%",
+      },
+      {
+        title: "Primary Commodity",
+        key: "primary_commodity",
+        width: "15%",
+        render: (record) => {
+          const findPrimaryCommodity = commodityOptions.find(
+            (co) => co.value === record.focus_commodity
+          );
+          if (!findPrimaryCommodity?.label) {
+            return "-";
+          }
+          return findPrimaryCommodity.label;
+        },
+      },
+      {
+        title: "Actions",
+        key: "action",
+        width: "15%",
+        align: "center",
+        render: (record) => {
+          return (
+            <Button
+              className="button-green-transparent button-light font-roc-grotesk"
+              onClick={() => handleOnClickViewSummary({ ...record })}
+            >
+              View summary
+            </Button>
+          );
+        },
+      },
+    ];
+  }, [isInternalUser]);
 
   return (
     <Row id="welcome" align="middle" gutter={[20, 20]}>
@@ -378,6 +397,7 @@ const Welcome = () => {
                   options={filteredCompanyOptions}
                   placeholder="Select company"
                   style={{ width: "24rem" }}
+                  onChange={handleOnCompanyChange}
                 />
               </Col>
             ) : null}
