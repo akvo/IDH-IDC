@@ -13,6 +13,7 @@ import {
   Form,
   Space,
   Popconfirm,
+  Spin,
 } from "antd";
 import { UserState } from "../../store";
 import { adminRole } from "../../store/static";
@@ -27,6 +28,37 @@ import { sourceOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { MapView } from "akvo-charts";
 import "akvo-charts/dist/index.css";
+
+const CustomTooltipComponent = ({ props }) => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        padding: 4,
+      }}
+    >
+      <div
+        style={{
+          fontWeight: 900,
+          fontSize: 14,
+          color: "#01625F",
+          fontFamily: "RocGrotesk",
+        }}
+      >
+        {props?.name || "NA"}
+      </div>
+      <table border={0} style={{ fontSize: 12 }}>
+        <tr>
+          <td>Number of studies</td>
+          <td>:</td>
+          <td>{props?.count}</td>
+        </tr>
+      </table>
+    </div>
+  );
+};
 
 const selectProps = {
   showSearch: true,
@@ -131,6 +163,9 @@ const ExploreStudiesPage = () => {
   const [expandedData, setExpandedData] = useState([]);
   const [filterInitialValues, setFilterInitialValues] = useState({});
 
+  const [mapLoading, setMapLoading] = useState(true);
+  const [mapData, setMapData] = useState([]);
+
   const countryOptions = window.master.countries;
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
     ct.commodities.map((c) => ({
@@ -143,15 +178,15 @@ const ExploreStudiesPage = () => {
 
   const config = {
     center: [0, 0],
-    zoom: 2.3,
-    height: "67vh",
+    zoom: 2,
+    height: "505px",
     width: "100%",
   };
 
   const tile = {
     url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     maxZoom: 19,
-    minZoom: 2.3,
+    minZoom: 2,
     attribution: "© OpenStreetMap",
   };
 
@@ -176,13 +211,50 @@ const ExploreStudiesPage = () => {
       "#01625F",
     ],
     mapKey: "COUNTRY",
-    choropleth: "case_count",
+    choropleth: "count",
     tooltip: {
       show: true,
       showTooltipForAll: false,
-      // tooltipComponent: CustomTooltipComponent,
+      tooltipComponent: CustomTooltipComponent,
     },
   };
+
+  const fetchMapData = useCallback(
+    (country, commodity, driver, source) => {
+      setLoading(true);
+      let url = "reference_data/count_by_country";
+      const params = [];
+
+      if (country || countryId) {
+        params.push(`country=${country ? country : countryId}`);
+      }
+      if (commodity || commodityId) {
+        params.push(`commodity=${commodity ? commodity : commodityId}`);
+      }
+      if (driver || driverId) {
+        params.push(`driver=${driver ? driver : driverId}`);
+      }
+      if (source) {
+        params.push(`source=${source}`);
+      }
+      if (params.length > 0) {
+        url += "?" + params.join("&");
+      }
+
+      api
+        .get(url)
+        .then((res) => {
+          setMapData(res.data);
+        })
+        .catch((e) => {
+          console.error(e.response);
+        })
+        .finally(() => {
+          setMapLoading(false);
+        });
+    },
+    [countryId, commodityId, driverId]
+  );
 
   const fetchReferenceData = useCallback(
     (country, commodity, driver, source) => {
@@ -372,11 +444,19 @@ const ExploreStudiesPage = () => {
         source: source,
       });
       fetchReferenceData(country, commodity, driver, source);
+      fetchMapData(country, commodity, driver, source);
     } else {
       const { country, commodity, driver, source } = filterInitialValues;
       fetchReferenceData(country, commodity, driver, source);
+      fetchMapData(country, commodity, driver, source);
     }
-  }, [fetchReferenceData, currentPage, location, filterInitialValues]);
+  }, [
+    fetchReferenceData,
+    currentPage,
+    location,
+    filterInitialValues,
+    fetchMapData,
+  ]);
 
   const onFilter = (values) => {
     setCurrentPage(1);
@@ -501,6 +581,7 @@ const ExploreStudiesPage = () => {
       navigate("/explore-studies");
     } else {
       fetchReferenceData();
+      fetchMapData();
     }
   };
 
@@ -517,6 +598,7 @@ const ExploreStudiesPage = () => {
         });
         resetFields();
         fetchReferenceData();
+        fetchMapData();
       })
       .catch(() => {
         messageApi.open({
@@ -579,12 +661,18 @@ const ExploreStudiesPage = () => {
           >
             <Col span={16}>
               <Card className="map-card-wrapper">
-                <MapView
-                  tile={tile}
-                  layer={layer}
-                  // data={mapData}
-                  config={config}
-                />
+                {!mapLoading ? (
+                  <MapView
+                    tile={tile}
+                    layer={layer}
+                    data={mapData}
+                    config={config}
+                  />
+                ) : (
+                  <div className="loading-container">
+                    <Spin />
+                  </div>
+                )}
               </Card>
             </Col>
             <Col span={8}>

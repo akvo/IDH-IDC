@@ -51,7 +51,7 @@
     .filter-card-wrapper {
       border-radius: 20px;
       background: #d0e2e2;
-      min-height: 67vh;
+      min-height: 505px;
 
       .ant-card-body {
         padding: 12px 20px;
@@ -97,7 +97,7 @@
         tr {
           th.ant-table-cell,
           td.ant-table-row-expand-icon-cell {
-            background: #b1b3b6;
+            background: #d1d1d1;
             color: #000;
           }
         }

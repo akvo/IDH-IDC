@@ -142,15 +142,15 @@ const Welcome = () => {
 
   const config = {
     center: [0, 0],
-    zoom: 2.3,
-    height: "75vh",
+    zoom: 2.5,
+    height: "80vh",
     width: "100%",
   };
 
   const tile = {
     url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     maxZoom: 19,
-    minZoom: 2.3,
+    minZoom: 2,
     attribution: "© OpenStreetMap",
   };
 
