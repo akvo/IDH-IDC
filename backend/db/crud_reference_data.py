@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from typing import Optional, List
 from typing_extensions import TypedDict
 from fastapi import HTTPException, status
@@ -12,6 +12,7 @@ from models.reference_data import (
     ReferenceDataBase,
     ReferenceDataDict,
 )
+from models.country import Country
 
 
 class PaginatedReferenceData(TypedDict):
@@ -52,6 +53,52 @@ def get_all_reference(
         data.order_by(ReferenceData.id.desc()).offset(skip).limit(limit).all()
     )
     return PaginatedReferenceData(count=count, data=data)
+
+
+def count_reference_data_by_country(
+    session: Session,
+    country: Optional[int] = None,
+    commodity: Optional[int] = None,
+    source: Optional[str] = None,
+    driver: Optional[Driver] = None,
+) -> List[dict]:
+    data = session.query(
+        ReferenceData.country.label("country_id"),
+        Country.name.label("country_name"),
+        func.count(ReferenceData.id).label("count"),
+    )
+
+    if country:
+        data = data.filter(ReferenceData.country == country)
+    if commodity:
+        data = data.filter(ReferenceData.commodity == commodity)
+    if source:
+        data = data.filter(
+            ReferenceData.source.ilike("%{}%".format(source.lower().strip()))
+        )
+    if driver == Driver.area:
+        data = data.filter(ReferenceData.area.is_not(None))
+    if driver == Driver.price:
+        data = data.filter(ReferenceData.price.is_not(None))
+    if driver == Driver.volume:
+        data = data.filter(ReferenceData.volume.is_not(None))
+    if driver == Driver.cost_of_production:
+        data = data.filter(ReferenceData.cost_of_production.is_not(None))
+    if driver == Driver.diversified_income:
+        data = data.filter(ReferenceData.diversified_income.is_not(None))
+
+    data = data.join(Country, ReferenceData.country == Country.id).group_by(
+        ReferenceData.country, Country.name
+    )
+
+    return [
+        {
+            "country_id": row.country_id,
+            "COUNTRY": row.country_name,
+            "count": row.count,
+        }
+        for row in data.all()
+    ]
 
 
 def get_reference_value(

@@ -36,14 +36,14 @@
 
   .button-green {
     border: 2px solid $primary-color;
-    border-radius: 20px;
+    border-radius: 40px;
     color: $primary-color;
     font-weight: 700;
   }
 
   .button-green-transparent {
     border: 2px solid $primary-color;
-    border-radius: 20px;
+    border-radius: 40px;
     color: $primary-color;
     font-weight: 700;
     background: transparent;
@@ -51,16 +51,46 @@
 
   .button-green-fill {
     background: $primary-color;
-    border-radius: 20px;
+    border-radius: 40px;
     color: #ffffff !important;
     font-weight: 700;
+    border: 1px solid $primary-color;
   }
 
   .button-ghost {
     background: transparent;
-    border-radius: 20px;
-    border-color: #000;
+    border-radius: 40px;
+    border-color: $primary-color;
     font-weight: 700;
+    color: $primary-color;
+  }
+
+  .button-light {
+    font-weight: normal;
+  }
+
+  .button {
+    border-radius: 40px;
+    font-weight: 600;
+    color: $primary-color;
+    padding: 12px 18px;
+    min-height: 48px;
+  }
+  .button-yellow {
+    background-color: $yellow-color;
+  }
+  .button-secondary {
+    border: 2px solid $primary-color;
+  }
+  .button-submit {
+    margin: 1rem 0px;
+  }
+
+  .font-tablet-gothic {
+    font-family: "TabletGothic" !important;
+  }
+  .font-roc-grotesk {
+    font-family: "TabletGothic" !important;
   }
 
   .button-light {
@@ -107,23 +137,6 @@
         border-radius: 20px;
       }
     }
-  }
-
-  .button {
-    border-radius: 20px;
-    font-weight: 600;
-    color: $primary-color;
-    padding: 12px 18px;
-    min-height: 48px;
-  }
-  .button-yellow {
-    background-color: $yellow-color;
-  }
-  .button-secondary {
-    border: 2px solid $primary-color;
-  }
-  .button-submit {
-    margin: 1rem 0px;
   }
 
   .ant-breadcrumb {
@@ -457,4 +470,9 @@
 
 .leaflet-interactive:focus {
   outline: none;
+}
+
+.leaflet-container {
+  border-radius: 20px;
+  z-index: 1;
 }
