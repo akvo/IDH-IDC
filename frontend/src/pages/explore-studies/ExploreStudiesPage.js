@@ -17,7 +17,7 @@ import {
 } from "antd";
 import { UserState } from "../../store";
 import { adminRole } from "../../store/static";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { upperFirst, isEmpty } from "lodash";
 import ReferenceDataForm from "./ReferenceDataForm";
 import { api } from "../../lib";
@@ -103,10 +103,6 @@ const referenceDataExpand = [
     key: "confidence_level",
     label: "Confidence Level",
   },
-  // {
-  //   key: "range",
-  //   label: "Range",
-  // },
 ];
 
 const perPage = 10;
@@ -501,33 +497,34 @@ const ExploreStudiesPage = () => {
       wrapperId="explore-studies-page"
     >
       {contextHolder}
-      <Row gutter={[24, 24]} className="explore-content-wrapper">
+      <Row gutter={[20, 20]} className="explore-content-wrapper">
+        {/* Page title */}
         <Col span={24}>
-          <Alert
-            className="explore-info-wrapper"
-            type="success"
-            message={
-              <div className="explore-info-content">
-                <h2>Explore Studies for Insights</h2>
-                <p>
-                  To make the data entry process more informed and efficient, we
-                  recommend visiting the &quot;Explore Studies&quot; section.
-                  Here, you can access valuable insights into feasible levels of
-                  income drivers for your selected country and sector.
-                </p>
-                {isAdmin ? (
-                  <Button
-                    className="button button-green-fill"
-                    onClick={() => setOpen(true)}
-                  >
-                    {/* Open Form Modal */}
-                    Add a new study
-                  </Button>
-                ) : null}
+          <Row gutter={[12, 12]} align="top" className="explore-info-wrapper">
+            <Col span={isAdmin ? 16 : 24} className="explore-info-content">
+              <div className="title">Explore Studies for Insights</div>
+              <div className="description">
+                To make the data entry process more informed and efficient, we
+                recommend visiting the &quot;Explore Studies&quot; section.
+                Here, you can access valuable insights into feasible levels of
+                income drivers for your selected country and sector.
               </div>
-            }
-          />
+            </Col>
+            {isAdmin ? (
+              <Col span={8} align="end">
+                <Button
+                  icon={<PlusOutlined />}
+                  className="button button-green-fill"
+                  onClick={() => setOpen(true)}
+                >
+                  {/* Open Form Modal */}
+                  Add a new study
+                </Button>
+              </Col>
+            ) : null}
+          </Row>
         </Col>
+        {/* EOL Page title */}
 
         <Col span={24}>
           <Card title="Cases" className="info-card-wrapper">
