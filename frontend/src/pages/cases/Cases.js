@@ -92,7 +92,7 @@ const Cases = () => {
 
   const searchProps = {
     placeholder: "Find Case",
-    style: { width: 575 },
+    style: { width: 350 },
     onSearch: (value) => setSearch(value),
   };
 

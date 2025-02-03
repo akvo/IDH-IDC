@@ -54,13 +54,15 @@
     border-radius: 40px;
     color: #ffffff !important;
     font-weight: 700;
+    border: 1px solid $primary-color;
   }
 
   .button-ghost {
     background: transparent;
     border-radius: 40px;
-    border-color: #000;
+    border-color: $primary-color;
     font-weight: 700;
+    color: $primary-color;
   }
 
   .button-light {
