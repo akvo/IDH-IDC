@@ -37,6 +37,11 @@
     }
 
     .map-filter-container {
+      .map-card-wrapper,
+      .filter-card-wrapper {
+        min-height: 505px;
+      }
+
       .map-card-wrapper {
         border-radius: 20px;
         border: 1px solid #f2f2f2;
@@ -46,15 +51,14 @@
           padding: 0;
         }
       }
-    }
 
-    .filter-card-wrapper {
-      border-radius: 20px;
-      background: #d0e2e2;
-      min-height: 505px;
+      .filter-card-wrapper {
+        border-radius: 20px;
+        background: #d0e2e2;
 
-      .ant-card-body {
-        padding: 12px 20px;
+        .ant-card-body {
+          padding: 12px 20px;
+        }
       }
     }
 
@@ -88,7 +92,7 @@
 
       .clear-button {
         color: #01625f;
-        background: #fff;
+        background: transparent;
       }
     }
 

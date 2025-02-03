@@ -30,6 +30,12 @@ import { MapView } from "akvo-charts";
 import "akvo-charts/dist/index.css";
 
 const CustomTooltipComponent = ({ props }) => {
+  const suffixText = props?.count
+    ? props?.count === 1
+      ? "study"
+      : "studies"
+    : "";
+
   return (
     <div
       style={{
@@ -37,6 +43,7 @@ const CustomTooltipComponent = ({ props }) => {
         flexDirection: "column",
         gap: 8,
         padding: 4,
+        minWidth: "100px",
       }}
     >
       <div
@@ -49,13 +56,9 @@ const CustomTooltipComponent = ({ props }) => {
       >
         {props?.name || "NA"}
       </div>
-      <table border={0} style={{ fontSize: 12 }}>
-        <tr>
-          <td>Number of studies</td>
-          <td>:</td>
-          <td>{props?.count}</td>
-        </tr>
-      </table>
+      <div>
+        {props?.count} {suffixText}
+      </div>
     </div>
   );
 };
