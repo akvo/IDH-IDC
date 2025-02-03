@@ -86,6 +86,7 @@ def get_all(
 )
 def count_reference_data_by_country(
     req: Request,
+    country: Optional[int] = None,
     commodity: Optional[int] = None,
     source: Optional[str] = None,
     driver: Optional[Driver] = None,
@@ -94,6 +95,7 @@ def count_reference_data_by_country(
 ):
     res = crud_ref.count_reference_data_by_country(
         session=session,
+        country=country,
         commodity=commodity,
         source=source,
         driver=driver,

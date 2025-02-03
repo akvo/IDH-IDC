@@ -57,6 +57,7 @@ def get_all_reference(
 
 def count_reference_data_by_country(
     session: Session,
+    country: Optional[int] = None,
     commodity: Optional[int] = None,
     source: Optional[str] = None,
     driver: Optional[Driver] = None,
@@ -67,6 +68,8 @@ def count_reference_data_by_country(
         func.count(ReferenceData.id).label("count"),
     )
 
+    if country:
+        data = data.filter(ReferenceData.country == country)
     if commodity:
         data = data.filter(ReferenceData.commodity == commodity)
     if source:
