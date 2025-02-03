@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import {
   Row,
   Col,
-  Alert,
   Button,
   Card,
   Select,
@@ -26,6 +25,8 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { sourceOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
+import { MapView } from "akvo-charts";
+import "akvo-charts/dist/index.css";
 
 const selectProps = {
   showSearch: true,
@@ -140,6 +141,49 @@ const ExploreStudiesPage = () => {
 
   const isAdmin = useMemo(() => adminRole.includes(userRole), [userRole]);
 
+  const config = {
+    center: [0, 0],
+    zoom: 2.3,
+    height: "67vh",
+    width: "100%",
+  };
+
+  const tile = {
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    maxZoom: 19,
+    minZoom: 2.3,
+    attribution: "© OpenStreetMap",
+  };
+
+  const layer = {
+    source: window.topojson,
+    style: {
+      color: "#fff",
+      weight: 1.5,
+      dashArray: 2,
+      fillOpacity: 1,
+    },
+    color: [
+      "#EAF2F2",
+      "#D0E2E2",
+      "#B6D2D1",
+      "#9CC2C1",
+      "#82B2B1",
+      "#69A2A0",
+      "#4F9290",
+      "#358280",
+      "#1B726F",
+      "#01625F",
+    ],
+    mapKey: "COUNTRY",
+    choropleth: "case_count",
+    tooltip: {
+      show: true,
+      showTooltipForAll: false,
+      // tooltipComponent: CustomTooltipComponent,
+    },
+  };
+
   const fetchReferenceData = useCallback(
     (country, commodity, driver, source) => {
       setLoading(true);
@@ -249,7 +293,7 @@ const ExploreStudiesPage = () => {
         ...res,
         {
           key: "action",
-          title: "Action",
+          title: "Actions",
           dataIndex: "action",
           render: (_, record) => (
             <Space size="large">
@@ -526,88 +570,113 @@ const ExploreStudiesPage = () => {
         </Col>
         {/* EOL Page title */}
 
+        {/* Map & Filter */}
         <Col span={24}>
-          <Card title="Cases" className="info-card-wrapper">
-            <Form
-              form={form}
-              name="filter-form"
-              className="filter-form-container"
-              layout="vertical"
-              initialValues={filterInitialValues}
-              onFinish={onFilter}
-            >
-              <Row gutter={[16, 16]} className="explore-filter-wrapper">
-                <Col span={24}>
-                  <Row gutter={[16, 16]} justify="space-between" align="bottom">
-                    <Col span={12}>
-                      <div className="filter-label">Country</div>
-                      <Form.Item name="country" noStyle>
-                        <Select
-                          {...selectProps}
-                          options={countryOptions}
-                          placeholder="Select Country"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <div className="filter-label">Commodity</div>
-                      <Form.Item name="commodity" noStyle>
-                        <Select
-                          {...selectProps}
-                          options={commodityOptions}
-                          placeholder="Select Commodity"
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={24}>
-                  <Row gutter={[16, 16]} justify="space-between" align="bottom">
-                    <Col span={12}>
-                      <div className="filter-label">Source</div>
-                      <Form.Item name="source" noStyle>
-                        <Select
-                          {...selectProps}
-                          options={sourceOptions}
-                          placeholder="Select Source"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <div className="filter-label">Drivers</div>
-                      <Form.Item name="driver" noStyle>
-                        <Select
-                          {...selectProps}
-                          options={driverOptions}
-                          placeholder="Select Driver"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={4} align="right">
-                      <Space wrap={true}>
-                        <Form.Item noStyle>
-                          <Button className="search-button" htmlType="submit">
-                            Search
-                          </Button>
-                        </Form.Item>
-                        <Button
-                          className="clear-button"
-                          onClick={handleClearFilter}
-                        >
-                          Clear
-                        </Button>
-                      </Space>
-                    </Col>
-                  </Row>
-                </Col>
-                {/* <Col span={24}>
-                  <div className="map-container"></div>
-                </Col> */}
-              </Row>
-            </Form>
-          </Card>
+          <Row
+            gutter={[12, 12]}
+            align="middle"
+            className="map-filter-container"
+          >
+            <Col span={16}>
+              <Card className="map-card-wrapper">
+                <MapView
+                  tile={tile}
+                  layer={layer}
+                  // data={mapData}
+                  config={config}
+                />
+              </Card>
+            </Col>
+            <Col span={8}>
+              <Card className="filter-card-wrapper">
+                <Row gutter={[20, 20]}>
+                  <Col span={24}>
+                    <h3>Search Studies</h3>
+                    <p>
+                      Here, you can access valuable insights into feasible
+                      levels of income drivers for your selected country and
+                      sector.
+                    </p>
+                  </Col>
+                  <Col span={24}>
+                    <Form
+                      form={form}
+                      name="filter-form"
+                      className="filter-form-container"
+                      layout="vertical"
+                      initialValues={filterInitialValues}
+                      onFinish={onFilter}
+                    >
+                      <Row gutter={[16, 16]} className="explore-filter-wrapper">
+                        <Col span={24}>
+                          <div className="filter-label">Country</div>
+                          <Form.Item name="country" noStyle>
+                            <Select
+                              {...selectProps}
+                              options={countryOptions}
+                              placeholder="Select Country"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                          <div className="filter-label">Source</div>
+                          <Form.Item name="source" noStyle>
+                            <Select
+                              {...selectProps}
+                              options={sourceOptions}
+                              placeholder="Select Source"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                          <div className="filter-label">Commodity</div>
+                          <Form.Item name="commodity" noStyle>
+                            <Select
+                              {...selectProps}
+                              options={commodityOptions}
+                              placeholder="Select Commodity"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={24}>
+                          <div className="filter-label">Drivers</div>
+                          <Form.Item name="driver" noStyle>
+                            <Select
+                              {...selectProps}
+                              options={driverOptions}
+                              placeholder="Select Driver"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col span={24} align="end">
+                          <Space wrap={true}>
+                            <Button
+                              className="clear-button"
+                              onClick={handleClearFilter}
+                            >
+                              Clear
+                            </Button>
+                            <Form.Item noStyle>
+                              <Button
+                                className="search-button"
+                                htmlType="submit"
+                              >
+                                Search
+                              </Button>
+                            </Form.Item>
+                          </Space>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+          </Row>
         </Col>
+        {/* EOL Map & Filter */}
 
+        {/* Table */}
         <Col span={24}>
           <Table
             rowKey="id"
@@ -654,6 +723,7 @@ const ExploreStudiesPage = () => {
             }}
           />
         </Col>
+        {/* EOL Table */}
       </Row>
 
       {/* Form Modal */}

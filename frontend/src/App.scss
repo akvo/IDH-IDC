@@ -67,6 +67,23 @@
     font-weight: normal;
   }
 
+  .button {
+    border-radius: 40px;
+    font-weight: 600;
+    color: $primary-color;
+    padding: 12px 18px;
+    min-height: 48px;
+  }
+  .button-yellow {
+    background-color: $yellow-color;
+  }
+  .button-secondary {
+    border: 2px solid $primary-color;
+  }
+  .button-submit {
+    margin: 1rem 0px;
+  }
+
   .font-tablet-gothic {
     font-family: "TabletGothic" !important;
   }
@@ -107,23 +124,6 @@
         border-radius: 20px;
       }
     }
-  }
-
-  .button {
-    border-radius: 40px;
-    font-weight: 600;
-    color: $primary-color;
-    padding: 12px 18px;
-    min-height: 48px;
-  }
-  .button-yellow {
-    background-color: $yellow-color;
-  }
-  .button-secondary {
-    border: 2px solid $primary-color;
-  }
-  .button-submit {
-    margin: 1rem 0px;
   }
 
   .ant-breadcrumb {
@@ -457,4 +457,9 @@
 
 .leaflet-interactive:focus {
   outline: none;
+}
+
+.leaflet-container {
+  border-radius: 20px;
+  z-index: 1;
 }

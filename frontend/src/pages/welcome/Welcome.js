@@ -14,9 +14,9 @@ import {
 import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
+import "akvo-charts/dist/index.css";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
-import "akvo-charts/dist/index.css";
 import { Link } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, uniq } from "lodash";
 
