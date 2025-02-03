@@ -14,9 +14,9 @@ import {
 import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { MapView } from "akvo-charts";
+import "akvo-charts/dist/index.css";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
-import "akvo-charts/dist/index.css";
 import { Link } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, uniq } from "lodash";
 
@@ -142,15 +142,15 @@ const Welcome = () => {
 
   const config = {
     center: [0, 0],
-    zoom: 2.3,
-    height: "75vh",
+    zoom: 2.5,
+    height: "80vh",
     width: "100%",
   };
 
   const tile = {
     url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     maxZoom: 19,
-    minZoom: 2.3,
+    minZoom: 2,
     attribution: "© OpenStreetMap",
   };
 

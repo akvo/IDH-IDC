@@ -73,6 +73,12 @@ class ReferenceValueList(TypedDict):
     type: Optional[str]
 
 
+class ReferenceCountByCountryDict(TypedDict):
+    country_id: int
+    COUNTRY: str
+    count: int
+
+
 class ReferenceData(Base):
     __tablename__ = "reference_data"
 

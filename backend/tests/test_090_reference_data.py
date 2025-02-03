@@ -186,6 +186,25 @@ class TestReferenceRoute:
         }
 
     @pytest.mark.asyncio
+    async def test_get_reference_data_count_by_country(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # with normal user cred
+        res = await client.get(
+            app.url_path_for("reference_data:count_by_country"),
+            headers={"Authorization": f"Bearer {non_admin_account.token}"},
+        )
+        assert res.status_code == 200
+        # with admin user cred
+        res = await client.get(
+            app.url_path_for("reference_data:count_by_country"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == [{"COUNTRY": "Indonesia", "count": 2, "country_id": 1}]
+
+    @pytest.mark.asyncio
     async def test_get_reference_data_by_id(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
