@@ -15,6 +15,7 @@ from models.reference_data import (
     ReferenceDataDict,
     ReferenceValueList,
     Driver,
+    ReferenceCountByCountryDict,
 )
 from middleware import verify_admin
 
@@ -74,6 +75,30 @@ def get_all(
         "total": total,
         "total_page": total_page,
     }
+
+
+@reference_data_routes.get(
+    "/reference_data/count_by_country",
+    response_model=List[ReferenceCountByCountryDict],
+    summary="Count reference data by country",
+    name="reference_data:count_by_country",
+    tags=["Reference Data"],
+)
+def count_reference_data_by_country(
+    req: Request,
+    commodity: Optional[int] = None,
+    source: Optional[str] = None,
+    driver: Optional[Driver] = None,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    res = crud_ref.count_reference_data_by_country(
+        session=session,
+        commodity=commodity,
+        source=source,
+        driver=driver,
+    )
+    return res
 
 
 @reference_data_routes.get(
