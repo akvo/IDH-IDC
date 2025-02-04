@@ -13,12 +13,11 @@ import {
   Form,
   Space,
   Popconfirm,
-  Spin,
 } from "antd";
 import { UserState } from "../../store";
 import { adminRole } from "../../store/static";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { upperFirst, isEmpty } from "lodash";
+import { upperFirst, isEmpty, min, max } from "lodash";
 import ReferenceDataForm from "./ReferenceDataForm";
 import { api } from "../../lib";
 import { driverOptions } from ".";
@@ -26,42 +25,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { sourceOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
-import { MapView } from "akvo-charts";
-import "akvo-charts/dist/index.css";
-
-const CustomTooltipComponent = ({ props }) => {
-  const suffixText = props?.count
-    ? props?.count === 1
-      ? "study"
-      : "studies"
-    : "";
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        padding: 4,
-        minWidth: "100px",
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 900,
-          fontSize: 14,
-          color: "#01625F",
-          fontFamily: "RocGrotesk",
-        }}
-      >
-        {props?.name || "NA"}
-      </div>
-      <div>
-        {props?.count} {suffixText}
-      </div>
-    </div>
-  );
-};
+import Chart from "../../components/chart";
 
 const selectProps = {
   showSearch: true,
@@ -179,49 +143,6 @@ const ExploreStudiesPage = () => {
 
   const isAdmin = useMemo(() => adminRole.includes(userRole), [userRole]);
 
-  const config = {
-    center: [0, 0],
-    zoom: 2,
-    height: "505px",
-    width: "100%",
-  };
-
-  const tile = {
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    maxZoom: 19,
-    minZoom: 2,
-    attribution: "© OpenStreetMap",
-  };
-
-  const layer = {
-    source: window.topojson,
-    style: {
-      color: "#fff",
-      weight: 1.5,
-      dashArray: 2,
-      fillOpacity: 1,
-    },
-    color: [
-      "#EAF2F2",
-      "#D0E2E2",
-      "#B6D2D1",
-      "#9CC2C1",
-      "#82B2B1",
-      "#69A2A0",
-      "#4F9290",
-      "#358280",
-      "#1B726F",
-      "#01625F",
-    ],
-    mapKey: "COUNTRY",
-    choropleth: "count",
-    tooltip: {
-      show: true,
-      showTooltipForAll: false,
-      tooltipComponent: CustomTooltipComponent,
-    },
-  };
-
   const fetchMapData = useCallback(
     (country, commodity, driver, source) => {
       setLoading(true);
@@ -247,7 +168,12 @@ const ExploreStudiesPage = () => {
       api
         .get(url)
         .then((res) => {
-          setMapData(res.data);
+          const data = res?.data?.map((d) => ({
+            ...d,
+            name: d.COUNTRY,
+            value: d.count,
+          }));
+          setMapData(data);
         })
         .catch((e) => {
           console.error(e.response);
@@ -664,18 +590,18 @@ const ExploreStudiesPage = () => {
           >
             <Col span={16}>
               <Card className="map-card-wrapper">
-                {!mapLoading ? (
-                  <MapView
-                    tile={tile}
-                    layer={layer}
-                    data={mapData}
-                    config={config}
-                  />
-                ) : (
-                  <div className="loading-container">
-                    <Spin />
-                  </div>
-                )}
+                <Chart
+                  wrapper={false}
+                  type="CHOROPLETH"
+                  loading={mapLoading}
+                  height={505}
+                  data={mapData}
+                  extra={{
+                    seriesName: "Case count by country",
+                    min: min(mapData.map((d) => d.value)),
+                    max: max(mapData.map((d) => d.value)),
+                  }}
+                />
               </Card>
             </Col>
             <Col span={8}>

@@ -1,24 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./welcome.scss";
-import {
-  Row,
-  Col,
-  Card,
-  Button,
-  Spin,
-  Table,
-  Modal,
-  Select,
-  Space,
-} from "antd";
+import { Row, Col, Card, Button, Table, Modal, Select, Space } from "antd";
 import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import { MapView } from "akvo-charts";
-import "akvo-charts/dist/index.css";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import { Link } from "react-router-dom";
-import { groupBy, map, sumBy, uniqBy, uniq } from "lodash";
+import { groupBy, map, sumBy, uniqBy, uniq, min, max } from "lodash";
+import Chart from "../../components/chart";
 
 // TODO :: Map data => case which have segment (current query)
 // TODO :: Map table data => all cases that saved on case table (current query)
@@ -29,42 +18,6 @@ const defData = {
   data: [],
   total: 0,
   total_page: 1,
-};
-
-const CustomTooltipComponent = ({ props }) => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        padding: 4,
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 900,
-          fontSize: 14,
-          color: "#01625F",
-          fontFamily: "RocGrotesk",
-        }}
-      >
-        {props?.name || "NA"}
-      </div>
-      <table border={0} style={{ fontSize: 12 }}>
-        <tr>
-          <td>Number of cases</td>
-          <td>:</td>
-          <td>{props?.case_count || "NA"}</td>
-        </tr>
-        <tr>
-          <td>Number of farmers</td>
-          <td>:</td>
-          <td>{isNaN(props?.total_farmers) ? "NA" : props?.total_farmers}</td>
-        </tr>
-      </table>
-    </div>
-  );
 };
 
 const Welcome = () => {
@@ -125,6 +78,8 @@ const Welcome = () => {
               country_id: parseInt(countryId),
               COUNTRY: countryName,
               case_count: totalCaseCount,
+              name: countryName,
+              value: totalCaseCount,
               total_farmers: totalFarmers,
               companies: companies,
             };
@@ -139,20 +94,6 @@ const Welcome = () => {
         );
     }
   }, [mapLoading]);
-
-  const config = {
-    center: [0, 0],
-    zoom: 2.5,
-    height: "80vh",
-    width: "100%",
-  };
-
-  const tile = {
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    maxZoom: 19,
-    minZoom: 2,
-    attribution: "© OpenStreetMap",
-  };
 
   const fetchTableData = ({ countryId, companyId = null }) => {
     let url = `case?page=${currentPage}&limit=${perPage}&country=${countryId}`;
@@ -175,51 +116,22 @@ const Welcome = () => {
     }, 100);
   };
 
-  const onClickMap = (map, { target }) => {
-    const selectedCountry = target?.feature?.properties?.COUNTRY;
+  const onClickMap = ({ name: selectedCountry, value }) => {
+    if (isNaN(value)) {
+      return;
+    }
     const findMapData = mapData.find(
-      (d) => d.COUNTRY.toLowerCase() === selectedCountry.toLowerCase()
+      (d) => d.name.toLowerCase() === selectedCountry.toLowerCase()
     );
     if (findMapData?.country_id) {
       setTableLoading(true);
       setSelectedCountryId(findMapData.country_id);
       fetchTableData({ countryId: findMapData.country_id });
-      map.fitBounds(target._bounds, { animate: true });
     }
   };
 
   const handleOnCompanyChange = (companyId) => {
     fetchTableData({ countryId: selectedCountryId, companyId });
-  };
-
-  const layer = {
-    source: window.topojson,
-    style: {
-      color: "#fff",
-      weight: 1.5,
-      dashArray: 2,
-      fillOpacity: 1,
-    },
-    color: [
-      "#EAF2F2",
-      "#D0E2E2",
-      "#B6D2D1",
-      "#9CC2C1",
-      "#82B2B1",
-      "#69A2A0",
-      "#4F9290",
-      "#358280",
-      "#1B726F",
-      "#01625F",
-    ],
-    mapKey: "COUNTRY",
-    choropleth: "case_count",
-    tooltip: {
-      show: true,
-      showTooltipForAll: false,
-      tooltipComponent: CustomTooltipComponent,
-    },
-    onClick: onClickMap,
   };
 
   const handleOnClickViewSummary = () => {
@@ -378,13 +290,21 @@ const Welcome = () => {
       {/* Map */}
       <Col span={24}>
         <Card className="map-card-wrapper">
-          {!mapLoading ? (
-            <MapView tile={tile} layer={layer} data={mapData} config={config} />
-          ) : (
-            <div className="loading-container">
-              <Spin />
-            </div>
-          )}
+          <Chart
+            wrapper={false}
+            type="CHOROPLETH"
+            loading={mapLoading}
+            height={700}
+            data={mapData}
+            extra={{
+              seriesName: "Case count by country",
+              min: min(mapData.map((d) => d.value)),
+              max: max(mapData.map((d) => d.value)),
+            }}
+            callbacks={{
+              onClick: onClickMap,
+            }}
+          />
         </Card>
       </Col>
       {/* EOL Map */}
