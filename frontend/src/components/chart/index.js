@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Col, Card, Row } from "antd";
 import ReactECharts from "echarts-for-react";
-import { Bar, BarStack, ColumnBar } from "./options";
+import { Bar, BarStack, ColumnBar, ChoroplethMap } from "./options";
 import { Easing } from "./options/common";
 import { SaveAsImageButton } from "../utils";
 
@@ -17,37 +17,32 @@ export const generateOptions = (
   switch (type) {
     case "BARSTACK":
       return BarStack({
-        data: data,
-        percentage: percentage,
-        chartTitle: chartTitle,
-        extra: extra,
-        horizontal: horizontal,
-        highlighted: highlighted,
-        targetData: targetData,
-        grid: grid,
-        showLabel: showLabel,
+        data,
+        percentage,
+        chartTitle,
+        extra,
+        horizontal,
+        highlighted,
+        targetData,
+        grid,
+        showLabel,
       });
     case "COLUMN-BAR":
       return ColumnBar({
-        data: data,
-        percentage: percentage,
-        chartTitle: chartTitle,
-        extra: extra,
-        horizontal: horizontal,
-        highlighted: highlighted,
-        grid: grid,
-        showLabel: showLabel,
-        series: series,
+        data,
+        percentage,
+        chartTitle,
+        extra,
+        horizontal,
+        highlighted,
+        grid,
+        showLabel,
+        series,
       });
+    case "CHOROPLETH":
+      return ChoroplethMap({ data, chartTitle, extra });
     default:
-      return Bar({
-        data: data,
-        percentage: percentage,
-        chartTitle: chartTitle,
-        extra: extra,
-        horizontal: horizontal,
-        grid: grid,
-      });
+      return Bar({ data, percentage, chartTitle, extra, horizontal, grid });
   }
 };
 
@@ -88,22 +83,13 @@ const Chart = ({
   grid = {},
   override = false,
   affix = false,
-  targetData = [], // to show income target symbol,
+  targetData = [],
   showLabel = true,
 }) => {
   const elementRef = useRef(null);
-
-  const chartTitle = wrapper ? {} : { title: title, subTitle: subTitle };
+  const chartTitle = wrapper ? {} : { title, subTitle };
   const option = generateOptions(
-    {
-      type: type,
-      data: data,
-      chartTitle: chartTitle,
-      percentage: percentage,
-      extra: extra,
-      targetData: targetData,
-      showLabel: showLabel,
-    },
+    { type, data, chartTitle, percentage, extra, targetData, showLabel },
     series,
     legend,
     horizontal,
@@ -119,26 +105,18 @@ const Chart = ({
     },
   };
   let chartOptions = {
-    option: option,
+    option,
     notMerge: true,
     style: { height: height - 50, width: "100%" },
-    onEvents: onEvents,
+    onEvents,
     showLoading: loading,
-    loadingOption: loadingOption,
+    loadingOption,
   };
   if (override) {
-    chartOptions = {
-      ...chartOptions,
-      option: { ...override, ...Easing },
-    };
+    chartOptions = { ...chartOptions, option: { ...override, ...Easing } };
   }
   const affixStyle = affix
-    ? {
-        position: "fixed",
-        right: 0,
-        width: "100%",
-        paddingRight: "5rem",
-      }
+    ? { position: "fixed", right: 0, width: "100%", paddingRight: "5rem" }
     : {};
   if (wrapper) {
     return (
@@ -146,7 +124,7 @@ const Chart = ({
         sm={24}
         md={span * 2}
         lg={span}
-        style={{ height: height, ...styles, ...affixStyle }}
+        style={{ height, ...styles, ...affixStyle }}
       >
         <Card
           ref={elementRef}
