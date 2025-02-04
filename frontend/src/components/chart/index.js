@@ -100,7 +100,7 @@ const Chart = ({
   const onEvents = {
     click: (e) => {
       if (callbacks?.onClick) {
-        callbacks.onClick(e.data?.cbParam);
+        callbacks.onClick(e);
       }
     },
   };

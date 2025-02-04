@@ -1,24 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./welcome.scss";
-import {
-  Row,
-  Col,
-  Card,
-  Button,
-  Spin,
-  Table,
-  Modal,
-  Select,
-  Space,
-} from "antd";
+import { Row, Col, Card, Button, Table, Modal, Select, Space } from "antd";
 import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import { MapView } from "akvo-charts";
-import "akvo-charts/dist/index.css";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import { Link } from "react-router-dom";
-import { groupBy, map, sumBy, uniqBy, uniq } from "lodash";
+import { groupBy, map, sumBy, uniqBy, uniq, min, max } from "lodash";
+import Chart from "../../components/chart";
 
 // TODO :: Map data => case which have segment (current query)
 // TODO :: Map table data => all cases that saved on case table (current query)
@@ -123,8 +112,8 @@ const Welcome = () => {
 
             return {
               country_id: parseInt(countryId),
-              COUNTRY: countryName,
-              case_count: totalCaseCount,
+              name: countryName,
+              value: totalCaseCount,
               total_farmers: totalFarmers,
               companies: companies,
             };
@@ -175,16 +164,17 @@ const Welcome = () => {
     }, 100);
   };
 
-  const onClickMap = (map, { target }) => {
-    const selectedCountry = target?.feature?.properties?.COUNTRY;
+  const onClickMap = ({ name: selectedCountry, value }) => {
+    if (isNaN(value)) {
+      return;
+    }
     const findMapData = mapData.find(
-      (d) => d.COUNTRY.toLowerCase() === selectedCountry.toLowerCase()
+      (d) => d.name.toLowerCase() === selectedCountry.toLowerCase()
     );
     if (findMapData?.country_id) {
       setTableLoading(true);
       setSelectedCountryId(findMapData.country_id);
       fetchTableData({ countryId: findMapData.country_id });
-      map.fitBounds(target._bounds, { animate: true });
     }
   };
 
@@ -378,13 +368,21 @@ const Welcome = () => {
       {/* Map */}
       <Col span={24}>
         <Card className="map-card-wrapper">
-          {!mapLoading ? (
-            <MapView tile={tile} layer={layer} data={mapData} config={config} />
-          ) : (
-            <div className="loading-container">
-              <Spin />
-            </div>
-          )}
+          <Chart
+            wrapper={false}
+            type="CHOROPLETH"
+            loading={mapLoading}
+            height={700}
+            data={mapData}
+            extra={{
+              seriesName: "Case count by country",
+              min: min(mapData.map((d) => d.value)),
+              max: max(mapData.map((d) => d.value)),
+            }}
+            callbacks={{
+              onClick: onClickMap,
+            }}
+          />
         </Card>
       </Col>
       {/* EOL Map */}

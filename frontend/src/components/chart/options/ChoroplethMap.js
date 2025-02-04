@@ -97,7 +97,7 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
         map: extra?.mapType || "world_map",
         emphasis: {
           label: {
-            show: true,
+            show: false,
           },
         },
         data: data,
