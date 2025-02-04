@@ -65,6 +65,7 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
       ...TextStyle,
     },
     visualMap: {
+      show: false,
       min: extra?.min || 0,
       max: extra?.max || 100,
       left: "right",
