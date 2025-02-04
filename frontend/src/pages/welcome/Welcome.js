@@ -20,42 +20,6 @@ const defData = {
   total_page: 1,
 };
 
-const CustomTooltipComponent = ({ props }) => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-        padding: 4,
-      }}
-    >
-      <div
-        style={{
-          fontWeight: 900,
-          fontSize: 14,
-          color: "#01625F",
-          fontFamily: "RocGrotesk",
-        }}
-      >
-        {props?.name || "NA"}
-      </div>
-      <table border={0} style={{ fontSize: 12 }}>
-        <tr>
-          <td>Number of cases</td>
-          <td>:</td>
-          <td>{props?.case_count || "NA"}</td>
-        </tr>
-        <tr>
-          <td>Number of farmers</td>
-          <td>:</td>
-          <td>{isNaN(props?.total_farmers) ? "NA" : props?.total_farmers}</td>
-        </tr>
-      </table>
-    </div>
-  );
-};
-
 const Welcome = () => {
   const { fullname: username, internal_user: isInternalUser } =
     UserState.useState((s) => s);
@@ -129,20 +93,6 @@ const Welcome = () => {
     }
   }, [mapLoading]);
 
-  const config = {
-    center: [0, 0],
-    zoom: 2.5,
-    height: "80vh",
-    width: "100%",
-  };
-
-  const tile = {
-    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-    maxZoom: 19,
-    minZoom: 2,
-    attribution: "© OpenStreetMap",
-  };
-
   const fetchTableData = ({ countryId, companyId = null }) => {
     let url = `case?page=${currentPage}&limit=${perPage}&country=${countryId}`;
     if (companyId) {
@@ -180,36 +130,6 @@ const Welcome = () => {
 
   const handleOnCompanyChange = (companyId) => {
     fetchTableData({ countryId: selectedCountryId, companyId });
-  };
-
-  const layer = {
-    source: window.topojson,
-    style: {
-      color: "#fff",
-      weight: 1.5,
-      dashArray: 2,
-      fillOpacity: 1,
-    },
-    color: [
-      "#EAF2F2",
-      "#D0E2E2",
-      "#B6D2D1",
-      "#9CC2C1",
-      "#82B2B1",
-      "#69A2A0",
-      "#4F9290",
-      "#358280",
-      "#1B726F",
-      "#01625F",
-    ],
-    mapKey: "COUNTRY",
-    choropleth: "case_count",
-    tooltip: {
-      show: true,
-      showTooltipForAll: false,
-      tooltipComponent: CustomTooltipComponent,
-    },
-    onClick: onClickMap,
   };
 
   const handleOnClickViewSummary = () => {
