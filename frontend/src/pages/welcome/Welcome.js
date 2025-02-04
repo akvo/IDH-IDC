@@ -76,6 +76,8 @@ const Welcome = () => {
 
             return {
               country_id: parseInt(countryId),
+              COUNTRY: countryName,
+              case_count: totalCaseCount,
               name: countryName,
               value: totalCaseCount,
               total_farmers: totalFarmers,

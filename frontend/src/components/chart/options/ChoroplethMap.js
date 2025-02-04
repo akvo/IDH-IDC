@@ -1,21 +1,10 @@
-import {
-  Easing,
-  Color,
-  TextStyle,
-  backgroundColor,
-  Title,
-  NoData,
-} from "./common";
+import { Easing, Color, TextStyle, backgroundColor, Title } from "./common";
 import { isEmpty } from "lodash";
 import * as echarts from "echarts";
 
 const worldGeoJson = window.topojson;
 
 const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
-  if (isEmpty(data) || !data) {
-    return NoData;
-  }
-
   echarts.registerMap(
     extra?.mapType || "world_map",
     extra?.geoJson || worldGeoJson
@@ -35,11 +24,6 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
         if (isNaN(value)) {
           return;
         }
-        // Extract properties from the `data` object
-        const caseCount = value || "NA";
-        const totalFarmers = isNaN(data?.total_farmers)
-          ? "NA"
-          : data?.total_farmers;
 
         let content = `<div style="display: flex; flex-direction: column; gap: 8px; padding: 4px;">`;
         content += `<div style="font-weight: 900; font-size: 14px; color: #01625F; font-family: 'RocGrotesk', sans-serif;">${
@@ -47,6 +31,12 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
         }</div>`;
 
         if (!isNaN(data?.total_farmers)) {
+          // landing page
+          const caseCount = value || "NA";
+          const totalFarmers = isNaN(data?.total_farmers)
+            ? "NA"
+            : data?.total_farmers;
+
           content += `
             <table border="0" style="font-size: 12px;">
             <tr>
@@ -60,6 +50,12 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
               <td>${totalFarmers}</td>
             </tr>
           </table>`;
+        }
+
+        if (!isNaN(data?.count)) {
+          // explore studies page
+          const suffixText = value ? (value === 1 ? "study" : "studies") : "";
+          content += `<div>${value} ${suffixText}</div>`;
         }
         content += `</div>`;
         return content;
