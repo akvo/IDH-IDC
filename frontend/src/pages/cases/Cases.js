@@ -42,33 +42,6 @@ const defData = {
   total_page: 1,
 };
 
-const caseSelectorItems = [
-  {
-    key: "all-cases",
-    label: "All cases",
-    type: "default",
-    onClick: () => console.info("1"),
-  },
-  {
-    key: "my-cases",
-    label: "My cases",
-    type: "text",
-    onClick: () => console.info("2"),
-  },
-  {
-    key: "shared-with-me",
-    label: "Shared with me",
-    type: "text",
-    onClick: () => console.info("2"),
-  },
-  {
-    key: "completed",
-    label: "Completed",
-    type: "text",
-    onClick: () => console.info("2"),
-  },
-];
-
 const Cases = () => {
   const [searchParams] = useSearchParams();
   const caseOwner = searchParams.get("owner");
@@ -92,13 +65,14 @@ const Cases = () => {
     id: userID,
     role: userRole,
     internal_user: userInternal,
-    // email: userEmail,
+    email: userEmail,
     // case_access: userCaseAccess,
   } = UserState.useState((s) => s);
 
   const [showChangeOwnerForm, setShowChangeOwnerForm] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
+  const [activeButton, setActiveButton] = useState("all-cases");
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -107,6 +81,41 @@ const Cases = () => {
     style: { width: 350 },
     onSearch: (value) => setSearch(value),
   };
+
+  const caseSelectorItems = [
+    {
+      key: "all-cases",
+      label: "All cases",
+      onClick: () => {
+        setActiveButton("all-cases");
+      },
+    },
+    {
+      key: "my-cases",
+      label: "My cases",
+      onClick: () => {
+        setActiveButton("my-cases");
+        setFilters((prev) => ({
+          ...prev,
+          email: userEmail,
+        }));
+      },
+    },
+    {
+      key: "shared-with-me",
+      label: "Shared with me",
+      onClick: () => {
+        setActiveButton("shared-with-me");
+      },
+    },
+    {
+      key: "completed",
+      label: "Completed",
+      onClick: () => {
+        setActiveButton("completed");
+      },
+    },
+  ];
 
   const columns = [
     {
@@ -426,10 +435,15 @@ const Cases = () => {
       }
     >
       {contextHolder}
-      <Row gutter={[12, 12]} style={{ paddingBottom: 16 }}>
+      <Row gutter={[8, 8]} style={{ paddingBottom: 16 }}>
         {caseSelectorItems.map((cs) => (
           <Col key={cs.key}>
-            <Button type={cs.type}>{cs.label}</Button>
+            <Button
+              type={activeButton === cs.key ? "default" : "text"}
+              onClick={cs.onClick}
+            >
+              {cs.label}
+            </Button>
           </Col>
         ))}
       </Row>
