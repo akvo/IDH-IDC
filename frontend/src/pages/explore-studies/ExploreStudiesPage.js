@@ -185,6 +185,11 @@ const ExploreStudiesPage = () => {
     [countryId, commodityId, driverId]
   );
 
+  const filteredCountryOptions = useMemo(() => {
+    const mapCountryIds = mapData.map((d) => d.country_id);
+    return countryOptions.filter((c) => mapCountryIds.includes(c.value));
+  }, [countryOptions, mapData]);
+
   const fetchReferenceData = useCallback(
     (country, commodity, driver, source) => {
       setLoading(true);
@@ -630,8 +635,9 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="country" noStyle>
                             <Select
                               {...selectProps}
-                              options={countryOptions}
+                              options={filteredCountryOptions}
                               placeholder="Select Country"
+                              loading={mapLoading}
                             />
                           </Form.Item>
                         </Col>
@@ -642,6 +648,7 @@ const ExploreStudiesPage = () => {
                               {...selectProps}
                               options={sourceOptions}
                               placeholder="Select Source"
+                              loading={mapLoading}
                             />
                           </Form.Item>
                         </Col>
@@ -652,6 +659,7 @@ const ExploreStudiesPage = () => {
                               {...selectProps}
                               options={commodityOptions}
                               placeholder="Select Commodity"
+                              loading={mapLoading}
                             />
                           </Form.Item>
                         </Col>
@@ -662,6 +670,7 @@ const ExploreStudiesPage = () => {
                               {...selectProps}
                               options={driverOptions}
                               placeholder="Select Driver"
+                              loading={mapLoading}
                             />
                           </Form.Item>
                         </Col>
@@ -670,6 +679,7 @@ const ExploreStudiesPage = () => {
                             <Button
                               className="clear-button"
                               onClick={handleClearFilter}
+                              disabled={mapLoading}
                             >
                               Clear
                             </Button>
@@ -677,6 +687,7 @@ const ExploreStudiesPage = () => {
                               <Button
                                 className="search-button"
                                 htmlType="submit"
+                                disabled={mapLoading}
                               >
                                 Search
                               </Button>
