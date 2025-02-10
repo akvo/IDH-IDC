@@ -18,6 +18,16 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
       text: chartTitle?.title,
       subtext: chartTitle?.subTitle,
     },
+    projection: {
+      project: (point) => [
+        (point[0] / 180) * Math.PI,
+        -Math.log(Math.tan((Math.PI / 2 + (point[1] / 180) * Math.PI) / 2)),
+      ],
+      unproject: (point) => [
+        (point[0] * 180) / Math.PI,
+        ((2 * 180) / Math.PI) * Math.atan(Math.exp(point[1])) - 90,
+      ],
+    },
     tooltip: {
       trigger: "item",
       formatter: function ({ name, value, data }) {
@@ -65,12 +75,13 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
       ...TextStyle,
     },
     visualMap: {
-      show: false,
+      show: true,
+      type: "continuous",
+      text: ["High", "Low"],
       min: extra?.min || 0,
       max: extra?.max || 100,
       left: "right",
       top: "bottom",
-      text: ["High", "Low"],
       calculable: true,
       inRange: {
         color: extra?.colors || [
@@ -92,6 +103,7 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
         name: extra?.seriesName || "Data",
         type: "map",
         map: extra?.mapType || "world_map",
+        zoom: 1.15,
         emphasis: {
           label: {
             show: false,
