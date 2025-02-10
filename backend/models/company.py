@@ -17,6 +17,12 @@ class CompanyOption(TypedDict):
     value: int
 
 
+class CompanyHavingCaseOption(TypedDict):
+    label: str
+    value: int
+    case_count: int
+
+
 class Company(Base):
     __tablename__ = "company"
 

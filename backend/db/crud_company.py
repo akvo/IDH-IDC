@@ -1,6 +1,7 @@
 from typing import List, Optional
 from typing_extensions import TypedDict
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from fastapi import HTTPException, status
 from models.company import (
     Company,
@@ -101,3 +102,19 @@ def delete_company(session: Session, company_id: int):
     session.delete(company)
     session.commit()
     session.flush()
+
+
+def get_company_having_case(session: Session):
+    result = (
+        session.query(
+            Company.id,
+            Company.name,
+            func.count(Case.id).label("case_count"),
+        )
+        .join(Case, Company.id == Case.company)
+        .group_by(Company.id, Company.name)
+        .having(func.count(Case.id) > 0)
+        .all()
+    )
+
+    return result

@@ -127,6 +127,18 @@ class TestCompanyRoute:
         assert res == [{"label": "Company Test", "value": 1}]
 
     @pytest.mark.asyncio
+    async def test_get_company_having_case_options(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # without cred
+        res = await client.get(
+            app.url_path_for("company:get_having_case_options"),
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == []
+
+    @pytest.mark.asyncio
     async def test_update_company(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:

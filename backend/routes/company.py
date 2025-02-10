@@ -12,6 +12,7 @@ from models.company import (
     CompanyDict,
     CompanyBase,
     PaginatedCompanyResponse,
+    CompanyHavingCaseOption,
 )
 from middleware import verify_admin
 from http import HTTPStatus
@@ -51,6 +52,24 @@ def get_company_options(
 ):
     companies = crud_company.get_all_company(session=session)
     return [company.to_option for company in companies]
+
+
+@company_route.get(
+    "/company/having_case_options",
+    response_model=List[CompanyHavingCaseOption,],
+    summary="get company options",
+    name="company:get_having_case_options",
+    tags=["Company"],
+)
+def get_company_having_case_options(
+    req: Request,
+    session: Session = Depends(get_session),
+):
+    companies = crud_company.get_company_having_case(session=session)
+    return [
+        {"label": c.name, "value": c.id, "case_count": c.case_count}
+        for c in companies
+    ]
 
 
 @company_route.get(
