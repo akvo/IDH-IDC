@@ -56,6 +56,7 @@ const Cases = () => {
     tags: [],
     email: caseOwner || null,
     year: null,
+    shared_with_me: false,
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
@@ -82,11 +83,23 @@ const Cases = () => {
     onSearch: (value) => setSearch(value),
   };
 
+  const resetFilters = () => {
+    setFilters({
+      country: null,
+      commodity: null,
+      tags: [],
+      email: caseOwner || null,
+      year: null,
+      shared_with_me: false,
+    });
+  };
+
   const caseSelectorItems = [
     {
       key: "all-cases",
       label: "All cases",
       onClick: () => {
+        resetFilters();
         setActiveButton("all-cases");
       },
     },
@@ -94,6 +107,7 @@ const Cases = () => {
       key: "my-cases",
       label: "My cases",
       onClick: () => {
+        resetFilters();
         setActiveButton("my-cases");
         setFilters((prev) => ({
           ...prev,
@@ -105,7 +119,12 @@ const Cases = () => {
       key: "shared-with-me",
       label: "Shared with me",
       onClick: () => {
+        resetFilters();
         setActiveButton("shared-with-me");
+        setFilters((prev) => ({
+          ...prev,
+          shared_with_me: true,
+        }));
       },
     },
     {
@@ -300,7 +319,7 @@ const Cases = () => {
 
   useEffect(() => {
     if (userID || refresh) {
-      const { country, commodity, tags, year, email } = filters;
+      const { country, commodity, tags, year, email, shared_with_me } = filters;
       setLoading(true);
       let url = `case?page=${currentPage}&limit=${perPage}`;
       if (search) {
@@ -321,6 +340,9 @@ const Cases = () => {
       }
       if (year) {
         url = `${url}&year=${year}`;
+      }
+      if (shared_with_me) {
+        url = `${url}&shared_with_me=${shared_with_me}`;
       }
       api
         .get(url)

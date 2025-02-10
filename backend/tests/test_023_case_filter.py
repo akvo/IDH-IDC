@@ -332,3 +332,14 @@ class TestCaseWithFilterRoute:
             headers={"Authorization": f"Bearer {admin_account.token}"},
         )
         assert res.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_get_case_filtered_by_shared_with_me(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        res = await client.get(
+            app.url_path_for("case:get_all"),
+            params={"shared_with_me": True},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 404

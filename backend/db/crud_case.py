@@ -107,6 +107,7 @@ def get_all_case(
     email: Optional[str] = None,
     year: Optional[int] = None,
     company: Optional[int] = None,
+    shared_with_me: Optional[bool] = None,
 ) -> List[CaseListDict]:
     case = session.query(Case)
     if not show_private:
@@ -123,7 +124,7 @@ def get_all_case(
         case = case.filter(Case.id.in_(case_ids))
     if business_unit_users:
         case = case.filter(Case.created_by.in_(business_unit_users))
-    if user_cases:
+    if user_cases or shared_with_me:
         case = case.filter(Case.id.in_(user_cases))
     if country:
         case = case.filter(Case.country == country)
