@@ -17,12 +17,12 @@ import {
 import {
   PlusOutlined,
   FilterOutlined,
-  EditOutlined,
   UserSwitchOutlined,
   SaveOutlined,
   CloseOutlined,
-  EyeOutlined,
   DeleteOutlined,
+  // EditOutlined,
+  // EyeOutlined,
 } from "@ant-design/icons";
 import { Link, useSearchParams } from "react-router-dom";
 import { UIState, UserState } from "../../store";
@@ -55,6 +55,18 @@ const caseSelectorItems = [
     type: "text",
     onClick: () => console.info("2"),
   },
+  {
+    key: "shared-with-me",
+    label: "Shared with me",
+    type: "text",
+    onClick: () => console.info("2"),
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    type: "text",
+    onClick: () => console.info("2"),
+  },
 ];
 
 const Cases = () => {
@@ -78,10 +90,10 @@ const Cases = () => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
     id: userID,
-    email: userEmail,
     role: userRole,
     internal_user: userInternal,
-    case_access: userCaseAccess,
+    // email: userEmail,
+    // case_access: userCaseAccess,
   } = UserState.useState((s) => s);
 
   const [showChangeOwnerForm, setShowChangeOwnerForm] = useState(null);
@@ -103,6 +115,17 @@ const Cases = () => {
       key: "case",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (text, record) => {
+        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
+        return (
+          <Link
+            style={{ fontWeight: "bold", color: "#000" }}
+            to={caseDetailURL}
+          >
+            {text}
+          </Link>
+        );
+      },
     },
     {
       title: "Country",
@@ -210,22 +233,22 @@ const Cases = () => {
       width: "5%",
       align: "center",
       render: (text, record) => {
-        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
-        const EditButton = (
-          <Link to={caseDetailURL}>
-            <EditOutlined />
-          </Link>
-        );
-        const ViewButton = (
-          <Link to={caseDetailURL}>
-            <EyeOutlined />
-          </Link>
-        );
+        // const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
+        // const EditButton = (
+        //   <Link to={caseDetailURL}>
+        //     <EditOutlined />
+        //   </Link>
+        // );
+        // const ViewButton = (
+        //   <Link to={caseDetailURL}>
+        //     <EyeOutlined />
+        //   </Link>
+        // );
 
         if (adminRole.includes(userRole)) {
           return (
             <Space size="large">
-              {EditButton}
+              {/* {EditButton} */}
               <Popconfirm
                 title="Delete Case"
                 description="Are you sure want to delete this case?"
@@ -243,20 +266,20 @@ const Cases = () => {
         }
 
         // check case access
-        const userPermission = userCaseAccess.find(
-          (a) => a.case === record.id
-        )?.permission;
-        // allow internal user case owner to edit case
-        if (userInternal && record.created_by === userEmail) {
-          return EditButton;
-        }
-        if ((userInternal && !userPermission) || userPermission === "view") {
-          return ViewButton;
-        }
-        if (userPermission === "edit") {
-          return EditButton;
-        }
-        return ViewButton;
+        // const userPermission = userCaseAccess.find(
+        //   (a) => a.case === record.id
+        // )?.permission;
+        // // allow internal user case owner to edit case
+        // if (userInternal && record.created_by === userEmail) {
+        //   return EditButton;
+        // }
+        // if ((userInternal && !userPermission) || userPermission === "view") {
+        //   return ViewButton;
+        // }
+        // if (userPermission === "edit") {
+        //   return EditButton;
+        // }
+        // return ViewButton;
       },
     },
   ];
