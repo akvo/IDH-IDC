@@ -28,7 +28,12 @@ import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
 import { ProcurementLibrary } from "./pages/procurement-library";
 
-const optionRoutes = ["organisation/options", "tag/options", "company/options"];
+const optionRoutes = [
+  "organisation/options",
+  "tag/options",
+  "company/options",
+  "company/having_case_options",
+];
 
 const App = () => {
   const navigate = useNavigate();
@@ -44,11 +49,16 @@ const App = () => {
     const optionApiCalls = optionRoutes.map((url) => api.get(url));
     Promise.all(optionApiCalls)
       .then((res) => {
-        const [orgRes, tagRes, companyRes] = res;
+        const [orgRes, tagRes, companyRes, companyHavingCaseRes] = res;
         UIState.update((s) => {
           s.organisationOptions = orgRes.data;
           s.tagOptions = tagRes.data;
           s.companyOptions = orderBy(companyRes.data, ["label"], ["asc"]);
+          s.companyHavingCaseOptions = orderBy(
+            companyHavingCaseRes.data,
+            ["label"],
+            ["asc"]
+          );
         });
       })
       .catch((e) => {

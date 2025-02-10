@@ -3,7 +3,7 @@ import db.crud_map as crud_map
 import db.crud_user_case_access as crud_uca
 import db.crud_case as crud_case
 
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Query
 from fastapi.responses import Response
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
@@ -122,6 +122,7 @@ def get_case_by_country(
 )
 def get_case_by_country_and_company(
     req: Request,
+    company: Optional[int] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -132,6 +133,7 @@ def get_case_by_country_and_company(
         session=session,
         user_cases=user_cases,
         show_private=show_private,
+        company=company,
     )
 
     return cases

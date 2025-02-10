@@ -60,6 +60,7 @@ def get_case_count_by_country_and_company(
     session: Session,
     show_private: Optional[bool] = False,
     user_cases: Optional[List[int]] = None,
+    company: Optional[int] = None,
 ) -> List[dict]:
     case_query = session.query(Case)
 
@@ -68,6 +69,9 @@ def get_case_count_by_country_and_company(
 
     if user_cases:
         case_query = case_query.filter(Case.id.in_(user_cases))
+
+    if company:
+        case_query = case_query.filter(Case.company == company)
 
     # Use LEFT JOIN to include cases without a company
     case_count_and_farmers_by_country_and_company = (

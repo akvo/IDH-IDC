@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "./welcome.scss";
 import { Row, Col, Card, Button, Table, Modal, Select, Space } from "antd";
 import { UserState, UIState } from "../../store";
@@ -6,7 +6,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import { Link } from "react-router-dom";
-import { groupBy, map, sumBy, uniqBy, uniq, min, max } from "lodash";
+import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
 
 // TODO :: Map data => case which have segment (current query)
@@ -23,7 +23,9 @@ const defData = {
 const Welcome = () => {
   const { fullname: username, internal_user: isInternalUser } =
     UserState.useState((s) => s);
-  const companyOptions = UIState.useState((s) => s.companyOptions);
+  const companyHavingCaseOptions = UIState.useState(
+    (s) => s.companyHavingCaseOptions
+  );
 
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
@@ -37,63 +39,72 @@ const Welcome = () => {
 
   const tableElement = document.getElementById("table-container");
 
-  const filteredCompanyOptions = useMemo(() => {
-    if (!mapData?.length) {
-      return [];
+  // old company options way
+  // const filteredCompanyOptions = useMemo(() => {
+  //   if (!mapData?.length) {
+  //     return [];
+  //   }
+  //   const companyIds = uniq(
+  //     mapData
+  //       .filter((d) =>
+  //         selectedCountryId ? d.country_id === selectedCountryId : true
+  //       ) // filter by clicked country
+  //       .flatMap((d) => d.companies.map((c) => c.company_id))
+  //   );
+  //   return companyOptions.filter((c) => companyIds.includes(c.value));
+  // }, [mapData, selectedCountryId, companyOptions]);
+
+  const fetchMapData = useCallback((companyId) => {
+    let url = "/map/case-by-country-and-company";
+    if (companyId) {
+      url += `?company=${companyId}`;
     }
-    const companyIds = uniq(
-      mapData
-        .filter((d) => d.country_id === selectedCountryId) // filter by clicked country
-        .flatMap((d) => d.companies.map((c) => c.company_id))
-    );
-    return companyOptions.filter((c) => companyIds.includes(c.value));
-  }, [mapData, selectedCountryId, companyOptions]);
+    api
+      .get(url)
+      .then((res) => {
+        // Group by country_id
+        const groupedData = groupBy(res.data, "country_id");
+
+        // Transform the grouped data
+        const transformedData = map(groupedData, (items, countryId) => {
+          const countryName = items[0].COUNTRY;
+          const totalCaseCount = sumBy(items, "case_count");
+          const totalFarmers = sumBy(items, "total_farmers");
+
+          // Create a unique list of companies
+          const companies = uniqBy(
+            items
+              .map((item) => ({
+                company_id: item.company_id,
+                company_name: item.company,
+              }))
+              .filter((x) => x?.company_id),
+            "company_id"
+          );
+
+          return {
+            country_id: parseInt(countryId),
+            COUNTRY: countryName,
+            case_count: totalCaseCount,
+            name: countryName,
+            value: totalCaseCount,
+            total_farmers: totalFarmers,
+            companies: companies,
+          };
+        });
+        setMapData(transformedData);
+      })
+      .catch((e) => console.error(`Error fetching map data: ${e}`))
+      .finally(() =>
+        setTimeout(() => {
+          setMapLoading(false);
+        }, 100)
+      );
+  }, []);
 
   useEffect(() => {
-    if (mapLoading) {
-      api
-        .get("/map/case-by-country-and-company")
-        .then((res) => {
-          // Group by country_id
-          const groupedData = groupBy(res.data, "country_id");
-
-          // Transform the grouped data
-          const transformedData = map(groupedData, (items, countryId) => {
-            const countryName = items[0].COUNTRY;
-            const totalCaseCount = sumBy(items, "case_count");
-            const totalFarmers = sumBy(items, "total_farmers");
-
-            // Create a unique list of companies
-            const companies = uniqBy(
-              items
-                .map((item) => ({
-                  company_id: item.company_id,
-                  company_name: item.company,
-                }))
-                .filter((x) => x?.company_id),
-              "company_id"
-            );
-
-            return {
-              country_id: parseInt(countryId),
-              COUNTRY: countryName,
-              case_count: totalCaseCount,
-              name: countryName,
-              value: totalCaseCount,
-              total_farmers: totalFarmers,
-              companies: companies,
-            };
-          });
-          setMapData(transformedData);
-        })
-        .catch((e) => console.error(`Error fetching map data: ${e}`))
-        .finally(() =>
-          setTimeout(() => {
-            setMapLoading(false);
-          }, 100)
-        );
-    }
-  }, [mapLoading]);
+    fetchMapData();
+  }, [fetchMapData]);
 
   const fetchTableData = ({ countryId, companyId = null }) => {
     let url = `case?page=${currentPage}&limit=${perPage}&country=${countryId}`;
@@ -131,7 +142,14 @@ const Welcome = () => {
   };
 
   const handleOnCompanyChange = (companyId) => {
-    fetchTableData({ countryId: selectedCountryId, companyId });
+    setMapLoading(true);
+    fetchMapData(companyId);
+    if (!companyId) {
+      setSelectedCountryId(null);
+    }
+    if (selectedCountryId) {
+      fetchTableData({ countryId: selectedCountryId, companyId });
+    }
   };
 
   const handleOnClickViewSummary = () => {
@@ -289,69 +307,74 @@ const Welcome = () => {
 
       {/* Map */}
       <Col span={24}>
-        <Card className="map-card-wrapper">
-          <Chart
-            wrapper={false}
-            type="CHOROPLETH"
-            loading={mapLoading}
-            height={700}
-            data={mapData}
-            extra={{
-              seriesName: "Case count by country",
-              min: min(mapData.map((d) => d.value)),
-              max: max(mapData.map((d) => d.value)),
-            }}
-            callbacks={{
-              onClick: onClickMap,
-            }}
-          />
-        </Card>
+        <Row gutter={[14, 14]}>
+          {isInternalUser ? (
+            <Col span={24}>
+              <Select
+                {...selectProps}
+                options={companyHavingCaseOptions.map((o) => ({
+                  ...o,
+                  label: `${o.label} (${o.case_count} ${
+                    o.case_count > 1 ? "cases" : "case"
+                  })`,
+                }))}
+                placeholder="Select company"
+                style={{ width: "24rem" }}
+                onChange={handleOnCompanyChange}
+              />
+            </Col>
+          ) : null}
+          <Col span={24}>
+            <Card className="map-card-wrapper">
+              <Chart
+                wrapper={false}
+                type="CHOROPLETH"
+                loading={mapLoading}
+                height={700}
+                data={mapData}
+                extra={{
+                  seriesName: "Case count by country",
+                  min: min(mapData.map((d) => d.value)),
+                  max: max(mapData.map((d) => d.value)),
+                }}
+                callbacks={{
+                  onClick: onClickMap,
+                }}
+              />
+            </Card>
+          </Col>
+        </Row>
       </Col>
       {/* EOL Map */}
 
       {/* Table */}
       <Col span={24} id="table-container">
         {selectedCountryId ? (
-          <Row gutter={[14, 14]}>
-            {isInternalUser ? (
-              <Col span={24}>
-                <Select
-                  {...selectProps}
-                  options={filteredCompanyOptions}
-                  placeholder="Select company"
-                  style={{ width: "24rem" }}
-                  onChange={handleOnCompanyChange}
-                />
-              </Col>
-            ) : null}
-            <Col span={24}>
-              <Table
-                rowKey="id"
-                className="table-content-wrapper"
-                columns={columns}
-                dataSource={tableData.data}
-                loading={tableLoading}
-                pagination={{
-                  current: currentPage,
-                  pageSize: perPage,
-                  total: tableData.total,
-                  onChange: (page) => setCurrentPage(page),
-                  showSizeChanger: false,
-                  showTotal: (total) => (
-                    <div
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        marginLeft: "14px",
-                      }}
-                    >
-                      Total Case: {total}
-                    </div>
-                  ),
-                }}
-              />
-            </Col>
-          </Row>
+          <Table
+            rowKey="id"
+            className="table-content-wrapper"
+            columns={columns}
+            dataSource={tableData.data}
+            loading={tableLoading}
+            pagination={{
+              current: currentPage,
+              pageSize: perPage,
+              total: tableData.total,
+              onChange: (page) => setCurrentPage(page),
+              showSizeChanger: false,
+              showTotal: (total) => (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    marginLeft: "14px",
+                  }}
+                >
+                  Total Case: {total}
+                </div>
+              ),
+            }}
+          />
         ) : null}
       </Col>
       {/* EOL Table */}

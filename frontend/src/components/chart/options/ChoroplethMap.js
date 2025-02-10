@@ -79,14 +79,18 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
       type: "continuous",
       text: ["High", "Low"],
       min: extra?.min || 0,
-      max: extra?.max || 100,
+      max: extra?.max
+        ? extra?.max === extra?.min
+          ? extra?.max + 5
+          : extra?.max
+        : 100,
       left: "right",
       top: "bottom",
       calculable: true,
       inRange: {
         color: extra?.colors || [
-          "#EAF2F2",
-          "#D0E2E2",
+          // "#EAF2F2",
+          // "#D0E2E2",
           "#B6D2D1",
           "#9CC2C1",
           "#82B2B1",
