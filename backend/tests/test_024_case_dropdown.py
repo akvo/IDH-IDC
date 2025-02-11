@@ -142,6 +142,7 @@ class TestCaseDropdownRoute:
             "logo": None,
             "created_by": 3,
             "segments": [],
+            "status": 0,
             "case_commodities": [
                 {
                     "id": 9,

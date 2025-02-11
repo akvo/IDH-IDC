@@ -46,6 +46,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 }
             ],
             "total": 1,
@@ -85,6 +86,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 }
             ],
             "total": 1,
@@ -124,6 +126,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 }
             ],
             "total": 1,
@@ -163,6 +166,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 }
             ],
             "total": 1,
@@ -200,6 +204,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [],
+                    "status": 0,
                 },
                 {
                     "id": 1,
@@ -212,6 +217,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][1]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 },
             ],
             "total": 2,
@@ -249,6 +255,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [],
+                    "status": 0,
                 },
                 {
                     "id": 1,
@@ -261,6 +268,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][1]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 },
             ],
             "total": 2,
@@ -298,6 +306,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [],
+                    "status": 0,
                 },
                 {
                     "id": 1,
@@ -310,6 +319,7 @@ class TestCaseWithFilterRoute:
                     "created_at": res["data"][1]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [2, 1],
+                    "status": 0,
                 },
             ],
             "total": 2,

@@ -143,6 +143,7 @@ class TestSegmentAnswerRouteContinued:
             "created_at": res["created_at"],
             "updated_by": "John Doe",
             "updated_at": res["updated_at"],
+            "status": 0,
             "segments": [
                 {
                     "id": 2,

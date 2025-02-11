@@ -83,6 +83,7 @@ class TestCaseWithSegmentRoute:
             "multiple_commodities": False,
             "logo": None,
             "created_by": 1,
+            "status": 0,
             "segments": [
                 {
                     "id": 4,
@@ -212,6 +213,7 @@ class TestCaseWithSegmentRoute:
             "created_at": res["created_at"],
             "updated_by": "John Doe",
             "updated_at": res["updated_at"],
+            "status": 0,
             "segments": [
                 {
                     "id": 5,
