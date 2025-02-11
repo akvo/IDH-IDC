@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from datetime import datetime
 
 from models.user import User
-from models.case import Case, CaseBase, CaseDict, CaseListDict
+from models.case import Case, CaseBase, CaseDict, CaseListDict, CaseStatusEnum
 from models.case_commodity import CaseCommodity, CaseCommodityType
 from models.case_tag import CaseTag
 from models.user_case_access import UserCaseAccess
@@ -107,6 +107,8 @@ def get_all_case(
     email: Optional[str] = None,
     year: Optional[int] = None,
     company: Optional[int] = None,
+    shared_with_me: Optional[bool] = None,
+    status: Optional[CaseStatusEnum] = None,
 ) -> List[CaseListDict]:
     case = session.query(Case)
     if not show_private:
@@ -123,7 +125,7 @@ def get_all_case(
         case = case.filter(Case.id.in_(case_ids))
     if business_unit_users:
         case = case.filter(Case.created_by.in_(business_unit_users))
-    if user_cases:
+    if user_cases or shared_with_me:
         case = case.filter(Case.id.in_(user_cases))
     if country:
         case = case.filter(Case.country == country)
@@ -141,6 +143,8 @@ def get_all_case(
         )
     if company:
         case = case.filter(Case.company == company)
+    if status is not None:
+        case = case.filter(Case.status == status)
     count = case.count()
     case = case.order_by(Case.id.desc()).offset(skip).limit(limit).all()
     return PaginatedCaseData(count=count, data=case)
@@ -281,6 +285,19 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
                     number_of_farmers=segment.number_of_farmers,
                 )
                 case.case_segments.append(new_segment)
+    session.commit()
+    session.flush()
+    session.refresh(case)
+    return case
+
+
+def set_case_status(
+    session: Session, id: int, status: CaseStatusEnum
+) -> CaseDict:
+    case = get_case_by_id(session=session, id=id)
+    case.status = status
+    # don't update updated_at value
+    case.updated_at = case.updated_at
     session.commit()
     session.flush()
     session.refresh(case)

@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 from tests.test_000_main import Acc
 
-from models.case import LivingIncomeStudyEnum
+from models.case import LivingIncomeStudyEnum, CaseStatusEnum
 from models.case_commodity import CaseCommodityType
 
 sys.path.append("..")
@@ -83,6 +83,7 @@ class TestCaseWithSegmentRoute:
             "multiple_commodities": False,
             "logo": None,
             "created_by": 1,
+            "status": 0,
             "segments": [
                 {
                     "id": 4,
@@ -212,6 +213,7 @@ class TestCaseWithSegmentRoute:
             "created_at": res["created_at"],
             "updated_by": "John Doe",
             "updated_at": res["updated_at"],
+            "status": 0,
             "segments": [
                 {
                     "id": 5,
@@ -280,3 +282,18 @@ class TestCaseWithSegmentRoute:
             "tags": [1],
             "company": 1,
         }
+
+    @pytest.mark.asyncio
+    async def test_update_case_status(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # with admin user cred
+        res = await client.put(
+            app.url_path_for("case:update_status", case_id=12),
+            params={"status": CaseStatusEnum.COMPLETED.value},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res["id"] == 12
+        assert res["status"] == CaseStatusEnum.COMPLETED.value

@@ -17,6 +17,7 @@ from models.case import (
     PaginatedCaseResponse,
     CaseDetailDict,
     CaseDropdown,
+    CaseStatusEnum,
 )
 from models.user import UserRole
 from models.user_case_access import UserCaseAccessPayload, UserCaseAccessDict
@@ -71,6 +72,8 @@ def get_all_case(
     email: Optional[str] = Query(None),
     year: Optional[int] = Query(None),
     company: Optional[int] = Query(None),
+    shared_with_me: Optional[bool] = Query(None),
+    status: Optional[CaseStatusEnum] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -111,7 +114,13 @@ def get_all_case(
         cases = crud_case.get_case_by_created_by(
             session=session, created_by=user.id
         )
-        user_cases = user_cases + [c.id for c in cases]
+        user_cases = [c.id for c in cases]
+
+    if shared_with_me:
+        # explicitly shared with the user
+        # this require query into user case access
+        # and rewrtie all user_cases value
+        user_cases = [d.case for d in user_permission]
 
     cases = crud_case.get_all_case(
         session=session,
@@ -126,6 +135,8 @@ def get_all_case(
         email=email,
         year=year,
         company=company,
+        shared_with_me=shared_with_me,
+        status=status,
     )
     if not cases:
         raise HTTPException(status_code=404, detail="Not found")
@@ -179,13 +190,36 @@ def get_case_options(
 
 
 @case_route.put(
+    "/case/update-status/{case_id:path}",
+    response_model=CaseDetailDict,
+    summary="update case status by id",
+    name="case:update_status",
+    tags=["Case"],
+)
+def update_case_status(
+    req: Request,
+    case_id: int,
+    status: CaseStatusEnum = Query(CaseStatusEnum),
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_editor(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
+    case = crud_case.set_case_status(
+        session=session, id=case_id, status=status
+    )
+    return case.to_case_detail
+
+
+@case_route.put(
     "/case/{case_id:path}",
     response_model=CaseDetailDict,
     summary="update case by id",
     name="case:update",
     tags=["Case"],
 )
-def update_Case(
+def update_case(
     req: Request,
     case_id: int,
     payload: CaseBase,

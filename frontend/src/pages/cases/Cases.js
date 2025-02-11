@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./cases.scss";
 import { ContentLayout } from "../../components/layout";
-import { commodityOptions } from "../../store/static";
+import { commodityOptions, CaseStatusEnum } from "../../store/static";
 import { DebounceSelect, CaseFilter, CaseSettings } from "./components";
 import {
   Row,
@@ -17,12 +17,12 @@ import {
 import {
   PlusOutlined,
   FilterOutlined,
-  EditOutlined,
   UserSwitchOutlined,
   SaveOutlined,
   CloseOutlined,
-  EyeOutlined,
   DeleteOutlined,
+  // EditOutlined,
+  // EyeOutlined,
 } from "@ant-design/icons";
 import { Link, useSearchParams } from "react-router-dom";
 import { UIState, UserState } from "../../store";
@@ -42,21 +42,6 @@ const defData = {
   total_page: 1,
 };
 
-const caseSelectorItems = [
-  {
-    key: "all-cases",
-    label: "All cases",
-    type: "default",
-    onClick: () => console.info("1"),
-  },
-  {
-    key: "my-cases",
-    label: "My cases",
-    type: "text",
-    onClick: () => console.info("2"),
-  },
-];
-
 const Cases = () => {
   const [searchParams] = useSearchParams();
   const caseOwner = searchParams.get("owner");
@@ -71,6 +56,8 @@ const Cases = () => {
     tags: [],
     email: caseOwner || null,
     year: null,
+    shared_with_me: false,
+    status: null,
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
@@ -78,15 +65,16 @@ const Cases = () => {
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const {
     id: userID,
-    email: userEmail,
     role: userRole,
     internal_user: userInternal,
-    case_access: userCaseAccess,
+    email: userEmail,
+    // case_access: userCaseAccess,
   } = UserState.useState((s) => s);
 
   const [showChangeOwnerForm, setShowChangeOwnerForm] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
+  const [activeButton, setActiveButton] = useState("all-cases");
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -96,6 +84,65 @@ const Cases = () => {
     onSearch: (value) => setSearch(value),
   };
 
+  const resetFilters = () => {
+    setFilters({
+      country: null,
+      commodity: null,
+      tags: [],
+      email: caseOwner || null,
+      year: null,
+      shared_with_me: false,
+      status: null,
+    });
+  };
+
+  const caseSelectorItems = [
+    {
+      key: "all-cases",
+      label: "All cases",
+      onClick: () => {
+        resetFilters();
+        setActiveButton("all-cases");
+      },
+    },
+    {
+      key: "my-cases",
+      label: "My cases",
+      onClick: () => {
+        resetFilters();
+        setActiveButton("my-cases");
+        setFilters((prev) => ({
+          ...prev,
+          email: userEmail,
+        }));
+      },
+    },
+    {
+      key: "shared-with-me",
+      label: "Shared with me",
+      onClick: () => {
+        resetFilters();
+        setActiveButton("shared-with-me");
+        setFilters((prev) => ({
+          ...prev,
+          shared_with_me: true,
+        }));
+      },
+    },
+    {
+      key: "completed",
+      label: "Completed",
+      onClick: () => {
+        resetFilters();
+        setActiveButton("completed");
+        setFilters((prev) => ({
+          ...prev,
+          status: CaseStatusEnum.COMPLETED,
+        }));
+      },
+    },
+  ];
+
   const columns = [
     {
       title: "Case Name",
@@ -103,6 +150,17 @@ const Cases = () => {
       key: "case",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.name.localeCompare(b.name),
+      render: (text, record) => {
+        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
+        return (
+          <Link
+            style={{ fontWeight: "bold", color: "#000" }}
+            to={caseDetailURL}
+          >
+            {text}
+          </Link>
+        );
+      },
     },
     {
       title: "Country",
@@ -205,27 +263,60 @@ const Cases = () => {
       },
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.status - b.status,
+      render: (val) => {
+        const status = Object.entries(CaseStatusEnum)
+          .map(([key, value]) => {
+            if (value === val) {
+              return key;
+            }
+            return null;
+          })
+          .filter((x) => x !== null);
+        return status[0];
+      },
+    },
+    {
       title: "Actions",
       key: "action",
       width: "5%",
       align: "center",
       render: (text, record) => {
-        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
-        const EditButton = (
-          <Link to={caseDetailURL}>
-            <EditOutlined />
-          </Link>
-        );
-        const ViewButton = (
-          <Link to={caseDetailURL}>
-            <EyeOutlined />
-          </Link>
+        // const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
+        // const EditButton = (
+        //   <Link to={caseDetailURL}>
+        //     <EditOutlined />
+        //   </Link>
+        // );
+        // const ViewButton = (
+        //   <Link to={caseDetailURL}>
+        //     <EyeOutlined />
+        //   </Link>
+        // );
+        const ViewSummaryButton = (
+          <Button
+            size="small"
+            type="primary"
+            disabled={!record?.has_scenario_data}
+            style={{
+              borderRadius: "20px",
+              padding: "0px 10px",
+            }}
+            ghost
+          >
+            View Summary
+          </Button>
         );
 
         if (adminRole.includes(userRole)) {
           return (
-            <Space size="large">
-              {EditButton}
+            <Space>
+              {/* {EditButton} */}
+              {ViewSummaryButton}
               <Popconfirm
                 title="Delete Case"
                 description="Are you sure want to delete this case?"
@@ -243,20 +334,20 @@ const Cases = () => {
         }
 
         // check case access
-        const userPermission = userCaseAccess.find(
-          (a) => a.case === record.id
-        )?.permission;
-        // allow internal user case owner to edit case
-        if (userInternal && record.created_by === userEmail) {
-          return EditButton;
-        }
-        if ((userInternal && !userPermission) || userPermission === "view") {
-          return ViewButton;
-        }
-        if (userPermission === "edit") {
-          return EditButton;
-        }
-        return ViewButton;
+        // const userPermission = userCaseAccess.find(
+        //   (a) => a.case === record.id
+        // )?.permission;
+        // // allow internal user case owner to edit case
+        // if (userInternal && record.created_by === userEmail) {
+        //   return EditButton;
+        // }
+        // if ((userInternal && !userPermission) || userPermission === "view") {
+        //   return ViewButton;
+        // }
+        // if (userPermission === "edit") {
+        //   return EditButton;
+        // }
+        // return ViewButton;
       },
     },
   ];
@@ -268,7 +359,8 @@ const Cases = () => {
 
   useEffect(() => {
     if (userID || refresh) {
-      const { country, commodity, tags, year, email } = filters;
+      const { country, commodity, tags, year, email, shared_with_me, status } =
+        filters;
       setLoading(true);
       let url = `case?page=${currentPage}&limit=${perPage}`;
       if (search) {
@@ -289,6 +381,12 @@ const Cases = () => {
       }
       if (year) {
         url = `${url}&year=${year}`;
+      }
+      if (shared_with_me) {
+        url = `${url}&shared_with_me=${shared_with_me}`;
+      }
+      if (status !== null) {
+        url = `${url}&status=${status}`;
       }
       api
         .get(url)
@@ -403,10 +501,15 @@ const Cases = () => {
       }
     >
       {contextHolder}
-      <Row gutter={[12, 12]} style={{ paddingBottom: 16 }}>
+      <Row gutter={[8, 8]} style={{ paddingBottom: 16 }}>
         {caseSelectorItems.map((cs) => (
           <Col key={cs.key}>
-            <Button type={cs.type}>{cs.label}</Button>
+            <Button
+              type={activeButton === cs.key ? "default" : "text"}
+              onClick={cs.onClick}
+            >
+              {cs.label}
+            </Button>
           </Col>
         ))}
       </Row>

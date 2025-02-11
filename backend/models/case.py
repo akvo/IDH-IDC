@@ -28,6 +28,7 @@ from models.segment import (
     CaseSettingSegmentPayload,
 )
 from models.case_tag import CaseTag
+from models.visualization import VisualizationTab
 
 
 class LivingIncomeStudyEnum(enum.Enum):
@@ -40,6 +41,11 @@ class CaseDropdown(TypedDict):
     value: int
 
 
+class CaseStatusEnum(enum.IntEnum):
+    INCOMPLETED = 0
+    COMPLETED = 1
+
+
 class CaseListDict(TypedDict):
     id: int
     name: str
@@ -49,6 +55,8 @@ class CaseListDict(TypedDict):
     year: int
     created_at: str
     created_by: str
+    status: int
+    has_scenario_data: bool
     company: Optional[str] = None
     tags: Optional[List[int]] = []
 
@@ -74,6 +82,7 @@ class CaseDict(TypedDict):
     segments: Optional[List[SegmentDict]]
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
+    status: int
     tags: Optional[List[int]] = []
     company: Optional[int] = None
 
@@ -101,6 +110,7 @@ class CaseDetailDict(TypedDict):
     segments: Optional[List[SegmentWithAnswersDict]]
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
+    status: int
     tags: Optional[List[int]] = []
     company: Optional[int] = None
 
@@ -138,6 +148,9 @@ class Case(Base):
     )
     updated_by = Column(Integer, ForeignKey("user.id"), nullable=True)
     company = Column(Integer, ForeignKey("company.id"), nullable=True)
+    status = Column(
+        Integer, nullable=False, default=CaseStatusEnum.INCOMPLETED
+    )
 
     case_commodities = relationship(
         CaseCommodity,
@@ -202,6 +215,7 @@ class Case(Base):
         multiple_commodities: int,
         logo: Optional[str],
         created_by: int,
+        status: Optional[int] = None,
         updated_by: Optional[int] = None,
         private: Optional[int] = 0,
         company: Optional[int] = None,
@@ -227,6 +241,7 @@ class Case(Base):
         self.created_by = created_by
         self.updated_by = updated_by
         self.company = company
+        self.status = status
 
     def __repr__(self) -> int:
         return f"<Case {self.id}>"
@@ -256,6 +271,7 @@ class Case(Base):
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
             "company": self.company,
+            "status": self.status,
         }
 
     @property
@@ -269,6 +285,18 @@ class Case(Base):
         company = None
         if self.company:
             company = self.company_detail.name
+        # Filter visualizations with tab "scenario_modeling"
+        scenario_modeling_visualizations = [
+            v
+            for v in self.case_visualization
+            if v.tab == VisualizationTab.scenario_modeling
+        ]
+        # Check if any of them contain scenario data
+        has_scenario_data = any(
+            v.config.get("scenarioData")
+            and any(s["scenarioValues"] for s in v.config["scenarioData"])
+            for v in scenario_modeling_visualizations
+        )
         return {
             "id": self.id,
             "name": self.name,
@@ -277,9 +305,11 @@ class Case(Base):
             "focus_commodity": self.focus_commodity,
             "diversified_commodities_count": len(diversified_count),
             "year": self.year,
+            "status": self.status,
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             "created_by": self.created_by_user.email,
             "tags": [ct.tag for ct in self.case_tags],
+            "has_scenario_data": has_scenario_data,
         }
 
     @property
@@ -314,6 +344,7 @@ class Case(Base):
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
             "company": self.company,
+            "status": self.status,
         }
 
     @property
@@ -352,6 +383,7 @@ class CaseBase(BaseModel):
     other_commodities: Optional[List[OtherCommoditysBase]] = None
     tags: Optional[List[int]] = None
     company: Optional[int] = None
+    status: Optional[int] = None
     segments: Optional[List[CaseSettingSegmentPayload]] = None
 
 

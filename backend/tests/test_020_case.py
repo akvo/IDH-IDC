@@ -99,6 +99,7 @@ class TestCaseRoute:
             "multiple_commodities": False,
             "logo": None,
             "created_by": 1,
+            "status": 0,
             "case_commodities": [
                 {
                     "id": 1,
@@ -190,6 +191,7 @@ class TestCaseRoute:
             "multiple_commodities": False,
             "logo": None,
             "created_by": 1,
+            "status": 0,
             "case_commodities": [
                 {
                     "id": 4,
@@ -239,6 +241,8 @@ class TestCaseRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [1],
+                    "status": 0,
+                    "has_scenario_data": False,
                 }
             ],
             "total": 1,
@@ -265,6 +269,8 @@ class TestCaseRoute:
                     "created_at": res["data"][0]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [],
+                    "status": 0,
+                    "has_scenario_data": False,
                 },
                 {
                     "id": 1,
@@ -277,6 +283,8 @@ class TestCaseRoute:
                     "created_at": res["data"][1]["created_at"],
                     "created_by": "super_admin@akvo.org",
                     "tags": [1],
+                    "status": 0,
+                    "has_scenario_data": False,
                 },
             ],
             "total": 2,
@@ -355,6 +363,7 @@ class TestCaseRoute:
             "created_at": res["created_at"],
             "updated_by": "John Doe",
             "updated_at": res["updated_at"],
+            "status": 0,
             "case_commodities": [
                 {
                     "id": 1,
@@ -434,6 +443,7 @@ class TestCaseRoute:
             "updated_by": "John Doe",
             "updated_at": res["updated_at"],
             "segments": [],
+            "status": 0,
             "case_commodities": [
                 {
                     "id": 1,
