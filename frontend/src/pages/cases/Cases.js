@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./cases.scss";
 import { ContentLayout } from "../../components/layout";
-import { commodityOptions } from "../../store/static";
+import { commodityOptions, CaseStatusEnum } from "../../store/static";
 import { DebounceSelect, CaseFilter, CaseSettings } from "./components";
 import {
   Row,
@@ -57,6 +57,7 @@ const Cases = () => {
     email: caseOwner || null,
     year: null,
     shared_with_me: false,
+    status: null,
   });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
@@ -91,6 +92,7 @@ const Cases = () => {
       email: caseOwner || null,
       year: null,
       shared_with_me: false,
+      status: null,
     });
   };
 
@@ -131,7 +133,12 @@ const Cases = () => {
       key: "completed",
       label: "Completed",
       onClick: () => {
+        resetFilters();
         setActiveButton("completed");
+        setFilters((prev) => ({
+          ...prev,
+          status: CaseStatusEnum.COMPLETED,
+        }));
       },
     },
   ];
@@ -319,7 +326,8 @@ const Cases = () => {
 
   useEffect(() => {
     if (userID || refresh) {
-      const { country, commodity, tags, year, email, shared_with_me } = filters;
+      const { country, commodity, tags, year, email, shared_with_me, status } =
+        filters;
       setLoading(true);
       let url = `case?page=${currentPage}&limit=${perPage}`;
       if (search) {
@@ -343,6 +351,9 @@ const Cases = () => {
       }
       if (shared_with_me) {
         url = `${url}&shared_with_me=${shared_with_me}`;
+      }
+      if (status !== null) {
+        url = `${url}&status=${status}`;
       }
       api
         .get(url)
