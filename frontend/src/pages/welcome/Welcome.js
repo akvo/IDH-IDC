@@ -207,8 +207,14 @@ const Welcome = () => {
         render: (record) => {
           return (
             <Button
-              className="button-green-transparent button-light font-roc-grotesk"
+              type="primary"
+              className="font-roc-grotesk"
               onClick={() => handleOnClickViewSummary({ ...record })}
+              disabled={!record?.has_scenario_data}
+              ghost
+              style={{
+                borderRadius: "20px",
+              }}
             >
               View summary
             </Button>

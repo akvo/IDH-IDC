@@ -297,11 +297,26 @@ const Cases = () => {
         //     <EyeOutlined />
         //   </Link>
         // );
+        const ViewSummaryButton = (
+          <Button
+            size="small"
+            type="primary"
+            disabled={!record?.has_scenario_data}
+            style={{
+              borderRadius: "20px",
+              padding: "0px 10px",
+            }}
+            ghost
+          >
+            View Summary
+          </Button>
+        );
 
         if (adminRole.includes(userRole)) {
           return (
-            <Space size="large">
+            <Space>
               {/* {EditButton} */}
+              {ViewSummaryButton}
               <Popconfirm
                 title="Delete Case"
                 description="Are you sure want to delete this case?"
