@@ -7,7 +7,7 @@ from fastapi import HTTPException, status
 from datetime import datetime
 
 from models.user import User
-from models.case import Case, CaseBase, CaseDict, CaseListDict
+from models.case import Case, CaseBase, CaseDict, CaseListDict, CaseStatusEnum
 from models.case_commodity import CaseCommodity, CaseCommodityType
 from models.case_tag import CaseTag
 from models.user_case_access import UserCaseAccess
@@ -282,6 +282,19 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
                     number_of_farmers=segment.number_of_farmers,
                 )
                 case.case_segments.append(new_segment)
+    session.commit()
+    session.flush()
+    session.refresh(case)
+    return case
+
+
+def set_case_status(
+    session: Session, id: int, status: CaseStatusEnum
+) -> CaseDict:
+    case = get_case_by_id(session=session, id=id)
+    case.status = status
+    # don't update updated_at value
+    case.updated_at = case.updated_at
     session.commit()
     session.flush()
     session.refresh(case)

@@ -17,6 +17,7 @@ from models.case import (
     PaginatedCaseResponse,
     CaseDetailDict,
     CaseDropdown,
+    CaseStatusEnum,
 )
 from models.user import UserRole
 from models.user_case_access import UserCaseAccessPayload, UserCaseAccessDict
@@ -187,13 +188,36 @@ def get_case_options(
 
 
 @case_route.put(
+    "/case/update-status/{case_id:path}",
+    response_model=CaseDetailDict,
+    summary="update case status by id",
+    name="case:update_status",
+    tags=["Case"],
+)
+def update_case_status(
+    req: Request,
+    case_id: int,
+    status: CaseStatusEnum = Query(CaseStatusEnum),
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_editor(
+        session=session, authenticated=req.state.authenticated, case_id=case_id
+    )
+    case = crud_case.set_case_status(
+        session=session, id=case_id, status=status
+    )
+    return case.to_case_detail
+
+
+@case_route.put(
     "/case/{case_id:path}",
     response_model=CaseDetailDict,
     summary="update case by id",
     name="case:update",
     tags=["Case"],
 )
-def update_Case(
+def update_case(
     req: Request,
     case_id: int,
     payload: CaseBase,
