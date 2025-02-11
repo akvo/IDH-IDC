@@ -263,6 +263,24 @@ const Cases = () => {
       },
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.status - b.status,
+      render: (val) => {
+        const status = Object.entries(CaseStatusEnum)
+          .map(([key, value]) => {
+            if (value === val) {
+              return key;
+            }
+            return null;
+          })
+          .filter((x) => x !== null);
+        return status[0];
+      },
+    },
+    {
       title: "Actions",
       key: "action",
       width: "5%",
