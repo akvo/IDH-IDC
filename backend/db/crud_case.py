@@ -108,6 +108,7 @@ def get_all_case(
     year: Optional[int] = None,
     company: Optional[int] = None,
     shared_with_me: Optional[bool] = None,
+    status: Optional[CaseStatusEnum] = None,
 ) -> List[CaseListDict]:
     case = session.query(Case)
     if not show_private:
@@ -142,6 +143,8 @@ def get_all_case(
         )
     if company:
         case = case.filter(Case.company == company)
+    if status is not None:
+        case = case.filter(Case.status == status)
     count = case.count()
     case = case.order_by(Case.id.desc()).offset(skip).limit(limit).all()
     return PaginatedCaseData(count=count, data=case)

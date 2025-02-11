@@ -6,6 +6,8 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 from tests.test_000_main import Acc
 
+from models.case import CaseStatusEnum
+
 sys.path.append("..")
 
 non_admin_account = Acc(email="support@akvo.org", token=None)
@@ -350,6 +352,17 @@ class TestCaseWithFilterRoute:
         res = await client.get(
             app.url_path_for("case:get_all"),
             params={"shared_with_me": True},
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_get_case_filtered_by_status(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        res = await client.get(
+            app.url_path_for("case:get_all"),
+            params={"status": CaseStatusEnum.COMPLETED.value},
             headers={"Authorization": f"Bearer {admin_account.token}"},
         )
         assert res.status_code == 404

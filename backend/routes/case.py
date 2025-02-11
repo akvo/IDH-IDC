@@ -73,6 +73,7 @@ def get_all_case(
     year: Optional[int] = Query(None),
     company: Optional[int] = Query(None),
     shared_with_me: Optional[bool] = Query(None),
+    status: Optional[CaseStatusEnum] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -135,6 +136,7 @@ def get_all_case(
         year=year,
         company=company,
         shared_with_me=shared_with_me,
+        status=status,
     )
     if not cases:
         raise HTTPException(status_code=404, detail="Not found")
