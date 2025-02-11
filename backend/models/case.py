@@ -28,6 +28,7 @@ from models.segment import (
     CaseSettingSegmentPayload,
 )
 from models.case_tag import CaseTag
+from models.visualization import VisualizationTab
 
 
 class LivingIncomeStudyEnum(enum.Enum):
@@ -55,6 +56,7 @@ class CaseListDict(TypedDict):
     created_at: str
     created_by: str
     status: int
+    has_scenario_data: bool
     company: Optional[str] = None
     tags: Optional[List[int]] = []
 
@@ -283,6 +285,18 @@ class Case(Base):
         company = None
         if self.company:
             company = self.company_detail.name
+        # Filter visualizations with tab "scenario_modeling"
+        scenario_modeling_visualizations = [
+            v
+            for v in self.case_visualization
+            if v.tab == VisualizationTab.scenario_modeling
+        ]
+        # Check if any of them contain scenario data
+        has_scenario_data = any(
+            v.config.get("scenarioData")
+            and any(s["scenarioValues"] for s in v.config["scenarioData"])
+            for v in scenario_modeling_visualizations
+        )
         return {
             "id": self.id,
             "name": self.name,
@@ -295,6 +309,7 @@ class Case(Base):
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             "created_by": self.created_by_user.email,
             "tags": [ct.tag for ct in self.case_tags],
+            "has_scenario_data": has_scenario_data,
         }
 
     @property
