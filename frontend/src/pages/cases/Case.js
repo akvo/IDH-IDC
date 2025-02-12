@@ -129,13 +129,18 @@ const Case = () => {
       if (userPermission === "edit") {
         return true;
       }
+      // handle external user in same company with case
+      if (userState?.company === currentCase?.company && !userPermission) {
+        return false;
+      }
       return false;
     };
+
     CaseUIState.update((s) => ({
       ...s,
       general: {
         ...s.general,
-        enableEditCase: checkEnableEditCase,
+        enableEditCase: checkEnableEditCase(),
       },
     }));
   }, [
@@ -144,7 +149,9 @@ const Case = () => {
     userState?.email,
     userState?.case_access,
     userState?.role,
+    userState?.company,
     currentCase?.created_by,
+    currentCase?.company,
   ]);
 
   // Fetch case details

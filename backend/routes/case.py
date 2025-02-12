@@ -108,13 +108,21 @@ def get_all_case(
         )
         user_cases = user_cases + [c.id for c in all_public_cases]
 
+    # handle company user
+    if user.role == UserRole.user and user.company:
+        case_in_same_company = crud_case.get_case_by_company(
+            session=session, company=user.company
+        )
+        if case_in_same_company:
+            user_cases = user_cases + [c.id for c in case_in_same_company]
+
     # handle case owner
     if user.role == UserRole.user:
         show_private = True
         cases = crud_case.get_case_by_created_by(
             session=session, created_by=user.id
         )
-        user_cases = [c.id for c in cases]
+        user_cases = user_cases + [c.id for c in cases]
 
     if shared_with_me:
         # explicitly shared with the user

@@ -410,3 +410,8 @@ def delete_case(session: Session, case_id: int):
     session.delete(case)
     session.commit()
     session.flush()
+
+
+def get_case_by_company(session: Session, company: int) -> CaseDict:
+    case = session.query(Case).filter(Case.company == company).all()
+    return case

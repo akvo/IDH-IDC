@@ -97,6 +97,7 @@ const App = () => {
       s.cases_count = 0;
       s.case_access = [];
       s.internal_user = false;
+      s.company = null;
     });
   }, [removeCookie]);
 
@@ -118,6 +119,7 @@ const App = () => {
             s.cases_count = data.cases_count;
             s.case_access = data.case_access || [];
             s.internal_user = data.internal_user;
+            s.company = data.company;
           });
         })
         .catch(() => {

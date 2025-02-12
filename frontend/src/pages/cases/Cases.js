@@ -69,6 +69,7 @@ const Cases = () => {
     internal_user: userInternal,
     email: userEmail,
     // case_access: userCaseAccess,
+    // company: userCompany,
   } = UserState.useState((s) => s);
 
   const [showChangeOwnerForm, setShowChangeOwnerForm] = useState(null);
@@ -152,7 +153,7 @@ const Cases = () => {
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => {
         const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
-        return (
+        const linkText = (
           <Link
             style={{ fontWeight: "bold", color: "#000" }}
             to={caseDetailURL}
@@ -160,6 +161,24 @@ const Cases = () => {
             {text}
           </Link>
         );
+        return linkText;
+        // check case access
+        /*
+        const userPermission = userCaseAccess.find(
+          (a) => a.case === record.id
+        )?.permission;
+        // allow internal user case owner to edit case
+        if (userInternal && record.created_by === userEmail) {
+          return linkText;
+        }
+        if ((userInternal && !userPermission) || userPermission === "view") {
+          return text;
+        }
+        if (userPermission === "edit") {
+          return linkText;
+        }
+        return text;
+        */
       },
     },
     {
@@ -286,17 +305,6 @@ const Cases = () => {
       width: "5%",
       align: "center",
       render: (text, record) => {
-        // const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
-        // const EditButton = (
-        //   <Link to={caseDetailURL}>
-        //     <EditOutlined />
-        //   </Link>
-        // );
-        // const ViewButton = (
-        //   <Link to={caseDetailURL}>
-        //     <EyeOutlined />
-        //   </Link>
-        // );
         const ViewSummaryButton = (
           <Button
             size="small"
@@ -332,22 +340,6 @@ const Cases = () => {
             </Space>
           );
         }
-
-        // check case access
-        // const userPermission = userCaseAccess.find(
-        //   (a) => a.case === record.id
-        // )?.permission;
-        // // allow internal user case owner to edit case
-        // if (userInternal && record.created_by === userEmail) {
-        //   return EditButton;
-        // }
-        // if ((userInternal && !userPermission) || userPermission === "view") {
-        //   return ViewButton;
-        // }
-        // if (userPermission === "edit") {
-        //   return EditButton;
-        // }
-        // return ViewButton;
       },
     },
   ];

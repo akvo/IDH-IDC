@@ -21,6 +21,7 @@ const defaultUserState = {
   cases_count: 0,
   case_access: [],
   internal_user: false,
+  company: null,
 };
 
 const UserState = new Store(defaultUserState);

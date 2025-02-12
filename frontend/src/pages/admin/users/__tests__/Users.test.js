@@ -74,6 +74,7 @@ describe("Users page", () => {
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
         s.internal_user = false;
+        s.company = null;
       });
     });
 
@@ -107,6 +108,7 @@ describe("Users page", () => {
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
         s.internal_user = false;
+        s.company = null;
       });
     });
 

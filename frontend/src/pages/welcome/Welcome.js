@@ -23,8 +23,8 @@ const defData = {
 const Welcome = () => {
   const { fullname: username, internal_user: isInternalUser } =
     UserState.useState((s) => s);
-  const companyHavingCaseOptions = UIState.useState(
-    (s) => s.companyHavingCaseOptions
+  const { companyHavingCaseOptions, companyOptions } = UIState.useState(
+    (s) => s
   );
 
   const [mapLoading, setMapLoading] = useState(true);
@@ -176,9 +176,15 @@ const Welcome = () => {
             dataIndex: "company",
             key: "company",
             width: "15%",
-            render: (text) => text || "N/A",
+            render: (val) => {
+              const findCompany = companyOptions.find((c) => c.value === val);
+              if (findCompany && findCompany?.label) {
+                return findCompany.label;
+              }
+              return "N/A";
+            },
           }
-        : "",
+        : {},
       {
         title: "Year",
         dataIndex: "year",
@@ -222,7 +228,7 @@ const Welcome = () => {
         },
       },
     ];
-  }, [isInternalUser]);
+  }, [isInternalUser, companyOptions]);
 
   return (
     <Row id="welcome" align="middle" gutter={[20, 20]}>

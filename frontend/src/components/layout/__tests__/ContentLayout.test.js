@@ -139,6 +139,7 @@ describe("ContentLayout component", () => {
         s.cases_count = 1;
         s.case_access = [];
         s.internal_user = false;
+        s.company = null;
       });
     });
 

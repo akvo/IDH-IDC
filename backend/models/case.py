@@ -57,7 +57,7 @@ class CaseListDict(TypedDict):
     created_by: str
     status: int
     has_scenario_data: bool
-    company: Optional[str] = None
+    company: Optional[int] = None
     tags: Optional[List[int]] = []
 
 
@@ -282,9 +282,6 @@ class Case(Base):
             for val in self.case_commodities
             if val.commodity != self.focus_commodity
         ]
-        company = None
-        if self.company:
-            company = self.company_detail.name
         # Filter visualizations with tab "scenario_modeling"
         scenario_modeling_visualizations = [
             v
@@ -301,7 +298,7 @@ class Case(Base):
             "id": self.id,
             "name": self.name,
             "country": self.country_detail.name,
-            "company": company,
+            "company": self.company,
             "focus_commodity": self.focus_commodity,
             "diversified_commodities_count": len(diversified_count),
             "year": self.year,

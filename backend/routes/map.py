@@ -69,6 +69,14 @@ def get_user_cases_and_permissions(req: Request, session: Session):
         )
         user_cases = user_cases + [c.id for c in all_public_cases]
 
+    # handle company user
+    if user.role == UserRole.user and user.company:
+        case_in_same_company = crud_case.get_case_by_company(
+            session=session, company=user.company
+        )
+        if case_in_same_company:
+            user_cases = user_cases + [c.id for c in case_in_same_company]
+
     # Handle case owner
     if user.role == UserRole.user:
         show_private = True

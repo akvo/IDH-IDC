@@ -76,6 +76,7 @@ class UserInfo(TypedDict):
     cases_count: int
     case_access: Optional[List[UserCasePermissionDict]]
     internal_user: bool  # UserRole == user has business unit
+    company: Optional[int]
 
 
 class UserDetailDict(TypedDict):
@@ -159,7 +160,7 @@ class User(Base):
         passive_deletes=True,
         back_populates="users",
     )
-    user_companies = relationship(
+    user_company = relationship(
         "Company",
         cascade="all, delete",
         passive_deletes=True,
@@ -253,6 +254,7 @@ class User(Base):
                 if not business_unit_detail and self.role == UserRole.user
                 else True
             ),
+            "company": self.company,
         }
 
     @property

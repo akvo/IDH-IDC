@@ -33,7 +33,7 @@ class Company(Base):
         "User",
         cascade="all, delete",
         passive_deletes=True,
-        back_populates="user_companies",
+        back_populates="user_company",
     )
 
     def __init__(self, id: Optional[int], name: str):
