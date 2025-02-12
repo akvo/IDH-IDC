@@ -230,4 +230,5 @@ class TestUserAuthentication:
             "cases_count": 0,
             "case_access": [],
             "internal_user": False,
+            "company": None,
         }

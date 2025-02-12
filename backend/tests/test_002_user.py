@@ -409,6 +409,7 @@ class TestUserEndpoint:
                 "cases_count": 0,
                 "case_access": [],
                 "internal_user": True,
+                "company": None,
             },
         }
 
