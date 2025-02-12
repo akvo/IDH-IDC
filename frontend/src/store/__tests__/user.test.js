@@ -62,6 +62,7 @@ describe("UserState", () => {
         s.cases_count = 1;
         s.case_access = [{ case: 1, permission: "edit" }];
         s.internal_user = false;
+        s.company = 1;
       });
     });
     const {
@@ -76,6 +77,7 @@ describe("UserState", () => {
       cases_count,
       case_access,
       internal_user,
+      company,
     } = result.current;
 
     expect(id).toBe(1);
@@ -98,5 +100,6 @@ describe("UserState", () => {
     expect(cases_count).toBe(1);
     expect(case_access).toEqual([{ case: 1, permission: "edit" }]);
     expect(internal_user).toBe(false);
+    expect(company).toBe(1);
   });
 });
