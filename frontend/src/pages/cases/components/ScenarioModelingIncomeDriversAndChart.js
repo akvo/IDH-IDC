@@ -10,6 +10,7 @@ import { VisualCardWrapper } from ".";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty } from "lodash";
 import { customFormula } from "../../../lib/formula";
+import { ChartSegmentsIncomeGapScenarioModeling } from "../visualizations";
 
 const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
@@ -25,6 +26,7 @@ const generateDriverOptions = ({ group, questions }) => {
   return questions.map((q) => ({
     value: `${group.id}-${q.id}`,
     label: q.text,
+    selectable: q.question_type === "aggregator" ? false : true,
     children: generateDriverOptions({ group, questions: q.childrens }),
   }));
 };
@@ -34,6 +36,7 @@ const Question = ({ index, segment, percentage }) => {
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [newValue, setNewValue] = useState(null);
+  const scenarioModelingForm = Form.useFormInstance();
 
   const fieldName = `${segment.id}-${index}`;
 
@@ -62,15 +65,30 @@ const Question = ({ index, segment, percentage }) => {
   }, [segment.answers, selectedDriver]);
 
   const currentIncrease = useMemo(() => {
+    let newFormValue = newValue || 0;
     if (percentage) {
-      const value = currentValue * (newValue / 100);
-      return newValue ? currentValue + value : 0;
+      const percentageField = `percentage-${segment.id}-${index}`;
+      newFormValue = scenarioModelingForm.getFieldValue(percentageField);
+    } else {
+      const absoluteField = `absolute-${segment.id}-${index}`;
+      newFormValue = scenarioModelingForm.getFieldValue(absoluteField);
     }
-    const percent = newValue
-      ? ((newValue - currentValue) / currentValue) * 100
+    if (percentage) {
+      const value = currentValue * (newFormValue / 100);
+      return newFormValue ? currentValue + value : 0;
+    }
+    const percent = newFormValue
+      ? ((newFormValue - currentValue) / currentValue) * 100
       : 0;
     return isNaN(percent) ? 0 : percent.toFixed(2);
-  }, [percentage, newValue, currentValue]);
+  }, [
+    percentage,
+    currentValue,
+    segment?.id,
+    index,
+    newValue,
+    scenarioModelingForm,
+  ]);
 
   return (
     <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
@@ -194,15 +212,21 @@ const ScenarioModelingIncomeDriversAndChart = ({
       valueField === "percentage" &&
       typeof currentSegmentAnswer !== "undefined"
     ) {
+      const absoluteField = `absolute-${segmentId}-${index}`;
       const valueTmp = currentSegmentAnswer * (newValue / 100);
       newFeasibleValue = newValue ? currentSegmentAnswer + valueTmp : 0;
+      scenarioDriversForm.setFieldValue(absoluteField, newFeasibleValue);
+      allNewValues[absoluteField] = newFeasibleValue;
     }
 
     if (
       valueField === "absolute" &&
       typeof currentSegmentAnswer !== "undefined"
     ) {
+      const percentageField = `percentage-${segmentId}-${index}`;
       newFeasibleValue = newValue;
+      scenarioDriversForm.setFieldValue(percentageField, newFeasibleValue);
+      allNewValues[percentageField] = newFeasibleValue;
     }
 
     const findQuestion = flattenIncomeDataDriversQuestions.find(
@@ -585,7 +609,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
           title="Optimal driver values to reach your target"
           bordered
         >
-          Chart
+          <ChartSegmentsIncomeGapScenarioModeling />
         </VisualCardWrapper>
       </Col>
     </Row>
