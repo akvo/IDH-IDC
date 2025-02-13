@@ -1,7 +1,7 @@
 from uuid import uuid4
 from fastapi import HTTPException, status
 from typing import Optional, List
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 from sqlalchemy.orm import Session
 from models.user import (
     User,
@@ -180,7 +180,11 @@ def update_password(session: Session, id: int, password: str) -> UserDict:
 
 
 def get_user_by_email(session: Session, email: str) -> User:
-    return session.query(User).filter(User.email == email).first()
+    return (
+        session.query(User)
+        .filter(func.lower(User.email) == email.lower())
+        .first()
+    )
 
 
 def get_user_by_id(session: Session, id: int) -> UserDict:

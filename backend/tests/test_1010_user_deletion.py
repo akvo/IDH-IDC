@@ -1,3 +1,4 @@
+import os
 import sys
 import pytest
 
@@ -12,8 +13,8 @@ from models.user_business_unit import UserBusinessUnit
 from models.tag import Tag
 from models.question import Question
 from models.reference_data import ReferenceData
-from models.user import User
-
+from models.user import User, UserRole
+from db.crud_user import get_user_by_email
 
 pytestmark = pytest.mark.asyncio
 sys.path.append("..")
@@ -21,6 +22,9 @@ sys.path.append("..")
 
 account = Acc(email="super_admin@akvo.org", token=None)
 non_admin_account = Acc(email="support@akvo.org", token=None)
+
+CLIENT_ID = os.environ.get("CLIENT_ID", None)
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET", None)
 
 
 class TestUserDeletion:
@@ -197,3 +201,69 @@ class TestUserDeletion:
 
         user = session.query(User).filter(User.id == deleted_user).first()
         assert user is None
+
+    @pytest.mark.asyncio
+    async def test_user_register_with_camel_case_email(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        user_payload = {
+            "fullname": "Camel Case Email",
+            "email": "Camel.Case@Test.com",
+            "password": "test",
+            "organisation": 1,
+        }
+        res = await client.post(
+            app.url_path_for("user:register"),
+            data=user_payload,
+            headers={
+                "content-type": "application/x-www-form-urlencoded",
+                "Authorization": f"Bearer {account.token}",
+            },
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res["email"] == "Camel.Case@Test.com"
+
+    @pytest.mark.asyncio
+    async def test_login_with_camel_case_but_typed_lowercase_email(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # approve user before login
+        user = get_user_by_email(session=session, email="camel.case@test.com")
+        assert user.email == "Camel.Case@Test.com"
+        update_payload = {
+            "fullname": user.fullname,
+            "organisation": user.organisation,
+            "role": UserRole.user.value,
+            "is_active": True,
+        }
+        # with cred
+        res = await client.put(
+            app.url_path_for("user:update", user_id=user.id),
+            data=update_payload,
+            headers={
+                "content-type": "application/x-www-form-urlencoded",
+                "Authorization": f"Bearer {account.token}",
+            },
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res["active"] is True
+
+        # login
+        res = await client.post(
+            app.url_path_for("user:login"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "username": "camel.case@test.com",
+                "password": "test",
+                "grant_type": "password",
+                "scopes": ["openid", "email"],
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+            },
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res["access_token"] is not None
+        assert res["user"]["email"] == "Camel.Case@Test.com"
