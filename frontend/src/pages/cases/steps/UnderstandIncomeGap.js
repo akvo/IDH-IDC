@@ -5,7 +5,7 @@ import { Row, Col, Card, Space } from "antd";
 import {
   ChartIncomeGap,
   CompareIncomeGap,
-  // ChartIncomeDriverAcrossSegments,
+  ChartIncomeDriverAcrossSegments,
   ChartExploreIncomeDriverBreakdown,
   ChartIncomeLevelsForDifferentCommodities,
 } from "../visualizations";
@@ -67,6 +67,9 @@ const UnderstandIncomeGap = ({ setbackfunction, setnextfunction }) => {
         </Card>
       </Col>
       {/* Chart */}
+      <Col span={24}>
+        <ChartIncomeDriverAcrossSegments />
+      </Col>
       <Col span={24}>
         <ChartExploreIncomeDriverBreakdown />
       </Col>

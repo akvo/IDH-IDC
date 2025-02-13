@@ -295,6 +295,16 @@ const ChartExploreIncomeDriverBreakdown = () => {
   return (
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
+        <Col span={8}>
+          <Space direction="vertical">
+            <div className="section-title">Explore income driver breakdown</div>
+            <div className="section-description">
+              This graph lets you dive into a specific income driver and see how
+              its sub-components contribute. Use it to identify the largest and
+              smallest contributors and spot variations across segments
+            </div>
+          </Space>
+        </Col>
         <Col span={16}>
           <VisualCardWrapper
             title="Explore income driver breakdown"
@@ -336,16 +346,6 @@ const ChartExploreIncomeDriverBreakdown = () => {
               </Col>
             </Row>
           </VisualCardWrapper>
-        </Col>
-        <Col span={8}>
-          <Space direction="vertical">
-            <div className="section-title">Explore income driver breakdown</div>
-            <div className="section-description">
-              This graph lets you dive into a specific income driver and see how
-              its sub-components contribute. Use it to identify the largest and
-              smallest contributors and spot variations across segments
-            </div>
-          </Space>
         </Col>
       </Row>
     </Card>

@@ -209,19 +209,6 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
   return (
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
-        <Col span={8}>
-          <Space direction="vertical">
-            <div className="section-title">
-              Explore income levels for different commodities
-            </div>
-            <div className="section-description">
-              This graph shows the current net income levels for your focus
-              commodity, any secondary or tertiary commodities, next to
-              diversified income within different segments. Use it to compare
-              income levels across sources and segments.
-            </div>
-          </Space>
-        </Col>
         <Col span={16}>
           <VisualCardWrapper
             title="Income levels for different commodities"
@@ -254,6 +241,19 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
               </Col>
             </Row>
           </VisualCardWrapper>
+        </Col>
+        <Col span={8}>
+          <Space direction="vertical">
+            <div className="section-title">
+              Explore income levels for different commodities
+            </div>
+            <div className="section-description">
+              This graph shows the current net income levels for your focus
+              commodity, any secondary or tertiary commodities, next to
+              diversified income within different segments. Use it to compare
+              income levels across sources and segments.
+            </div>
+          </Space>
         </Col>
       </Row>
     </Card>
