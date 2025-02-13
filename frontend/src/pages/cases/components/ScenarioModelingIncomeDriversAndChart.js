@@ -8,7 +8,7 @@ import {
 } from "../../../lib";
 import { VisualCardWrapper } from ".";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { isEmpty } from "lodash";
+import { isEmpty, uniqBy } from "lodash";
 import { customFormula } from "../../../lib/formula";
 import { ChartSegmentsIncomeGapScenarioModeling } from "../visualizations";
 
@@ -174,13 +174,14 @@ const ScenarioModelingIncomeDriversAndChart = ({
       (q) => q.parent === question?.parent
     );
     const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
-    return allChildrensIds.reduce((acc, id) => {
+    const allChildrensValues = allChildrensIds.reduce((acc, id) => {
       const value = values?.[id];
       if (value) {
         acc.push({ id, value });
       }
       return acc;
     }, []);
+    return uniqBy(allChildrensValues, "id");
   };
 
   const onScenarioModelingIncomeDriverFormValuesChange = (
@@ -239,6 +240,45 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ? []
       : flatten(findQuestion.childrens);
 
+    // recalculate drivers value by new value from scenario modeling form
+    const recalculate = ({ key, updatedSegment }) => {
+      const [fieldName, caseCommodityId, questionId] = key.split("-");
+      const fieldKey = `${fieldName}-${caseCommodityId}`;
+
+      const question = flattenIncomeDataDriversQuestions.find(
+        (q) => q.id === parseInt(questionId)
+      );
+      const parentQuestion = flattenIncomeDataDriversQuestions.find(
+        (q) => q.id === question?.parent
+      );
+
+      const allChildrensValues = calculateChildrenValues(
+        question,
+        fieldKey,
+        updatedSegment.answers
+      );
+      const sumAllChildrensValues = parentQuestion?.default_value
+        ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
+        : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+
+      const parentQuestionField = `${fieldKey}-${question?.parent}`;
+      if (parentQuestion) {
+        // use parentValue if child is 0
+        const parentValue = !sumAllChildrensValues
+          ? updatedSegment.answers?.[parentQuestionField] || 0
+          : sumAllChildrensValues;
+
+        updatedSegment["answers"] = {
+          ...updatedSegment["answers"],
+          [parentQuestionField]: parentValue,
+        };
+      }
+
+      if (parentQuestion?.parent) {
+        recalculate({ key: parentQuestionField, updatedSegment });
+      }
+    };
+
     const updatedChildAnswer = flattenChildrens
       .map((q) => {
         return {
@@ -251,77 +291,25 @@ const ScenarioModelingIncomeDriversAndChart = ({
         return a;
       }, {});
 
-    // update segment answers for change driver
-    let updatedScenarioSegmentAnswer = {};
+    const currentScenarioValue = currentScenarioData.scenarioValues.find(
+      (scenario) => scenario.segmentId === segment.id
+    );
+    const currentScenarioValueUpdatedSegment =
+      currentScenarioValue?.updatedSegment?.answers || {};
+
     const updatedSegment = {
       ...segment,
       answers: {
         ...segment.answers,
+        ...currentScenarioValueUpdatedSegment,
         ...updatedChildAnswer,
         [`current-${driverDropdownValue}`]: newFeasibleValue,
       },
     };
-
-    // recalculate the income drivers calculation
-    if (findQuestion?.parent && findQuestion?.question_type !== "aggregator") {
-      const recalculate = ({ key }) => {
-        const [fieldName, caseCommodityId, questionId] = key.split("-");
-        const fieldKey = `${fieldName}-${caseCommodityId}`;
-
-        // const commodity = currentCase.case_commodities.find(
-        //   (cc) => cc.id === parseInt(caseCommodityId)
-        // );
-
-        const question = flattenIncomeDataDriversQuestions.find(
-          (q) => q.id === parseInt(questionId)
-        );
-        const parentQuestion = flattenIncomeDataDriversQuestions.find(
-          (q) => q.id === question?.parent
-        );
-
-        // handleQuestionType(
-        //   question,
-        //   commodity,
-        //   fieldName,
-        //   updatedSegment.answers,
-        //   fieldKey
-        // );
-
-        const allChildrensValues = calculateChildrenValues(
-          question,
-          fieldKey,
-          updatedSegment.answers
-        );
-        const sumAllChildrensValues = parentQuestion?.default_value
-          ? getFunctionDefaultValue(
-              parentQuestion,
-              fieldKey,
-              allChildrensValues
-            )
-          : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-
-        const parentQuestionField = `${fieldKey}-${question?.parent}`;
-        if (parentQuestion) {
-          // use parentValue if child is 0
-          const parentValue = !sumAllChildrensValues
-            ? updatedSegment.answers?.[parentQuestionField] || 0
-            : sumAllChildrensValues;
-
-          updatedScenarioSegmentAnswer = {
-            ...updatedScenarioSegmentAnswer,
-            [parentQuestionField]: parentValue,
-          };
-        }
-
-        if (parentQuestion?.parent) {
-          recalculate({ key: parentQuestionField });
-        }
-      };
-      Object.keys(updatedSegment.answers).forEach((key) => {
-        recalculate({ key });
-      });
-    }
-    // EOL recalculate the income drivers calculation
+    recalculate({
+      key: `current-${driverDropdownValue}`,
+      updatedSegment,
+    });
 
     // generate questions
     const flattenedQuestionGroups = questionGroups.flatMap((group) => {
@@ -338,10 +326,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
       q.text.toLowerCase().includes("cost")
     );
 
-    updatedSegment["answers"] = {
-      ...updatedSegment.answers,
-      ...updatedScenarioSegmentAnswer,
-    };
     const updatedDasboardData = [updatedSegment].map((segment) => {
       const answers = isEmpty(segment?.answers) ? {} : segment.answers;
       const remappedAnswers = Object.keys(answers).map((key) => {
@@ -480,10 +464,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
       };
     })[0];
 
-    const currentScenarioValue = currentScenarioData.scenarioValues.find(
-      (scenario) => scenario.segmentId === segment.id
-    );
-
     let updatedScenarioValue = {};
     if (currentScenarioValue) {
       updatedScenarioValue = {
@@ -494,6 +474,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
           ...allNewValues,
         },
         updatedDasboardData,
+        updatedSegment,
       };
     } else {
       updatedScenarioValue = {
@@ -502,6 +483,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
         name: segment.name,
         allNewValues,
         updatedDasboardData,
+        updatedSegment,
       };
     }
 
