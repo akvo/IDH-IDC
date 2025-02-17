@@ -6,7 +6,6 @@ import {
   flatten,
   getFunctionDefaultValue,
 } from "../../../lib";
-import { VisualCardWrapper } from ".";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, uniqBy } from "lodash";
 import { customFormula } from "../../../lib/formula";
@@ -29,53 +28,6 @@ const generateDriverOptions = ({ group, questions }) => {
     selectable: q.question_type === "aggregator" ? false : true,
     children: generateDriverOptions({ group, questions: q.childrens }),
   }));
-};
-
-const generateChartData = (data, current = false) => {
-  return data.map((d) => {
-    const incomeTarget = d?.currentSegmentValue?.target || 0;
-    const currentTotalIncome =
-      d?.currentSegmentValue?.total_current_income || 0;
-
-    const newTotalIncome = d?.newTotalIncome || 0;
-    const additionalValue = newTotalIncome
-      ? newTotalIncome - currentTotalIncome
-      : 0;
-
-    let gapValue = incomeTarget - newTotalIncome;
-    gapValue = gapValue < 0 ? 0 : gapValue;
-
-    return {
-      name: current ? d.name : `${d.scenarioName}-${d.name}`,
-      target: Math.round(incomeTarget),
-      stack: [
-        {
-          name: "Current total\nhousehold income",
-          title: "Current total\nhousehold income",
-          value: Math.round(currentTotalIncome),
-          total: Math.round(currentTotalIncome),
-          color: "#1B625F",
-          order: 1,
-        },
-        {
-          name: "Additional income\nwhen income drivers\nare changed",
-          title: "Additional income\nwhen income drivers\nare changed",
-          value: Math.round(additionalValue),
-          total: Math.round(additionalValue),
-          color: "#49D985",
-          order: 2,
-        },
-        {
-          name: "Gap",
-          title: "Gap",
-          value: Math.round(gapValue),
-          total: Math.round(gapValue),
-          color: "#F9CB21",
-          order: 3,
-        },
-      ],
-    };
-  });
 };
 
 const Question = ({ index, segment, percentage }) => {
@@ -200,7 +152,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
   const { incomeDataDrivers, questionGroups, totalIncomeQuestions } =
     CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
-  console.log(currentScenarioData);
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -712,12 +663,9 @@ const ScenarioModelingIncomeDriversAndChart = ({
         </Row>
       </Col>
       <Col span={12}>
-        <VisualCardWrapper
-          title="Optimal driver values to reach your target"
-          bordered
-        >
-          <ChartSegmentsIncomeGapScenarioModeling />
-        </VisualCardWrapper>
+        <ChartSegmentsIncomeGapScenarioModeling
+          currentScenarioData={currentScenarioData}
+        />
       </Col>
     </Row>
   );
