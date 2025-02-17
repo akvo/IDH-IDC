@@ -59,7 +59,7 @@ const Question = ({ index, segment, percentage }) => {
 
   const currentValue = useMemo(() => {
     if (selectedDriver) {
-      return segment?.answers?.[`current-${selectedDriver}`];
+      return segment?.answers?.[`current-${selectedDriver}`] || 0;
     }
     return 0;
   }, [segment.answers, selectedDriver]);
@@ -620,16 +620,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
               You can select up to 5 variables to change
             </div>
             <div className="description">
-              Make sure that you select variables you can influence/are within
-              your control.
-            </div>
-            <div>
-              {thousandFormatter(
-                currentScenarioData.scenarioValues.find(
-                  (s) => s.segmentId === segment.id
-                )?.updatedDasboardData?.total_current_income || 0,
-                2
-              )}
+              Set up your scenario by selecting changes for up to 5 drivers. You
+              can specify these changes as either a percentage or an absolute
+              value. The graph on the right illustrates how these adjustments
+              impact the gap across different segments.
             </div>
           </Col>
           <Col span={24}>
@@ -659,6 +653,15 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 />
               ))}
             </Form>
+            <div style={{ marginTop: 24, fontWeight: "bold" }}>
+              New total income:{" "}
+              {thousandFormatter(
+                currentScenarioData.scenarioValues.find(
+                  (s) => s.segmentId === segment.id
+                )?.updatedDasboardData?.total_current_income || 0,
+                2
+              )}
+            </div>
           </Col>
         </Row>
       </Col>
