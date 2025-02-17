@@ -31,6 +31,53 @@ const generateDriverOptions = ({ group, questions }) => {
   }));
 };
 
+const generateChartData = (data, current = false) => {
+  return data.map((d) => {
+    const incomeTarget = d?.currentSegmentValue?.target || 0;
+    const currentTotalIncome =
+      d?.currentSegmentValue?.total_current_income || 0;
+
+    const newTotalIncome = d?.newTotalIncome || 0;
+    const additionalValue = newTotalIncome
+      ? newTotalIncome - currentTotalIncome
+      : 0;
+
+    let gapValue = incomeTarget - newTotalIncome;
+    gapValue = gapValue < 0 ? 0 : gapValue;
+
+    return {
+      name: current ? d.name : `${d.scenarioName}-${d.name}`,
+      target: Math.round(incomeTarget),
+      stack: [
+        {
+          name: "Current total\nhousehold income",
+          title: "Current total\nhousehold income",
+          value: Math.round(currentTotalIncome),
+          total: Math.round(currentTotalIncome),
+          color: "#1B625F",
+          order: 1,
+        },
+        {
+          name: "Additional income\nwhen income drivers\nare changed",
+          title: "Additional income\nwhen income drivers\nare changed",
+          value: Math.round(additionalValue),
+          total: Math.round(additionalValue),
+          color: "#49D985",
+          order: 2,
+        },
+        {
+          name: "Gap",
+          title: "Gap",
+          value: Math.round(gapValue),
+          total: Math.round(gapValue),
+          color: "#F9CB21",
+          order: 3,
+        },
+      ],
+    };
+  });
+};
+
 const Question = ({ index, segment, percentage }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
@@ -379,7 +426,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
     // EOL CALCULATION
 
     // create new updated dashboardData for current scenario - segment
-    const updatedDasboardData = [updatedSegment].map((segment) => {
+    const currentSegmentValue = [updatedSegment].map((segment) => {
       const answers = isEmpty(segment?.answers) ? {} : segment.answers;
       const remappedAnswers = Object.keys(answers).map((key) => {
         const [fieldKey, caseCommodityId, questionId] = key.split("-");
@@ -543,7 +590,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 "field"
               )
             : currentScenarioValue.selectedDrivers,
-        updatedDasboardData,
+        currentSegmentValue,
         updatedSegment,
       };
     } else {
@@ -554,7 +601,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
         selectedDrivers:
           valueField === "driver" ? [{ field: valueKey, value: newValue }] : [],
         allNewValues,
-        updatedDasboardData,
+        currentSegmentValue,
         updatedSegment,
       };
     }
@@ -657,7 +704,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
               {thousandFormatter(
                 currentScenarioData.scenarioValues.find(
                   (s) => s.segmentId === segment.id
-                )?.updatedDasboardData?.total_current_income || 0,
+                )?.currentSegmentValue?.total_current_income || 0,
                 2
               )}
             </div>

@@ -4,6 +4,7 @@ import { stepPath, CurrentCaseState, CaseVisualState } from "../store";
 import { Row, Col, Space, Card, Button, Tabs } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
+import { isEmpty } from "lodash";
 
 /**
  * STEP 5
@@ -11,7 +12,9 @@ import { ScenarioModelingForm } from "../components";
 const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { scenarioModeling } = CaseVisualState.useState((s) => s);
+  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
+    (s) => s
+  );
 
   const [activeScenario, setActiveScenario] = useState(
     scenarioModeling?.config?.scenarioData?.[0]?.key || null
@@ -33,6 +36,40 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
       setnextfunction(nextFunction);
     }
   }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
+
+  // handle initial scenario data for all segments (run only once)
+  useEffect(() => {
+    CaseVisualState.update((s) => ({
+      ...s,
+      scenarioModeling: {
+        ...s.scenarioModeling,
+        config: {
+          ...s.scenarioModeling.config,
+          scenarioData: s.scenarioModeling.config.scenarioData.map(
+            (scenario) => {
+              if (isEmpty(scenario?.scenarioValues)) {
+                return {
+                  ...scenario,
+                  scenarioValues: dashboardData.map((d) => {
+                    return {
+                      name: d.name,
+                      segmentId: d.id,
+                      selectedDrivers: [],
+                      allNewValues: {},
+                      currentSegmentValues: d,
+                      updatedSegment: {},
+                    };
+                  }),
+                };
+              }
+              return scenario;
+            }
+          ),
+        },
+      },
+    }));
+  });
+  // EOL handle initial scenario data for all segments
 
   const scenarioTabItems = useMemo(() => {
     return scenarioModeling?.config?.scenarioData?.map((item) => ({
