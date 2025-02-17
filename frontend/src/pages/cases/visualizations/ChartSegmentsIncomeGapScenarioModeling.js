@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
+import { CurrentCaseState } from "../store";
 
 const generateTargetChartData = (data) => {
   const target = [
@@ -28,7 +29,8 @@ const generateChartData = (data, current = false) => {
     const currentTotalIncome =
       d?.currentSegmentValue?.total_current_income || 0;
 
-    const newTotalIncome = d?.newTotalIncome || 0;
+    const newTotalIncome =
+      d?.updatedSegmentScenarioValue?.total_current_income || 0;
     const additionalValue = newTotalIncome
       ? newTotalIncome - currentTotalIncome
       : 0;
@@ -70,6 +72,11 @@ const generateChartData = (data, current = false) => {
 };
 
 const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
+  const currentCase = CurrentCaseState.useState((s) => s);
+
+  const [showLabel, setShowLabel] = useState(false);
+  const chartRef = useRef(null);
+
   const chartData = useMemo(() => {
     const scenarioValues = currentScenarioData?.scenarioValues || [];
     return generateChartData(scenarioValues, true);
@@ -84,6 +91,10 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
     <VisualCardWrapper
       title="Optimal driver values to reach your target"
       bordered
+      showLabel={showLabel}
+      setShowLabel={setShowLabel}
+      exportElementRef={chartRef}
+      exportFilename="Optimal driver values to reach your target"
     >
       <Chart
         wrapper={false}
@@ -91,9 +102,9 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
         data={chartData}
         targetData={targetChartData}
         loading={!chartData.length}
-        extra={{ axisTitle: { y: `Income CURRENCY` } }}
+        extra={{ axisTitle: { y: `Income ${currentCase?.currency || ""}` } }}
         grid={{ right: 161 }}
-        // showLabel={showLabel}
+        showLabel={showLabel}
         height={385}
       />
     </VisualCardWrapper>

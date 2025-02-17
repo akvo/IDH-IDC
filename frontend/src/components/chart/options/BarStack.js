@@ -11,6 +11,7 @@ import {
   NoData,
   LabelStyle,
   thousandFormatter,
+  formatNumberToString,
 } from "./common";
 import { uniq, flatten, uniqBy, isEmpty, upperFirst, sumBy } from "lodash";
 
@@ -162,7 +163,7 @@ const BarStack = ({
     grid: {
       top: 25,
       bottom: grid?.bottom ? grid.bottom : 28,
-      left: 50,
+      left: 55,
       right: grid?.right ? grid.right : 150,
       show: true,
       containLabel: true,
@@ -188,9 +189,9 @@ const BarStack = ({
       nameLocation: "middle",
       nameGap: 75,
       axisLabel: {
-        formatter: (e) => (percentage ? `${e}%` : thousandFormatter(e)),
         ...TextStyle,
         color: "#9292ab",
+        formatter: (e) => (percentage ? `${e}%` : formatNumberToString(e)),
       },
     },
     [horizontal ? "yAxis" : "xAxis"]: {

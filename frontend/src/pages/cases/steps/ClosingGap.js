@@ -57,6 +57,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
                       selectedDrivers: [],
                       allNewValues: {},
                       currentSegmentValue: d,
+                      updatedSegmentScenarioValue: d,
                       updatedSegment: {},
                     };
                   }),

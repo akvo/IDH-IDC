@@ -7,7 +7,7 @@ import {
   getFunctionDefaultValue,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { isEmpty, uniqBy } from "lodash";
+import { isEmpty, orderBy, uniqBy } from "lodash";
 import { customFormula } from "../../../lib/formula";
 import { ChartSegmentsIncomeGapScenarioModeling } from "../visualizations";
 
@@ -377,7 +377,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
     // EOL CALCULATION
 
     // create new updated dashboardData for current scenario - segment
-    const currentSegmentValue = [updatedSegment].map((segment) => {
+    const updatedSegmentScenarioValue = [updatedSegment].map((segment) => {
       const answers = isEmpty(segment?.answers) ? {} : segment.answers;
       const remappedAnswers = Object.keys(answers).map((key) => {
         const [fieldKey, caseCommodityId, questionId] = key.split("-");
@@ -541,7 +541,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 "field"
               )
             : currentScenarioValue.selectedDrivers,
-        currentSegmentValue,
+        updatedSegmentScenarioValue,
         updatedSegment,
       };
     } else {
@@ -552,7 +552,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
         selectedDrivers:
           valueField === "driver" ? [{ field: valueKey, value: newValue }] : [],
         allNewValues,
-        currentSegmentValue,
+        updatedSegmentScenarioValue,
         updatedSegment,
       };
     }
@@ -569,14 +569,17 @@ const ScenarioModelingIncomeDriversAndChart = ({
               if (scenario.key === currentScenarioData.key) {
                 return {
                   ...scenario,
-                  scenarioValues: [
-                    ...scenario.scenarioValues.filter(
-                      (item) => item.segmentId !== segment.id
-                    ),
-                    {
-                      ...updatedScenarioValue,
-                    },
-                  ],
+                  scenarioValues: orderBy(
+                    [
+                      ...scenario.scenarioValues.filter(
+                        (item) => item.segmentId !== segment.id
+                      ),
+                      {
+                        ...updatedScenarioValue,
+                      },
+                    ],
+                    "segmentId"
+                  ),
                 };
               }
               return scenario;
@@ -655,7 +658,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
               {thousandFormatter(
                 currentScenarioData.scenarioValues.find(
                   (s) => s.segmentId === segment.id
-                )?.currentSegmentValue?.total_current_income || 0,
+                )?.updatedSegmentScenarioValue?.total_current_income || 0,
                 2
               )}
             </div>
