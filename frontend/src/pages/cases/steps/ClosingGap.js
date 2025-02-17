@@ -4,11 +4,14 @@ import { stepPath, CurrentCaseState, CaseVisualState } from "../store";
 import { Row, Col, Space, Card, Button, Tabs } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 
 /**
  * STEP 5
  */
+
+const MAX_SCENARIO = 3;
+
 const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -72,6 +75,48 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   });
   // EOL handle initial scenario data for all segments
 
+  const handleAddScenario = () => {
+    if (scenarioModeling?.config?.scenarioData?.length < MAX_SCENARIO) {
+      CaseVisualState.update((s) => {
+        const prevScenarioData = orderBy(
+          s.scenarioModeling.config.scenarioData,
+          "key",
+          "desc"
+        );
+        const lastScenarioKey = prevScenarioData[0]?.key || 1;
+        return {
+          ...s,
+          scenarioModeling: {
+            ...s.scenarioModeling,
+            config: {
+              ...s.scenarioModeling.config,
+              scenarioData: [
+                ...s.scenarioModeling.config.scenarioData,
+                {
+                  key: lastScenarioKey + 1,
+                  name: `Scenario ${lastScenarioKey + 1}`,
+                  description: null,
+                  percentage: true,
+                  scenarioValues: dashboardData.map((d) => {
+                    return {
+                      name: d.name,
+                      segmentId: d.id,
+                      selectedDrivers: [],
+                      allNewValues: {},
+                      currentSegmentValue: d,
+                      updatedSegmentScenarioValue: d,
+                      updatedSegment: {},
+                    };
+                  }),
+                },
+              ],
+            },
+          },
+        };
+      });
+    }
+  };
+
   const scenarioTabItems = useMemo(() => {
     return scenarioModeling?.config?.scenarioData?.map((item) => ({
       label: item.name,
@@ -104,7 +149,15 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
               </Space>
             </Col>
             <Col span={6} align="end">
-              <Button icon={<PlusOutlined />} className="button-add-scenario">
+              <Button
+                icon={<PlusOutlined />}
+                className="button-add-scenario"
+                onClick={handleAddScenario}
+                disabled={
+                  scenarioModeling?.config?.scenarioData?.length ===
+                  MAX_SCENARIO
+                }
+              >
                 Add scenario
               </Button>
             </Col>
