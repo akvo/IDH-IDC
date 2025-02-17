@@ -150,13 +150,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
   currentScenarioData,
 }) => {
   const [scenarioDriversForm] = Form.useForm();
-  const {
-    incomeDataDrivers,
-    questionGroups,
-    totalIncomeQuestions,
-    scenarioModeling,
-  } = CaseVisualState.useState((s) => s);
+  const { incomeDataDrivers, questionGroups, totalIncomeQuestions } =
+    CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
+  console.log(currentScenarioData);
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -636,12 +633,14 @@ const ScenarioModelingIncomeDriversAndChart = ({
             >
               <Row gutter={[5, 5]} align="middle">
                 <Col span={8}>Income Driver</Col>
-                <Col span={6}>New Value</Col>
+                <Col span={6}>
+                  {currentScenarioData?.percentage ? "Change" : "New Value"}
+                </Col>
                 <Col span={6} align="end">
                   Current Value
                 </Col>
                 <Col span={4} align="end">
-                  Change
+                  {currentScenarioData?.percentage ? "New Value" : "Change"}
                 </Col>
               </Row>
               {MAX_VARIABLES.map((index) => (
