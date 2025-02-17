@@ -157,7 +157,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
     scenarioModeling,
   } = CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
-  console.log(scenarioModeling);
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -248,8 +247,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
     );
     // eol generate questions
 
-    // CALCULATION :: calculate new total income based on driver change
-    // assume the scenario modeling value to replace the current value
     const valueKey = Object.keys(changedValue)[0];
     const [valueField, segmentId, index] = valueKey.split("-");
 
@@ -269,39 +266,33 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ? driverDropdownValue.split("-")
       : [];
 
+    // find childrens answer and reset to 0
+    const findQuestion = flattenIncomeDataDriversQuestions.find(
+      (q) =>
+        q.case_commodity === parseInt(caseCommodityId) &&
+        q.id === parseInt(questionId)
+    );
+
+    const flattenChildrens = !findQuestion
+      ? []
+      : flatten(findQuestion.childrens);
+
+    const updatedChildAnswer = flattenChildrens
+      .map((q) => {
+        return {
+          key: `current-${caseCommodityId}-${q.id}`,
+          value: 0,
+        };
+      })
+      .reduce((a, b) => {
+        a[b.key] = b.value;
+        return a;
+      }, {});
+    // EOL find childrens answer and reset to 0
+
     const segmentAnswerField = `current-${driverDropdownValue}`;
     const currentSegmentAnswer = segment.answers?.[segmentAnswerField];
 
-    // reset scenario value when driver changed
-    if (valueField === "driver") {
-      scenarioDriversForm.setFieldsValue({
-        [absoluteField]: null,
-        [percentageField]: null,
-      });
-    }
-
-    // calculate percentage change
-    if (
-      valueField === "percentage" &&
-      typeof currentSegmentAnswer !== "undefined"
-    ) {
-      const valueTmp = currentSegmentAnswer * (newValue / 100);
-      newFeasibleValue = newValue ? currentSegmentAnswer + valueTmp : 0;
-      scenarioDriversForm.setFieldValue(absoluteField, newFeasibleValue);
-      allNewValues[absoluteField] = newFeasibleValue;
-    }
-
-    // calculate absolute change
-    if (
-      valueField === "absolute" &&
-      typeof currentSegmentAnswer !== "undefined"
-    ) {
-      newFeasibleValue = newValue;
-      scenarioDriversForm.setFieldValue(percentageField, newFeasibleValue);
-      allNewValues[percentageField] = newFeasibleValue;
-    }
-
-    // calculate new current value by accomodate the scenario modeling value
     const currentScenarioValue = currentScenarioData.scenarioValues.find(
       (scenario) => scenario.segmentId === segment.id
     );
@@ -314,45 +305,83 @@ const ScenarioModelingIncomeDriversAndChart = ({
         ...currentScenarioValueUpdatedSegment,
       },
     };
-    if (valueField !== "driver") {
-      const findQuestion = flattenIncomeDataDriversQuestions.find(
-        (q) =>
-          q.case_commodity === parseInt(caseCommodityId) &&
-          q.id === parseInt(questionId)
-      );
 
-      const flattenChildrens = !findQuestion
-        ? []
-        : flatten(findQuestion.childrens);
+    // reset scenario value when driver changed or deleted
+    if (valueField === "driver") {
+      const prevSelectedDrivers = currentScenarioValue?.selectedDrivers || [];
+      scenarioDriversForm.setFieldsValue({
+        [absoluteField]: null,
+        [percentageField]: null,
+      });
+      const findPrevSelectedDriverValue = prevSelectedDrivers.find(
+        (d) => d.field === valueKey
+      )?.value;
+      // check if prev we have driver in same variables index
+      if (findPrevSelectedDriverValue) {
+        const prevSegmentAnswerField = `current-${findPrevSelectedDriverValue}`;
+        const resetSegmentAnswer = segment?.answers?.[prevSegmentAnswerField];
+        // reset segment answers
+        updatedSegment = {
+          ...updatedSegment,
+          answers: {
+            ...updatedSegment.answers,
+            ...updatedChildAnswer,
+            [prevSegmentAnswerField]: resetSegmentAnswer,
+          },
+        };
+        recalculate({
+          key: prevSegmentAnswerField,
+          updatedSegment,
+        });
+      }
+    }
+    // EOL reset scenario value when driver changed or deleted
 
-      const updatedChildAnswer = flattenChildrens
-        .map((q) => {
-          return {
-            key: `current-${caseCommodityId}-${q.id}`,
-            value: 0,
-          };
-        })
-        .reduce((a, b) => {
-          a[b.key] = b.value;
-          return a;
-        }, {});
+    // calculate percentage change
+    if (
+      valueField === "percentage" &&
+      typeof currentSegmentAnswer !== "undefined"
+    ) {
+      const valueTmp = currentSegmentAnswer * (newValue / 100);
+      newFeasibleValue = newValue ? currentSegmentAnswer + valueTmp : 0;
+      scenarioDriversForm.setFieldValue(absoluteField, newFeasibleValue);
+      allNewValues[absoluteField] = newFeasibleValue;
+    }
+    // EOL calculate percentage change
 
+    // calculate absolute change
+    if (
+      valueField === "absolute" &&
+      typeof currentSegmentAnswer !== "undefined"
+    ) {
+      newFeasibleValue = newValue;
+      scenarioDriversForm.setFieldValue(percentageField, newFeasibleValue);
+      allNewValues[percentageField] = newFeasibleValue;
+    }
+    // EOL calculate absolute change
+
+    // CALCULATION :: calculate new total income based on driver change and new scenario value
+    // assume the scenario modeling value to replace the current value
+    if (newFeasibleValue || newFeasibleValue === 0) {
       // update segment answers current value with the new value from scenario modeling
-      // TODO :: if the same drivers value changed or removed, we need to reset the value
       updatedSegment = {
         ...updatedSegment,
         answers: {
           ...updatedSegment.answers,
           ...updatedChildAnswer,
-          [`current-${driverDropdownValue}`]: newFeasibleValue,
+          [segmentAnswerField]: newFeasibleValue
+            ? newFeasibleValue
+            : currentSegmentAnswer,
         },
       };
       recalculate({
-        key: `current-${driverDropdownValue}`,
+        key: segmentAnswerField,
         updatedSegment,
       });
     }
+    // EOL CALCULATION
 
+    // create new updated dashboardData for current scenario - segment
     const updatedDasboardData = [updatedSegment].map((segment) => {
       const answers = isEmpty(segment?.answers) ? {} : segment.answers;
       const remappedAnswers = Object.keys(answers).map((key) => {
@@ -490,7 +519,9 @@ const ScenarioModelingIncomeDriversAndChart = ({
         answers: remappedAnswers,
       };
     })[0];
+    // EOL create new updated dashboardData for current scenario - segment
 
+    // Update scenario modeling global state
     let updatedScenarioValue = {};
     if (currentScenarioValue) {
       updatedScenarioValue = {
@@ -559,6 +590,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
         },
       },
     }));
+    // EOL Update scenario modeling global state
   };
 
   const initialScenarioModelingIncomeDriverValues = useMemo(() => {
