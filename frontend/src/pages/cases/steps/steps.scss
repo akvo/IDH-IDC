@@ -32,6 +32,11 @@
       border-right: 1px solid #e1e0e0;
     }
   }
+
+  // anticipate over line in tabs nav
+  .ant-tabs-top > .ant-tabs-nav::before {
+    margin-right: 16px;
+  }
 }
 
 .card-income-target-wrapper {
@@ -591,6 +596,13 @@
 
     .scenario-field-item {
       margin: 0 !important;
+    }
+  }
+
+  .step-segment-tabs-container,
+  .scenario-segment-tabs-container {
+    .ant-tabs-content {
+      margin-bottom: 0;
     }
   }
 }

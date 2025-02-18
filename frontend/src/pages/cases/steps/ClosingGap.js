@@ -5,6 +5,7 @@ import { Row, Col, Space, Card, Button, Tabs } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
 import { isEmpty, orderBy } from "lodash";
+import { ChartIncomeGapAcrossScenario } from "../visualizations";
 
 /**
  * STEP 5
@@ -167,7 +168,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
 
       <Col span={24}>
         <Tabs
-          className="step-segment-tabs-container"
+          className="step-segment-tabs-container scenario-segment-tabs-container"
           type="card"
           tabBarGutter={5}
           items={scenarioTabItems}
@@ -178,6 +179,21 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
         />
       </Col>
       {/* EOL Section 1 */}
+
+      {/* Section 2 */}
+      <Col span={24}>
+        <Card className="card-section-wrapper">
+          <Space className="step-wrapper" align="center">
+            <div className="number">2.</div>
+            <div className="label">Compare your scenarios</div>
+          </Space>
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <ChartIncomeGapAcrossScenario />
+      </Col>
+      {/* EOL Section 2 */}
     </Row>
   );
 };
