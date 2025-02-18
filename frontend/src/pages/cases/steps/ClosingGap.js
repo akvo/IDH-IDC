@@ -5,7 +5,10 @@ import { Row, Col, Space, Card, Button, Tabs } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
 import { isEmpty, orderBy } from "lodash";
-import { ChartIncomeGapAcrossScenario } from "../visualizations";
+import {
+  ChartIncomeGapAcrossScenario,
+  TableScenarioOutcomes,
+} from "../visualizations";
 
 /**
  * STEP 5
@@ -194,6 +197,29 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
         <ChartIncomeGapAcrossScenario />
       </Col>
       {/* EOL Section 2 */}
+
+      {/* Section 3 */}
+      <Col span={24}>
+        <Card className="card-section-wrapper">
+          <Space className="step-wrapper" align="top">
+            <div className="number">3.</div>
+            <div className="label">
+              Better understand scenario outcomes for your segments
+              <div className="description">
+                In the table below, you can compare specific outcomes per
+                segment to understand in which scenario the farmers in that
+                segment reach the income target, how this is established, and
+                how it compares to the current scenario.
+              </div>
+            </div>
+          </Space>
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <TableScenarioOutcomes />
+      </Col>
+      {/* EOL Section 3 */}
     </Row>
   );
 };

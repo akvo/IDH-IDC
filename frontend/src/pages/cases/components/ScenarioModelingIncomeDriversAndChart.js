@@ -23,7 +23,7 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
 
 const generateDriverOptions = ({ group, questions }) => {
   return questions.map((q) => ({
-    value: `${group.id}-${q.id}`,
+    value: `${group.id}-${q.id}`, // commodityID - questionID
     label: q.text,
     selectable: q.question_type === "aggregator" ? false : true,
     children: generateDriverOptions({ group, questions: q.childrens }),

@@ -10,3 +10,4 @@ export { default as ChartBinningHeatmapSensitivityAnalysis } from "./ChartBinnin
 export { default as ChartIncomeLevelsForDifferentCommodities } from "./ChartIncomeLevelsForDifferentCommodities";
 export { default as ChartSegmentsIncomeGapScenarioModeling } from "./ChartSegmentsIncomeGapScenarioModeling";
 export { default as ChartIncomeGapAcrossScenario } from "./ChartIncomeGapAcrossScenario";
+export { default as TableScenarioOutcomes } from "./TableScenarioOutcomes";
