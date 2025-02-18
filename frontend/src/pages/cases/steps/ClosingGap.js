@@ -1,14 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { stepPath, CurrentCaseState, CaseVisualState } from "../store";
-import { Row, Col, Space, Card, Button, Tabs } from "antd";
+import {
+  stepPath,
+  CurrentCaseState,
+  CaseVisualState,
+  CaseUIState,
+} from "../store";
+import { Row, Col, Space, Card, Button, Tabs, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
-import { isEmpty, orderBy } from "lodash";
+import { isEmpty, orderBy, isEqual } from "lodash";
 import {
   ChartIncomeGapAcrossScenario,
   TableScenarioOutcomes,
 } from "../visualizations";
+import { api, removeUndefinedObjectValue } from "../../../lib";
 
 /**
  * STEP 5
@@ -19,21 +25,80 @@ const MAX_SCENARIO = 3;
 const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
-    (s) => s
-  );
+  const { scenarioModeling, dashboardData, prevScenarioModeling } =
+    CaseVisualState.useState((s) => s);
+  const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [activeScenario, setActiveScenario] = useState(
     scenarioModeling?.config?.scenarioData?.[0]?.key || null
   );
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const upateCaseButtonState = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      caseButton: value,
+    }));
+  };
+
+  // TODO :: Handle load scenario
+  const handleSaveVisualization = useCallback(() => {
+    if (!enableEditCase) {
+      return;
+    }
+
+    upateCaseButtonState({ loading: true });
+    const payloads = [scenarioModeling];
+    // scenario modeling
+    const isScenarioUpdated = !isEqual(
+      removeUndefinedObjectValue(prevScenarioModeling?.config),
+      removeUndefinedObjectValue(scenarioModeling?.config)
+    );
+    // save only when the payloads is provided
+    if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
+      // Save
+      api
+        .post(`visualization?updated=${isScenarioUpdated}`, payloads)
+        .then(() => {
+          CaseVisualState.update((s) => ({
+            ...s,
+            prevScenarioModeling: {
+              ...scenarioModeling,
+            },
+          }));
+          messageApi.open({
+            type: "success",
+            content: "Scenario modeling value saved successfully.",
+          });
+        })
+        .catch((e) => {
+          console.error(e);
+          const { status, data } = e.response;
+          let errorText = "Failed to save scenario modeling value.";
+          if (status === 403) {
+            errorText = data.detail;
+          }
+          messageApi.open({
+            type: "error",
+            content: errorText,
+          });
+        })
+        .finally(() => {
+          upateCaseButtonState({ loading: false });
+        });
+    } else {
+      upateCaseButtonState({ loading: false });
+    }
+  }, [enableEditCase, messageApi, prevScenarioModeling, scenarioModeling]);
 
   const backFunction = useCallback(() => {
     navigate(`/case/${currentCase.id}/${stepPath.step4.label}`);
   }, [navigate, currentCase.id]);
 
   const nextFunction = useCallback(() => {
-    console.info("Finish");
-  }, []);
+    handleSaveVisualization();
+  }, [handleSaveVisualization]);
 
   useEffect(() => {
     if (setbackfunction) {
@@ -50,6 +115,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
       ...s,
       scenarioModeling: {
         ...s.scenarioModeling,
+        case: currentCase.id,
         config: {
           ...s.scenarioModeling.config,
           scenarioData: s.scenarioModeling.config.scenarioData.map(
@@ -92,6 +158,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
           ...s,
           scenarioModeling: {
             ...s.scenarioModeling,
+            case: currentCase.id,
             config: {
               ...s.scenarioModeling.config,
               scenarioData: [
@@ -131,6 +198,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
 
   return (
     <Row id="closing-gap" gutter={[24, 24]}>
+      {contextHolder}
       <Col span={24} className="header-wrapper">
         <Space direction="vertical">
           <div className="title">Explanatory text</div>

@@ -68,6 +68,13 @@ const AssessImpactMitigationStrategies = ({
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  const upateCaseButtonState = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      caseButton: value,
+    }));
+  };
+
   // initial load adjusted income target
   useEffect(() => {
     if (!isEmpty(sensitivityAnalysis?.config)) {
@@ -110,12 +117,7 @@ const AssessImpactMitigationStrategies = ({
       return;
     }
 
-    CaseUIState.update((s) => ({
-      ...s,
-      caseButton: {
-        loading: true,
-      },
-    }));
+    upateCaseButtonState({ loading: true });
     const payloads = [sensitivityAnalysis];
     // sensitivity analysis
     const isBinningDataUpdated = !isEqual(
@@ -123,7 +125,7 @@ const AssessImpactMitigationStrategies = ({
       removeUndefinedObjectValue(sensitivityAnalysis?.config)
     );
     // save only when the payloads is provided
-    if (!isEmpty(payloads?.config) && payloads?.case) {
+    if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
       // Save
       api
         .post(`visualization?updated=${isBinningDataUpdated}`, payloads)
@@ -157,20 +159,10 @@ const AssessImpactMitigationStrategies = ({
           });
         })
         .finally(() => {
-          CaseUIState.update((s) => ({
-            ...s,
-            caseButton: {
-              loading: false,
-            },
-          }));
+          upateCaseButtonState({ loading: false });
         });
     } else {
-      CaseUIState.update((s) => ({
-        ...s,
-        caseButton: {
-          loading: false,
-        },
-      }));
+      upateCaseButtonState({ loading: false });
       setTimeout(() => {
         navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
       }, 100);
