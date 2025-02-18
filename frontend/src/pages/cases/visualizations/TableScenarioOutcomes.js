@@ -6,6 +6,7 @@ import { CaseVisualState, CurrentCaseState } from "../store";
 import { flatten } from "../../../lib";
 import { uniqBy, isEmpty, orderBy } from "lodash";
 import { CheckCircleTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 const outcomeIndicator = [
   {
@@ -46,6 +47,7 @@ const TableScenarioOutcomes = () => {
   const scenarioData = scenarioModeling.config.scenarioData;
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const tableRef = useRef(null);
 
   const segmentOptions = useMemo(() => {
     return currentCase.segments.map((s) => ({
@@ -193,7 +195,6 @@ const TableScenarioOutcomes = () => {
           const scenarioSegment = sd.scenarioValues.find(
             (sv) => sv.segmentId === selectedSegment
           );
-          console.log(scenarioSegment);
           const newTotalIncome = !scenarioSegment?.updatedSegmentScenarioValue
             ?.total_current_income
             ? currentDashboardData.total_current_income
@@ -208,13 +209,101 @@ const TableScenarioOutcomes = () => {
           };
         });
       }
+
+      if (ind.key === "income_gap") {
+        const currentGap =
+          currentDashboardData.target -
+          currentDashboardData.total_current_income;
+        res = {
+          ...res,
+          current: currentGap <= 0 ? "-" : currentGap?.toFixed(2),
+        };
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const scenarioSegment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const segmentValue = scenarioSegment?.updatedSegmentScenarioValue
+            ?.total_current_income
+            ? scenarioSegment?.updatedSegmentScenarioValue?.total_current_income
+            : currentDashboardData.target;
+          const segmentGap = currentDashboardData.target - segmentValue;
+          res = {
+            ...res,
+            [scenarioKey]:
+              segmentGap <= 0 ? "-" : thousandFormatter(segmentGap?.toFixed(2)),
+          };
+        });
+      }
+
+      if (ind.key === "income_increase") {
+        res = {
+          ...res,
+          current: "-",
+        };
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const scenarioSegment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const segmentValue = scenarioSegment?.updatedSegmentScenarioValue
+            ?.total_current_income
+            ? scenarioSegment?.updatedSegmentScenarioValue?.total_current_income
+            : currentDashboardData.total_current_income;
+          const incomeIncrease =
+            segmentValue - currentDashboardData.total_current_income;
+          res = {
+            ...res,
+            [scenarioKey]:
+              parseInt(incomeIncrease) === 0
+                ? "-"
+                : thousandFormatter(incomeIncrease?.toFixed(2)),
+          };
+        });
+      }
+
+      if (ind.key === "income_increase_percentage") {
+        res = {
+          ...res,
+          current: "-",
+        };
+        scenarioData.forEach((sd) => {
+          const scenarioKey = `scenario-${sd.key}`;
+          const scenarioSegment =
+            sd.scenarioValues.find((sv) => sv.segmentId === selectedSegment) ||
+            {};
+          const segmentValue = scenarioSegment?.updatedSegmentScenarioValue
+            ?.total_current_income
+            ? scenarioSegment?.updatedSegmentScenarioValue?.total_current_income
+            : currentDashboardData.total_current_income;
+          const incomeIncrease =
+            segmentValue - currentDashboardData.total_current_income;
+          let incomeIncreasePercent = "-";
+          if (parseInt(incomeIncrease) !== 0) {
+            incomeIncreasePercent = (
+              (incomeIncrease / currentDashboardData.total_current_income) *
+              100
+            )?.toFixed(2);
+            incomeIncreasePercent = `${incomeIncreasePercent}%`;
+          }
+          res = {
+            ...res,
+            [scenarioKey]: incomeIncreasePercent,
+          };
+        });
+      }
+
       return res;
     });
     return data;
-  }, [scenarioData, selectedSegment, questionGroups]);
+  }, [scenarioData, selectedSegment, questionGroups, dashboardData]);
 
   return (
-    <VisualCardWrapper title="Scenario Outcomes">
+    <VisualCardWrapper
+      title="Scenario Outcomes"
+      exportElementRef={tableRef}
+      exportFilename="Scenario Outcomes"
+    >
       <Row gutter={[20, 20]}>
         <Col span={24}>
           <Select
