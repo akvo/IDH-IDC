@@ -28,6 +28,7 @@ const defaultCaseVisualState = {
     tab: "scenario_modeling",
     config: {
       scenarioData: [defaultScenarioData],
+      scenarioOutcomeDataSource: [],
     },
   },
   prevScenarioModeling: {
@@ -35,6 +36,7 @@ const defaultCaseVisualState = {
     tab: "scenario_modeling",
     config: {
       scenarioData: [defaultScenarioData],
+      scenarioOutcomeDataSource: [],
     },
   },
 };
