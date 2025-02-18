@@ -42,7 +42,6 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     }));
   };
 
-  // TODO :: Handle load scenario
   const handleSaveVisualization = useCallback(() => {
     if (!enableEditCase) {
       return;

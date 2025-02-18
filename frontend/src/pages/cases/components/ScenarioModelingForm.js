@@ -81,8 +81,8 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
                   {...selectProps}
                   disabled={!enableEditCase}
                   options={[
-                    { label: "Percentage", value: true },
-                    { label: "Absolute", value: false },
+                    { label: "Change in percentage value", value: true },
+                    { label: "Change in absolute value", value: false },
                   ]}
                 />
               </Form.Item>
