@@ -65,7 +65,7 @@ const Bar = ({
       name: yAxisTitle || "",
       nameTextStyle: { ...TextStyle },
       nameLocation: "middle",
-      nameGap: 75,
+      nameGap: 55,
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",

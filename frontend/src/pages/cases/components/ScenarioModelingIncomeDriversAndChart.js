@@ -530,9 +530,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
           valueField === "driver"
             ? uniqBy(
                 [
-                  ...currentScenarioValue.selectedDrivers.filter(
-                    (x) => x.field !== valueKey
-                  ),
+                  ...(currentScenarioValue?.selectedDrivers
+                    ? currentScenarioValue.selectedDrivers.filter(
+                        (x) => x.field !== valueKey
+                      )
+                    : []),
                   {
                     field: valueKey,
                     value: newValue,

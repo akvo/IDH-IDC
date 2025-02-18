@@ -163,7 +163,7 @@ const BarStack = ({
     grid: {
       top: 25,
       bottom: grid?.bottom ? grid.bottom : 28,
-      left: 55,
+      left: 45,
       right: grid?.right ? grid.right : 150,
       show: true,
       containLabel: true,
@@ -187,7 +187,7 @@ const BarStack = ({
       name: yAxisTitle || "",
       nameTextStyle: { ...TextStyle },
       nameLocation: "middle",
-      nameGap: 75,
+      nameGap: 55,
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",

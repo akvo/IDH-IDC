@@ -110,6 +110,8 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     nextFunctionRef.current();
   };
 
+  const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
+
   return (
     <Row id="case-detail" className="case-container">
       <Col span={24}>
@@ -194,7 +196,13 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
             onClick={handleNext}
             className="button-green-fill"
           >
-            Next <ArrowRightOutlined />
+            {isInLastStep ? (
+              "Save"
+            ) : (
+              <>
+                Next <ArrowRightOutlined />
+              </>
+            )}
           </Button>
         </Space>
       </Col>

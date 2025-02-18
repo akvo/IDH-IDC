@@ -69,7 +69,7 @@ export const getColumnStackBarOptions = ({
     },
     grid: {
       top: grid?.top ? grid.top : 25,
-      left: grid?.left ? grid.left : 50,
+      left: grid?.left ? grid.left : 30,
       right: grid?.right ? grid.right : 190,
       bottom: grid?.bottom ? grid.bottom : 25,
       show: true,
@@ -105,7 +105,7 @@ export const getColumnStackBarOptions = ({
       type: "value",
       nameTextStyle: { ...TextStyle },
       nameLocation: "middle",
-      nameGap: 75,
+      nameGap: 55,
       axisLabel: {
         formatter: function (value) {
           return formatNumberToString(value);

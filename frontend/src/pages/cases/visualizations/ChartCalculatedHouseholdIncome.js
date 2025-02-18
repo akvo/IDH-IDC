@@ -66,7 +66,7 @@ const ChartCalculatedHouseholdIncome = () => {
             align: "center",
           },
         }}
-        grid={{ bottom: 60, right: 5, left: 90 }}
+        grid={{ bottom: 60, right: 5, left: 70 }}
         showLabel={showLabel}
       />
     </VisualCardWrapper>

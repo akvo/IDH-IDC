@@ -283,13 +283,13 @@ const ChartIncomeDriverAcrossSegments = () => {
   const chartGrid = (selectedDriver) => {
     switch (selectedDriver) {
       case 3: // volume
-        return { right: 115, left: 70, bottom: 20 };
+        return { right: 115, left: 45, bottom: 20 };
       case 4: // price
-        return { right: 175, left: 90, bottom: 20 };
+        return { right: 175, left: 55, bottom: 20 };
       case 5: // cost of production
-        return { right: 215, left: 70, bottom: 20 };
-      default:
-        return { right: 295, left: 70, bottom: 20 };
+        return { right: 215, left: 50, bottom: 20 };
+      default: // diversified income
+        return { right: 295, left: 45, bottom: 20 };
     }
   };
 

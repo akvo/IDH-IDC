@@ -234,7 +234,7 @@ const ChartBiggestImpactOnIncome = () => {
       grid: {
         show: true,
         containLabel: true,
-        left: 55,
+        left: 75,
         right: 30,
         top: 100,
         bottom: 20,
@@ -248,7 +248,7 @@ const ChartBiggestImpactOnIncome = () => {
         name: "Change (%)",
         nameTextStyle: { ...TextStyle },
         nameLocation: "middle",
-        nameGap: 50,
+        nameGap: 55,
         axisLabel: {
           ...TextStyle,
           color: "#9292ab",
