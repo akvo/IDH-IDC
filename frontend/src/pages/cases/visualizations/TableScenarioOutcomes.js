@@ -40,7 +40,11 @@ const incomeTargetIcon = {
   ),
 };
 
-const TableScenarioOutcomes = () => {
+const TableScenarioOutcomes = ({
+  // this params used when showing scenario outcomes from View Summary Button
+  isSummary = false,
+  summaryScenarioOutcomeDataSource = [],
+}) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { scenarioModeling, questionGroups, dashboardData } =
     CaseVisualState.useState((s) => s);
@@ -163,21 +167,11 @@ const TableScenarioOutcomes = () => {
                 [scenarioKey]: "-",
               };
             }
-            const values = (
-              <Space direction="vertical">
-                {orderBy(uniqBy(scenarioDriverValues, "qid"), "qid").map(
-                  (x) => (
-                    <Space key={x.qid}>
-                      <div>{x.text}</div>
-                      <div>({x.percent})</div>
-                    </Space>
-                  )
-                )}
-              </Space>
-            );
             res = {
               ...res,
-              [scenarioKey]: values,
+              [scenarioKey]: orderBy(uniqBy(scenarioDriverValues, "qid"), "qid")
+                .map((x) => `${x.text}#(${x.percent})`)
+                .join("|"),
             };
           });
         }
@@ -188,8 +182,8 @@ const TableScenarioOutcomes = () => {
             current:
               currentDashboardData.target <=
               currentDashboardData.total_current_income
-                ? incomeTargetIcon.reached
-                : incomeTargetIcon.not_reached,
+                ? "reached"
+                : "not_reached",
           };
           scenarioData.forEach((sd) => {
             const scenarioKey = `scenario-${sd.key}`;
@@ -205,8 +199,8 @@ const TableScenarioOutcomes = () => {
               ...res,
               [scenarioKey]:
                 currentDashboardData.target <= newTotalIncome
-                  ? incomeTargetIcon.reached
-                  : incomeTargetIcon.not_reached,
+                  ? "reached"
+                  : "not_reached",
             };
           });
         }
@@ -305,6 +299,7 @@ const TableScenarioOutcomes = () => {
       });
       return {
         segmentId: currentDashboardData.id,
+        segmentName: currentDashboardData.name,
         scenarioOutcome: data,
       };
     });
@@ -326,11 +321,65 @@ const TableScenarioOutcomes = () => {
     if (!selectedSegment) {
       return [];
     }
-    return (
+    const res =
       scenarioOutcomeDataSource.find((so) => so.segmentId === selectedSegment)
-        ?.scenarioOutcome || []
-    );
+        ?.scenarioOutcome || [];
+    return res.map((r) => {
+      if (r.id === "income_driver") {
+        // render value
+        Object.entries(r).map(([key, value]) => {
+          if (key !== "title") {
+            const splitted = value.split("|");
+            const values = (
+              <Space direction="vertical">
+                {splitted.map((x, xi) => {
+                  const [text, percent] = x.split("#");
+                  return (
+                    <Space key={`${xi}-${x}`}>
+                      <div>{text}</div>
+                      <div>{percent}</div>
+                    </Space>
+                  );
+                })}
+              </Space>
+            );
+            r = {
+              ...r,
+              [key]: values,
+            };
+          }
+        });
+      }
+      if (r.id === "income_target_reached") {
+        Object.entries(r).map(([key, value]) => {
+          if (key !== "title") {
+            let icon = "";
+            if (value === "reached") {
+              icon = incomeTargetIcon.reached;
+            } else {
+              icon = incomeTargetIcon.not_reached;
+            }
+            r = {
+              ...r,
+              [key]: icon,
+            };
+          }
+        });
+      }
+      return r;
+    });
   }, [selectedSegment, scenarioOutcomeDataSource]);
+
+  if (isSummary) {
+    return (
+      <Table
+        rowKey="id"
+        columns={scenarioOutcomeColumns}
+        dataSource={summaryScenarioOutcomeDataSource}
+        pagination={false}
+      />
+    );
+  }
 
   return (
     <VisualCardWrapper
