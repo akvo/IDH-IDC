@@ -243,6 +243,7 @@ class TestCaseRoute:
                     "tags": [1],
                     "status": 0,
                     "has_scenario_data": False,
+                    "scenario_outcome_data_source": [],
                 }
             ],
             "total": 1,
@@ -271,6 +272,7 @@ class TestCaseRoute:
                     "tags": [],
                     "status": 0,
                     "has_scenario_data": False,
+                    "scenario_outcome_data_source": [],
                 },
                 {
                     "id": 1,
@@ -285,6 +287,7 @@ class TestCaseRoute:
                     "tags": [1],
                     "status": 0,
                     "has_scenario_data": False,
+                    "scenario_outcome_data_source": [],
                 },
             ],
             "total": 2,

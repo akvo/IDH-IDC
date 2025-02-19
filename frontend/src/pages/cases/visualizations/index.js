@@ -8,3 +8,6 @@ export { default as ChartMonetaryImpactOnIncome } from "./ChartMonetaryImpactOnI
 export { default as ChartBinningDriversSensitivityAnalysis } from "./ChartBinningDriversSensitivityAnalysis";
 export { default as ChartBinningHeatmapSensitivityAnalysis } from "./ChartBinningHeatmapSensitivityAnalysis";
 export { default as ChartIncomeLevelsForDifferentCommodities } from "./ChartIncomeLevelsForDifferentCommodities";
+export { default as ChartSegmentsIncomeGapScenarioModeling } from "./ChartSegmentsIncomeGapScenarioModeling";
+export { default as ChartIncomeGapAcrossScenario } from "./ChartIncomeGapAcrossScenario";
+export { default as TableScenarioOutcomes } from "./TableScenarioOutcomes";

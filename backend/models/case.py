@@ -57,6 +57,7 @@ class CaseListDict(TypedDict):
     created_by: str
     status: int
     has_scenario_data: bool
+    scenario_outcome_data_source: Optional[List[dict]] = []
     company: Optional[int] = None
     tags: Optional[List[int]] = []
 
@@ -291,9 +292,19 @@ class Case(Base):
         # Check if any of them contain scenario data
         has_scenario_data = any(
             v.config.get("scenarioData")
+            and v.config.get("scenarioOutcomeDataSource")
             and any(s["scenarioValues"] for s in v.config["scenarioData"])
             for v in scenario_modeling_visualizations
         )
+        # get scenario outcome data source
+        scenario_outcome_data_source = []
+        if has_scenario_data:
+            scenario_outcome_data_source = scenario_modeling_visualizations[0]
+            scenario_outcome_data_source = (
+                scenario_outcome_data_source.config.get(
+                    "scenarioOutcomeDataSource"
+                )
+            )
         return {
             "id": self.id,
             "name": self.name,
@@ -307,6 +318,7 @@ class Case(Base):
             "created_by": self.created_by_user.email,
             "tags": [ct.tag for ct in self.case_tags],
             "has_scenario_data": has_scenario_data,
+            "scenario_outcome_data_source": scenario_outcome_data_source,
         }
 
     @property

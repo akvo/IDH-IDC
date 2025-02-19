@@ -156,6 +156,7 @@ const Case = () => {
 
   // Fetch case details
   useEffect(() => {
+    // TODO :: handle clear currentCase after create a new case
     if (caseId && currentCase.id !== parseInt(caseId)) {
       // setLoading(true);
       // prevent fetch the data when it's already defined

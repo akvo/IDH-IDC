@@ -68,6 +68,13 @@ const AssessImpactMitigationStrategies = ({
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  const upateCaseButtonState = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      caseButton: value,
+    }));
+  };
+
   // initial load adjusted income target
   useEffect(() => {
     if (!isEmpty(sensitivityAnalysis?.config)) {
@@ -110,57 +117,56 @@ const AssessImpactMitigationStrategies = ({
       return;
     }
 
-    CaseUIState.update((s) => ({
-      ...s,
-      caseButton: {
-        loading: true,
-      },
-    }));
+    upateCaseButtonState({ loading: true });
     const payloads = [sensitivityAnalysis];
     // sensitivity analysis
     const isBinningDataUpdated = !isEqual(
       removeUndefinedObjectValue(prevSensitivityAnalysis?.config),
       removeUndefinedObjectValue(sensitivityAnalysis?.config)
     );
-    // Save
-    api
-      .post(`visualization?updated=${isBinningDataUpdated}`, payloads)
-      .then(() => {
-        CaseVisualState.update((s) => ({
-          ...s,
-          prevSensitivityAnalysis: {
-            ...sensitivityAnalysis,
-          },
-        }));
-        messageApi.open({
-          type: "success",
-          content: "Assess impact of mitigation strategies saved successfully.",
+    // save only when the payloads is provided
+    if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
+      // Save
+      api
+        .post(`visualization?updated=${isBinningDataUpdated}`, payloads)
+        .then(() => {
+          CaseVisualState.update((s) => ({
+            ...s,
+            prevSensitivityAnalysis: {
+              ...sensitivityAnalysis,
+            },
+          }));
+          messageApi.open({
+            type: "success",
+            content:
+              "Assess impact of mitigation strategies saved successfully.",
+          });
+          setTimeout(() => {
+            navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
+          }, 100);
+        })
+        .catch((e) => {
+          console.error(e);
+          const { status, data } = e.response;
+          let errorText =
+            "Failed to save assess impact of mitigation strategies.";
+          if (status === 403) {
+            errorText = data.detail;
+          }
+          messageApi.open({
+            type: "error",
+            content: errorText,
+          });
+        })
+        .finally(() => {
+          upateCaseButtonState({ loading: false });
         });
-        setTimeout(() => {
-          navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
-        }, 100);
-      })
-      .catch((e) => {
-        console.error(e);
-        const { status, data } = e.response;
-        let errorText =
-          "Failed to save assess impact of mitigation strategies.";
-        if (status === 403) {
-          errorText = data.detail;
-        }
-        messageApi.open({
-          type: "error",
-          content: errorText,
-        });
-      })
-      .finally(() => {
-        CaseUIState.update((s) => ({
-          ...s,
-          caseButton: {
-            loading: false,
-          },
-        }));
-      });
+    } else {
+      upateCaseButtonState({ loading: false });
+      setTimeout(() => {
+        navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
+      }, 100);
+    }
   }, [
     currentCase.id,
     enableEditCase,

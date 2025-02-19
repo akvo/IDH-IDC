@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "./welcome.scss";
-import { Row, Col, Card, Button, Table, Modal, Select, Space } from "antd";
+import { Row, Col, Card, Button, Table, Select } from "antd";
 import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { api, selectProps } from "../../lib";
@@ -8,6 +8,7 @@ import { commodityOptions } from "../../store/static";
 import { Link } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
+import { ViewSummaryModal } from "../../components/utils";
 
 // TODO :: Map data => case which have segment (current query)
 // TODO :: Map table data => all cases that saved on case table (current query)
@@ -36,6 +37,7 @@ const Welcome = () => {
   const [tableData, setTableData] = useState(defData);
 
   const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [selectedCaseData, setSelectedCaseData] = useState({});
 
   const tableElement = document.getElementById("table-container");
 
@@ -152,9 +154,16 @@ const Welcome = () => {
     }
   };
 
-  const handleOnClickViewSummary = () => {
-    setShowSummaryModal(true);
-    // TODO :: fetch view summary data?
+  const handleOnClickViewSummary = (record) => {
+    if (record?.has_scenario_data) {
+      setSelectedCaseData(record);
+      setShowSummaryModal(true);
+    }
+  };
+
+  const handleOnCloseViewSummary = () => {
+    setShowSummaryModal(false);
+    setSelectedCaseData({});
   };
 
   const columns = useMemo(() => {
@@ -391,61 +400,11 @@ const Welcome = () => {
       </Col>
       {/* EOL Table */}
 
-      {/* View summary modal */}
-      <Modal
-        title="View summary"
-        open={showSummaryModal}
-        onCancel={() => setShowSummaryModal(false)}
-        width="55%"
-        className="view-summary-modal-wrapper"
-        maskClosable={false}
-        footer={false}
-      >
-        <Row gutter={[20, 20]} align="middle">
-          <Col span={24}>
-            <Card className="scenario-outcome-form-wrapper">
-              <Row gutter={[12, 12]} align="top">
-                <Col span={12}>
-                  <Space direction="vertical" style={{ width: "100%" }}>
-                    <label>Scenario</label>
-                    <Select {...selectProps} placeholder="Select scenario" />
-                  </Space>
-                </Col>
-                <Col span={12} align="end">
-                  <Button className="button-download">
-                    Download scenario outcomes
-                  </Button>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-          <Col span={24}>
-            <Table
-              columns={[
-                {
-                  title: "",
-                  dataIndex: "name",
-                  key: "name",
-                },
-                {
-                  title: "Current value",
-                  dataIndex: "current",
-                  key: "current",
-                  width: "25%",
-                },
-                {
-                  title: "Scenario 1",
-                  dataIndex: "scenario",
-                  key: "scenario",
-                  width: "25%",
-                },
-              ]}
-              dataSource={[]}
-            />
-          </Col>
-        </Row>
-      </Modal>
-      {/* EOL View summary modal */}
+      <ViewSummaryModal
+        showSummaryModal={showSummaryModal}
+        setShowSummaryModal={handleOnCloseViewSummary}
+        selectedCaseData={selectedCaseData}
+      />
     </Row>
   );
 };

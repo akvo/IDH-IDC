@@ -32,6 +32,11 @@
       border-right: 1px solid #e1e0e0;
     }
   }
+
+  // anticipate over line in tabs nav
+  .ant-tabs-top > .ant-tabs-nav::before {
+    margin-right: 16px;
+  }
 }
 
 .card-income-target-wrapper {
@@ -234,7 +239,7 @@
     .title {
       color: #01625f;
       font-family: "RocGrotesk";
-      font-size: 40px;
+      font-size: 28px;
       font-style: normal;
       font-weight: 700;
       line-height: 52px;
@@ -563,6 +568,16 @@
       }
     }
 
+    .description {
+      margin-top: 5px;
+      color: #fff;
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+
     .button-add-scenario {
       border-radius: 40px;
       border: 1px solid #fff;
@@ -591,6 +606,13 @@
 
     .scenario-field-item {
       margin: 0 !important;
+    }
+  }
+
+  .step-segment-tabs-container,
+  .scenario-segment-tabs-container {
+    .ant-tabs-content {
+      margin-bottom: 0;
     }
   }
 }

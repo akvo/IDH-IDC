@@ -626,7 +626,6 @@ const Scenario = ({
     useState([]);
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [currentScenarioData, setCurrentScenarioData] = useState([]);
-
   const [
     showLabelChartCurrentScenarioIncomeGap,
     setShowLabelChartCurrentScenarioIncomeGap,

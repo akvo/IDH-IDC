@@ -124,8 +124,8 @@ const ColumnBar = ({
     grid: {
       top: grid?.top ? grid.top : horizontal ? 80 : 70,
       bottom: grid?.bottom ? grid.bottom : horizontal ? 80 : 58,
-      left: grid?.left ? grid.left : horizontal ? 100 : 100,
-      right: grid?.right ? grid.right : horizontal ? 58 : 58,
+      left: grid?.left ? grid.left : horizontal ? 100 : 75,
+      right: grid?.right ? grid.right : horizontal ? 58 : 15,
       show: true,
       label: {
         color: "#222",
@@ -145,7 +145,7 @@ const ColumnBar = ({
       name: yAxisTitle || "",
       nameTextStyle: { ...TextStyle },
       nameLocation: "middle",
-      nameGap: 75,
+      nameGap: 55,
       axisLabel: {
         ...TextStyle,
         color: "#9292ab",

@@ -31,6 +31,7 @@ import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
 import { stepPath } from "./store";
 import { resetCurrentCaseState } from "./store/current_case";
+import { ViewSummaryModal } from "../../components/utils";
 
 const { Search } = Input;
 
@@ -76,6 +77,9 @@ const Cases = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [activeButton, setActiveButton] = useState("all-cases");
+
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [selectedCaseData, setSelectedCaseData] = useState({});
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -315,6 +319,7 @@ const Cases = () => {
               padding: "0px 10px",
             }}
             ghost
+            onClick={() => handleOnClickViewSummary({ ...record })}
           >
             View Summary
           </Button>
@@ -449,6 +454,18 @@ const Cases = () => {
     setFilters((prev) => ({ ...prev, country, commodity, tags, year }));
   };
 
+  const handleOnClickViewSummary = (record) => {
+    if (record?.has_scenario_data) {
+      setSelectedCaseData(record);
+      setShowSummaryModal(true);
+    }
+  };
+
+  const handleOnCloseViewSummary = () => {
+    setShowSummaryModal(false);
+    setSelectedCaseData({});
+  };
+
   return (
     <ContentLayout
       breadcrumbItems={[
@@ -538,6 +555,12 @@ const Cases = () => {
       <CaseSettings
         open={caseSettingModalVisible}
         handleCancel={() => setCaseSettingModalVisible(false)}
+      />
+
+      <ViewSummaryModal
+        showSummaryModal={showSummaryModal}
+        setShowSummaryModal={handleOnCloseViewSummary}
+        selectedCaseData={selectedCaseData}
       />
     </ContentLayout>
   );

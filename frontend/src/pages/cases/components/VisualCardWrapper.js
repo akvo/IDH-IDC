@@ -20,6 +20,8 @@ const htmlToImageConvert = (exportElementRef, exportFilename, setExporting) => {
         "save-as-image-btn",
         "show-label-btn",
         "info-tooltip",
+        "button-export",
+        "ant-btn",
       ];
       return !exclusionClasses.some((classname) =>
         node.classList?.contains(classname)

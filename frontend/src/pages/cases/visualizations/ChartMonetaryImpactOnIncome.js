@@ -220,7 +220,7 @@ const ChartMonetaryImpactOnIncome = () => {
       grid: {
         show: true,
         containLabel: true,
-        left: 65,
+        left: 55,
         right: 30,
         label: {
           color: "#222",
@@ -253,7 +253,7 @@ const ChartMonetaryImpactOnIncome = () => {
         name: `Income (${currentCase.currency})`,
         nameTextStyle: { ...TextStyle },
         nameLocation: "middle",
-        nameGap: 75,
+        nameGap: 55,
         axisLabel: {
           ...TextStyle,
           color: "#9292ab",

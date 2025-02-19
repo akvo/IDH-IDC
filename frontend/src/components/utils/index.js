@@ -19,3 +19,4 @@ export { default as SaveAsImageButton } from "./SaveAsImageButton";
 export { default as PasswordCriteria } from "./PasswordCriteria";
 export { default as ShowLabelButton } from "./ShowLabelButton";
 export { default as DataSecurityProvisionModal } from "./DataSecurityProvisionModal";
+export { default as ViewSummaryModal } from "./ViewSummaryModal";

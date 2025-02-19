@@ -98,7 +98,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
                   .filter((x) => x.role.includes(userRole))
                   .map((x, xi) => (
                     <Link
-                      key={`nav-menu-${xi}`}
+                      key={`auth-nav-menu-${xi}`}
                       data-testid={x.testid}
                       to={x.path}
                     >
@@ -107,7 +107,11 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
                   ))
               : ""}
             {generalMenus.map((x, xi) => (
-              <Link key={`nav-menu-${xi}`} data-testid={x.testid} to={x.path}>
+              <Link
+                key={`general-nav-menu-${xi}`}
+                data-testid={x.testid}
+                to={x.path}
+              >
                 {x.name}
               </Link>
             ))}
