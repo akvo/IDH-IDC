@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Row, Col, Form, InputNumber, TreeSelect } from "antd";
 import { CaseUIState, CaseVisualState, CurrentCaseState } from "../store";
 import {
@@ -38,6 +38,16 @@ const Question = ({ index, segment, percentage }) => {
   const scenarioModelingForm = Form.useFormInstance();
 
   const fieldName = `${segment.id}-${index}`;
+
+  useEffect(() => {
+    const initialValues = scenarioModelingForm.getFieldsValue();
+    const driverSelectField = `driver-${fieldName}`;
+    Object.entries(initialValues).forEach(([key, value]) => {
+      if (key === driverSelectField) {
+        setSelectedDriver(value);
+      }
+    });
+  });
 
   const incomeDriverOptions = useMemo(() => {
     return incomeDataDrivers.map((driver) => ({
