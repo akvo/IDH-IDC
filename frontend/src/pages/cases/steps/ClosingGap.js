@@ -58,7 +58,10 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
       // Save
       api
-        .post(`visualization?updated=${isScenarioUpdated}`, payloads)
+        .sendCompressedData(
+          `visualization?updated=${isScenarioUpdated}`,
+          payloads
+        )
         .then(() => {
           CaseVisualState.update((s) => ({
             ...s,

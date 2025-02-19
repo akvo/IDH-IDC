@@ -1,3 +1,6 @@
+import gzip
+import json
+
 import db.crud_visualization as crud_visualization
 import db.crud_case as crud_case
 
@@ -7,7 +10,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from db.connection import get_session
-from models.visualization import VisualizationBase, VisualizationDict
+from models.visualization import VisualizationDict
 from middleware import verify_case_editor, verify_case_viewer
 
 security = HTTPBearer()
@@ -21,17 +24,28 @@ visualization_route = APIRouter()
     name="visualization:create_or_update",
     tags=["Visualization"],
 )
-def create_visualization(
+async def create_visualization(
     req: Request,
-    payload: List[VisualizationBase],
     updated: Optional[bool] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    case_id = payload[0].case
+    # Read raw compressed body
+    compressed_data = await req.body()
+
+    # Decompress if it's gzip
+    try:
+        decompressed_data = gzip.decompress(compressed_data).decode("utf-8")
+        payload = json.loads(decompressed_data)
+    except OSError:
+        return {"error": "Invalid gzip format"}
+
+    case_id = payload[0].get("case")
     user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
+
+    # Process CRUD operations
     data = crud_visualization.create_or_update_visualization(
         session=session, payloads=payload
     )

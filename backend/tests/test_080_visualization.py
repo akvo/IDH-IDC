@@ -1,4 +1,7 @@
 import sys
+import gzip
+import json
+
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
@@ -27,11 +30,17 @@ class TestVisualizationRoute:
                 },
             }
         ]
-        # with admin user cred
+        # Compress payload using gzip
+        compressed_payload = gzip.compress(json.dumps(payload).encode("utf-8"))
+
         res = await client.post(
             app.url_path_for("visualization:create_or_update"),
-            headers={"Authorization": f"Bearer {admin_account.token}"},
-            json=payload,
+            headers={
+                "Authorization": f"Bearer {admin_account.token}",
+                "Content-Encoding": "gzip",
+                "Accept-Encoding": "gzip",
+            },
+            content=compressed_payload,
         )
         assert res.status_code == 200
         res = res.json()
@@ -57,11 +66,17 @@ class TestVisualizationRoute:
                 },
             }
         ]
-        # with admin user cred
+        # Compress payload using gzip
+        compressed_payload = gzip.compress(json.dumps(payload).encode("utf-8"))
+
         res = await client.post(
             app.url_path_for("visualization:create_or_update"),
-            headers={"Authorization": f"Bearer {admin_account.token}"},
-            json=payload,
+            headers={
+                "Authorization": f"Bearer {admin_account.token}",
+                "Content-Encoding": "gzip",
+                "Accept-Encoding": "gzip",
+            },
+            content=compressed_payload,
         )
         assert res.status_code == 200
         res = res.json()
@@ -89,12 +104,17 @@ class TestVisualizationRoute:
                 },
             }
         ]
-        # with admin user cred
+        # Compress payload using gzip
+        compressed_payload = gzip.compress(json.dumps(payload).encode("utf-8"))
+
         res = await client.post(
             app.url_path_for("visualization:create_or_update"),
-            params={"update": True},
-            headers={"Authorization": f"Bearer {admin_account.token}"},
-            json=payload,
+            headers={
+                "Authorization": f"Bearer {admin_account.token}",
+                "Content-Encoding": "gzip",
+                "Accept-Encoding": "gzip",
+            },
+            content=compressed_payload,
         )
         assert res.status_code == 200
         res = res.json()
