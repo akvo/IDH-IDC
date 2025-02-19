@@ -30,19 +30,26 @@ const generateDriverOptions = ({ group, questions }) => {
   }));
 };
 
-const Question = ({ index, segment, percentage }) => {
+const Question = ({
+  index,
+  segment,
+  percentage,
+  currentScenarioData,
+  initialValues,
+}) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [newValue, setNewValue] = useState(null);
   const scenarioModelingForm = Form.useFormInstance();
 
-  const fieldName = `${segment.id}-${index}`;
+  const fieldName = `${currentScenarioData.key}-${segment.id}-${index}`;
 
   useEffect(() => {
-    const initialValues = scenarioModelingForm.getFieldsValue();
+    // load initial value manually
     const driverSelectField = `driver-${fieldName}`;
     Object.entries(initialValues).forEach(([key, value]) => {
+      scenarioModelingForm.setFieldValue(key, value);
       if (key === driverSelectField) {
         setSelectedDriver(value);
       }
@@ -76,10 +83,10 @@ const Question = ({ index, segment, percentage }) => {
   const currentIncrease = useMemo(() => {
     let newFormValue = newValue || 0;
     if (percentage) {
-      const percentageField = `percentage-${segment.id}-${index}`;
+      const percentageField = `percentage-${fieldName}`;
       newFormValue = scenarioModelingForm.getFieldValue(percentageField);
     } else {
-      const absoluteField = `absolute-${segment.id}-${index}`;
+      const absoluteField = `absolute-${fieldName}`;
       newFormValue = scenarioModelingForm.getFieldValue(absoluteField);
     }
     if (percentage) {
@@ -90,14 +97,7 @@ const Question = ({ index, segment, percentage }) => {
       ? ((newFormValue - currentValue) / currentValue) * 100
       : 0;
     return isNaN(percent) ? 0 : percent.toFixed(2);
-  }, [
-    percentage,
-    currentValue,
-    segment?.id,
-    index,
-    newValue,
-    scenarioModelingForm,
-  ]);
+  }, [percentage, currentValue, newValue, scenarioModelingForm, fieldName]);
 
   return (
     <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
@@ -253,17 +253,18 @@ const ScenarioModelingIncomeDriversAndChart = ({
     // eol generate questions
 
     const valueKey = Object.keys(changedValue)[0];
-    const [valueField, segmentId, index] = valueKey.split("-");
+    const [valueField, scenarioKey, segmentId, index] = valueKey.split("-");
 
-    const absoluteField = `absolute-${segmentId}-${index}`;
-    const percentageField = `percentage-${segmentId}-${index}`;
+    const variableFieldName = `${scenarioKey}-${segmentId}-${index}`;
+    const absoluteField = `absolute-${variableFieldName}`;
+    const percentageField = `percentage-${variableFieldName}`;
 
     let newFeasibleValue = 0;
     const newValue = changedValue[valueKey];
 
     const driverDropdownKey = Object.keys(allNewValues).find(
       (key) =>
-        key === `driver-${segmentId}-${index}` &&
+        key === `driver-${variableFieldName}` &&
         (allNewValues?.[key] || allNewValues?.[key] === 0)
     );
     const driverDropdownValue = allNewValues[driverDropdownKey];
@@ -639,10 +640,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
           <Col span={24}>
             <Form
               layout="vertical"
-              name={`scenario-modeling-income-driver-form-${segment.id}`}
+              name={`scenario-modeling-income-driver-form-${currentScenarioData.key}-${segment.id}`}
               form={scenarioDriversForm}
               onValuesChange={onScenarioModelingIncomeDriverFormValuesChange}
-              initialValues={initialScenarioModelingIncomeDriverValues}
+              // initialValues={initialScenarioModelingIncomeDriverValues}
             >
               <Row gutter={[5, 5]} align="middle">
                 <Col span={8}>Income Driver</Col>
@@ -662,6 +663,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
                   index={index}
                   segment={segment}
                   percentage={currentScenarioData.percentage}
+                  currentScenarioData={currentScenarioData}
+                  initialValues={initialScenarioModelingIncomeDriverValues}
                 />
               ))}
             </Form>
