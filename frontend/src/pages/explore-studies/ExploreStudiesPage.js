@@ -605,6 +605,7 @@ const ExploreStudiesPage = () => {
                     seriesName: "Case count by country",
                     min: min(mapData.map((d) => d.value)),
                     max: max(mapData.map((d) => d.value)),
+                    visualMapText: ["Number of studies", ""],
                   }}
                 />
               </Card>
