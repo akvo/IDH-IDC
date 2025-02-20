@@ -226,12 +226,23 @@ const ExploreStudiesPage = () => {
   );
 
   useMemo(() => {
-    if (countryId && commodityId && driverId) {
-      setFilterInitialValues({
+    if (countryId) {
+      setFilterInitialValues((prev) => ({
+        ...prev,
         country: parseInt(countryId),
+      }));
+    }
+    if (commodityId) {
+      setFilterInitialValues((prev) => ({
+        ...prev,
         commodity: parseInt(commodityId),
+      }));
+    }
+    if (driverId) {
+      setFilterInitialValues((prev) => ({
+        ...prev,
         driver: driverId,
-      });
+      }));
     }
   }, [countryId, commodityId, driverId]);
 
@@ -509,14 +520,17 @@ const ExploreStudiesPage = () => {
 
   const handleClearFilter = () => {
     setCurrentPage(1);
-    form.resetFields();
+    form.setFieldsValue({});
+    setFilterInitialValues({});
     if (countryId && commodityId && driverId) {
-      setFilterInitialValues({});
       navigate("/explore-studies");
     } else {
       fetchReferenceData();
       fetchMapData();
     }
+    setTimeout(() => {
+      form.resetFields();
+    }, 100);
   };
 
   const onSave = ({ payload, setConfirmLoading, resetFields }) => {
@@ -546,6 +560,23 @@ const ExploreStudiesPage = () => {
           setConfirmLoading(false);
         }, 500);
       });
+  };
+
+  const onClickMap = ({ name: selectedCountry, value }) => {
+    if (isNaN(value)) {
+      return;
+    }
+    const findMapData = mapData.find(
+      (d) => d.name.toLowerCase() === selectedCountry.toLowerCase()
+    );
+    if (findMapData?.country_id) {
+      const countryId = parseInt(findMapData?.country_id);
+      form.setFieldsValue({ ...filterInitialValues, country: countryId });
+      setFilterInitialValues((prev) => ({
+        ...prev,
+        country: countryId,
+      }));
+    }
   };
 
   return (
@@ -606,6 +637,9 @@ const ExploreStudiesPage = () => {
                     min: min(mapData.map((d) => d.value)),
                     max: max(mapData.map((d) => d.value)),
                     visualMapText: ["Number of studies", ""],
+                  }}
+                  callbacks={{
+                    onClick: onClickMap,
                   }}
                 />
               </Card>
