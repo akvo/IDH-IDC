@@ -253,8 +253,10 @@ const Welcome = () => {
             Welcome to the income driver calculator
           </div>
           <div className="welcome-subtitle">
-            Enter in this creative world. Discover now the latest NFTs or start
-            creating your own!
+            IDH is working to secure better income for smallholder farmers in
+            several sectors and landscapes. Start analysing data, uncover trends
+            in household income and explore pathways to bridge the living income
+            gap.
           </div>
         </Card>
         <Row
@@ -267,17 +269,16 @@ const Welcome = () => {
             <Card className="floating-card-item case-card-wrapper">
               <Row gutter={[12, 12]}>
                 <Col span={24} className="title">
-                  Cases
+                  Case Overview
                 </Col>
                 <Col span={24} className="description">
-                  Calculates actual household income and feasible changes in
-                  income by using input data on the 5 key drivers of household
-                  income.
+                  Create a case to go through the income driver assessment and
+                  discover how you can improve farmer income.
                 </Col>
                 <Col span={24} align="end">
                   <Link to="/cases">
                     <Button className="button-explore">
-                      Explore <ArrowRightOutlined />
+                      View cases <ArrowRightOutlined />
                     </Button>
                   </Link>
                 </Col>
@@ -288,11 +289,11 @@ const Welcome = () => {
             <Card className="floating-card-item explore-studies-card-wrapper">
               <Row gutter={[12, 12]}>
                 <Col span={24} className="title">
-                  Explore Studies for Insights
+                  Explore Studies
                 </Col>
                 <Col span={24} className="description">
-                  To make the data entry process more informed and efficient, we
-                  recommend visiting the &quot;Explore Studies&quot; section.
+                  Explore whether relevant data on the five income drivers is
+                  available for your specific context.
                 </Col>
                 <Col span={24} align="end">
                   <Link to="/explore-studies">
@@ -391,7 +392,7 @@ const Welcome = () => {
                     marginLeft: "14px",
                   }}
                 >
-                  Total Case: {total}
+                  Total number of cases: {total}
                 </div>
               ),
             }}
