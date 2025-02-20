@@ -17,6 +17,7 @@ import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
   SettingOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 import { CaseSettings } from "../components";
 import { stepPath, CaseUIState } from "../store";
@@ -127,6 +128,14 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                 trigger={null}
                 collapsed={siderCollapsed}
               >
+                <Button
+                  icon={
+                    siderCollapsed ? <MenuOutlined /> : <ArrowLeftOutlined />
+                  }
+                  onClick={() => setSiderCollapsed((prev) => !prev)}
+                  size="large"
+                  className="sider-collapsed-button"
+                />
                 <CaseSidebar
                   step={step}
                   caseId={caseId}
@@ -138,9 +147,11 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
           <Col span={layoutSize.right} className="case-content-container">
             <Content>
               <ContentLayout
-                siderCollapsedButton={true}
-                setSiderCollapsed={setSiderCollapsed}
-                siderCollapsed={siderCollapsed}
+                // enable sider collapsed
+                // siderCollapsedButton={true}
+                // setSiderCollapsed={setSiderCollapsed}
+                // siderCollapsed={siderCollapsed}
+                // EOL enable sider collapsed
                 breadcrumbItems={[
                   { title: "Home", href: "/welcome" },
                   { title: "Cases", href: "/cases" },
