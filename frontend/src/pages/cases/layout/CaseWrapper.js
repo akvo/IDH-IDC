@@ -17,6 +17,7 @@ import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
   SettingOutlined,
+  MenuOutlined,
 } from "@ant-design/icons";
 import { CaseSettings } from "../components";
 import { stepPath, CaseUIState } from "../store";
@@ -93,9 +94,9 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   const layoutSize = useMemo(() => {
     if (!siderCollapsed) {
-      return { left: 4, right: 20 };
+      return { left: "20%", right: "80%" };
     }
-    return { left: 2, right: 22 };
+    return { left: "10%", right: "90%" };
   }, [siderCollapsed]);
 
   // Use refs to store the functions
@@ -116,7 +117,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     <Row id="case-detail" className="case-container">
       <Col span={24}>
         <Row>
-          <Col span={layoutSize.left}>
+          <Col flex={layoutSize.left}>
             <Affix offsetTop={80}>
               <Sider
                 className="case-sidebar-container"
@@ -127,6 +128,14 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                 trigger={null}
                 collapsed={siderCollapsed}
               >
+                <Button
+                  icon={
+                    siderCollapsed ? <MenuOutlined /> : <ArrowLeftOutlined />
+                  }
+                  onClick={() => setSiderCollapsed((prev) => !prev)}
+                  size="large"
+                  className="sider-collapsed-button"
+                />
                 <CaseSidebar
                   step={step}
                   caseId={caseId}
@@ -135,12 +144,14 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
               </Sider>
             </Affix>
           </Col>
-          <Col span={layoutSize.right} className="case-content-container">
+          <Col flex={layoutSize.right} className="case-content-container">
             <Content>
               <ContentLayout
-                siderCollapsedButton={true}
-                setSiderCollapsed={setSiderCollapsed}
-                siderCollapsed={siderCollapsed}
+                // enable sider collapsed
+                // siderCollapsedButton={true}
+                // setSiderCollapsed={setSiderCollapsed}
+                // siderCollapsed={siderCollapsed}
+                // EOL enable sider collapsed
                 breadcrumbItems={[
                   { title: "Home", href: "/welcome" },
                   { title: "Cases", href: "/cases" },
