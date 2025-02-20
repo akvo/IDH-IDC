@@ -94,9 +94,9 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   const layoutSize = useMemo(() => {
     if (!siderCollapsed) {
-      return { left: "20%", right: "80%" };
+      return { left: 4, right: 20 };
     }
-    return { left: "10%", right: "90%" };
+    return { left: 2, right: 22 };
   }, [siderCollapsed]);
 
   // Use refs to store the functions
@@ -117,7 +117,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     <Row id="case-detail" className="case-container">
       <Col span={24}>
         <Row>
-          <Col flex={layoutSize.left}>
+          <Col span={layoutSize.left}>
             <Affix offsetTop={80}>
               <Sider
                 className="case-sidebar-container"
@@ -144,7 +144,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
               </Sider>
             </Affix>
           </Col>
-          <Col flex={layoutSize.right} className="case-content-container">
+          <Col span={layoutSize.right} className="case-content-container">
             <Content>
               <ContentLayout
                 // enable sider collapsed
