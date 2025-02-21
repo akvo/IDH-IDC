@@ -59,6 +59,7 @@ const defaultCurrentCaseState = {
   created_at: null,
   updated_by: null,
   updated_at: null,
+  status: null,
 };
 
 const CurrentCaseState = new Store(defaultCurrentCaseState);

@@ -190,6 +190,31 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     }
   };
 
+  const handleOnClickComplete = () => {
+    api
+      .put(`case/update-status/${currentCase.id}?status=1`)
+      .then(() => {
+        CurrentCaseState.update((s) => ({
+          ...s,
+          status: 1,
+        }));
+        messageApi.open({
+          type: "success",
+          content: `Case ${currentCase.name} mark as completed.`,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        // const { status, data } = e.response;
+        const errorText = "Failed to mark this case as completed.";
+        messageApi.open({
+          type: "error",
+          content: errorText,
+        });
+      })
+      .finally(() => {});
+  };
+
   const scenarioTabItems = useMemo(() => {
     return scenarioModeling?.config?.scenarioData?.map((item) => ({
       label: item.name,
@@ -304,7 +329,11 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
             </div>
           </div>
           <div className="button-wrapper">
-            <Button className="button-complete" size="large">
+            <Button
+              className="button-complete"
+              size="large"
+              onClick={handleOnClickComplete}
+            >
               Mark as complete
             </Button>
           </div>
