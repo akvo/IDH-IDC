@@ -10,3 +10,4 @@ export { default as SegmentSelector } from "./SegmentSelector";
 export { default as IncomeDriversDropdown } from "./IncomeDriversDropdown";
 export { default as BinningDriverForm } from "./BinningDriverForm";
 export { default as ScenarioModelingForm } from "./ScenarioModelingForm";
+export { default as AllDriverTreeSelector } from "./AllDriverTreeSelector";

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Row, Col, Form, InputNumber, TreeSelect } from "antd";
+import { Row, Col, Form, InputNumber } from "antd";
 import { CaseUIState, CaseVisualState, CurrentCaseState } from "../store";
 import {
   InputNumberThousandFormatter,
@@ -10,6 +10,7 @@ import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { customFormula } from "../../../lib/formula";
 import { ChartSegmentsIncomeGapScenarioModeling } from "../visualizations";
+import AllDriverTreeSelector from "./AllDriverTreeSelector";
 
 const MAX_VARIABLES = [0, 1, 2, 3, 4];
 
@@ -21,15 +22,6 @@ const commodityNames = masterCommodityCategories.reduce((acc, curr) => {
   return { ...acc, ...commodities };
 }, {});
 
-const generateDriverOptions = ({ group, questions }) => {
-  return questions.map((q) => ({
-    value: `${group.id}-${q.id}`, // commodityID - questionID
-    label: q.text,
-    selectable: q.question_type === "aggregator" ? false : true,
-    children: generateDriverOptions({ group, questions: q.childrens }),
-  }));
-};
-
 const Question = ({
   index,
   segment,
@@ -38,7 +30,6 @@ const Question = ({
   initialValues,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
-  const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [newValue, setNewValue] = useState(null);
   const scenarioModelingForm = Form.useFormInstance();
@@ -55,23 +46,6 @@ const Question = ({
       }
     });
   });
-
-  const incomeDriverOptions = useMemo(() => {
-    return incomeDataDrivers.map((driver) => ({
-      value: driver.groupName,
-      title: driver.groupName,
-      selectable: false,
-      children: driver.questionGroups.map((qg) => ({
-        value: qg.id,
-        label: qg.commodity_name,
-        selectable: false,
-        children: generateDriverOptions({
-          group: qg,
-          questions: qg.questions,
-        }),
-      })),
-    }));
-  }, [incomeDataDrivers]);
 
   const currentValue = useMemo(() => {
     if (selectedDriver) {
@@ -103,16 +77,8 @@ const Question = ({
     <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
       <Col span={8}>
         <Form.Item className="scenario-field-item" name={`driver-${fieldName}`}>
-          <TreeSelect
-            showSearch
-            allowClear
-            style={{ width: "100%" }}
-            dropdownStyle={{ maxHeight: 400, overflow: "auto", width: "400px" }}
-            placeholder="Select driver"
+          <AllDriverTreeSelector
             onChange={(value) => setSelectedDriver(value)}
-            treeData={incomeDriverOptions}
-            disabled={!enableEditCase}
-            treeNodeFilterProp="label"
           />
         </Form.Item>
       </Col>
