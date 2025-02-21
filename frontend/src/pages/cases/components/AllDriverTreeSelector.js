@@ -15,6 +15,7 @@ const AllDriverTreeSelector = ({
   onChange,
   value = null,
   multiple = false,
+  dropdownStyle = {},
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
@@ -41,7 +42,11 @@ const AllDriverTreeSelector = ({
       showSearch
       allowClear
       style={{ width: "100%" }}
-      dropdownStyle={{ maxHeight: 400, overflow: "auto", width: "400px" }}
+      dropdownStyle={{
+        maxHeight: 400,
+        overflow: "auto",
+        ...dropdownStyle,
+      }}
       placeholder="Select driver"
       onChange={(value) => {
         if (onChange) {

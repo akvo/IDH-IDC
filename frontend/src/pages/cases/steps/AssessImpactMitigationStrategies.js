@@ -32,10 +32,14 @@ import {
   ChartBinningDriversSensitivityAnalysis,
   ChartBinningHeatmapSensitivityAnalysis,
 } from "../visualizations";
-import { BinningDriverForm, SegmentSelector } from "../components";
+import {
+  BinningDriverForm,
+  SegmentSelector,
+  AllDriverTreeSelector,
+} from "../components";
 import { map, groupBy, isEqual, isEmpty } from "lodash";
 import { commodities } from "../../../store/static";
-import { selectProps, api } from "../../../lib";
+import { api } from "../../../lib";
 import {
   removeUndefinedObjectValue,
   InputNumberThousandFormatter,
@@ -570,11 +574,7 @@ const AssessImpactMitigationStrategies = ({
                   Select the (sub)drivers that you want to include in further
                   analysis:
                 </div>
-                <Select
-                  {...selectProps}
-                  options={[]}
-                  placeholder="Select driver"
-                />
+                <AllDriverTreeSelector />
               </Space>
             </Col>
             <Col span={12}>

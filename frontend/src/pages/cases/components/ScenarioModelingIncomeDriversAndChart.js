@@ -81,6 +81,9 @@ const Question = ({
           <AllDriverTreeSelector
             onChange={(value) => setSelectedDriver(value)}
             value={selectedDriver}
+            dropdownStyle={{
+              width: "400px",
+            }}
           />
         </Form.Item>
       </Col>
