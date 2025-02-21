@@ -615,4 +615,54 @@
       margin-bottom: 0;
     }
   }
+
+  .complete-button-wrapper {
+    border-radius: 20px;
+    background: #abefc6;
+    border: none;
+
+    .ant-card-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-wrapper {
+      flex: 1;
+
+      .title {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px;
+      }
+
+      .description {
+        color: #01625f;
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 157.15%;
+      }
+    }
+
+    .button-wrapper {
+      .button-complete {
+        border-radius: 40px;
+        border: 1px solid #01625f;
+        background: #01625f;
+
+        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+        color: #fff;
+        font-family: "RocGrotesk";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+      }
+    }
+  }
 }

@@ -290,6 +290,27 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
         <TableScenarioOutcomes />
       </Col>
       {/* EOL Section 3 */}
+
+      {/* Complete Button */}
+      <Col span={24}>
+        <Card className="complete-button-wrapper">
+          <div className="text-wrapper">
+            <div className="title">
+              You’ve reached the final step of the Income Driver Calculator
+            </div>
+            <div className="description">
+              Would you like to mark this case as complete? Doing so allows
+              others to review your analysis and access the results.
+            </div>
+          </div>
+          <div className="button-wrapper">
+            <Button className="button-complete" size="large">
+              Mark as complete
+            </Button>
+          </div>
+        </Card>
+      </Col>
+      {/* EOL Complete Button */}
     </Row>
   );
 };
