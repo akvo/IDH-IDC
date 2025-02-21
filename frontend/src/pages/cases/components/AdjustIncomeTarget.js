@@ -118,7 +118,6 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
     }));
     setShowAdjustIncomeModal(false);
   };
-  console.log(sensitivityAnalysis);
 
   const onChangePercentage = (value) => {
     if (value === "percentage") {
@@ -187,7 +186,12 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
                   ] || false
                 }
               />
-              <div className="label">Stay within feasible ranges?</div>
+              <div
+                className="label"
+                style={{ lineHeight: 0, paddingTop: "7px" }}
+              >
+                Stay within feasible ranges?
+              </div>
             </Space>
           </Col>
         </Row>
