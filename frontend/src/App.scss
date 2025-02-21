@@ -476,3 +476,10 @@
   border-radius: 20px;
   z-index: 1;
 }
+
+// general modal button border-radius
+.ant-modal {
+  .ant-btn {
+    border-radius: 24px;
+  }
+}
