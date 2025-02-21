@@ -163,7 +163,7 @@ const BarStack = ({
     grid: {
       top: 25,
       bottom: grid?.bottom ? grid.bottom : 28,
-      left: 45,
+      left: grid?.left ? grid.left : 45,
       right: grid?.right ? grid.right : 150,
       show: true,
       containLabel: true,

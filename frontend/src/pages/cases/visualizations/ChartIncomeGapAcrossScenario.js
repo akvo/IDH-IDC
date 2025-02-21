@@ -6,6 +6,8 @@ import { CaseVisualState, CurrentCaseState } from "../store";
 import { orderBy } from "lodash";
 import Chart from "../../../components/chart";
 
+const MAX_SCENARIO_SEGMENT = 6;
+
 const generateTargetChartData = (data) => {
   const target = [
     {
@@ -74,7 +76,7 @@ const generateChartData = (data, current = false) => {
   });
 };
 
-const ChartIncomeGapAcrossScenario = () => {
+const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { scenarioModeling } = CaseVisualState.useState((s) => s);
   const scenarioData = scenarioModeling.config.scenarioData;
@@ -105,6 +107,7 @@ const ChartIncomeGapAcrossScenario = () => {
     const scenarioValues = scenarioData
       .flatMap((sd) => {
         return sd.scenarioValues.map((sv) => ({
+          scenarioKey: sd.key,
           scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
           scenarioName: sd.name,
           ...sv,
@@ -114,10 +117,10 @@ const ChartIncomeGapAcrossScenario = () => {
         if (selectedScenarioSegmentChart.length) {
           return selectedScenarioSegmentChart.includes(sv.scenarioSegmentKey);
         }
-        return sv;
+        return sv.scenarioKey === activeScenario;
       });
     return generateChartData(scenarioValues);
-  }, [scenarioData, selectedScenarioSegmentChart]);
+  }, [scenarioData, selectedScenarioSegmentChart, activeScenario]);
 
   const targetChartData = useMemo(
     () => generateTargetChartData(chartData),
@@ -165,7 +168,18 @@ const ChartIncomeGapAcrossScenario = () => {
             <div>
               <Select
                 {...selectProps}
-                options={scenarioSegmentOptions}
+                options={scenarioSegmentOptions.map((so) => {
+                  let disabled = false;
+                  if (
+                    selectedScenarioSegmentChart.length >= MAX_SCENARIO_SEGMENT
+                  ) {
+                    disabled = !selectedScenarioSegmentChart.includes(so.value);
+                  }
+                  return {
+                    ...so,
+                    disabled,
+                  };
+                })}
                 placeholder="Select Scenario - Segment"
                 mode="multiple"
                 onChange={setSelectedScenarioSegmentChart}

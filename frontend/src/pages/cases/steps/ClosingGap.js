@@ -289,7 +289,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
       </Col>
 
       <Col span={24}>
-        <ChartIncomeGapAcrossScenario />
+        <ChartIncomeGapAcrossScenario activeScenario={activeScenario} />
       </Col>
       {/* EOL Section 2 */}
 

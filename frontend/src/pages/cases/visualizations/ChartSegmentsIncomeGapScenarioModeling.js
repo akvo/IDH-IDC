@@ -103,7 +103,7 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
         targetData={targetChartData}
         loading={!chartData.length}
         extra={{ axisTitle: { y: `Income ${currentCase?.currency || ""}` } }}
-        grid={{ right: 161 }}
+        grid={{ right: 150, left: 25 }}
         showLabel={showLabel}
         height={385}
       />
