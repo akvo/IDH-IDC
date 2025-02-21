@@ -110,13 +110,15 @@ const ContentLayout = ({
               ""
             )}
           </Space>
+
+          {/* Page title */}
           <Row
             gutter={[12, 12]}
             align="middle"
             justify="start"
             className="title-wrapper"
           >
-            <Col span={titleRighContent ? 8 : 24}>
+            <Col flex={1}>
               {title ? (
                 <div data-testid="title" className="title">
                   {title}
@@ -133,15 +135,13 @@ const ContentLayout = ({
               )}
             </Col>
             {titleRighContent && (
-              <Col span={16}>
-                <Row>
-                  <Col span={24} align="end">
-                    {titleRighContent}
-                  </Col>
-                </Row>
+              <Col flex="auto" align="end">
+                {titleRighContent}
               </Col>
             )}
           </Row>
+          {/* EOL Page title */}
+
           {adminRole.includes(userRole) &&
           currentPath.includes("/admin/") &&
           showTabItemsForPath.includes(window.location.pathname) ? (
