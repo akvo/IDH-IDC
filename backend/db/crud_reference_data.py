@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc, func
 from typing import Optional, List
 from typing_extensions import TypedDict
@@ -29,14 +29,19 @@ def get_all_reference(
     skip: int = 0,
     limit: int = 10,
 ) -> List[ReferenceDataList]:
-    data = session.query(ReferenceData)
+    data = (
+        session.query(ReferenceData)
+        .join(Country)
+        .options(joinedload(ReferenceData.country_detail))
+    )
+
     if country:
         data = data.filter(ReferenceData.country == country)
     if commodity:
         data = data.filter(ReferenceData.commodity == commodity)
     if source:
         data = data.filter(
-            ReferenceData.source.ilike("%{}%".format(source.lower().strip()))
+            ReferenceData.source.ilike(f"%{source.lower().strip()}%")
         )
     if driver == Driver.area:
         data = data.filter(ReferenceData.area.is_not(None))
@@ -48,10 +53,16 @@ def get_all_reference(
         data = data.filter(ReferenceData.cost_of_production.is_not(None))
     if driver == Driver.diversified_income:
         data = data.filter(ReferenceData.diversified_income.is_not(None))
+
     count = data.count()
+
     data = (
-        data.order_by(ReferenceData.id.desc()).offset(skip).limit(limit).all()
+        data.order_by(Country.name.asc(), ReferenceData.id.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
     )
+
     return PaginatedReferenceData(count=count, data=data)
 
 

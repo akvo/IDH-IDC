@@ -564,6 +564,8 @@ const ExploreStudiesPage = () => {
 
   const onClickMap = ({ name: selectedCountry, value }) => {
     if (isNaN(value)) {
+      // Show now data not available
+      setData(defData);
       return;
     }
     const findMapData = mapData.find(
