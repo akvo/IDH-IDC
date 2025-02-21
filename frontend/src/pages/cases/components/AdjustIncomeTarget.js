@@ -130,7 +130,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
   return (
     <div>
       <Card className="card-section-wrapper adjust-income-target-wrapper">
-        <Row gutter={[20, 20]} align="middle">
+        <Row gutter={[20, 12]} align="middle">
           <Col span={24}>
             <div className="title">When do we reach the target?</div>
           </Col>
@@ -188,7 +188,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
               />
               <div
                 className="label"
-                style={{ lineHeight: 0, paddingTop: "7px" }}
+                style={{ lineHeight: 0, paddingTop: "5px" }}
               >
                 Stay within feasible ranges?
               </div>
