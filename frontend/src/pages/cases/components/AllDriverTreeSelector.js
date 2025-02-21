@@ -11,7 +11,11 @@ const generateDriverOptions = ({ group, questions }) => {
   }));
 };
 
-const AllDriverTreeSelector = ({ onChange, multiple = false }) => {
+const AllDriverTreeSelector = ({
+  onChange,
+  value = null,
+  multiple = false,
+}) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
 
@@ -48,6 +52,7 @@ const AllDriverTreeSelector = ({ onChange, multiple = false }) => {
       disabled={!enableEditCase}
       treeNodeFilterProp="label"
       multiple={multiple}
+      value={value}
     />
   );
 };

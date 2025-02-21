@@ -40,9 +40,10 @@ const Question = ({
     // load initial value manually
     const driverSelectField = `driver-${fieldName}`;
     Object.entries(initialValues).forEach(([key, value]) => {
-      scenarioModelingForm.setFieldValue(key, value);
       if (key === driverSelectField) {
         setSelectedDriver(value);
+      } else {
+        scenarioModelingForm.setFieldValue(key, value);
       }
     });
   });
@@ -79,6 +80,7 @@ const Question = ({
         <Form.Item className="scenario-field-item" name={`driver-${fieldName}`}>
           <AllDriverTreeSelector
             onChange={(value) => setSelectedDriver(value)}
+            value={selectedDriver}
           />
         </Form.Item>
       </Col>
