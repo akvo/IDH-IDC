@@ -159,6 +159,7 @@ const AssessImpactMitigationStrategies = ({
     const focusCommodity = currentCase?.case_commodities?.find(
       (cm) => cm.commodity_type === "focus"
     );
+    const currencyUnit = currentCase?.currency || "";
     const segmentData = dashboardData.find(
       (segment) => segment.id === selectedSegment
     );
@@ -171,13 +172,16 @@ const AssessImpactMitigationStrategies = ({
       const unitName = currentQuestion.unit
         .split("/")
         .map((u) => u.trim())
-        .map((u) =>
-          u === "crop"
+        .map((u) => {
+          if (u === "currency") {
+            return currencyUnit;
+          }
+          return u === "crop"
             ? commodities
                 .find((c) => c.id === focusCommodity?.commodity)
                 ?.name?.toLowerCase() || ""
-            : focusCommodity?.[u]
-        )
+            : focusCommodity?.[u];
+        })
         .join(" / ");
       return {
         key: parseInt(i) - 1,
@@ -187,7 +191,6 @@ const AssessImpactMitigationStrategies = ({
         unitName: unitName,
       };
     });
-    const currencyUnit = focusCommodity["currency"];
     return [
       ...data,
       {
@@ -221,7 +224,12 @@ const AssessImpactMitigationStrategies = ({
         },
       },
     ];
-  }, [selectedSegment, dashboardData, currentCase?.case_commodities]);
+  }, [
+    selectedSegment,
+    dashboardData,
+    currentCase?.case_commodities,
+    currentCase?.currency,
+  ]);
 
   const binningValues = useMemo(() => {
     const allBining = Object.keys(sensitivityAnalysis.config);
