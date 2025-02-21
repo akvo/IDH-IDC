@@ -57,7 +57,7 @@ const AllDriverTreeSelector = ({
       disabled={!enableEditCase}
       treeNodeFilterProp="label"
       multiple={multiple}
-      value={value}
+      value={value || []}
     />
   );
 };
