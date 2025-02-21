@@ -10,6 +10,10 @@ import { thousandFormatter } from "../../../components/chart/options/common";
 
 const outcomeIndicator = [
   {
+    key: "number_of_farmers",
+    name: "How many farmers are in this segment?",
+  },
+  {
     key: "income_driver",
     name: "What income drivers have changed?",
   },
@@ -28,6 +32,10 @@ const outcomeIndicator = [
   {
     key: "income_increase_percentage",
     name: "What is the % income increase?",
+  },
+  {
+    key: "monetary_value_income_gap",
+    name: "What is the monetary value of the income gap?",
   },
 ];
 
@@ -92,6 +100,26 @@ const TableScenarioOutcomes = ({
     const allScenarioOutcomes = dashboardData.map((currentDashboardData) => {
       const data = outcomeIndicator.map((ind) => {
         let res = { id: ind.key, title: ind.name };
+        if (ind.key === "number_of_farmers") {
+          res = {
+            ...res,
+            current: currentDashboardData?.number_of_farmers || "-",
+          };
+          scenarioData.forEach((sd) => {
+            const scenarioKey = `scenario-${sd.key}`;
+            const scenarioSegment =
+              sd.scenarioValues.find(
+                (sv) => sv.segmentId === currentDashboardData.id
+              ) || {};
+            const numberOfFarmers =
+              scenarioSegment?.updatedSegmentScenarioValue?.number_of_farmers;
+            res = {
+              ...res,
+              [scenarioKey]: numberOfFarmers,
+            };
+          });
+        }
+
         if (ind.key === "income_driver") {
           res = {
             ...res,
@@ -211,7 +239,8 @@ const TableScenarioOutcomes = ({
             currentDashboardData.total_current_income;
           res = {
             ...res,
-            current: currentGap <= 0 ? "-" : currentGap?.toFixed(2),
+            current:
+              currentGap <= 0 ? "-" : thousandFormatter(currentGap?.toFixed(2)),
           };
           scenarioData.forEach((sd) => {
             const scenarioKey = `scenario-${sd.key}`;
@@ -295,6 +324,33 @@ const TableScenarioOutcomes = ({
             };
           });
         }
+
+        if (ind.key === "monetary_value_income_gap") {
+          res = {
+            ...res,
+            current: currentDashboardData?.total_current_income
+              ? thousandFormatter(currentDashboardData?.total_current_income)
+              : "-",
+          };
+          scenarioData.forEach((sd) => {
+            const scenarioKey = `scenario-${sd.key}`;
+            const scenarioSegment =
+              sd.scenarioValues.find(
+                (sv) => sv.segmentId === currentDashboardData.id
+              ) || {};
+            const monetary =
+              scenarioSegment?.updatedSegmentScenarioValue
+                ?.total_current_income || 0;
+            res = {
+              ...res,
+              [scenarioKey]:
+                parseInt(monetary) === 0
+                  ? "-"
+                  : thousandFormatter(monetary?.toFixed(2)),
+            };
+          });
+        }
+
         return res;
       });
       return {
