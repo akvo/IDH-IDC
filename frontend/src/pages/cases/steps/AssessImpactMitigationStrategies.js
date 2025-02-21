@@ -74,7 +74,10 @@ const AssessImpactMitigationStrategies = ({
     if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
       // Save
       api
-        .post(`visualization?updated=${isBinningDataUpdated}`, payloads)
+        .sendCompressedData(
+          `visualization?updated=${isBinningDataUpdated}`,
+          payloads
+        )
         .then(() => {
           CaseVisualState.update((s) => ({
             ...s,
