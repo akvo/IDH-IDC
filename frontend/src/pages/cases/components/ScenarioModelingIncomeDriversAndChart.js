@@ -76,7 +76,7 @@ const Question = ({
 
   return (
     <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
-      <Col span={8}>
+      <Col span={11}>
         <Form.Item className="scenario-field-item" name={`driver-${fieldName}`}>
           <AllDriverTreeSelector
             onChange={(value) => setSelectedDriver(value)}
@@ -87,7 +87,7 @@ const Question = ({
           />
         </Form.Item>
       </Col>
-      <Col span={6}>
+      <Col span={5}>
         {["absolute", "percentage"].map((qtype) => (
           <Form.Item
             key={`${qtype}-${fieldName}`}
@@ -113,7 +113,7 @@ const Question = ({
           </Form.Item>
         ))}
       </Col>
-      <Col span={6} align="end">
+      <Col span={4} align="end">
         {thousandFormatter(currentValue, 2)}
       </Col>
       <Col span={4} align="end">
@@ -588,10 +588,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
   return (
     <Row
       align="middle"
-      gutter={[20, 20]}
+      gutter={[24, 24]}
       className="income-driver-form-container"
     >
-      <Col span={12}>
+      <Col span={10}>
         <Row
           gutter={[50, 50]}
           align="middle"
@@ -617,11 +617,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
               // initialValues={initialScenarioModelingIncomeDriverValues}
             >
               <Row gutter={[5, 5]} align="middle">
-                <Col span={8}>Income Driver</Col>
-                <Col span={6}>
+                <Col span={11}>Income Driver</Col>
+                <Col span={5}>
                   {currentScenarioData?.percentage ? "Change" : "New Value"}
                 </Col>
-                <Col span={6} align="end">
+                <Col span={4} align="end">
                   Current Value
                 </Col>
                 <Col span={4} align="end">
@@ -651,7 +651,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
           </Col>
         </Row>
       </Col>
-      <Col span={12}>
+      <Col span={14}>
         <ChartSegmentsIncomeGapScenarioModeling
           currentScenarioData={currentScenarioData}
         />
