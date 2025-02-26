@@ -240,112 +240,127 @@ const Welcome = () => {
   }, [isInternalUser, companyOptions]);
 
   return (
-    <Row id="welcome" align="middle" gutter={[20, 20]}>
-      {/* Header */}
-      <Col span={24} className="username-wrapper">
-        Hello, {username}!
-      </Col>
+    <Row id="welcome" align="middle">
+      <div className="welcome-with-padding">
+        {/* Header */}
+        <Col span={24} className="username-wrapper">
+          Hello, {username}!
+        </Col>
 
-      {/* Jumbotron */}
-      <Col span={24} className="jumbotron-card-wrapper">
-        <Card className="welcome-card-wrapper">
-          <div className="welcome-title">
-            Welcome to the income driver calculator
-          </div>
-          <div className="welcome-subtitle">
-            IDH is working to secure better income for smallholder farmers in
-            several sectors and landscapes. Start analysing data, uncover trends
-            in household income and explore pathways to bridge the living income
-            gap.
-          </div>
-        </Card>
-        <Row
-          align="middle"
-          justify="center"
-          gutter={[24, 24]}
-          className="floating-card-wrapper"
-        >
-          <Col span={7}>
-            <Card className="floating-card-item case-card-wrapper">
-              <Row gutter={[12, 12]}>
-                <Col span={24} className="title">
-                  Case Overview
-                </Col>
-                <Col span={24} className="description">
-                  Create a case to go through the income driver assessment and
-                  discover how you can improve farmer income.
-                </Col>
-                <Col span={24} align="end">
-                  <Link to="/cases">
-                    <Button className="button-explore">
-                      View cases <ArrowRightOutlined />
-                    </Button>
-                  </Link>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-          <Col span={7}>
-            <Card className="floating-card-item explore-studies-card-wrapper">
-              <Row gutter={[12, 12]}>
-                <Col span={24} className="title">
-                  Explore Studies
-                </Col>
-                <Col span={24} className="description">
-                  Explore whether relevant data on the five income drivers is
-                  available for your specific context.
-                </Col>
-                <Col span={24} align="end">
-                  <Link to="/explore-studies">
+        {/* Jumbotron */}
+        <Col span={24} className="jumbotron-card-wrapper">
+          <Card className="welcome-card-wrapper">
+            <div className="welcome-title">
+              Welcome to the income driver calculator
+            </div>
+            <div className="welcome-subtitle">
+              IDH is working to secure better income for smallholder farmers in
+              several sectors and landscapes. Start analysing data, uncover
+              trends in household income and explore pathways to bridge the
+              living income gap.
+            </div>
+          </Card>
+          <Row
+            align="middle"
+            justify="center"
+            gutter={[24, 24]}
+            className="floating-card-wrapper"
+          >
+            <Col span={7}>
+              <Card className="floating-card-item case-card-wrapper">
+                <Row gutter={[12, 12]}>
+                  <Col span={24} className="title">
+                    Case Overview
+                  </Col>
+                  <Col span={24} className="description">
+                    Create a case to go through the income driver assessment and
+                    discover how you can improve farmer income.
+                  </Col>
+                  <Col span={24} align="end">
+                    <Link to="/cases">
+                      <Button className="button-explore">
+                        View cases <ArrowRightOutlined />
+                      </Button>
+                    </Link>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+            <Col span={7}>
+              <Card className="floating-card-item explore-studies-card-wrapper">
+                <Row gutter={[12, 12]}>
+                  <Col span={24} className="title">
+                    Explore Studies
+                  </Col>
+                  <Col span={24} className="description">
+                    Explore whether relevant data on the five income drivers is
+                    available for your specific context.
+                  </Col>
+                  <Col span={24} align="end">
+                    <Link to="/explore-studies">
+                      <Button className="button-explore">
+                        Explore <ArrowRightOutlined />
+                      </Button>
+                    </Link>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+            <Col span={7}>
+              <Card className="floating-card-item lib-card-wrapper">
+                <Row gutter={[12, 12]}>
+                  <Col span={24} className="title">
+                    Living income benchmarks
+                  </Col>
+                  <Col span={24} className="description">
+                    To make the data entry process more informed and efficient,
+                    we recommend visiting the &quot;Explore Studies&quot;
+                    section.
+                  </Col>
+                  <Col span={24} align="end">
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
                     </Button>
-                  </Link>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-          <Col span={7}>
-            <Card className="floating-card-item lib-card-wrapper">
-              <Row gutter={[12, 12]}>
-                <Col span={24} className="title">
-                  Living income benchmarks
-                </Col>
-                <Col span={24} className="description">
-                  To make the data entry process more informed and efficient, we
-                  recommend visiting the &quot;Explore Studies&quot; section.
-                </Col>
-                <Col span={24} align="end">
-                  <Button className="button-explore">
-                    Explore <ArrowRightOutlined />
-                  </Button>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-        </Row>
-      </Col>
-      {/* EOL  Jumbotron */}
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+          </Row>
+        </Col>
+        {/* EOL  Jumbotron */}
+      </div>
 
       {/* Map */}
-      <Col span={24}>
+      <Col span={24} className="map-container">
         <Row gutter={[14, 14]}>
-          {isInternalUser ? (
-            <Col span={24}>
-              <Select
-                {...selectProps}
-                options={companyHavingCaseOptions.map((o) => ({
-                  ...o,
-                  label: `${o.label} (${o.case_count} ${
-                    o.case_count > 1 ? "cases" : "case"
-                  })`,
-                }))}
-                placeholder="Select company"
-                style={{ width: "24rem" }}
-                onChange={handleOnCompanyChange}
-              />
-            </Col>
-          ) : null}
+          <Col span={24} className="map-heading-wrapper">
+            <div>
+              <div className="label">
+                Explore cases on the map and gain quick insights
+              </div>
+              <div className="description">
+                Click on a country to view completed cases. Below the map,
+                you&apos;ll find a case overview for the selected country with
+                quick insights.
+              </div>
+            </div>
+            {isInternalUser ? (
+              <div>
+                <Select
+                  {...selectProps}
+                  options={companyHavingCaseOptions.map((o) => ({
+                    ...o,
+                    label: `${o.label} (${o.case_count} ${
+                      o.case_count > 1 ? "cases" : "case"
+                    })`,
+                  }))}
+                  placeholder="Select company"
+                  style={{ width: "24rem" }}
+                  onChange={handleOnCompanyChange}
+                />
+              </div>
+            ) : null}
+          </Col>
           <Col span={24}>
             <Card className="map-card-wrapper">
               <Chart
@@ -366,41 +381,40 @@ const Welcome = () => {
               />
             </Card>
           </Col>
+          {/* Table */}
+          <Col span={24} className="table-container">
+            {selectedCountryId ? (
+              <Table
+                rowKey="id"
+                className="table-content-wrapper"
+                columns={columns}
+                dataSource={tableData.data}
+                loading={tableLoading}
+                pagination={{
+                  current: currentPage,
+                  pageSize: perPage,
+                  total: tableData.total,
+                  onChange: (page) => setCurrentPage(page),
+                  showSizeChanger: false,
+                  showTotal: (total) => (
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        marginLeft: "14px",
+                      }}
+                    >
+                      Total number of cases: {total}
+                    </div>
+                  ),
+                }}
+              />
+            ) : null}
+          </Col>
+          {/* EOL Table */}
         </Row>
       </Col>
       {/* EOL Map */}
-
-      {/* Table */}
-      <Col span={24} id="table-container">
-        {selectedCountryId ? (
-          <Table
-            rowKey="id"
-            className="table-content-wrapper"
-            columns={columns}
-            dataSource={tableData.data}
-            loading={tableLoading}
-            pagination={{
-              current: currentPage,
-              pageSize: perPage,
-              total: tableData.total,
-              onChange: (page) => setCurrentPage(page),
-              showSizeChanger: false,
-              showTotal: (total) => (
-                <div
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    marginLeft: "14px",
-                  }}
-                >
-                  Total number of cases: {total}
-                </div>
-              ),
-            }}
-          />
-        ) : null}
-      </Col>
-      {/* EOL Table */}
 
       <ViewSummaryModal
         showSummaryModal={showSummaryModal}

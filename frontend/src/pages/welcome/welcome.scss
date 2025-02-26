@@ -1,7 +1,11 @@
 @import "../../variables.scss";
 
 #welcome {
-  padding: 24px $default-padding-size;
+  padding: 24px 0;
+
+  .welcome-with-padding {
+    padding: 0 $default-padding-size;
+  }
 
   .username-wrapper {
     color: #01625f;
@@ -111,6 +115,42 @@
         border-radius: 20px;
       }
     }
+  }
+
+  .map-container {
+    margin-top: 48px;
+    margin-bottom: -$default-padding-size;
+    padding: 32px $default-padding-size;
+    background: #dedede;
+    width: 100%;
+
+    .map-heading-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .label {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 20px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px;
+      }
+
+      .description {
+        color: #000;
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 157.15%;
+      }
+    }
+  }
+
+  .table-container {
+    padding-top: 24px;
   }
 }
 
