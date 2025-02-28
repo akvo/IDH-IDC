@@ -409,9 +409,13 @@
   }
 
   .adjust-income-target-wrapper {
+    background: #eaf2f2;
+    border: none;
+    color: #01625f;
+
     .title {
       font-family: "RocGrotesk";
-      font-size: 24px;
+      font-size: 22px;
       font-style: normal;
       font-weight: 700;
       line-height: 32px;
@@ -419,7 +423,7 @@
 
     .description {
       font-family: "TabletGothic";
-      font-size: 16px;
+      font-size: 15px;
       font-style: normal;
       font-weight: 400;
       line-height: 157.15%;
@@ -438,21 +442,16 @@
     }
 
     .button-ghost-white {
+      color: #01625f;
       border-radius: 40px;
-      border: 1px solid #fff;
+      border: 1px solid #01625f;
       background: transparent;
-      color: #fff;
       box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
       font-family: "RocGrotesk";
       font-size: 14px;
       font-style: normal;
       font-weight: 700;
       line-height: 20px;
-
-      &:hover {
-        border: 1px solid #48d985;
-        color: #48d985;
-      }
     }
 
     .ant-switch {

@@ -410,6 +410,12 @@ const AssessImpactMitigationStrategies = ({
             </Col>
             {/* EOL Binning Form */}
 
+            {/* Adjust Income Target */}
+            <Col span={24}>
+              <AdjustIncomeTarget selectedSegment={selectedSegment} />
+            </Col>
+            {/* EOL Adjust Income Target */}
+
             {/* Sensitivity Analysis Chart */}
             <Col span={24}>
               {dashboardData.map((segment) =>
@@ -443,9 +449,9 @@ const AssessImpactMitigationStrategies = ({
       {/* EOL Sensitivity Analysis */}
 
       {/* #3 Adjust Income Target */}
-      <Col span={24}>
+      {/* <Col span={24}>
         <AdjustIncomeTarget selectedSegment={selectedSegment} />
-      </Col>
+      </Col> */}
       {/* EOL Adjust Income Target */}
     </Row>
   );
