@@ -60,6 +60,12 @@ const BarStack = ({
   if (isEmpty(data) || !data) {
     return NoData;
   }
+  let customLegend = {};
+  if (extra?.legend) {
+    customLegend = extra.legend;
+    delete extra.legend;
+  }
+
   // Custom Axis Title
   const { xAxisTitle, yAxisTitle } = axisTitle(extra);
   const xAxisLabel = extra?.xAxisLabel || {};
@@ -159,9 +165,10 @@ const BarStack = ({
       top: 15,
       left: "right",
       orient: "vertical",
+      ...customLegend,
     },
     grid: {
-      top: 25,
+      top: grid?.top ? grid.top : 25,
       bottom: grid?.bottom ? grid.bottom : 28,
       left: grid?.left ? grid.left : 45,
       right: grid?.right ? grid.right : 150,

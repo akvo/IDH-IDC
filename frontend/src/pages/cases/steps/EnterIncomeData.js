@@ -173,8 +173,9 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   ]);
 
   const backFunction = useCallback(() => {
-    navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
-  }, [navigate, currentCase.id]);
+    navigate(-1);
+    // navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
+  }, [navigate]);
 
   const nextFunction = useCallback(() => {
     handleSaveIncomeData();

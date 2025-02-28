@@ -133,9 +133,11 @@ const TableScenarioOutcomes = ({
             const scenarioDriverValues = scenarioSegment?.selectedDrivers
               ?.map((driver) => {
                 // scenario field
-                const [, segmentId, index] = driver.field.split("-");
-                const absoluteField = `absolute-${segmentId}-${index}`;
-                const percentageField = `percentage-${segmentId}-${index}`;
+                const [, scenarioKey, segmentId, index] =
+                  driver.field.split("-");
+                const fieldKey = `${scenarioKey}-${segmentId}-${index}`;
+                const absoluteField = `absolute-${fieldKey}`;
+                const percentageField = `percentage-${fieldKey}`;
 
                 // question
                 const [, questionId] = driver.value.split(["-"]);
@@ -326,10 +328,15 @@ const TableScenarioOutcomes = ({
         }
 
         if (ind.key === "monetary_value_income_gap") {
+          const currentGap =
+            currentDashboardData.target -
+            currentDashboardData.total_current_income;
+          const numberOfFarmers = currentDashboardData?.number_of_farmers || 0;
+          const currentMonetary = currentGap * numberOfFarmers;
           res = {
             ...res,
-            current: currentDashboardData?.total_current_income
-              ? thousandFormatter(currentDashboardData?.total_current_income)
+            current: currentMonetary
+              ? thousandFormatter(currentMonetary?.toFixed(2))
               : "-",
           };
           scenarioData.forEach((sd) => {
@@ -338,15 +345,22 @@ const TableScenarioOutcomes = ({
               sd.scenarioValues.find(
                 (sv) => sv.segmentId === currentDashboardData.id
               ) || {};
-            const monetary =
-              scenarioSegment?.updatedSegmentScenarioValue
-                ?.total_current_income || 0;
+            const segmentValue = scenarioSegment?.updatedSegmentScenarioValue
+              ?.total_current_income
+              ? scenarioSegment?.updatedSegmentScenarioValue
+                  ?.total_current_income
+              : currentDashboardData.target;
+            const segmentGap = currentDashboardData.target - segmentValue;
+            const segmentNumberOfFarmers =
+              scenarioSegment?.updatedSegmentScenarioValue?.number_of_farmers ||
+              0;
+            const segmentMonetary = segmentGap * segmentNumberOfFarmers;
             res = {
               ...res,
               [scenarioKey]:
-                parseInt(monetary) === 0
+                segmentMonetary <= 0
                   ? "-"
-                  : thousandFormatter(monetary?.toFixed(2)),
+                  : thousandFormatter(segmentMonetary?.toFixed(2)),
             };
           });
         }

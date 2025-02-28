@@ -147,8 +147,13 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
               loading={!chartData.length}
               extra={{
                 axisTitle: { y: `Income ${currentCase?.currency || ""}` },
+                legend: {
+                  top: 0,
+                  left: "top",
+                  orient: "horizontal",
+                },
               }}
-              grid={{ right: 161 }}
+              grid={{ top: 60, right: 5, left: 35, bottom: 10 }}
               showLabel={showLabel}
               height={385}
             />
