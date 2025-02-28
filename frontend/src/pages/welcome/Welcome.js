@@ -38,6 +38,7 @@ const Welcome = () => {
 
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedCaseData, setSelectedCaseData] = useState({});
+  const [selectedCaseToDisplay, setSelectedCaseToDisplay] = useState(null);
 
   const tableElement = document.getElementById("table-container");
 
@@ -55,6 +56,22 @@ const Welcome = () => {
   //   );
   //   return companyOptions.filter((c) => companyIds.includes(c.value));
   // }, [mapData, selectedCountryId, companyOptions]);
+
+  const caseToDisplayOptions = useMemo(() => {
+    const options = companyHavingCaseOptions.map((o) => ({
+      ...o,
+      label: `${o.label} (${o.case_count} ${
+        o.case_count > 1 ? "cases" : "case"
+      })`,
+    }));
+    return [
+      {
+        label: "All cases",
+        value: null,
+      },
+      ...options,
+    ];
+  }, [companyHavingCaseOptions]);
 
   const fetchMapData = useCallback((companyId) => {
     let url = "/map/case-by-country-and-company";
@@ -145,6 +162,7 @@ const Welcome = () => {
 
   const handleOnCompanyChange = (companyId) => {
     setMapLoading(true);
+    setSelectedCaseToDisplay(companyId || null);
     fetchMapData(companyId);
     if (!companyId) {
       setSelectedCountryId(null);
@@ -346,17 +364,14 @@ const Welcome = () => {
             </div>
             {isInternalUser ? (
               <div>
+                <div className="description">Select cases to display</div>
                 <Select
                   {...selectProps}
-                  options={companyHavingCaseOptions.map((o) => ({
-                    ...o,
-                    label: `${o.label} (${o.case_count} ${
-                      o.case_count > 1 ? "cases" : "case"
-                    })`,
-                  }))}
-                  placeholder="Select company"
+                  options={caseToDisplayOptions}
+                  placeholder="Select cases to display"
                   style={{ width: "24rem" }}
                   onChange={handleOnCompanyChange}
+                  value={selectedCaseToDisplay}
                 />
               </div>
             ) : null}
