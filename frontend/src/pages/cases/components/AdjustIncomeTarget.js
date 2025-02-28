@@ -28,6 +28,9 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
   const [percentageSensitivity, setPercentageSensitivity] = useState(true);
   const [adjustedValues, setAdjustedValues] = useState({});
 
+  const driversToIncludeField = `${selectedSegment}_drivers-to-include`;
+  const stayWithinFeasibleRangesField = `${selectedSegment}_stay-within-feasible-ranges`;
+
   // initial load adjusted income target
   useEffect(() => {
     if (!isEmpty(sensitivityAnalysis?.config)) {
@@ -101,7 +104,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
     setAdjustedValues((prev) => ({ ...prev, ...newValue }));
   };
 
-  const handleOnSaveAdjustIncomeTarget = () => {
+  const handleOnSaveAdjustIncomeTarget = ({ updatedValue = {} }) => {
     CaseVisualState.update((s) => ({
       ...s,
       sensitivityAnalysis: {
@@ -109,6 +112,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
         config: {
           ...s.sensitivityAnalysis.config,
           ...adjustedValues,
+          ...updatedValue,
         },
       },
     }));
@@ -126,7 +130,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
   return (
     <div>
       <Card className="card-section-wrapper adjust-income-target-wrapper">
-        <Row gutter={[20, 20]} align="middle">
+        <Row gutter={[20, 12]} align="middle">
           <Col span={24}>
             <div className="title">When do we reach the target?</div>
           </Col>
@@ -143,7 +147,19 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
                 Select the (sub)drivers that you want to include in further
                 analysis:
               </div>
-              <AllDriverTreeSelector multiple={true} />
+              <AllDriverTreeSelector
+                multiple={true}
+                onChange={(val) =>
+                  handleOnSaveAdjustIncomeTarget({
+                    updatedValue: {
+                      [driversToIncludeField]: val,
+                    },
+                  })
+                }
+                value={
+                  sensitivityAnalysis?.config?.[driversToIncludeField] || []
+                }
+              />
             </Space>
           </Col>
           <Col span={12}>
@@ -156,8 +172,26 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
           </Col>
           <Col span={12}>
             <Space align="center">
-              <Switch />
-              <div className="label">Stay within feasible ranges?</div>
+              <Switch
+                onChange={(val) =>
+                  handleOnSaveAdjustIncomeTarget({
+                    updatedValue: {
+                      [stayWithinFeasibleRangesField]: val,
+                    },
+                  })
+                }
+                checked={
+                  sensitivityAnalysis?.config?.[
+                    stayWithinFeasibleRangesField
+                  ] || false
+                }
+              />
+              <div
+                className="label"
+                style={{ lineHeight: 0, paddingTop: "5px" }}
+              >
+                Stay within feasible ranges?
+              </div>
             </Space>
           </Col>
         </Row>
