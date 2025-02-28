@@ -462,6 +462,142 @@
       background: $light-green;
     }
   }
+
+  .optimize-income-target-wrapper {
+    .title {
+      font-family: "RocGrotesk";
+      font-size: 22px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .description {
+      font-family: "TabletGothic";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .ant-select {
+      font-weight: normal;
+    }
+
+    .button-ghost-white {
+      color: #01625f;
+      border-radius: 40px;
+      border: 1px solid #01625f;
+      background: transparent;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px;
+    }
+
+    .optimize-income-target-step-wrapper {
+      padding: 20px 0;
+
+      .step-wrapper {
+        width: 100%;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--light-40, #d8d8d8);
+
+        .number {
+          color: #01625f;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 23.056px;
+
+          background: #ffc505;
+          padding: 4px 8px;
+          border-radius: 50% 70% 70% 50%;
+        }
+
+        .label {
+          color: #fff;
+          font-family: "TabletGothic";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+        }
+      }
+
+      .income-inputs-wrapper {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        font-weight: normal;
+
+        div {
+          flex: 1;
+
+          label {
+            display: block;
+          }
+
+          .ant-input-number {
+            width: 100%;
+          }
+
+          span {
+            display: block;
+          }
+
+          label,
+          span {
+            color: #fff;
+            font-family: "TabletGothic";
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            // line-height
+          }
+        }
+
+        .ant-input-number-group-addon {
+          background-color: #eff2f5;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .optimize-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+
+      .button-clear-optimize-result {
+        border-radius: 40px;
+        border: 1px solid #fff;
+        background-color: transparent;
+        color: #fff;
+        font-weight: 500;
+      }
+
+      .button-run-the-model {
+        border-radius: 40px;
+        border: 1px solid #ffc505;
+        background: #ffc505;
+        color: #01625f;
+        font-weight: 500;
+      }
+    }
+  }
 }
 
 .adjust-income-target-modal-container {

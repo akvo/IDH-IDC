@@ -23,6 +23,7 @@ import {
   BinningDriverForm,
   SegmentSelector,
   AdjustIncomeTarget,
+  OptimizeIncomeTarget,
 } from "../components";
 import { map, groupBy, isEqual, isEmpty } from "lodash";
 import { commodities } from "../../../store/static";
@@ -448,11 +449,11 @@ const AssessImpactMitigationStrategies = ({
       </Col>
       {/* EOL Sensitivity Analysis */}
 
-      {/* #3 Adjust Income Target */}
-      {/* <Col span={24}>
-        <AdjustIncomeTarget selectedSegment={selectedSegment} />
-      </Col> */}
-      {/* EOL Adjust Income Target */}
+      {/* #3 Optimize Income Target */}
+      <Col span={24}>
+        <OptimizeIncomeTarget selectedSegment={selectedSegment} />
+      </Col>
+      {/* EOL Optimize Income Target */}
     </Row>
   );
 };
