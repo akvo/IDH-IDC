@@ -7,7 +7,6 @@ import {
   Space,
   Button,
   Select,
-  Switch,
   Modal,
   InputNumber,
 } from "antd";
@@ -17,7 +16,6 @@ import {
   determineDecimalRound,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import AllDriverTreeSelector from "./AllDriverTreeSelector";
 
 const AdjustIncomeTarget = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
