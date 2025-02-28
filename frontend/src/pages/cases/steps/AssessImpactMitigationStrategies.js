@@ -126,8 +126,9 @@ const AssessImpactMitigationStrategies = ({
   ]);
 
   const backFunction = useCallback(() => {
-    navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
-  }, [navigate, currentCase.id]);
+    navigate(-1);
+    // navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
+  }, [navigate]);
 
   const nextFunction = useCallback(() => {
     handleSaveVisualization();

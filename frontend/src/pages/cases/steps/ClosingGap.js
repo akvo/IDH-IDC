@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  stepPath,
-  CurrentCaseState,
-  CaseVisualState,
-  CaseUIState,
-} from "../store";
+import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { Row, Col, Space, Card, Button, Tabs, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
@@ -95,8 +90,9 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   }, [enableEditCase, messageApi, prevScenarioModeling, scenarioModeling]);
 
   const backFunction = useCallback(() => {
-    navigate(`/case/${currentCase.id}/${stepPath.step4.label}`);
-  }, [navigate, currentCase.id]);
+    navigate(-1);
+    // navigate(`/case/${currentCase.id}/${stepPath.step4.label}`);
+  }, [navigate]);
 
   const nextFunction = useCallback(() => {
     handleSaveVisualization();
