@@ -18,6 +18,7 @@ from routes.visualization import visualization_route
 from routes.reference_data import reference_data_routes
 from routes.company import company_route
 from routes.map import map_route
+from routes.optimization import optimization_route
 
 import os
 from jsmin import jsmin
@@ -128,6 +129,7 @@ app.include_router(cpi_route)
 app.include_router(visualization_route)
 app.include_router(reference_data_routes)
 app.include_router(map_route)
+app.include_router(optimization_route)
 
 
 @app.get("/", tags=["Dev"])

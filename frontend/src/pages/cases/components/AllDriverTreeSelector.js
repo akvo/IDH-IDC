@@ -19,6 +19,7 @@ const AllDriverTreeSelector = ({
   dropdownStyle = {},
   style = {},
 }) => {
+  // TODO :: Filter drivers that only have answer value
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
 
