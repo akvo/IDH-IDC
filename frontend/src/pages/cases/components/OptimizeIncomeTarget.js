@@ -9,6 +9,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { dashboardData } = CaseVisualState.useState((s) => s);
 
+  const [selectedDrivers, setSelectedDrivers] = useState([]);
   const [increaseValues, setIncreaseValues] = useState({
     "percentage-increase-1": null,
     "absolute-increase-1": 0,
@@ -22,13 +23,21 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
 
   const currentDashboardData = useMemo(() => {
     return dashboardData.find((d) => d.id === selectedSegment);
-  }, [selectedSegment]);
+  }, [selectedSegment, dashboardData]);
 
   const handleChangeIncreaseValues = ({ index, percentage }) => {
     const percentageField = `percentage-increase-${index}`;
+    const absoluteKey = `absolute-increase-${index}`;
+
+    const currentIncome = currentDashboardData?.total_current_income || 0;
+    let absoluteIncreaseValue = currentIncome;
+    if (percentage) {
+      absoluteIncreaseValue = currentIncome * (1 + percentage / 100);
+    }
     setIncreaseValues((prev) => ({
       ...prev,
       [percentageField]: percentage,
+      [absoluteKey]: absoluteIncreaseValue,
     }));
   };
 
@@ -57,6 +66,8 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               maxLength={3}
               style={{ width: "45%" }}
               dropdownStyle={{ width: "60%" }}
+              onChange={setSelectedDrivers}
+              value={selectedDrivers}
             />
           </div>
         </Col>
@@ -104,7 +115,13 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                 value={increaseValues?.["percentage-increase-1"] || null}
               />
               {increaseValues?.["percentage-increase-1"] && (
-                <span>increase 1 {currency}</span>
+                <span>
+                  {thousandFormatter(
+                    increaseValues?.["absolute-increase-1"],
+                    2
+                  )}{" "}
+                  {currency}
+                </span>
               )}
             </div>
             <div>
@@ -118,7 +135,13 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                 value={increaseValues?.["percentage-increase-2"] || null}
               />
               {increaseValues?.["percentage-increase-2"] && (
-                <span>increase 2 {currency}</span>
+                <span>
+                  {thousandFormatter(
+                    increaseValues?.["absolute-increase-2"],
+                    2
+                  )}{" "}
+                  {currency}
+                </span>
               )}
             </div>
             <div>
@@ -132,7 +155,13 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                 value={increaseValues?.["percentage-increase-3"] || null}
               />
               {increaseValues?.["percentage-increase-3"] && (
-                <span>increase 3 {currency}</span>
+                <span>
+                  {thousandFormatter(
+                    increaseValues?.["absolute-increase-3"],
+                    2
+                  )}{" "}
+                  {currency}
+                </span>
               )}
             </div>
           </div>
