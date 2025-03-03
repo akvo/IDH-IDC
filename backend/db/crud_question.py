@@ -9,7 +9,7 @@ from models.question import (
 )
 from models.commodity import Commodity
 from models.commodity_category_question import CommodityCategoryQuestion
-from models.case_commodity import CaseCommodity
+from models.case_commodity import CaseCommodity, CaseCommodityType
 
 
 def build_tree(data, parent=None):
@@ -27,54 +27,84 @@ def get_question_by_commodity(
     session: Session, params: List[QuestionGroupParam]
 ) -> List[QuestionGroupListDict]:
     res = []
+
     for param in params:
-        commodity = (
-            session.query(Commodity)
+        # Fetch Commodity and optionally join with CaseCommodity
+        case_commodity_data = (
+            session.query(CaseCommodity, Commodity)
+            .outerjoin(
+                CaseCommodity, CaseCommodity.commodity == Commodity.id
+            )  # LEFT JOIN
             .filter(Commodity.id == param["commodity"])
             .first()
         )
-        commodity = commodity.to_question_list
-        commodity_category_id = commodity["commodity_category_id"]
+
+        if not case_commodity_data:
+            continue  # Skip if no matching commodity is found
+
+        case_commodity, commodity = case_commodity_data  # Unpacking results
+        commodity_data = commodity.to_question_list
+        commodity_category_id = commodity_data["commodity_category_id"]
+
+        # Fetch related questions
         questions = (
             session.query(Question)
             .join(CommodityCategoryQuestion)
             .filter(
                 CommodityCategoryQuestion.commodity_category
-                == commodity_category_id,
+                == commodity_category_id
             )
             .all()
         )
         questions = [question.serialize for question in questions]
+
+        # Apply breakdown filter if required
         if not param["breakdown"]:
-            questions = list(
-                filter(
-                    lambda question: question["id"] == 1
-                    or question["parent"] == 1,
-                    questions,
-                )
-            )
-        commodity["questions"] = build_tree(questions)
-        res.append(commodity)
+            questions = [
+                question
+                for question in questions
+                if question["id"] == 1 or question["parent"] == 1
+            ]
+
+        # Attach questions and additional fields
+        commodity_data["questions"] = build_tree(questions)
+        commodity_data["case_commodity_id"] = (
+            case_commodity.id if case_commodity else None
+        )
+        commodity_data["case_commodity_type"] = (
+            case_commodity.commodity_type.value if case_commodity else None
+        )
+
+        res.append(commodity_data)
+
     return res
 
 
 def get_question_by_case(
     session: Session, case_id: int
 ) -> List[QuestionGroupListDict]:
-    case_commodity = (
-        session.query(CaseCommodity)
+    case_commodities = (
+        session.query(CaseCommodity, Commodity)
+        .join(Commodity, CaseCommodity.commodity == Commodity.id)
         .filter(CaseCommodity.case == case_id)
         .all()
     )
-    commodities = (
-        session.query(Commodity)
-        .filter(Commodity.id.in_(cc.commodity for cc in case_commodity))
-        .all()
+
+    diversified_commodity = (
+        session.query(CaseCommodity)
+        .filter(CaseCommodity.case == case_id)
+        .filter(CaseCommodity.commodity_type == CaseCommodityType.diversified)
+        .first()
     )
+    diversified_case_commodity_id = (
+        diversified_commodity.id if diversified_commodity else None
+    )
+
     res = []
-    for commodity in commodities:
-        commodity = commodity.to_question_list
-        commodity_category_id = commodity["commodity_category_id"]
+    for case_commodity, commodity in case_commodities:
+        commodity_data = commodity.to_question_list
+        commodity_category_id = commodity_data["commodity_category_id"]
+
         questions = (
             session.query(Question)
             .join(CommodityCategoryQuestion)
@@ -85,9 +115,17 @@ def get_question_by_case(
             .all()
         )
         questions = [question.serialize for question in questions]
-        commodity["questions"] = build_tree(questions)
-        res.append(commodity)
-    # diversified questions
+        commodity_data["questions"] = build_tree(questions)
+
+        # Add case_commodity_id and case_commodity_type to response
+        commodity_data["case_commodity_id"] = case_commodity.id
+        commodity_data["case_commodity_type"] = (
+            case_commodity.commodity_type.value
+        )
+
+        res.append(commodity_data)
+
+    # Diversified questions
     diversified_qs = (
         session.query(Question)
         .filter(Question.question_type == QuestionType.diversified)
@@ -96,11 +134,14 @@ def get_question_by_case(
     diversified_qs = [dqs.serialize for dqs in diversified_qs]
     res.append(
         {
+            "case_commodity_id": diversified_case_commodity_id,  # Set if found
             "commodity_id": None,
             "commodity_name": "Diversified Income",
+            "case_commodity_type": CaseCommodityType.diversified.value,
             "questions": build_tree(diversified_qs),
         }
     )
+
     return res
 
 
