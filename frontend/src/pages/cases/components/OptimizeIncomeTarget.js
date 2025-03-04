@@ -18,6 +18,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     "percentage-increase-3": null,
     "absolute-increase-3": 0,
   });
+  console.log(selectedDrivers);
 
   const currency = currentCase?.currency || "";
 
