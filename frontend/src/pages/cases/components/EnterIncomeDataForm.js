@@ -91,7 +91,7 @@ const EnterIncomeDataQuestions = ({
         gutter={rowColSpanSize.gutter}
         style={{
           display: hidden && "none",
-          padding: "10px 20px",
+          padding: "6px 12px",
         }}
       >
         <Col
@@ -113,28 +113,29 @@ const EnterIncomeDataQuestions = ({
                     onClick={() => setCollapsed(!collapsed)}
                     icon={
                       collapsed ? (
-                        <DownOutlined style={{ fontSize: 12 }} />
+                        <DownOutlined style={{ fontSize: 10 }} />
                       ) : (
-                        <UpOutlined style={{ fontSize: 12 }} />
+                        <UpOutlined style={{ fontSize: 10 }} />
                       )
                     }
                   />
                 )}
                 {!hidden ? (
-                  <div>
-                    {question.text} <small>({unitName})</small>
+                  <div style={{ fontSize: 14 }}>
+                    {question.text}{" "}
+                    <small style={{ fontSize: 12 }}>({unitName})</small>
                   </div>
                 ) : null}
                 {question?.description && !hidden ? (
                   <Tooltip title={question.description} placement="right">
-                    <InfoCircleOutlined style={{ fontSize: 14 }} />
+                    <InfoCircleOutlined style={{ fontSize: 12 }} />
                   </Tooltip>
                 ) : null}
               </Space>
             </Col>
             {disableInput && (
               <Col span={1} align="end">
-                <LockOutlined style={{ fontSize: 14 }} />
+                <LockOutlined style={{ fontSize: 12 }} />
               </Col>
             )}
           </Row>
@@ -148,6 +149,7 @@ const EnterIncomeDataQuestions = ({
               style={{ width: "100%" }}
               controls={false}
               disabled={disableInput}
+              size="small"
               {...InputNumberThousandFormatter}
             />
           </Form.Item>
@@ -161,6 +163,7 @@ const EnterIncomeDataQuestions = ({
               style={{ width: "100%" }}
               controls={false}
               disabled={disableInput}
+              size="small"
               {...InputNumberThousandFormatter}
             />
           </Form.Item>

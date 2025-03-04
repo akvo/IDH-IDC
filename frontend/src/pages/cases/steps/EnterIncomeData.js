@@ -232,11 +232,11 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         className="total-income-container"
       >
         <Col span={rowColSpanSize.label} className="total-income-title-wrapper">
-          Total Income
+          Total Income <small>/ year</small>
         </Col>
         <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
-            <div className="level-text">Current level per year</div>
+            <div className="level-text">Current</div>
             <div className="value-text">
               {thousandFormatter(
                 totalIncome.current,
@@ -247,7 +247,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
         </Col>
         <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
-            <div className="level-text">Feasible level per year</div>
+            <div className="level-text">Feasible</div>
             <div className="value-text">
               {thousandFormatter(
                 totalIncome.feasible,
@@ -268,7 +268,7 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
       </Row>
 
       {/* Questions */}
-      <Row className="income-questions-wrapper" gutter={[20, 20]}>
+      <Row className="income-questions-wrapper" gutter={[10, 10]}>
         {incomeDataDrivers.map((driver, driverIndex) => (
           <Col span={24} key={driverIndex}>
             <EnterIncomeDataForm
