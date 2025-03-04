@@ -24,7 +24,7 @@
 
     .ant-tabs-content {
       background: #fff;
-      padding: 20px 24px;
+      padding: 10px 14px;
       border-radius: 0 20px 20px 20px;
       margin-bottom: 100px;
       border-left: 1px solid #e1e0e0;
@@ -96,20 +96,21 @@
 
 #enter-income-data {
   .total-income-container {
-    padding: 14px 20px;
+    padding: 0 16px;
 
     .total-income-title-wrapper {
       font-family: "RocGrotesk";
-      font-size: 24px;
+      font-size: 18px;
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 32px;
+      color: #000;
     }
 
     .total-income-value-wrapper {
       font-family: "TabletGothic";
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 22px;
 
       .level-text {
@@ -118,7 +119,7 @@
 
       .value-text {
         font-family: "RocGrotesk";
-        font-size: 18px;
+        font-size: 14px;
       }
     }
   }
@@ -126,7 +127,7 @@
   .percentage-tag-wrapper {
     .ant-tag {
       border-radius: 16px;
-      font-size: 12px;
+      font-size: 11px;
       font-family: "TabletGothic";
       line-height: 18px;
       font-weight: normal;
@@ -137,28 +138,29 @@
   }
 
   .income-questions-wrapper {
-    padding: 24px 0;
+    padding: 10px 0;
 
     .ant-card {
       .ant-card-head {
-        padding: 14px 20px;
+        padding: 10px;
         border-radius: 20px 20px 0px 0px;
         border: 1px solid #e5e5e5;
         background: #f2f2f2;
+        min-height: 0 !important;
 
         .title-text {
           font-family: "RocGrotesk";
-          font-size: 18px;
+          font-size: 14px;
           font-style: normal;
-          font-weight: 700;
+          font-weight: 500;
           line-height: 157.15%;
         }
 
         .value-text {
-          font-family: "TabletGothic";
+          font-family: "RocGrotesk";
           font-size: 14px;
           font-style: normal;
-          font-weight: 700;
+          font-weight: 500;
           line-height: 157.15%;
         }
       }
@@ -173,22 +175,23 @@
     .section-title-wrapper {
       border-top: 1px solid #e5e5e5;
       border-bottom: 1px solid #e5e5e5;
-      padding: 20px;
+      padding: 5px 10px;
+      background: #e1e0e0;
       width: 100%;
 
       .title-text {
         font-family: "RocGrotesk";
-        font-size: 16px;
+        font-size: 13px;
         font-style: normal;
-        font-weight: 700;
+        font-weight: 500;
         line-height: 157.15%;
       }
 
       .value-text {
-        font-family: "TabletGothic";
-        font-size: 14px;
+        font-family: "RocGrotesk";
+        font-size: 13px;
         font-style: normal;
-        font-weight: 700;
+        font-weight: 500;
         line-height: 157.15%;
       }
     }
@@ -200,7 +203,7 @@
 }
 
 .income-data-visual-container {
-  padding: 40px 0;
+  padding: 0;
 
   .income-target-wrapper {
     padding: 0;
@@ -222,7 +225,7 @@
 
     .value {
       font-family: "RocGrotesk";
-      font-size: 24px;
+      font-size: 18px;
       font-style: normal;
       font-weight: 700;
       line-height: 32px;

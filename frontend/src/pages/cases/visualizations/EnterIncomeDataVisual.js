@@ -24,14 +24,12 @@ const EnterIncomeDataVisual = () => {
     <Row gutter={[20, 20]} className="income-data-visual-container">
       <Col span={24}>
         <Card className="income-target-wrapper">
-          <Space direction="vertical">
-            <div className="label">Living income benchmark for a household</div>
-            <Space align="center">
-              <div className="value">
-                {thousandFormatter(currentSegment.target, 2)}
-              </div>
-              <div className="label"> / year</div>
-            </Space>
+          <div className="label">Living income benchmark for a household</div>
+          <Space align="center">
+            <div className="value">
+              {thousandFormatter(currentSegment.target, 2)}
+            </div>
+            <div className="label"> / year</div>
           </Space>
         </Card>
       </Col>

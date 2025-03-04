@@ -34,6 +34,10 @@
     font-weight: normal;
   }
 
+  .ant-btn {
+    font-size: 13px;
+  }
+
   .button-green {
     border: 2px solid $primary-color;
     border-radius: 40px;
@@ -54,7 +58,7 @@
     border-radius: 40px;
     color: #ffffff !important;
     font-weight: 700;
-    border: 1px solid $primary-color;
+    border: 2px solid $primary-color;
   }
 
   .button-ghost {
@@ -214,11 +218,14 @@
       background-color: $bg-color-grey;
 
       .content-card-wrapper {
-        padding: 0px 32px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0px 2rem;
       }
 
       .ant-card-body {
-        padding: 1.5rem 0px 0px;
+        padding: 20px 0 16px 0;
 
         .ant-breadcrumb-link {
           font-family: "TabletGothic" !important;
@@ -382,14 +389,21 @@
     }
   }
 
-  .breadcrumb-right-content {
-    position: absolute;
-    right: 0;
-    top: 20px;
-    padding-right: 5rem;
-    font-size: 13px;
-    font-family: "TabletGothic" !important;
-    font-style: italic;
+  .breadcrumb-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .breadcrumb-left-content {
+      flex: 1;
+    }
+
+    .breadcrumb-right-content {
+      font-size: 13px;
+      font-family: "TabletGothic" !important;
+      font-style: italic;
+    }
   }
 }
 
@@ -423,15 +437,15 @@
   border-radius: 20px;
 
   .ant-card-head {
-    padding: 12px 24px;
+    padding: 10px 14px;
     background: #dfdfdf;
     border-radius: 20px 20px 0px 0px;
 
     .title {
       font-family: "RocGrotesk";
-      font-size: 16px !important;
+      font-size: 14px !important;
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 157.15%;
       color: #000 !important;
     }
@@ -439,11 +453,12 @@
     .button-export {
       margin-left: 5px;
       border: 1px solid #01625f;
-      font-weight: 600;
-      font-size: 12px;
+      font-weight: 500;
+      font-size: 12px !important;
       background: transparent;
       color: #01625f;
       border-radius: 40px;
+      padding: 2px 10px;
 
       &:hover {
         border: 2px solid #01625f;
@@ -452,7 +467,7 @@
   }
 
   .ant-card-body {
-    padding: 18px 24px;
+    padding: 12px 14px;
     border-radius: 0px 0px 20px 20px;
     background: #fff;
   }

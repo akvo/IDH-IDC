@@ -179,7 +179,7 @@ export const calculateIncomePercentage = ({ current, feasible }) => {
 };
 
 export const renderPercentageTag = (type = "default", value = 0) => {
-  value = value % 1 !== 0 || value === 0 ? value.toFixed(2) : value;
+  value = value % 1 !== 0 || value === 0 ? value.toFixed(0) : value;
   value = `${value}%`;
 
   switch (type) {

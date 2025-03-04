@@ -16,13 +16,14 @@ import { ContentLayout } from "../../../components/layout";
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
-  SettingOutlined,
   MenuOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { CaseSettings } from "../components";
 import { stepPath, CaseUIState } from "../store";
 
 const { Sider, Content } = Layout;
+const buttonPrevNextPosition = "top";
 
 const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const navigate = useNavigate();
@@ -30,11 +31,11 @@ const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const sidebarItems = useMemo(() => {
     if (siderCollapsed) {
       return [
-        { title: "Step 1" },
-        { title: "Step 2" },
-        { title: "Step 3" },
-        { title: "Step 4" },
-        { title: "Step 5" },
+        { title: "" },
+        { title: "" },
+        { title: "" },
+        { title: "" },
+        { title: "" },
       ];
     }
     return [
@@ -96,7 +97,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     if (!siderCollapsed) {
       return { left: 4, right: 20 };
     }
-    return { left: 2, right: 22 };
+    return { left: 1, right: 23 };
   }, [siderCollapsed]);
 
   // Use refs to store the functions
@@ -113,16 +114,42 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
 
+  const ButtonPrevNext = () => (
+    <Space>
+      <Button
+        disabled={caseButtonState.loading}
+        onClick={handleBack}
+        className="button-green-transparent"
+      >
+        <ArrowLeftOutlined /> Back
+      </Button>
+      <Button
+        loading={caseButtonState.loading}
+        disabled={caseButtonState.loading}
+        onClick={handleNext}
+        className="button-green-fill"
+      >
+        {isInLastStep ? (
+          "Save"
+        ) : (
+          <>
+            Next <ArrowRightOutlined />
+          </>
+        )}
+      </Button>
+    </Space>
+  );
+
   return (
     <Row id="case-detail" className="case-container">
       <Col span={24}>
-        <Row>
+        <Row gutter={[0, 0]}>
           <Col span={layoutSize.left}>
             <Affix offsetTop={80}>
               <Sider
                 className="case-sidebar-container"
                 width="100%"
-                collapsedWidth={100}
+                collapsedWidth={65}
                 collapsible={true}
                 reverseArrow={true}
                 trigger={null}
@@ -133,8 +160,9 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                     siderCollapsed ? <MenuOutlined /> : <ArrowLeftOutlined />
                   }
                   onClick={() => setSiderCollapsed((prev) => !prev)}
-                  size="large"
+                  size={siderCollapsed ? "small" : "large"}
                   className="sider-collapsed-button"
+                  style={{ marginLeft: siderCollapsed ? 0 : -8 }}
                 />
                 <CaseSidebar
                   step={step}
@@ -155,16 +183,19 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                 breadcrumbItems={[
                   { title: "Home", href: "/welcome" },
                   { title: "Cases", href: "/cases" },
+                  { title: currentCase?.name, href: "" },
                 ]}
-                title={currentCase?.name}
-                titleRighContent={
-                  <Button
-                    className="button-green-transparent"
-                    icon={<SettingOutlined />}
-                    onClick={() => setCaseSettingModalVisible(true)}
-                  >
-                    Case settings
-                  </Button>
+                breadcrumbRightContent={
+                  <Space>
+                    <Button
+                      className="button-green-transparent"
+                      icon={<SettingOutlined />}
+                      onClick={() => setCaseSettingModalVisible(true)}
+                    >
+                      Case settings
+                    </Button>
+                    {buttonPrevNextPosition === "top" && <ButtonPrevNext />}
+                  </Space>
                 }
               >
                 {loading ? (
@@ -191,32 +222,12 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
         </Row>
       </Col>
 
-      {/* Next Back Button */}
-      <Col span={24} align="end" className="case-button-wrapper">
-        <Space>
-          <Button
-            disabled={caseButtonState.loading}
-            onClick={handleBack}
-            className="button-green"
-          >
-            <ArrowLeftOutlined /> Back
-          </Button>
-          <Button
-            loading={caseButtonState.loading}
-            disabled={caseButtonState.loading}
-            onClick={handleNext}
-            className="button-green-fill"
-          >
-            {isInLastStep ? (
-              "Save"
-            ) : (
-              <>
-                Next <ArrowRightOutlined />
-              </>
-            )}
-          </Button>
-        </Space>
-      </Col>
+      {/* Next Back Button Bottom */}
+      {buttonPrevNextPosition === "bottom" && (
+        <Col span={24} align="end" className="case-button-wrapper">
+          <ButtonPrevNext />
+        </Col>
+      )}
 
       <CaseSettings
         open={caseSettingModalVisible}
