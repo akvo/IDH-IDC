@@ -46,11 +46,11 @@ const ChartCalculatedHouseholdIncome = () => {
 
   return (
     <VisualCardWrapper
-      title="Calculated household income"
+      title="Total Income"
       showLabel={showLabel}
       setShowLabel={setShowLabel}
       exportElementRef={elChartHHIncome}
-      exportFilename="Calculated Household Income"
+      exportFilename="Total Income"
     >
       <Chart
         wrapper={false}

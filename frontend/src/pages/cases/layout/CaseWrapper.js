@@ -16,13 +16,14 @@ import { ContentLayout } from "../../../components/layout";
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
-  SettingOutlined,
   MenuOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import { CaseSettings } from "../components";
 import { stepPath, CaseUIState } from "../store";
 
 const { Sider, Content } = Layout;
+const buttonPrevNextPosition = "top";
 
 const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const navigate = useNavigate();
@@ -113,6 +114,32 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
 
+  const ButtonPrevNext = () => (
+    <Space>
+      <Button
+        disabled={caseButtonState.loading}
+        onClick={handleBack}
+        className="button-green-transparent"
+      >
+        <ArrowLeftOutlined /> Back
+      </Button>
+      <Button
+        loading={caseButtonState.loading}
+        disabled={caseButtonState.loading}
+        onClick={handleNext}
+        className="button-green-fill"
+      >
+        {isInLastStep ? (
+          "Save"
+        ) : (
+          <>
+            Next <ArrowRightOutlined />
+          </>
+        )}
+      </Button>
+    </Space>
+  );
+
   return (
     <Row id="case-detail" className="case-container">
       <Col span={24}>
@@ -155,16 +182,19 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                 breadcrumbItems={[
                   { title: "Home", href: "/welcome" },
                   { title: "Cases", href: "/cases" },
+                  { title: currentCase?.name, href: "" },
                 ]}
-                title={currentCase?.name}
-                titleRighContent={
-                  <Button
-                    className="button-green-transparent"
-                    icon={<SettingOutlined />}
-                    onClick={() => setCaseSettingModalVisible(true)}
-                  >
-                    Case settings
-                  </Button>
+                breadcrumbRightContent={
+                  <Space>
+                    <Button
+                      className="button-green-transparent"
+                      icon={<SettingOutlined />}
+                      onClick={() => setCaseSettingModalVisible(true)}
+                    >
+                      Case settings
+                    </Button>
+                    {buttonPrevNextPosition === "top" && <ButtonPrevNext />}
+                  </Space>
                 }
               >
                 {loading ? (
@@ -191,32 +221,12 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
         </Row>
       </Col>
 
-      {/* Next Back Button */}
-      <Col span={24} align="end" className="case-button-wrapper">
-        <Space>
-          <Button
-            disabled={caseButtonState.loading}
-            onClick={handleBack}
-            className="button-green"
-          >
-            <ArrowLeftOutlined /> Back
-          </Button>
-          <Button
-            loading={caseButtonState.loading}
-            disabled={caseButtonState.loading}
-            onClick={handleNext}
-            className="button-green-fill"
-          >
-            {isInLastStep ? (
-              "Save"
-            ) : (
-              <>
-                Next <ArrowRightOutlined />
-              </>
-            )}
-          </Button>
-        </Space>
-      </Col>
+      {/* Next Back Button Bottom */}
+      {buttonPrevNextPosition === "bottom" && (
+        <Col span={24} align="end" className="case-button-wrapper">
+          <ButtonPrevNext />
+        </Col>
+      )}
 
       <CaseSettings
         open={caseSettingModalVisible}
