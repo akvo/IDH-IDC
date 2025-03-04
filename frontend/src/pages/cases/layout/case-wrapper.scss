@@ -4,7 +4,6 @@
   .sider-collapsed-button {
     background: "transparent";
     margin-bottom: 10px;
-    margin-left: -8px;
     border: "none";
     border-radius: 50%;
     border-width: 0;
@@ -15,11 +14,14 @@
   }
 
   .case-sidebar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-right: 1px solid #e1e0da;
     background: #fff;
     box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08),
       0px 4px 6px -2px rgba(16, 24, 40, 0.03);
-    padding: 12px 16px 12px 14px;
+    padding: 12px 15px 12px 20px;
     z-index: 2;
 
     .case-step-container {
@@ -107,6 +109,15 @@
     .content-wrapper,
     .title-wrapper {
       padding: 10px 18px !important;
+    }
+
+    // override content-layout css
+    .content-card-container {
+      margin-left: 10px;
+
+      .content-card-wrapper {
+        padding: 0 1.5rem;
+      }
     }
   }
 

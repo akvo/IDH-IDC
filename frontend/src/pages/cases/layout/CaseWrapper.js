@@ -31,11 +31,11 @@ const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const sidebarItems = useMemo(() => {
     if (siderCollapsed) {
       return [
-        { title: "Step 1" },
-        { title: "Step 2" },
-        { title: "Step 3" },
-        { title: "Step 4" },
-        { title: "Step 5" },
+        { title: "" },
+        { title: "" },
+        { title: "" },
+        { title: "" },
+        { title: "" },
       ];
     }
     return [
@@ -97,7 +97,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     if (!siderCollapsed) {
       return { left: 4, right: 20 };
     }
-    return { left: 2, right: 22 };
+    return { left: 1, right: 23 };
   }, [siderCollapsed]);
 
   // Use refs to store the functions
@@ -143,13 +143,13 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   return (
     <Row id="case-detail" className="case-container">
       <Col span={24}>
-        <Row>
+        <Row gutter={[0, 0]}>
           <Col span={layoutSize.left}>
             <Affix offsetTop={80}>
               <Sider
                 className="case-sidebar-container"
                 width="100%"
-                collapsedWidth={100}
+                collapsedWidth={65}
                 collapsible={true}
                 reverseArrow={true}
                 trigger={null}
@@ -160,8 +160,9 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                     siderCollapsed ? <MenuOutlined /> : <ArrowLeftOutlined />
                   }
                   onClick={() => setSiderCollapsed((prev) => !prev)}
-                  size="large"
+                  size={siderCollapsed ? "small" : "large"}
                   className="sider-collapsed-button"
+                  style={{ marginLeft: siderCollapsed ? 0 : -8 }}
                 />
                 <CaseSidebar
                   step={step}
