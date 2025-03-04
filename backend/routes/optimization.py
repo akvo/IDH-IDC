@@ -3,16 +3,22 @@ import numpy as np
 
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from db.crud_segment import get_segment_by_id
 from db.crud_question import get_question_by_case
 from db.connection import get_session
 
 from scipy.optimize import minimize
+from collections import defaultdict, deque
 
 optimization_route = APIRouter()
 placeholder_pattern = re.compile(r"#(\d+)")
+
+
+def extract_dependencies(formula: str) -> List[str]:
+    """Extracts dependencies (question IDs) from a formula."""
+    return placeholder_pattern.findall(formula)
 
 
 def evaluate_formula(
@@ -38,18 +44,95 @@ def evaluate_formula(
         return 0.0
 
 
+def build_dependency_graph(commodities: List[dict], mode: str) -> tuple:
+    """Builds a dependency graph for topological sorting."""
+    dependency_graph = defaultdict(set)
+    in_degree = defaultdict(int)
+
+    # Track commodities by case_commodity_id for quick lookup
+    commodity_map = {c["case_commodity_id"]: c for c in commodities}
+
+    # Build dependency graph
+    for commodity in commodities:
+        case_commodity_id = commodity["case_commodity_id"]
+
+        for q in commodity.get("questions", []):
+            if q.get("question_type") == "aggregator" and q.get(
+                "default_value"
+            ):
+                dependencies = extract_dependencies(q["default_value"])
+                for dep in dependencies:
+                    # dep_key = f"{mode}-{case_commodity_id}-{dep}"
+
+                    # If dependent question exists in another commodity,
+                    # add dependency
+                    for other_commodity in commodities:
+                        for other_q in other_commodity.get("questions", []):
+                            if str(other_q["id"]) == dep:
+                                dep_case_commodity_id = other_commodity[
+                                    "case_commodity_id"
+                                ]
+                                dependency_graph[dep_case_commodity_id].add(
+                                    case_commodity_id
+                                )
+                                in_degree[case_commodity_id] += 1
+
+    return dependency_graph, in_degree, commodity_map
+
+
+def topological_sort(commodities: List[dict], mode: str) -> List[dict]:
+    """
+    Sorts commodities in an order that ensures children are processed before
+    parents.
+    """
+    dependency_graph, in_degree, commodity_map = build_dependency_graph(
+        commodities, mode
+    )
+
+    # Start with nodes that have no dependencies
+    queue = deque(
+        [
+            c["case_commodity_id"]
+            for c in commodities
+            if in_degree[c["case_commodity_id"]] == 0
+        ]
+    )
+    sorted_commodities = []
+
+    while queue:
+        case_commodity_id = queue.popleft()
+        sorted_commodities.append(commodity_map[case_commodity_id])
+
+        # Process children
+        for dependent in dependency_graph[case_commodity_id]:
+            in_degree[dependent] -= 1
+            if in_degree[dependent] == 0:
+                queue.append(dependent)
+
+    return sorted_commodities
+
+
 def calculate_total_income(
     commodities: List[dict], segment_data: dict, mode: str = "current"
-) -> float:
+) -> Tuple[float, dict]:
     """
-    Calculates total income dynamically based on formulas in default_value.
+    Calculates total income dynamically, ensuring child dependencies are
+    processed first.
+    Returns:
+    - total_income: The sum of all computed values.
+    - updated_answers: A dictionary with all calculated values per question.
     """
 
     total_income = 0.0
-    answers = segment_data.get("answers", {})
+    updated_answers = segment_data.get(
+        "answers", {}
+    ).copy()  # Copy existing answers
 
-    for commodity in commodities:
-        case_commodity_id = commodity.get("case_commodity_id")
+    # Process commodities in the correct order (children first)
+    sorted_commodities = topological_sort(commodities, mode)
+
+    for commodity in sorted_commodities:
+        case_commodity_id = commodity["case_commodity_id"]
 
         # Find the aggregator question (Income formula)
         income_question = next(
@@ -64,10 +147,13 @@ def calculate_total_income(
         if income_question and income_question.get("default_value"):
             commodity_income = evaluate_formula(
                 income_question["default_value"],
-                answers,
+                updated_answers,
                 mode,
                 case_commodity_id,
             )
+            updated_answers[
+                f"{mode}-{case_commodity_id}-{income_question['id']}"
+            ] = commodity_income  # Store computed value
         else:
             # Sum up individual answers if no formula
             question_keys = [
@@ -75,12 +161,17 @@ def calculate_total_income(
                 for q in commodity.get("questions", [])
             ]
             commodity_income = sum(
-                answers.get(key, 0) or 0 for key in question_keys
+                updated_answers.get(key, 0) or 0 for key in question_keys
             )
+
+        # Store computed income for the commodity
+        updated_answers[f"{mode}-{case_commodity_id}-income"] = (
+            commodity_income
+        )
 
         total_income += commodity_income
 
-    return total_income
+    return total_income, updated_answers
 
 
 def optimize_income(
@@ -184,14 +275,22 @@ async def run_model(
     ).serialize_with_answers
     questions = get_question_by_case(session=session, case_id=case_id)
 
-    current_income = calculate_total_income(
+    current_income, test = calculate_total_income(
         commodities=questions, segment_data=segment, mode="current"
     )
-    feasible_income = calculate_total_income(
+    feasible_income, _ = calculate_total_income(
         commodities=questions, segment_data=segment, mode="feasible"
     )
 
     segment_answers = segment.get("answers", {})
+    return {
+        "target_income": segment.get("target", 0),
+        "current_income": current_income,
+        "feasible_income": feasible_income,
+        "test": test,
+        "segment_answers": segment_answers,
+    }
+
     percentage = 0.5
     target_p = current_income + (feasible_income - current_income) * percentage
 
