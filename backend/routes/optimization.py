@@ -3,40 +3,43 @@ import numpy as np
 
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from db.crud_segment import get_segment_by_id
 from db.crud_question import get_question_by_case
 from db.connection import get_session
+from models.case_commodity import CaseCommodityType
 
 from scipy.optimize import minimize
-from collections import defaultdict, deque
 
 optimization_route = APIRouter()
 placeholder_pattern = re.compile(r"#(\d+)")
 
 
-def extract_dependencies(formula: str) -> List[str]:
-    """Extracts dependencies (question IDs) from a formula."""
+def extract_dependencies(formula) -> List[str]:
+    if not isinstance(formula, str):
+        return []
     return placeholder_pattern.findall(formula)
 
 
 def evaluate_formula(
-    formula: str, answers: dict, mode: str, case_commodity_id: Optional[int]
+    formula: str,
+    answers: dict,
+    mode: str,
+    case_commodity_id: Optional[int],
+    question_id: Optional[int] = None,
 ) -> float:
-    """
-    Evaluates a formula dynamically by replacing placeholders with answer
-    values.
-    """
-
     def replace_placeholder(match):
-        question_id = match.group(1)
+        referenced_qid = match.group(1)
+        if question_id and referenced_qid == str(question_id):
+            raise ValueError(
+                f"Self-referencing detected in question {question_id}"
+            )
         return str(
-            answers.get(f"{mode}-{case_commodity_id}-{question_id}", 0) or 0
+            answers.get(f"{mode}-{case_commodity_id}-{referenced_qid}", 0) or 0
         )
 
     formula_with_values = placeholder_pattern.sub(replace_placeholder, formula)
-
     try:
         return eval(formula_with_values)
     except Exception as e:
@@ -44,131 +47,118 @@ def evaluate_formula(
         return 0.0
 
 
-def build_dependency_graph(commodities: List[dict], mode: str) -> tuple:
-    """Builds a dependency graph for topological sorting."""
-    dependency_graph = defaultdict(set)
-    in_degree = defaultdict(int)
+def flatten_questions(questions):
+    flat_questions = {}
+    child_to_parent = {}
 
-    # Track commodities by case_commodity_id for quick lookup
-    commodity_map = {c["case_commodity_id"]: c for c in commodities}
+    def _flatten(q_list, parent_id=None):
+        for q in q_list:
+            flat_questions[q["id"]] = q
+            if parent_id:
+                child_to_parent[q["id"]] = parent_id
+            if "childrens" in q and q["childrens"]:
+                _flatten(q["childrens"], q["id"])
 
-    # Build dependency graph
-    for commodity in commodities:
-        case_commodity_id = commodity["case_commodity_id"]
-
-        for q in commodity.get("questions", []):
-            if q.get("question_type") == "aggregator" and q.get(
-                "default_value"
-            ):
-                dependencies = extract_dependencies(q["default_value"])
-                for dep in dependencies:
-                    # dep_key = f"{mode}-{case_commodity_id}-{dep}"
-
-                    # If dependent question exists in another commodity,
-                    # add dependency
-                    for other_commodity in commodities:
-                        for other_q in other_commodity.get("questions", []):
-                            if str(other_q["id"]) == dep:
-                                dep_case_commodity_id = other_commodity[
-                                    "case_commodity_id"
-                                ]
-                                dependency_graph[dep_case_commodity_id].add(
-                                    case_commodity_id
-                                )
-                                in_degree[case_commodity_id] += 1
-
-    return dependency_graph, in_degree, commodity_map
+    _flatten(questions)
+    return flat_questions, child_to_parent
 
 
-def topological_sort(commodities: List[dict], mode: str) -> List[dict]:
-    """
-    Sorts commodities in an order that ensures children are processed before
-    parents.
-    """
-    dependency_graph, in_degree, commodity_map = build_dependency_graph(
-        commodities, mode
-    )
+def recalculate_answers(
+    answers, flat_questions, child_to_parent, field_key, question_id
+):
+    for qid, parent in child_to_parent.items():
+        if parent == question_id:
+            answers[f"{field_key}-{qid}"] = 0
 
-    # Start with nodes that have no dependencies
-    queue = deque(
-        [
-            c["case_commodity_id"]
-            for c in commodities
-            if in_degree[c["case_commodity_id"]] == 0
+    while question_id in child_to_parent:
+        parent_id = child_to_parent[question_id]
+        parent_key = f"{field_key}-{parent_id}"
+        children = [
+            qid for qid, p in child_to_parent.items() if p == parent_id
         ]
-    )
-    sorted_commodities = []
 
-    while queue:
-        case_commodity_id = queue.popleft()
-        sorted_commodities.append(commodity_map[case_commodity_id])
+        if (
+            "default_value" in flat_questions[parent_id]
+            and flat_questions[parent_id]["default_value"]
+        ):
+            answers[parent_key] = evaluate_formula(
+                flat_questions[parent_id]["default_value"],
+                answers,
+                field_key.split("-")[0],
+                field_key.split("-")[1],
+            )
+        else:
+            answers[parent_key] = sum(
+                answers.get(f"{field_key}-{child}", 0) for child in children
+            )
 
-        # Process children
-        for dependent in dependency_graph[case_commodity_id]:
-            in_degree[dependent] -= 1
-            if in_degree[dependent] == 0:
-                queue.append(dependent)
-
-    return sorted_commodities
+        question_id = parent_id
 
 
 def calculate_total_income(
-    commodities: List[dict], segment_data: dict, mode: str = "current"
-) -> Tuple[float, dict]:
-    """
-    Calculates total income dynamically, ensuring child dependencies are
-    processed first.
-    Returns:
-    - total_income: The sum of all computed values.
-    - updated_answers: A dictionary with all calculated values per question.
-    """
-
+    commodities: list, segment_data: dict, mode: str = "current"
+) -> tuple:
     total_income = 0.0
-    updated_answers = segment_data.get(
-        "answers", {}
-    ).copy()  # Copy existing answers
+    answers = segment_data.get("answers", {})
+    updated_answers = answers.copy()
 
-    # Process commodities in the correct order (children first)
-    sorted_commodities = topological_sort(commodities, mode)
-
-    for commodity in sorted_commodities:
+    for commodity in commodities:
         case_commodity_id = commodity["case_commodity_id"]
-
-        # Find the aggregator question (Income formula)
-        income_question = next(
-            (
-                q
-                for q in commodity.get("questions", [])
-                if q.get("question_type") == "aggregator"
-            ),
-            None,
+        field_key = f"{mode}-{case_commodity_id}"
+        flat_questions, child_to_parent = flatten_questions(
+            commodity.get("questions", [])
         )
 
-        if income_question and income_question.get("default_value"):
-            commodity_income = evaluate_formula(
-                income_question["default_value"],
-                updated_answers,
-                mode,
-                case_commodity_id,
-            )
-            updated_answers[
-                f"{mode}-{case_commodity_id}-{income_question['id']}"
-            ] = commodity_income  # Store computed value
+        for question_id, question in flat_questions.items():
+            question_key = f"{field_key}-{question_id}"
+            if "default_value" in question and question["default_value"]:
+                updated_answers[question_key] = evaluate_formula(
+                    question["default_value"],
+                    updated_answers,
+                    mode,
+                    case_commodity_id,
+                )
+            elif question_id in child_to_parent:
+                children = [
+                    qid
+                    for qid, p in child_to_parent.items()
+                    if p == question_id
+                ]
+                updated_answers[question_key] = sum(
+                    updated_answers.get(f"{field_key}-{child}", 0) or 0
+                    for child in children
+                )
+            elif question_key not in updated_answers:
+                updated_answers[question_key] = 0
+
+        for question_id, question in flat_questions.items():
+            if question.get("question_type") == "aggregator":
+                q_key = f"{field_key}-{question_id}"
+                if q_key not in updated_answers or updated_answers[q_key] == 0:
+                    children = [
+                        qid
+                        for qid, p in child_to_parent.items()
+                        if p == question_id
+                    ]
+                    updated_answers[q_key] = sum(
+                        updated_answers.get(f"{field_key}-{child}", 0)
+                        for child in children
+                    )
+        # only use aggregator
+        if (
+            commodity["case_commodity_type"]
+            != CaseCommodityType.diversified.value
+        ):
+            commodity_income = updated_answers.get(f"{field_key}-{1}", 0)
         else:
-            # Sum up individual answers if no formula
-            question_keys = [
-                f"{mode}-{case_commodity_id}-{q['id']}"
-                for q in commodity.get("questions", [])
+            diversified_qids = [
+                q["id"] for q in commodity.get("questions", [])
             ]
             commodity_income = sum(
-                updated_answers.get(key, 0) or 0 for key in question_keys
+                updated_answers.get(f"{field_key}-{qid}", 0) or 0
+                for qid in diversified_qids
             )
-
-        # Store computed income for the commodity
-        updated_answers[f"{mode}-{case_commodity_id}-income"] = (
-            commodity_income
-        )
-
+        # updated_answers[f"{field_key}-income"] = commodity_income
         total_income += commodity_income
 
     return total_income, updated_answers
@@ -193,9 +183,10 @@ def optimize_income(
                 f"param-{key}": value for key, value in params_dict.items()
             }
         }
-        neg_net_income = -calculate_total_income(
+        neg_net_income, _ = calculate_total_income(
             commodities=questions, segment_data=params_answers, mode="param"
         )
+        neg_net_income = -neg_net_income
 
         # Compute penalty for deviation from current values
         penalty = sum(
@@ -219,29 +210,96 @@ def optimize_income(
                 f"param-{key}": value for key, value in params_dict.items()
             }
         }
-        return (
-            calculate_total_income(
-                commodities=questions,
-                segment_data=params_answers,
-                mode="param",
-            )
-            - target_p
+        constraint_income, _ = calculate_total_income(
+            commodities=questions,
+            segment_data=params_answers,
+            mode="param",
         )
+        return constraint_income - target_p
 
     constraints = [{"type": "eq", "fun": constraint_function}]
 
-    # Set up bounds: Fix non-editable parameters at current values
-    bounds = [
+    # recalculate parameter bounds by editable_indices
+    bounds_temp = [
         (
             (
+                k,
                 dict(current_values).get(k, low),
                 dict(current_values).get(k, high),
             )
             if k not in editable_indices
-            else (low, high)
+            else (k, low, high)
         )
         for k, low, high in parameter_bounds
     ]
+    current_answers = {}
+    feasible_answers = {}
+    for k, low, high in bounds_temp:
+        current_answer_key = f"current-{k}"
+        feasible_answer_key = f"feasible-{k}"  # Fix here: Should be "feasible"
+
+        current_answers[current_answer_key] = low
+        feasible_answers[feasible_answer_key] = high
+
+    _, current_recalculated_bounds = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": current_answers},
+        mode="current",
+    )
+    filtered_current_recalculated_bounds = {
+        k: v for k, v in current_recalculated_bounds.items() if v != 0
+    }
+    current_recalculated_bounds = (
+        current_answers | filtered_current_recalculated_bounds
+    )
+
+    _, feasible_recalculated_bounds = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": feasible_answers},
+        mode="feasible",
+    )
+    filtered_feasible_recalculated_bounds = {
+        k: v for k, v in feasible_recalculated_bounds.items() if v != 0
+    }
+    feasible_recalculated_bounds = (
+        feasible_answers | filtered_feasible_recalculated_bounds
+    )
+    # eol recalculate
+
+    # merge the bounds recalculated
+    merged_tuples = []
+    # Extract unique keys ignoring "current-" and "feasible-" prefixes
+    all_keys = set(
+        re.sub(r"^(current-|feasible-)", "", key)
+        for key in current_recalculated_bounds.keys()
+        | feasible_recalculated_bounds.keys()
+    )
+
+    for key in all_keys:
+        # Ignore question 1
+        if key.endswith("-1"):
+            continue
+        current_key = f"current-{key}"
+        feasible_key = f"feasible-{key}"
+        current_value = current_recalculated_bounds.get(current_key, None)
+        feasible_value = feasible_recalculated_bounds.get(feasible_key, None)
+        merged_tuples.append((key, current_value, feasible_value))
+    # Sort using integer conversion
+    merged_tuples.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
+
+    # Set up bounds: Fix non-editable parameters at current values
+    bounds = [(low, high) for _, low, high in merged_tuples]
+    # bounds = [
+    #     (
+    #         (
+    #             dict(current_values).get(k, low),
+    #             dict(current_values).get(k, high),
+    #         )
+    #         if k not in editable_indices
+    #         else (low, high)
+    #     )
+    #     for k, low, high in parameter_bounds
+    # ]
 
     x0 = np.array([value for _, value in current_values])
 
@@ -274,8 +332,7 @@ async def run_model(
         session=session, id=segment_id
     ).serialize_with_answers
     questions = get_question_by_case(session=session, case_id=case_id)
-
-    current_income, test = calculate_total_income(
+    current_income, _ = calculate_total_income(
         commodities=questions, segment_data=segment, mode="current"
     )
     feasible_income, _ = calculate_total_income(
@@ -283,13 +340,6 @@ async def run_model(
     )
 
     segment_answers = segment.get("answers", {})
-    return {
-        "target_income": segment.get("target", 0),
-        "current_income": current_income,
-        "feasible_income": feasible_income,
-        "test": test,
-        "segment_answers": segment_answers,
-    }
 
     percentage = 0.5
     target_p = current_income + (feasible_income - current_income) * percentage
@@ -311,7 +361,6 @@ async def run_model(
         )
         for case_commodity_id, qid in question_ids
     ]
-
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
@@ -335,7 +384,7 @@ async def run_model(
         f"optimized-{key}": value
         for key, value in optimized_params_dict.items()
     }
-    achieved_income = calculate_total_income(
+    achieved_income, _ = calculate_total_income(
         commodities=questions,
         segment_data={"answers": optimized_answers},
         mode="optimized",
