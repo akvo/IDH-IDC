@@ -4,6 +4,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { api } from "../../../lib";
 
 const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -18,7 +19,6 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     "percentage-increase-3": null,
     "absolute-increase-3": 0,
   });
-  console.log(selectedDrivers);
 
   const currency = currentCase?.currency || "";
 
@@ -40,6 +40,26 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       [percentageField]: percentage,
       [absoluteKey]: absoluteIncreaseValue,
     }));
+  };
+
+  const handleRunModel = () => {
+    const percentages = Object.entries(increaseValues)
+      .map(([key, value]) => {
+        if (key.includes("percentage-") && value) {
+          return value / 100;
+        }
+        return null;
+      })
+      .filter((x) => x);
+    const payload = {
+      percentages,
+      editable_indices: selectedDrivers,
+    };
+    api
+      .post(`optimize/run-model/${currentCase.id}/${selectedSegment}`, payload)
+      .then((res) => {
+        console.log(res);
+      });
   };
 
   return (
@@ -171,7 +191,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           <Button className="button-clear-optimize-result">
             Clear results
           </Button>
-          <Button className="button-run-the-model">
+          <Button className="button-run-the-model" onClick={handleRunModel}>
             Run the model <ArrowRightOutlined />
           </Button>
         </Col>
