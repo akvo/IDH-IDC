@@ -8,23 +8,51 @@ import { api } from "../../../lib";
 
 const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { dashboardData } = CaseVisualState.useState((s) => s);
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+  const sensitivityAnalysis = CaseVisualState.useState(
+    (s) => s.sensitivityAnalysis
+  );
+  const optimizationModelState =
+    sensitivityAnalysis?.config?.optimizationModel || {};
+  const { selectedDrivers, increaseValues } = optimizationModelState;
 
-  const [selectedDrivers, setSelectedDrivers] = useState([]);
-  const [increaseValues, setIncreaseValues] = useState({
-    "percentage-increase-1": null,
-    "absolute-increase-1": 0,
-    "percentage-increase-2": null,
-    "absolute-increase-2": 0,
-    "percentage-increase-3": null,
-    "absolute-increase-3": 0,
-  });
+  /*
+    increaseValues example
+    {
+      "percentage-increase-1": null,
+      "absolute-increase-1": 0,
+      "percentage-increase-2": null,
+      "absolute-increase-2": 0,
+      "percentage-increase-3": null,
+      "absolute-increase-3": 0,
+    }
+  */
 
   const currency = currentCase?.currency || "";
+
+  const updateOptimizationModelState = (updatedValue) => {
+    CaseVisualState.update((s) => ({
+      ...s,
+      sensitivityAnalysis: {
+        ...s.sensitivityAnalysis,
+        config: {
+          ...s.sensitivityAnalysis.config,
+          optimizationModel: {
+            ...s.sensitivityAnalysis.config.optimizationModel,
+            ...updatedValue,
+          },
+        },
+      },
+    }));
+  };
 
   const currentDashboardData = useMemo(() => {
     return dashboardData.find((d) => d.id === selectedSegment);
   }, [selectedSegment, dashboardData]);
+
+  const handleChangeSelectedDrivers = (val) => {
+    updateOptimizationModelState({ selectedDrivers: val });
+  };
 
   const handleChangeIncreaseValues = ({ index, percentage }) => {
     const percentageField = `percentage-increase-${index}`;
@@ -35,11 +63,13 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     if (percentage) {
       absoluteIncreaseValue = currentIncome * (1 + percentage / 100);
     }
-    setIncreaseValues((prev) => ({
-      ...prev,
-      [percentageField]: percentage,
-      [absoluteKey]: absoluteIncreaseValue,
-    }));
+    updateOptimizationModelState({
+      increaseValues: {
+        ...increaseValues,
+        [percentageField]: percentage,
+        [absoluteKey]: absoluteIncreaseValue,
+      },
+    });
   };
 
   const handleRunModel = () => {
@@ -87,7 +117,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               maxLength={3}
               style={{ width: "45%" }}
               dropdownStyle={{ width: "60%" }}
-              onChange={setSelectedDrivers}
+              onChange={handleChangeSelectedDrivers}
               value={selectedDrivers}
             />
           </div>

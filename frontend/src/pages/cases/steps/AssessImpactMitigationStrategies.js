@@ -30,6 +30,7 @@ import { commodities } from "../../../store/static";
 import { api } from "../../../lib";
 import { removeUndefinedObjectValue } from "../../../lib";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { config } from "../../../lib/api";
 
 /**
  * STEP 4
@@ -312,7 +313,10 @@ const AssessImpactMitigationStrategies = ({
     );
     updateCaseVisualSensitivityAnalysisState({
       case: currentCase.id,
-      config: filteredValues,
+      config: {
+        ...sensitivityAnalysis?.config,
+        ...filteredValues,
+      },
     });
     form.setFieldsValue(filteredValues);
   };
