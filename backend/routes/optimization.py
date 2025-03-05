@@ -16,6 +16,23 @@ optimization_route = APIRouter()
 placeholder_pattern = re.compile(r"#(\d+)")
 
 
+def find_case_commodity_by_case_commodity_id(
+    data: List[dict], case_commodity_id: int
+):
+    for item in data:
+        if item.get("case_commodity_id") == case_commodity_id:
+            return item
+    return None
+
+
+def get_parents(data: dict, key: int):
+    parents = []
+    while key in data:  # Continue until key is not found in dictionary
+        key = data[key]  # Get the parent of the current key
+        parents.append(key)  # Store the parent
+    return parents
+
+
 def extract_dependencies(formula) -> List[str]:
     if not isinstance(formula, str):
         return []
@@ -144,6 +161,7 @@ def calculate_total_income(
                         updated_answers.get(f"{field_key}-{child}", 0)
                         for child in children
                     )
+
         # only use aggregator
         if (
             commodity["case_commodity_type"]
@@ -219,6 +237,8 @@ def optimize_income(
 
     constraints = [{"type": "eq", "fun": constraint_function}]
 
+    """
+    # START
     # recalculate parameter bounds by editable_indices
     bounds_temp = [
         (
@@ -288,19 +308,53 @@ def optimize_income(
     merged_tuples.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
     # Set up bounds: Fix non-editable parameters at current values
-    # TODO :: check for parents of editable_indices and zremove the value from bounds
-    bounds = [(low, high) for _, low, high in merged_tuples]
-    # bounds = [
-    #     (
-    #         (
-    #             dict(current_values).get(k, low),
-    #             dict(current_values).get(k, high),
-    #         )
-    #         if k not in editable_indices
-    #         else (low, high)
-    #     )
-    #     for k, low, high in parameter_bounds
-    # ]
+    # check for parents of editable_indices and remove the value from bounds
+    parents_to_remove = []
+    for key, low, high in merged_tuples:
+        if key not in editable_indices:
+            continue
+        case_commodity_id = key.split("-")[0]
+        qid = key.split("-")[1]
+        case_commodity = find_case_commodity_by_case_commodity_id(
+            data=questions, case_commodity_id=int(case_commodity_id)
+        )
+        case_commodity_questions = (
+            case_commodity.get("questions", []) if case_commodity else []
+        )
+        _, child_to_parent = flatten_questions(case_commodity_questions)
+        keys = set(child_to_parent.keys())  # All dictionary keys
+        values = set(child_to_parent.values())  # All dictionary values
+        # Find elements that appear as both keys and values
+        # meaning this value is parent question
+        keys_as_values = list(keys.intersection(values))
+        parents_to_remove += (
+            get_parents(child_to_parent, key=int(qid)) + keys_as_values
+        )
+    parents_to_remove = list(set(parents_to_remove))
+
+    filtered_merged_tuples = [
+        tup
+        for tup in merged_tuples
+        if int(tup[0].split("-")[1]) not in parents_to_remove
+    ]
+    # Sort using integer conversion
+    filtered_merged_tuples.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
+
+    bounds = [(low, high) for _, low, high in filtered_merged_tuples]
+    # END
+    """
+
+    bounds = [
+        (
+            (
+                dict(current_values).get(k, low),
+                dict(current_values).get(k, high),
+            )
+            if k not in editable_indices
+            else (low, high)
+        )
+        for k, low, high in parameter_bounds
+    ]
 
     x0 = np.array([value for _, value in current_values])
 
@@ -365,6 +419,38 @@ async def run_model(
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
+    # check for parents of editable_indices and remove the value from bounds
+    parents_to_remove = []
+    for key, low, high in parameter_bounds:
+        if key not in editable_indices:
+            continue
+        case_commodity_id = key.split("-")[0]
+        qid = key.split("-")[1]
+        case_commodity = find_case_commodity_by_case_commodity_id(
+            data=questions, case_commodity_id=int(case_commodity_id)
+        )
+        case_commodity_questions = (
+            case_commodity.get("questions", []) if case_commodity else []
+        )
+        _, child_to_parent = flatten_questions(case_commodity_questions)
+        keys = set(child_to_parent.keys())  # All dictionary keys
+        values = set(child_to_parent.values())  # All dictionary values
+        # Find elements that appear as both keys and values
+        # meaning this value is parent question
+        keys_as_values = list(keys.intersection(values))
+        parents_to_remove += (
+            get_parents(child_to_parent, key=int(qid)) + keys_as_values
+        )
+    parents_to_remove = list(set(parents_to_remove))
+
+    parameter_bounds = [
+        tup
+        for tup in parameter_bounds
+        if int(tup[0].split("-")[1]) not in parents_to_remove
+    ]
+    # Sort using integer conversion
+    parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
+
     current_values = [(key, current) for key, current, _ in parameter_bounds]
 
     result = optimize_income(
@@ -385,9 +471,14 @@ async def run_model(
         f"optimized-{key}": value
         for key, value in optimized_params_dict.items()
     }
-    achieved_income, _ = calculate_total_income(
+    _, recalculated_optimized_answers = calculate_total_income(
         commodities=questions,
         segment_data={"answers": optimized_answers},
+        mode="optimized",
+    )
+    achieved_income, _ = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": recalculated_optimized_answers},
         mode="optimized",
     )
 
