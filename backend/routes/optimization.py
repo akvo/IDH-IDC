@@ -356,12 +356,23 @@ async def run_model(
         mode="optimized",
     )
 
+    # create editable_indices_result
+    results = {}
+    for key in editable_indices:
+        current = segment_answers.get(f"current-{key}", 0)
+        feasible = segment_answers.get(f"feasible-{key}", 0)
+        optimized = optimized_answers.get(f"optimized-{key}", 0)
+        results[key] = [
+            {"name": "current", "value": current},
+            {"name": "feasible", "value": feasible},
+            {"name": "optimized", "value": optimized},
+        ]
+
     return {
         "target_income": segment.get("target", 0),
         "current_income": current_income,
         "feasible_income": feasible_income,
         "achieved_income": achieved_income,
         "target_p": target_p,
-        "segment_answers": segment_answers,
-        "optimized_answers": optimized_answers,
+        "optimization_result": results,
     }
