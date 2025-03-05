@@ -80,38 +80,6 @@ def flatten_questions(questions):
     return flat_questions, child_to_parent
 
 
-def recalculate_answers(
-    answers, flat_questions, child_to_parent, field_key, question_id
-):
-    for qid, parent in child_to_parent.items():
-        if parent == question_id:
-            answers[f"{field_key}-{qid}"] = 0
-
-    while question_id in child_to_parent:
-        parent_id = child_to_parent[question_id]
-        parent_key = f"{field_key}-{parent_id}"
-        children = [
-            qid for qid, p in child_to_parent.items() if p == parent_id
-        ]
-
-        if (
-            "default_value" in flat_questions[parent_id]
-            and flat_questions[parent_id]["default_value"]
-        ):
-            answers[parent_key] = evaluate_formula(
-                flat_questions[parent_id]["default_value"],
-                answers,
-                field_key.split("-")[0],
-                field_key.split("-")[1],
-            )
-        else:
-            answers[parent_key] = sum(
-                answers.get(f"{field_key}-{child}", 0) for child in children
-            )
-
-        question_id = parent_id
-
-
 def calculate_total_income(
     commodities: list, segment_data: dict, mode: str = "current"
 ) -> tuple:
@@ -241,126 +209,6 @@ def optimize_income(
         return constraint_income - target_p
 
     constraints = [{"type": "eq", "fun": constraint_function}]
-
-    """
-    # START
-    # recalculate parameter bounds by editable_indices
-    bounds_temp = [
-        (
-            (
-                k,
-                dict(current_values).get(k, low),
-                dict(current_values).get(k, high),
-            )
-            if k not in editable_indices
-            else (k, low, high)
-        )
-        for k, low, high in parameter_bounds
-    ]
-    current_answers = {}
-    feasible_answers = {}
-    for k, low, high in bounds_temp:
-        current_answer_key = f"current-{k}"
-        feasible_answer_key = f"feasible-{k}"  # Fix here: Should be "feasible"
-
-        current_answers[current_answer_key] = low
-        feasible_answers[feasible_answer_key] = high
-
-    _, current_recalculated_bounds = calculate_total_income(
-        commodities=questions,
-        segment_data={"answers": current_answers},
-        mode="current",
-    )
-    filtered_current_recalculated_bounds = {
-        k: v for k, v in current_recalculated_bounds.items() if v != 0
-    }
-    current_recalculated_bounds = (
-        current_answers | filtered_current_recalculated_bounds
-    )
-
-    _, feasible_recalculated_bounds = calculate_total_income(
-        commodities=questions,
-        segment_data={"answers": feasible_answers},
-        mode="feasible",
-    )
-    filtered_feasible_recalculated_bounds = {
-        k: v for k, v in feasible_recalculated_bounds.items() if v != 0
-    }
-    feasible_recalculated_bounds = (
-        feasible_answers | filtered_feasible_recalculated_bounds
-    )
-    # eol recalculate
-
-    # merge the bounds recalculated
-    merged_tuples = []
-    # Extract unique keys ignoring "current-" and "feasible-" prefixes
-    all_keys = set(
-        re.sub(r"^(current-|feasible-)", "", key)
-        for key in current_recalculated_bounds.keys()
-        | feasible_recalculated_bounds.keys()
-    )
-
-    for key in all_keys:
-        # Ignore question 1
-        if key.endswith("-1"):
-            continue
-        current_key = f"current-{key}"
-        feasible_key = f"feasible-{key}"
-        current_value = current_recalculated_bounds.get(current_key, None)
-        feasible_value = feasible_recalculated_bounds.get(feasible_key, None)
-        merged_tuples.append((key, current_value, feasible_value))
-    # Sort using integer conversion
-    merged_tuples.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
-
-    # Set up bounds: Fix non-editable parameters at current values
-    # check for parents of editable_indices and remove the value from bounds
-    parents_to_remove = []
-    for key, low, high in merged_tuples:
-        if key not in editable_indices:
-            continue
-        case_commodity_id = key.split("-")[0]
-        qid = key.split("-")[1]
-        case_commodity = find_case_commodity_by_case_commodity_id(
-            data=questions, case_commodity_id=int(case_commodity_id)
-        )
-        case_commodity_questions = (
-            case_commodity.get("questions", []) if case_commodity else []
-        )
-        _, child_to_parent = flatten_questions(case_commodity_questions)
-        keys = set(child_to_parent.keys())  # All dictionary keys
-        values = set(child_to_parent.values())  # All dictionary values
-        # Find elements that appear as both keys and values
-        # meaning this value is parent question
-        keys_as_values = list(keys.intersection(values))
-
-        # Find values in left that appear in any string in right
-        editable_indices_qids = [
-            int(v.split("-")[1]) for v in editable_indices
-        ]
-        appeared_values = list(
-            set(keys_as_values) & set(editable_indices_qids)
-        )
-        # Remove appeared_values from left list
-        keys_as_values = [
-            x for x in keys_as_values if x not in appeared_values
-        ]
-
-        parents_to_remove += (
-            get_parents(child_to_parent, key=int(qid)) + keys_as_values
-        )
-    parents_to_remove = list(set(parents_to_remove))
-
-    filtered_merged_tuples = [
-        tup
-        for tup in merged_tuples
-        if int(tup[0].split("-")[1]) not in parents_to_remove
-    ]
-    # Sort using integer conversion
-    filtered_merged_tuples.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
-
-    bounds = [(low, high) for _, low, high in filtered_merged_tuples]
-    # END
-    """
 
     bounds = [
         (
@@ -507,11 +355,6 @@ async def run_model(
         segment_data={"answers": optimized_answers},
         mode="optimized",
     )
-    # achieved_income, _ = calculate_total_income(
-    #     commodities=questions,
-    #     segment_data={"answers": recalculated_optimized_answers},
-    #     mode="optimized",
-    # )
 
     return {
         "target_income": segment.get("target", 0),
