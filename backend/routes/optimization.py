@@ -152,15 +152,26 @@ def calculate_total_income(
             if question.get("question_type") == "aggregator":
                 q_key = f"{field_key}-{question_id}"
                 if q_key not in updated_answers or updated_answers[q_key] == 0:
-                    children = [
-                        qid
-                        for qid, p in child_to_parent.items()
-                        if p == question_id
-                    ]
-                    updated_answers[q_key] = sum(
-                        updated_answers.get(f"{field_key}-{child}", 0)
-                        for child in children
-                    )
+                    if (
+                        "default_value" in question
+                        and question["default_value"]
+                    ):
+                        updated_answers[q_key] = evaluate_formula(
+                            question["default_value"],
+                            updated_answers,
+                            mode,
+                            case_commodity_id,
+                        )
+                    else:
+                        children = [
+                            qid
+                            for qid, p in child_to_parent.items()
+                            if p == question_id
+                        ]
+                        updated_answers[q_key] = sum(
+                            updated_answers.get(f"{field_key}-{child}", 0)
+                            for child in children
+                        )
 
         # only use aggregator
         if (
@@ -197,26 +208,22 @@ def optimize_income(
             key: value for (key, _, _), value in zip(parameter_bounds, params)
         }
         params_answers = {
-            "answers": {
-                f"param-{key}": value for key, value in params_dict.items()
-            }
+            f"param-{key}": value for key, value in params_dict.items()
         }
         neg_net_income, _ = calculate_total_income(
-            commodities=questions, segment_data=params_answers, mode="param"
+            commodities=questions,
+            segment_data={"answers": params_answers},
+            mode="param",
         )
         neg_net_income = -neg_net_income
 
         # Compute penalty for deviation from current values
-        penalty = sum(
-            penalty_factor
-            * (
-                (params_dict.get(k, 0) - dict(current_values).get(k, 0))
-                / (dict(current_values).get(k, 1e-9))
-            )
-            ** 2
-            for k in editable_indices
-        )
-
+        penalty = 0.0
+        for k in editable_indices:
+            percentage_change = (
+                params_dict.get(k, 0) - dict(current_values).get(k, 0)
+            ) / (dict(current_values).get(k, 0) + 1e-9)
+            penalty += penalty_factor * percentage_change**2
         return neg_net_income + penalty
 
     def constraint_function(params):
@@ -224,13 +231,11 @@ def optimize_income(
             key: value for (key, _, _), value in zip(parameter_bounds, params)
         }
         params_answers = {
-            "answers": {
-                f"param-{key}": value for key, value in params_dict.items()
-            }
+            f"param-{key}": value for key, value in params_dict.items()
         }
         constraint_income, _ = calculate_total_income(
             commodities=questions,
-            segment_data=params_answers,
+            segment_data={"answers": params_answers},
             mode="param",
         )
         return constraint_income - target_p
@@ -327,6 +332,19 @@ def optimize_income(
         # Find elements that appear as both keys and values
         # meaning this value is parent question
         keys_as_values = list(keys.intersection(values))
+
+        # Find values in left that appear in any string in right
+        editable_indices_qids = [
+            int(v.split("-")[1]) for v in editable_indices
+        ]
+        appeared_values = list(
+            set(keys_as_values) & set(editable_indices_qids)
+        )
+        # Remove appeared_values from left list
+        keys_as_values = [
+            x for x in keys_as_values if x not in appeared_values
+        ]
+
         parents_to_remove += (
             get_parents(child_to_parent, key=int(qid)) + keys_as_values
         )
@@ -438,6 +456,19 @@ async def run_model(
         # Find elements that appear as both keys and values
         # meaning this value is parent question
         keys_as_values = list(keys.intersection(values))
+
+        # Find values in left that appear in any string in right
+        editable_indices_qids = [
+            int(v.split("-")[1]) for v in editable_indices
+        ]
+        appeared_values = list(
+            set(keys_as_values) & set(editable_indices_qids)
+        )
+        # Remove appeared_values from left list
+        keys_as_values = [
+            x for x in keys_as_values if x not in appeared_values
+        ]
+
         parents_to_remove += (
             get_parents(child_to_parent, key=int(qid)) + keys_as_values
         )
@@ -471,16 +502,16 @@ async def run_model(
         f"optimized-{key}": value
         for key, value in optimized_params_dict.items()
     }
-    _, recalculated_optimized_answers = calculate_total_income(
+    achieved_income, _ = calculate_total_income(
         commodities=questions,
         segment_data={"answers": optimized_answers},
         mode="optimized",
     )
-    achieved_income, _ = calculate_total_income(
-        commodities=questions,
-        segment_data={"answers": recalculated_optimized_answers},
-        mode="optimized",
-    )
+    # achieved_income, _ = calculate_total_income(
+    #     commodities=questions,
+    #     segment_data={"answers": recalculated_optimized_answers},
+    #     mode="optimized",
+    # )
 
     return {
         "target_income": segment.get("target", 0),
