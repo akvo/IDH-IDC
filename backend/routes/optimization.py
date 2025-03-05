@@ -235,7 +235,7 @@ def optimize_income(
 
 
 @optimization_route.post(
-    "/optimize/run-model/{case_id:path}",
+    "/optimize/run-model/{case_id:path}/{segment_id:path}",
     summary="Calculate the optimization value",
     name="optimization:run_model",
     tags=["Optimization"],
@@ -368,9 +368,9 @@ async def run_model(
             feasible = segment_answers.get(f"feasible-{key}", 0)
             optimized = optimized_answers.get(f"optimized-{key}", 0)
             results[key] = [
-                {"name": "current", "value": current},
-                {"name": "feasible", "value": feasible},
-                {"name": "optimized", "value": optimized},
+                {"name": "current", "value": current or 0},
+                {"name": "feasible", "value": feasible or 0},
+                {"name": "optimized", "value": optimized or 0},
             ]
         increase = i + 1
         value = {}
@@ -385,7 +385,5 @@ async def run_model(
         "target_income": segment.get("target", 0),
         "current_income": current_income,
         "feasible_income": feasible_income,
-        "achieved_income": achieved_income,
-        "target_p": target_p,
         "optimization_result": optimization_result,
     }

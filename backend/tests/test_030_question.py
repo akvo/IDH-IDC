@@ -69,9 +69,7 @@ class TestQuestionRoute:
                         "question_type": "aggregator",
                         "text": "Net Income per day",
                         "description": None,
-                        "default_value": (
-                            "function() { return #Q2 * #Q3 / 30; }"
-                        ),
+                        "default_value": "(2 * 3) / 30",
                         "created_by": 1,
                         "childrens": [
                             {
@@ -113,9 +111,7 @@ class TestQuestionRoute:
                         "question_type": "aggregator",
                         "text": "Net Income per day",
                         "description": None,
-                        "default_value": (
-                            "function() { return #Q2 * #Q3 / 30; }"
-                        ),
+                        "default_value": "(2 * 3) / 30",
                         "created_by": 1,
                         "childrens": [
                             {
@@ -170,9 +166,7 @@ class TestQuestionRoute:
                         "question_type": "aggregator",
                         "text": "Net Income per day",
                         "description": None,
-                        "default_value": (
-                            "function() { return #Q2 * #Q3 / 30; }"
-                        ),
+                        "default_value": "(2 * 3) / 30",
                         "created_by": 1,
                         "childrens": [
                             {
@@ -214,9 +208,7 @@ class TestQuestionRoute:
                         "question_type": "aggregator",
                         "text": "Net Income per day",
                         "description": None,
-                        "default_value": (
-                            "function() { return #Q2 * #Q3 / 30; }"
-                        ),
+                        "default_value": "(2 * 3) / 30",
                         "created_by": 1,
                         "childrens": [
                             {
