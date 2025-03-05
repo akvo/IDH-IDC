@@ -244,6 +244,7 @@ async def run_model(
     req: Request,
     case_id: int,
     segment_id: int,
+    percentages: List[float],
     editable_indices: List[str],
     session: Session = Depends(get_session),
 ):
@@ -259,11 +260,7 @@ async def run_model(
     feasible_income, _ = calculate_total_income(
         commodities=questions, segment_data=segment, mode="feasible"
     )
-
     segment_answers = segment.get("answers", {})
-
-    percentage = 0.5
-    target_p = current_income + (feasible_income - current_income) * percentage
 
     # Extract (case_commodity_id, question_id) pairs
     # while ignoring question_id = 1
@@ -332,41 +329,57 @@ async def run_model(
 
     current_values = [(key, current) for key, current, _ in parameter_bounds]
 
-    result = optimize_income(
-        parameter_bounds=parameter_bounds,
-        current_values=current_values,
-        editable_indices=editable_indices,
-        target_p=target_p,
-        questions=questions,
-        penalty_factor=1000,
-    )
+    # loop optimize in percentages param
+    optimization_result = []
+    for i, percentage in enumerate(percentages):
+        # percentage = 0.5
+        target_p = (
+            current_income + (feasible_income - current_income) * percentage
+        )
 
-    optimized_values = result.x
-    optimized_params_dict = {
-        key: value
-        for (key, _, _), value in zip(parameter_bounds, optimized_values)
-    }
-    optimized_answers = {
-        f"optimized-{key}": value
-        for key, value in optimized_params_dict.items()
-    }
-    achieved_income, _ = calculate_total_income(
-        commodities=questions,
-        segment_data={"answers": optimized_answers},
-        mode="optimized",
-    )
+        result = optimize_income(
+            parameter_bounds=parameter_bounds,
+            current_values=current_values,
+            editable_indices=editable_indices,
+            target_p=target_p,
+            questions=questions,
+            penalty_factor=1000,
+        )
 
-    # create editable_indices_result
-    results = {}
-    for key in editable_indices:
-        current = segment_answers.get(f"current-{key}", 0)
-        feasible = segment_answers.get(f"feasible-{key}", 0)
-        optimized = optimized_answers.get(f"optimized-{key}", 0)
-        results[key] = [
-            {"name": "current", "value": current},
-            {"name": "feasible", "value": feasible},
-            {"name": "optimized", "value": optimized},
-        ]
+        optimized_values = result.x
+        optimized_params_dict = {
+            key: value
+            for (key, _, _), value in zip(parameter_bounds, optimized_values)
+        }
+        optimized_answers = {
+            f"optimized-{key}": value
+            for key, value in optimized_params_dict.items()
+        }
+        achieved_income, _ = calculate_total_income(
+            commodities=questions,
+            segment_data={"answers": optimized_answers},
+            mode="optimized",
+        )
+
+        # create editable_indices_result
+        results = {}
+        for key in editable_indices:
+            current = segment_answers.get(f"current-{key}", 0)
+            feasible = segment_answers.get(f"feasible-{key}", 0)
+            optimized = optimized_answers.get(f"optimized-{key}", 0)
+            results[key] = [
+                {"name": "current", "value": current},
+                {"name": "feasible", "value": feasible},
+                {"name": "optimized", "value": optimized},
+            ]
+        increase = i + 1
+        value = {}
+        value[f"target_p_{increase}"] = target_p
+        value[f"achieved_income_{increase}"] = achieved_income
+        value[f"optimization_{increase}"] = results
+        optimization_result.append(
+            {"name": f"percentage_{increase}", "value": value}
+        )
 
     return {
         "target_income": segment.get("target", 0),
@@ -374,5 +387,5 @@ async def run_model(
         "feasible_income": feasible_income,
         "achieved_income": achieved_income,
         "target_p": target_p,
-        "optimization_result": results,
+        "optimization_result": optimization_result,
     }
