@@ -157,24 +157,23 @@ def seeder_procurement_questions(session: Session):
         session.commit()
     except Exception as e:
         session.rollback()
-        print(f"An error occurred: {e}")
+        print(f"[ERROR]: {e}")
         raise
 
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()
-    print("Truncating all tables...")
+    print("[START]: Truncating all tables...")
     truncate_all_tables(session=session)
-    print("All tables truncated.")
+    print("[DONE]: All tables truncated.")
 
-    print("Seeding procurement practices...")
+    print("[START]: Seeding procurement practices...")
     seeder_procurement_practices(session=session)
-    print("Procurement practices seeded.")
+    print("[DONE]: Procurement practices seeded.")
 
-    print("Seeding procurement questions...")
+    print("[START]: Seeding procurement questions...")
     seeder_procurement_questions(session=session)
-    print("Procurement questions seeded.")
+    print("[DONE]: Procurement questions seeded.")
 
     session.close()
-    print("Session closed.")
