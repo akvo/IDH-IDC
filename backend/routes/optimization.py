@@ -288,6 +288,7 @@ def optimize_income(
     merged_tuples.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
     # Set up bounds: Fix non-editable parameters at current values
+    # TODO :: check for parents of editable_indices and zremove the value from bounds
     bounds = [(low, high) for _, low, high in merged_tuples]
     # bounds = [
     #     (
