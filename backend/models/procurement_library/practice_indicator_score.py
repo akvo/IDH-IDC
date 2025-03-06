@@ -25,20 +25,8 @@ class PracticeIndicatorScore(Base):
         onupdate=func.now(),
     )
 
-    practice = relationship(
-        "Practice",
-        foreign_keys=[practice_id],
-        cascade="all, delete",
-        passive_deletes=True,
-        backref="practices",
-    )
-    indicator = relationship(
-        "PracticeIndicator",
-        foreign_keys=[indicator_id],
-        cascade="all, delete",
-        passive_deletes=True,
-        backref="indicators",
-    )
+    practice = relationship("Practice", backref="practice_scores", overlaps="practice_scores,practice")
+    indicator = relationship("PracticeIndicator")
 
     def __repr__(self):
         return f"<PracticeIndicatorScore(id={self.id}>"
