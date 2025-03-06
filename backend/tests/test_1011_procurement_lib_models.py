@@ -24,11 +24,11 @@ def setup_module():
 class TestProcurementLibraryModels:
     def test_total_procurement_processes(self, app: FastAPI, session: Session) -> None:
         total_processes = session.query(ProcurementProcess).count()
-        assert total_processes == 15, "Total ProcurementProcesses do not match"
+        assert total_processes == 23, "Total ProcurementProcesses do not match"
 
     def test_total_practices(self, app: FastAPI, session: Session) -> None:
         total_practices = session.query(Practice).count()
-        assert total_practices == 51, "Total Practices do not match"
+        assert total_practices == 47, "Total Practices do not match"
 
     def test_total_practice_indicators(self, app: FastAPI, session: Session) -> None:
         total_practice_indicators = session.query(PracticeIndicator).count()
@@ -47,5 +47,5 @@ class TestProcurementLibraryModels:
     ) -> None:
         total_practice_indicator_scores = session.query(PracticeIndicatorScore).count()
         assert (
-            total_practice_indicator_scores == 23 * 51
+            total_practice_indicator_scores == 23 * 47
         ), "Total PracticeIndicatorScores do not match"

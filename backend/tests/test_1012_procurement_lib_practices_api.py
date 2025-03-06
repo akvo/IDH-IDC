@@ -23,8 +23,8 @@ class TestPracticeRoute:
         assert res.status_code == 200
         res = res.json()
         assert res["current"] == 1
-        assert res["total"] == 51
-        assert res["total_page"] == 6
+        assert res["total"] == 47
+        assert res["total_page"] == 5
         assert len(res["data"]) == 10
         assert list(res["data"][0].keys()) == [
             "id",
@@ -32,6 +32,8 @@ class TestPracticeRoute:
             "label",
             "is_environmental",
             "is_income",
+            "total_score",
+            "scores",
             "created_at",
         ]
 
