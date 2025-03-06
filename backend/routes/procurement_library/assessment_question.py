@@ -4,9 +4,10 @@ from sqlalchemy.orm import Session
 from typing import List
 from db.connection import get_session
 from db.procurement_library import crud_assessment_question
-from models.procurement_library.assessment_question import (
-    AssessmentQuestionDict
-)
+from db.procurement_library import crud_practice
+from models.procurement_library.assessment_question import AssessmentQuestionDict
+from models.procurement_library.assessment_question_option import SelectedOption
+from models.procurement_library.practice import PracticeListDict
 
 assessment_question_route = APIRouter()
 
@@ -24,3 +25,65 @@ def get_all_questions(
     session: Session = Depends(get_session),
 ) -> List[AssessmentQuestionDict]:
     return crud_assessment_question.get_all_questions(session)
+
+
+@assessment_question_route.post(
+    "/pl/questions",
+    response_model=List[PracticeListDict],
+    summary="Submit an assessment question answer",
+    description="Submit an assessment question answer",
+    tags=["Procurement Library"],
+    name="pl:submit_answers",
+)
+def submit_answer(
+    req: Request,
+    answers: List[SelectedOption],
+    session: Session = Depends(get_session),
+) -> List[PracticeListDict]:
+    # get all practices
+    practices = crud_practice.get_all_practices(
+        session=session,
+    )
+    # intialize practice results
+    practice_results = []
+    # loop through all practices
+    for practice in practices:
+        # intial total_score
+        total_score = 0
+        scores = []
+        # loop each answers
+        for a in answers:
+            # get score directly from practice model object via scores
+            p_score = crud_practice.get_practice_score_by_indicator_id(
+                session=session,
+                practice_id=practice.id,
+                indicator_id=a.indicator_id,
+            )
+            if p_score:
+                # sum up the score
+                total_score += p_score.score
+                # append score to scores list
+                scores.append(f"{p_score.indicator.label}: {p_score.score}")
+        # append practice result
+        practice_results.append(
+            {
+                "id": practice.id,
+                "procurement_process_label": (
+                    practice.procurement_process.label
+                ),
+                "label": practice.label,
+                "is_environmental": practice.is_environmental,
+                "is_income": practice.is_income,
+                "total_score": total_score,
+                "scores": scores,
+                "created_at": practice.created_at,
+            }
+        )
+    # sort practice results
+    practice_results = sorted(
+        practice_results, key=lambda x: x["total_score"],
+        reverse=True
+    )
+    # get top 10 practices
+    top_10_practices = practice_results[:10]
+    return top_10_practices

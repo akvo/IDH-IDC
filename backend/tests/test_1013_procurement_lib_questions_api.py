@@ -1,8 +1,9 @@
+import pytest
+import sys
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
-import pytest
-import sys
+from db.procurement_library import crud_assessment_question
 
 sys.path.append("..")
 
@@ -33,3 +34,73 @@ class TestAssessmentQuestionsRoute:
             "name",
             "created_at",
         ]
+
+    @pytest.mark.asyncio
+    async def test_submit_answer(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        selected_answers = [
+            "Environment",
+            "Aggregator",
+            "Informal–small Markets",
+            "Intermediate Enhancement",
+            "Small-scale Enterprise",
+        ]
+        questions = crud_assessment_question.get_all_questions(
+            session=session,
+        )
+        answers = []
+        for index, question in enumerate(questions):
+            for option in question["options"]:
+                if option["label"] == selected_answers[index]:
+                    answers.append(
+                        {
+                            "question_id": question["id"],
+                            "indicator_id": option["indicator_id"],
+                        }
+                    )
+        print("answers", answers)
+        res = await client.post(
+            app.url_path_for("pl:submit_answers"),
+            json=answers,
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert len(res) == 10
+        assert list(res[0].keys()) == [
+            "id",
+            "procurement_process_label",
+            "label",
+            "is_environmental",
+            "is_income",
+            "total_score",
+            "scores",
+            "created_at",
+        ]
+        expected_practice_labels = [
+            "Long-Term / Multi-seasonal Contracts",
+            "Simple Contract Terminology",
+            "Shorter Payment Periods\n",
+            "Supporting regenerative agriculture",
+            "Pricing Methods",
+            "Procurement-Driven Sustainability Investments",
+            "Supplier Capacity Building",
+            "Payment Management & Procurement Risk Mangement",
+            "Partial Payments and Milestone Payments",
+            "Buyer Sustainability Targets",
+        ]
+        assert [practice["label"] for practice in res] == \
+            expected_practice_labels
+        expected_scores = [
+            21,
+            20,
+            20,
+            20,
+            19,
+            19,
+            19,
+            19,
+            19,
+            19,
+        ]
+        assert [practice["total_score"] for practice in res] == expected_scores
