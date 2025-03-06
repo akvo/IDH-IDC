@@ -16,7 +16,7 @@ class PaginatedPracticeData(TypedDict):
     data: List[PracticeListDict]
 
 
-def get_practices(
+def get_paginated_practices(
     session: Session,
     skip: int = 0,
     limit: int = 10,
@@ -39,9 +39,9 @@ def get_practices(
             Practice.procurement_process_id.in_(procurement_process_ids)
         )
     if impact_area:
-        indicator_id = session.query(PracticeIndicator).filter_by(
-            name=impact_area
-        ).first().id
+        indicator_id = (
+            session.query(PracticeIndicator).filter_by(name=impact_area).first().id
+        )
         practices = practices.filter(
             Practice.scores.any(
                 and_(
@@ -59,3 +59,17 @@ def get_practices(
 
 def get_practice_by_id(session: Session, practice_id: int) -> PracticeDict:
     return session.get(Practice, practice_id).serialize
+
+
+def get_all_practices(session: Session) -> List[Practice]:
+    return session.query(Practice).all()
+
+
+def get_practice_score_by_indicator_id(
+    session: Session, practice_id: int, indicator_id: int
+) -> PracticeIndicatorScore:
+    return (
+        session.query(PracticeIndicatorScore)
+        .filter_by(practice_id=practice_id, indicator_id=indicator_id)
+        .first()
+    )
