@@ -1,5 +1,5 @@
 from typing_extensions import TypedDict
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
@@ -25,12 +25,14 @@ class ImpactArea(str, Enum):
     env = "environmental_impact"
 
 
-class PracticeListDict(TypedDict):
+class PracticeListDict(BaseModel):
     id: int
     procurement_process_label: str
     label: str
     is_environmental: bool
     is_income: bool
+    total_score: Optional[float] = None
+    scores: Optional[List[str]] = []
     created_at: datetime
 
 
