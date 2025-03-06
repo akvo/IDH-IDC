@@ -1,3 +1,5 @@
+from datetime import datetime
+from typing_extensions import TypedDict
 from sqlalchemy import (
     Column,
     String,
@@ -5,7 +7,17 @@ from sqlalchemy import (
     Integer,
 )
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from db.connection import Base
+from models.procurement_library.assessment_question_option import OptionDict
+
+
+class AssessmentQuestionDict(TypedDict):
+    id: int
+    label: str
+    created_at: datetime
+    updated_at: datetime
+    options: list[OptionDict]
 
 
 class AssessmentQuestion(Base):
@@ -21,5 +33,20 @@ class AssessmentQuestion(Base):
         onupdate=func.now(),
     )
 
+    options = relationship(
+        "AssessmentQuestionOption",
+        back_populates="question"
+    )
+
     def __repr__(self):
         return f"<AssessmentQuestion(id={self.id}, name={self.name}>"
+
+    @property
+    def serialize(self) -> AssessmentQuestionDict:
+        return {
+            "id": self.id,
+            "label": self.label,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "options": [option.serialize for option in self.options],
+        }
