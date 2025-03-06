@@ -78,29 +78,28 @@ class TestAssessmentQuestionsRoute:
             "created_at",
         ]
         expected_practice_labels = [
-            "Long-Term / Multi-seasonal Contracts",
-            "Simple Contract Terminology",
-            "Shorter Payment Periods\n",
             "Supporting regenerative agriculture",
-            "Pricing Methods",
-            "Procurement-Driven Sustainability Investments",
+            "Long-Term / Multi-seasonal Contracts",
             "Supplier Capacity Building",
+            "Procurement-Driven Sustainability Investments",
+            "Buyer Sustainability Targets",
+            "Simple Contract Terminology",
+            "Pricing Methods",
             "Payment Management & Procurement Risk Mangement",
             "Partial Payments and Milestone Payments",
-            "Buyer Sustainability Targets",
+            "Shorter Payment Periods\n",
         ]
-        assert [practice["label"] for practice in res] == \
-            expected_practice_labels
+        assert [practice["label"] for practice in res] == expected_practice_labels
         expected_scores = [
+            25,
+            24,
+            23,
+            22,
+            22,
             21,
-            20,
-            20,
-            20,
-            19,
-            19,
-            19,
-            19,
-            19,
-            19,
+            21,
+            21,
+            21,
+            21,
         ]
         assert [practice["total_score"] for practice in res] == expected_scores

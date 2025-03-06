@@ -52,18 +52,23 @@ def submit_answer(
         total_score = 0
         scores = []
         # loop each answers
-        for a in answers:
+        impact_score = 0
+        for ax, a in enumerate(answers):
             # get score directly from practice model object via scores
             p_score = crud_practice.get_practice_score_by_indicator_id(
                 session=session,
                 practice_id=practice.id,
                 indicator_id=a.indicator_id,
             )
-            if p_score:
+            if p_score and ax == 0:
+                impact_score = p_score.score
+            if p_score and ax > 0:
                 # sum up the score
                 total_score += p_score.score
                 # append score to scores list
                 scores.append(f"{p_score.indicator.label}: {p_score.score}")
+        # first total_score of impact area (first question) * 2
+        total_score += impact_score * 2
         # append practice result
         practice_results.append(
             {
