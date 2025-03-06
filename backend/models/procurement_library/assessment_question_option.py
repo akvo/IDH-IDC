@@ -7,10 +7,16 @@ from sqlalchemy import (
     DateTime,
     String,
 )
+from pydantic import BaseModel
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from db.connection import Base
 from models.procurement_library.practice_indicator import PracticeIndicator
+
+
+class SelectedOption(BaseModel):
+    question_id: int
+    indicator_id: int
 
 
 class OptionDict(TypedDict):
