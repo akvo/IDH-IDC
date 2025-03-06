@@ -47,7 +47,8 @@ class TestProcurementLibraryModels:
                                 "is_option": True,
                                 "indicator_group": "relative_potential_impact",
                                 "description": "Trader: is something test",
-                                "score": "3",
+                                "score": 3,
+                                "autofield": None,
                             },
                             {
                                 "name": "environmental_impact",
@@ -55,7 +56,8 @@ class TestProcurementLibraryModels:
                                 "is_option": True,
                                 "indicator_group": "relative_potential_impact",
                                 "description": "Trader: is something test",
-                                "score": "1",
+                                "score": 1,
+                                "autofield": None,
                             },
                             {
                                 "name": "combined_impact",
@@ -63,9 +65,10 @@ class TestProcurementLibraryModels:
                                 "is_option": True,
                                 "indicator_group": "relative_potential_impact",
                                 "description": "Trader: is something test",
-                                "score": (
-                                    "#income_impact + #environmental_impact / 2"
-                                ),
+                                "score": 2,
+                                "autofield": (
+                                    "#income_impact + #environmental_impact/2"
+                                )
                             },
                         ],
                     }
@@ -194,7 +197,7 @@ class TestProcurementLibraryModels:
             len(practice_scores) == 3
         ), "Number of PracticeIndicatorScores does not match"
 
-        expected_scores = ["3", "1", "#income_impact + #environmental_impact / 2"]
+        expected_scores = [3.0, 1.0, 2.0]
         actual_scores = [score.score for score in practice_scores]
         assert sorted(actual_scores) == sorted(
             expected_scores
