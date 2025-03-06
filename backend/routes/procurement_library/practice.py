@@ -15,7 +15,7 @@ practice_route = APIRouter()
 
 
 @practice_route.get(
-    "/practices",
+    "/pl/practices",
     summary="Get all practices",
     response_description="List of all practices",
     response_model=PaginatedPracticeResponse,
@@ -35,7 +35,7 @@ def get_all_practices(
         if procurement_process_ids
         else None
     )
-    results = crud_practice.get_practices(
+    results = crud_practice.get_paginated_practices(
         session=session,
         skip=(limit * (page - 1)),
         limit=limit,
@@ -54,7 +54,7 @@ def get_all_practices(
 
 
 @practice_route.get(
-    "/practice/{practice_id}",
+    "/pl/practice/{practice_id}",
     summary="Get practice by id",
     response_description="Practice details",
     response_model=PracticeDict,
