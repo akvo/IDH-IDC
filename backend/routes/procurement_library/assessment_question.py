@@ -39,6 +39,7 @@ def submit_answer(
     req: Request,
     answers: List[SelectedOption],
     session: Session = Depends(get_session),
+    limit: int = 10,
 ) -> List[PracticeListDict]:
     # get all practices
     practices = crud_practice.get_all_practices(
@@ -89,6 +90,6 @@ def submit_answer(
         practice_results, key=lambda x: x["total_score"],
         reverse=True
     )
-    # get top 10 practices
-    top_10_practices = practice_results[:10]
-    return top_10_practices
+    # get top practices based on the limit
+    top_practices = practice_results[:limit]
+    return top_practices
