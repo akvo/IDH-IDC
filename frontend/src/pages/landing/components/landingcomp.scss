@@ -67,21 +67,9 @@
     }
   }
 
-  .image-wrapper {
-    padding: 3rem $default-padding-size 3rem 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .image {
-      border: 12px solid $bg-color-grey;
-      border-radius: 22px;
-    }
-  }
-
   .framework-drivers-calculation-wrapper {
-    padding: 24px;
-    height: 275px;
+    padding: 0;
+    height: 245px;
 
     .driver-label {
       color: #000;
@@ -125,15 +113,15 @@
 
 #get-started {
   padding: 3rem $default-padding-size;
-  background: #fcf9f4;
+  background: #fff;
 
   h2 {
-    color: #00403e;
+    color: $primary-color;
     font-family: "RocGrotesk";
-    font-size: 30px;
+    font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 48px;
+    line-height: 30px;
     letter-spacing: -0.8px;
   }
 
@@ -180,14 +168,80 @@
   }
 
   .image-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 0 0 3rem;
-
     img {
-      border-radius: 20px;
+      border-radius: 10px;
       box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .case-step-wrapper {
+    .ant-steps-item {
+      padding: 0 0 24px 0;
+      // not active
+      .ant-steps-item-tail::after {
+        border: 1px solid #e1e0da;
+      }
+
+      .ant-steps-item-icon {
+        border: 1px solid #e3e3e3;
+
+        .ant-steps-icon {
+          color: #979797;
+          text-align: center;
+          font-family: "RocGrotesk";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+        }
+      }
+
+      .ant-steps-item-title {
+        font-family: "RocGrotesk";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 20px;
+        padding: 0;
+        color: #000;
+      }
+      .ant-steps-item-description {
+        color: #475467;
+        font-family: "TabletGothic";
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 15px;
+        margin-top: 5px;
+      }
+
+      // when active
+      &.ant-steps-item-active {
+        .ant-steps-item-tail::after {
+          border: 1px solid $primary-color;
+        }
+
+        .ant-steps-item-icon {
+          border: 1px solid $primary-color;
+          box-shadow: 0 0 2px 4px rgba(203, 244, 220, 1);
+          background: #eaf2f2;
+
+          .ant-steps-icon {
+            color: $primary-color;
+          }
+        }
+      }
+
+      // when finished
+      &.ant-steps-item-finish {
+        .ant-steps-item-icon {
+          border: 1px solid #48d985;
+          background: #48d985;
+
+          .ant-steps-icon {
+            color: #fff;
+          }
+        }
+      }
     }
   }
 }

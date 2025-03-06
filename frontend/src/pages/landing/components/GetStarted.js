@@ -1,66 +1,51 @@
 import React from "react";
-import { Row, Col, Space, Image } from "antd";
+import { Row, Col, Image, Steps } from "antd";
 import "./landingcomp.scss";
-import { Link } from "react-router-dom";
-import LoginRightImage from "../../../assets/images/login-right-img.png";
-import { UserState } from "../../../store";
+import GetStartedImg from "../../../assets/images/get-started.png";
 
 const GetStarted = () => {
-  const loggedIn = UserState.useState((s) => s.id);
-
   const items = [
     {
-      title: "Set up your case",
+      title:
+        "Set an income target: use a living income benchmark or define the target yourself",
       description:
-        "To begin, create a new case and fill in the details of your case such as the name, country of interest, name of the primary commodity and measurement units you would like to use.",
+        "Set an income target: define the target yourself or rely on a living income.",
     },
     {
-      title: "Follow the prompt to input",
+      title: "Enter your income data",
       description:
-        "Then, follow the prompts to input the relevant data for each income driver, including breakdown levels where applicable.",
+        "Enter current and feasible data for the five income drivers and its subcomponents for each segment.",
     },
     {
-      title: "Dive deeper into understanding the income gap",
+      title: "Understand the income gap",
       description:
-        "You will be able to delve deeper into the income gap and understand what drivers you can leverage to close the income gap for different farmer segments.",
+        "Explore the current income situation and the gap to reach your income target.",
+    },
+    {
+      title: "Assess impact of mitigation strategies",
+      description:
+        "Analyze which drivers impact income increase the most, and how to close the gap.",
+    },
+    {
+      title: "Closing the gap",
+      description:
+        "Save different scenarios to close the gap, and explore procurement practices.",
     },
   ];
 
   return (
-    <Row id="get-started">
-      <Col span={12}>
-        <h2>Using the Income Driver Calculator</h2>
-        <Space
-          direction="vertical"
-          size={[24, 24]}
-          className="get-started-info-wrapper"
-        >
-          {items.map((it, i) => (
-            <div key={i}>
-              <Space direction="vertical" size={[16, 16]}>
-                <Space align="center">
-                  <div className="number">{i + 1}</div>
-                  <div className="title">{it.title}</div>
-                </Space>
-                <div className="description">{it.description}</div>
-              </Space>
-            </div>
-          ))}
-        </Space>
-        <div className="button-wrapper">
-          {loggedIn ? (
-            <Link to="/old-cases" className="button button-green-fill">
-              Go to my cases
-            </Link>
-          ) : (
-            <Link to="/login" className="button button-green-fill">
-              Sign in to calculator
-            </Link>
-          )}
-        </div>
-      </Col>
+    <Row id="get-started" gutter={[20, 20]} align="middle">
       <Col span={12} className="image-wrapper">
-        <Image src={LoginRightImage} preview={false} />
+        <h2>What is the current income of the farmers and their income gap?</h2>
+        <Image src={GetStartedImg} preview={false} style={{ width: "95%" }} />
+      </Col>
+      <Col span={12}>
+        <Steps
+          direction="vertical"
+          items={items}
+          className="case-step-wrapper"
+          size="small"
+        />
       </Col>
     </Row>
   );
