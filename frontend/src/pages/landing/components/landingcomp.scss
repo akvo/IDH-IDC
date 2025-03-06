@@ -6,25 +6,36 @@
   background-repeat: no-repeat;
   background-position: center -7rem;
   width: 100%;
-  height: 43rem;
-  padding: 4rem $default-padding-size $default-padding-size
-    $default-padding-size;
+  height: 32rem;
+  position: relative;
+  overflow: hidden;
+
+  .jumbotron-col {
+    background-color: rgba(0, 0, 0, 0.35);
+    padding: 3rem $default-padding-size;
+  }
 
   h1 {
-    font-family: "TabletGothicBold" !important;
+    font-family: "RocGrotesk" !important;
     color: #ffffff;
-    font-weight: 700;
-    font-size: 3.4rem !important;
+    font-weight: 900;
+    font-size: 3rem !important;
     width: 606px;
     line-height: 70px;
+    margin: 0;
   }
 
   h3 {
     color: #ffffff;
     font-weight: 400;
-    font-size: 1.9rem;
-    line-height: 45px;
+    font-size: 1.2rem;
+    line-height: 35px;
     width: 426px;
+  }
+
+  .jumbotron-idh-logo {
+    position: absolute !important;
+    bottom: 0;
   }
 }
 

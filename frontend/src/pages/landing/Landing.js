@@ -68,10 +68,21 @@ const IncomeDriverFramework = () => (
     justify="center"
     className="income-driver-framework-wrapper"
   >
+    <Col span={24} className="income-driver-framework-text-wrapper">
+      <h2>Living Income Roadmap to Guide Action</h2>
+      <p>
+        IDH is the convener of the Living Income Roadmap. It helps companies,
+        along with other stakeholders, take ambitious, aligned actions in their
+        journeys to close living income gaps for small-holder farming
+        communities. The roadmap provides a logical framework with useful
+        resources to help guide a company’s journey to close living income gaps
+        in their supply chain.
+      </p>
+    </Col>
     <Col span={14}>
       <Image src={LivingIncomeRoadmap} preview={false} width="100%" />
     </Col>
-    <Col span={10} className="income-driver-framework-text-wrapper">
+    {/* <Col span={10} className="income-driver-framework-text-wrapper">
       <h2 data-testid="income-driver-framework-left-text">
         IDH Living Income Roadmap and Toolkit
       </h2>
@@ -102,7 +113,7 @@ const IncomeDriverFramework = () => (
       >
         Learn More
       </Link>
-    </Col>
+    </Col> */}
   </Row>
 );
 
