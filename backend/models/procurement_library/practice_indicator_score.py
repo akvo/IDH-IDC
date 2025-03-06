@@ -25,8 +25,8 @@ class PracticeIndicatorScore(Base):
         onupdate=func.now(),
     )
 
-    practice = relationship("Practice", backref="practice_scores", overlaps="practice_scores,practice")
-    indicator = relationship("PracticeIndicator")
+    practice = relationship("Practice", back_populates="scores")
+    indicator = relationship("PracticeIndicator", back_populates="scores")
 
     def __repr__(self):
         return f"<PracticeIndicatorScore(id={self.id}>"

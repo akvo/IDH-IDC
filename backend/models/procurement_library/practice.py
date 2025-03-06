@@ -89,8 +89,7 @@ class Practice(Base):
         foreign_keys=[PracticeIndicatorScore.practice_id],
         cascade="all, delete",
         passive_deletes=True,
-        backref="practice_scores",
-        overlaps="practice_scores,practice",
+        back_populates="practice"
     )
 
     def __repr__(self):
