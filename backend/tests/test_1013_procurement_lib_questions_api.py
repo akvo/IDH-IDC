@@ -59,7 +59,6 @@ class TestAssessmentQuestionsRoute:
                             "indicator_id": option["indicator_id"],
                         }
                     )
-        print("answers", answers)
         res = await client.post(
             app.url_path_for("pl:submit_answers"),
             json=answers,
