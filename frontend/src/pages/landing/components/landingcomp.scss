@@ -40,8 +40,9 @@
 }
 
 #framework-drivers {
-  background-color: #ffffff;
+  background-color: #f9fafb;
   width: 100%;
+  padding: 2rem $default-padding-size;
 
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
     padding: 24px 0 16px 0;
@@ -55,14 +56,14 @@
   }
 
   .text-wrapper {
-    padding: 3rem 2rem 3rem $default-padding-size;
     h2 {
-      color: #00403e;
-      font-family: Roc Grotesk;
-      font-size: 30px;
+      text-align: center;
+      color: $primary-color;
+      font-family: "RocGrotesk";
+      font-size: 24px;
       font-style: normal;
       font-weight: 700;
-      line-height: 52px;
+      line-height: 30px;
     }
   }
 
