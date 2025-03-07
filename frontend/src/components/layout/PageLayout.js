@@ -52,10 +52,16 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
 
   // menu without loggin
   const generalMenus = useMemo(() => {
-    const otherResources = {
+    const otherResourcesMenu = {
       testid: "nav-menu-other-resources",
       name: "Other Resources",
       path: "/other-resources",
+      role: allUserRole,
+    };
+    const faqMenu = {
+      testid: "nav-menu-faq",
+      name: "FAQ",
+      path: "/faq",
       role: allUserRole,
     };
     const procurementLibraryMenu = {
@@ -64,7 +70,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       path: "/procurement-library",
       role: allUserRole,
     };
-    const values = [otherResources, procurementLibraryMenu];
+    const values = [otherResourcesMenu, faqMenu, procurementLibraryMenu];
     return values;
   }, []);
 
