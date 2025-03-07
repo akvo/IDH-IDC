@@ -9,6 +9,7 @@ import {
   OvalIcon,
 } from "../../lib/icon";
 import { Link } from "react-router-dom";
+import CaseStudies from "./components/CaseStudies";
 
 const ProcurementLibrary = () => {
   const cards = [
@@ -33,34 +34,36 @@ const ProcurementLibrary = () => {
   ];
   return (
     <div className="procurement-library-container">
-      <div className="hero">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1>
-              What is the
-              <br />
-              Procurement Library?
-            </h1>
-            <p>
-              The procurement library is a tool designed to help businesses
-              across the entire supply chain identify the most impactful and
-              relevant interventions for their goals. You can provide additional
-              information about your business for personalized procurement
-              advice, browse all practices in the intervention library, or
-              explore our methodology.
-            </p>
-          </div>
+      <div className="jumbotron-gradient" />
+      <div className="jumbotron" />
+      <div className="jumbotron-content">
+        <div className="jumbotron-text">
+          <h1>
+            What is the
+            <br />
+            Procurement Library?
+          </h1>
+          <p>
+            The procurement library is a tool designed to help businesses across
+            the entire supply chain identify the most impactful and relevant
+            interventions for their goals. You can provide additional
+            information about your business for personalized procurement advice,
+            browse all practices in the intervention library, or explore our
+            methodology.
+          </p>
+        </div>
 
-          <div>
-            <List
-              grid={{
-                gutter: 24,
-                column: 3,
-              }}
-              dataSource={cards}
-              renderItem={(item) => (
-                <List.Item>
-                  <Card>
+        <div>
+          <List
+            grid={{
+              gutter: 24,
+              column: 3,
+            }}
+            dataSource={cards}
+            renderItem={(item) => (
+              <List.Item>
+                <Card>
+                  <div className="card-content">
                     <div className="card-icon">
                       <span className="icon-front">{item.icon}</span>
                       <span className="icon-back">
@@ -80,12 +83,15 @@ const ProcurementLibrary = () => {
                         </Button>
                       </Link>
                     </div>
-                  </Card>
-                </List.Item>
-              )}
-            />
-          </div>
+                  </div>
+                </Card>
+              </List.Item>
+            )}
+          />
         </div>
+      </div>
+      <div className="case-studies-container">
+        <CaseStudies />
       </div>
     </div>
   );
