@@ -95,9 +95,9 @@ const ProcurementLibrary = () => {
           />
         </div>
       </div>
-      <div className="case-studies-container">
+      {/* <div className="case-studies-container">
         <CaseStudies />
-      </div>
+      </div> */}
     </div>
   );
 };

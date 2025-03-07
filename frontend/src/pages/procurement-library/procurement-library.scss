@@ -1,6 +1,8 @@
 @import "../../variables.scss";
 
 .procurement-library-container {
+  width: 100%;
+  min-height: 100vh;
   position: relative;
   overflow: hidden;
   .jumbotron {
