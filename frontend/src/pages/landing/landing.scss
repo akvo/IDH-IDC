@@ -9,7 +9,7 @@
 
     .income-driver-framework-text-wrapper {
       h2 {
-        color: #005855;
+        color: $primary-color;
         font-family: "RocGrotesk";
         font-size: 24px;
         font-style: normal;
@@ -89,6 +89,21 @@
       &.info-third {
         background: #ffc505;
       }
+    }
+  }
+
+  .other-tools-recources-container {
+    padding: 3rem $default-padding-size;
+    background: #fff;
+
+    h2 {
+      color: $primary-color;
+      font-family: "RocGrotesk";
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 30px;
+      text-align: center;
     }
   }
 }

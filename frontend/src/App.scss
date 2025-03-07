@@ -406,6 +406,51 @@
       font-style: italic;
     }
   }
+
+  .other-tool-resource-list-container {
+    margin-top: 24px;
+
+    .other-tool-resource-list {
+      display: flex;
+      justify-content: space-around;
+      gap: 40px;
+
+      .otr-item-wrapper {
+        h2 {
+          color: #000 !important;
+          text-align: left !important;
+          font-family: "RocGrotesk";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 28px;
+        }
+
+        p {
+          text-align: left;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          line-height: 24px;
+        }
+      }
+    }
+
+    .button-wrapper {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+
+      .ant-btn {
+        border-radius: 100px;
+        border: 1px solid $primary-color;
+        background: $primary-color;
+        color: #fff;
+        font-family: "RocGrotesk";
+        font-weight: 600;
+      }
+    }
+  }
 }
 
 .ant-popover {

@@ -14,6 +14,7 @@ import {
   FooterDisclaimer,
   FrameworkDrivers,
 } from "./components";
+import { OtherToolResourceList } from "../../components/utils";
 
 const InformationCard = () => (
   <Row
@@ -84,6 +85,15 @@ const IncomeDriverFramework = () => (
   </Row>
 );
 
+const OtherToolsAndResources = () => {
+  return (
+    <div className="other-tools-recources-container">
+      <h2>Other tools & resources</h2>
+      <OtherToolResourceList size={3} showMoreButton={true} />
+    </div>
+  );
+};
+
 const Landing = ({ signOut }) => {
   return (
     <div className="landing-container" id="landing">
@@ -93,6 +103,7 @@ const Landing = ({ signOut }) => {
       <FrameworkDrivers />
       <GetStarted />
       <ExploreStudies />
+      <OtherToolsAndResources />
       <FooterDisclaimer />
     </div>
   );
