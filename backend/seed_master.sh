@@ -9,3 +9,4 @@ python -m seeder.region
 python -m seeder.benchmark
 python -m seeder.question
 python -m seeder.reference_data
+python -m seeder.procurement_library
