@@ -2,8 +2,11 @@ import React from "react";
 import { otherToolsAndResourcesContent } from "../../store/static-other-tools-resources-content";
 import { Button, Image, Tag } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="other-tool-resource-list-container">
       <div className="other-tool-resource-list">
@@ -45,7 +48,7 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
       </div>
       {showMoreButton && (
         <div className="button-wrapper">
-          <Button>
+          <Button onClick={() => navigate("/other-resources")}>
             Explore more Tools & Resources <ArrowRightOutlined />
           </Button>
         </div>

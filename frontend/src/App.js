@@ -27,6 +27,7 @@ import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
 import { ProcurementLibrary } from "./pages/procurement-library";
+import { OtherResources } from "./pages/other-resources";
 
 const optionRoutes = [
   "organisation/options",
@@ -205,6 +206,11 @@ const App = () => {
           )}
           <Route exact path="/" element={<Landing signOut={signOut} />} />
           <Route exact path="/login" element={<Login />} />
+          <Route
+            exact
+            path="/other-resources"
+            element={<OtherResources signOut={signOut} />}
+          />
           <Route
             exact
             path="/procurement-library"

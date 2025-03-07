@@ -132,14 +132,16 @@
       float: right;
       a {
         color: $primary-color;
-        font-weight: 700;
-        font-size: 0.95rem;
+        font-weight: 600;
+        font-size: 15px;
       }
       .nav-sign-in {
         background-color: $primary-color;
         color: #ffffff;
-        padding: 12px 18px;
-        border-radius: 20px;
+        padding: 10px 14px;
+        border-radius: 100px;
+        font-size: 15px !important;
+        font-weight: 600;
       }
     }
   }
@@ -412,10 +414,13 @@
 
     .other-tool-resource-list {
       display: flex;
-      justify-content: space-around;
+      justify-content: flex-start;
+      flex-wrap: wrap;
       gap: 40px;
 
       .otr-item-wrapper {
+        width: 30%;
+
         h2 {
           color: #000 !important;
           text-align: left !important;
@@ -449,6 +454,44 @@
         font-family: "RocGrotesk";
         font-weight: 600;
       }
+    }
+  }
+
+  .page-title-layout-container {
+    .page-title-layout-header-wrapper {
+      background: #d5ebfd;
+      position: relative;
+      overflow: hidden;
+
+      .title-wrapper {
+        padding: 2rem $default-padding-size;
+
+        h1 {
+          margin: 0;
+          color: $primary-color;
+          font-weight: 700;
+          font-size: 26px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .page-footer-container {
+    color: #fff;
+
+    &.with-padding-bg {
+      padding: 1rem $default-padding-size;
+      background-color: #00625f;
+    }
+    .copyright-text {
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
   }
 }
