@@ -1,0 +1,189 @@
+@import "../../variables.scss";
+
+.procurement-library-container {
+  display: flex;
+  justify-content: center;
+  .hero {
+    width: 100%;
+    height: auto;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    text-align: left;
+    overflow: hidden;
+    padding: 40px 64px 0;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 400px;
+      background: linear-gradient(
+        135deg,
+        rgba(28, 62, 32, 0.64) 66.97%,
+        rgba(127, 127, 84, 0) 102.75%
+      );
+      filter: blur(50px);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      padding: 32px 128px;
+      display: flex;
+      flex-direction: column;
+      gap: 64px;
+      justify-content: space-between;
+
+      .hero-text {
+        display: flex;
+        width: 687px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+
+        h1 {
+          font-family: "FONTSPRING DEMO - Roc Grotesk";
+          font-size: 40px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 52px; /* 130% */
+          margin-block-start: 0;
+          margin-block-end: 0;
+        }
+        p {
+          font-family: "FONTSPRING DEMO - Roc Grotesk";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 28px; /* 157.15% */
+          margin-block-start: 0;
+          margin-block-end: 0;
+        }
+      }
+
+      .ant-btn {
+        height: auto;
+        border-radius: 40px;
+        border: 1px solid $primary-color;
+        background: $primary-color;
+        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+        .ant-space-item span {
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 20px; /* 142.857% */
+        }
+        .ant-space-item svg {
+          margin-top: 4px;
+        }
+      }
+
+      .ant-list {
+        .ant-card {
+          border-radius: 20px;
+          border: 1px solid #ddd;
+          .ant-card-body {
+            padding: 20px;
+          }
+        }
+        .ant-row {
+          div:nth-child(1) {
+            .ant-card {
+              background: #9cd7ff;
+            }
+          }
+          div:nth-child(2) {
+            .ant-card {
+              background: #7dd3ab;
+            }
+          }
+          div:nth-child(3) {
+            .ant-card {
+              background: #eed06e;
+            }
+          }
+        }
+      }
+
+      .card-icon {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        .icon-back {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          background-size: cover;
+          background-position: center;
+        }
+        .icon-front {
+          color: $primary-color;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -40%);
+          z-index: 1;
+        }
+      }
+
+      .card-title {
+        h3 {
+          color: $primary-color;
+          font-family: "FONTSPRING DEMO - Roc Grotesk";
+          font-size: 24px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 32px; /* 133.333% */
+          letter-spacing: -0.48px;
+          margin-block-end: 8px;
+        }
+      }
+
+      .card-cta {
+        text-align: right;
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .hero {
+      padding: 40px 32px 0;
+
+      .hero-content {
+        padding: 16px 64px;
+
+        .hero-text {
+          width: 100%;
+          h1 {
+            font-size: 32px;
+            line-height: 40px;
+          }
+          p {
+            font-size: 16px;
+            line-height: 24px;
+          }
+        }
+
+        .card-title {
+          h3 {
+            font-size: 20px;
+            line-height: 28px;
+          }
+        }
+      }
+    }
+  }
+}
