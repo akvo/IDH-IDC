@@ -57,7 +57,12 @@ const ProcurementLibrary = () => {
           <List
             grid={{
               gutter: 24,
-              column: 3,
+              xs: 1,
+              sm: 1,
+              md: 1,
+              lg: 3,
+              xl: 3,
+              xxl: 3,
             }}
             dataSource={cards}
             renderItem={(item) => (
