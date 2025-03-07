@@ -1,7 +1,6 @@
 import React from "react";
 import "./landing.scss";
 import { Row, Col, Card, Image } from "antd";
-import { Link } from "react-router-dom";
 import {
   LandingInfoHelpIcon,
   LandingInfoEstimateIcon,
@@ -15,6 +14,7 @@ import {
   FooterDisclaimer,
   FrameworkDrivers,
 } from "./components";
+import { OtherToolResourceList } from "../../components/utils";
 
 const InformationCard = () => (
   <Row
@@ -68,43 +68,31 @@ const IncomeDriverFramework = () => (
     justify="center"
     className="income-driver-framework-wrapper"
   >
-    <Col span={14}>
-      <Image src={LivingIncomeRoadmap} preview={false} width="100%" />
-    </Col>
-    <Col span={10} className="income-driver-framework-text-wrapper">
-      <h2 data-testid="income-driver-framework-left-text">
-        IDH Living Income Roadmap and Toolkit
-      </h2>
-      <p data-testid="income-driver-framework-right-text">
+    <Col span={24} className="income-driver-framework-text-wrapper">
+      <h2>Living Income Roadmap to Guide Action</h2>
+      <p>
         IDH is the convener of the Living Income Roadmap. It helps companies,
         along with other stakeholders, take ambitious, aligned actions in their
         journeys to close living income gaps for small-holder farming
         communities. The roadmap provides a logical framework with useful
         resources to help guide a company’s journey to close living income gaps
-        in their supply chain. This framework includes 5 essential steps,
-        ‘smart-mix’ of strategies and a data-driven toolkit. These approaches
-        highlight the need to use comparable data, engaging in multistakeholder
-        partnerships to take effective action.
-        <br />
-        <br />
-        The ‘Income Driver Framework’ is at the heart of IDH’s data-driven
-        approach on data and tools. IDH’s tools and approaches and tools have
-        been found to be equally useful and effective in interventions without a
-        Living Income commitment yet.
+        in their supply chain.
       </p>
-      <br />
-      <Link
-        data-testid="button-learn-more-2"
-        className="button button-secondary"
-        to="https://www.idhsustainabletrade.com/roadmap-on-living-income/"
-        target="_blank"
-        rel="norefferer"
-      >
-        Learn More
-      </Link>
+    </Col>
+    <Col span={24} align="center">
+      <Image src={LivingIncomeRoadmap} preview={false} width={800} />
     </Col>
   </Row>
 );
+
+const OtherToolsAndResources = () => {
+  return (
+    <div className="other-tools-recources-container">
+      <h2>Other tools & resources</h2>
+      <OtherToolResourceList size={3} showMoreButton={true} />
+    </div>
+  );
+};
 
 const Landing = ({ signOut }) => {
   return (
@@ -115,6 +103,7 @@ const Landing = ({ signOut }) => {
       <FrameworkDrivers />
       <GetStarted />
       <ExploreStudies />
+      <OtherToolsAndResources />
       <FooterDisclaimer />
     </div>
   );

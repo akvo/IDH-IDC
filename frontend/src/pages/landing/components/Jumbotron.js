@@ -4,6 +4,8 @@ import { Row, Col, Button } from "antd";
 import { Link } from "react-router-dom";
 import { UserState } from "../../../store";
 import { useNavigate } from "react-router-dom";
+import { ArrowRightOutlined } from "@ant-design/icons";
+import { LandingIDHLogo } from "../../../lib/icon";
 
 const Jumbotron = ({ signOut = null }) => {
   const navigate = useNavigate();
@@ -11,7 +13,18 @@ const Jumbotron = ({ signOut = null }) => {
 
   return (
     <Row id="jumbotron" data-testid="jumbotron-wrapper" justify="center">
-      <Col span={24}>
+      <LandingIDHLogo
+        style={{
+          position: "absolute",
+          bottom: -180,
+          right: -165,
+          transform: "rotate(260deg)",
+        }}
+        width={400}
+        height={400}
+      />
+
+      <Col span={24} className="jumbotron-col">
         <h1 data-testid="jumbotron-title">
           Welcome to the Income Driver Calculator (IDC)
         </h1>
@@ -37,7 +50,8 @@ const Jumbotron = ({ signOut = null }) => {
             data-testid="button-learn-more"
             className="button button-yellow"
           >
-            Sign in to calculator
+            Log in to calculator{" "}
+            <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
           </Link>
         )}
       </Col>
