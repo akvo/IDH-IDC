@@ -26,7 +26,10 @@ import { api } from "./lib";
 import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
-import { ProcurementLibrary } from "./pages/procurement-library";
+import {
+  ProcurementLibrary,
+  ProcurementPage,
+} from "./pages/procurement-library";
 import { OtherResources } from "./pages/other-resources";
 import { FAQ } from "./pages/faq";
 
@@ -217,6 +220,26 @@ const App = () => {
             exact
             path="/procurement-library"
             element={<ProcurementLibrary signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/assessment"
+            element={<ProcurementPage.Assessment signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/intervention-library"
+            element={<ProcurementPage.InterventionLibrary signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/methodology"
+            element={<ProcurementPage.Methodology signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/practice/:practiceId"
+            element={<ProcurementPage.Practice signOut={signOut} />}
           />
           {/* <Route exact path="/register" element={<Register />} /> */}
           <Route
