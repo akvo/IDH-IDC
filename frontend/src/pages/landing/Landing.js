@@ -79,7 +79,7 @@ const IncomeDriverFramework = () => (
       </p>
     </Col>
     <Col span={24} align="center">
-      <Image src={LivingIncomeRoadmap} preview={false} width="75%" />
+      <Image src={LivingIncomeRoadmap} preview={false} width={800} />
     </Col>
   </Row>
 );

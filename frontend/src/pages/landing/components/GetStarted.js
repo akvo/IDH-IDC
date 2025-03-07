@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Image, Steps } from "antd";
+import { Image, Steps } from "antd";
 import "./landingcomp.scss";
 import GetStartedImg from "../../../assets/images/get-started.png";
 
@@ -34,20 +34,20 @@ const GetStarted = () => {
   ];
 
   return (
-    <Row id="get-started" gutter={[20, 20]} align="middle">
-      <Col span={12} className="image-wrapper">
+    <div id="get-started">
+      <div className="image-wrapper">
         <h2>What is the current income of the farmers and their income gap?</h2>
-        <Image src={GetStartedImg} preview={false} style={{ width: "95%" }} />
-      </Col>
-      <Col span={12}>
+        <Image src={GetStartedImg} preview={false} style={{ width: "93%" }} />
+      </div>
+      <div>
         <Steps
           direction="vertical"
           items={items}
           className="case-step-wrapper"
           size="small"
         />
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
 
