@@ -25,12 +25,6 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       role: allUserRole,
     };
     let values = [
-      // {
-      //   testid: "nav-menu-calculator",
-      //   name: "Use the Calculator",
-      //   path: "/use-calculator",
-      //   role: allUserRole,
-      // },
       {
         testid: "nav-menu-cases",
         name: "Cases Overview",
@@ -58,13 +52,19 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
 
   // menu without loggin
   const generalMenus = useMemo(() => {
+    const otherResources = {
+      testid: "nav-menu-other-resources",
+      name: "Other Resources",
+      path: "/other-resources",
+      role: allUserRole,
+    };
     const procurementLibraryMenu = {
       testid: "nav-menu-procurement-library",
       name: "Procurement Library",
       path: "/procurement-library",
       role: allUserRole,
     };
-    const values = [procurementLibraryMenu];
+    const values = [otherResources, procurementLibraryMenu];
     return values;
   }, []);
 
