@@ -28,6 +28,7 @@ import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
 import { ProcurementLibrary } from "./pages/procurement-library";
 import { OtherResources } from "./pages/other-resources";
+import { FAQ } from "./pages/faq";
 
 const optionRoutes = [
   "organisation/options",
@@ -211,6 +212,7 @@ const App = () => {
             path="/other-resources"
             element={<OtherResources signOut={signOut} />}
           />
+          <Route exact path="/faq" element={<FAQ signOut={signOut} />} />
           <Route
             exact
             path="/procurement-library"
