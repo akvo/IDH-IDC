@@ -82,6 +82,7 @@
   }
   .button-yellow {
     background-color: $yellow-color;
+    color: #000;
   }
   .button-secondary {
     border: 2px solid $primary-color;
@@ -131,14 +132,16 @@
       float: right;
       a {
         color: $primary-color;
-        font-weight: 700;
-        font-size: 0.95rem;
+        font-weight: 600;
+        font-size: 15px;
       }
       .nav-sign-in {
         background-color: $primary-color;
         color: #ffffff;
-        padding: 12px 18px;
-        border-radius: 20px;
+        padding: 10px 14px;
+        border-radius: 100px;
+        font-size: 15px !important;
+        font-weight: 600;
       }
     }
   }
@@ -403,6 +406,92 @@
       font-size: 13px;
       font-family: "TabletGothic" !important;
       font-style: italic;
+    }
+  }
+
+  .other-tool-resource-list-container {
+    margin-top: 24px;
+
+    .other-tool-resource-list {
+      display: flex;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 40px;
+
+      .otr-item-wrapper {
+        width: 30%;
+
+        h2 {
+          color: #000 !important;
+          text-align: left !important;
+          font-family: "RocGrotesk";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 28px;
+        }
+
+        p {
+          text-align: left;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          line-height: 24px;
+        }
+      }
+    }
+
+    .button-wrapper {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+
+      .ant-btn {
+        border-radius: 100px;
+        border: 1px solid $primary-color;
+        background: $primary-color;
+        color: #fff;
+        font-family: "RocGrotesk";
+        font-weight: 600;
+      }
+    }
+  }
+
+  .page-title-layout-container {
+    .page-title-layout-header-wrapper {
+      background: #d5ebfd;
+      position: relative;
+      overflow: hidden;
+
+      .title-wrapper {
+        padding: 2rem $default-padding-size;
+
+        h1 {
+          margin: 0;
+          color: $primary-color;
+          font-weight: 700;
+          font-size: 26px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .page-footer-container {
+    color: #fff;
+
+    &.with-padding-bg {
+      padding: 1rem $default-padding-size;
+      background-color: #00625f;
+    }
+    .copyright-text {
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
   }
 }

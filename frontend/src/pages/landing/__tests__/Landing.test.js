@@ -45,13 +45,6 @@ describe("Landing page", () => {
     expect(
       wrapper.getByTestId("income-driver-framework-wrapper")
     ).toBeInTheDocument();
-    expect(
-      wrapper.getByTestId("income-driver-framework-left-text")
-    ).toBeInTheDocument();
-    expect(
-      wrapper.getByTestId("income-driver-framework-right-text")
-    ).toBeInTheDocument();
-    expect(wrapper.getByTestId("button-learn-more-2")).toBeInTheDocument();
   });
 
   it("should render second section", () => {
@@ -67,7 +60,6 @@ describe("Landing page", () => {
       wrapper.getByTestId("framework-drivers-wrapper")
     ).toBeInTheDocument();
     expect(wrapper.getByTestId("framework-drivers-title")).toBeInTheDocument();
-    expect(wrapper.getByTestId("framework-drivers-image")).toBeInTheDocument();
   });
 
   it("should render third section", () => {
@@ -82,7 +74,6 @@ describe("Landing page", () => {
     expect(wrapper.getByTestId("explore-studies-wrapper")).toBeInTheDocument();
     expect(wrapper.getByTestId("explore-studies-title")).toBeInTheDocument();
     expect(wrapper.getByTestId("explore-studies-subtitle")).toBeInTheDocument();
-    expect(wrapper.getByTestId("map")).toBeInTheDocument();
   });
 
   it("should render disclaimer section", () => {

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "./landingcomp.scss";
-import { Row, Col, Space, Image, Divider } from "antd";
-import LogoWhite from "../../../assets/images/logo-white.png";
+import { Row, Col, Divider } from "antd";
 import { Link } from "react-router-dom";
 import { DataSecurityProvisionModal } from "../../../components/utils";
+import { PageFooter } from "../../../components/layout";
 
 const FooterDisclaimer = () => {
   const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
@@ -52,16 +52,7 @@ const FooterDisclaimer = () => {
       </Col>
       <Col span={24} className="footer-wrapper">
         <Divider style={{ borderColor: "#fff", opacity: 0.25 }} />
-        <Row align="middle">
-          <Col span={24}>
-            <Space align="center">
-              <Image src={LogoWhite} preview={false} width={100} />
-              <div className="copyright-text">
-                Copyright 2023 © IDH. All rights reserved - Created by Akvo.
-              </div>
-            </Space>
-          </Col>
-        </Row>
+        <PageFooter wrapper={false} />
       </Col>
 
       {/* Data Security Provision Modal */}
