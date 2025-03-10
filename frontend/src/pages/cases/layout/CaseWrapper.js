@@ -23,7 +23,7 @@ import { CaseSettings } from "../components";
 import { stepPath, CaseUIState } from "../store";
 
 const { Sider, Content } = Layout;
-const buttonPrevNextPosition = "top";
+const buttonPrevNextPosition = "bottom";
 
 const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const navigate = useNavigate();

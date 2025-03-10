@@ -52,7 +52,7 @@ const FooterDisclaimer = () => {
       </Col>
       <Col span={24} className="footer-wrapper">
         <Divider style={{ borderColor: "#fff", opacity: 0.25 }} />
-        <PageFooter wrapper={false} />
+        <PageFooter wrapper={false} fixed={false} />
       </Col>
 
       {/* Data Security Provision Modal */}

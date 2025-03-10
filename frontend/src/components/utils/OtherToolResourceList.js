@@ -3,6 +3,7 @@ import { otherToolsAndResourcesContent } from "../../store/static-other-tools-re
 import { Button, Image, Tag } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
   const navigate = useNavigate();
@@ -13,6 +14,30 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
         {otherToolsAndResourcesContent
           .filter((item) => item.order <= size)
           .map((item, ti) => {
+            const LinkButton = ({ children }) => {
+              if (item?.button?.type === "download") {
+                return (
+                  <a href={item.button.href} download>
+                    {children}
+                  </a>
+                );
+              }
+
+              if (item?.button?.type === "new-window") {
+                return (
+                  <a
+                    href={item.button.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    {children}
+                  </a>
+                );
+              }
+
+              return <Link to={item.button.href}>{children}</Link>;
+            };
+
             return (
               <div key={`otr-${ti}`} className="otr-item-wrapper">
                 <Image
@@ -30,17 +55,19 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
                 <h2>{item.title}</h2>
                 <p>{item.description}</p>
                 {item?.button?.text && (
-                  <Button
-                    type="link"
-                    style={{
-                      color: "#00625F",
-                      fontWeight: 600,
-                      padding: 0,
-                      fontFamily: "RocGrotesk",
-                    }}
-                  >
-                    {item.button.text}
-                  </Button>
+                  <LinkButton>
+                    <Button
+                      type="link"
+                      style={{
+                        color: "#00625F",
+                        fontWeight: 600,
+                        padding: 0,
+                        fontFamily: "RocGrotesk",
+                      }}
+                    >
+                      {item.button.text}
+                    </Button>
+                  </LinkButton>
                 )}
               </div>
             );
