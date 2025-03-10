@@ -25,6 +25,7 @@ class OptionDict(TypedDict):
     indicator_id: int
     label: str
     name: str
+    description: str
     created_at: datetime
 
 
@@ -51,5 +52,6 @@ class AssessmentQuestionOption(Base):
             "indicator_id": self.indicator_id,
             "label": self.label if self.label else self.indicator.label,
             "name": self.indicator.name,
+            "description": self.indicator.description,
             "created_at": self.created_at,
         }

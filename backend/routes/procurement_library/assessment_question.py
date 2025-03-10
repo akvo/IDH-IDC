@@ -77,6 +77,7 @@ def submit_answer(
                 "procurement_process_label": (
                     practice.procurement_process.label
                 ),
+                "procurement_process_id": practice.procurement_process_id,
                 "label": practice.label,
                 "is_environmental": practice.is_environmental,
                 "is_income": practice.is_income,
