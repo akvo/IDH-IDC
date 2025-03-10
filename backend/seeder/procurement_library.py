@@ -164,9 +164,9 @@ def seeder_procurement_questions(session: Session):
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()
-    print("[START]: Truncating all tables...")
+    print("[START]: Truncating all procurement tables...")
     truncate_all_tables(session=session)
-    print("[DONE]: All tables truncated.")
+    print("[DONE]: All procurement tables truncated.")
 
     print("[START]: Seeding procurement practices...")
     seeder_procurement_practices(session=session)

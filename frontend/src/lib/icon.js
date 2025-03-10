@@ -566,3 +566,106 @@ export const LandingIDHLogo = ({
     />
   </svg>
 );
+
+export const QuestionCircleOutline = ({ size = 16 }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 16 16"
+    fill="none"
+  >
+    <g clipPath="url(#clip0_4353_30106)">
+      <path
+        d="M6.05967 6.00065C6.21641 5.5551 6.52578 5.17939 6.93298 4.94007C7.34018 4.70076 7.81894 4.61328 8.28446 4.69313C8.74998 4.77297 9.17222 5.015 9.47639 5.37634C9.78057 5.73767 9.94705 6.195 9.94634 6.66732C9.94634 8.00065 7.94634 8.66732 7.94634 8.66732M7.99967 11.334H8.00634M14.6663 8.00065C14.6663 11.6826 11.6816 14.6673 7.99967 14.6673C4.31778 14.6673 1.33301 11.6826 1.33301 8.00065C1.33301 4.31875 4.31778 1.33398 7.99967 1.33398C11.6816 1.33398 14.6663 4.31875 14.6663 8.00065Z"
+        stroke="currentColor"
+        strokeWidth="1.33333"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_4353_30106">
+        <rect width="16" height="16" fill="white" />
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+export const DollarSignIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M11.2871 5.87584L13.8417 6.52384L14.4796 3.94336"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M13.473 9.43654C12.8336 12.1236 10.4375 14.1209 7.58193 14.1209C4.23249 14.1209 1.51953 11.3805 1.51953 8.00086C1.51953 4.62118 4.23249 1.88086 7.58049 1.88086C10.3856 1.88086 12.7458 3.80614 13.437 6.4183"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.49609 10.3613V11.4168"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M7.49609 4.58203V5.63611"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M8.66206 6.03128C8.56567 5.90944 8.4432 5.81075 8.30365 5.74247C8.1641 5.67419 8.01102 5.63806 7.85566 5.63672H7.02046C6.48766 5.63672 6.05566 6.10904 6.05566 6.69224C6.05566 7.1876 6.37246 7.61528 6.81454 7.72184L8.0875 8.02568C8.58286 8.1452 8.9371 8.62616 8.9371 9.18056C8.9371 9.83288 8.45326 10.3614 7.8571 10.3614H7.1371C6.95047 10.3584 6.76792 10.3062 6.60788 10.2101C6.44785 10.1141 6.31598 9.97747 6.22558 9.81416"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const LeafIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g clipPath="url(#clip0_4353_29601)">
+      <path
+        d="M3.53532 10.4651C4.58143 11.0819 5.80631 11.3244 7.00854 11.1527C8.21078 10.9809 9.31878 10.4052 10.1503 9.52008C12.6703 7.00008 12.6703 1.33008 12.6703 1.33008C12.6703 1.33008 7.00032 1.33008 4.48032 3.85008C3.59523 4.68163 3.01946 5.78962 2.84771 6.99185C2.67597 8.19408 2.91846 9.41896 3.53532 10.4651Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M1.33008 12.67L8.26008 5.73999"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+    <defs>
+      <clipPath id="clip0_4353_29601">
+        <rect width="14" height="14" fill="white" />
+      </clipPath>
+    </defs>
+  </svg>
+);

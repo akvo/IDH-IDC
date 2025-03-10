@@ -29,6 +29,7 @@ class TestPracticeRoute:
         assert list(res["data"][0].keys()) == [
             "id",
             "procurement_process_label",
+            "procurement_process_id",
             "label",
             "is_environmental",
             "is_income",

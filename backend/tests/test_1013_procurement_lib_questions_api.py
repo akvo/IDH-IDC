@@ -32,6 +32,7 @@ class TestAssessmentQuestionsRoute:
             "indicator_id",
             "label",
             "name",
+            "description",
             "created_at",
         ]
 
@@ -69,6 +70,7 @@ class TestAssessmentQuestionsRoute:
         assert list(res[0].keys()) == [
             "id",
             "procurement_process_label",
+            "procurement_process_id",
             "label",
             "is_environmental",
             "is_income",
