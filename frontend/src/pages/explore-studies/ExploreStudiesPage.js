@@ -607,7 +607,7 @@ const ExploreStudiesPage = () => {
               <Col span={8} align="end">
                 <Button
                   icon={<PlusOutlined />}
-                  className="button button-green-fill"
+                  className="button-green-fill"
                   onClick={() => setOpen(true)}
                 >
                   {/* Open Form Modal */}
