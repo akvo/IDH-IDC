@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useCallback } from "react";
 import "./App.scss";
 import { Spin } from "antd";
 import { useCookies } from "react-cookie";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
@@ -39,6 +39,16 @@ const optionRoutes = [
   "company/options",
   "company/having_case_options",
 ];
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top when the route changes
+  }, [pathname]);
+
+  return null;
+};
 
 const App = () => {
   const navigate = useNavigate();
@@ -139,6 +149,7 @@ const App = () => {
 
   return (
     <PageLayout testid="page-layout" signOut={signOut}>
+      <ScrollToTop />
       {authTokenAvailable && userRole === null ? (
         <div className="loading-container">
           <Spin />

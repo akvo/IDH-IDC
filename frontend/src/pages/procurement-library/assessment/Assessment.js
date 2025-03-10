@@ -74,6 +74,14 @@ const Assessment = () => {
   }, [form, questions]);
 
   useEffect(() => {
+    // disable overflow on mount
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = ""; // Cleanup on unmount
+    };
+  }, []);
+
+  useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
 
