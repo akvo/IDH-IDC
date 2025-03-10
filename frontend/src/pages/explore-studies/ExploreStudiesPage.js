@@ -604,7 +604,7 @@ const ExploreStudiesPage = () => {
               </div>
             </Col>
             {isAdmin ? (
-              <Col span={8} align="end">
+              <Col span={8} align="end" style={{ textAlign: "right" }}>
                 <Button
                   icon={<PlusOutlined />}
                   className="button-green-fill"
