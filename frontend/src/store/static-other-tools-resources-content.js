@@ -13,7 +13,7 @@ export const otherToolsAndResourcesContent = [
       "This tool streamlines household income assessments, allowing you to measure total income while optimizing primary and secondary data use.",
     order: 1,
     button: {
-      href: null,
+      href: "https://idh-prp.files.prepr.io/1wk73l1s25z4-income-measurement-guidance-tool-img-idh.zip",
       type: "download",
       text: "Download",
     },
@@ -26,7 +26,7 @@ export const otherToolsAndResourcesContent = [
       "The tool allows you to explore data on cocoa production, income from cocoa and other key indicators from different origins. Play around with the data using an interactive dashboard.",
     order: 2,
     button: {
-      href: null,
+      href: "/cocoa-income-inventory",
       type: "link",
       text: "Explore the tool",
     },
@@ -39,7 +39,7 @@ export const otherToolsAndResourcesContent = [
       "The tool helps businesses identify the best interventions for their goals, access personalized procurement advice, and explore the intervention library.",
     order: 3,
     button: {
-      href: null,
+      href: "/procurement-library",
       type: "link",
       text: "Explore the tool",
     },
@@ -65,8 +65,8 @@ export const otherToolsAndResourcesContent = [
       "Introduces the main principles to be adopted by the DISCO partners as part of their living income strategies.",
     order: 5,
     button: {
-      href: null,
-      type: "download",
+      href: "https://www.idhsustainabletrade.com/uploaded/2024/04/DISCO-Procurement-Practices-Position-Paper.pdf",
+      type: "new-window",
       text: "Download",
     },
   },
