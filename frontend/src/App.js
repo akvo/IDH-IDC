@@ -238,7 +238,7 @@ const App = () => {
           />
           <Route
             exact
-            path="/procurement-library/practice/:practiceId"
+            path="/procurement-library/intervention-library/:practiceId"
             element={<ProcurementPage.Practice signOut={signOut} />}
           />
           {/* <Route exact path="/register" element={<Register />} /> */}
