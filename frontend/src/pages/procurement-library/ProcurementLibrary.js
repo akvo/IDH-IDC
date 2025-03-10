@@ -9,7 +9,7 @@ import {
   OvalIcon,
 } from "../../lib/icon";
 import { Link } from "react-router-dom";
-import CaseStudies from "./components/CaseStudies";
+// import CaseStudies from "./components/CaseStudies";
 
 const ProcurementLibrary = () => {
   const cards = [
