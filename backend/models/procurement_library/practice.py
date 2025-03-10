@@ -28,6 +28,7 @@ class ImpactArea(str, Enum):
 class PracticeListDict(BaseModel):
     id: int
     procurement_process_label: str
+    procurement_process_id: int = None
     label: str
     is_environmental: bool
     is_income: bool
@@ -133,6 +134,7 @@ class Practice(Base):
         return {
             "id": self.id,
             "procurement_process_label": self.procurement_process.label,
+            "procurement_process_id": self.procurement_process_id,
             "label": self.label,
             "is_environmental": is_environmental,
             "is_income": is_income,
