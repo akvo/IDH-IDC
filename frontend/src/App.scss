@@ -69,10 +69,6 @@
     color: $primary-color;
   }
 
-  .button-light {
-    font-weight: normal;
-  }
-
   .button {
     border-radius: 40px;
     font-weight: 600;
@@ -487,6 +483,13 @@
       padding: 1rem $default-padding-size;
       background-color: #00625f;
     }
+
+    &.with-fixed-position {
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+
     .copyright-text {
       font-size: 14px;
       display: flex;
