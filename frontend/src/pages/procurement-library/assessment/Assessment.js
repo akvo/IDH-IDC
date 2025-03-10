@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { SubmitButton } from "../components";
 import EmptyResultsIcon from "../../../assets/icons/icon-empty-results.svg";
 import {
+  ArrowRight,
   DollarSignIcon,
   LeafIcon,
   QuestionCircleOutline,
@@ -266,6 +267,19 @@ const Assessment = () => {
               </li>
             ))}
           </ul>
+          <div className="assessment-footer">
+            <Button
+              type="link"
+              onClick={() =>
+                navigate("/procurement-library/intervention-library")
+              }
+            >
+              <Space align="center" justify="center">
+                <span>View all</span>
+                <ArrowRight />
+              </Space>
+            </Button>
+          </div>
         </div>
       )}
     </div>
