@@ -139,3 +139,18 @@
     height: 95vh;
   }
 }
+
+/* 🔹 Tall Screens (1000px height and above) */
+@media (min-height: 1000px) {
+  .case-sidebar-container {
+    padding: 20px !important;
+
+    .case-step-container {
+      .case-step-wrapper {
+        .ant-steps-item {
+          padding-bottom: 20px;
+        }
+      }
+    }
+  }
+}

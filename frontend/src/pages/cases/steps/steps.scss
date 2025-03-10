@@ -96,7 +96,7 @@
 
 #enter-income-data {
   .total-income-container {
-    padding: 0 16px;
+    padding: 0 10px;
 
     .total-income-title-wrapper {
       font-family: "RocGrotesk";
@@ -131,6 +131,9 @@
       font-family: "TabletGothic";
       line-height: 18px;
       font-weight: normal;
+      padding: 2px 7px 0px 7px;
+      min-width: 55px;
+      text-align: right;
       span {
         margin-top: 4px;
       }
