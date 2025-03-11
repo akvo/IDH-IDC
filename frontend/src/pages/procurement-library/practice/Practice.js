@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Skeleton, Space, Tabs } from "antd";
-import { Link, useParams } from "react-router-dom";
+import { Button, message, Skeleton, Space, Tabs } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../../lib";
 import {
   PROCUREMENT_COLOR_SCALE,
@@ -20,6 +20,7 @@ const Practice = () => {
   const { practiceId } = useParams();
   const [loading, setLoading] = useState(true);
   const [practice, setPractice] = useState(null);
+  const navigate = useNavigate();
 
   const [primaryDesc, secondaryDesc] =
     practice?.intervention_definition?.split(
@@ -40,10 +41,16 @@ const Practice = () => {
       setPractice(_practice);
       setLoading(false);
     } catch (err) {
-      console.error(err);
+      console.error(err?.response);
       setLoading(false);
+      if (err?.response?.status === 404) {
+        message.error(err.response?.data?.detail);
+        navigate("/404");
+      } else {
+        navigate("/procurement-library");
+      }
     }
-  }, [practiceId]);
+  }, [practiceId, navigate]);
 
   useEffect(() => {
     fetchPractice();
@@ -91,14 +98,14 @@ const Practice = () => {
       </div>
       <div className="practice-content">
         <div className="practice-content-header">
-          <Link to="/procurement-library">
+          <Button type="link" onClick={() => navigate(-1)} className="back-btn">
             <Space>
               <span className="back-icon">
                 <ArrowRight />
               </span>
               <span className="back-text">Procurement Library</span>
             </Space>
-          </Link>
+          </Button>
         </div>
         <div className="practice-content-body">
           <Skeleton loading={loading} paragraph={{ rows: 10 }} active>

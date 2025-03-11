@@ -80,10 +80,13 @@
     padding: 22px;
     .practice-content-header {
       padding: 4px 0;
-      a {
-        .back-icon svg {
-          fill: $primary-color;
-          transform: scaleX(-1);
+      .back-btn {
+        .back-icon {
+          svg {
+            margin-top: 4px;
+            fill: $primary-color;
+            transform: scaleX(-1);
+          }
         }
         .back-text {
           color: #8a8a8a;
