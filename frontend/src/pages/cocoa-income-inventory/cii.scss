@@ -2,6 +2,24 @@
 
 #cii-page,
 .cii-page-container {
+  h2 {
+    color: $primary-color;
+    font-family: "RocGrotesk";
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+  }
+
+  p {
+    margin: 0;
+    font-family: "TabletGothic";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+  }
+
   .jumbotron-wrapper {
     background-image: url("/assets/images/cii/cii-jumbotron.png") !important;
     background-size: cover;
@@ -79,27 +97,95 @@
     }
 
     .about-text-wrapper {
-      h2 {
-        color: $primary-color;
-        font-family: "RocGrotesk";
-        font-size: 24px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 32px;
-      }
       .about-description-wrapper {
         display: flex;
         gap: 20px;
 
         p {
-          margin: 0;
           color: #8a8a8a;
-          font-family: "TabletGothic";
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 24px;
         }
+      }
+    }
+  }
+
+  .indicators-wrapper {
+    padding: 24px 0 24px $default-padding-size;
+    background-color: #eaf2f2;
+
+    h2 {
+      text-align: center;
+    }
+
+    .indicator-carousel-wrapper {
+      position: relative;
+      margin-left: 100px;
+
+      .alice-carousel__stage {
+        display: flex;
+        gap: 10px;
+      }
+
+      .alice-carousel__stage-item,
+      .indicator-item {
+        width: 200px !important;
+        height: 200px;
+      }
+
+      .alice-carousel__dots {
+        margin-top: 18px !important;
+      }
+
+      .alice-carousel__dots-item {
+        margin-right: 10px !important;
+        background-color: #d6d3d3;
+
+        &.__active {
+          background-color: $primary-color;
+        }
+      }
+
+      .indicator-item {
+        border-radius: 20px;
+        border: 1px solid #f2f2f2;
+        background: #fffaeb;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        p {
+          margin-top: 20px;
+        }
+      }
+
+      .btn-prev,
+      .btn-next {
+        position: absolute;
+        top: 35%;
+        border-radius: 22px;
+        background: #01625f;
+        backdrop-filter: blur(4px);
+        width: 30px;
+        height: 30px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 !important;
+        padding: 0;
+
+        .anticon {
+          font-size: 12px;
+          font-weight: 600;
+        }
+      }
+
+      .btn-prev {
+        left: -20px;
+      }
+
+      .btn-next {
+        right: 55px;
       }
     }
   }

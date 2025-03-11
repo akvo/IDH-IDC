@@ -7,6 +7,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import IDHLogo from "../../assets/images/logo.png";
 import WageningenLogo from "../../assets/images/cii/wageningen-univ.png";
 import VoiceLogo from "../../assets/images/cii/voice.png";
+import IndicatorCarousel from "./IndicatorCarousel";
 
 const CocoaIncomeInventory = () => {
   return (
@@ -76,7 +77,10 @@ const CocoaIncomeInventory = () => {
       {/* EOL About */}
 
       {/* Indicators section */}
-      <Col span={24} className="indicators-wrapper"></Col>
+      <Col span={24} className="indicators-wrapper">
+        <h2>Example indicators to be explored</h2>
+        <IndicatorCarousel />
+      </Col>
       {/* EOL Indicators section */}
     </Row>
   );
