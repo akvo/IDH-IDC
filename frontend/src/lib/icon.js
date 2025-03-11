@@ -670,6 +670,39 @@ export const LeafIcon = () => (
   </svg>
 );
 
+export const DownPointingIcon = ({ size = 12 }) => (
+  <svg
+    width={size + 2}
+    height={size}
+    viewBox="0 0 14 12"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M7.41484 11.3843C7.21666 11.6785 6.78363 11.6785 6.58545 11.3843L1.46291 3.77931C1.2392 3.4472 1.47718 2.99998 1.87761 2.99998L12.1227 2.99998C12.5231 2.99998 12.7611 3.4472 12.5374 3.77931L7.41484 11.3843Z"
+      fill="#01625F"
+    />
+  </svg>
+);
+
+export const ChevronRightIcon = () => (
+  <svg
+    width="18"
+    height="19"
+    viewBox="0 0 18 19"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M6.75 5.46155L11.25 9.96155L6.75 14.4615"
+      stroke="currentColor"
+      strokeWidth="1.66667"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const CheckIcon = ({
   rectColor = "#D0E2E2",
   pathColor = "#01625F",
