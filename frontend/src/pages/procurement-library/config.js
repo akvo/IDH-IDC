@@ -25,3 +25,62 @@ export const PROCUREMENT_PROCESS_COLORS = [
   "#800000", // maroon
   "#008080", // teal
 ];
+
+export const PROCUREMENT_IMPACT_AREAS = {
+  income: "income_impact",
+  env: "environmental_impact",
+};
+
+export const PROCUREMENT_TABS = [
+  {
+    key: "farmer_rationale",
+    label: "Farmer Rationale",
+  },
+  {
+    key: "business_rationale",
+    label: "Business Rationale",
+  },
+  {
+    key: "enabling_conditions",
+    label: "Enabling Conditions",
+  },
+  {
+    key: "risks_n_trade_offs",
+    label: "Risks and Trade-offs",
+  },
+  {
+    key: "source_or_evidence",
+    label: "Source or Evidence",
+  },
+];
+
+export const PROCUREMENT_SCALE = [
+  {
+    key: "implementation_time",
+    label: "Implementation Time",
+    reversed: true,
+  },
+  {
+    key: "implementation_cost_/_effort",
+    label: "Implementation Cost / Effort",
+    reversed: true,
+  },
+  {
+    key: "income_impact",
+    label: "Income Impact",
+    reversed: false,
+  },
+  {
+    key: "environmental_impact",
+    label: "Environmental Impact",
+    reversed: false,
+  },
+];
+
+export const PROCUREMENT_COLOR_SCALE = [
+  "#FF010E",
+  "#FF8754",
+  "#FEC508",
+  "#ABEA53",
+  "#48D985",
+];
