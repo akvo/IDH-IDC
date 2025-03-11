@@ -143,3 +143,16 @@ class TestPracticeRoute:
             "created_at",
             "scores",
         ]
+
+    @pytest.mark.asyncio
+    async def test_get_practice_by_id_not_found(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        practice_id = 999
+        res = await client.get(
+            app.url_path_for("pl:get_practice_by_id", practice_id=practice_id)
+        )
+        assert res.status_code == 404
+        assert res.json() == {
+            "detail": f"Practice with id {practice_id} not found"
+        }

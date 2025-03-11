@@ -58,7 +58,10 @@ def get_paginated_practices(
 
 
 def get_practice_by_id(session: Session, practice_id: int) -> PracticeDict:
-    return session.get(Practice, practice_id).serialize
+    practice = session.get(Practice, practice_id)
+    if practice is None:
+        raise ValueError(f"Practice with id {practice_id} not found")
+    return practice.serialize
 
 
 def get_all_practices(session: Session) -> List[Practice]:
