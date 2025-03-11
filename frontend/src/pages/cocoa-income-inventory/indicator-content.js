@@ -3,6 +3,8 @@ import CocoaYieldIcon from "../../assets/icons/cii-indicators/cocoa-yield.png";
 import CocoaTreeAgeIcon from "../../assets/icons/cii-indicators/cocoa-tree-age.png";
 import HiredLabourDayIcon from "../../assets/icons/cii-indicators/hired-labour-days.png";
 import CostOfHiredLabourIcon from "../../assets/icons/cii-indicators/cost-of-hired-labour.png";
+import FertilizerIcon from "../../assets/icons/cii-indicators/fertilizer.png";
+import PriceIcon from "../../assets/icons/cii-indicators/price.png";
 
 export const indicatorContent = [
   {
@@ -31,10 +33,14 @@ export const indicatorContent = [
   },
   {
     title: "Fertilizer cost/hectare",
-    icon: "",
+    icon: FertilizerIcon,
   },
   {
     title: "Price Premium paid/kg",
-    icon: "",
+    icon: PriceIcon,
+  },
+  {
+    title: "Price Premium paid/kg",
+    icon: PriceIcon,
   },
 ];

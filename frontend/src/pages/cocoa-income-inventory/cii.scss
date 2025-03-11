@@ -228,4 +228,39 @@
       }
     }
   }
+
+  .value-org-wrapper {
+    padding: 2rem $default-padding-size;
+    background-color: #fcf9f4;
+
+    .value-org-content-wrapper {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+
+      .value-org-item-wrapper {
+        flex: 1 1/2;
+        display: flex;
+        gap: 20px;
+        flex-direction: column;
+
+        .value-org-item {
+          display: flex;
+          gap: 12px;
+          justify-content: flex-start;
+
+          h3 {
+            margin: 0;
+            font-size: 16px;
+          }
+        }
+      }
+
+      .image-wrapper {
+        flex: 1/2 1;
+        border-radius: 12px;
+      }
+    }
+  }
 }

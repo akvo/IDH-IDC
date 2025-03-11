@@ -16,7 +16,12 @@ const FooterDisclaimer = () => {
       justify="center"
     >
       <Col span={24}>
-        <h2 data-testid="disclaimer-section-title">Disclaimer</h2>
+        <h2
+          data-testid="disclaimer-section-title"
+          style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}
+        >
+          Disclaimer
+        </h2>
         <p data-testid="disclaimer-section-description">
           The data published on this website is provided by IDH as a public
           service to promote transparency, accountability, and informed

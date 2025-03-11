@@ -7,10 +7,13 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import IDHLogo from "../../assets/images/logo.png";
 import WageningenLogo from "../../assets/images/cii/wageningen-univ.png";
 import VoiceLogo from "../../assets/images/cii/voice.png";
+import ValueOrgImg from "../../assets/images/cii/value-for-org-sharing-data.jpeg";
 import IndicatorCarousel from "./IndicatorCarousel";
 import { pchContent } from "./pch-content";
 import { contributingContent } from "./contributing-content";
+import { valueOrgContent } from "./value-org-content";
 import { CheckIcon } from "../../lib/icon";
+import { FooterDisclaimer } from "../landing/components";
 
 const CocoaIncomeInventory = () => {
   return (
@@ -117,6 +120,33 @@ const CocoaIncomeInventory = () => {
         </div>
       </Col>
       {/* EOL Contributing to a new sector section */}
+
+      {/* Value for organisation sharing data section */}
+      <Col span={24} className="value-org-wrapper">
+        <h2>Value for Organizations Sharing Data</h2>
+        <div className="value-org-content-wrapper">
+          <div className="value-org-item-wrapper">
+            {valueOrgContent.map((item, i) => (
+              <div key={`value-org-item-${i}`} className="value-org-item">
+                <Image src={item.icon} preview={false} style={{ width: 30 }} />
+                <div className="item-text-wrapper">
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Image
+            src={ValueOrgImg}
+            preview={false}
+            width="50%"
+            className="image-wrapper"
+          />
+        </div>
+      </Col>
+      {/* EOL Value for organisation sharing data section */}
+
+      <FooterDisclaimer />
     </Row>
   );
 };
