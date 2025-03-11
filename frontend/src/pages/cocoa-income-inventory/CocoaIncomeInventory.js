@@ -9,6 +9,8 @@ import WageningenLogo from "../../assets/images/cii/wageningen-univ.png";
 import VoiceLogo from "../../assets/images/cii/voice.png";
 import IndicatorCarousel from "./IndicatorCarousel";
 import { pchContent } from "./pch-content";
+import { contributingContent } from "./contributing-content";
+import { CheckIcon } from "../../lib/icon";
 
 const CocoaIncomeInventory = () => {
   return (
@@ -95,6 +97,26 @@ const CocoaIncomeInventory = () => {
         ))}
       </Col>
       {/* EOL Public, consequences, harmonized section */}
+
+      {/* Contributing to a new sector section */}
+      <Col span={24} className="contributing-wrapper">
+        <h2>
+          Contributing to a New Sector Standard for
+          <br />
+          PreCompetitive Data and Insights Sharing:
+        </h2>
+        <div className="contributing-content-wrapper">
+          {contributingContent.map((item, i) => (
+            <div key={`contributing-item-${i}`} className="contributing-item">
+              <div>
+                <CheckIcon width={20} height={20} />
+              </div>
+              <p>{item}</p>
+            </div>
+          ))}
+        </div>
+      </Col>
+      {/* EOL Contributing to a new sector section */}
     </Row>
   );
 };

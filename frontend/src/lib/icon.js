@@ -669,3 +669,26 @@ export const LeafIcon = () => (
     </defs>
   </svg>
 );
+
+export const CheckIcon = ({
+  rectColor = "#D0E2E2",
+  pathColor = "#01625F",
+  width = 28,
+  height = 28,
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={width}
+    height={height}
+    viewBox="0 0 28 28"
+    fill="none"
+  >
+    <rect width="28" height="28" rx="14" fill={rectColor} />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M19.9459 8.62172L11.5926 16.6834L9.37592 14.3151C8.96759 13.9301 8.32592 13.9067 7.85925 14.2334C7.40425 14.5717 7.27592 15.1667 7.55592 15.6451L10.1809 19.9151C10.4376 20.3117 10.8809 20.5567 11.3826 20.5567C11.8609 20.5567 12.3159 20.3117 12.5726 19.9151C12.9926 19.3667 21.0076 9.81172 21.0076 9.81172C22.0576 8.73839 20.7859 7.79339 19.9459 8.61005V8.62172Z"
+      fill={pathColor}
+    />
+  </svg>
+);

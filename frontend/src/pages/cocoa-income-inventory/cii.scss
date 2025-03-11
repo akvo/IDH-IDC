@@ -85,7 +85,7 @@
 
   .about-wrapper {
     background-color: #fff;
-    padding: 24px $default-padding-size;
+    padding: 2rem $default-padding-size;
 
     .logos-wrapper {
       display: flex;
@@ -119,7 +119,7 @@
   }
 
   .indicators-wrapper {
-    padding: 24px 0 24px $default-padding-size;
+    padding: 2rem 0 24px $default-padding-size;
     background-color: #eaf2f2;
 
     h2 {
@@ -201,10 +201,31 @@
   }
 
   .pch-wrapper {
-    padding: 24px $default-padding-size;
+    padding: 2rem $default-padding-size;
     background-color: #fcf9f4;
     display: flex;
     justify-content: space-evenly;
     gap: 20px;
+  }
+
+  .contributing-wrapper {
+    padding: 2rem $default-padding-size;
+
+    .contributing-content-wrapper {
+      padding-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+      grid-template-rows: repeat(
+        3,
+        auto
+      ); /* 3 rows, height adjusts based on content */
+      gap: 20px; /* Space between grid items */
+
+      div.contributing-item {
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+      }
+    }
   }
 }
