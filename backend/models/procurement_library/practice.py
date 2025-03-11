@@ -17,6 +17,7 @@ from sqlalchemy.orm import relationship
 from models.procurement_library.procurement_process import ProcurementProcess
 from models.procurement_library.practice_indicator_score import (
     PracticeIndicatorScore,
+    PracticeIndicatorScoreDict,
 )
 
 
@@ -40,6 +41,7 @@ class PracticeListDict(BaseModel):
 class PracticeDict(TypedDict):
     id: int
     procurement_process_label: str
+    procurement_process_id: int
     label: str
     intervention_definition: str
     enabling_conditions: str
@@ -50,6 +52,7 @@ class PracticeDict(TypedDict):
     intervention_impact_env: str
     source_or_evidence: str
     created_at: datetime
+    scores: List[PracticeIndicatorScoreDict]
 
 
 class Practice(Base):
@@ -101,6 +104,7 @@ class Practice(Base):
         return {
             "id": self.id,
             "procurement_process_label": self.procurement_process.label,
+            "procurement_process_id": self.procurement_process_id,
             "label": self.label,
             "intervention_definition": self.intervention_definition,
             "enabling_conditions": self.enabling_conditions,
@@ -111,6 +115,7 @@ class Practice(Base):
             "intervention_impact_env": self.intervention_impact_env,
             "source_or_evidence": self.source_or_evidence,
             "created_at": self.created_at,
+            "scores": [score.to_dict for score in self.scores],
         }
 
     @property

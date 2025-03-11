@@ -1,6 +1,5 @@
 from math import ceil
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db.connection import get_session
 from db.procurement_library import crud_practice
@@ -65,4 +64,7 @@ def get_practice_by_id(
     practice_id: int,
     session: Session = Depends(get_session),
 ) -> PracticeDict:
-    return crud_practice.get_practice_by_id(session, practice_id)
+    try:
+        return crud_practice.get_practice_by_id(session, practice_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
