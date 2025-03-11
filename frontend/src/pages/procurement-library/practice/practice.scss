@@ -74,13 +74,13 @@
     }
   }
   .practice-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    width: 100%;
     padding: 22px;
     .practice-content-header {
       padding: 4px 0;
+      margin-bottom: 12px;
       .back-btn {
+        padding: 0;
         .back-icon {
           svg {
             margin-top: 4px;
