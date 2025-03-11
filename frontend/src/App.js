@@ -32,6 +32,7 @@ import {
 } from "./pages/procurement-library";
 import { OtherResources } from "./pages/other-resources";
 import { FAQ } from "./pages/faq";
+import { CocoaIncomeInventory } from "./pages/cocoa-income-inventory";
 
 const optionRoutes = [
   "organisation/options",
@@ -227,6 +228,11 @@ const App = () => {
             element={<OtherResources signOut={signOut} />}
           />
           <Route exact path="/faq" element={<FAQ signOut={signOut} />} />
+          <Route
+            exact
+            path="/cocoa-income-inventory"
+            element={<CocoaIncomeInventory signOut={signOut} />}
+          />
           <Route
             exact
             path="/procurement-library"
