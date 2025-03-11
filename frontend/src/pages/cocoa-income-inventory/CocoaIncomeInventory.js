@@ -8,6 +8,7 @@ import IDHLogo from "../../assets/images/logo.png";
 import WageningenLogo from "../../assets/images/cii/wageningen-univ.png";
 import VoiceLogo from "../../assets/images/cii/voice.png";
 import IndicatorCarousel from "./IndicatorCarousel";
+import { pchContent } from "./pch-content";
 
 const CocoaIncomeInventory = () => {
   return (
@@ -82,6 +83,18 @@ const CocoaIncomeInventory = () => {
         <IndicatorCarousel />
       </Col>
       {/* EOL Indicators section */}
+
+      {/* Public, consequences, harmonized, section */}
+      <Col span={24} className="pch-wrapper">
+        {pchContent.map((item, i) => (
+          <div key={`pch-item-${i}`} className="pch-item">
+            <Image src={item.icon} preview={false} height={30} />
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </div>
+        ))}
+      </Col>
+      {/* EOL Public, consequences, harmonized section */}
     </Row>
   );
 };

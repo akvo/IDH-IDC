@@ -11,6 +11,16 @@
     line-height: 32px;
   }
 
+  h3 {
+    color: $primary-color;
+    font-family: "RocGrotesk";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 28px;
+    margin: 10px 0;
+  }
+
   p {
     margin: 0;
     font-family: "TabletGothic";
@@ -188,5 +198,13 @@
         right: 55px;
       }
     }
+  }
+
+  .pch-wrapper {
+    padding: 24px $default-padding-size;
+    background-color: #fcf9f4;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
   }
 }
