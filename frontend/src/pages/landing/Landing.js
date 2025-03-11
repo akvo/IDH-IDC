@@ -28,7 +28,7 @@ const InformationCard = () => (
         <div className="info-card-icon">
           <LandingInfoHelpIcon />
         </div>
-        <h3>Estimate Farmer Income</h3>
+        <h3>Estimate farmer income</h3>
         <p>
           Calculates actual household income and feasible changes in income by
           using input data on the 5 key drivers of household income.
@@ -40,7 +40,7 @@ const InformationCard = () => (
         <div className="info-card-icon">
           <LandingInfoEstimateIcon />
         </div>
-        <h3>Assess income gap</h3>
+        <h3>Assess the income gap</h3>
         <p>
           Compares household income to a Living Income benchmark and/or a custom
           target to assess income gap.

@@ -529,6 +529,13 @@
   background-color: #1b625f !important;
   font-family: "TabletGothic" !important;
   font-size: 12px;
+  color: #fff;
+
+  strong {
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px; /* 150% */
+  }
 }
 
 .visual-card-wrapper {

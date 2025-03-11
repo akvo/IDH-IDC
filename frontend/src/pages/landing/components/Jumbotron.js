@@ -1,6 +1,6 @@
 import React from "react";
 import "./landingcomp.scss";
-import { Row, Col, Button } from "antd";
+import { Row, Col } from "antd";
 import { Link } from "react-router-dom";
 import { UserState } from "../../../store";
 import { useNavigate } from "react-router-dom";
@@ -33,24 +33,22 @@ const Jumbotron = ({ signOut = null }) => {
           different sectors and landscapes.
         </h3>
         {loggedIn ? (
-          <Button
+          <Link
             onClick={() => {
               signOut();
               navigate("/");
             }}
             className="button button-yellow"
-            type="secondary"
-            size="small"
           >
             Sign out
-          </Button>
+          </Link>
         ) : (
           <Link
             to="/login"
             data-testid="button-learn-more"
             className="button button-yellow"
           >
-            Log in to calculator{" "}
+            Log in to the calculator{" "}
             <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
           </Link>
         )}

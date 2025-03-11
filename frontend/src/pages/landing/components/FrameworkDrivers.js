@@ -86,7 +86,7 @@ const FrameworkDrivers = () => {
         <Image
           src={TheFrameworkDrivers}
           preview={false}
-          style={{ width: "90%" }}
+          style={{ width: 950 }}
         />
         {showOldCalculation && (
           <div>

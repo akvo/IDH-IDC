@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip } from "antd";
+import { Popconfirm } from "antd";
 import "./landingcomp.scss";
 
 import SmartMix from "../../../assets/images/smart-mix-of-strategies.png";
@@ -56,20 +56,25 @@ const PizzaDiagram = () => {
 
       {/* Invisible Slices */}
       {slices.map(({ key, title, description, placement }) => (
-        <Tooltip
+        <Popconfirm
           key={key}
           placement={placement}
           color="#fff"
-          title={
-            <div>
-              <h3>{title}</h3>
-              <p>{description}</p>
-            </div>
-          }
-          getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          title={() => <div className="pizza-tooltip-title">{title}</div>}
+          description={() => (
+            <div className="pizza-tooltip-description">{description}</div>
+          )}
+          trigger="hover"
+          showCancel={false}
+          okButtonProps={{
+            style: {
+              display: "none",
+            },
+          }}
+          icon={null}
         >
           <div className={`slice slice-${key}`} />
-        </Tooltip>
+        </Popconfirm>
       ))}
     </div>
   );
