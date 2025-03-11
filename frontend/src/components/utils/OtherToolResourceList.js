@@ -48,7 +48,10 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
                 <Tag
                   bordered={false}
                   color="#01625F"
-                  style={{ borderRadius: 20, padding: "2px 10px" }}
+                  style={{
+                    borderRadius: 20,
+                    padding: "2px 10px",
+                  }}
                 >
                   {item.tag}
                 </Tag>
@@ -75,7 +78,7 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
       </div>
       {showMoreButton && (
         <div className="button-wrapper">
-          <Button onClick={() => navigate("/other-resources")}>
+          <Button onClick={() => navigate("/tools-and-resources")}>
             Explore more Tools & Resources <ArrowRightOutlined />
           </Button>
         </div>

@@ -20,9 +20,9 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
   // menu without loggin
   const generalMenus = useMemo(() => {
     const otherResourcesMenu = {
-      testid: "nav-menu-other-resources",
-      name: "Other Resources",
-      path: "/other-resources",
+      testid: "nav-menu-tools-and-resources",
+      name: "Tools & Resources",
+      path: "/tools-and-resources",
       role: allUserRole,
     };
     const faqMenu = {

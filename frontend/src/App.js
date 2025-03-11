@@ -223,7 +223,7 @@ const App = () => {
           <Route exact path="/login" element={<Login />} />
           <Route
             exact
-            path="/other-resources"
+            path="/tools-and-resources"
             element={<OtherResources signOut={signOut} />}
           />
           <Route exact path="/faq" element={<FAQ signOut={signOut} />} />
