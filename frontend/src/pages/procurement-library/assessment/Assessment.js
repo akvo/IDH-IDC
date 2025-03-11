@@ -1,19 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Badge, Button, Form, Radio, Space, Tag, Tooltip } from "antd";
+import { Button, Form, Radio, Space, Tag, Tooltip } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 
-import { SubmitButton } from "../components";
+import { ImpactAreaIcons, ProcurementBadge, SubmitButton } from "../components";
 import EmptyResultsIcon from "../../../assets/icons/icon-empty-results.svg";
-import {
-  ArrowRight,
-  DollarSignIcon,
-  LeafIcon,
-  QuestionCircleOutline,
-} from "../../../lib/icon";
+import { ArrowRight, QuestionCircleOutline } from "../../../lib/icon";
 import api from "../../../lib/api";
-import "./assessment.scss";
-import { LIMIT_RESULT, PROCUREMENT_PROCESS_COLORS } from "../config";
+import { LIMIT_RESULT } from "../config";
 import { PLState } from "../../../store";
+import "./assessment.scss";
 
 const Assessment = () => {
   const [form] = Form.useForm();
@@ -225,33 +220,16 @@ const Assessment = () => {
                       trigger={["hover"]}
                       placement="top"
                     >
-                      <span>
-                        <Badge
-                          color={
-                            PROCUREMENT_PROCESS_COLORS?.[
-                              practice?.procurement_process_id - 1
-                            ] || PROCUREMENT_PROCESS_COLORS[0]
-                          }
-                          text={practice?.procurement_process_label}
-                          className="badge"
-                        />
-                      </span>
+                      <ProcurementBadge
+                        id={practice?.procurement_process_id}
+                        text={practice?.procurement_process_label}
+                      />
                     </Tooltip>
                   </div>
-                  <div className="assessment-practice-icon">
-                    <Space>
-                      {practice?.is_environmental && (
-                        <span className="environment">
-                          <LeafIcon />
-                        </span>
-                      )}
-                      {practice?.is_income && (
-                        <span className="income">
-                          <DollarSignIcon />
-                        </span>
-                      )}
-                    </Space>
-                  </div>
+                  <ImpactAreaIcons
+                    isEnv={practice?.is_environmental}
+                    isIncome={practice?.is_income}
+                  />
                 </div>
                 <div className="assessment-practice-content">
                   <div
