@@ -130,6 +130,7 @@ class TestPracticeRoute:
         assert list(res.keys()) == [
             "id",
             "procurement_process_label",
+            "procurement_process_id",
             "label",
             "intervention_definition",
             "enabling_conditions",
@@ -140,4 +141,5 @@ class TestPracticeRoute:
             "intervention_impact_env",
             "source_or_evidence",
             "created_at",
+            "scores",
         ]

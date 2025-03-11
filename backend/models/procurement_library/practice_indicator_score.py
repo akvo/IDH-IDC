@@ -8,6 +8,13 @@ from sqlalchemy import (
 from sqlalchemy.sql import func
 from db.connection import Base
 from sqlalchemy.orm import relationship
+from typing_extensions import TypedDict
+
+
+class PracticeIndicatorScoreDict(TypedDict):
+    id: int
+    indicator_name: str
+    score: float
 
 
 class PracticeIndicatorScore(Base):
@@ -30,3 +37,11 @@ class PracticeIndicatorScore(Base):
 
     def __repr__(self):
         return f"<PracticeIndicatorScore(id={self.id}>"
+
+    @property
+    def to_dict(self) -> PracticeIndicatorScoreDict:
+        return {
+            "id": self.id,
+            "indicator_name": self.indicator.name,
+            "score": self.score,
+        }
