@@ -89,7 +89,7 @@ const VisualCardWrapper = ({
               )}
             </Space>
           </Col>
-          <Col span={10} align="end">
+          <Col span={10} align="end" style={{ textAlign: "right" }}>
             {setShowLabel ? (
               <Button
                 size="small"

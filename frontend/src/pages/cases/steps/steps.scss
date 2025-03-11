@@ -245,19 +245,18 @@
     .title {
       color: #01625f;
       font-family: "RocGrotesk";
-      font-size: 28px;
+      font-size: 24px;
       font-style: normal;
       font-weight: 700;
-      line-height: 52px;
+      line-height: 34px;
     }
 
     .description {
       font-family: "TabletGothic";
-      font-size: 16px;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: 28px;
-      letter-spacing: -0.32px;
+      line-height: 24px;
     }
   }
 
@@ -266,13 +265,13 @@
     background: #01625f;
     color: #fff;
     font-family: "RocGrotesk";
-    font-size: 20px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 700;
-    line-height: 32px;
+    line-height: 26px;
 
     .ant-card-body {
-      padding: 20px;
+      padding: 10px 20px;
     }
   }
 
@@ -283,6 +282,10 @@
   .card-visual-wrapper {
     border-radius: 20px;
 
+    .ant-card-body {
+      padding: 12px 14px;
+    }
+
     &.no-padding {
       .ant-card-body {
         padding: 0;
@@ -292,10 +295,10 @@
     .section-title {
       color: #01625f;
       font-family: "RocGrotesk";
-      font-size: 20px;
+      font-size: 16px;
       font-style: normal;
       font-weight: 700;
-      line-height: 32px;
+      line-height: 24px;
     }
 
     .section-description {
@@ -304,7 +307,7 @@
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: 157.15%;
+      line-height: 22px;
     }
   }
 
@@ -314,25 +317,23 @@
       border-radius: 20px;
 
       .ant-table-thead {
-        background: #01625f;
-        border-radius: 40px;
+        background: transparent;
+        border-radius: 20px;
 
-        // top-left
-        tr:first-child > *:first-child {
-          border-start-start-radius: 20px;
+        // Ensure the top-left and top-right borders apply properly
+        tr:first-child th:first-child {
+          border-top-left-radius: 20px;
         }
 
-        // top-right
-        tr:last-child > *:last-child {
-          border-start-end-radius: 20px;
+        tr:first-child th:last-child {
+          border-top-right-radius: 20px;
         }
 
         .ant-table-cell {
           color: #fff;
-          background: transparent;
+          background: $primary-color;
           font-family: "RocGrotesk";
           font-size: 13px;
-          font-style: normal;
           font-weight: 700;
           line-height: 157.15%;
 
@@ -343,26 +344,26 @@
       }
 
       .ant-table-tbody {
-        /* Style for even odd rows */
+        /* Style for even and odd rows */
         tr:nth-child(even) {
           background-color: rgba(242, 242, 242, 0.5);
         }
         tr:nth-child(odd) {
           background-color: #ffffff;
         }
-        // bottom-left
-        tr:last-child > *:first-child {
-          border-end-start-radius: 20px;
+
+        // Bottom-left and bottom-right rounding
+        tr:last-child td:first-child {
+          border-bottom-left-radius: 20px;
         }
-        // bottom-right
-        tr:last-child > *:last-child {
-          border-end-end-radius: 20px;
+
+        tr:last-child td:last-child {
+          border-bottom-right-radius: 20px;
         }
 
         .ant-table-cell {
           font-family: "TabletGothic";
           font-size: 14px;
-          font-style: normal;
           font-weight: 400;
           line-height: 20px;
         }
@@ -555,17 +556,16 @@
 #closing-gap {
   .card-section-wrapper {
     .step-wrapper {
-      font-size: 20px;
+      font-size: 16px;
       font-family: "RocGrotesk";
       font-style: normal;
-      line-height: 32px;
+      line-height: 24px;
       font-weight: 700;
 
       .number {
         padding: 2px 8px;
         background: #ffc505;
         border-radius: 70% 100% 100% 70%;
-
         color: #01625f;
       }
 
@@ -585,6 +585,7 @@
     }
 
     .button-add-scenario {
+      float: right;
       border-radius: 40px;
       border: 1px solid #fff;
       background: transparent;
@@ -601,12 +602,19 @@
   .income-driver-form-container {
     .income-driver-form-section {
       .title {
-        color: #01625f;
+        margin-top: 5px;
+        color: $primary-color;
         font-family: "RocGrotesk";
-        font-size: 20px;
+        font-size: 16px;
         font-style: normal;
         font-weight: 700;
-        line-height: 32px;
+        line-height: 30px;
+      }
+
+      .description {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        line-height: 24px;
       }
     }
 
@@ -628,6 +636,7 @@
     border: none;
 
     .ant-card-body {
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -639,10 +648,10 @@
       .title {
         color: #01625f;
         font-family: "RocGrotesk";
-        font-size: 20px;
+        font-size: 18px;
         font-style: normal;
         font-weight: 700;
-        line-height: 32px;
+        line-height: 30px;
       }
 
       .description {
@@ -651,7 +660,7 @@
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 157.15%;
+        line-height: 24px;
       }
     }
 

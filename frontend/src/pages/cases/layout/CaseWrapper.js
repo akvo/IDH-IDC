@@ -224,7 +224,12 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
       {/* Next Back Button Bottom */}
       {buttonPrevNextPosition === "bottom" && (
-        <Col span={24} align="end" className="case-button-wrapper">
+        <Col
+          span={24}
+          align="end"
+          className="case-button-wrapper"
+          style={{ textAlign: "right" }}
+        >
           <ButtonPrevNext />
         </Col>
       )}
