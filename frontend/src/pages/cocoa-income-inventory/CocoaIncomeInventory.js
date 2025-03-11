@@ -36,7 +36,7 @@ const CocoaIncomeInventory = () => {
             <h1>
               Welcome to the
               <br />
-              cocoa income inventory
+              Cocoa Income Inventory
             </h1>
             <h3>
               Explore data on cocoa production, income from cocoa and other key
@@ -142,7 +142,7 @@ const CocoaIncomeInventory = () => {
           <Image
             src={ValueOrgImg}
             preview={false}
-            width="50%"
+            width={450}
             className="image-wrapper"
           />
         </div>

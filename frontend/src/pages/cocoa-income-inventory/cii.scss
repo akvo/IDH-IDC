@@ -62,7 +62,6 @@
       .jumbotron-text-wrapper {
         z-index: 1;
         padding: 36px $default-padding-size;
-
         h1 {
           font-family: "RocGrotesk" !important;
           color: #ffffff;
@@ -78,6 +77,7 @@
           font-size: 1.2rem;
           line-height: 35px;
           width: 50%;
+          margin-bottom: 24px;
         }
       }
     }
@@ -85,7 +85,7 @@
 
   .about-wrapper {
     background-color: #fff;
-    padding: 2rem $default-padding-size;
+    padding: 2rem $default-padding-size 2rem $default-padding-size;
 
     .logos-wrapper {
       display: flex;
@@ -201,7 +201,7 @@
   }
 
   .pch-wrapper {
-    padding: 2rem $default-padding-size;
+    padding: 2rem $default-padding-size 2rem $default-padding-size;
     background-color: #fcf9f4;
     display: flex;
     justify-content: space-evenly;
@@ -209,7 +209,7 @@
   }
 
   .contributing-wrapper {
-    padding: 2rem $default-padding-size;
+    padding: 2rem $default-padding-size 3rem $default-padding-size;
 
     .contributing-content-wrapper {
       padding-top: 10px;
@@ -230,12 +230,16 @@
   }
 
   .value-org-wrapper {
-    padding: 2rem $default-padding-size;
+    padding: 2rem $default-padding-size 3rem $default-padding-size;
     background-color: #fcf9f4;
+
+    h2 {
+      text-align: center;
+    }
 
     .value-org-content-wrapper {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-evenly;
       gap: 20px;
       align-items: center;
 
