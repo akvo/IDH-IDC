@@ -1,6 +1,7 @@
 @import "../../variables.scss";
 
-#cii-page {
+#cii-page,
+.cii-page-container {
   .jumbotron-wrapper {
     background-image: url("/assets/images/cii/cii-jumbotron.png") !important;
     background-size: cover;
@@ -49,6 +50,55 @@
           font-size: 1.2rem;
           line-height: 35px;
           width: 50%;
+        }
+      }
+    }
+  }
+
+  .about-wrapper {
+    background-color: #fff;
+    padding: 24px $default-padding-size;
+
+    .logos-wrapper {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      gap: 20px;
+      border-bottom: 2px solid #f2f2f2;
+      padding-bottom: 20px;
+
+      div {
+        flex: 1 1 33%;
+        text-align: center;
+
+        &:nth-child(2) {
+          border-left: 2px solid #f2f2f2;
+          border-right: 2px solid #f2f2f2;
+        }
+      }
+    }
+
+    .about-text-wrapper {
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 32px;
+      }
+      .about-description-wrapper {
+        display: flex;
+        gap: 20px;
+
+        p {
+          margin: 0;
+          color: #8a8a8a;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 24px;
         }
       }
     }
