@@ -32,7 +32,10 @@ import {
 } from "./pages/procurement-library";
 import { OtherResources } from "./pages/other-resources";
 import { FAQ } from "./pages/faq";
-import { CocoaIncomeInventory } from "./pages/cocoa-income-inventory";
+import {
+  CocoaIncomeInventory,
+  CocoaIncomeInventoryDashboard,
+} from "./pages/cocoa-income-inventory";
 
 const optionRoutes = [
   "organisation/options",
@@ -232,6 +235,11 @@ const App = () => {
             exact
             path="/cocoa-income-inventory"
             element={<CocoaIncomeInventory signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/cocoa-income-inventory/dashboard"
+            element={<CocoaIncomeInventoryDashboard signOut={signOut} />}
           />
           <Route
             exact

@@ -60,6 +60,13 @@
     font-weight: 700;
     border: 2px solid $primary-color;
   }
+  .button-yellow-fill {
+    background-color: $yellow-color;
+    border-radius: 40px;
+    color: #000;
+    font-weight: 700;
+    border: 2px solid $yellow-color;
+  }
 
   .button-ghost {
     background: transparent;

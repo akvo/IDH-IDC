@@ -42,7 +42,10 @@ const CocoaIncomeInventory = () => {
               Explore data on cocoa production, income from cocoa and other key
               indicators from different origins
             </h3>
-            <Link to="/" className="button button-yellow">
+            <Link
+              to="/cocoa-income-inventory/dashboard"
+              className="button button-yellow"
+            >
               Explore dashboard{" "}
               <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
             </Link>
