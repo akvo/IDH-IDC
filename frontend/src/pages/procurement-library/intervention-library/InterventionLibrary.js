@@ -8,6 +8,7 @@ import {
   Select,
   Space,
   Spin,
+  Tooltip,
 } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, SearchIcon } from "../../../lib/icon";
@@ -129,8 +130,8 @@ const InterventionLibrary = () => {
               <Input
                 placeholder="Search"
                 prefix={<SearchIcon />}
-                allowClear
                 size="large"
+                allowClear
               />
             </Form.Item>
             <Form.Item
@@ -143,6 +144,32 @@ const InterventionLibrary = () => {
                 options={procurementProcesses}
                 style={{ minWidth: 310 }}
                 size="large"
+                maxTagCount={1}
+                maxTagPlaceholder={(omittedValues) => (
+                  <Tooltip
+                    styles={{
+                      root: {
+                        pointerEvents: "none",
+                      },
+                    }}
+                    title={
+                      <ul
+                        style={{
+                          paddingInlineStart: 12,
+                          marginBlockStart: 0,
+                          marginBlockEnd: 0,
+                        }}
+                      >
+                        {omittedValues?.map(({ label }, ox) => (
+                          <li key={ox}>{label}</li>
+                        ))}
+                      </ul>
+                    }
+                    placement="bottom"
+                  >
+                    <span>{`+${omittedValues?.length}`}</span>
+                  </Tooltip>
+                )}
                 allowClear
               />
             </Form.Item>
