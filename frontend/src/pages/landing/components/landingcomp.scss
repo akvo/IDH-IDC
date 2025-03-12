@@ -366,13 +366,13 @@
 
 #footer-disclaimer {
   background-color: #00625f;
-  color: #ffffff;
+  color: #ffffff !important;
   width: 100%;
   padding: 1.5rem $default-padding-size;
 
   h2 {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 24px !important;
+    font-weight: 700 !important;
   }
 
   p {
