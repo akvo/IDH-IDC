@@ -131,6 +131,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     }));
   });
 
+  // TODO :: Rever to chart biggest impact on income
   const chartData = useMemo(() => {
     const { optimization_result } = optimizationResult;
     const optimizedValues = orderBy(optimization_result, "key");
@@ -168,14 +169,14 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           const optimizedValue =
             valueTmp.find((v) => v.name === "optimized")?.value || 0;
           const optimizedPercentage = currentValue
-            ? ((optimizedValue - currentValue) / currentValue) * 100
-            : 0;
+            ? 100 + ((optimizedValue - currentValue) / currentValue) * 100
+            : 100;
 
           currentValues.push({
             key,
             name: "current",
             absolute: thousandFormatter(currentValue, 2),
-            percentage: "100",
+            value: "100",
           });
 
           return {
