@@ -88,10 +88,10 @@ export const PROCUREMENT_COLOR_SCALE = [
 export const IMPACT_AREA_OPTIONS = [
   {
     value: PROCUREMENT_IMPACT_AREAS.income,
-    label: "Income Impact",
+    label: "Income",
   },
   {
     value: PROCUREMENT_IMPACT_AREAS.env,
-    label: "Environmental Impact",
+    label: "Environment",
   },
 ];
