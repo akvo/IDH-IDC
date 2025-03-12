@@ -160,7 +160,7 @@ const Practice = () => {
                       ),
                       children: (
                         <div
-                          className="font-tablet-gothic"
+                          className="practice-content-text font-tablet-gothic"
                           dangerouslySetInnerHTML={{
                             __html: practice?.[key],
                           }}
