@@ -85,7 +85,7 @@
 
   .about-wrapper {
     background-color: #fff;
-    padding: 2rem $default-padding-size 2rem $default-padding-size;
+    padding: 2rem $default-padding-size 3rem $default-padding-size;
 
     .logos-wrapper {
       display: flex;
@@ -119,7 +119,7 @@
   }
 
   .indicators-wrapper {
-    padding: 2rem 0 24px $default-padding-size;
+    padding: 2rem 0 2rem $default-padding-size;
     background-color: #eaf2f2;
 
     h2 {
@@ -206,6 +206,20 @@
     display: flex;
     justify-content: space-evenly;
     gap: 20px;
+    flex-wrap: wrap;
+
+    .pch-item {
+      flex: 1;
+
+      &:nth-child(1),
+      &:nth-child(2) {
+        flex: 1 1 calc(50% - 20px); /* 2 items in first row (50% width each) */
+      }
+
+      &:nth-child(3) {
+        flex: 1 1 100%; /* Full-width for the second row */
+      }
+    }
   }
 
   .contributing-wrapper {
