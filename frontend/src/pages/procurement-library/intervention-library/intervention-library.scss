@@ -2,6 +2,9 @@
 
 .intervention-library-container {
   padding: 12px 32px;
+  @media (max-width: 1280px) {
+    padding: 6px 32px;
+  }
   .intervention-library-header ul {
     list-style: none;
     padding-inline-start: 0;
@@ -59,6 +62,9 @@
         grid-template-columns: repeat(4, 1fr);
         align-items: center;
         gap: 12px;
+        @media (max-width: 768px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
         .intervention-library-search-button {
           width: fit-content;
           height: auto;
@@ -94,12 +100,19 @@
       margin: 24px 0;
       .ant-spin-container {
         width: 100%;
+        max-width: 1440px;
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 24px;
 
         @media (max-width: 1024px) {
           grid-template-columns: repeat(3, 1fr);
+        }
+        @media (max-width: 768px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        @media (max-width: 480px) {
+          grid-template-columns: 1fr;
         }
         .intervention-card {
           width: 100%;

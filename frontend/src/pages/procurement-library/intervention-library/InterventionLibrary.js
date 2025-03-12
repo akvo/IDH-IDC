@@ -131,6 +131,7 @@ const InterventionLibrary = () => {
                 placeholder="Search"
                 prefix={<SearchIcon />}
                 size="large"
+                style={{ minWidth: 280 }}
                 allowClear
               />
             </Form.Item>
