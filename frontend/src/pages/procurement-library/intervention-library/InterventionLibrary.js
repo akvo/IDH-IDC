@@ -1,21 +1,32 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Form, Input, Pagination, Select, Space, Spin } from "antd";
+import {
+  Button,
+  Empty,
+  Form,
+  Input,
+  Pagination,
+  Select,
+  Space,
+  Spin,
+} from "antd";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight } from "../../../lib/icon";
+import { ArrowRight, SearchIcon } from "../../../lib/icon";
 import { api } from "../../../lib";
 import { ImpactAreaIcons, ProcurementBadge } from "../components";
 import "./intervention-library.scss";
 import { IMPACT_AREA_OPTIONS } from "../config";
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 8;
 const { useForm } = Form;
 
 const InterventionLibrary = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [practices, setPractices] = useState([]);
+  const [total, setTotal] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
   const [procurementProcesses, setProcurementProcesses] = useState([]);
+  const [filter, setFilter] = useState({});
 
   const [form] = useForm();
   const navigate = useNavigate();
@@ -35,8 +46,11 @@ const InterventionLibrary = () => {
   }, []);
 
   const fetchData = useCallback(
-    async (filter = {}) => {
+    async (resetPage = false) => {
       try {
+        if (!loading) {
+          return;
+        }
         let apiURL = `/pl/practices?limit=${PAGE_SIZE}`;
         if (filter?.search) {
           apiURL += `&search=${filter.search}`;
@@ -50,26 +64,27 @@ const InterventionLibrary = () => {
           apiURL += `&impact_area=${filter.impact_area}`;
         }
 
-        apiURL += Object.keys(filter).length > 0 ? "&page=1" : `&page=${page}`;
+        apiURL += resetPage ? "&page=1" : `&page=${page}`;
         const { data: apiData } = await api.get(apiURL);
-        const { current, total, data } = apiData;
+        const { current, total: _total, data, total_page } = apiData;
         setPractices(data);
         setPage(current);
-
-        setTotalPage(total);
+        setTotal(_total);
+        setTotalPage(total_page);
         setLoading(false);
       } catch (err) {
         console.error(err);
         setLoading(false);
       }
     },
-    [page]
+    [loading, page, filter]
   );
 
-  const handleOnFinish = (filter) => {
-    setLoading(true);
+  const handleOnFinish = (payload) => {
+    setFilter(payload);
     setPage(1);
-    fetchData(filter);
+    setLoading(true);
+    fetchData(true);
   };
 
   useEffect(() => {
@@ -84,8 +99,23 @@ const InterventionLibrary = () => {
     <div className="intervention-library-container">
       <div className="intervention-library-header">
         <ul>
-          <li>Procurement Library</li>
-          <li className="active">Library</li>
+          <li
+            role="button"
+            onClick={() => {
+              navigate("/procurement-library");
+            }}
+          >
+            Procurement Library
+          </li>
+          <li
+            className="active"
+            role="button"
+            onClick={() => {
+              navigate("/procurement-library/intervention-library");
+            }}
+          >
+            Library
+          </li>
         </ul>
       </div>
       <div className="intervention-library-content">
@@ -96,7 +126,12 @@ const InterventionLibrary = () => {
               label="Procurement practice title or keyword"
               name="search"
             >
-              <Input placeholder="Search" />
+              <Input
+                placeholder="Search"
+                prefix={<SearchIcon />}
+                allowClear
+                size="large"
+              />
             </Form.Item>
             <Form.Item
               label="Procurement Process"
@@ -106,6 +141,8 @@ const InterventionLibrary = () => {
                 placeholder="Choose procurement process"
                 mode="multiple"
                 options={procurementProcesses}
+                style={{ minWidth: 310 }}
+                size="large"
                 allowClear
               />
             </Form.Item>
@@ -113,20 +150,30 @@ const InterventionLibrary = () => {
               <Select
                 placeholder="Choose impact area"
                 options={IMPACT_AREA_OPTIONS}
+                style={{ minWidth: 125 }}
+                size="large"
                 allowClear
               />
             </Form.Item>
-            <Button type="primary" htmlType="submit">
+            <button
+              type="submit"
+              className="intervention-library-search-button"
+            >
               <Space>
                 <span>Search</span>
                 <span>
                   <ArrowRight />
                 </span>
               </Space>
-            </Button>
+            </button>
           </Form>
         </div>
         <div className="intervention-library-content-body">
+          {practices?.length === 0 && (
+            <div className="intervention-library-no-data">
+              <Empty description="No results found. Please adjust your filters and try again." />
+            </div>
+          )}
           <Spin spinning={loading}>
             {practices?.map((practice) => (
               <div key={practice.id} className="intervention-card">
@@ -167,7 +214,7 @@ const InterventionLibrary = () => {
                       );
                     }}
                   >
-                    <Space>
+                    <Space size="small">
                       <span>View</span>
                       <span>
                         <ArrowRight />
@@ -180,15 +227,17 @@ const InterventionLibrary = () => {
           </Spin>
         </div>
         <div className="intervention-library-content-footer">
-          <Pagination
-            pageSize={PAGE_SIZE}
-            current={page}
-            total={totalPage}
-            onChange={(p) => {
-              setLoading(true);
-              setPage(p);
-            }}
-          />
+          {totalPage > 1 && (
+            <Pagination
+              pageSize={PAGE_SIZE}
+              current={page}
+              total={total}
+              onChange={(p) => {
+                setLoading(true);
+                setPage(p);
+              }}
+            />
+          )}
         </div>
       </div>
     </div>
