@@ -9,11 +9,10 @@ import WageningenLogo from "../../assets/images/cii/wageningen-univ.png";
 import VoiceLogo from "../../assets/images/cii/voice.png";
 import ValueOrgImg from "../../assets/images/cii/value-for-org-sharing-data.jpeg";
 import IndicatorCarousel from "./IndicatorCarousel";
-import { pchContent } from "./pch-content";
-import { contributingContent } from "./contributing-content";
-import { valueOrgContent } from "./value-org-content";
 import { CheckIcon } from "../../lib/icon";
 import { FooterDisclaimer } from "../landing/components";
+import { CIIContent } from "./static";
+import ContactCardEmailIcon from "../../assets/icons/contact-card-email.png";
 
 const CocoaIncomeInventory = () => {
   return (
@@ -94,7 +93,7 @@ const CocoaIncomeInventory = () => {
 
       {/* Public, consequences, harmonized, section */}
       <Col span={24} className="pch-wrapper">
-        {pchContent.map((item, i) => (
+        {CIIContent.pchContent.map((item, i) => (
           <div key={`pch-item-${i}`} className="pch-item">
             <Image src={item.icon} preview={false} height={30} />
             <h3>{item.title}</h3>
@@ -112,7 +111,7 @@ const CocoaIncomeInventory = () => {
           PreCompetitive Data and Insights Sharing:
         </h2>
         <div className="contributing-content-wrapper">
-          {contributingContent.map((item, i) => (
+          {CIIContent.contributingContent.map((item, i) => (
             <div key={`contributing-item-${i}`} className="contributing-item">
               <div>
                 <CheckIcon width={20} height={20} />
@@ -129,7 +128,7 @@ const CocoaIncomeInventory = () => {
         <h2>Value for Organizations Sharing Data</h2>
         <div className="value-org-content-wrapper">
           <div className="value-org-item-wrapper">
-            {valueOrgContent.map((item, i) => (
+            {CIIContent.valueOrgContent.map((item, i) => (
               <div key={`value-org-item-${i}`} className="value-org-item">
                 <Image src={item.icon} preview={false} style={{ width: 30 }} />
                 <div className="item-text-wrapper">
@@ -148,6 +147,46 @@ const CocoaIncomeInventory = () => {
         </div>
       </Col>
       {/* EOL Value for organisation sharing data section */}
+
+      {/* Contribute to inventory section */}
+      <Col span={24} className="contribute-to-wrapper">
+        <h2>Contribute to the inventory</h2>
+        <p>
+          Organisations wishing to contribute their datasets should contact:
+        </p>
+        <div className="contact-card-wrapper">
+          {CIIContent.contactCardContent.map((item, i) => (
+            <div key={`contact-card-item-${i}`} className="contact-card-item">
+              <Image src={ContactCardEmailIcon} preview={false} width={30} />
+              <div className="name">{item.name}</div>
+              <div className="org">{item.organisation}</div>
+              <div className="email">
+                <a href={`mailto:${item.email}`}>{item.email}</a>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="address-wrapper">
+          <p>
+            Citation: IDH, VOICE Network, WUR, 2025. Cocoa Income Inventory -
+            Release February 2025. Authors: Yuca Waarts (WUR), Antonie Fountain
+            (Voice Network), Pavithra Ram (IDH), Valerie Janssen (WUR), Olivia
+            Azhari (WUR), 2025.
+          </p>
+          <p>
+            Funded by the IDH{" "}
+            <a
+              href="https://www.idhsustainabletrade.com/roadmap-on-living-income/"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Living Income Roadmap
+            </a>{" "}
+            In-kind contributions by WUR, VOICE.
+          </p>
+        </div>
+      </Col>
+      {/* EOL Contribute to inventory section */}
 
       <FooterDisclaimer />
     </Row>

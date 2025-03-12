@@ -1,7 +1,7 @@
-import EnchancedIcon from "../../assets/icons/cii-value-org/enhanced.png";
-import InsightIcon from "../../assets/icons/cii-value-org/insight.png";
-import DiveIcon from "../../assets/icons/cii-value-org/dive.png";
-import StreamlinedIcom from "../../assets/icons/cii-value-org/streamlined.png";
+import EnchancedIcon from "../../../assets/icons/cii-value-org/enhanced.png";
+import InsightIcon from "../../../assets/icons/cii-value-org/insight.png";
+import DiveIcon from "../../../assets/icons/cii-value-org/dive.png";
+import StreamlinedIcom from "../../../assets/icons/cii-value-org/streamlined.png";
 
 export const valueOrgContent = [
   {

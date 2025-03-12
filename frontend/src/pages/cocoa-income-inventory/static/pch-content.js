@@ -1,6 +1,6 @@
-import PAIcon from "../../assets/icons/cii-pch/public-availability.png";
-import CSIcon from "../../assets/icons/cii-pch/consequences.png";
-import HAIcon from "../../assets/icons/cii-pch/harmonized.png";
+import PAIcon from "../../../assets/icons/cii-pch/public-availability.png";
+import CSIcon from "../../../assets/icons/cii-pch/consequences.png";
+import HAIcon from "../../../assets/icons/cii-pch/harmonized.png";
 
 export const pchContent = [
   {

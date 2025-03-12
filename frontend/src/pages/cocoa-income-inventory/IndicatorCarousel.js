@@ -3,7 +3,7 @@ import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 import { Button, Image } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { indicatorContent } from "./indicator-content";
+import { CIIContent } from "./static";
 
 const responsive = {
   0: { items: 1 },
@@ -11,7 +11,7 @@ const responsive = {
   1024: { items: 3 },
 };
 
-const items = indicatorContent.map((item, i) => (
+const items = CIIContent.indicatorContent.map((item, i) => (
   <div key={`${item.icon}-${i}`} className="indicator-item" data-value={i}>
     <Image src={item.icon} preview={false} height={52} />
     <p>{item.title}</p>

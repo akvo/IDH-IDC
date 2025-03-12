@@ -281,4 +281,81 @@
       }
     }
   }
+
+  .contribute-to-wrapper {
+    padding: 2rem $default-padding-size 3rem $default-padding-size;
+    background-color: #fff;
+
+    h2,
+    p {
+      text-align: center;
+      margin: 14px;
+    }
+
+    .contact-card-wrapper {
+      padding: 1.5rem 0;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+
+      .contact-card-item {
+        min-width: 25%;
+        max-width: 275px;
+        border-radius: 12px;
+        background: #eaf2f2;
+        padding: 24px;
+
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .name,
+        .email > a {
+          color: $primary-color;
+        }
+
+        .name {
+          margin-top: 10px;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+        }
+
+        .org {
+          color: #000;
+          font-family: "TabletGothic";
+          font-size: 13px;
+          font-style: normal;
+          font-weight: 500;
+        }
+
+        .email {
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 600;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .address-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      p {
+        max-width: 685px;
+        color: #8a8a8a;
+        font-size: 14px;
+
+        a {
+          color: #8a8a8a;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
 }
