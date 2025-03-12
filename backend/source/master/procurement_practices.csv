@@ -1,5 +1,5 @@
 Area,Procurement Processes,Practice,intervention_definition,enabling_conditions,business_rationale,farmer_rationale,risks_n_trade_offs,intervention_impact_income,intervention_impact_env,source_or_evidence,Income Impact,Environmental Impact,Combined impact,Implementation Time,Implementation Cost / Effort,Aggregated Ease of Implementation,Farmer,Aggregator,Processor,Trader,Manufacturer,Retailer,Informal-Small,Informal-Large,Formal-Small,Formal-Large,Basic Processing,Intermediate Enhancement, High Differentiation,Small-scale Enterprise,Medium-scale Enterprise, Large-scale Enterprise, Mega-scale Enterprise,nan,nan,nan,nan,nan,nan
-Income,Contract Lifecycle Management,Simple Contract Terminology,"<h3>Definition</h3>
+Income,Contract Life Cycle Management,Simple Contract Terminology,"<h3>Definition</h3>
 <p>Simple Contract Terminology in a procurement context refers to the use of clear and easily understandable language in contractual agreements to facilitate effective communication and comprehension among all parties involved in the procurement process.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -56,7 +56,7 @@ Income,Contract Lifecycle Management,Simple Contract Terminology,"<h3>Definition
 <p></p>
 <p>Accessibility: Facilitates easier interpretation for all stakeholders involved in the procurement process. Stakeholders need to decide between the accessibility, ensuring a broader understanding but potentially lacking technical depth, and the specificationability, catering to technical experts but potentially limiting accessibility to a specialized audience.</p>",<p>Indirect</p>,<p>Indirect</p>,"<p>Interview with IDH Stakeholder (07.12.2023)</p>
 <p>Arthur Ng’ang’a & Violaine Berger</p>",3,1,2,4,1,2.5,0,5,5,4,2,1,5,4,1,1,4,4,4,5,4,2,1,15,10,12,7,7,19
-Income,Contract Lifecycle Management,Long-Term / Multi-seasonal Contracts,"<h3>Definition</h3>
+Income,Contract Life Cycle Management,Long-Term / Multi-seasonal Contracts,"<h3>Definition</h3>
 <p>Long-term contracts refer to agreements between a buyer and a supplier that extend beyond a standard contractual duration, often spanning an extended period, to secure a stable and ongoing supply of goods or services while promoting a strategic and collaborative relationship.</p>","<h3>Enabling conditions for the effective implementation of long-term contracts in a procurement organization include establishing robust risk management strategies, ensuring clear performance metrics and key performance indicators (KPIs), fostering strong relationships with suppliers, conducting thorough due diligence on contractual terms, maintaining flexibility to accommodate changes, and implementing advanced contract management technologies to facilitate monitoring and compliance over extended periods.</h3>","<strong>1. Cost Efficiency:</strong>
 <p>Stability in farmer income reduces the need for constant renegotiation of contracts and administrative overheads related to short-term contract turnovers, contributing to cost savings.</p>
 <p></p>
@@ -133,7 +133,7 @@ Income,Contract Lifecycle Management,Long-Term / Multi-seasonal Contracts,"<h3>D
 <p>Cost Efficiency vs. Price Negotiation: Suppliers may achieve cost efficiency through long-term relationships, but this could limit their ability to renegotiate prices upward in response to increased costs or inflation.</p>
 <p>Collaboration vs. Market Exposure: Building a collaborative relationship with a buyer in a long-term contract is beneficial, but it may limit a supplier's exposure to a broader market and potential new customers.</p>",<p>Indirect</p>,<p>Indirect</p>,"<p>Starbucks & C.A.F.E Initiative in Brazil</p>
 <p><a href=""https://ccsi.columbia.edu/sites/default/files/content/pics/CCSI%20Responsible%20Coffee%20Sourcing%20Report.pdf"">https://ccsi.columbia.edu/sites/default/files/content/pics/CCSI%20Responsible%20Coffee%20Sourcing%20Report.pdf</a></p>",4,3,3.5,1,2,1.5,0,5,4,3,4,2,5,4,3,3,2,3,3,5,4,2,3,13,12,13,10,11,17
-Income,Contract Lifecycle Management,Pricing Methods,"<h3>Definition</h3>
+Income,Contract Life Cycle Management,Pricing Methods,"<h3>Definition</h3>
 <p>In sustainable procurement and responsible sourcing, pricing methods within the contract life cycle management involve intentionally selecting and applying pricing structures and strategies during negotiation, analysis, and continuous monitoring to optimize cost-effectiveness, ensure value, and align with financial goals while prioritizing environmentally and socially responsible practices throughout the contract duration.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -620,7 +620,7 @@ Income,Procurement Risk Management,Crop Insurance,"<h3>Definition</h3>
 <p>Claim Payouts vs. Financial Stability: Suppliers must decide on the frequency and extent of claim payouts. While timely payouts may enhance trust, overly generous payouts could impact the financial stability of the insurance provider.</p>
 <p>Market Reach vs. Specialization: Suppliers may need to decide between expanding their market reach by offering diverse crop insurance products and specializing in specific crops or regions. Balancing market reach with specialization involves assessing the risk landscape and market demand.</p>
 <p>Innovation vs. Standardization: Suppliers may weigh the trade-off between introducing innovative features in crop insurance policies and maintaining standardized offerings. Innovations may attract buyers, but standardization may ensure ease of administration and understanding.</p>",<p>Indirect</p>,<p>Indirect</p>,"<p><a href=""https://edepot.wur.nl/460672"">https://edepot.wur.nl/460672</a></p>",3,1,2,4,2,3,0,2,3,1,1,1,4,4,3,3,3,3,3,4,3,2,1,12,8,10,8,8,13
-Income,"Strategic, Responsible Sourcing & Vertical Integration",Make vs. Buy Decision ,"<h3>Definition</h3>
+Income,"Responsible Sourcing, Vertical Integration",Make vs. Buy Decision ,"<h3>Definition</h3>
 <p>The Make vs. Buy Decision in procurement refers to the strategic evaluation and determination of whether to internally produce goods or services (make) or externally acquire them from external suppliers (buy), considering factors such as cost, expertise, and strategic alignment.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -702,7 +702,7 @@ Income,"Strategic, Responsible Sourcing & Vertical Integration",Make vs. Buy Dec
 <p>Economies of Scale vs. Customization: Suppliers may weigh the advantages of achieving economies of scale through serving multiple buyers against the customization requirements of individual buyers. The trade-off involves deciding between mass production efficiency and tailoring products or services to specific buyer needs.</p>
 <p>Cash Flow Predictability vs. Market Dependency: Suppliers may prioritize cash flow predictability through long-term contracts, but this may result in dependency on specific buyers. Balancing cash flow stability with market diversification is essential for supplier sustainability.</p>",<p>Direct</p>,<p>Indirect</p>,"<p>IDH Interview Session</p>
 <p><a href=""https://webassets.oxfamamerica.org/media/documents/Business-briefing-Issue-1-V3.pdf"">https://webassets.oxfamamerica.org/media/documents/Business-briefing-Issue-1-V3.pdf</a></p>",4,1,2.5,1,1,1,0,3,5,3,4,4,3,4,4,5,4,3,3,3,4,5,4,17,15,16,17,16,13
-Income,Procurement Leadership & Responsible Sourcing & Contract Mangement,Direct Farmer Contracting Programs,"<h3>Definition</h3>
+Income,"Procurement Leadership, Responsible Sourcing,  Contract Mangement",Direct Farmer Contracting Programs,"<h3>Definition</h3>
 <p>Direct Farmer Contracting Programs in procurement involve establishing contractual agreements directly between procurement organizations and individual farmers, fostering a direct and collaborative relationship throughout the agricultural supply chain.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -746,7 +746,7 @@ Income,Procurement Leadership & Responsible Sourcing & Contract Mangement,Direct
 <p>Risk Reduction vs. Profit Potential: Farmers may opt for direct contracts to reduce production and market risks, but this may come with limitations on profit potential. Deciding on the right balance involves assessing risk tolerance and profit expectations.</p>
 <p>Long-Term Stability vs. Flexibility: Farmers may seek long-term stability through direct contracts, but this could limit their flexibility to adapt to changing market conditions. Finding the right balance involves considering the benefits of stability against the need for adaptability.</p>",<p>Direct</p>,<p>Indirect</p>,"<p>IDH Interview Sessions</p>
 <p>Nespresso Example, Norwegian & Pakstanian Rice producer</p>",4,2,3,2,3,2.5,0,1,1,4,4,3,4,3,2,1,4,3,2,4,3,2,2,9,10,11,10,8,13
-Income,Strategic / Responsible Sourcing,Fair Pricing Negotiation Practices,"<h3>Definition</h3>
+Income,Responsible Sourcing,Fair Pricing Negotiation Practices,"<h3>Definition</h3>
 <p>Fair Pricing Negotiation Practices in procurement refer to ethical and transparent approaches used by buyers and suppliers to collaboratively determine prices, ensuring equitable and mutually beneficial agreements.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -837,7 +837,7 @@ Income,Payment Management,Partial Payments and Milestone Payments,"<h3>Definitio
 <p>Innovation vs. Payment Constraints: Suppliers may desire to innovate during project execution, but the constraints of milestone payments may limit these initiatives. Striking a balance involves finding innovative solutions within the framework of payment schedules.</p>",<p>Direct</p>,<p>Indirect</p>,"<p>EY Based Interviews</p>
 <p>IDH Based Interviews as well as in our workshop</p>
 <p><a href=""https://www.sciencedirect.com/science/article/abs/pii/S0308521X20308702"">https://www.sciencedirect.com/science/article/abs/pii/S0308521X20308702</a></p>",5,2,3.5,3,3,3,0,5,5,4,3,3,5,5,4,4,4,3,3,4,3,3,3,16,14,14,14,13,18
-Income,Contract Lifecycle Management & Payment Management,"Shorter Payment Periods
+Income,"Contract Life Cycle Management, Payment Management","Shorter Payment Periods
 ","<h3>Definition</h3>
 <p>Shorter Payment Periods in procurement refer to a financial arrangement where buyers expedite the disbursement of funds to suppliers within a reduced timeframe, promoting prompt and timely payment for goods or services rendered.</p>
 <p></p>
@@ -1317,7 +1317,7 @@ Income,Procurement Leadership,Public Procurement Programs,"<h3>Definition</h3>
 <p>Profitability vs. Social Responsibility: Suppliers may face the trade-off between maximizing profitability in public procurement contracts and fulfilling social responsibility objectives. Striking the right balance involves maintaining a profitable business model while addressing social and environmental concerns.</p>
 <p>Compliance Costs vs. Procurement Opportunities: Suppliers may incur compliance costs to participate in public procurement programs, and this must be balanced against the potential opportunities available. The trade-off involves managing costs while leveraging the chances for business growth.</p>
 <p>Long-Term Partnerships vs. Individual Contracts: Suppliers may seek long-term partnerships in public procurement, but this could conflict with the prevalence of individual contract awards. The challenge involves pursuing stability while adapting to the prevailing procurement model.</p>",<p>Indirect</p>,<p>Indirect</p>,<p>Sustainability | Free Full-Text | How Public Procurement Mechanisms Can Be Used as a Tool for Developing Pro-Poor Food Value Chains: From Entry Points to Interventions (mdpi.com)</p>,3,1,2,1,2,1.5,0,3,4,2,1,1,4,3,1,1,3,2,1,4,1,1,1,10,6,6,6,4,14
-Income,Supplier Life-Cycle Management,Supplier Segmentation ,"<h3>Definition</h3>
+Income,Supplier Life Cycle Management,Supplier Segmentation ,"<h3>Definition</h3>
 <p>Supplier Segmentation in the supplier life cycle process involves strategically categorizing suppliers based on criteria such as performance, risk, innovation potential, business impact, geography, product category, and supplier spend size, enabling tailored management approaches and optimized engagement throughout their life cycle with a procurement organization</p>","<p>To effectively implement Supplier Segmentation in a procurement organization, key enabling conditions and prerequisites include establishing a comprehensive category calibration, evaluating business requirements, and developing strategic category strategies. Additionally, integrating supplier lifecycle management, ensuring effective accreditation, streamlining qualification and onboarding processes, and employing a structured segmentation approach based on criteria like performance, risk, innovation potential, geography, product category, and spend size are essential. Utilizing questionnaires, conducting regular segmentation analyses, implementing robust performance and risk management, and fostering proactive supplier development and innovation initiatives contribute to a successful Supplier Segmentation framework aligned with organizational goals.</p>","<strong>1. Cost Perspective</strong>
 <p>Efficiency Gains: By segmenting suppliers based on critical criteria such as spend size, geography, and product category, businesses can tailor their management approaches, optimizing resource allocation and reducing operational costs.</p>
 <p>Resource Allocation: Focusing resources on strategic suppliers in higher segments allows businesses to allocate their procurement efforts more efficiently, leading to potential cost savings.</p>
@@ -1365,7 +1365,7 @@ Income,Supplier Life-Cycle Management,Supplier Segmentation ,"<h3>Definition</h3
 <p>Collaboration vs. Independence: Suppliers in collaborative segments may value partnerships, but this could conflict with the desire for independence in certain business aspects. The challenge is to collaborate effectively while respecting the autonomy of suppliers.</p>",<p>Indirect</p>,<p>Indirect</p>,"<p>Based on old procurement framework of IDH and co-developmeent with Mars</p>
 <p>Iterated by EY and based on interview process within the project</p>
 <p>Evidence of clear supplier segmentation process in Mondelez Interview with CPO LATAM, more</p>",3,2,2.5,4,5,4.5,0,2,3,4,5,5,2,4,4,5,2,3,4,3,4,5,5,15,17,18,17,19,9
-Income,Demand & Specification Management & Integrated Business Planning,Business procurement requirements planning,"<h3>Definition</h3>
+Income,"Demand and Specification Management, Integrated Business Planning",Business Procurement Requirements Planning,"<h3>Definition</h3>
 <p>Business procurement requirements planning in a demand and specification management context refers to the strategic process of identifying, analyzing, and defining the specific needs and specifications of goods or services required by an organization to effectively inform the procurement process</p>","<p>To implement effective Business Procurement Requirements Planning, a procurement organization should align its strategies with overall business objectives, foster collaborative stakeholder engagement, establish comprehensive data management systems, invest in technological infrastructure, ensure skilled procurement personnel, provide continuous training, maintain clear documentation and standardization, integrate supplier relations, implement effective risk management, foster flexibility and adaptability, and establish performance metrics for continuous improvement.</p>","<strong>1. Cost Perspective</strong>
 <p>Optimized Resource Allocation: Business procurement requirements planning allows for the optimization of resources by aligning procurement needs with organizational demands, reducing unnecessary costs associated with overstock or stockouts.</p>
 <p>Efficiency in Procurement Processes: Streamlining procurement through effective planning reduces operational costs by minimizing the time and effort spent on emergency or unplanned purchases.</p>
@@ -1633,7 +1633,7 @@ Income,Procurement Finance Enablement,Pre-Finance Purchases,"<p>Pre-finance purc
 <p>Tradeoff: Balancing the benefits of securing pre-financing with the associated costs, and negotiating terms that are fair and sustainable for the supplier.</p>
 <p></p>",<p>Direct</p>,<p>Direct</p>,"<p>Based on old procurement framework of IDH and co-developmeent with Mars</p>
 <p>Iterated by EY and based on interview process within the project</p>",4,3,3.5,4,4,4,0,4,4,4,4,2,4,4,3,2,3,2,1,4,2,1,1,11,9,10,8,6,15
-Environment,Sustainability strategy & target setting,Integrating sustainability targets within the procurement strategy,"<h3>Definition</h3>
+Environment,"Sustainability Strategy, Target Setting",Integrating Sustainability Targets Within the Procurement Strategy,"<h3>Definition</h3>
 <p>Integrated sustainability strategies and targets in a procurement context involve the seamless incorporation of environmentally and socially conscious practices and specific objectives within the procurement processes to minimize environmental and social impact and promote sustainable sourcing and operations.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -1722,7 +1722,7 @@ Environment,Sustainability strategy & target setting,Integrating sustainability 
 <strong>23. https://www.thecasecentre.org/products/view?id=79265</strong>
 <strong>24. https://www.thecasecentre.org/products/view?id=63213</strong>
 <strong>25. https://ccsi.columbia.edu/sites/default/files/content/pics/CCSI%20Responsible%20Coffee%20Sourcing%20Report.pdf</strong>",4,4,4,4,4,4,0,1,3,5,3,5,1,4,5,5,2,4,5,1,2,5,5,16,19,17,17,20,5
-Environment,Green procurement policies,Adoption of a green policy,"<h3>Definition</h3>
+Environment,Green Procurement Policies,Adoption of a Green Policy,"<h3>Definition</h3>
 <p>The adoption of green procurement policies in a procurement perspective involves incorporating environmentally sustainable criteria and practices into the procurement process to minimize environmental impact, promote eco-friendly products and services, and align with responsible and sustainable business practices.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -1796,7 +1796,7 @@ Environment,Green procurement policies,Adoption of a green policy,"<h3>Definitio
 <strong>5. https://green-business.ec.europa.eu/green-public-procurement_en</strong>
 <strong>6. https://store.hbr.org/product/the-international-committee-of-the-red-cross-development-of-an-ethical-procurement-policy/W24873</strong>
 <strong>7. https://www.unilever.com/planet-and-society/protect-and-regenerate-nature/sustainable-and-regenerative-sourcing/</strong>",3,4,3.5,4,4,4,0,3,3,5,4,5,1,3,5,5,2,4,5,1,2,5,5,15,19,17,17,20,7
-Environment,Supplier lifecycle management,Supplier sustainability assessment,"<h3>Definition</h3>
+Environment,Supplier Life Cycle Management,Supplier Sustainability Assessment,"<h3>Definition</h3>
 <p>The evaluation and measurement of a supplier's environmental, social, and economic practices to ensure alignment with sustainable and responsible business principles.</p>
 <p></p>
 <b>Additional Details:</b>
@@ -1883,7 +1883,7 @@ Environment,Supplier lifecycle management,Supplier sustainability assessment,"<h
 <strong>4. https://www.thecasecentre.org/products/view?id=170954</strong>
 <strong>5. https://www.thecasecentre.org/products/view?id=120895</strong>
 <strong>6. https://ccsi.columbia.edu/sites/default/files/content/pics/CCSI%20Responsible%20Coffee%20Sourcing%20Report.pdf</strong>",3,3,3,2,3,2.5,4,4,4,5,4,5,3,4,5,5,3,4,5,3,4,5,5,17,19,18,18,20,13
-Environment,Product footprint assessment,Conducting an Environmental Impact Assessment (EIA),"<h3>Definition</h3>
+Environment,Product Footprint Assessment,Conducting an Environmental Impact Assessment (EIA),"<h3>Definition</h3>
 <p>Environmental risk assessment in a procurement context involves the systematic evaluation and analysis of potential adverse environmental impacts associated with the sourcing and acquisition of goods and services, aiming to mitigate and manage environmental risks throughout the supply chain.</p>
 <p></p>
 <p>Additional details:</p>
@@ -1956,7 +1956,7 @@ Environment,Product footprint assessment,Conducting an Environmental Impact Asse
 <p>Market Access vs. Sustainability: Suppliers targeting international markets must weigh the benefits of market access against the costs of adapting to sustainability requirements, aligning their strategies with evolving global standards.</p>",<p>Indirect</p>,<p>Indirect</p>,"<strong>1. https://consult.defra.gov.uk/water/rules-for-diffuse-water-pollution-from-agriculture/supporting_documents/New%20basic%20rules%20Consultation%20Impact%20Assessment.pdf</strong>
 <strong>2. https://www.fao.org/3/Y5136E/y5136e0a.htm</strong>
 <strong>3. https://www.sciencedirect.com/science/article/pii/S0048969721007506</strong>",2,4,3,3,3,3,2,4,4,4,5,5,1,2,4,3,2,3,5,1,3,4,5,13,15,16,15,18,8
-Environment,Product footprint assessment,Conducting a Lifecycle Assessment (LCA),"<h3>Definition</h3>
+Environment,Product Footprint Assessment,Conducting a Life Cycle Assessment (LCA),"<h3>Definition</h3>
 <p>A systematic evaluation of the environmental impacts associated with the entire life cycle of a product or service, from raw material extraction through production, use, and disposal, aiming to inform sustainable procurement decisions.</p>
 <p>Additional details:</p>
 <p>Conducting a Lifecycle Assessment by procurement organizations as part of procurement practices is a strategic move to understand, address, and mitigate the environmental risks associated with agri-food products. By leveraging these insights, procurement teams can guide decisions that not only minimize negative environmental impacts but also foster sustainable practices benefiting farmers and the broader ecosystem.To fully understand the environmental impact of procuring agri-food products, reduce the environmenatl risks associated with these products along the agri-food supply chain, it is advised to assess the entire lifecycle of these products, from raw material extraction to disposal. Procurement decisions can then be guided by the results of this LCA to select options with lower environmental footprints.</p>","<h3>Enabling conditions for conducting a Lifecycle Assessment (LCA) in a procurement organization include</h3>
@@ -2031,7 +2031,7 @@ Environment,Product footprint assessment,Conducting a Lifecycle Assessment (LCA)
 <strong>5. https://www.sciencedirect.com/science/article/pii/S2590332219301289</strong>
 <strong>6. https://core.ac.uk/download/pdf/211503602.pdf</strong>
 <strong>7. https://sustainabledevelopment.un.org/content/documents/846Why_take_a_life_cycle_approach_EN.pdf</strong>",3,3,3,3,3,3,0,2,2,2,3,4,1,2,4,3,1,3,4,0,2,4,5,11,13,13,13,16,4
-Environment,Support sustainable farming practices,Supporting regenerative agriculture,"<p>Definiton: Regenerative agriculture is an package of sustainable farming practices, aiming to restore and enhance soil health, promoting biodiversity, and increasing resilience to climate change, emphasizing sustainability and resilience throughout the supply chain. This holistic approach can bring about several benefits for the environment and, in many cases, contribute to improved economic outcomes for farmers. Many of the other sustainable farming practices are included in this package of regenerative agriculture, such as:</p>
+Environment,Support Sustainable Farming Practices,Supporting Regenerative Agriculture,"<p>Definiton: Regenerative agriculture is an package of sustainable farming practices, aiming to restore and enhance soil health, promoting biodiversity, and increasing resilience to climate change, emphasizing sustainability and resilience throughout the supply chain. This holistic approach can bring about several benefits for the environment and, in many cases, contribute to improved economic outcomes for farmers. Many of the other sustainable farming practices are included in this package of regenerative agriculture, such as:</p>
 <p>-Limited use of chemical products</p>
 <p>-Soil conservation</p>
 <p>-Crop diversification</p>
@@ -2098,7 +2098,7 @@ Environment,Support sustainable farming practices,Supporting regenerative agricu
 <strong>6. https://www.unilever.com/planet-and-society/protect-and-regenerate-nature/regenerating-nature/</strong>
 <strong>7. https://demos.co.uk/wp-content/uploads/2023/09/Regenerative-Farming-Report-Final.pdf</strong>
 <strong>8. https://www.rainforest-alliance.org/insights/what-is-regenerative-agriculture/</strong>",3.5,5,4.25,2,3,2.5,5,4,4,4,3,2,3,4,5,5,2,4,5,4,4,5,5,17,18,17,14,17,13
-Environment,Support sustainable farming practices,Supporting limited use of chemical products,"<h3>Definition</h3>
+Environment,Support Sustainable Farming Practices,Supporting Limited Use of Chemical Products,"<h3>Definition</h3>
 <p>The strategic restriction or controlled application of chemical substances within the supply chain, emphasizing a reduction in harmful environmental and health impacts while promoting the adoption of more sustainable alternatives.</p>","<strong>1. Enabling Conditions for Limited Use of Chemical Products in a Procurement Organization:</strong>
 <p></p>
 <p>Sustainable Procurement Policies: Development of procurement policies that prioritize and incentivize the limited use of chemical products, emphasizing environmentally friendly and low-impact alternatives.</p>
@@ -2166,7 +2166,7 @@ Environment,Support sustainable farming practices,Supporting limited use of chem
 <p>Cost vs. Compliance: Suppliers must strategically balance the trade-off between adapting to limited chemical use and maintaining production efficiency to remain competitive.</p>
 <p>Innovation vs. Tradition: Suppliers can navigate the trade-off by integrating compliance efforts with innovation, ensuring the development of new products or processes continues alongside adherence to restrictions.</p>
 <p>Market Access vs. Chemical Restrictions: Suppliers targeting international markets must weigh the benefits of market access against the costs of adapting to strict limitations on chemical products, aligning their strategies with evolving global expectations.</p>",<p>Direct</p>,<p>Direct</p>,"<p><a href=""https://link.springer.com/referencework/10.1007/978-3-030-57281-5"">https://link.springer.com/referencework/10.1007/978-3-030-57281-5</a></p>",3.5,3,3.25,3,4,3.5,5,0,1,1,1,3,3,3,5,3,1,3,4,3,2,2,4,9,11,10,11,14,7
-Environment,Support sustainable farming practices,Supporting soil conservation ,"<p>The deliberate implementation of sustainable agricultural practices and sourcing strategies that aim to prevent soil erosion, enhance soil health, and promote long-term fertility, ensuring responsible and resilient procurement within the supply chain.</p>","<strong>1. Enabling Conditions for Soil Conservation in a Procurement Organization:</strong>
+Environment,Support Sustainable Farming Practices,Supporting Soil Conservation ,"<p>The deliberate implementation of sustainable agricultural practices and sourcing strategies that aim to prevent soil erosion, enhance soil health, and promote long-term fertility, ensuring responsible and resilient procurement within the supply chain.</p>","<strong>1. Enabling Conditions for Soil Conservation in a Procurement Organization:</strong>
 <p></p>
 <p>Sustainable Sourcing Policies: Development of procurement policies that prioritize and support the inclusion of products from suppliers practicing soil conservation, emphasizing environmentally responsible and soil-enhancing agricultural practices.</p>
 <p></p>
@@ -2228,7 +2228,7 @@ Environment,Support sustainable farming practices,Supporting soil conservation ,
 <p>Innovation vs. Tradition: Allocating resources to adopt soil conservation practices may divert attention and resources from traditional production methods.</p>
 <p>Short-Term Costs vs. Long-Term Benefits: Balancing the short-term financial implications of transitioning to soil conservation with the potential long-term benefits in terms of soil health, productivity, and environmental sustainability.</p>
 <p>Addressing these risks and trade-offs requires careful planning, collaboration, and a long-term perspective from both buyers and suppliers in the procurement process.</p>",<p>Direct</p>,<p>Direct</p>,<p>Conservation agriculture- Case studies in Latin America and Africa (fao.org)</p>,3,4,3.5,3,4,3.5,5,0,0,1,0,1,2,2,5,2,3,3,3,4,4,4,5,9,11,9,11,11,9
-Environment,Support sustainable farming practices,Supporting crop rotation and diversification,"<h3>Definition</h3>
+Environment,Support Sustainable Farming Practices,Supporting Crop Rotation and Diversification,"<h3>Definition</h3>
 <p>The strategic planning and cultivation of different crops in sequence or simultaneously, aiming to enhance soil health, reduce pests and diseases, and promote agricultural sustainability within the supply chain.</p>
 <p>Additional details:</p>
 <p>Implementing practices such as crop rotation and diversification at the farm level can help break pest and disease cycles, reducing the need for chemical inputs. Different crops have different nutrient requirements and susceptibility to pests, allowing for a more balanced and sustainable approach to farming.</p>","<strong>1. Enabling Conditions for Crop Rotation and Diversification in a Procurement Organization:</strong>
@@ -2292,7 +2292,7 @@ Environment,Support sustainable farming practices,Supporting crop rotation and d
 <strong>4. https://www.hindawi.com/journals/aag/2021/8924087/</strong>
 <strong>5. https://www.mdpi.com/2073-4395/12/2/436</strong>
 <strong>6. https://www.frontiersin.org/articles/10.3389/fagro.2021.698968/full</strong>",3,4,3.5,2,3,2.5,5,0,0,0,0,0,0,0,5,0,1,2,2,4,4,4,3,6,5,6,4,5,5
-Environment,Support sustainable farming practices,Supporting agroforestry,"<h3>Definition</h3>
+Environment,Support Sustainable Farming Practices,Supporting Agroforestry,"<h3>Definition</h3>
 <p>The integration of trees and shrubs into agricultural landscapes, combining the simultaneous cultivation of crops, livestock, or other agricultural products, to enhance ecological sustainability, resource efficiency, and diversified procurement offerings.</p>
 <p>Additional details:</p>
 <p>Integration of trees and crops: agroforestry involves the intentional Integration of trees and shrubs into agricultural systems. This not only provides additional income sources for farmers but also creates diverse habitats for birds, insects, and other wildlife.</p>
@@ -2358,7 +2358,7 @@ Environment,Support sustainable farming practices,Supporting agroforestry,"<h3>D
 <strong>5. https://www.woodlandtrust.org.uk/media/51622/farming-for-the-future-how-agroforestry-can-deliver-for-nature-climate.pdf</strong>
 <strong>6. https://www.mdpi.com/1999-4907/13/4/556</strong>
 <p></p>",3,5,4,2,3,2.5,4,0,0,4,0,4,3,3,5,3,2,2,2,4,4,4,3,9,12,9,12,12,9
-Environment,Support sustainable farming practices,Supporting Integrated Pest Management (IPM),"<h3>Definition IPM is a field-level approach that combines various pest control methods, including biological control, cultural practices, and the judicious use of pesticides. By monitoring pest populations and using targeted interventions, farmers can minimize the overall use of pesticides.</h3>","<strong>1. Enabling conditions in a Procurement Organization:</strong>
+Environment,Support Sustainable Farming Practices,Supporting Integrated Pest Management (IPM),"<h3>Definition IPM is a field-level approach that combines various pest control methods, including biological control, cultural practices, and the judicious use of pesticides. By monitoring pest populations and using targeted interventions, farmers can minimize the overall use of pesticides.</h3>","<strong>1. Enabling conditions in a Procurement Organization:</strong>
 <p></p>
 <p>Clear Policies and Guidelines: Establishing comprehensive policies and guidelines that prioritize the adoption of IPM practices in the procurement of agricultural products.</p>
 <p>Supplier Collaboration: Collaborating with suppliers to ensure their adherence to IPM principles, promoting sustainable and environmentally friendly pest control methods.</p>
@@ -2418,7 +2418,7 @@ Environment,Support sustainable farming practices,Supporting Integrated Pest Man
 <p>Market Access vs. IPM Adoption: Suppliers targeting environmentally conscious markets must weigh the benefits of market access against the costs and challenges of adopting and maintaining IPM practices, aligning their strategies with evolving consumer expectations.</p>",<p>Direct</p>,<p>Direct</p>,"<strong>1. https://onlinelibrary.wiley.com/doi/full/10.1111/1477-9552.12306</strong>
 <strong>2. https://www.fao.org/pest-and-pesticide-management/ipm/integrated-pest-management/en/</strong>
 <strong>3. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4553536/</strong>",3,4,3.5,3,4,3.5,4,0,0,0,0,0,4,3,5,3,0,2,3,3,2,2,4,7,9,8,7,10,7
-Environment,Support sustainable farming practices,Supporting hedgerows and field borders,"<h3>Definition</h3>
+Environment,Support Sustainable Farming Practices,Supporting Hedgerows and Field Borders,"<h3>Definition</h3>
 <p>Planted strips or boundaries of diverse vegetation, including trees, shrubs, and wildflowers, along agricultural fields to enhance biodiversity, promote ecological resilience, and contribute to sustainable sourcing practices.</p>
 <p>Additional details:</p>
 <p>Planting hedgerows: creating hedgerows and field borders with native plants provides shelter, food, and nesting sites for birds, insects, and small mammals. These areas can serve as wildlife corridors, connecting fragmented habitats.</p>
@@ -2486,7 +2486,7 @@ Environment,Support sustainable farming practices,Supporting hedgerows and field
 <strong>2. https://www.cpre.org.uk/wp-content/uploads/2022/12/CPRE-farming-and-hedgrows-report.pdf</strong>
 <strong>3. https://extension.missouri.edu/publications/g9421</strong>
 <strong>4. https://hedgelink.org.uk/cms/cms_content/files/65_hedgerow_management_and_wildlife.pdf</strong>",2,2,2,5,5,5,2,0,0,0,0,3,3,0,5,0,0,0,0,3,3,3,0,3,0,3,3,3,6
-Environment,Support sustainable farming practices,Supporting organic farming,"<h3>Definition</h3>
+Environment,Support Sustainable Farming Practices,Supporting Organic Farming,"<h3>Definition</h3>
 <p>The cultivation of agricultural products without synthetic pesticides, herbicides, or genetically modified organisms, adhering to certified organic standards that prioritize environmentally sustainable and ecologically responsible practices.</p>
 <p>Additional details:</p>
 <p>Organic farming practices at the farm level emphasize the use of natural inputs and biological controls instead of synthetic fertilizers and pesticides. Organic farmers follow strict guidelines to minimize the environmental impact and prioritize soil health.</p>","<strong>1. Enabling Conditions for Organic Farming in a Procurement Organization:</strong>
@@ -2548,7 +2548,7 @@ Environment,Support sustainable farming practices,Supporting organic farming,"<h
 <strong>5. https://www.annualreviews.org/doi/10.1146/annurev-resource-100517-023252</strong>
 <strong>6. https://cdnsciencepub.com/doi/pdf/10.4141/CJPS07135</strong>
 <strong>7. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10069358/</strong>",3,3,3,2,3,2.5,3,3,3,3,3,4,3,4,5,5,3,3,3,4,5,5,5,15,16,15,17,17,13
-Environment,Support sustainable farming practices,Supporting sustainable water management,"<h3>Definition</h3>
+Environment,Support Sustainable Farming Practices,Supporting Sustainable Water Management,"<h3>Definition</h3>
 <p>The responsible use, conservation, and sourcing of water resources throughout the supply chain, emphasizing efficiency, environmental stewardship, and long-term resilience.</p>
 <p>Implementing water management practices that optimize water use and prevent water pollution contributes to the health of aquatic ecosystems and the biodiversity they support.</p>
 <p>Wetland restoration: protecting and restoring wetlands on or near farms provides important habitat for a wide range of plant and animal species.</p>","<strong>1. Enabling Conditions for Sustainable Water Management in a Procurement Organization:</strong>
@@ -2617,7 +2617,7 @@ Environment,Support sustainable farming practices,Supporting sustainable water m
 <strong>4. https://www.sciencedirect.com/science/article/abs/pii/S0959652619322346</strong>
 <strong>5. https://agupubs.onlinelibrary.wiley.com/doi/full/10.1002/2014WR016869</strong>
 <strong>6. https://www.nestle.com/sustainability/water/sustainable-water-efficiency-agriculture</strong>",2,4,3,4,3,3.5,3,0,2,2,2,2,4,4,5,4,2,3,3,4,4,4,5,13,14,13,13,14,10
-Environment,Carbon reductions,Incentivizing carbon sequestration,"<p>The adoption of sustainable agricultural practices and sourcing strategies that enhance the capture and storage of carbon in soils and vegetation, contributing to carbon neutrality and climate-friendly procurement within the supply chain.</p>","<strong>1. Enabling Conditions for Carbon Sequestration in a Procurement Organization:</strong>
+Environment,Carbon Reductions,Incentivizing Carbon Sequestration,"<p>The adoption of sustainable agricultural practices and sourcing strategies that enhance the capture and storage of carbon in soils and vegetation, contributing to carbon neutrality and climate-friendly procurement within the supply chain.</p>","<strong>1. Enabling Conditions for Carbon Sequestration in a Procurement Organization:</strong>
 <p></p>
 <p>Sustainable Sourcing Policies: Development of procurement policies that prioritize and support the inclusion of products from suppliers actively engaged in carbon sequestration practices, emphasizing environmentally responsible and climate-friendly agricultural methods.</p>
 <p></p>
@@ -2679,7 +2679,7 @@ Environment,Carbon reductions,Incentivizing carbon sequestration,"<p>The adoptio
 <p>Innovation vs. Tradition: Allocating resources to adopt carbon sequestration practices may divert attention and resources from traditional production methods.</p>
 <p>Short-Term Costs vs. Long-Term Benefits: Balancing the short-term financial implications of transitioning to carbon sequestration with the potential long-term benefits in terms of soil health, productivity, and environmental sustainability.</p>
 <p>Addressing these risks and trade-offs requires careful planning, collaboration, and a long-term perspective from both buyers and suppliers in the procurement process.</p>",<p>Indirect</p>,<p>Direct</p>,<strong>1. https://www.greenbiz.com/article/why-jpmorgan-hm-and-others-will-pay-571-million-spread-crushed-rock-farmland</strong>,2,4,3,2,3,2.5,4,0,0,3,0,4,2,3,3,4,1,2,3,1,2,4,5,9,14,10,14,16,4
-Environment,Carbon reductions,Supporting energy efficiency/renewable energy use,"<p>The adoption of practices and sourcing strategies that prioritize reduced energy consumption, increased efficiency, and the integration of renewable energy sources to minimize environmental impact and enhance sustainability throughout the supply chain.</p>","<strong>1. Enabling Conditions for Energy Efficiency/Renewable Energy Use in a Procurement Organization:</strong>
+Environment,Carbon Reductions,Supporting Energy Efficiency and Renewable Energy Use,"<p>The adoption of practices and sourcing strategies that prioritize reduced energy consumption, increased efficiency, and the integration of renewable energy sources to minimize environmental impact and enhance sustainability throughout the supply chain.</p>","<strong>1. Enabling Conditions for Energy Efficiency/Renewable Energy Use in a Procurement Organization:</strong>
 <p></p>
 <p>Sustainable Procurement Policies: Development of procurement policies that prioritize and incentivize the adoption of energy-efficient practices and the sourcing of products from suppliers utilizing renewable energy sources.</p>
 <p></p>
@@ -2745,7 +2745,7 @@ Environment,Carbon reductions,Supporting energy efficiency/renewable energy use,
 <strong>4. https://ag.umass.edu/crops-dairy-livestock-equine/fact-sheets/renewable-energy-production-on-farms</strong>
 <strong>5. https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2021/Nov/IRENA_FAO_Renewables_Agrifood_2021.pdf</strong>
 <strong>6. https://www.ucsusa.org/resources/renewable-energy-and-agriculture</strong>",1,2,1.5,5,4,4.5,2,4,4,4,4,3,5,5,5,5,1,2,4,4,4,4,5,15,16,17,14,17,14
-Environment,Environmental certification,Fair trade certifications,"<h3>Definition</h3>
+Environment,Environmental Certification,Fair Trade Certifications,"<h3>Definition</h3>
 <p>The endorsement and verification of products meeting specific social, economic, and environmental standards, ensuring equitable trading practices, fair wages, and sustainable production methods throughout the supply chain.</p>
 <p>Details of the process:</p>
 <p>The process of adopting Fair Trade certifications by procurement organizations involves the following key steps:</p>
@@ -2827,7 +2827,7 @@ Environment,Environmental certification,Fair trade certifications,"<h3>Definitio
 <p>Cost vs. Market Access: Suppliers should carefully weigh the costs and challenges of fair trade certifications against potential market access and premium prices associated with ethical and sustainable practices.</p>
 <p>Innovation vs. Tradition: Allocating resources to adhere to fair trade certifications may divert attention and resources from traditional production methods, requiring suppliers to find a balanced approach.</p>
 <p>Short-Term Costs vs. Long-Term Benefits: Suppliers need to balance the short-term financial implications of fair trade certifications with the potential long-term benefits in terms of brand reputation, market access, and social responsibility.</p>",<p>Direct</p>,<p>Direct</p>,<strong>1. https://www.rainforest-alliance.org/for-business/2020-certification-program/</strong>,2,2,2,3,4,3.5,3,2,2,2,2,4,2,3,5,4,2,2,2,3,3,3,3,10,11,10,13,13,9
-Environment,Environmental certification,Organic agriculture certification,"<h3>Definition</h3>
+Environment,Environmental Certification,Organic Agriculture Certification,"<h3>Definition</h3>
 <p>The verification and endorsement of products meeting specific organic farming standards, ensuring adherence to environmentally sustainable practices, avoidance of synthetic chemicals, and fostering ecological balance throughout the supply chain.</p>
 <p></p>
 <p>Process:</p>
@@ -2910,7 +2910,7 @@ Environment,Environmental certification,Organic agriculture certification,"<h3>D
 <p>Cost vs. Market Access: Suppliers should carefully weigh the costs and challenges of organic agriculture certifications against potential market access and premium prices associated with organic and sustainable practices.</p>
 <p>Innovation vs. Tradition: Allocating resources to adhere to organic agriculture certifications may divert attention and resources from traditional production methods, requiring suppliers to find a balanced approach.</p>
 <p>Short-Term Costs vs. Long-Term Benefits: Suppliers need to balance the short-term financial implications of organic agriculture certifications with the potential long-term benefits in terms of brand reputation, market access, and environmental responsibility.</p>",<p>Direct</p>,<p>Direct</p>,"<p><a href=""https://www.sciencedirect.com/science/article/pii/S016953472100183X"">https://www.sciencedirect.com/science/article/pii/S016953472100183X</a></p>",3,3,3,3,3,3,4,2,3,3,3,5,2,3,5,4,3,3,3,4,4,4,4,13,14,13,16,16,11
-Environment,Innovation and agritech,Supporting Precision Agriculture,"<h3>Definition</h3>
+Environment,Innovation and Agritech,Supporting Precision Agriculture,"<h3>Definition</h3>
 <p>Tthe strategic utilization of advanced technologies and data-driven practices to optimize the efficiency, sustainability, and productivity of agricultural supply chains, enabling informed procurement decisions and resource allocation.</p>
 <p>Additional details:</p>
 <p>At the field level, precision agriculture technologies enable farmers to apply inputs more efficiently. This includes the use of GPS-guided equipment, sensors, and data analytics to optimize the application of fertilizers and pesticides, ensuring that resources are used only where and when needed.</p>","<strong>1. Enabling Conditions for Precision Agriculture in a Procurement Organization:</strong>
