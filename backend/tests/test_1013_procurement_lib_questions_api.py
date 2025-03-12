@@ -69,8 +69,7 @@ class TestAssessmentQuestionsRoute:
         assert len(res) == 10
         assert list(res[0].keys()) == [
             "id",
-            "procurement_process_label",
-            "procurement_process_id",
+            "procurement_process_labels",
             "label",
             "is_environmental",
             "is_income",
@@ -79,7 +78,7 @@ class TestAssessmentQuestionsRoute:
             "created_at",
         ]
         expected_practice_labels = [
-            "Supporting regenerative agriculture",
+            "Supporting Regenerative Agriculture",
             "Long-Term / Multi-seasonal Contracts",
             "Supplier Capacity Building",
             "Procurement-Driven Sustainability Investments",

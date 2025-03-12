@@ -24,7 +24,7 @@ def setup_module():
 class TestProcurementLibraryModels:
     def test_total_procurement_processes(self, app: FastAPI, session: Session) -> None:
         total_processes = session.query(ProcurementProcess).count()
-        assert total_processes == 23, "Total ProcurementProcesses do not match"
+        assert total_processes == 20, "Total ProcurementProcesses do not match"
 
     def test_total_practices(self, app: FastAPI, session: Session) -> None:
         total_practices = session.query(Practice).count()
@@ -49,3 +49,21 @@ class TestProcurementLibraryModels:
         assert (
             total_practice_indicator_scores == 23 * 47
         ), "Total PracticeIndicatorScores do not match"
+
+    def test_practice_procurement_process_relationship(
+        self, app: FastAPI, session: Session
+    ) -> None:
+        practice = session.query(Practice).first()
+        assert practice is not None, "No Practice found"
+        assert (
+            len(practice.procurement_processes) > 0
+        ), "No ProcurementProcesses associated with Practice"
+
+    def test_procurement_process_practice_relationship(
+        self, app: FastAPI, session: Session
+    ) -> None:
+        procurement_process = session.query(ProcurementProcess).first()
+        assert procurement_process is not None, "No ProcurementProcess found"
+        assert (
+            len(procurement_process.practices) > 0
+        ), "No Practices associated with ProcurementProcess"
