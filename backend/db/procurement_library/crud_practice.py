@@ -7,6 +7,7 @@ from models.procurement_library.practice import (
 )
 from models.procurement_library.practice_indicator import PracticeIndicator
 from models.procurement_library.practice_indicator_score import PracticeIndicatorScore
+from models.procurement_library.practice import procurement_practice_tag
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 
@@ -35,8 +36,10 @@ def get_paginated_practices(
             | Practice.enabling_conditions.ilike(f"%{search}%")
         )
     if procurement_process_ids:
-        practices = practices.filter(
-            Practice.procurement_process_id.in_(procurement_process_ids)
+        practices = practices.join(procurement_practice_tag).filter(
+            procurement_practice_tag.c.procurement_process_id.in_(
+                procurement_process_ids
+            )
         )
     if impact_area:
         indicator_id = (
