@@ -1,0 +1,147 @@
+@import "../../../variables.scss";
+
+.intervention-library-container {
+  padding: 12px 32px;
+  .intervention-library-header ul {
+    list-style: none;
+    padding-inline-start: 0;
+    li {
+      display: inline-block;
+      color: #8a8a8a;
+      font-family: "TabletGothic";
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px; /* 166.667% */
+      display: inline-flex;
+      padding: 4px 8px;
+      justify-content: center;
+      align-items: center;
+      border-radius: 6px;
+      width: auto;
+
+      &:not(:first-child) {
+        margin-left: 6px;
+      }
+      &.active {
+        color: $primary-color;
+        background-color: #ddf8e9;
+      }
+    }
+  }
+  .intervention-library-content {
+    .intervention-library-content-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: stretch;
+      gap: 12px;
+      padding: 24px 18px;
+      border-radius: 20px;
+      background-color: #abefc6;
+      background-image: url("/assets/images/procurement-library/bg-card-procurement-green.png");
+      background-position: right bottom;
+      background-repeat: no-repeat;
+      background-size: contain;
+      h1 {
+        margin-block-start: 0;
+        margin-block-end: 0;
+        color: $primary-color;
+        font-size: 34px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 42px; /* 123.529% */
+        letter-spacing: -0.68px;
+      }
+      .ant-form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-items: center;
+        gap: 12px;
+        .ant-btn {
+          height: auto;
+          border-radius: 40px;
+          border: 1px solid $primary-color;
+          background: $primary-color;
+          box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+          .ant-space-item span {
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 20px; /* 142.857% */
+          }
+          .ant-space-item svg {
+            margin-top: 4px;
+          }
+        }
+      }
+    }
+    .intervention-library-content-body {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 24px 0;
+      .ant-spin-container {
+        width: 100%;
+        max-width: 1248px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        .intervention-card {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: flex-start;
+          gap: 12px;
+          padding: 12px;
+          border-radius: 16px;
+          border: 1px solid #e9e9e9;
+          background-color: #fff;
+          .intervention-card-header {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            .intervention-card-categories {
+              display: flex;
+              flex-direction: row;
+              flex-wrap: wrap;
+              gap: 6px;
+            }
+          }
+          .intervention-card-description {
+            width: 100%;
+            color: #000;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 700;
+            cursor: pointer;
+            strong {
+              margin-block-start: 0;
+            }
+          }
+          .intervention-card-footer {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            .ant-btn {
+              padding-left: 0;
+              padding-right: 0;
+              .ant-space-item svg {
+                margin-top: 4px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
