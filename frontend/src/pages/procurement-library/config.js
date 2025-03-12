@@ -84,3 +84,14 @@ export const PROCUREMENT_COLOR_SCALE = [
   "#ABEA53",
   "#48D985",
 ];
+
+export const IMPACT_AREA_OPTIONS = [
+  {
+    value: PROCUREMENT_IMPACT_AREAS.income,
+    label: "Income Impact",
+  },
+  {
+    value: PROCUREMENT_IMPACT_AREAS.env,
+    label: "Environmental Impact",
+  },
+];
