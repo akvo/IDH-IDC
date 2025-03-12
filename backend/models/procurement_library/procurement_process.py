@@ -6,6 +6,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 from db.connection import Base
+from sqlalchemy.orm import relationship
+from models.procurement_library.practice import procurement_practice_tag
 
 
 class ProcurementProcess(Base):
@@ -19,6 +21,12 @@ class ProcurementProcess(Base):
         nullable=False,
         server_default=func.now(),
         onupdate=func.now(),
+    )
+
+    practices = relationship(
+        "Practice",
+        secondary=procurement_practice_tag,
+        back_populates="procurement_processes",
     )
 
     def __repr__(self):
