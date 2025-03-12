@@ -374,11 +374,11 @@ async def run_model(
             ]
         increase = i + 1
         value = {}
-        value[f"target_p_{increase}"] = target_p
-        value[f"achieved_income_{increase}"] = achieved_income
-        value[f"optimization_{increase}"] = results
+        value["target_p"] = target_p
+        value["achieved_income"] = achieved_income
+        value["optimization"] = results
         optimization_result.append(
-            {"name": f"percentage_{increase}", "value": value}
+            {"key": increase, "name": f"percentage_{increase}", "value": value}
         )
 
     return {

@@ -46,11 +46,12 @@ class TestOptimizationRoute:
             "feasible_income": 0.4,
             "optimization_result": [
                 {
+                    "key": 1,
                     "name": "percentage_1",
                     "value": {
-                        "target_p_1": 0.4,
-                        "achieved_income_1": 0.4,
-                        "optimization_1": {
+                        "target_p": 0.4,
+                        "achieved_income": 0.4,
+                        "optimization": {
                             "1-2": [
                                 {"name": "current", "value": 0},
                                 {"name": "feasible", "value": 0},
@@ -65,11 +66,12 @@ class TestOptimizationRoute:
                     },
                 },
                 {
+                    'key': 2,
                     "name": "percentage_2",
                     "value": {
-                        "target_p_2": 0.4,
-                        "achieved_income_2": 0.4,
-                        "optimization_2": {
+                        "target_p": 0.4,
+                        "achieved_income": 0.4,
+                        "optimization": {
                             "1-2": [
                                 {"name": "current", "value": 0},
                                 {"name": "feasible", "value": 0},
@@ -84,11 +86,12 @@ class TestOptimizationRoute:
                     },
                 },
                 {
+                    'key': 3,
                     "name": "percentage_3",
                     "value": {
-                        "target_p_3": 0.4,
-                        "achieved_income_3": 0.4,
-                        "optimization_3": {
+                        "target_p": 0.4,
+                        "achieved_income": 0.4,
+                        "optimization": {
                             "1-2": [
                                 {"name": "current", "value": 0},
                                 {"name": "feasible", "value": 0},
