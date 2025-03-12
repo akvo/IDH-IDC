@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useCallback } from "react";
 import "./App.scss";
 import { Spin } from "antd";
 import { useCookies } from "react-cookie";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
@@ -26,7 +26,16 @@ import { api } from "./lib";
 import { adminRole } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
-import { ProcurementLibrary } from "./pages/procurement-library";
+import {
+  ProcurementLibrary,
+  ProcurementPage,
+} from "./pages/procurement-library";
+import { OtherResources } from "./pages/other-resources";
+import { FAQ } from "./pages/faq";
+import {
+  CocoaIncomeInventory,
+  CocoaIncomeInventoryDashboard,
+} from "./pages/cocoa-income-inventory";
 
 const optionRoutes = [
   "organisation/options",
@@ -34,6 +43,16 @@ const optionRoutes = [
   "company/options",
   "company/having_case_options",
 ];
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top when the route changes
+  }, [pathname]);
+
+  return null;
+};
 
 const App = () => {
   const navigate = useNavigate();
@@ -134,6 +153,7 @@ const App = () => {
 
   return (
     <PageLayout testid="page-layout" signOut={signOut}>
+      <ScrollToTop />
       {authTokenAvailable && userRole === null ? (
         <div className="loading-container">
           <Spin />
@@ -207,8 +227,44 @@ const App = () => {
           <Route exact path="/login" element={<Login />} />
           <Route
             exact
+            path="/tools-and-resources"
+            element={<OtherResources signOut={signOut} />}
+          />
+          <Route exact path="/faq" element={<FAQ signOut={signOut} />} />
+          <Route
+            exact
+            path="/cocoa-income-inventory"
+            element={<CocoaIncomeInventory signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/cocoa-income-inventory/dashboard"
+            element={<CocoaIncomeInventoryDashboard signOut={signOut} />}
+          />
+          <Route
+            exact
             path="/procurement-library"
             element={<ProcurementLibrary signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/assessment"
+            element={<ProcurementPage.Assessment signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/intervention-library"
+            element={<ProcurementPage.InterventionLibrary signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/methodology"
+            element={<ProcurementPage.Methodology signOut={signOut} />}
+          />
+          <Route
+            exact
+            path="/procurement-library/intervention-library/:practiceId"
+            element={<ProcurementPage.Practice signOut={signOut} />}
           />
           {/* <Route exact path="/register" element={<Register />} /> */}
           <Route

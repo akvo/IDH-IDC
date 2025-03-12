@@ -17,7 +17,43 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
 
-  const menus = useMemo(() => {
+  // menu without loggin
+  const generalMenus = useMemo(() => {
+    const otherResourcesMenu = {
+      testid: "nav-menu-tools-and-resources",
+      name: "Tools & Resources",
+      path: "/tools-and-resources",
+      role: allUserRole,
+    };
+    const faqMenu = {
+      testid: "nav-menu-faq",
+      name: "FAQ",
+      path: "/faq",
+      role: allUserRole,
+    };
+    const procurementLibraryMenu = {
+      testid: "nav-menu-procurement-library",
+      name: "Procurement Library",
+      path: "/procurement-library",
+      role: allUserRole,
+    };
+    const cocoaIncomeInventoryMenu = {
+      testid: "nav-menu-cocoa-income-inventory",
+      name: "Cocoa Income Inventory",
+      path: "/cocoa-income-inventory",
+      role: allUserRole,
+    };
+    const values = [
+      otherResourcesMenu,
+      faqMenu,
+      procurementLibraryMenu,
+      cocoaIncomeInventoryMenu,
+    ];
+    return values;
+  }, []);
+
+  // logged in menus
+  const authMenus = useMemo(() => {
     const exploreStudiesMenu = {
       testid: "nav-menu-explore-studies",
       name: "Explore Studies",
@@ -25,12 +61,6 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       role: allUserRole,
     };
     let values = [
-      // {
-      //   testid: "nav-menu-calculator",
-      //   name: "Use the Calculator",
-      //   path: "/use-calculator",
-      //   role: allUserRole,
-      // },
       {
         testid: "nav-menu-cases",
         name: "Cases Overview",
@@ -42,6 +72,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       values = [
         ...values,
         exploreStudiesMenu,
+        ...generalMenus,
         {
           testid: "nav-menu-admin",
           name: "Admin",
@@ -51,22 +82,10 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       ];
     }
     if (userRole === "user" && isInternalUser) {
-      values = [...values, exploreStudiesMenu];
+      values = [...values, exploreStudiesMenu, ...generalMenus];
     }
     return values;
-  }, [userRole, isInternalUser]);
-
-  // menu without loggin
-  const generalMenus = useMemo(() => {
-    const procurementLibraryMenu = {
-      testid: "nav-menu-procurement-library",
-      name: "Procurement Library",
-      path: "/procurement-library",
-      role: allUserRole,
-    };
-    const values = [procurementLibraryMenu];
-    return values;
-  }, []);
+  }, [userRole, isInternalUser, generalMenus]);
 
   return (
     <Header
@@ -94,7 +113,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
           <Space size="large" className="navigation-container">
             {/* <Link to={isLoggedIn ? "/welcome" : "/"}>About IDC</Link> */}
             {isLoggedIn
-              ? menus
+              ? authMenus
                   .filter((x) => x.role.includes(userRole))
                   .map((x, xi) => (
                     <Link
@@ -105,16 +124,15 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
                       {x.name}
                     </Link>
                   ))
-              : ""}
-            {generalMenus.map((x, xi) => (
-              <Link
-                key={`general-nav-menu-${xi}`}
-                data-testid={x.testid}
-                to={x.path}
-              >
-                {x.name}
-              </Link>
-            ))}
+              : generalMenus.map((x, xi) => (
+                  <Link
+                    key={`general-nav-menu-${xi}`}
+                    data-testid={x.testid}
+                    to={x.path}
+                  >
+                    {x.name}
+                  </Link>
+                ))}
             {!isLoggedIn ? (
               <Link className="nav-sign-in" to="/login">
                 {" "}

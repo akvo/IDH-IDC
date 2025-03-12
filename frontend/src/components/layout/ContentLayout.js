@@ -138,7 +138,7 @@ const ContentLayout = ({
                 )}
               </Col>
               {titleRighContent && (
-                <Col flex="auto" align="end">
+                <Col flex="auto" align="end" style={{ textAlign: "right" }}>
                   {titleRighContent}
                 </Col>
               )}

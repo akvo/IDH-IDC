@@ -1,0 +1,13 @@
+@import "../../variables.scss";
+
+#other-resources {
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  .content-wrapper {
+    margin-bottom: 3rem;
+    flex: 1;
+  }
+}
