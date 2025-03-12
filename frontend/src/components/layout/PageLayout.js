@@ -37,7 +37,18 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       path: "/procurement-library",
       role: allUserRole,
     };
-    const values = [otherResourcesMenu, faqMenu, procurementLibraryMenu];
+    const cocoaIncomeInventoryMenu = {
+      testid: "nav-menu-cocoa-income-inventory",
+      name: "Cocoa Income Inventory",
+      path: "/cocoa-income-inventory",
+      role: allUserRole,
+    };
+    const values = [
+      otherResourcesMenu,
+      faqMenu,
+      procurementLibraryMenu,
+      cocoaIncomeInventoryMenu,
+    ];
     return values;
   }, []);
 
