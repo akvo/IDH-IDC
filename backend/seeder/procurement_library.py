@@ -60,10 +60,9 @@ def seeder_procurement_practices(session: Session):
         indicator_ids = {}
         for i in indicator_fields:
             name = i.lower().strip().replace(" ", "_")
-            indicator = PracticeIndicator(
-                name=name,
-                label=i,
-            )
+            indicator = session.query(PracticeIndicator).filter_by(
+                name=name
+            ).first() or PracticeIndicator(name=name, label=i)
             session.add(indicator)
             session.flush()
 
@@ -71,20 +70,11 @@ def seeder_procurement_practices(session: Session):
 
         procurement_practices = df.to_dict("records")
         for p in procurement_practices:
-            procurement_process = (
-                session.query(ProcurementProcess)
-                .filter_by(label=p["Procurement Processes"])
-                .first()
-            )
-            if not procurement_process:
-                procurement_process = ProcurementProcess(
-                    label=p["Procurement Processes"]
-                )
-                session.add(procurement_process)
-            session.flush()
+            procurement_processes = p["Procurement Processes"].split(",")
 
-            practice = Practice(
-                procurement_process_id=procurement_process.id,
+            practice = session.query(Practice).filter_by(
+                label=p["Practice"]
+            ).first() or Practice(
                 label=p["Practice"],
                 intervention_definition=p["intervention_definition"],
                 enabling_conditions=p["enabling_conditions"],
@@ -98,8 +88,22 @@ def seeder_procurement_practices(session: Session):
             session.add(practice)
             session.flush()
 
+            for proc_label in procurement_processes:
+                proc_label = proc_label.strip()
+                procurement_process = session.query(ProcurementProcess).filter_by(
+                    label=proc_label
+                ).first() or ProcurementProcess(label=proc_label)
+                session.add(procurement_process)
+                session.flush()
+
+                if procurement_process not in practice.procurement_processes:
+                    practice.procurement_processes.append(procurement_process)
+            session.flush()
+
             for icol in indicator_fields:
-                score = PracticeIndicatorScore(
+                score = session.query(PracticeIndicatorScore).filter_by(
+                    practice_id=practice.id, indicator_id=indicator_ids[icol]
+                ).first() or PracticeIndicatorScore(
                     practice_id=practice.id,
                     indicator_id=indicator_ids[icol],
                     score=p[icol],
@@ -133,12 +137,10 @@ def seeder_procurement_questions(session: Session):
         questions = df.to_dict("records")
         for q in questions:
             name = q["Select answer"].lower().strip().replace(" ", "_")
-            question = (
-                session.query(AssessmentQuestion).filter_by(label=q["Question"]).first()
-            )
-            if not question:
-                question = AssessmentQuestion(label=q["Question"])
-                session.add(question)
+            question = session.query(AssessmentQuestion).filter_by(
+                label=q["Question"]
+            ).first() or AssessmentQuestion(label=q["Question"])
+            session.add(question)
             session.flush()
             indicator = session.query(PracticeIndicator).filter_by(name=name).first()
             if indicator:
@@ -146,7 +148,9 @@ def seeder_procurement_questions(session: Session):
                 option_label = {v: k for k, v in selected_indicator_labels.items()}.get(
                     q["Select answer"], q["Select answer"]
                 )
-                option = AssessmentQuestionOption(
+                option = session.query(AssessmentQuestionOption).filter_by(
+                    question_id=question.id, indicator_id=indicator.id
+                ).first() or AssessmentQuestionOption(
                     question_id=question.id,
                     indicator_id=indicator.id,
                     label=option_label,
