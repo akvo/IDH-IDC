@@ -7,17 +7,21 @@ from sqlalchemy import (
     Column,
     Integer,
     Text,
-    ForeignKey,
     String,
     DateTime,
 )
 from sqlalchemy.sql import func
 from db.connection import Base
 from sqlalchemy.orm import relationship
-from models.procurement_library.procurement_process import ProcurementProcess
 from models.procurement_library.practice_indicator_score import (
     PracticeIndicatorScore,
     PracticeIndicatorScoreDict,
+)
+from models.procurement_library.procurement_process import (
+    ProcurementProcessDict
+)
+from models.procurement_library.procurement_practice_tag import (
+    procurement_practice_tag
 )
 
 
@@ -28,8 +32,7 @@ class ImpactArea(str, Enum):
 
 class PracticeListDict(BaseModel):
     id: int
-    procurement_process_label: str
-    procurement_process_id: int = None
+    procurement_processes: List[ProcurementProcessDict]
     label: str
     is_environmental: bool
     is_income: bool
@@ -40,8 +43,7 @@ class PracticeListDict(BaseModel):
 
 class PracticeDict(TypedDict):
     id: int
-    procurement_process_label: str
-    procurement_process_id: int
+    procurement_processes: List[ProcurementProcessDict]
     label: str
     intervention_definition: str
     enabling_conditions: str
@@ -59,10 +61,6 @@ class Practice(Base):
     __tablename__ = "pl_practice"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    procurement_process_id = Column(
-        Integer,
-        ForeignKey("pl_procurement_process.id")
-    )
     label = Column(String(225), nullable=False)
     intervention_definition = Column(Text, nullable=True)
     enabling_conditions = Column(Text, nullable=True)
@@ -80,12 +78,10 @@ class Practice(Base):
         onupdate=func.now(),
     )
 
-    procurement_process = relationship(
-        ProcurementProcess,
-        foreign_keys=[procurement_process_id],
-        cascade="all, delete",
-        passive_deletes=True,
-        backref="practices",
+    procurement_processes = relationship(
+        "ProcurementProcess",
+        secondary=procurement_practice_tag,
+        back_populates="practices",
     )
 
     scores = relationship(
@@ -93,7 +89,7 @@ class Practice(Base):
         foreign_keys=[PracticeIndicatorScore.practice_id],
         cascade="all, delete",
         passive_deletes=True,
-        back_populates="practice"
+        back_populates="practice",
     )
 
     def __repr__(self):
@@ -103,8 +99,9 @@ class Practice(Base):
     def serialize(self) -> PracticeDict:
         return {
             "id": self.id,
-            "procurement_process_label": self.procurement_process.label,
-            "procurement_process_id": self.procurement_process_id,
+            "procurement_processes": [
+                pp.serialize for pp in self.procurement_processes
+            ],
             "label": self.label,
             "intervention_definition": self.intervention_definition,
             "enabling_conditions": self.enabling_conditions,
@@ -120,17 +117,17 @@ class Practice(Base):
 
     @property
     def is_environmental(self) -> bool:
-        for score in self.scores:
-            if score.indicator.name == "environmental_impact":
-                return score.score > 3
-        return False
+        return any(
+            score.indicator.name == "environmental_impact" and score.score > 3
+            for score in self.scores
+        )
 
     @property
     def is_income(self) -> bool:
-        for score in self.scores:
-            if score.indicator.name == "income_impact":
-                return score.score > 3
-        return False
+        return any(
+            score.indicator.name == "income_impact" and score.score > 3
+            for score in self.scores
+        )
 
     @property
     def to_list_dict(self) -> PracticeListDict:
@@ -138,8 +135,9 @@ class Practice(Base):
         is_income = self.is_income
         return {
             "id": self.id,
-            "procurement_process_label": self.procurement_process.label,
-            "procurement_process_id": self.procurement_process_id,
+            "procurement_processes": [
+                pp.serialize for pp in self.procurement_processes
+            ],
             "label": self.label,
             "is_environmental": is_environmental,
             "is_income": is_income,

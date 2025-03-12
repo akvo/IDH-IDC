@@ -215,16 +215,13 @@ const Assessment = () => {
               <li key={practice.id} className="assessment-practice">
                 <div className="assessment-practice-content">
                   <div>
-                    <Tooltip
-                      title={practice?.procurement_process_label}
-                      trigger={["hover"]}
-                      placement="top"
-                    >
+                    {practice?.procurement_processes?.map((proc) => (
                       <ProcurementBadge
-                        id={practice?.procurement_process_id}
-                        text={practice?.procurement_process_label}
+                        key={proc?.id}
+                        id={proc?.id}
+                        text={proc?.label}
                       />
-                    </Tooltip>
+                    ))}
                   </div>
                   <ImpactAreaIcons
                     isEnv={practice?.is_environmental}

@@ -28,8 +28,7 @@ class TestPracticeRoute:
         assert len(res["data"]) == 10
         assert list(res["data"][0].keys()) == [
             "id",
-            "procurement_process_label",
-            "procurement_process_id",
+            "procurement_processes",
             "label",
             "is_environmental",
             "is_income",
@@ -70,7 +69,8 @@ class TestPracticeRoute:
         procs = session.query(ProcurementProcess).limit(2).all()
         total_results = (
             session.query(Practice)
-            .filter(Practice.procurement_process_id.in_([proc.id for proc in procs]))
+            .join(Practice.procurement_processes)
+            .filter(ProcurementProcess.id.in_([proc.id for proc in procs]))
             .count()
         )
         procurement_process_ids = ",".join(str(proc.id) for proc in procs)
@@ -82,7 +82,10 @@ class TestPracticeRoute:
         res = res.json()
         assert res["total"] == total_results
         assert all(
-            any(proc.label in practice["procurement_process_label"] for proc in procs)
+            any(
+                proc.label in [pp["label"] for pp in practice["procurement_processes"]]
+                for proc in procs
+            )
             for practice in res["data"]
         )
 
@@ -129,8 +132,7 @@ class TestPracticeRoute:
         assert res["id"] == practice_id
         assert list(res.keys()) == [
             "id",
-            "procurement_process_label",
-            "procurement_process_id",
+            "procurement_processes",
             "label",
             "intervention_definition",
             "enabling_conditions",
@@ -153,6 +155,4 @@ class TestPracticeRoute:
             app.url_path_for("pl:get_practice_by_id", practice_id=practice_id)
         )
         assert res.status_code == 404
-        assert res.json() == {
-            "detail": f"Practice with id {practice_id} not found"
-        }
+        assert res.json() == {"detail": f"Practice with id {practice_id} not found"}

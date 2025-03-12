@@ -24,7 +24,7 @@ const Practice = () => {
 
   const [primaryDesc, secondaryDesc] =
     practice?.intervention_definition?.split(
-      "\n<b>Additional Details:</b>\n"
+      /<b>Additional Details:<\/b>|<p>Additional Detail:<\/p>/
     ) || [];
   const isEnv =
     practice?.scores?.find(
@@ -122,11 +122,15 @@ const Practice = () => {
                 ></div>
               </div>
               <div className="practice-card-categories">
-                <ProcurementBadge
-                  id={practice?.procurement_process_id}
-                  text={practice?.procurement_process_label}
-                  block
-                />
+                <div className="practice-card-categories-label">
+                  {practice?.procurement_processes?.map((proc) => (
+                    <ProcurementBadge
+                      key={proc?.id}
+                      id={proc?.id}
+                      text={proc?.label}
+                    />
+                  ))}
+                </div>
                 <ImpactAreaIcons {...{ isEnv, isIncome }} />
               </div>
             </div>

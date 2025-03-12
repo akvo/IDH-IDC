@@ -6,6 +6,16 @@ from sqlalchemy import (
 )
 from sqlalchemy.sql import func
 from db.connection import Base
+from sqlalchemy.orm import relationship
+from models.procurement_library.procurement_practice_tag import (
+    procurement_practice_tag
+)
+from typing_extensions import TypedDict
+
+
+class ProcurementProcessDict(TypedDict):
+    id: int
+    label: str
 
 
 class ProcurementProcess(Base):
@@ -21,5 +31,18 @@ class ProcurementProcess(Base):
         onupdate=func.now(),
     )
 
+    practices = relationship(
+        "Practice",
+        secondary=procurement_practice_tag,
+        back_populates="procurement_processes",
+    )
+
     def __repr__(self):
         return f"<ProcurementProcess(id={self.id}, label={self.label}>"
+
+    @property
+    def serialize(self) -> ProcurementProcessDict:
+        return {
+            "id": self.id,
+            "label": self.label,
+        }

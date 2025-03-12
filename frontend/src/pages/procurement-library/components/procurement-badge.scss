@@ -1,16 +1,9 @@
 .ant-badge {
-  width: 100%;
-  max-width: 210px;
   padding: 2px 8px;
   border-radius: 9999px;
   border: 1px solid #e9eaeb;
   background-color: #fafafa;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  &.w-full {
-    max-width: 100%;
-  }
 }
 .ant-badge.ant-badge-status .ant-badge-status-text {
   color: #414651;

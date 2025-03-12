@@ -99,9 +99,6 @@
     }
     .practice-content-body {
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
       .practice-card {
         width: 100%;
         min-height: 165px;
@@ -118,6 +115,7 @@
         background-position: right bottom;
         background-repeat: no-repeat;
         background-size: contain;
+        margin-bottom: 12px;
         .practice-card-description {
           width: 100%;
 
@@ -142,11 +140,16 @@
           }
         }
         .practice-card-categories {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          align-items: flex-end;
-          justify-content: flex-start;
+          width: 50%;
+          text-align: right;
+          .practice-card-categories-label {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-bottom: 12px;
+          }
         }
       }
       .practice-details-card {

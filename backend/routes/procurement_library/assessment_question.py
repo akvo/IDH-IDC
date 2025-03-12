@@ -74,10 +74,9 @@ def submit_answer(
         practice_results.append(
             {
                 "id": practice.id,
-                "procurement_process_label": (
-                    practice.procurement_process.label
-                ),
-                "procurement_process_id": practice.procurement_process_id,
+                "procurement_processes": [
+                    pp.serialize for pp in practice.procurement_processes
+                ],
                 "label": practice.label,
                 "is_environmental": practice.is_environmental,
                 "is_income": practice.is_income,
