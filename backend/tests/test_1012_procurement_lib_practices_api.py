@@ -28,7 +28,7 @@ class TestPracticeRoute:
         assert len(res["data"]) == 10
         assert list(res["data"][0].keys()) == [
             "id",
-            "procurement_process_labels",
+            "procurement_processes",
             "label",
             "is_environmental",
             "is_income",
@@ -82,7 +82,10 @@ class TestPracticeRoute:
         res = res.json()
         assert res["total"] == total_results
         assert all(
-            any(proc.label in practice["procurement_process_labels"] for proc in procs)
+            any(
+                proc.label in [pp["label"] for pp in practice["procurement_processes"]]
+                for proc in procs
+            )
             for practice in res["data"]
         )
 
@@ -129,7 +132,7 @@ class TestPracticeRoute:
         assert res["id"] == practice_id
         assert list(res.keys()) == [
             "id",
-            "procurement_process_labels",
+            "procurement_processes",
             "label",
             "intervention_definition",
             "enabling_conditions",

@@ -69,7 +69,7 @@ class TestAssessmentQuestionsRoute:
         assert len(res) == 10
         assert list(res[0].keys()) == [
             "id",
-            "procurement_process_labels",
+            "procurement_processes",
             "label",
             "is_environmental",
             "is_income",
