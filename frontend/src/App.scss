@@ -34,6 +34,10 @@
     font-weight: normal;
   }
 
+  .ant-btn {
+    font-size: 13px;
+  }
+
   .button-green {
     border: 2px solid $primary-color;
     border-radius: 40px;
@@ -54,7 +58,14 @@
     border-radius: 40px;
     color: #ffffff !important;
     font-weight: 700;
-    border: 1px solid $primary-color;
+    border: 2px solid $primary-color;
+  }
+  .button-yellow-fill {
+    background-color: $yellow-color;
+    border-radius: 40px;
+    color: #000;
+    font-weight: 700;
+    border: 2px solid $yellow-color;
   }
 
   .button-ghost {
@@ -63,10 +74,6 @@
     border-color: $primary-color;
     font-weight: 700;
     color: $primary-color;
-  }
-
-  .button-light {
-    font-weight: normal;
   }
 
   .button {
@@ -78,6 +85,7 @@
   }
   .button-yellow {
     background-color: $yellow-color;
+    color: #000;
   }
   .button-secondary {
     border: 2px solid $primary-color;
@@ -127,14 +135,16 @@
       float: right;
       a {
         color: $primary-color;
-        font-weight: 700;
-        font-size: 0.95rem;
+        font-weight: 600;
+        font-size: 15px;
       }
       .nav-sign-in {
         background-color: $primary-color;
         color: #ffffff;
-        padding: 12px 18px;
-        border-radius: 20px;
+        padding: 10px 14px;
+        border-radius: 100px;
+        font-size: 15px !important;
+        font-weight: 600;
       }
     }
   }
@@ -214,11 +224,14 @@
       background-color: $bg-color-grey;
 
       .content-card-wrapper {
-        padding: 0px 32px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0px 2rem;
       }
 
       .ant-card-body {
-        padding: 1.5rem 0px 0px;
+        padding: 20px 0 16px 0;
 
         .ant-breadcrumb-link {
           font-family: "TabletGothic" !important;
@@ -382,14 +395,122 @@
     }
   }
 
-  .breadcrumb-right-content {
-    position: absolute;
-    right: 0;
-    top: 20px;
-    padding-right: 5rem;
-    font-size: 13px;
-    font-family: "TabletGothic" !important;
-    font-style: italic;
+  .breadcrumb-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .breadcrumb-left-content {
+      flex: 1;
+    }
+
+    .breadcrumb-right-content {
+      font-size: 13px;
+      font-family: "TabletGothic" !important;
+      font-style: italic;
+    }
+  }
+
+  .other-tool-resource-list-container {
+    margin-top: 24px;
+
+    .other-tool-resource-list {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 40px;
+
+      /* Create invisible items to fill the last row */
+      &::after {
+        content: "";
+        flex: 1 1 calc(32% - 20px);
+        visibility: hidden;
+      }
+
+      .otr-item-wrapper {
+        flex: 1 1 calc(32% - 20px);
+
+        h2 {
+          color: #000 !important;
+          text-align: left !important;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 26px;
+        }
+
+        p {
+          margin: 0;
+          text-align: left;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          line-height: 24px;
+        }
+      }
+    }
+
+    .button-wrapper {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+
+      .ant-btn {
+        border-radius: 100px;
+        border: 1px solid $primary-color;
+        background: $primary-color;
+        color: #fff;
+        font-family: "RocGrotesk";
+        font-weight: 600;
+      }
+    }
+  }
+
+  .page-title-layout-container {
+    .page-title-layout-header-wrapper {
+      background: #d5ebfd;
+      position: relative;
+      overflow: hidden;
+
+      .title-wrapper {
+        padding: 2rem $default-padding-size;
+
+        h1 {
+          margin: 0;
+          color: $primary-color;
+          font-weight: 700;
+          font-size: 26px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .page-footer-container {
+    color: #fff;
+
+    &.with-padding-bg {
+      padding: 1rem $default-padding-size;
+      background-color: #00625f;
+    }
+
+    &.with-fixed-position {
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+
+    .copyright-text {
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
   }
 }
 
@@ -416,6 +537,13 @@
   background-color: #1b625f !important;
   font-family: "TabletGothic" !important;
   font-size: 12px;
+  color: #fff;
+
+  strong {
+    font-style: normal;
+    font-weight: 700;
+    line-height: 18px; /* 150% */
+  }
 }
 
 .visual-card-wrapper {
@@ -423,15 +551,15 @@
   border-radius: 20px;
 
   .ant-card-head {
-    padding: 12px 24px;
+    padding: 10px 14px;
     background: #dfdfdf;
     border-radius: 20px 20px 0px 0px;
 
     .title {
       font-family: "RocGrotesk";
-      font-size: 16px !important;
+      font-size: 14px !important;
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 157.15%;
       color: #000 !important;
     }
@@ -439,11 +567,12 @@
     .button-export {
       margin-left: 5px;
       border: 1px solid #01625f;
-      font-weight: 600;
-      font-size: 12px;
+      font-weight: 500;
+      font-size: 12px !important;
       background: transparent;
       color: #01625f;
       border-radius: 40px;
+      padding: 2px 10px;
 
       &:hover {
         border: 2px solid #01625f;
@@ -452,7 +581,7 @@
   }
 
   .ant-card-body {
-    padding: 18px 24px;
+    padding: 12px 14px;
     border-radius: 0px 0px 20px 20px;
     background: #fff;
   }

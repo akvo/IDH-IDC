@@ -21,8 +21,6 @@ import {
   SaveOutlined,
   CloseOutlined,
   DeleteOutlined,
-  // EditOutlined,
-  // EyeOutlined,
 } from "@ant-design/icons";
 import { Link, useSearchParams } from "react-router-dom";
 import { UIState, UserState } from "../../store";

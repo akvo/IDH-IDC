@@ -24,7 +24,7 @@
 
     .ant-tabs-content {
       background: #fff;
-      padding: 20px 24px;
+      padding: 10px 14px;
       border-radius: 0 20px 20px 20px;
       margin-bottom: 100px;
       border-left: 1px solid #e1e0e0;
@@ -96,20 +96,21 @@
 
 #enter-income-data {
   .total-income-container {
-    padding: 14px 20px;
+    padding: 0 10px;
 
     .total-income-title-wrapper {
       font-family: "RocGrotesk";
-      font-size: 24px;
+      font-size: 18px;
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 32px;
+      color: #000;
     }
 
     .total-income-value-wrapper {
       font-family: "TabletGothic";
       font-style: normal;
-      font-weight: 700;
+      font-weight: 500;
       line-height: 22px;
 
       .level-text {
@@ -118,7 +119,7 @@
 
       .value-text {
         font-family: "RocGrotesk";
-        font-size: 18px;
+        font-size: 14px;
       }
     }
   }
@@ -126,10 +127,13 @@
   .percentage-tag-wrapper {
     .ant-tag {
       border-radius: 16px;
-      font-size: 12px;
+      font-size: 11px;
       font-family: "TabletGothic";
       line-height: 18px;
       font-weight: normal;
+      padding: 2px 7px 0px 7px;
+      min-width: 55px;
+      text-align: right;
       span {
         margin-top: 4px;
       }
@@ -137,28 +141,29 @@
   }
 
   .income-questions-wrapper {
-    padding: 24px 0;
+    padding: 10px 0;
 
     .ant-card {
       .ant-card-head {
-        padding: 14px 20px;
+        padding: 10px;
         border-radius: 20px 20px 0px 0px;
         border: 1px solid #e5e5e5;
         background: #f2f2f2;
+        min-height: 0 !important;
 
         .title-text {
           font-family: "RocGrotesk";
-          font-size: 18px;
+          font-size: 14px;
           font-style: normal;
-          font-weight: 700;
+          font-weight: 500;
           line-height: 157.15%;
         }
 
         .value-text {
-          font-family: "TabletGothic";
+          font-family: "RocGrotesk";
           font-size: 14px;
           font-style: normal;
-          font-weight: 700;
+          font-weight: 500;
           line-height: 157.15%;
         }
       }
@@ -173,22 +178,23 @@
     .section-title-wrapper {
       border-top: 1px solid #e5e5e5;
       border-bottom: 1px solid #e5e5e5;
-      padding: 20px;
+      padding: 5px 10px;
+      background: #e1e0e0;
       width: 100%;
 
       .title-text {
         font-family: "RocGrotesk";
-        font-size: 16px;
+        font-size: 13px;
         font-style: normal;
-        font-weight: 700;
+        font-weight: 500;
         line-height: 157.15%;
       }
 
       .value-text {
-        font-family: "TabletGothic";
-        font-size: 14px;
+        font-family: "RocGrotesk";
+        font-size: 13px;
         font-style: normal;
-        font-weight: 700;
+        font-weight: 500;
         line-height: 157.15%;
       }
     }
@@ -200,7 +206,7 @@
 }
 
 .income-data-visual-container {
-  padding: 40px 0;
+  padding: 0;
 
   .income-target-wrapper {
     padding: 0;
@@ -222,7 +228,7 @@
 
     .value {
       font-family: "RocGrotesk";
-      font-size: 24px;
+      font-size: 18px;
       font-style: normal;
       font-weight: 700;
       line-height: 32px;
@@ -239,19 +245,18 @@
     .title {
       color: #01625f;
       font-family: "RocGrotesk";
-      font-size: 28px;
+      font-size: 24px;
       font-style: normal;
       font-weight: 700;
-      line-height: 52px;
+      line-height: 34px;
     }
 
     .description {
       font-family: "TabletGothic";
-      font-size: 16px;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: 28px;
-      letter-spacing: -0.32px;
+      line-height: 24px;
     }
   }
 
@@ -260,13 +265,13 @@
     background: #01625f;
     color: #fff;
     font-family: "RocGrotesk";
-    font-size: 20px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 700;
-    line-height: 32px;
+    line-height: 26px;
 
     .ant-card-body {
-      padding: 20px;
+      padding: 10px 20px;
     }
   }
 
@@ -277,6 +282,10 @@
   .card-visual-wrapper {
     border-radius: 20px;
 
+    .ant-card-body {
+      padding: 12px 14px;
+    }
+
     &.no-padding {
       .ant-card-body {
         padding: 0;
@@ -286,10 +295,10 @@
     .section-title {
       color: #01625f;
       font-family: "RocGrotesk";
-      font-size: 20px;
+      font-size: 16px;
       font-style: normal;
       font-weight: 700;
-      line-height: 32px;
+      line-height: 24px;
     }
 
     .section-description {
@@ -298,7 +307,7 @@
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
-      line-height: 157.15%;
+      line-height: 22px;
     }
   }
 
@@ -308,25 +317,23 @@
       border-radius: 20px;
 
       .ant-table-thead {
-        background: #01625f;
-        border-radius: 40px;
+        background: transparent;
+        border-radius: 20px;
 
-        // top-left
-        tr:first-child > *:first-child {
-          border-start-start-radius: 20px;
+        // Ensure the top-left and top-right borders apply properly
+        tr:first-child th:first-child {
+          border-top-left-radius: 20px;
         }
 
-        // top-right
-        tr:last-child > *:last-child {
-          border-start-end-radius: 20px;
+        tr:first-child th:last-child {
+          border-top-right-radius: 20px;
         }
 
         .ant-table-cell {
           color: #fff;
-          background: transparent;
+          background: $primary-color;
           font-family: "RocGrotesk";
           font-size: 13px;
-          font-style: normal;
           font-weight: 700;
           line-height: 157.15%;
 
@@ -337,26 +344,26 @@
       }
 
       .ant-table-tbody {
-        /* Style for even odd rows */
+        /* Style for even and odd rows */
         tr:nth-child(even) {
           background-color: rgba(242, 242, 242, 0.5);
         }
         tr:nth-child(odd) {
           background-color: #ffffff;
         }
-        // bottom-left
-        tr:last-child > *:first-child {
-          border-end-start-radius: 20px;
+
+        // Bottom-left and bottom-right rounding
+        tr:last-child td:first-child {
+          border-bottom-left-radius: 20px;
         }
-        // bottom-right
-        tr:last-child > *:last-child {
-          border-end-end-radius: 20px;
+
+        tr:last-child td:last-child {
+          border-bottom-right-radius: 20px;
         }
 
         .ant-table-cell {
           font-family: "TabletGothic";
           font-size: 14px;
-          font-style: normal;
           font-weight: 400;
           line-height: 20px;
         }
@@ -409,6 +416,10 @@
   }
 
   .adjust-income-target-wrapper {
+    background: #eaf2f2;
+    border: none;
+    color: #01625f;
+
     .title {
       font-family: "RocGrotesk";
       font-size: 22px;
@@ -438,21 +449,16 @@
     }
 
     .button-ghost-white {
+      color: #01625f;
       border-radius: 40px;
-      border: 1px solid #fff;
+      border: 1px solid #01625f;
       background: transparent;
-      color: #fff;
       box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
       font-family: "RocGrotesk";
       font-size: 14px;
       font-style: normal;
       font-weight: 700;
       line-height: 20px;
-
-      &:hover {
-        border: 1px solid #48d985;
-        color: #48d985;
-      }
     }
 
     .ant-switch {
@@ -461,6 +467,142 @@
 
     .ant-switch-checked {
       background: $light-green;
+    }
+  }
+
+  .optimize-income-target-wrapper {
+    .title {
+      font-family: "RocGrotesk";
+      font-size: 22px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+    }
+
+    .description {
+      font-family: "TabletGothic";
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 157.15%;
+    }
+
+    .label {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .ant-select {
+      font-weight: normal;
+    }
+
+    .button-ghost-white {
+      color: #01625f;
+      border-radius: 40px;
+      border: 1px solid #01625f;
+      background: transparent;
+      box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 20px;
+    }
+
+    .optimize-income-target-step-wrapper {
+      padding: 20px 0;
+
+      .step-wrapper {
+        width: 100%;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--light-40, #d8d8d8);
+
+        .number {
+          color: #01625f;
+          font-family: "RocGrotesk";
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 23.056px;
+
+          background: #ffc505;
+          padding: 4px 8px;
+          border-radius: 50% 70% 70% 50%;
+        }
+
+        .label {
+          color: #fff;
+          font-family: "TabletGothic";
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 157.15%;
+        }
+      }
+
+      .income-inputs-wrapper {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        font-weight: normal;
+
+        div {
+          flex: 1;
+
+          label {
+            display: block;
+          }
+
+          .ant-input-number {
+            width: 100%;
+          }
+
+          span {
+            display: block;
+          }
+
+          label,
+          span {
+            color: #fff;
+            font-family: "TabletGothic";
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            // line-height
+          }
+        }
+
+        .ant-input-number-group-addon {
+          background-color: #eff2f5;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .optimize-button-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+
+      .button-clear-optimize-result {
+        border-radius: 40px;
+        border: 1px solid #fff;
+        background-color: transparent;
+        color: #fff;
+        font-weight: 500;
+      }
+
+      .button-run-the-model {
+        border-radius: 40px;
+        border: 1px solid #ffc505;
+        background: #ffc505;
+        color: #01625f;
+        font-weight: 500;
+      }
     }
   }
 }
@@ -549,17 +691,16 @@
 #closing-gap {
   .card-section-wrapper {
     .step-wrapper {
-      font-size: 20px;
+      font-size: 16px;
       font-family: "RocGrotesk";
       font-style: normal;
-      line-height: 32px;
+      line-height: 24px;
       font-weight: 700;
 
       .number {
         padding: 2px 8px;
         background: #ffc505;
         border-radius: 70% 100% 100% 70%;
-
         color: #01625f;
       }
 
@@ -579,6 +720,7 @@
     }
 
     .button-add-scenario {
+      float: right;
       border-radius: 40px;
       border: 1px solid #fff;
       background: transparent;
@@ -595,12 +737,19 @@
   .income-driver-form-container {
     .income-driver-form-section {
       .title {
-        color: #01625f;
+        margin-top: 5px;
+        color: $primary-color;
         font-family: "RocGrotesk";
-        font-size: 20px;
+        font-size: 16px;
         font-style: normal;
         font-weight: 700;
-        line-height: 32px;
+        line-height: 30px;
+      }
+
+      .description {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        line-height: 24px;
       }
     }
 
@@ -622,6 +771,7 @@
     border: none;
 
     .ant-card-body {
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -633,10 +783,10 @@
       .title {
         color: #01625f;
         font-family: "RocGrotesk";
-        font-size: 20px;
+        font-size: 18px;
         font-style: normal;
         font-weight: 700;
-        line-height: 32px;
+        line-height: 30px;
       }
 
       .description {
@@ -645,7 +795,7 @@
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
-        line-height: 157.15%;
+        line-height: 24px;
       }
     }
 

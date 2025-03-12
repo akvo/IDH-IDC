@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Table, Card, Input, Space } from "antd";
+import { Row, Col, Table, Card, Input, Space, Button } from "antd";
 import { Link } from "react-router-dom";
 import isEmpty from "lodash/isEmpty";
 
@@ -46,8 +46,8 @@ const TableContent = ({
             </Col>
             <Col span={4} align="right">
               {!isEmpty(buttonProps) && (
-                <Link className="button button-secondary" to={buttonProps.to}>
-                  {buttonProps.text}
+                <Link to={buttonProps.to}>
+                  <Button className="button-ghost">{buttonProps.text}</Button>
                 </Link>
               )}
             </Col>

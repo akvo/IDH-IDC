@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Breadcrumb, Card, Tabs, Affix, Row, Col, Button, Space } from "antd";
+import { Breadcrumb, Card, Tabs, Affix, Row, Col, Button } from "antd";
 import {
   HomeOutlined,
   RightOutlined,
@@ -70,7 +70,7 @@ const ContentLayout = ({
     <div>
       <Affix offsetTop={80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
-          <Space className="content-card-wrapper" align="center">
+          <div className="content-card-wrapper">
             {siderCollapsedButton && setSiderCollapsed && (
               <Button
                 icon={
@@ -80,18 +80,20 @@ const ContentLayout = ({
                 style={{
                   background: "transparent",
                   borderRadius: 0,
+                  marginRight: 12,
                 }}
               />
             )}
             {hasBreadcrumb ? (
-              <div>
+              <div className="breadcrumb-wrapper">
                 <Breadcrumb
+                  className="breadcrumb-left-content"
                   separator={<RightOutlined />}
                   items={breadcrumbItems.map((x, bi) => ({
                     key: bi,
                     title: (
                       <Link to={x.href}>
-                        {x.title.toLowerCase() === "home" ? (
+                        {x?.title?.toLowerCase() === "home" ? (
                           <HomeOutlined style={{ fontSize: "16px" }} />
                         ) : (
                           x.title
@@ -109,37 +111,41 @@ const ContentLayout = ({
             ) : (
               ""
             )}
-          </Space>
+          </div>
 
           {/* Page title */}
-          <Row
-            gutter={[12, 12]}
-            align="middle"
-            justify="start"
-            className="title-wrapper"
-          >
-            <Col flex={1}>
-              {title ? (
-                <div data-testid="title" className="title">
-                  {title}
-                </div>
-              ) : (
-                ""
-              )}
-              {subTitle ? (
-                <div data-testid="subTitle" className="subTitle">
-                  {subTitle}
-                </div>
-              ) : (
-                ""
-              )}
-            </Col>
-            {titleRighContent && (
-              <Col flex="auto" align="end">
-                {titleRighContent}
+          {title || titleRighContent ? (
+            <Row
+              gutter={[12, 12]}
+              align="middle"
+              justify="start"
+              className="title-wrapper"
+            >
+              <Col flex={1}>
+                {title ? (
+                  <div data-testid="title" className="title">
+                    {title}
+                  </div>
+                ) : (
+                  ""
+                )}
+                {subTitle ? (
+                  <div data-testid="subTitle" className="subTitle">
+                    {subTitle}
+                  </div>
+                ) : (
+                  ""
+                )}
               </Col>
-            )}
-          </Row>
+              {titleRighContent && (
+                <Col flex="auto" align="end" style={{ textAlign: "right" }}>
+                  {titleRighContent}
+                </Col>
+              )}
+            </Row>
+          ) : (
+            ""
+          )}
           {/* EOL Page title */}
 
           {adminRole.includes(userRole) &&

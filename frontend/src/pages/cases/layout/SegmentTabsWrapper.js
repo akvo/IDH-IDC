@@ -45,7 +45,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
   ]);
 
   return (
-    <Row id="steps" gutter={[20, 20]}>
+    <Row id="steps" gutter={[12, 12]}>
       <Col span={childrenCount === 1 ? 24 : 14}>
         <Tabs
           className="step-segment-tabs-container"

@@ -15,8 +15,11 @@ const AllDriverTreeSelector = ({
   onChange,
   value = null,
   multiple = false,
+  maxLength = null,
   dropdownStyle = {},
+  style = {},
 }) => {
+  // TODO :: Filter drivers that only have answer value
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
 
@@ -41,7 +44,7 @@ const AllDriverTreeSelector = ({
     <TreeSelect
       showSearch
       allowClear
-      style={{ width: "100%" }}
+      style={{ width: "100%", ...style }}
       dropdownStyle={{
         maxHeight: 400,
         overflow: "auto",
@@ -58,6 +61,7 @@ const AllDriverTreeSelector = ({
       treeNodeFilterProp="label"
       multiple={multiple}
       value={value || []}
+      maxLength={maxLength}
     />
   );
 };

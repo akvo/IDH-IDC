@@ -76,7 +76,7 @@ const Question = ({
 
   return (
     <Row gutter={[5, 5]} align="middle" style={{ marginTop: 10 }}>
-      <Col span={8}>
+      <Col span={11}>
         <Form.Item className="scenario-field-item" name={`driver-${fieldName}`}>
           <AllDriverTreeSelector
             onChange={(value) => setSelectedDriver(value)}
@@ -87,7 +87,7 @@ const Question = ({
           />
         </Form.Item>
       </Col>
-      <Col span={6}>
+      <Col span={5}>
         {["absolute", "percentage"].map((qtype) => (
           <Form.Item
             key={`${qtype}-${fieldName}`}
@@ -113,7 +113,7 @@ const Question = ({
           </Form.Item>
         ))}
       </Col>
-      <Col span={6} align="end">
+      <Col span={4} align="end">
         {thousandFormatter(currentValue, 2)}
       </Col>
       <Col span={4} align="end">
@@ -130,9 +130,17 @@ const ScenarioModelingIncomeDriversAndChart = ({
   currentScenarioData,
 }) => {
   const [scenarioDriversForm] = Form.useForm();
-  const { incomeDataDrivers, questionGroups, totalIncomeQuestions } =
-    CaseVisualState.useState((s) => s);
+  const {
+    incomeDataDrivers,
+    questionGroups,
+    totalIncomeQuestions,
+    dashboardData,
+  } = CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
+
+  const currentDashboardData = useMemo(() => {
+    return dashboardData.find((d) => d.id === segment.id);
+  }, [segment, dashboardData]);
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -588,10 +596,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
   return (
     <Row
       align="middle"
-      gutter={[20, 20]}
+      gutter={[24, 24]}
       className="income-driver-form-container"
     >
-      <Col span={12}>
+      <Col span={10}>
         <Row
           gutter={[50, 50]}
           align="middle"
@@ -617,11 +625,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
               // initialValues={initialScenarioModelingIncomeDriverValues}
             >
               <Row gutter={[5, 5]} align="middle">
-                <Col span={8}>Income Driver</Col>
-                <Col span={6}>
+                <Col span={11}>Income Driver</Col>
+                <Col span={5}>
                   {currentScenarioData?.percentage ? "Change" : "New Value"}
                 </Col>
-                <Col span={6} align="end">
+                <Col span={4} align="end">
                   Current Value
                 </Col>
                 <Col span={4} align="end">
@@ -639,19 +647,33 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 />
               ))}
             </Form>
+            {/* TOTAL INCOME SECTION */}
             <div style={{ marginTop: 24, fontWeight: "bold" }}>
-              New total income:{" "}
-              {thousandFormatter(
-                currentScenarioData.scenarioValues.find(
-                  (s) => s.segmentId === segment.id
-                )?.updatedSegmentScenarioValue?.total_current_income || 0,
-                2
-              )}
+              <Row gutter={[10, 10]} align="middle">
+                <Col span={16} align="end">
+                  Total Income:
+                </Col>
+                <Col span={4} align="end">
+                  {thousandFormatter(
+                    currentDashboardData?.total_current_income || 0,
+                    2
+                  )}
+                </Col>
+                <Col span={4} align="end">
+                  {thousandFormatter(
+                    currentScenarioData.scenarioValues.find(
+                      (s) => s.segmentId === segment.id
+                    )?.updatedSegmentScenarioValue?.total_current_income || 0,
+                    2
+                  )}
+                </Col>
+              </Row>
             </div>
+            {/* EOL TOTAL INCOME SECTION */}
           </Col>
         </Row>
       </Col>
-      <Col span={12}>
+      <Col span={14}>
         <ChartSegmentsIncomeGapScenarioModeling
           currentScenarioData={currentScenarioData}
         />

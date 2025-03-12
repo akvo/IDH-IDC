@@ -18,7 +18,9 @@ class TestQuestionRoute:
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
         # without cred
-        res = await client.post(app.url_path_for("question:get_by_commodities"))
+        res = await client.post(
+            app.url_path_for("question:get_by_commodities")
+        )
         assert res.status_code == 403
         # with non admin cred
         res = await client.post(
@@ -55,6 +57,8 @@ class TestQuestionRoute:
         res = res.json()
         assert res == [
             {
+                "case_commodity_id": 4,
+                "case_commodity_type": "focus",
                 "commodity_id": 1,
                 "commodity_name": "Wheat",
                 "questions": [
@@ -65,14 +69,13 @@ class TestQuestionRoute:
                         "question_type": "aggregator",
                         "text": "Net Income per day",
                         "description": None,
-                        "default_value": "function() { return #Q2 * #Q3 / 30; }",
+                        "default_value": "(2 * 3) / 30",
                         "created_by": 1,
                         "childrens": [
                             {
                                 "id": 2,
                                 "parent": 1,
                                 "unit": "Q2",
-                                "question_type": "question",
                                 "question_type": "question",
                                 "text": "Income from Commodity / Month",
                                 "description": None,
@@ -83,7 +86,6 @@ class TestQuestionRoute:
                             {
                                 "id": 3,
                                 "parent": 1,
-                                "question_type": "question",
                                 "unit": "Q3",
                                 "question_type": "question",
                                 "text": "Cost of Production / Month",
@@ -93,10 +95,12 @@ class TestQuestionRoute:
                                 "childrens": [],
                             },
                         ],
-                    },
+                    }
                 ],
             },
             {
+                "case_commodity_id": 1,
+                "case_commodity_type": "focus",
                 "commodity_id": 2,
                 "commodity_name": "Rice",
                 "questions": [
@@ -107,13 +111,12 @@ class TestQuestionRoute:
                         "question_type": "aggregator",
                         "text": "Net Income per day",
                         "description": None,
-                        "default_value": "function() { return #Q2 * #Q3 / 30; }",
+                        "default_value": "(2 * 3) / 30",
                         "created_by": 1,
                         "childrens": [
                             {
                                 "id": 2,
                                 "parent": 1,
-                                "question_type": "question",
                                 "unit": "Q2",
                                 "question_type": "question",
                                 "text": "Income from Commodity / Month",
@@ -125,7 +128,6 @@ class TestQuestionRoute:
                             {
                                 "id": 3,
                                 "parent": 1,
-                                "question_type": "question",
                                 "unit": "Q3",
                                 "question_type": "question",
                                 "text": "Cost of Production / Month",
@@ -135,7 +137,7 @@ class TestQuestionRoute:
                                 "childrens": [],
                             },
                         ],
-                    },
+                    }
                 ],
             },
         ]
@@ -150,76 +152,96 @@ class TestQuestionRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == [{
-            'commodity_id': 2,
-            'commodity_name': 'Rice',
-            'questions': [{
-                'id': 1,
-                'parent': None,
-                'unit': 'Q1',
-                'question_type': 'aggregator',
-                'text': 'Net Income per day',
-                'description': None,
-                'default_value': 'function() { return #Q2 * #Q3 / 30; }',
-                'created_by': 1,
-                'childrens': [{
-                    'id': 2,
-                    'parent': 1,
-                    'unit': 'Q2',
-                    'question_type': 'question',
-                    'text': 'Income from Commodity / Month',
-                    'description': None,
-                    'default_value': None,
-                    'created_by': 1,
-                    'childrens': []
-                }, {
-                    'id': 3,
-                    'parent': 1,
-                    'unit': 'Q3',
-                    'question_type': 'question',
-                    'text': 'Cost of Production / Month',
-                    'description': None,
-                    'default_value': None,
-                    'created_by': 1,
-                    'childrens': []
-                }]
-            }]
-        }, {
-            'commodity_id': 3,
-            'commodity_name': 'Corn',
-            'questions': [{
-                'id': 1,
-                'parent': None,
-                'unit': 'Q1',
-                'question_type': 'aggregator',
-                'text': 'Net Income per day',
-                'description': None,
-                'default_value': 'function() { return #Q2 * #Q3 / 30; }',
-                'created_by': 1,
-                'childrens': [{
-                    'id': 2,
-                    'parent': 1,
-                    'unit': 'Q2',
-                    'question_type': 'question',
-                    'text': 'Income from Commodity / Month',
-                    'description': None,
-                    'default_value': None,
-                    'created_by': 1,
-                    'childrens': []
-                }, {
-                    'id': 3,
-                    'parent': 1,
-                    'unit': 'Q3',
-                    'question_type': 'question',
-                    'text': 'Cost of Production / Month',
-                    'description': None,
-                    'default_value': None,
-                    'created_by': 1,
-                    'childrens': []
-                }]
-            }]
-        }, {
-            'commodity_id': None,
-            'commodity_name': 'Diversified Income',
-            'questions': []
-        }]
+        assert res == [
+            {
+                "case_commodity_id": 1,
+                "case_commodity_type": "focus",
+                "commodity_id": 2,
+                "commodity_name": "Rice",
+                "questions": [
+                    {
+                        "id": 1,
+                        "parent": None,
+                        "unit": "Q1",
+                        "question_type": "aggregator",
+                        "text": "Net Income per day",
+                        "description": None,
+                        "default_value": "(2 * 3) / 30",
+                        "created_by": 1,
+                        "childrens": [
+                            {
+                                "id": 2,
+                                "parent": 1,
+                                "unit": "Q2",
+                                "question_type": "question",
+                                "text": "Income from Commodity / Month",
+                                "description": None,
+                                "default_value": None,
+                                "created_by": 1,
+                                "childrens": [],
+                            },
+                            {
+                                "id": 3,
+                                "parent": 1,
+                                "unit": "Q3",
+                                "question_type": "question",
+                                "text": "Cost of Production / Month",
+                                "description": None,
+                                "default_value": None,
+                                "created_by": 1,
+                                "childrens": [],
+                            },
+                        ],
+                    }
+                ],
+            },
+            {
+                "case_commodity_id": 2,
+                "case_commodity_type": "secondary",
+                "commodity_id": 3,
+                "commodity_name": "Corn",
+                "questions": [
+                    {
+                        "id": 1,
+                        "parent": None,
+                        "unit": "Q1",
+                        "question_type": "aggregator",
+                        "text": "Net Income per day",
+                        "description": None,
+                        "default_value": "(2 * 3) / 30",
+                        "created_by": 1,
+                        "childrens": [
+                            {
+                                "id": 2,
+                                "parent": 1,
+                                "unit": "Q2",
+                                "question_type": "question",
+                                "text": "Income from Commodity / Month",
+                                "description": None,
+                                "default_value": None,
+                                "created_by": 1,
+                                "childrens": [],
+                            },
+                            {
+                                "id": 3,
+                                "parent": 1,
+                                "unit": "Q3",
+                                "question_type": "question",
+                                "text": "Cost of Production / Month",
+                                "description": None,
+                                "default_value": None,
+                                "created_by": 1,
+                                "childrens": [],
+                            },
+                        ],
+                    }
+                ],
+            },
+            {
+                "case_commodity_id": 3,
+                "case_commodity_type": "diversified",
+                "commodity_id": None,
+                "commodity_name": "Diversified Income",
+                "questions": [],
+            },
+        ]

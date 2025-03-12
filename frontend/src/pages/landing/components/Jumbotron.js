@@ -1,9 +1,11 @@
 import React from "react";
 import "./landingcomp.scss";
-import { Row, Col, Button } from "antd";
+import { Row, Col } from "antd";
 import { Link } from "react-router-dom";
 import { UserState } from "../../../store";
 import { useNavigate } from "react-router-dom";
+import { ArrowRightOutlined } from "@ant-design/icons";
+import { LandingIDHLogo } from "../../../lib/icon";
 
 const Jumbotron = ({ signOut = null }) => {
   const navigate = useNavigate();
@@ -11,7 +13,18 @@ const Jumbotron = ({ signOut = null }) => {
 
   return (
     <Row id="jumbotron" data-testid="jumbotron-wrapper" justify="center">
-      <Col span={24}>
+      <LandingIDHLogo
+        style={{
+          position: "absolute",
+          bottom: -180,
+          right: -165,
+          transform: "rotate(260deg)",
+        }}
+        width={400}
+        height={400}
+      />
+
+      <Col span={24} className="jumbotron-col">
         <h1 data-testid="jumbotron-title">
           Welcome to the Income Driver Calculator (IDC)
         </h1>
@@ -20,24 +33,23 @@ const Jumbotron = ({ signOut = null }) => {
           different sectors and landscapes.
         </h3>
         {loggedIn ? (
-          <Button
+          <Link
             onClick={() => {
               signOut();
               navigate("/");
             }}
             className="button button-yellow"
-            type="secondary"
-            size="small"
           >
             Sign out
-          </Button>
+          </Link>
         ) : (
           <Link
             to="/login"
             data-testid="button-learn-more"
             className="button button-yellow"
           >
-            Sign in to calculator
+            Log in to the calculator{" "}
+            <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
           </Link>
         )}
       </Col>

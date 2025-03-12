@@ -27,7 +27,7 @@ class TestAddMasterDataDedenpentToUser:
                 "question_type": QuestionType.aggregator,
                 "text": "Net Income per day",
                 "description": None,
-                "default_value": "function() { return #Q2 * #Q3 / 30; }",
+                "default_value": "(2 * 3) / 30",
             },
             {
                 "id": 2,
@@ -72,7 +72,9 @@ class TestAddMasterDataDedenpentToUser:
             session.flush()
             session.refresh(commodity_category_question)
         # expect
-        commodity_category_questions = session.query(CommodityCategoryQuestion).all()
+        commodity_category_questions = session.query(
+            CommodityCategoryQuestion
+        ).all()
         assert commodity_category_questions is not None
         questions = session.query(Question).all()
         questions = [q.serialize for q in questions]
@@ -84,7 +86,7 @@ class TestAddMasterDataDedenpentToUser:
                 "question_type": "aggregator",
                 "text": "Net Income per day",
                 "description": None,
-                "default_value": "function() { return #Q2 * #Q3 / 30; }",
+                "default_value": "(2 * 3) / 30",
                 "created_by": 1,
                 "childrens": [],
             },

@@ -394,7 +394,8 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   ]);
 
   const backFunction = useCallback(() => {
-    navigate("/cases");
+    navigate(-1);
+    // navigate("/cases");
   }, [navigate]);
 
   const nextFunction = useCallback(() => {

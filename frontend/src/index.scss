@@ -1,5 +1,10 @@
-body {
+body,
+html {
+  height: 100%;
   margin: 0;
+}
+
+body {
   font-family: "TabletGothic", -apple-system, BlinkMacSystemFont, "Roboto",
     "Ubuntu", "Fira Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;

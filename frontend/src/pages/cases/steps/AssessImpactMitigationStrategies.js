@@ -23,6 +23,7 @@ import {
   BinningDriverForm,
   SegmentSelector,
   AdjustIncomeTarget,
+  OptimizeIncomeTarget,
 } from "../components";
 import { map, groupBy, isEqual, isEmpty } from "lodash";
 import { commodities } from "../../../store/static";
@@ -126,8 +127,9 @@ const AssessImpactMitigationStrategies = ({
   ]);
 
   const backFunction = useCallback(() => {
-    navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
-  }, [navigate, currentCase.id]);
+    navigate(-1);
+    // navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
+  }, [navigate]);
 
   const nextFunction = useCallback(() => {
     handleSaveVisualization();
@@ -318,7 +320,10 @@ const AssessImpactMitigationStrategies = ({
     );
     updateCaseVisualSensitivityAnalysisState({
       case: currentCase.id,
-      config: filteredValues,
+      config: {
+        ...sensitivityAnalysis?.config,
+        ...filteredValues,
+      },
     });
     form.setFieldsValue(filteredValues);
   };
@@ -417,6 +422,12 @@ const AssessImpactMitigationStrategies = ({
             </Col>
             {/* EOL Binning Form */}
 
+            {/* Adjust Income Target */}
+            <Col span={24}>
+              <AdjustIncomeTarget selectedSegment={selectedSegment} />
+            </Col>
+            {/* EOL Adjust Income Target */}
+
             {/* Sensitivity Analysis Chart */}
             <Col span={24}>
               {dashboardData.map((segment) =>
@@ -449,11 +460,11 @@ const AssessImpactMitigationStrategies = ({
       </Col>
       {/* EOL Sensitivity Analysis */}
 
-      {/* #3 Adjust Income Target */}
+      {/* #3 Optimize Income Target */}
       <Col span={24}>
-        <AdjustIncomeTarget selectedSegment={selectedSegment} />
+        <OptimizeIncomeTarget selectedSegment={selectedSegment} />
       </Col>
-      {/* EOL Adjust Income Target */}
+      {/* EOL Optimize Income Target */}
     </Row>
   );
 };
