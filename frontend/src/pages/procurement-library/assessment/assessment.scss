@@ -38,7 +38,7 @@
     .assessment-form-header,
     .assessment-form-body {
       width: 100%;
-      max-width: 556px;
+      max-width: 960px;
     }
     .assessment-tabs {
       display: flex;
@@ -147,7 +147,7 @@
   }
   .assessment-practices {
     width: 100%;
-    max-width: 516px;
+    max-width: 640px;
     min-height: calc(100vh - 148px);
     position: sticky;
     top: 0;
