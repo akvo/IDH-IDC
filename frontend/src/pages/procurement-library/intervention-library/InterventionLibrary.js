@@ -1,16 +1,17 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Button,
   Empty,
   Form,
   Input,
   Pagination,
+  Popover,
   Select,
   Space,
   Spin,
+  Tag,
   Tooltip,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, SearchIcon } from "../../../lib/icon";
 import { api } from "../../../lib";
 import { ImpactAreaIcons, ProcurementBadge } from "../components";
@@ -207,13 +208,46 @@ const InterventionLibrary = () => {
               <div key={practice.id} className="intervention-card">
                 <div className="intervention-card-header">
                   <div className="intervention-card-categories">
-                    {practice?.procurement_processes?.map((proc) => (
-                      <ProcurementBadge
-                        key={proc?.id}
-                        id={proc?.id}
-                        text={proc?.label}
-                      />
-                    ))}
+                    {practice?.procurement_processes
+                      ?.slice(0, 1)
+                      ?.map((proc) => (
+                        <ProcurementBadge
+                          key={proc?.id}
+                          id={proc?.id}
+                          text={proc?.label}
+                        />
+                      ))}
+                    {practice?.procurement_processes?.length > 1 && (
+                      <Popover
+                        placement="bottom"
+                        content={
+                          <ul
+                            style={{
+                              paddingInlineStart: 0,
+                              paddingBlockStart: 0,
+                              marginBlockStart: 0,
+                              marginBlockEnd: 0,
+                              listStyle: "none",
+                            }}
+                          >
+                            {practice.procurement_processes
+                              .slice(1, practice.procurement_processes.length)
+                              .map((proc) => (
+                                <li key={proc?.id} style={{ marginBottom: 6 }}>
+                                  <ProcurementBadge
+                                    id={proc?.id}
+                                    text={proc?.label}
+                                  />
+                                </li>
+                              ))}
+                          </ul>
+                        }
+                      >
+                        <Tag>
+                          {`+${practice?.procurement_processes?.length - 1}`}
+                        </Tag>
+                      </Popover>
+                    )}
                   </div>
                   <ImpactAreaIcons
                     isIncome={practice?.is_income}
@@ -234,13 +268,8 @@ const InterventionLibrary = () => {
                   </strong>
                 </div>
                 <div className="intervention-card-footer">
-                  <Button
-                    type="link"
-                    onClick={() => {
-                      navigate(
-                        `/procurement-library/intervention-library/${practice.id}`
-                      );
-                    }}
+                  <Link
+                    to={`/procurement-library/intervention-library/${practice.id}`}
                   >
                     <Space size="small">
                       <span>View</span>
@@ -248,7 +277,7 @@ const InterventionLibrary = () => {
                         <ArrowRight />
                       </span>
                     </Space>
-                  </Button>
+                  </Link>
                 </div>
               </div>
             ))}
