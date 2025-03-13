@@ -198,11 +198,13 @@ const InterventionLibrary = () => {
           </Form>
         </div>
         <div className="intervention-library-content-body">
-          {practices?.length === 0 && (
-            <div className="intervention-library-no-data">
-              <Empty description="No results found. Please adjust your filters and try again." />
-            </div>
-          )}
+          {practices?.length === 0 &&
+            !loading &&
+            Object.keys(filter).length && (
+              <div className="intervention-library-no-data">
+                <Empty description="No results found. Please adjust your filters and try again." />
+              </div>
+            )}
           <Spin spinning={loading}>
             {practices?.map((practice) => (
               <div key={practice.id} className="intervention-card">
