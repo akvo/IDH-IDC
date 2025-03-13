@@ -44,10 +44,10 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       role: allUserRole,
     };
     const values = [
-      otherResourcesMenu,
-      faqMenu,
       procurementLibraryMenu,
       cocoaIncomeInventoryMenu,
+      otherResourcesMenu,
+      faqMenu,
     ];
     return values;
   }, []);
