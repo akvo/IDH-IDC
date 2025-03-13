@@ -363,32 +363,54 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       </Col>
       <Col span={24}>
         <Card className="card-visual-wrapper">
-          <VisualCardWrapper
-            bordered={true}
-            title="Optimal driver values to react your target"
-            showLabel={showLabel}
-            setShowLabel={setShowLabel}
-            exportElementRef={chartRef}
-            exportFilename="Optimal driver values to react your target"
-          >
-            <Chart
-              wrapper={false}
-              type="COLUMN-BAR"
-              data={chartData}
-              loading={!chartData?.length}
-              height={window.innerHeight * 0.4}
-              extra={{
-                axisTitle: { y: "Percentage Value" },
-                xAxisLabel: {
-                  margin: 20,
-                  align: "center",
-                },
-              }}
-              grid={{ bottom: 60, right: 5, left: 70 }}
-              showLabel={showLabel}
-              percentage={true}
-            />
-          </VisualCardWrapper>
+          <Row gutter={[20, 20]} align="middle">
+            <Col span={18}>
+              <VisualCardWrapper
+                bordered={true}
+                title="Optimal driver values to react your target"
+                showLabel={showLabel}
+                setShowLabel={setShowLabel}
+                exportElementRef={chartRef}
+                exportFilename="Optimal driver values to react your target"
+              >
+                <Chart
+                  wrapper={false}
+                  type="COLUMN-BAR"
+                  data={chartData}
+                  loading={!chartData?.length}
+                  height={window.innerHeight * 0.4}
+                  extra={{
+                    axisTitle: { y: "Percentage Value" },
+                    xAxisLabel: {
+                      margin: 20,
+                      align: "center",
+                    },
+                  }}
+                  grid={{ bottom: 60, right: 5, left: 70 }}
+                  showLabel={showLabel}
+                  percentage={true}
+                />
+              </VisualCardWrapper>
+            </Col>
+            <Col span={6}>
+              <Space direction="vertical">
+                <div className="section-title">
+                  What is the optimal change in income drivers to maximize
+                  income within feasible limits?
+                </div>
+                <div className="section-description">
+                  This graph compares your current income driver values with
+                  optimized scenarios, showing how different adjustments
+                  influence income. It helps identify which changes lead to the
+                  most efficient income increase while staying within feasible
+                  ranges.
+                  <br />
+                  <br />
+                  For more details about the model, click here.
+                </div>
+              </Space>
+            </Col>
+          </Row>
         </Card>
       </Col>
     </Row>
