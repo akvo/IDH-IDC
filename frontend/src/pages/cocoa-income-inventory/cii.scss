@@ -174,7 +174,7 @@
       top: 50%;
       transform: translateY(-50%);
       z-index: 1;
-      font-size: 18px; /* Adjust icon size */
+      font-size: 16px; /* Adjust icon size */
       color: white; /* Arrow color */
       background: $primary-color; /* Circle background */
       width: 30px; /* Circle size */
@@ -184,7 +184,7 @@
       justify-content: center;
       border-radius: 50%; /* Makes it circular */
       cursor: pointer;
-      padding-top: 5px;
+      padding-top: 7px;
       font-weight: 700;
     }
 
