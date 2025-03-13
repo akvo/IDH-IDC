@@ -24,7 +24,7 @@ const Practice = () => {
 
   const [primaryDesc, secondaryDesc] =
     practice?.intervention_definition?.split(
-      /<b>Additional Details:<\/b>|<p>Additional Detail:<\/p>/
+      /<b>Additional Details:<\/b>|<p>Additional details:<\/p>|<p>Additional Detail:<\/p>/
     ) || [];
   const isEnv =
     practice?.scores?.find(
@@ -160,7 +160,7 @@ const Practice = () => {
                       ),
                       children: (
                         <div
-                          className="font-tablet-gothic"
+                          className="practice-content-text font-tablet-gothic"
                           dangerouslySetInnerHTML={{
                             __html: practice?.[key],
                           }}

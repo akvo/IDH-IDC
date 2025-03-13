@@ -171,10 +171,16 @@
           }
         }
         .practice-content-details {
+          .practice-content-text {
+            width: 100%;
+            overflow: hidden;
+            white-space: normal;
+            word-break: break-word;
+          }
           .ant-tabs-left {
             & > .ant-tabs-content-holder {
               border-left: none;
-              padding-left: 48px;
+              padding-left: 24px;
             }
             .ant-tabs-ink-bar {
               background-color: transparent;
@@ -229,7 +235,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .practice-container
     .practice-content
     .practice-content-body

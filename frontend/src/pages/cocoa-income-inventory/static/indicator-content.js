@@ -39,8 +39,4 @@ export const indicatorContent = [
     title: "Price Premium paid/kg",
     icon: PriceIcon,
   },
-  {
-    title: "Price Premium paid/kg",
-    icon: PriceIcon,
-  },
 ];

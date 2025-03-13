@@ -1,36 +1,55 @@
 @import "../../../variables.scss";
 
 #jumbotron {
-  background-image: url("/assets/images/jumbotron.jpeg") !important;
+  background-image: url("/assets/images/jumbotron.png") !important;
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center -7rem;
+  background-position: center;
   width: 100%;
   height: 32rem;
   position: relative;
   overflow: hidden;
 
-  .jumbotron-col {
-    background-color: rgba(0, 0, 0, 0.35);
+  .jumbotron-gradient-wrapper {
+    position: relative;
+    display: flex;
+
+    .jumbotron-gradient-overlay {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 32rem;
+      background: linear-gradient(
+        90deg,
+        rgba(28, 62, 32, 0.67) 0%,
+        rgba(127, 127, 84, 0) 100%
+      );
+      z-index: 0;
+    }
+  }
+
+  .jumbotron-text-wrapper {
     padding: 3rem $default-padding-size;
-  }
+    z-index: 1;
+    h1 {
+      font-family: "RocGrotesk" !important;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 3rem !important;
+      width: 606px;
+      line-height: 70px;
+      margin: 0;
+    }
 
-  h1 {
-    font-family: "RocGrotesk" !important;
-    color: #ffffff;
-    font-weight: 900;
-    font-size: 3rem !important;
-    width: 606px;
-    line-height: 70px;
-    margin: 0;
-  }
-
-  h3 {
-    color: #ffffff;
-    font-weight: 400;
-    font-size: 1.2rem;
-    line-height: 35px;
-    width: 426px;
+    h3 {
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 1.2rem;
+      line-height: 35px;
+      width: 426px;
+    }
   }
 
   .jumbotron-idh-logo {
