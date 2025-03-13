@@ -209,15 +209,26 @@
     flex-wrap: wrap;
 
     .pch-item {
-      flex: 1;
+      flex: 1 1 calc(33.33% - 20px);
 
-      &:nth-child(1),
-      &:nth-child(2) {
-        flex: 1 1 calc(50% - 20px); /* 2 items in first row (50% width each) */
+      // FOR 1 row 2 col, 2 roe 1 col
+      // &:nth-child(1),
+      // &:nth-child(2) {
+      //   flex: 1 1 calc(50% - 20px); /* 2 items in first row (50% width each) */
+      // }
+
+      // &:nth-child(3) {
+      //   flex: 1 1 100%; /* Full-width for the second row */
+      // }
+      // EOL
+
+      a {
+        color: #000;
+        text-decoration: underline;
       }
 
-      &:nth-child(3) {
-        flex: 1 1 100%; /* Full-width for the second row */
+      .ant-btn-link {
+        color: #000;
       }
     }
   }
