@@ -327,7 +327,9 @@ async def run_model(
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
+    # TODO :: handle check feasible < current, use the highest value as new_current_values
     current_values = [(key, current) for key, current, _ in parameter_bounds]
+    # TODO :: recalculate current_income and target_p based on new_current_values
 
     # loop optimize in percentages param
     optimization_result = []
