@@ -16,7 +16,6 @@
     "pako": "^2.1.0",
     "pullstate": "^1.23.0",
     "react": "^18.2.0",
-    "react-alice-carousel": "^2.9.1",
     "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
