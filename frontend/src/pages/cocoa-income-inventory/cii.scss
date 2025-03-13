@@ -119,7 +119,7 @@
   }
 
   .indicators-wrapper {
-    padding: 2rem 0 2rem $default-padding-size;
+    padding: 2rem 0 3rem $default-padding-size;
     background-color: #eaf2f2;
 
     h2 {
@@ -171,7 +171,7 @@
       .btn-prev,
       .btn-next {
         position: absolute;
-        top: 35%;
+        top: 40%;
         border-radius: 22px;
         background: #01625f;
         backdrop-filter: blur(4px);

@@ -21,8 +21,20 @@ const items = CIIContent.indicatorContent.map((item, i) => (
 const IndicatorCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const slidePrev = () => setActiveIndex(activeIndex - 1);
-  const slideNext = () => setActiveIndex(activeIndex + 1);
+  const slidePrev = () =>
+    setActiveIndex((prev) => {
+      if (prev <= 0) {
+        return 2;
+      }
+      return activeIndex - 1;
+    });
+  const slideNext = () =>
+    setActiveIndex((prev) => {
+      if (prev > 1) {
+        return 0;
+      }
+      return activeIndex + 1;
+    });
 
   return (
     <div className="indicator-carousel-wrapper">
@@ -31,9 +43,10 @@ const IndicatorCarousel = () => {
         mouseTracking
         items={items}
         responsive={responsive}
-        controlsStrategy="alternate"
+        controlsStrategy="default"
         disableButtonsControls
-        onSlideChanged={(e) => setActiveIndex(e.item)}
+        disableDotsControls
+        paddingLeft={0}
       />
       <Button
         className="btn-prev"
