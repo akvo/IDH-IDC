@@ -99,7 +99,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       id="page-layout-header"
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
-        <Col span={4} align="start" style={{ width: "100%" }}>
+        <Col span={3} align="start" style={{ width: "100%" }}>
           <Link to={isLoggedIn ? "/welcome" : "/"}>
             <Image
               src={Logo}
@@ -109,8 +109,8 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
             />
           </Link>
         </Col>
-        <Col span={20} align="end" testid="nav-container">
-          <Space size="large" className="navigation-container">
+        <Col span={21} align="end" testid="nav-container">
+          <Space size={12} className="navigation-container">
             {/* <Link to={isLoggedIn ? "/welcome" : "/"}>About IDC</Link> */}
             {isLoggedIn
               ? authMenus

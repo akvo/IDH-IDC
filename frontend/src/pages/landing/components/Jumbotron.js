@@ -24,34 +24,37 @@ const Jumbotron = ({ signOut = null }) => {
         height={400}
       />
 
-      <Col span={24} className="jumbotron-col">
-        <h1 data-testid="jumbotron-title">
-          Welcome to the Income Driver Calculator (IDC)
-        </h1>
-        <h3 data-testid="jumbotron-subtitle">
-          IDH works towards better incomes for smallholder farmers across
-          different sectors and landscapes.
-        </h3>
-        {loggedIn ? (
-          <Link
-            onClick={() => {
-              signOut();
-              navigate("/");
-            }}
-            className="button button-yellow"
-          >
-            Sign out
-          </Link>
-        ) : (
-          <Link
-            to="/login"
-            data-testid="button-learn-more"
-            className="button button-yellow"
-          >
-            Log in to the calculator{" "}
-            <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
-          </Link>
-        )}
+      <Col span={24} className="jumbotron-gradient-wrapper">
+        <div className="jumbotron-gradient-overlay"></div>
+        <div className="jumbotron-text-wrapper">
+          <h1 data-testid="jumbotron-title">
+            Welcome to the Income Driver Calculator (IDC)
+          </h1>
+          <h3 data-testid="jumbotron-subtitle">
+            IDH works towards better incomes for smallholder farmers across
+            different sectors and landscapes.
+          </h3>
+          {loggedIn ? (
+            <Link
+              onClick={() => {
+                signOut();
+                navigate("/");
+              }}
+              className="button button-yellow"
+            >
+              Sign out
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              data-testid="button-learn-more"
+              className="button button-yellow"
+            >
+              Log in to the calculator{" "}
+              <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
+            </Link>
+          )}
+        </div>
       </Col>
     </Row>
   );
