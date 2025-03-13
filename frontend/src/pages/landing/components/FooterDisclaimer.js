@@ -78,7 +78,10 @@ const ciiDisclaimerText = (handleSecurityClick) => (
   </>
 );
 
-const FooterDisclaimer = ({ disclaimerText = "default" }) => {
+const FooterDisclaimer = ({
+  disclaimerText = "default",
+  showPageFooter = true,
+}) => {
   const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
     useState(false);
 
@@ -104,10 +107,12 @@ const FooterDisclaimer = ({ disclaimerText = "default" }) => {
           defaultDisclaimerText(handleSecurityClick)}
         {disclaimerText === "cii" && ciiDisclaimerText(handleSecurityClick)}
       </Col>
-      <Col span={24} className="footer-wrapper">
-        <Divider style={{ borderColor: "#fff", opacity: 0.25 }} />
-        <PageFooter wrapper={false} fixed={false} />
-      </Col>
+      {showPageFooter && (
+        <Col span={24} className="footer-wrapper">
+          <Divider style={{ borderColor: "#fff", opacity: 0.25 }} />
+          <PageFooter wrapper={false} fixed={false} />
+        </Col>
+      )}
 
       {/* Data Security Provision Modal */}
       <DataSecurityProvisionModal

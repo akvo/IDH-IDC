@@ -53,7 +53,7 @@ const CocoaIncomeInventoryDashboard = () => {
       </div>
       {/* EOL Power BI iframe section */}
 
-      <FooterDisclaimer />
+      <FooterDisclaimer disclaimerText="cii" showPageFooter={false} />
     </div>
   );
 };
