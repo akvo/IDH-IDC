@@ -61,8 +61,8 @@ const ChartCalculatedHouseholdIncome = () => {
         extra={{
           axisTitle: { y: `Income (${currentCase.currency})` },
           xAxisLabel: {
-            rotate: 45,
-            margin: 40,
+            rotate: 30,
+            margin: 30,
             align: "center",
           },
         }}

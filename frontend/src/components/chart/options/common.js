@@ -63,20 +63,26 @@ export const LabelStyle = {
 };
 
 export const AxisLabelFormatter = {
-  formatter: function (params) {
-    const maxLength = 1;
-    let newParamsName = String(params).split(" ");
-    if (newParamsName.length > maxLength) {
-      newParamsName = newParamsName.map((p) => {
-        // if (pi !== 0 && pi % maxLength === 0) {
-        //   p += "\n";
-        // }
-        p += "\n";
-        return p;
-      });
-    }
-    newParamsName = newParamsName.join(" ");
-    return upperFirst(newParamsName);
+  formatter: function (value) {
+    const maxCharsPerLine = 10; // Max characters per line
+    const words = value.split(" "); // Split by spaces
+    const lines = [];
+    let currentLine = "";
+
+    words.forEach((word) => {
+      if ((currentLine + word).length > maxCharsPerLine) {
+        lines.push(currentLine.trim());
+        currentLine = word + " ";
+      } else {
+        currentLine += word + " ";
+      }
+    });
+
+    if (currentLine) {
+      lines.push(currentLine.trim());
+    } // Add last line
+
+    return upperFirst(lines.join("\n")); // Join lines with new lines
   },
 };
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { Button, Card, Col, InputNumber, Row, Space } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
@@ -9,6 +9,13 @@ import VisualCardWrapper from "./VisualCardWrapper";
 import Chart from "../../../components/chart";
 import { commodities } from "../../../store/static";
 import { orderBy, uniqBy } from "lodash";
+
+const colors = [
+  "#05615e", // green,
+  "#fecb21", // yellow,
+  "#fecb21", // blue,
+  "#ffcea4", // pink
+];
 
 const unitName = ({ currentCase, question, group }) => {
   return question.unit
@@ -41,7 +48,9 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const { selectedDrivers, increaseValues, optimizationResult } =
     optimizationModelState;
 
-  const [refreshChart, setRefreshChart] = useState(false);
+  const [refreshChart, setRefreshChart] = useState(true);
+  const [showLabel, setShowLabel] = useState(false);
+  const chartRef = useRef(null);
 
   /*
     increaseValues example
@@ -131,7 +140,6 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     }));
   });
 
-  // TODO :: Rever to chart biggest impact on income
   const chartData = useMemo(() => {
     if (optimizationResult) {
       const { optimization_result } = optimizationResult;
@@ -174,9 +182,10 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
 
           currentValues.push({
             key,
-            name: "current",
+            name: "Current",
             absolute: thousandFormatter(currentValue, 2),
             value: "100",
+            color: colors[0],
           });
 
           return {
@@ -184,6 +193,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
             name: `Increase ${val.key}`,
             absolute: thousandFormatter(optimizedValue, 2),
             value: thousandFormatter(optimizedPercentage, 2),
+            color: colors[val.key],
           };
         });
         return {
@@ -195,6 +205,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       setRefreshChart(false);
       return data;
     }
+    setRefreshChart(false);
     return [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshChart, currentCase]);
@@ -353,17 +364,18 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       <Col span={24}>
         <Card className="card-visual-wrapper">
           <VisualCardWrapper
+            bordered={true}
             title="Optimal driver values to react your target"
-            // showLabel={showLabel}
-            // setShowLabel={setShowLabel}
-            // exportElementRef={elChartHHIncome}
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
+            exportElementRef={chartRef}
             exportFilename="Optimal driver values to react your target"
           >
             <Chart
               wrapper={false}
               type="COLUMN-BAR"
               data={chartData}
-              // loading={!chartData?.length}
+              loading={!chartData?.length}
               height={window.innerHeight * 0.4}
               extra={{
                 axisTitle: { y: "Percentage Value" },
@@ -373,7 +385,8 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                 },
               }}
               grid={{ bottom: 60, right: 5, left: 70 }}
-              // showLabel={showLabel}
+              showLabel={showLabel}
+              percentage={true}
             />
           </VisualCardWrapper>
         </Card>

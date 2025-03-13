@@ -14,38 +14,40 @@ import {
 } from "./common";
 import { sortBy, isEmpty, groupBy, orderBy } from "lodash";
 
-const customFormatter = {
-  formatter: function (params) {
-    if (!params?.data?.stack?.length) {
-      return `<div>${params.name}: <b>${thousandFormatter(
-        params.value
-      )}</b><div>`;
-    }
-    // handle stack/commodities without breakdowndrivers
-    const stackValues = params.data.stack.filter((x) => x.value);
-    if (!stackValues?.length) {
-      return `<div><b>${
-        params.name
-      }</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${thousandFormatter(
-        params.value
-      )}</b><div>`;
-    }
-    let customTooltip = "<div>";
-    customTooltip += `<b>${params.name}</b>`;
-    customTooltip +=
-      "<ul style='list-style-type: none; margin: 0; padding: 0;'>";
-    orderBy(params.data.stack, "order").forEach((it) => {
-      customTooltip += `<li key=${it.order}>
+const customFormatter = (params, percentage = false) => {
+  const absoluteValue = params?.data?.absolute;
+  const percentagePreffix = `${percentage ? "%" : ""}${
+    !isNaN(absoluteValue) ? ` (${absoluteValue})` : ""
+  }`;
+
+  if (!params?.data?.stack?.length) {
+    return `<div>${params.name}: <b>${thousandFormatter(
+      params.value
+    )}${percentagePreffix}</b><div>`;
+  }
+  // handle stack/commodities without breakdowndrivers
+  const stackValues = params.data.stack.filter((x) => x.value);
+  if (!stackValues?.length) {
+    return `<div><b>${
+      params.name
+    }</b>:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>${thousandFormatter(
+      params.value
+    )}${percentagePreffix}</b><div>`;
+  }
+  let customTooltip = "<div>";
+  customTooltip += `<b>${params.name}</b>`;
+  customTooltip += "<ul style='list-style-type: none; margin: 0; padding: 0;'>";
+  orderBy(params.data.stack, "order").forEach((it) => {
+    customTooltip += `<li key=${it.order}>
         <span>- ${it.name}:</span>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <span style="float: right;">
-        <b>${thousandFormatter(it.value)}</b>
+        <b>${thousandFormatter(it.value)}${percentagePreffix}</b>
         </span>
       </li>`;
-    });
-    customTooltip += "</ul></div>";
-    return customTooltip;
-  },
+  });
+  customTooltip += "</ul></div>";
+  return customTooltip;
 };
 
 const ColumnBar = ({
@@ -56,6 +58,7 @@ const ColumnBar = ({
   grid = {},
   showLabel = true,
   series = [],
+  percentage,
 }) => {
   if ((isEmpty(data) || !data) && (isEmpty(series) || !series)) {
     return NoData;
@@ -96,6 +99,12 @@ const ColumnBar = ({
           backgroundColor: "rgba(0,0,0,.3)",
           ...TextStyle,
           color: "#fff",
+          formatter: (s) => {
+            if (percentage) {
+              return `${s.value}%`;
+            }
+            return thousandFormatter(s.value);
+          },
         },
         color: values?.[0]?.color || Color.color[ki],
       };
@@ -135,7 +144,7 @@ const ColumnBar = ({
     tooltip: {
       show: true,
       trigger: "item",
-      formatter: customFormatter.formatter,
+      formatter: (params) => customFormatter(params, percentage),
       padding: 5,
       backgroundColor: "#f2f2f2",
       ...TextStyle,
