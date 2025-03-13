@@ -177,14 +177,14 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           const optimizedValue =
             valueTmp.find((v) => v.name === "optimized")?.value || 0;
           const optimizedPercentage = currentValue
-            ? 100 + ((optimizedValue - currentValue) / currentValue) * 100
-            : 100;
+            ? (optimizedValue / currentValue) * 100
+            : currentValue;
 
           currentValues.push({
             key,
             name: "Current",
             absolute: thousandFormatter(currentValue, 2),
-            value: "100",
+            value: currentValue ? "100" : 0,
             color: colors[0],
           });
 

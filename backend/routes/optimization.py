@@ -414,8 +414,9 @@ async def run_model(
         # create editable_indices_result
         results = {}
         for key in editable_indices:
-            current = segment_answers.get(f"current-{key}", 0)
-            feasible = segment_answers.get(f"feasible-{key}", 0)
+            # use adjusted current/feasible values here
+            current = adjusted_current_answers.get(f"current-{key}", 0)
+            feasible = adjusted_feasible_answers.get(f"feasible-{key}", 0)
             optimized = optimized_answers.get(f"optimized-{key}", 0)
             results[key] = [
                 {"name": "current", "value": current or 0},
