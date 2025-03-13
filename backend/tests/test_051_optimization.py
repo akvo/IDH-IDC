@@ -44,10 +44,13 @@ class TestOptimizationRoute:
             "target_income": 3000.0,
             "current_income": 0.4,
             "feasible_income": 0.4,
+            "adjusted_current_income": 0.4,
+            "adjusted_feasible_income": 0.4,
             "optimization_result": [
                 {
                     "key": 1,
                     "name": "percentage_1",
+                    "percentage": 0.5,
                     "value": {
                         "target_p": 0.4,
                         "achieved_income": 0.4,
@@ -66,8 +69,9 @@ class TestOptimizationRoute:
                     },
                 },
                 {
-                    'key': 2,
+                    "key": 2,
                     "name": "percentage_2",
+                    "percentage": 0.75,
                     "value": {
                         "target_p": 0.4,
                         "achieved_income": 0.4,
@@ -86,8 +90,9 @@ class TestOptimizationRoute:
                     },
                 },
                 {
-                    'key': 3,
+                    "key": 3,
                     "name": "percentage_3",
+                    "percentage": 1,
                     "value": {
                         "target_p": 0.4,
                         "achieved_income": 0.4,

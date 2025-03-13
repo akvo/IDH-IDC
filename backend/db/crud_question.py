@@ -149,3 +149,12 @@ def get_question_by_created_by(session: Session, created_by=int):
     return (
         session.query(Question).filter(Question.created_by == created_by).all()
     )
+
+
+def get_cost_production_questions(session: Session):
+    COST_PRODUCTION_QID = 5
+    questions = session.query(Question).filter(
+        Question.id == COST_PRODUCTION_QID
+    ).all()
+    questions = [question.serialize_with_child for question in questions]
+    return questions

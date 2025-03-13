@@ -133,9 +133,9 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
 
   // TODO :: Rever to chart biggest impact on income
   const chartData = useMemo(() => {
-    const { optimization_result } = optimizationResult;
-    const optimizedValues = orderBy(optimization_result, "key");
-    if (optimizedValues) {
+    if (optimizationResult) {
+      const { optimization_result } = optimizationResult;
+      const optimizedValues = orderBy(optimization_result, "key");
       const drivers = optimizedValues?.flatMap(
         (v) => v?.value?.optimization
       )?.[0];

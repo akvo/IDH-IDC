@@ -6,7 +6,10 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from db.crud_segment import get_segment_by_id
-from db.crud_question import get_question_by_case
+from db.crud_question import (
+    get_question_by_case,
+    get_cost_production_questions
+)
 from db.connection import get_session
 from models.case_commodity import CaseCommodityType
 
@@ -250,6 +253,12 @@ async def run_model(
 ):
     """Runs the optimization model for a given case and segment."""
 
+    # GENERATE list of COP question IDS
+    cop_questions = get_cost_production_questions(session=session)
+    flatten_cop_questions, _ = flatten_questions(cop_questions)
+    cop_qids = [f"-{key}" for key in flatten_cop_questions.keys()]
+    # EOL GENERATE list of COP question IDS
+
     segment = get_segment_by_id(
         session=session, id=segment_id
     ).serialize_with_answers
@@ -327,21 +336,60 @@ async def run_model(
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
-    # TODO :: handle check feasible < current, use the highest value as new_current_values
-    current_values = [(key, current) for key, current, _ in parameter_bounds]
-    # TODO :: recalculate current_income and target_p based on new_current_values
+    # REMAP CURRENT/FEASIBLE VALUE
+    # handle adjust current feasible value by check feasible < current
+    # and check by cost driver feasible > current
+    adjusted_current_values = []
+    adjusted_feasible_values = []
+    for key, current, feasible in parameter_bounds:
+        key_in_cop = any(val in key for val in cop_qids)
+        if key_in_cop and feasible > current:
+            adjusted_current_values.append((key, feasible))
+            adjusted_feasible_values.append((key, current))
+            continue
+        if not key_in_cop and feasible < current:
+            adjusted_current_values.append((key, feasible))
+            adjusted_feasible_values.append((key, current))
+            continue
+        adjusted_current_values.append((key, current))
+        adjusted_feasible_values.append((key, feasible))
+
+    # recalculate current value
+    adjusted_current_answers = {
+        f"current-{key}": value
+        for key, value in adjusted_current_values
+    }
+    adjusted_current_income, _ = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": adjusted_current_answers},
+        mode="current",
+    )
+
+    # recalculate current value
+    adjusted_feasible_answers = {
+        f"feasible-{key}": value
+        for key, value in adjusted_feasible_values
+    }
+    adjusted_feasible_income, _ = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": adjusted_feasible_answers},
+        mode="feasible",
+    )
+    # EOL REMAP CURRENT/FEASIBLE VALUE
 
     # loop optimize in percentages param
     optimization_result = []
     for i, percentage in enumerate(percentages):
-        # percentage = 0.5
+        # use adjusted income to calculate target_p
         target_p = (
-            current_income + (feasible_income - current_income) * percentage
+            adjusted_current_income + (
+                adjusted_feasible_income - adjusted_current_income
+            ) * percentage
         )
 
         result = optimize_income(
             parameter_bounds=parameter_bounds,
-            current_values=current_values,
+            current_values=adjusted_current_values,
             editable_indices=editable_indices,
             target_p=target_p,
             questions=questions,
@@ -379,13 +427,18 @@ async def run_model(
         value["target_p"] = target_p
         value["achieved_income"] = achieved_income
         value["optimization"] = results
-        optimization_result.append(
-            {"key": increase, "name": f"percentage_{increase}", "value": value}
-        )
+        optimization_result.append({
+            "key": increase,
+            "name": f"percentage_{increase}",
+            "value": value,
+            "percentage": percentage
+        })
 
     return {
         "target_income": segment.get("target", 0),
         "current_income": current_income,
         "feasible_income": feasible_income,
+        "adjusted_current_income": adjusted_current_income,
+        "adjusted_feasible_income": adjusted_feasible_income,
         "optimization_result": optimization_result,
     }
