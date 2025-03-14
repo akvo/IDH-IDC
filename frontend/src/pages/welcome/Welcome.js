@@ -288,7 +288,7 @@ const Welcome = () => {
               <Card className="floating-card-item case-card-wrapper">
                 <Row gutter={[12, 12]}>
                   <Col span={24} className="title">
-                    Case Overview
+                    <h3>Case Overview</h3>
                   </Col>
                   <Col span={24} className="description">
                     Create a case to go through the income driver assessment and
@@ -308,7 +308,7 @@ const Welcome = () => {
               <Card className="floating-card-item explore-studies-card-wrapper">
                 <Row gutter={[12, 12]}>
                   <Col span={24} className="title">
-                    Explore Studies
+                    <h3>Explore Studies</h3>
                   </Col>
                   <Col span={24} className="description">
                     Explore whether relevant data on the five income drivers is
@@ -328,7 +328,7 @@ const Welcome = () => {
               <Card className="floating-card-item lib-card-wrapper">
                 <Row gutter={[12, 12]}>
                   <Col span={24} className="title">
-                    Living income benchmarks
+                    <h3>Living income benchmarks</h3>
                   </Col>
                   <Col span={24} className="description">
                     To make the data entry process more informed and efficient,
