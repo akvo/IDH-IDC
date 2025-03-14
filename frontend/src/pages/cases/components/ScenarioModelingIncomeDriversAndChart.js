@@ -84,6 +84,7 @@ const Question = ({
             dropdownStyle={{
               width: "400px",
             }}
+            segment={segment}
           />
         </Form.Item>
       </Col>

@@ -23,6 +23,7 @@ import {
   BinningDriverForm,
   SegmentSelector,
   AdjustIncomeTarget,
+  OptimizeIncomeTarget,
 } from "../components";
 import { map, groupBy, isEqual, isEmpty } from "lodash";
 import { commodities } from "../../../store/static";
@@ -160,6 +161,7 @@ const AssessImpactMitigationStrategies = ({
     const focusCommodity = currentCase?.case_commodities?.find(
       (cm) => cm.commodity_type === "focus"
     );
+    const currencyUnit = currentCase?.currency || "";
     const segmentData = dashboardData.find(
       (segment) => segment.id === selectedSegment
     );
@@ -172,13 +174,16 @@ const AssessImpactMitigationStrategies = ({
       const unitName = currentQuestion.unit
         .split("/")
         .map((u) => u.trim())
-        .map((u) =>
-          u === "crop"
+        .map((u) => {
+          if (u === "currency") {
+            return currencyUnit;
+          }
+          return u === "crop"
             ? commodities
                 .find((c) => c.id === focusCommodity?.commodity)
                 ?.name?.toLowerCase() || ""
-            : focusCommodity?.[u]
-        )
+            : focusCommodity?.[u];
+        })
         .join(" / ");
       return {
         key: parseInt(i) - 1,
@@ -188,7 +193,6 @@ const AssessImpactMitigationStrategies = ({
         unitName: unitName,
       };
     });
-    const currencyUnit = focusCommodity["currency"];
     return [
       ...data,
       {
@@ -222,7 +226,12 @@ const AssessImpactMitigationStrategies = ({
         },
       },
     ];
-  }, [selectedSegment, dashboardData, currentCase?.case_commodities]);
+  }, [
+    selectedSegment,
+    dashboardData,
+    currentCase?.case_commodities,
+    currentCase?.currency,
+  ]);
 
   const binningValues = useMemo(() => {
     const allBining = Object.keys(sensitivityAnalysis.config);
@@ -311,7 +320,10 @@ const AssessImpactMitigationStrategies = ({
     );
     updateCaseVisualSensitivityAnalysisState({
       case: currentCase.id,
-      config: filteredValues,
+      config: {
+        ...sensitivityAnalysis?.config,
+        ...filteredValues,
+      },
     });
     form.setFieldsValue(filteredValues);
   };
@@ -410,6 +422,12 @@ const AssessImpactMitigationStrategies = ({
             </Col>
             {/* EOL Binning Form */}
 
+            {/* Adjust Income Target */}
+            <Col span={24}>
+              <AdjustIncomeTarget selectedSegment={selectedSegment} />
+            </Col>
+            {/* EOL Adjust Income Target */}
+
             {/* Sensitivity Analysis Chart */}
             <Col span={24}>
               {dashboardData.map((segment) =>
@@ -442,11 +460,11 @@ const AssessImpactMitigationStrategies = ({
       </Col>
       {/* EOL Sensitivity Analysis */}
 
-      {/* #3 Adjust Income Target */}
+      {/* #3 Optimize Income Target */}
       <Col span={24}>
-        <AdjustIncomeTarget selectedSegment={selectedSegment} />
+        <OptimizeIncomeTarget selectedSegment={selectedSegment} />
       </Col>
-      {/* EOL Adjust Income Target */}
+      {/* EOL Optimize Income Target */}
     </Row>
   );
 };

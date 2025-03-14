@@ -7,7 +7,6 @@ import {
   Space,
   Button,
   Select,
-  Switch,
   Modal,
   InputNumber,
 } from "antd";
@@ -17,7 +16,6 @@ import {
   determineDecimalRound,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import AllDriverTreeSelector from "./AllDriverTreeSelector";
 
 const AdjustIncomeTarget = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -101,7 +99,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
     setAdjustedValues((prev) => ({ ...prev, ...newValue }));
   };
 
-  const handleOnSaveAdjustIncomeTarget = () => {
+  const handleOnSaveAdjustIncomeTarget = ({ updatedValue = {} }) => {
     CaseVisualState.update((s) => ({
       ...s,
       sensitivityAnalysis: {
@@ -109,6 +107,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
         config: {
           ...s.sensitivityAnalysis.config,
           ...adjustedValues,
+          ...updatedValue,
         },
       },
     }));
@@ -126,27 +125,11 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
   return (
     <div>
       <Card className="card-section-wrapper adjust-income-target-wrapper">
-        <Row gutter={[20, 20]} align="middle">
-          <Col span={24}>
-            <div className="title">When do we reach the target?</div>
-          </Col>
+        <Row gutter={[20, 14]} align="middle">
           <Col span={12}>
-            <div className="description">
-              Based on the selected drivers that are open to change, we run an
-              optimization model to search for the minimum required changes in
-              order to reach the income target.
-            </div>
+            <div className="title">Adjust your income target</div>
           </Col>
-          <Col span={12}>
-            <Space direction="vertical">
-              <div className="label">
-                Select the (sub)drivers that you want to include in further
-                analysis:
-              </div>
-              <AllDriverTreeSelector multiple={true} />
-            </Space>
-          </Col>
-          <Col span={12}>
+          <Col span={12} align="end">
             <Button
               className="button-ghost-white"
               onClick={() => setShowAdjustIncomeModal(true)}
@@ -154,11 +137,16 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
               Adjust your income target
             </Button>
           </Col>
-          <Col span={12}>
-            <Space align="center">
-              <Switch />
-              <div className="label">Stay within feasible ranges?</div>
-            </Space>
+          <Col span={24}>
+            <div className="description">
+              The results in the sensitivity analysis depend significantly on
+              the income target value set. When conducting the sensitivity
+              analysis, adjusting the income target is recommended to observe
+              how the results vary, providing better insight into the
+              sensitivity of various income drivers in reaching the income
+              target. If you do not adjust the target, we will use the current
+              target value for the calculations.
+            </div>
           </Col>
         </Row>
       </Card>
