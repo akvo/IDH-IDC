@@ -246,7 +246,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <div>
                 <AllDriverTreeSelector
                   multiple={true}
-                  maxLength={3}
+                  maxCount={3}
                   style={{ width: "45%" }}
                   dropdownStyle={{ width: "60%" }}
                   onChange={handleChangeSelectedDrivers}

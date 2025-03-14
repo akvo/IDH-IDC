@@ -85,12 +85,13 @@ const generateDriverOptions = ({
 
 const AllDriverTreeSelector = ({
   onChange,
-  value = null,
+  value = [],
   multiple = false,
   maxLength = null,
   segment = {},
   dropdownStyle = {},
   style = {},
+  maxCount = null,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
@@ -181,21 +182,33 @@ const AllDriverTreeSelector = ({
       allowClear
       style={{ width: "100%", ...style }}
       dropdownStyle={{
-        maxHeight: 400,
+        maxHeight: 500,
         overflow: "auto",
         ...dropdownStyle,
       }}
       placeholder="Select driver"
       onChange={(value) => {
         if (onChange) {
-          onChange(value);
+          if (multiple && maxCount && value?.length <= maxCount) {
+            onChange(value);
+          }
+          if (multiple && !maxCount) {
+            onChange(value);
+          }
+          if (!multiple) {
+            onChange(value);
+          }
         }
       }}
       treeData={incomeDriverOptions}
       disabled={!enableEditCase}
+      treeDefaultExpandedKeys={[
+        ...incomeDriverOptions.map((item) => item.value),
+        ...value,
+      ]} // Expands only first-level nodes
       treeNodeFilterProp="label"
       multiple={multiple}
-      value={value || []}
+      value={value}
       maxLength={maxLength}
     />
   );
