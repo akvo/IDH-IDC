@@ -97,7 +97,7 @@ const Assessment = () => {
           </li>
         </ul>
         <div className="assessment-form-header">
-          <h1>Find best Procurement Practices</h1>
+          <h1>Find good Procurement Practices</h1>
           <p>
             Answer five quick questions about your business and discover the
             procurement practices that fit your situation and help you achieve
@@ -198,7 +198,7 @@ const Assessment = () => {
             <span>
               <img src={EmptyResultsIcon} alt="Empty Results" />
             </span>
-            <h3>Complete the questions to reveal your best practises</h3>
+            <h3>Complete the questions to reveal your good practises</h3>
           </div>
         </div>
       )}
