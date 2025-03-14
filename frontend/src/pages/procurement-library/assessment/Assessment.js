@@ -99,9 +99,13 @@ const Assessment = () => {
         <div className="assessment-form-header">
           <h1>Find good Procurement Practices</h1>
           <p>
-            Answer five quick questions about your business and discover the
-            procurement practices that fit your situation and help you achieve
-            your desired impact.
+            Answer five simple questions about your business context to discover
+            sustainable procurement practices tailored to your specific needs
+            and impact goals. The shortlisting method uses weighted scoring
+            based on your selected answers. The results are indicative and may
+            vary depending on your actual context. This tool is intended as a
+            guide to explore a range of potential practices rather than a
+            prescriptive solution.
           </p>
           <Button type="primary" onClick={handleOnClear}>
             Clear results

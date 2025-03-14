@@ -76,6 +76,8 @@
         margin-block-end: 12px;
       }
       p {
+        width: 100%;
+        max-width: 556px;
         color: $primary-color;
         font-family: "Tablet Gothic";
         font-size: 16px;
