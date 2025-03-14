@@ -48,10 +48,10 @@ export const PROCUREMENT_TABS = [
     key: "risks_n_trade_offs",
     label: "Risks and Trade-offs",
   },
-  {
-    key: "source_or_evidence",
-    label: "Source or Evidence",
-  },
+  // {
+  //   key: "source_or_evidence",
+  //   label: "Source or Evidence",
+  // },
 ];
 
 export const PROCUREMENT_SCALE = [
