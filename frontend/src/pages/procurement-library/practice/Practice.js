@@ -24,7 +24,7 @@ const Practice = () => {
 
   const [primaryDesc, secondaryDesc] =
     practice?.intervention_definition?.split(
-      /<b>Additional Details:<\/b>|<p>Additional details:<\/p>|<p>Additional Detail:<\/p>/
+      /<h3>(?:Additional Details:|Process:|Details of the process:|Additional details:|Additional Detail:)<\/h3>/
     ) || [];
   const isEnv =
     practice?.scores?.find(
@@ -117,7 +117,8 @@ const Practice = () => {
                   dangerouslySetInnerHTML={{
                     __html: primaryDesc
                       ?.replace("<h3>Definition</h3>", "")
-                      ?.replace("<p>Defintion:</p>", ""),
+                      ?.replace("<h4>Definition</h4>", "")
+                      ?.replace("<h3>Defintion:</h3>", ""),
                   }}
                 ></div>
               </div>

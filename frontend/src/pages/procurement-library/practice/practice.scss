@@ -159,6 +159,19 @@
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
         background-color: #fff;
+        h3 {
+          margin-block-end: 6px;
+        }
+        h4 {
+          font-family: "RocGrotesk" !important;
+          font-size: 18px;
+          margin-block-start: 0;
+          margin-block-end: 0;
+        }
+        h3,
+        h4 {
+          color: $primary-color;
+        }
         .practice-secondary-desc {
           color: #454545;
           font-size: 16px;
@@ -177,9 +190,6 @@
             overflow: hidden;
             white-space: normal;
             word-break: break-word;
-            h3 {
-              font-family: "RocGrotesk" !important;
-            }
           }
           .ant-tabs-left {
             & > .ant-tabs-content-holder {
@@ -237,10 +247,6 @@
       }
     }
   }
-}
-
-#root h1 {
-  font-family: "RocGroteskBold" !important;
 }
 
 @media (max-width: 1280px) {
