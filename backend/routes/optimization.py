@@ -285,12 +285,12 @@ async def run_model(
         key = f"{case_commodity_id}-{qid}"
         current_value = segment_answers.get(f"current-{key}", 0) or 0
         feasible_value = segment_answers.get(f"feasible-{key}", 0) or 0
-        # swap parameter bound value if feasible < current
         if feasible_value < current_value:
+            # swap parameter bound value if feasible < current
             parameter_bounds.append((key, feasible_value, current_value))
-            continue
-        # normal current/feasible value
-        parameter_bounds.append((key, current_value, feasible_value))
+        else:
+            # normal current/feasible value
+            parameter_bounds.append((key, current_value, feasible_value))
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
