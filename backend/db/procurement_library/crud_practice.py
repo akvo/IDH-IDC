@@ -57,6 +57,8 @@ def get_paginated_practices(
     practices = practices.order_by(Practice.id.asc()).offset(skip).limit(limit).all()
 
     data = [practice.to_list_dict for practice in practices]
+    if len(data) < limit:
+        count = len(data)
     return PaginatedPracticeData(count=count, data=data)
 
 

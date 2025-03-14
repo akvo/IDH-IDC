@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  Empty,
+  Divider,
   Form,
   Input,
-  Pagination,
+  List,
   Popover,
   Select,
   Space,
@@ -12,13 +12,14 @@ import {
   Tooltip,
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { ArrowRight, SearchIcon } from "../../../lib/icon";
 import { api } from "../../../lib";
 import { ImpactAreaIcons, ProcurementBadge } from "../components";
 import "./intervention-library.scss";
 import { IMPACT_AREA_OPTIONS } from "../config";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 12;
 const { useForm } = Form;
 
 const InterventionLibrary = () => {
@@ -26,7 +27,6 @@ const InterventionLibrary = () => {
   const [page, setPage] = useState(1);
   const [practices, setPractices] = useState([]);
   const [total, setTotal] = useState(0);
-  const [totalPage, setTotalPage] = useState(0);
   const [procurementProcesses, setProcurementProcesses] = useState([]);
   const [filter, setFilter] = useState({});
 
@@ -68,11 +68,11 @@ const InterventionLibrary = () => {
 
         apiURL += resetPage ? "&page=1" : `&page=${page}`;
         const { data: apiData } = await api.get(apiURL);
-        const { current, total: _total, data, total_page } = apiData;
-        setPractices(data);
+        const { current, total: _total, data } = apiData;
+
+        setPractices((prev) => (page === 1 ? data : [...prev, ...data]));
         setPage(current);
         setTotal(_total);
-        setTotalPage(total_page);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -197,106 +197,129 @@ const InterventionLibrary = () => {
             </button>
           </Form>
         </div>
-        <div className="intervention-library-content-body">
-          {practices?.length === 0 &&
-            !loading &&
-            Object.keys(filter).length && (
-              <div className="intervention-library-no-data">
-                <Empty description="No results found. Please adjust your filters and try again." />
-              </div>
-            )}
-          <Spin spinning={loading}>
-            {practices?.map((practice) => (
-              <div key={practice.id} className="intervention-card">
-                <div className="intervention-card-header">
-                  <div className="intervention-card-categories">
-                    {practice?.procurement_processes
-                      ?.slice(0, 1)
-                      ?.map((proc) => (
-                        <ProcurementBadge
-                          key={proc?.id}
-                          id={proc?.id}
-                          text={proc?.label}
-                        />
-                      ))}
-                    {practice?.procurement_processes?.length > 1 && (
-                      <Popover
-                        placement="bottom"
-                        content={
-                          <ul
-                            style={{
-                              paddingInlineStart: 0,
-                              paddingBlockStart: 0,
-                              marginBlockStart: 0,
-                              marginBlockEnd: 0,
-                              listStyle: "none",
-                            }}
-                          >
-                            {practice.procurement_processes
-                              .slice(1, practice.procurement_processes.length)
-                              .map((proc) => (
-                                <li key={proc?.id} style={{ marginBottom: 6 }}>
-                                  <ProcurementBadge
-                                    id={proc?.id}
-                                    text={proc?.label}
-                                  />
-                                </li>
-                              ))}
-                          </ul>
-                        }
-                      >
-                        <Tag>
-                          {`+${practice?.procurement_processes?.length - 1}`}
-                        </Tag>
-                      </Popover>
-                    )}
-                  </div>
-                  <ImpactAreaIcons
-                    isIncome={practice?.is_income}
-                    isEnv={practice?.is_environmental}
-                  />
-                </div>
-                <div
-                  className="intervention-card-description"
-                  role="button"
-                  onClick={() => {
-                    navigate(
-                      `/procurement-library/intervention-library/${practice.id}`
-                    );
-                  }}
-                >
-                  <strong className="font-tablet-gothic">
-                    {practice.label}
-                  </strong>
-                </div>
-                <div className="intervention-card-footer">
-                  <Link
-                    to={`/procurement-library/intervention-library/${practice.id}`}
-                  >
-                    <Space size="small">
-                      <span>View</span>
-                      <span>
-                        <ArrowRight />
-                      </span>
-                    </Space>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </Spin>
-        </div>
-        <div className="intervention-library-content-footer">
-          {totalPage > 1 && (
-            <Pagination
-              pageSize={PAGE_SIZE}
-              current={page}
-              total={total}
-              onChange={(p) => {
-                setLoading(true);
-                setPage(p);
+        <div id="scrollableDiv" className="intervention-library-content-body">
+          <InfiniteScroll
+            dataLength={practices.length}
+            next={() => {
+              setLoading(true);
+              setPage(page + 1);
+              setTimeout(() => {
+                fetchData();
+              }, 1000);
+            }}
+            hasMore={practices.length < total}
+            loader={
+              <Divider plain>
+                <Spin spinning />
+              </Divider>
+            }
+            endMessage={
+              <Divider plain>
+                <em>No more results available.</em>
+              </Divider>
+            }
+            scrollableTarget="scrollableDiv"
+          >
+            <List
+              grid={{
+                gutter: 16,
+                xs: 1,
+                sm: 2,
+                md: 3,
+                lg: 3,
+                xl: 4,
+                xxl: 4,
               }}
+              dataSource={practices}
+              renderItem={(practice) => (
+                <List.Item key={practice.id}>
+                  <div className="intervention-card">
+                    <div className="intervention-card-header">
+                      <div className="intervention-card-categories">
+                        {practice?.procurement_processes
+                          ?.slice(0, 1)
+                          ?.map((proc) => (
+                            <ProcurementBadge
+                              key={proc?.id}
+                              id={proc?.id}
+                              text={proc?.label}
+                            />
+                          ))}
+                        {practice?.procurement_processes?.length > 1 && (
+                          <Popover
+                            placement="bottom"
+                            content={
+                              <ul
+                                style={{
+                                  paddingInlineStart: 0,
+                                  paddingBlockStart: 0,
+                                  marginBlockStart: 0,
+                                  marginBlockEnd: 0,
+                                  listStyle: "none",
+                                }}
+                              >
+                                {practice.procurement_processes
+                                  .slice(
+                                    1,
+                                    practice.procurement_processes.length
+                                  )
+                                  .map((proc) => (
+                                    <li
+                                      key={proc?.id}
+                                      style={{ marginBottom: 6 }}
+                                    >
+                                      <ProcurementBadge
+                                        id={proc?.id}
+                                        text={proc?.label}
+                                      />
+                                    </li>
+                                  ))}
+                              </ul>
+                            }
+                          >
+                            <Tag>
+                              {`+${
+                                practice?.procurement_processes?.length - 1
+                              }`}
+                            </Tag>
+                          </Popover>
+                        )}
+                      </div>
+                      <ImpactAreaIcons
+                        isIncome={practice?.is_income}
+                        isEnv={practice?.is_environmental}
+                      />
+                    </div>
+                    <div
+                      className="intervention-card-description"
+                      role="button"
+                      onClick={() => {
+                        navigate(
+                          `/procurement-library/intervention-library/${practice.id}`
+                        );
+                      }}
+                    >
+                      <strong className="font-tablet-gothic">
+                        {practice.label}
+                      </strong>
+                    </div>
+                    <div className="intervention-card-footer">
+                      <Link
+                        to={`/procurement-library/intervention-library/${practice.id}`}
+                      >
+                        <Space size="small">
+                          <span>View</span>
+                          <span>
+                            <ArrowRight />
+                          </span>
+                        </Space>
+                      </Link>
+                    </div>
+                  </div>
+                </List.Item>
+              )}
             />
-          )}
+          </InfiniteScroll>
         </div>
       </div>
     </div>
