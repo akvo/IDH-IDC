@@ -308,6 +308,11 @@
       font-style: normal;
       font-weight: 400;
       line-height: 22px;
+
+      a {
+        color: #000;
+        font-weight: 600;
+      }
     }
   }
 
@@ -421,7 +426,7 @@
 
     .title {
       font-family: "RocGrotesk";
-      font-size: 22px;
+      font-size: 20px;
       font-style: normal;
       font-weight: 700;
       line-height: 32px;
@@ -429,7 +434,7 @@
 
     .description {
       font-family: "TabletGothic";
-      font-size: 15px;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
       line-height: 157.15%;
@@ -470,9 +475,11 @@
   }
 
   .optimize-income-target-wrapper {
+    padding: 10px 0;
+
     .title {
       font-family: "RocGrotesk";
-      font-size: 22px;
+      font-size: 20px;
       font-style: normal;
       font-weight: 700;
       line-height: 32px;
@@ -480,7 +487,7 @@
 
     .description {
       font-family: "TabletGothic";
-      font-size: 15px;
+      font-size: 14px;
       font-style: normal;
       font-weight: 400;
       line-height: 157.15%;
@@ -505,7 +512,6 @@
       background: transparent;
       box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
       font-family: "RocGrotesk";
-      font-size: 14px;
       font-style: normal;
       font-weight: 700;
       line-height: 20px;
@@ -606,7 +612,8 @@
   }
 }
 
-.adjust-income-target-modal-container {
+.adjust-income-target-modal-container,
+.about-model-modal-container {
   .ant-modal-title {
     font-family: "RocGrotesk";
     font-size: 24px;
@@ -619,9 +626,11 @@
     padding: 20px 0;
   }
 
-  .description {
+  .description,
+  p,
+  li {
     font-family: "TabletGothic";
-    font-size: 16px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: 28px;
@@ -641,7 +650,7 @@
       .number {
         color: #01625f;
         font-family: "RocGrotesk";
-        font-size: 16px;
+        font-size: 14px;
         font-style: normal;
         font-weight: 700;
         line-height: 23.056px;
@@ -654,7 +663,7 @@
       .label {
         color: #01625f;
         font-family: "TabletGothic";
-        font-size: 18px;
+        font-size: 16px;
         font-style: normal;
         font-weight: 700;
         line-height: 157.15%;
@@ -675,7 +684,7 @@
     .adjusted-target-wrapper {
       color: #01625f;
       font-family: "RocGrotesk";
-      font-size: 15px;
+      font-size: 14px;
       font-style: normal;
       font-weight: 700;
       line-height: 157.15%;

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef } from "react";
-import { Button, Card, Col, InputNumber, Row, Space } from "antd";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import { Button, Card, Col, InputNumber, Row, Space, Modal } from "antd";
+import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
@@ -48,6 +48,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const { selectedDrivers, increaseValues, optimizationResult } =
     optimizationModelState;
 
+  const [showModelDetail, setShowModelDetail] = useState(false);
   const [refreshChart, setRefreshChart] = useState(true);
   const [showLabel, setShowLabel] = useState(false);
   const chartRef = useRef(null);
@@ -406,13 +407,69 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   ranges.
                   <br />
                   <br />
-                  For more details about the model, click here.
+                  For more details about the model,{" "}
+                  <a onClick={() => setShowModelDetail(true)}>click here</a>.
                 </div>
               </Space>
             </Col>
           </Row>
         </Card>
       </Col>
+
+      <Modal
+        title="About the model"
+        open={showModelDetail}
+        centered
+        width={650}
+        onCancel={() => setShowModelDetail(false)}
+        className="about-model-modal-container"
+        footer={() => (
+          <Button
+            ghost
+            type="primary"
+            onClick={() => setShowModelDetail(false)}
+          >
+            <ArrowLeftOutlined /> Back
+          </Button>
+        )}
+      >
+        <>
+          <p>
+            This analysis compares current and optimized values of key income
+            drivers using an optimization model. The model applies a
+            mathematical approach to maximize income by adjusting selected
+            driver values while ensuring changes stay within feasible ranges.
+          </p>
+          <p>
+            <b>Key considerations</b>
+          </p>
+          <ul>
+            <li>
+              Constraints: Each driver has defined boundaries (current and
+              feasible levels inserted on the input page). The model ensures
+              that the income using the optimized income drivers equals the
+              desired income level.
+            </li>
+            <li>
+              Editable Drivers: Only selected income drivers are changed during
+              optimization. The remaining income drivers remain at their current
+              levels.
+            </li>
+            <li>
+              Penalty Factor: The model includes a penalty system to avoid
+              extreme deviations from the current values, ensuring the changes
+              are realistic and practical.
+            </li>
+          </ul>
+          <p>
+            Please note that optimization is a guide, not a certainty: This
+            optimization serves as a tool to explore income improvement
+            strategies, but it does not provide a definitive solution. When
+            making decisions, consider external factors and external influences
+            that the model cannot capture.
+          </p>
+        </>
+      </Modal>
     </Row>
   );
 };
