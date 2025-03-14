@@ -37,7 +37,7 @@ const unitName = ({ currentCase, question, group }) => {
 };
 
 const OptimizeIncomeTarget = ({ selectedSegment }) => {
-  const currentCase = CurrentCaseState.useState((s) => s);
+  const currentCaseState = CurrentCaseState.useState((s) => s);
   const questionGroups = CaseVisualState.useState((s) => s.questionGroups);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
   const sensitivityAnalysis = CaseVisualState.useState(
@@ -65,7 +65,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     }
   */
 
-  const currency = currentCase?.currency || "";
+  const currency = currentCaseState?.currency || "";
 
   const updateOptimizationModelState = (updatedValue) => {
     CaseVisualState.update((s) => ({
@@ -82,6 +82,10 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       },
     }));
   };
+
+  const currentSegment = useMemo(() => {
+    return currentCaseState?.segments?.find((s) => s.id === selectedSegment);
+  }, [selectedSegment, currentCaseState]);
 
   const currentDashboardData = useMemo(() => {
     return dashboardData.find((d) => d.id === selectedSegment);
@@ -123,7 +127,10 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       editable_indices: selectedDrivers,
     };
     api
-      .post(`optimize/run-model/${currentCase.id}/${selectedSegment}`, payload)
+      .post(
+        `optimize/run-model/${currentCaseState.id}/${selectedSegment}`,
+        payload
+      )
       .then((res) => {
         const { data } = res;
         updateOptimizationModelState({
@@ -155,11 +162,11 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
         const question = flattenedQuestionGroups.find(
           (q) => q.id === parseInt(qid)
         );
-        const caseCommodity = currentCase?.case_commodities?.find(
+        const caseCommodity = currentCaseState?.case_commodities?.find(
           (c) => c.id === parseInt(caseCommodityId)
         );
         const unit = unitName({
-          currentCase,
+          currentCaseState,
           question: question,
           group: caseCommodity,
         });
@@ -209,7 +216,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     setRefreshChart(false);
     return [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshChart, currentCase]);
+  }, [refreshChart, currentCaseState]);
 
   return (
     <Row gutter={[24, 24]}>
@@ -244,6 +251,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   dropdownStyle={{ width: "60%" }}
                   onChange={handleChangeSelectedDrivers}
                   value={selectedDrivers}
+                  segment={currentSegment}
                 />
               </div>
             </Col>

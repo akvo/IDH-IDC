@@ -220,6 +220,7 @@ const Case = () => {
           });
           if (cc.commodity_type === "focus") {
             incomeDataDriversTmp.push({
+              type: "primary",
               groupName: "Primary Commodity",
               questionGroups: [{ ...cc, ...tmp }],
             });
@@ -230,6 +231,7 @@ const Case = () => {
         });
         // add diversified group
         incomeDataDriversTmp.push({
+          type: "diversified",
           groupName: "Diversified Income",
           questionGroups: diversifiedGroupTmp,
         });
