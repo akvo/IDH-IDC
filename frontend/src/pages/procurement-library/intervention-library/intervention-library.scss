@@ -8,7 +8,7 @@
   .intervention-library-header ul {
     list-style: none;
     padding-inline-start: 0;
-    margin-block-start: 0;
+    margin-block-start: 8px;
     li {
       display: inline-block;
       color: #8a8a8a;
@@ -52,7 +52,7 @@
         margin-block-start: 0;
         margin-block-end: 0;
         color: $primary-color;
-        font-size: 34px;
+        font-size: 34px !important;
         font-style: normal;
         font-weight: 700;
         line-height: 42px; /* 123.529% */

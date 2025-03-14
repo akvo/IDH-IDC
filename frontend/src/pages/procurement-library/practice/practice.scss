@@ -121,7 +121,7 @@
 
           h1 {
             color: $primary-color;
-            font-size: 32px;
+            font-size: 32px !important;
             font-style: normal;
             font-weight: 700;
             line-height: 42px; /* 131.25% */
@@ -154,6 +154,7 @@
       }
       .practice-details-card {
         width: 100%;
+        min-height: 590px;
         padding: 20px;
         border-top-left-radius: 20px;
         border-top-right-radius: 20px;
@@ -176,6 +177,9 @@
             overflow: hidden;
             white-space: normal;
             word-break: break-word;
+            h3 {
+              font-family: "RocGrotesk" !important;
+            }
           }
           .ant-tabs-left {
             & > .ant-tabs-content-holder {
@@ -233,6 +237,10 @@
       }
     }
   }
+}
+
+#root h1 {
+  font-family: "RocGroteskBold" !important;
 }
 
 @media (max-width: 1280px) {

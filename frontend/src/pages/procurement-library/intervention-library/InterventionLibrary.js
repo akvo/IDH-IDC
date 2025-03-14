@@ -215,7 +215,7 @@ const InterventionLibrary = () => {
             }
             endMessage={
               <Divider plain>
-                <em>No more results available.</em>
+                {!loading && <em>No more results available.</em>}
               </Divider>
             }
             scrollableTarget="scrollableDiv"
@@ -231,6 +231,7 @@ const InterventionLibrary = () => {
                 xxl: 4,
               }}
               dataSource={practices}
+              loading={loading}
               renderItem={(practice) => (
                 <List.Item key={practice.id}>
                   <div className="intervention-card">
