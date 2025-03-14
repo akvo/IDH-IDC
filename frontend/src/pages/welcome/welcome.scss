@@ -47,7 +47,6 @@
 
     .floating-card-item {
       border-radius: 20px;
-      border: 1px solid #ddd;
 
       .ant-card-body {
         padding: 10px 20px;
@@ -58,12 +57,10 @@
 
       .title {
         color: #01625f;
-        font-family: "RocGrotesk";
-        font-size: 16px;
-        font-style: normal;
-        font-weight: 700;
         line-height: 32px;
-        letter-spacing: -0.36px;
+        h3 {
+          margin: 0;
+        }
       }
 
       .description {
