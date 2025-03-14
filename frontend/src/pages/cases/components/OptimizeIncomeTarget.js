@@ -355,14 +355,18 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <Button className="button-clear-optimize-result">
                 Clear results
               </Button>
-              <Button className="button-run-the-model" onClick={handleRunModel}>
+              <Button
+                className="button-run-the-model"
+                onClick={handleRunModel}
+                disabled={!selectedDrivers?.length}
+              >
                 Run the model <ArrowRightOutlined />
               </Button>
             </Col>
           </Row>
         </Card>
       </Col>
-      <Col span={24}>
+      <Col span={24} style={{ display: chartData?.length ? "" : "none" }}>
         <Card className="card-visual-wrapper">
           <Row gutter={[20, 20]} align="middle">
             <Col span={18}>
