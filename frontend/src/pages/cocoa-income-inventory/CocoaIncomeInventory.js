@@ -159,7 +159,9 @@ const CocoaIncomeInventory = () => {
             <div key={`contact-card-item-${i}`} className="contact-card-item">
               <Image src={ContactCardEmailIcon} preview={false} width={30} />
               <div className="name">{item.name}</div>
-              <div className="org">{item.organisation}</div>
+              <div className={`org ${!item.organisation ? "hidden" : ""}`}>
+                {item.organisation ? item.organisation : "&nbsp;"}
+              </div>
               <div className="email">
                 <a href={`mailto:${item.email}`}>{item.email}</a>
               </div>
