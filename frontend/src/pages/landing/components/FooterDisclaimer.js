@@ -78,7 +78,7 @@ const ciiDisclaimerText = (handleSecurityClick) => (
   </>
 );
 
-const procurementDisclaimerText = (handleSecurityClick) => (
+const procurementDisclaimerText = () => (
   <>
     <p data-testid="disclaimer-section-description">
       Although every effort has been made to ensure that the content of this
@@ -95,11 +95,7 @@ const procurementDisclaimerText = (handleSecurityClick) => (
     </p>
     <p data-testid="disclaimer-section-description">
       For more information or for sharing your experience please contact{" "}
-      <a
-        href="mailto:birch@idhtrade.org"
-        onClick={handleSecurityClick}
-        style={{ color: "#fff" }}
-      >
+      <a href="mailto:birch@idhtrade.org" style={{ color: "#fff" }}>
         Mark Birch
       </a>
       , Program Director – Procurement and Living Income.
@@ -135,8 +131,7 @@ const FooterDisclaimer = ({
         {disclaimerText === "default" &&
           defaultDisclaimerText(handleSecurityClick)}
         {disclaimerText === "cii" && ciiDisclaimerText(handleSecurityClick)}
-        {disclaimerText === "procurement" &&
-          procurementDisclaimerText(handleSecurityClick)}
+        {disclaimerText === "procurement" && procurementDisclaimerText()}
       </Col>
       {showPageFooter && (
         <Col span={24} className="footer-wrapper">
