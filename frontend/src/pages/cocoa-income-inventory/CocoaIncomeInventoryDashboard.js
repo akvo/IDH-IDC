@@ -25,12 +25,7 @@ const CocoaIncomeInventoryDashboard = () => {
           >
             <ArrowLeftOutlined style={{ fontSize: 12 }} /> Back
           </Button>
-          <Button
-            className="button-yellow-fill"
-            onClick={() => {
-              navigate("/cocoa-income-inventory");
-            }}
-          >
+          <Button className="button-yellow-fill">
             Methodology <DownloadOutlined style={{ fontSize: 12 }} />
           </Button>
         </div>

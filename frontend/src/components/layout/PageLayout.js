@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Layout, Row, Col, Space, Image } from "antd";
+import { Layout, Row, Col, Space, Image, Menu } from "antd";
 import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -11,11 +11,107 @@ const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const pagesWithNoHeader = ["/login", "/register"];
 const { Header, Content } = Layout;
 
+// const procurementLibraryMenu = {
+//   testid: "nav-menu-procurement-library",
+//   name: "Procurement Library",
+//   path: "/procurement-library",
+//   role: allUserRole,
+// };
+// const cocoaIncomeInventoryMenu = {
+//   testid: "nav-menu-cocoa-income-inventory",
+//   name: "Cocoa Income Inventory",
+//   path: "/cocoa-income-inventory",
+//   role: allUserRole,
+// };
+
 const PageHeader = ({ isLoggedIn, signOut }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
+
+  const menuList = [
+    {
+      testid: "nav-menu-cases",
+      label: "Cases Overview",
+      key: "/cases",
+      role: allUserRole,
+      isPublic: false,
+    },
+    {
+      testid: "nav-menu-explorers-dropdown",
+      label: "Explorers",
+      key: "nav-menu-explorers-dropdown",
+      isInternalUser: true,
+      role: adminRole,
+      isPublic: false,
+      children: [
+        {
+          testid: "nav-menu-explore-studies",
+          label: "Explore other studies",
+          key: "/explore-studies",
+          isInternalUser: true,
+          role: adminRole,
+        },
+      ],
+    },
+    {
+      testid: "nav-menu-tools-and-resources",
+      label: "Tools & Resources",
+      key: "/tools-and-resources",
+      isPublic: true,
+      role: allUserRole,
+    },
+    {
+      testid: "nav-menu-admin",
+      label: "Admin",
+      key: "/admin/users",
+      isPublic: false,
+      role: adminRole,
+    },
+    {
+      testid: "nav-menu-faq",
+      label: "FAQ",
+      key: "/faq",
+      isPublic: true,
+      role: allUserRole,
+    },
+    {
+      testid: "nav-menu-login",
+      label: <Link className="nav-sign-in"> Sign in</Link>,
+      key: "/login",
+      isPublic: true,
+      role: [],
+    },
+    {
+      testid: "nav-menu-logout",
+      label: (
+        <Link
+          className="nav-sign-in"
+          onClick={() => {
+            signOut();
+            setLoading(true);
+            setTimeout(() => {
+              setLoading(false);
+              navigate("/");
+            }, 300);
+          }}
+        >
+          {loading ? (
+            <Space>
+              <LoadingOutlined />
+              Sign out
+            </Space>
+          ) : (
+            "Sign out"
+          )}
+        </Link>
+      ),
+      key: "nav-menut-logout",
+      isPublic: false,
+      role: allUserRole,
+    },
+  ];
 
   // menu without loggin
   const generalMenus = useMemo(() => {
@@ -87,6 +183,23 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     return values;
   }, [userRole, isInternalUser, generalMenus]);
 
+  const menuItems = useMemo(() => {
+    const items = menuList.filter((item) => {
+      console.log(item, userRole);
+      if (!userRole && !isLoggedIn) {
+        return item.isPublic;
+      }
+      if (userRole && isLoggedIn) {
+        if (item?.isInternalUser) {
+          return item?.role?.includes(userRole) && isInternalUser;
+        }
+        return item?.role?.includes(userRole);
+      }
+      return false;
+    });
+    return items;
+  }, [userRole, isInternalUser]);
+
   return (
     <Header
       testid="layout-header"
@@ -109,9 +222,25 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
             />
           </Link>
         </Col>
-        <Col span={21} align="end" testid="nav-container">
-          <Space size={12} className="navigation-container">
-            {/* <Link to={isLoggedIn ? "/welcome" : "/"}>About IDC</Link> */}
+        <Col
+          span={21}
+          align="end"
+          testid="nav-container"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Menu
+            onClick={({ key }) => navigate(key)}
+            mode="horizontal"
+            items={menuItems}
+            className="navigation-container"
+          />
+          {/* EOL Login button */}
+          {/* TODO:: DELETE THIS */}
+          {/* <Space size={12} className="navigation-container">
             {isLoggedIn
               ? authMenus
                   .filter((x) => x.role.includes(userRole))
@@ -160,7 +289,8 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
                 )}
               </Link>
             )}
-          </Space>
+          </Space> */}
+          {/* EOL OF TODO:: */}
         </Col>
       </Row>
     </Header>

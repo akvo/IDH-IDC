@@ -12,12 +12,12 @@
 
   h2 {
     font-family: "RocGrotesk" !important;
-    font-size: 22px !important;
+    font-size: 22px;
   }
 
   h3 {
     font-family: "RocGrotesk" !important;
-    font-size: 20px !important;
+    font-size: 20px;
   }
 
   h4,
@@ -136,8 +136,22 @@
 
     .navigation-container {
       margin-left: $default-padding-size;
-      align-self: flex-end;
-      float: right;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      width: 100%;
+
+      &.ant-menu-horizontal {
+        border: none;
+
+        li {
+          font-family: "RocGrotesk";
+          font-size: 14px;
+          color: $primary-color;
+          font-weight: 700;
+        }
+      }
+
       a {
         color: $primary-color;
         font-weight: 600;
@@ -147,7 +161,7 @@
         background-color: $primary-color;
         color: #ffffff;
         padding: 10px 14px;
-        border-radius: 100px;
+        border-radius: 40px;
         font-size: 14px !important;
         font-weight: 600;
       }
@@ -440,10 +454,10 @@
           color: #000 !important;
           text-align: left !important;
           font-family: "RocGrotesk";
-          font-size: 16px;
+          font-size: 16px !important;
           font-style: normal;
           font-weight: 700;
-          line-height: 26px;
+          line-height: 28px;
         }
 
         p {
