@@ -28,7 +28,10 @@ const CocoaIncomeInventoryDashboard = () => {
           <Button
             className="button-yellow-fill"
             onClick={() => {
-              navigate("/cocoa-income-inventory");
+              window.open(
+                "/files/methodology-cocoa-income-inventory.pdf",
+                "_blank"
+              );
             }}
           >
             Methodology <DownloadOutlined style={{ fontSize: 12 }} />
