@@ -11,19 +11,6 @@ const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const pagesWithNoHeader = ["/login", "/register"];
 const { Header, Content } = Layout;
 
-// const procurementLibraryMenu = {
-//   testid: "nav-menu-procurement-library",
-//   name: "Procurement Library",
-//   path: "/procurement-library",
-//   role: allUserRole,
-// };
-// const cocoaIncomeInventoryMenu = {
-//   testid: "nav-menu-cocoa-income-inventory",
-//   name: "Cocoa Income Inventory",
-//   path: "/cocoa-income-inventory",
-//   role: allUserRole,
-// };
-
 const PageHeader = ({ isLoggedIn, signOut }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -59,6 +46,20 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
             role: adminRole,
           },
         ],
+      },
+      {
+        testid: "nav-menu-procurement-library",
+        label: "Procurement Library",
+        key: "/procurement-library",
+        isPublic: true,
+        role: [],
+      },
+      {
+        testid: "nav-menu-cocoa-income-inventory",
+        label: "Cocoa Income Inventory",
+        key: "/cocoa-income-inventory",
+        isPublic: true,
+        role: [],
       },
       {
         testid: "nav-menu-tools-and-resources",
