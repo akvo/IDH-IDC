@@ -3,7 +3,7 @@ import { Layout, Row, Col, Space, Image, Menu } from "antd";
 import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined, DownOutlined } from "@ant-design/icons";
 import Logo from "../../assets/images/logo.png";
 import { adminRole, allUserRole } from "../../store/static";
 
@@ -40,7 +40,11 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     },
     {
       testid: "nav-menu-explorers-dropdown",
-      label: "Explorers",
+      label: (
+        <>
+          Explorers <DownOutlined />
+        </>
+      ),
       key: "nav-menu-explorers-dropdown",
       isInternalUser: true,
       role: adminRole,
@@ -191,7 +195,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       }
       if (userRole && isLoggedIn) {
         if (item?.isInternalUser) {
-          return item?.role?.includes(userRole) && isInternalUser;
+          return item?.role?.includes(userRole) || isInternalUser;
         }
         return item?.role?.includes(userRole);
       }

@@ -152,6 +152,16 @@
         }
       }
 
+      .ant-menu-item::after,
+      .ant-menu-submenu::after {
+        // remove bottom border for the menu active
+        border: none;
+      }
+
+      .anticon {
+        font-size: 10px;
+      }
+
       a {
         color: $primary-color;
         font-weight: 600;
