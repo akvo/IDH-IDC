@@ -131,7 +131,7 @@ const Users = () => {
             ),
             okText: "Go to cases",
             onOk: () => {
-              const URL = `/old-cases?owner=${user.email}`;
+              const URL = `/old-cases?owner=${user.email}`; // TODO:: update to new case steps page (/cases)
               window.open(URL, "_blank");
             },
             cancelText: "Cancel",

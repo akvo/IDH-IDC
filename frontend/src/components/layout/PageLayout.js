@@ -22,7 +22,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       {
         testid: "nav-menu-cases",
         label: "Cases Overview",
-        key: "/cases",
+        key: "/old-cases", // TODO:: update to new-case step link (/cases)
         role: allUserRole,
         isPublic: false,
       },
