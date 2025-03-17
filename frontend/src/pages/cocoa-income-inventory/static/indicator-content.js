@@ -20,7 +20,7 @@ export const indicatorContent = [
     icon: CocoaTreeAgeIcon,
   },
   {
-    title: "Cocoa volume bought",
+    title: "Cocoa volume",
     icon: CocoaYieldIcon,
   },
   {

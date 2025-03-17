@@ -25,7 +25,15 @@ const CocoaIncomeInventoryDashboard = () => {
           >
             <ArrowLeftOutlined style={{ fontSize: 12 }} /> Back
           </Button>
-          <Button className="button-yellow-fill">
+          <Button
+            className="button-yellow-fill"
+            onClick={() => {
+              window.open(
+                "/files/methodology-cocoa-income-inventory.pdf",
+                "_blank"
+              );
+            }}
+          >
             Methodology <DownloadOutlined style={{ fontSize: 12 }} />
           </Button>
         </div>

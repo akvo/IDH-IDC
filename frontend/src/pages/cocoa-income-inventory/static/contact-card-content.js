@@ -1,5 +1,10 @@
 export const contactCardContent = [
   {
+    name: "Yuca Waarts",
+    organisation: null,
+    email: "yuca@agri-logic.nl",
+  },
+  {
     name: "Pavithra Ram",
     organisation: "IDH",
     email: "ram@idhtrade.org",

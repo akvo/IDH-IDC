@@ -307,7 +307,7 @@
       align-items: center;
 
       .contact-card-item {
-        min-width: 25%;
+        min-width: 22%;
         max-width: 275px;
         border-radius: 12px;
         background: #eaf2f2;
@@ -336,6 +336,10 @@
           font-size: 13px;
           font-style: normal;
           font-weight: 500;
+
+          &.hidden {
+            color: #eaf2f2;
+          }
         }
 
         .email {
@@ -354,12 +358,12 @@
       flex-direction: column;
 
       p {
-        max-width: 685px;
-        color: #8a8a8a;
+        max-width: 675px;
+        color: #000;
         font-size: 14px;
 
         a {
-          color: #8a8a8a;
+          color: #000;
           text-decoration: underline;
         }
       }
