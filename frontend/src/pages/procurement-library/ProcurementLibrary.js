@@ -27,7 +27,7 @@ const ProcurementLibrary = () => {
       icon: <BookSearchIcon />,
     },
     {
-      title: "Learn more about our methodology",
+      title: "Learn more about the context and methodology",
       url: "/procurement-library/methodology",
       cta: "Explore",
       icon: <BookInfoIcon />,
