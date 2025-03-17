@@ -189,5 +189,8 @@ class Email:
 
     @property
     def send(self) -> int:
-        res = mailjet.send.create(data=self.data)
-        return res.status_code == 200
+        try:
+            res = mailjet.send.create(data=self.data)
+            return res.status_code == 200
+        except Exception as e:
+            print(f'[ERROR], Failed to send email: {e}')

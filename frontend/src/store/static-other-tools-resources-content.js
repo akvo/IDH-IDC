@@ -21,7 +21,7 @@ export const otherToolsAndResourcesContent = [
   {
     tag: "Tool",
     image: Image2,
-    title: "Cocoa income inventory",
+    title: "Cocoa Income Inventory",
     description:
       "The tool allows you to explore data on cocoa production, income from cocoa and other key indicators from different origins. Play around with the data using an interactive dashboard.",
     order: 2,
@@ -34,7 +34,7 @@ export const otherToolsAndResourcesContent = [
   {
     tag: "Tool",
     image: Image3,
-    title: "Procurement library",
+    title: "Procurement Library",
     description:
       "The tool helps businesses identify the best interventions for their goals, access personalized procurement advice, and explore the intervention library.",
     order: 3,
