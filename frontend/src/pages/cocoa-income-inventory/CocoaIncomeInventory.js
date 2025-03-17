@@ -176,6 +176,18 @@ const CocoaIncomeInventory = () => {
             Azhari (WUR), 2025.
           </p>
           <p>
+            We gratefully acknowledge the valuable data contributions from Barry
+            Callebaut, Cargill, ECOM, Fairtrade International, IDH, KIT, and
+            Mars. The following organisations were instrumental in designing the
+            questions collected in the Cocoa Income Inventory: KIT, Südwind,
+            Agri-Logic, Sustainable Food Lab, with additional input from members
+            of the Alliance of Living Income in Cocoa (ALICO) (members of ALICO
+            include WCF, LICOP, the Voice Network, IDH, GISCO, SWISSCO, DISCO
+            and Beyond Chocolate). Going forward, we hope that more
+            organisations will contribute their data to make the Cocoa Income
+            Inventory even more robust and representative.
+          </p>
+          <p>
             Funded by the IDH{" "}
             <a
               href="https://www.idhsustainabletrade.com/roadmap-on-living-income/"
@@ -183,8 +195,8 @@ const CocoaIncomeInventory = () => {
               rel="noreferrer noopener"
             >
               Living Income Roadmap
-            </a>{" "}
-            In-kind contributions by WUR, VOICE.
+            </a>
+            . In-kind contributions by WUR, VOICE.
           </p>
         </div>
       </Col>
