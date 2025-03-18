@@ -44,14 +44,14 @@ const ProcurementLibrary = () => {
               <br />
               Procurement Library
             </h1>
-            <p>
+            <span className="caption">
               The procurement library is a valuable resource designed for
               guiding stakeholders who are looking to incorporate sustainability
               into procurement strategies. By providing a comprehensive list of
               sustainable procurement practices, the library guides users to
               make informed decisions that align with their sustainability
               goals.
-            </p>
+            </span>
           </div>
 
           <div className="jumbotron-cards">
@@ -123,7 +123,9 @@ const ProcurementLibrary = () => {
                   </span>
                 </div>
                 <h3>{feature.title}</h3>
-                <p>{feature.description}</p>
+                <span className="key-feature-description">
+                  {feature.description}
+                </span>
               </div>
             ))}
           </div>
