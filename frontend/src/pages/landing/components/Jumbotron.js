@@ -28,11 +28,13 @@ const Jumbotron = ({ signOut = null }) => {
         <div className="jumbotron-gradient-overlay"></div>
         <div className="jumbotron-text-wrapper">
           <h1 data-testid="jumbotron-title">
-            Welcome to the Income Driver Calculator (IDC)
+            Welcome To the Income
+            <br />
+            Driver Calculator
           </h1>
           <h3 data-testid="jumbotron-subtitle">
-            IDH works towards better incomes for smallholder farmers across
-            different sectors and landscapes.
+            IDH is working to secure better income for smallholder farmers in
+            several sectors and landscapes.
           </h3>
           {loggedIn ? (
             <Link
