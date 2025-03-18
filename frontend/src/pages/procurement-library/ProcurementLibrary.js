@@ -10,6 +10,7 @@ import {
 } from "../../lib/icon";
 import { Link } from "react-router-dom";
 import FooterDisclaimer from "../landing/components/FooterDisclaimer";
+import { PROCUREMENT_KEY_FEATURES } from "./config";
 // import CaseStudies from "./components/CaseStudies";
 
 const ProcurementLibrary = () => {
@@ -39,17 +40,17 @@ const ProcurementLibrary = () => {
         <div className="jumbotron-content">
           <div className="jumbotron-text">
             <h1>
-              What is the
+              Welcome to the
               <br />
-              Procurement Library?
+              Procurement Library
             </h1>
             <p>
-              The procurement library is a tool designed to help businesses
-              across the entire supply chain identify the most impactful and
-              relevant interventions for their goals. You can provide additional
-              information about your business for personalized procurement
-              advice, browse all practices in the intervention library, or
-              explore our methodology.
+              The procurement library is a valuable resource designed for
+              guiding stakeholders who are looking to incorporate sustainability
+              into procurement strategies. By providing a comprehensive list of
+              sustainable procurement practices, the library guides users to
+              make informed decisions that align with their sustainability
+              goals.
             </p>
           </div>
 
@@ -98,7 +99,36 @@ const ProcurementLibrary = () => {
           </div>
         </div>
       </div>
-      <div className="case-studies-container">{/* <CaseStudies /> */}</div>
+      <div className="key-features-container">
+        <div className="key-features-content">
+          <h2>Key features include:</h2>
+          <div className="key-features">
+            {PROCUREMENT_KEY_FEATURES.map((feature) => (
+              <div key={feature.id} className="key-feature">
+                <div className="key-icon">
+                  <span className="key-icon-front">{feature.icon}</span>
+                  <span className="key-icon-back">
+                    <svg
+                      width="48"
+                      height="48"
+                      viewBox="0 0 48 48"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7166 35.7756 46.5703 23.9215 47.7383"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                </div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       <FooterDisclaimer disclaimerText="procurement" />
     </div>
   );
