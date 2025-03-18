@@ -1,3 +1,10 @@
+import {
+  CheckClipBoardIcon,
+  GearIcon,
+  SearchBoldIcon,
+  UserSupportIcon,
+} from "../../lib/icon";
+
 export const LIMIT_RESULT = 15;
 
 export const PROCUREMENT_PROCESS_COLORS = [
@@ -93,5 +100,36 @@ export const IMPACT_AREA_OPTIONS = [
   {
     value: PROCUREMENT_IMPACT_AREAS.env,
     label: "Environment",
+  },
+];
+
+export const PROCUREMENT_KEY_FEATURES = [
+  {
+    id: 1,
+    icon: <SearchBoldIcon />,
+    title: "Self Assessment Tool",
+    description:
+      "The quick self-assessment allows users to evaluate their specific needs and identify the most relevant sustainable practices for their procurement processes. This feature makes it easier for stakeholders to get tailored recommendations without feeling overwhelmed by the full list.",
+  },
+  {
+    id: 2,
+    title: "Comprehensive List of Practices",
+    icon: <CheckClipBoardIcon />,
+    description:
+      "The intervention library offers a wide range of sustainable procurement practices, each with detailed information such as definitions, rationale for intervention, and enabling conditions. This allows users to thoroughly understand how each practice contributes to sustainability.",
+  },
+  {
+    id: 3,
+    title: "Filters for Easy Browsing",
+    icon: <GearIcon />,
+    description:
+      "For users who prefer to explore the entire library, the filters help narrow down the options according to various criteria. This enables users to find the best practices that fit their particular situation or organizational context.",
+  },
+  {
+    id: 4,
+    title: "Support for Stakeholders",
+    icon: <UserSupportIcon />,
+    description:
+      "Whether you are a procurement officer, sustainability manager, or policy maker, the library offers guidance to help you make more sustainable choices, ultimately contributing to the achievement of broader sustainability goals.",
   },
 ];
