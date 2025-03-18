@@ -69,7 +69,7 @@ const ciiDisclaimerText = (handleSecurityClick) => (
       <br />
       <br />
       We encourage the use of this data in other publications, provided proper
-      references are given. The CCI is published under Creative Commons License
+      references are given. The CII is published under Creative Commons License
       Attribution-ShareAlike 4.0 International
       <br />
       <br />
