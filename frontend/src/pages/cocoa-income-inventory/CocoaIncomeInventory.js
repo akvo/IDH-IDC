@@ -182,7 +182,7 @@ const CocoaIncomeInventory = () => {
             questions collected in the Cocoa Income Inventory: KIT, Südwind,
             Agri-Logic, Sustainable Food Lab, with additional input from members
             of the Alliance of Living Income in Cocoa (ALICO) (members of ALICO
-            include WCF, LICOP, the Voice Network, IDH, GISCO, SWISSCO, DISCO
+            include WCF, LICOP, GIZ, Voice Network, IDH, GISCO, SWISSCO, DISCO
             and Beyond Chocolate). Going forward, we hope that more
             organisations will contribute their data to make the Cocoa Income
             Inventory even more robust and representative.
