@@ -18,7 +18,7 @@ const PageTitle = ({ title = "", subTitle = "" }) => {
         />
         <div className="title-wrapper">
           <h1>{title}</h1>
-          <p>{subTitle}</p>{" "}
+          <p>{subTitle}</p>
         </div>
       </div>
     </div>

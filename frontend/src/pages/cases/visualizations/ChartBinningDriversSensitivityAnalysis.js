@@ -337,8 +337,8 @@ const ChartBinningDriversSensitivityAnalysis = ({
   }
 
   return (
-    <Card className="card-visual-wrapper no-padding">
-      <Row gutter={[20, 20]} align="middle">
+    <Card className="card-visual-wrapper no-padding" style={{ marginTop: 20 }}>
+      <Row gutter={[20, 20]} align="start">
         <Col span={8}>
           <Space direction="vertical">
             <div className="section-title">{label}</div>

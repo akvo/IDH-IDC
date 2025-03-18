@@ -3,6 +3,7 @@ import Image2 from "../assets/images/other-tool-resource/cocoa-income-inventory.
 import Image3 from "../assets/images/other-tool-resource/procurement-library.png";
 import Image4 from "../assets/images/other-tool-resource/reporting-standards.png";
 import Image5 from "../assets/images/other-tool-resource/procurement-pratices-principles.png";
+// import { ArrowRightOutlined } from "@ant-design/icons";
 
 export const otherToolsAndResourcesContent = [
   {

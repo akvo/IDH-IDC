@@ -119,7 +119,7 @@ const Question = ({
       </Col>
       <Col span={4} align="end">
         {percentage
-          ? thousandFormatter(currentIncrease)
+          ? thousandFormatter(currentIncrease, 2)
           : `${currentIncrease} %`}
       </Col>
     </Row>
@@ -600,7 +600,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
       gutter={[24, 24]}
       className="income-driver-form-container"
     >
-      <Col span={10}>
+      <Col span={12}>
         <Row
           gutter={[50, 50]}
           align="middle"
@@ -628,13 +628,13 @@ const ScenarioModelingIncomeDriversAndChart = ({
               <Row gutter={[5, 5]} align="middle">
                 <Col span={11}>Income Driver</Col>
                 <Col span={5}>
-                  {currentScenarioData?.percentage ? "Change" : "New Value"}
+                  {currentScenarioData?.percentage ? "Change" : "New"}
                 </Col>
                 <Col span={4} align="end">
-                  Current Value
+                  Current
                 </Col>
                 <Col span={4} align="end">
-                  {currentScenarioData?.percentage ? "New Value" : "Change"}
+                  {currentScenarioData?.percentage ? "New" : "Change"}
                 </Col>
               </Row>
               {MAX_VARIABLES.map((index) => (
@@ -674,7 +674,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
           </Col>
         </Row>
       </Col>
-      <Col span={14}>
+      <Col span={12}>
         <ChartSegmentsIncomeGapScenarioModeling
           currentScenarioData={currentScenarioData}
         />

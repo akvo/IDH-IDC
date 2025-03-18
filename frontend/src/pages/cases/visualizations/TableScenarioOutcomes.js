@@ -473,6 +473,7 @@ const TableScenarioOutcomes = ({
             columns={scenarioOutcomeColumns}
             dataSource={selectedScenarioOutcomeDataSource}
             pagination={false}
+            size="small"
           />
         </Col>
       </Row>

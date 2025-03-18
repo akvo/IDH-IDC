@@ -445,20 +445,16 @@
     margin-top: 24px;
 
     .other-tool-resource-list {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 40px;
-
-      /* Create invisible items to fill the last row */
-      &::after {
-        content: "";
-        flex: 1 1 calc(32% - 20px);
-        visibility: hidden;
-      }
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(250px, 1fr)
+      ); /* Responsive grid */
+      gap: 20px; /* Adjust spacing between items */
 
       .otr-item-wrapper {
-        flex: 1 1 calc(32% - 20px);
+        display: flex;
+        flex-direction: column;
 
         h2 {
           color: #000 !important;
@@ -477,6 +473,25 @@
           font-size: 14px;
           line-height: 24px;
         }
+
+        .otr-tag-button-wrapper {
+          width: 100%;
+        }
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .other-tool-resource-list {
+        grid-template-columns: repeat(
+          3,
+          1fr
+        ); /* 3 columns for medium screens */
+      }
+    }
+
+    @media (min-width: 1440px) {
+      .other-tool-resource-list {
+        grid-template-columns: repeat(4, 1fr); /* 4 columns for large screens */
       }
     }
 
@@ -510,10 +525,11 @@
           margin: 0;
           color: $primary-color;
           font-weight: 700;
-          font-size: 26px;
+          font-size: 32px !important;
         }
 
         p {
+          margin: 5px 0;
           font-size: 16px;
         }
       }

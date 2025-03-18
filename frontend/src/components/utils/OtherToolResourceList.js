@@ -1,6 +1,6 @@
 import React from "react";
 import { otherToolsAndResourcesContent } from "../../store/static-other-tools-resources-content";
-import { Button, Image, Tag } from "antd";
+import { Button, Image, Space, Tag } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -45,33 +45,35 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
                   preview={false}
                   style={{ borderRadius: 20, marginBottom: 20 }}
                 />
-                <Tag
-                  bordered={false}
-                  color="#01625F"
-                  style={{
-                    borderRadius: 20,
-                    padding: "2px 10px",
-                  }}
-                >
-                  {item.tag}
-                </Tag>
+                <Space className="otr-tag-button-wrapper">
+                  <Tag
+                    bordered={false}
+                    color="#01625F"
+                    style={{
+                      borderRadius: 20,
+                      padding: "2px 10px",
+                    }}
+                  >
+                    {item.tag}
+                  </Tag>
+                  {item?.button?.text && (
+                    <LinkButton>
+                      <Button
+                        type="link"
+                        style={{
+                          color: "#00625F",
+                          fontWeight: 600,
+                          padding: 0,
+                          fontFamily: "RocGrotesk",
+                        }}
+                      >
+                        {item.button.text}
+                      </Button>
+                    </LinkButton>
+                  )}
+                </Space>
                 <h2>{item.title}</h2>
                 <p>{item.description}</p>
-                {item?.button?.text && (
-                  <LinkButton>
-                    <Button
-                      type="link"
-                      style={{
-                        color: "#00625F",
-                        fontWeight: 600,
-                        padding: 0,
-                        fontFamily: "RocGrotesk",
-                      }}
-                    >
-                      {item.button.text}
-                    </Button>
-                  </LinkButton>
-                )}
               </div>
             );
           })}

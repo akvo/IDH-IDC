@@ -88,7 +88,7 @@ const ChartIncomeDriverAcrossSegments = () => {
           return false;
         }
         return {
-          text: `Total ${capitalize(x)} / Non Primary - ${
+          text: `Total ${capitalize(x)} /\nNon Primary - ${
             commodity.commodityName
           }`,
           type: x,
@@ -119,6 +119,7 @@ const ChartIncomeDriverAcrossSegments = () => {
     return [...focusRes, ...diversifiedRes];
   }, [dashboardData]);
 
+  // TODO:: fix the legend filtering when change the legend text to have an enter
   const chartData = useMemo(() => {
     setLoading(true);
     if (!driverOptionsDropdown.length) {
@@ -149,8 +150,8 @@ const ChartIncomeDriverAcrossSegments = () => {
                 }
                 value = value ? parseFloat(value.toFixed(2)) : value;
                 return {
-                  name: `${capitalize(x)} ${d.label}`,
-                  title: `${capitalize(x)} ${d.label}`,
+                  name: `${capitalize(x)}\n${d.label}`,
+                  title: `${capitalize(x)}\n${d.label}`,
                   value: value,
                   total: value,
                   order: di,
@@ -173,8 +174,8 @@ const ChartIncomeDriverAcrossSegments = () => {
                       ? parseFloat(answer.value.toFixed(2))
                       : 0;
                   return {
-                    name: `${capitalize(x)} ${d.text}`,
-                    title: `${capitalize(x)} ${d.text}`,
+                    name: `${capitalize(x)}\n${d.text}`,
+                    title: `${capitalize(x)}\n${d.text}`,
                     value: value,
                     total: value,
                     order: di,
@@ -194,8 +195,8 @@ const ChartIncomeDriverAcrossSegments = () => {
                       : 0;
                   stack = [
                     {
-                      name: `${capitalize(x)} ${findDriver.label}`,
-                      title: `${capitalize(x)} ${findDriver.label}`,
+                      name: `${capitalize(x)}\n${findDriver.label}`,
+                      title: `${capitalize(x)}\n${findDriver.label}`,
                       value: value,
                       total: value,
                       order: 0,
@@ -236,8 +237,8 @@ const ChartIncomeDriverAcrossSegments = () => {
                         : 0;
                   }
                   return {
-                    name: `${capitalize(x)} ${d.text}`,
-                    title: `${capitalize(x)} ${d.text}`,
+                    name: `${capitalize(x)}\n${d.text}`,
+                    title: `${capitalize(x)}\n${d.text}`,
                     value: value,
                     total: value,
                     order: di,
@@ -289,7 +290,7 @@ const ChartIncomeDriverAcrossSegments = () => {
       case 5: // cost of production
         return { right: 215, left: 50, bottom: 20 };
       default: // diversified income
-        return { right: 295, left: 45, bottom: 20 };
+        return { right: 200, left: 30, bottom: 20 };
     }
   };
 
@@ -329,7 +330,7 @@ const ChartIncomeDriverAcrossSegments = () => {
                     grid: chartGrid(selectedDriver),
                     showLabel: showLabel,
                   })}
-                  height={575}
+                  height={600}
                 />
               </Col>
             </Row>
