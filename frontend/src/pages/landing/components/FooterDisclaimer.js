@@ -96,7 +96,9 @@ const procurementDisclaimerText = () => (
     <p data-testid="disclaimer-section-description">
       For more information or for sharing your experience please contact{" "}
       <a href="mailto:birch@idhtrade.org" style={{ color: "#fff" }}>
-        Mark Birch
+        <strong>
+          <u>Mark Birch</u>
+        </strong>
       </a>
       , Program Director – Procurement and Living Income.
     </p>
