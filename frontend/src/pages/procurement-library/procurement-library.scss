@@ -203,18 +203,8 @@
     background-color: #fff;
     .key-features-content {
       width: 100%;
-      // max-width: 1440px;
-      // margin: 0 auto;
-      padding: 9rem 4rem 3rem;
+      padding: 10rem 4rem 3rem;
 
-      @media screen and (max-width: 1440px) {
-        max-width: 1344px;
-        margin: 0 auto;
-      }
-
-      @media (max-width: 1024px) {
-        padding: 128px 64px 96px;
-      }
       h2,
       h3 {
         margin-block-start: 0;

@@ -28,9 +28,9 @@ const Jumbotron = ({ signOut = null }) => {
         <div className="jumbotron-gradient-overlay"></div>
         <div className="jumbotron-text-wrapper">
           <h1 data-testid="jumbotron-title">
-            Welcome To the Income
+            Welcome to the
             <br />
-            Driver Calculator
+            Income Driver Calculator
           </h1>
           <h3 data-testid="jumbotron-subtitle">
             IDH is working to secure better income for smallholder farmers in
