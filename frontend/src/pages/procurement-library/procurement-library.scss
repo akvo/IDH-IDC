@@ -36,8 +36,6 @@
     .jumbotron-content {
       position: relative;
       width: 100%;
-      // max-width: 1440px;
-      // margin: 0 auto;
       min-height: 32rem;
       color: white;
       text-align: left;
@@ -51,10 +49,6 @@
       @media (max-width: 1440px) {
         max-width: 1344px;
         margin: 0 auto;
-      }
-
-      @media (max-width: 1024px) {
-        padding: 98px 64px 0;
       }
 
       @media (max-width: 820px) {
@@ -78,8 +72,9 @@
           line-height: 72px; /* 112.5% */
         }
         .caption {
+          width: 90%;
           font-family: "RocGrotesk";
-          font-size: 16px;
+          font-size: 18px;
           font-style: normal;
           font-weight: 400;
           line-height: 157.15%; /* 25.144px */
@@ -115,14 +110,10 @@
 
       .jumbotron-cards {
         position: absolute;
-        bottom: -96px;
+        bottom: -112px;
         left: 0;
         width: 100%;
         padding: 94px 62px 0;
-
-        @media (max-width: 1024px) {
-          padding: 98px 62px 0;
-        }
 
         .ant-list {
           .ant-card {

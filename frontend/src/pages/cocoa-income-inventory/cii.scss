@@ -61,21 +61,21 @@
 
       .jumbotron-text-wrapper {
         z-index: 1;
-        padding: 36px $default-padding-size;
+        padding: 3rem $default-padding-size;
         h1 {
           font-family: "RocGrotesk" !important;
           color: #ffffff;
           font-weight: 900;
-          font-size: 3rem !important;
-          line-height: 70px;
+          font-size: 48px !important;
+          line-height: 72px; /* 112.5% */
           margin: 0;
         }
 
         h3 {
           color: #ffffff;
           font-weight: 400;
-          font-size: 1.2rem;
-          line-height: 35px;
+          font-size: 18px;
+          line-height: 157.15%; /* 25.144px */
           width: 50%;
           margin-bottom: 24px;
         }
