@@ -70,16 +70,18 @@ const ProcurementLibrary = () => {
                 <List.Item>
                   <Card>
                     <div className="card-content">
-                      <div className="card-icon">
-                        <span className={`icon-front front-${ix}`}>
-                          {item.icon}
-                        </span>
-                        <span className="icon-back">
-                          <OvalIcon />
-                        </span>
-                      </div>
-                      <div className="card-title">
-                        <h3>{item.title}</h3>
+                      <div>
+                        <div className="card-icon">
+                          <span className={`icon-front front-${ix}`}>
+                            {item.icon}
+                          </span>
+                          <span className="icon-back">
+                            <OvalIcon />
+                          </span>
+                        </div>
+                        <div className="card-title">
+                          <h3>{item.title}</h3>
+                        </div>
                       </div>
                       <div className="card-cta">
                         <Link to={item.url}>

@@ -22,8 +22,9 @@ const InformationCard = () => (
     justify="space-evenly"
     align="center"
     className="info-card-row"
+    gutter={24}
   >
-    <Col sm={24} md={7} align="top">
+    <Col sm={24} md={8} align="top">
       <Card className="info-card-wrapper info-first">
         <div className="info-card-icon">
           <LandingInfoHelpIcon />
@@ -35,7 +36,7 @@ const InformationCard = () => (
         </p>
       </Card>
     </Col>
-    <Col sm={24} md={7} align="top">
+    <Col sm={24} md={8} align="top">
       <Card className="info-card-wrapper info-second">
         <div className="info-card-icon">
           <LandingInfoEstimateIcon />
@@ -47,7 +48,7 @@ const InformationCard = () => (
         </p>
       </Card>
     </Col>
-    <Col sm={24} md={7} align="top">
+    <Col sm={24} md={8} align="top">
       <Card className="info-card-wrapper info-third">
         <div className="info-card-icon">
           <LandingInfoDriversIcon />
