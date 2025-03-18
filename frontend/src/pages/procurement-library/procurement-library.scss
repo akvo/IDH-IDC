@@ -3,7 +3,7 @@
 
 #root {
   h1 {
-    font-size: 64px !important;
+    font-size: 48px !important;
     margin-block-start: 0;
     margin-block-end: 0;
   }
@@ -11,9 +11,6 @@
     font-size: 38px !important;
   }
   @media screen and (max-width: 1024px) {
-    h1 {
-      font-size: 56px !important;
-    }
     h2 {
       font-size: 36px !important;
     }
@@ -39,13 +36,13 @@
     .jumbotron-content {
       position: relative;
       width: 100%;
-      max-width: 1440px;
-      margin: 0 auto;
-      min-height: 600px;
+      // max-width: 1440px;
+      // margin: 0 auto;
+      min-height: 32rem;
       color: white;
       text-align: left;
       z-index: 10;
-      padding: 98px 72px 0;
+      padding: 3rem 4rem;
       display: flex;
       flex-direction: column;
       gap: 62px;
@@ -220,9 +217,9 @@
     background-color: #fff;
     .key-features-content {
       width: 100%;
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 128px 64px 96px;
+      // max-width: 1440px;
+      // margin: 0 auto;
+      padding: 9rem 4rem 3rem;
 
       @media screen and (max-width: 1440px) {
         max-width: 1344px;
