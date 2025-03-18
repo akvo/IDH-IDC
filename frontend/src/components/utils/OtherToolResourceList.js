@@ -56,24 +56,24 @@ const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
                   >
                     {item.tag}
                   </Tag>
-                  {item?.button?.text && (
-                    <LinkButton>
-                      <Button
-                        type="link"
-                        style={{
-                          color: "#00625F",
-                          fontWeight: 600,
-                          padding: 0,
-                          fontFamily: "RocGrotesk",
-                        }}
-                      >
-                        {item.button.text}
-                      </Button>
-                    </LinkButton>
-                  )}
                 </Space>
                 <h2>{item.title}</h2>
                 <p>{item.description}</p>
+                {item?.button?.text && (
+                  <LinkButton>
+                    <Button
+                      type="link"
+                      style={{
+                        color: "#00625F",
+                        fontWeight: 600,
+                        padding: 0,
+                        fontFamily: "RocGrotesk",
+                      }}
+                    >
+                      {item.button.text}
+                    </Button>
+                  </LinkButton>
+                )}
               </div>
             );
           })}

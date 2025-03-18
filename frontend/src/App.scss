@@ -7,12 +7,19 @@
   h1 {
     font-family: "RocGrotesk" !important;
     font-weight: 700 !important;
-    font-size: 24px;
+    font-size: 48px;
+    margin-block-start: 0;
+    margin-block-end: 0;
   }
 
   h2 {
     font-family: "RocGrotesk" !important;
-    font-size: 22px;
+    font-size: 38px;
+  }
+  @media screen and (max-width: 1024px) {
+    h2 {
+      font-size: 36px;
+    }
   }
 
   h3 {
@@ -507,7 +514,7 @@
         background: $primary-color;
         color: #fff;
         font-family: "RocGrotesk";
-        font-weight: 600;
+        font-weight: 700;
       }
     }
   }
