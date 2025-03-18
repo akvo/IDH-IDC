@@ -168,7 +168,7 @@ const CocoaIncomeInventory = () => {
             </div>
           ))}
         </div>
-        <div className="address-wrapper">
+        <div className="ack-wrapper">
           <p>
             Citation: IDH, VOICE Network, WUR, 2025. Cocoa Income Inventory -
             Release February 2025. Authors: Yuca Waarts (WUR), Antonie Fountain

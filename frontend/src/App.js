@@ -9,7 +9,7 @@ import { Home } from "./pages/home";
 import { Landing } from "./pages/landing";
 import { Login, ResetPassword } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
-// import { Cases, Case } from "./pages/cases";
+import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
 import { Welcome as OldWelcome } from "./pages/old-welcome";
 import { Welcome } from "./pages/welcome";
@@ -55,6 +55,7 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
+  const host = window.location.hostname;
   const navigate = useNavigate();
   const [cookies, , removeCookie] = useCookies(["AUTH_TOKEN"]);
   const userRole = UserState.useState((s) => s.role);
@@ -165,14 +166,16 @@ const App = () => {
             <Route element={<PrivateRoutes />}>
               <Route exact path="/welcome" element={<Welcome />} />
               <Route exact path="/home" element={<Home />} />
-              {/* TODO:: Comment for now
-              <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/case/:caseId/:step" element={<Case />} />
-              */}
-              {/*
-                TODO:: Delete later
-                Old  Page
-              */}
+
+              {/* TODO:: Manage new cases step route to show in development */}
+              {!host !== "incomedrivercalculator.idhtrade.org" && (
+                <>
+                  <Route exact path="/cases" element={<Cases />} />
+                  <Route exact path="/case/:caseId/:step" element={<Case />} />
+                </>
+              )}
+
+              {/* TODO:: Delete later Old  Page */}
               <Route
                 exact
                 path="/old-welcome"
