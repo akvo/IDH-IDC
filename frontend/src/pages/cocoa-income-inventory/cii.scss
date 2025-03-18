@@ -351,16 +351,17 @@
       }
     }
 
-    .address-wrapper {
+    .ack-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
 
       p {
-        max-width: 675px;
+        max-width: 80%;
         color: #000;
         font-size: 14px;
+        line-height: 30px;
 
         a {
           color: #000;
