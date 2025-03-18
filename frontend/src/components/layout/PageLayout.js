@@ -12,6 +12,7 @@ const pagesWithNoHeader = ["/login", "/register"];
 const { Header, Content } = Layout;
 
 const PageHeader = ({ isLoggedIn, signOut }) => {
+  const host = window.location.hostname;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const userRole = UserState.useState((s) => s.role);
@@ -22,7 +23,12 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       {
         testid: "nav-menu-cases",
         label: "Cases Overview",
-        key: "/old-cases", // TODO:: update to new-case step link (/cases)
+        // TODO:: update to new-case step link (/cases)
+        // currently handled by hostname to enable new case step in dev mode
+        key:
+          host === "incomedrivercalculator.idhtrade.org"
+            ? "/old-cases"
+            : "/cases",
         role: allUserRole,
         isPublic: false,
       },
@@ -131,7 +137,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       return false;
     });
     return items;
-  }, [userRole, isInternalUser, isLoggedIn, loading, signOut, navigate]);
+  }, [userRole, isInternalUser, isLoggedIn, loading, signOut, navigate, host]);
 
   return (
     <Header
