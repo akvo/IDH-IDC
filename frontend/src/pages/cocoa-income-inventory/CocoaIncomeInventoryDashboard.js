@@ -1,9 +1,10 @@
 import React from "react";
 import "./cii-dashboard.scss";
 import { useNavigate } from "react-router-dom";
-import { Button } from "antd";
-import { ArrowLeftOutlined, DownloadOutlined } from "@ant-design/icons";
+import { Button, Space } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { FooterDisclaimer } from "../landing/components";
+import { FileDownloadIcon } from "../../lib/icon";
 
 const CocoaIncomeInventoryDashboard = () => {
   const navigate = useNavigate();
@@ -34,7 +35,23 @@ const CocoaIncomeInventoryDashboard = () => {
               );
             }}
           >
-            Methodology <DownloadOutlined style={{ fontSize: 12 }} />
+            <Space align="middle" size={2}>
+              Methodology
+              <FileDownloadIcon />
+            </Space>
+          </Button>
+          <Button
+            className="button-yellow-fill"
+            onClick={() => {
+              window.open(
+                "/files/Cocoa-Income-Inventory_2020-2023_February_2025.xlsx"
+              );
+            }}
+          >
+            <Space align="middle" size={2}>
+              CII Data
+              <FileDownloadIcon />
+            </Space>
           </Button>
         </div>
       </div>
