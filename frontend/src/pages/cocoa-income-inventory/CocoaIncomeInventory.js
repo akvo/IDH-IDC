@@ -138,12 +138,9 @@ const CocoaIncomeInventory = () => {
               </div>
             ))}
           </div>
-          <Image
-            src={ValueOrgImg}
-            preview={false}
-            width={450}
-            className="image-wrapper"
-          />
+          <div className="image-wrapper">
+            <Image src={ValueOrgImg} preview={false} width="100%" />
+          </div>
         </div>
       </Col>
       {/* EOL Value for organisation sharing data section */}
