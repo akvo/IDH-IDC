@@ -68,7 +68,7 @@ const generateDriverOptions = ({
 
       return {
         value: commodityQID,
-        label: `${numbering} ${q.text}`,
+        label: q.text,
         selectable: q.question_type !== "aggregator",
         children: hasChildren
           ? generateDriverOptions({

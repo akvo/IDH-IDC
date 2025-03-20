@@ -311,9 +311,7 @@ const AssessImpactMitigationStrategies = ({
     }
     const filteredValues = Object.entries(allValues).reduce(
       (acc, [key, value]) => {
-        if (typeof value !== "undefined" && value !== null) {
-          acc[key] = value;
-        }
+        acc[key] = value;
         return acc;
       },
       {}
