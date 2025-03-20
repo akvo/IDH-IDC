@@ -261,15 +261,15 @@
     padding: 2rem $default-padding-size 3rem $default-padding-size;
     background-color: #fcf9f4;
 
-    h2 {
-      text-align: center;
-    }
-
     .value-org-content-wrapper {
-      display: flex;
-      justify-content: space-evenly;
-      gap: 20px;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); // Two equal columns
+      place-items: center;
+      gap: 30px;
+
+      @media (max-width: 1050px) {
+        grid-template-columns: 1fr; // Single column for small screens
+      }
 
       .value-org-item-wrapper {
         flex: 1 1/2;
@@ -290,8 +290,16 @@
       }
 
       .image-wrapper {
-        flex: 1/2 1;
-        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+
+        .ant-image-img {
+          border-radius: 12px;
+          max-width: 650px !important;
+        }
       }
     }
   }
