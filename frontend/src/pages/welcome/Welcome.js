@@ -286,61 +286,54 @@ const Welcome = () => {
           >
             <Col span={7}>
               <Card className="floating-card-item case-card-wrapper">
-                <Row gutter={[12, 12]}>
-                  <Col span={24} className="title">
-                    <h3>Case Overview</h3>
-                  </Col>
-                  <Col span={24} className="description">
-                    Create a case to go through the income driver assessment and
-                    discover how you can improve farmer income.
-                  </Col>
-                  <Col span={24} align="end">
-                    <Link to="/cases">
-                      <Button className="button-explore">
-                        View cases <ArrowRightOutlined />
-                      </Button>
-                    </Link>
-                  </Col>
-                </Row>
+                <div className="title">
+                  <h3>Case Overview</h3>
+                </div>
+                <div className="description">
+                  Create a case to go through the income driver assessment and
+                  discover how you can improve farmer income.
+                </div>
+                <div>
+                  <Link to="/cases">
+                    <Button className="button-explore">
+                      View cases <ArrowRightOutlined />
+                    </Button>
+                  </Link>
+                </div>
               </Card>
             </Col>
             <Col span={7}>
               <Card className="floating-card-item explore-studies-card-wrapper">
-                <Row gutter={[12, 12]}>
-                  <Col span={24} className="title">
-                    <h3>Explore Studies</h3>
-                  </Col>
-                  <Col span={24} className="description">
-                    Explore whether relevant data on the five income drivers is
-                    available for your specific context.
-                  </Col>
-                  <Col span={24} align="end">
-                    <Link to="/explore-studies">
-                      <Button className="button-explore">
-                        Explore <ArrowRightOutlined />
-                      </Button>
-                    </Link>
-                  </Col>
-                </Row>
+                <div className="title">
+                  <h3>Explore Studies</h3>
+                </div>
+                <div className="description">
+                  Explore whether relevant data on the five income drivers is
+                  available for your specific context.
+                </div>
+                <div>
+                  <Link to="/explore-studies">
+                    <Button className="button-explore">
+                      Explore <ArrowRightOutlined />
+                    </Button>
+                  </Link>
+                </div>
               </Card>
             </Col>
             <Col span={7}>
               <Card className="floating-card-item lib-card-wrapper">
-                <Row gutter={[12, 12]}>
-                  <Col span={24} className="title">
-                    <h3>Living income benchmarks</h3>
-                  </Col>
-                  <Col span={24} className="description">
-                    To make the data entry process more informed and efficient,
-                    we recommend visiting the &quot;Explore Studies&quot;
-                    section.
-                  </Col>
-                  <Col span={24} align="end">
-                    <Button className="button-explore">
-                      Explore <ArrowRightOutlined />
-                    </Button>
-                  </Col>
-                </Row>
+                <div className="title">
+                  <h3>Living income benchmarks</h3>
+                </div>
+                <div className="description">
+                  To make the data entry process more informed and efficient, we
+                  recommend visiting the &quot;Explore Studies&quot; section.
+                </div>
+                <div>
+                  <Button className="button-explore">
+                    Explore <ArrowRightOutlined />
+                  </Button>
+                </div>
               </Card>
             </Col>
           </Row>
