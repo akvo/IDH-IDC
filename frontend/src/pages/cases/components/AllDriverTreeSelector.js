@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { TreeSelect } from "antd";
 import { CaseUIState, CaseVisualState } from "../store";
 
@@ -83,11 +83,24 @@ const generateDriverOptions = ({
     });
 };
 
+// Flatten tree structure for fast lookups
+const flattenTree = (nodes, parent = null, map = {}) => {
+  nodes.forEach((node) => {
+    map[node.value] = {
+      parent,
+      children: node.children?.map((child) => child.value) || [],
+    };
+    if (node.children) {
+      flattenTree(node.children, node.value, map);
+    }
+  });
+  return map;
+};
+
 const AllDriverTreeSelector = ({
   onChange,
   value = [],
   multiple = false,
-  maxLength = null,
   segment = {},
   dropdownStyle = {},
   style = {},
@@ -95,7 +108,9 @@ const AllDriverTreeSelector = ({
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
+  const [disabledNodes, setDisabledNodes] = useState({});
 
+  // Generate tree structure
   const incomeDriverOptions = useMemo(() => {
     if (!segment?.answers) {
       return [];
@@ -176,6 +191,53 @@ const AllDriverTreeSelector = ({
     return [...primaryDrivers, ...diversifiedDrivers];
   }, [incomeDataDrivers, segment]);
 
+  const treeMap = useMemo(
+    () => flattenTree(incomeDriverOptions),
+    [incomeDriverOptions]
+  );
+
+  // Update disabled state based on selection
+  const updateSelectableNodes = (selectedValues) => {
+    if (!multiple) {
+      // Only apply for multiple select mode
+      return;
+    }
+
+    const newNonSelectableNodes = {};
+
+    selectedValues.forEach((selected) => {
+      // Mark all ancestors (parents) as non-selectable
+      let parent = treeMap[selected]?.parent;
+      while (parent) {
+        newNonSelectableNodes[parent] = true;
+        parent = treeMap[parent]?.parent;
+      }
+
+      // Mark all descendants (children) as non-selectable
+      const markNonSelectable = (node) => {
+        if (node) {
+          newNonSelectableNodes[node] = true;
+          treeMap[node]?.children.forEach(markNonSelectable);
+        }
+      };
+      markNonSelectable(selected);
+    });
+
+    setDisabledNodes(newNonSelectableNodes); // Store non-selectable nodes
+  };
+
+  // Apply disabled state dynamically
+  const modifiedTreeData = useMemo(() => {
+    const applySelectableState = (nodes) =>
+      nodes.map((node) => ({
+        ...node,
+        selectable: !disabledNodes[node.value], // Only allow selection if not marked
+        children: node.children ? applySelectableState(node.children) : null,
+      }));
+
+    return applySelectableState(incomeDriverOptions);
+  }, [incomeDriverOptions, disabledNodes]);
+
   return (
     <TreeSelect
       showSearch
@@ -187,20 +249,20 @@ const AllDriverTreeSelector = ({
         ...dropdownStyle,
       }}
       placeholder="Select driver"
-      onChange={(value) => {
-        if (onChange) {
-          if (multiple && maxCount && value?.length <= maxCount) {
-            onChange(value);
+      onChange={(newValue) => {
+        if (!onChange) {
+          return;
+        }
+        if (multiple) {
+          if (!maxCount || newValue.length <= maxCount) {
+            updateSelectableNodes(newValue);
+            onChange(newValue);
           }
-          if (multiple && !maxCount) {
-            onChange(value);
-          }
-          if (!multiple) {
-            onChange(value);
-          }
+        } else {
+          onChange(newValue);
         }
       }}
-      treeData={incomeDriverOptions}
+      treeData={modifiedTreeData}
       disabled={!enableEditCase}
       treeDefaultExpandedKeys={[
         ...incomeDriverOptions.map((item) => item.value),
@@ -209,7 +271,6 @@ const AllDriverTreeSelector = ({
       treeNodeFilterProp="label"
       multiple={multiple}
       value={value}
-      maxLength={maxLength}
     />
   );
 };
