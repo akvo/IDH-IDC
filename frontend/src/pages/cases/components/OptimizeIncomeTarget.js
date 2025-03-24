@@ -1,5 +1,14 @@
 import React, { useMemo, useState, useRef } from "react";
-import { Button, Card, Col, InputNumber, Row, Space, Modal } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  InputNumber,
+  Row,
+  Space,
+  Modal,
+  Tooltip,
+} from "antd";
 import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
 import { CaseVisualState, CurrentCaseState } from "../store";
@@ -9,6 +18,7 @@ import VisualCardWrapper from "./VisualCardWrapper";
 import Chart from "../../../components/chart";
 import { commodities } from "../../../store/static";
 import { orderBy, uniqBy } from "lodash";
+import { QuestionCircleOutline } from "../../../lib/icon";
 
 const colors = [
   "#05615e", // green,
@@ -237,11 +247,16 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <Space className="step-wrapper" align="center">
                 <div className="number">1.</div>
                 <div className="label">
-                  Select the drivers you can influence
+                  Select the drivers you can influence{" "}
+                  <Tooltip title="These are the drivers you have control over and can realistically adjust">
+                    <span>
+                      <QuestionCircleOutline />
+                    </span>
+                  </Tooltip>
                 </div>
               </Space>
               <div className="description">
-                You can enter up to 3 scenario’s.
+                You can enter up to 5 scenario’s.
               </div>
               <div>
                 <AllDriverTreeSelector
