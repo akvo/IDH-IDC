@@ -8,6 +8,7 @@ import {
   Space,
   Modal,
   Tooltip,
+  message,
 } from "antd";
 import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
@@ -62,18 +63,22 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const [refreshChart, setRefreshChart] = useState(true);
   const [showLabel, setShowLabel] = useState(false);
   const chartRef = useRef(null);
+  const [messageApi, messageContextHolder] = message.useMessage();
 
   /*
     increaseValues example
     {
-      "percentage-increase-1": null,
-      "absolute-increase-1": 0,
-      "percentage-increase-2": null,
-      "absolute-increase-2": 0,
-      "percentage-increase-3": null,
-      "absolute-increase-3": 0,
+      "{selectedSegment}_percentage-increase-1": null,
+      "{selectedSegment}_absolute-increase-1": 0,
+      "{selectedSegment}_percentage-increase-2": null,
+      "{selectedSegment}_absolute-increase-2": 0,
+      "{selectedSegment}_percentage-increase-3": null,
+      "{selectedSegment}_absolute-increase-3": 0,
     }
   */
+  const percentageFieldPreffix = `${selectedSegment}_percentage-increase`;
+  const absoluteKeyPreffix = `${selectedSegment}_absolute-increase`;
+  const selectedDriversFieldPreffix = `${selectedSegment}_selected-drivers`;
 
   const currency = currentCaseState?.currency || "";
 
@@ -102,12 +107,17 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   }, [selectedSegment, dashboardData]);
 
   const handleChangeSelectedDrivers = (val) => {
-    updateOptimizationModelState({ selectedDrivers: val });
+    updateOptimizationModelState({
+      selectedDrivers: {
+        ...selectedDrivers,
+        [selectedDriversFieldPreffix]: val,
+      },
+    });
   };
 
   const handleChangeIncreaseValues = ({ index, percentage }) => {
-    const percentageField = `percentage-increase-${index}`;
-    const absoluteKey = `absolute-increase-${index}`;
+    const percentageField = `${percentageFieldPreffix}-${index}`;
+    const absoluteKey = `${absoluteKeyPreffix}-${index}`;
 
     const currentIncome = currentDashboardData?.total_current_income || 0;
     let absoluteIncreaseValue = currentIncome;
@@ -126,15 +136,30 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const handleRunModel = () => {
     const percentages = Object.entries(increaseValues)
       .map(([key, value]) => {
-        if (key.includes("percentage-") && value) {
+        if (key.includes(percentageFieldPreffix) && value) {
           return value / 100;
         }
         return null;
       })
       .filter((x) => x);
+
+    const editable_indices =
+      selectedDrivers?.[selectedDriversFieldPreffix] || [];
+
+    if (!percentages?.length || !editable_indices?.length) {
+      // return notification
+      messageApi.open({
+        type: "warning",
+        content:
+          "Please double-check the model input values (drivers and percentage increase), then re-run the model.",
+      });
+      return;
+    }
+
+    // run the model
     const payload = {
       percentages,
-      editable_indices: selectedDrivers,
+      editable_indices,
     };
     api
       .post(
@@ -265,7 +290,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   style={{ width: "45%" }}
                   dropdownStyle={{ width: "60%" }}
                   onChange={handleChangeSelectedDrivers}
-                  value={selectedDrivers}
+                  value={selectedDrivers?.[selectedDriversFieldPreffix] || []}
                   segment={currentSegment}
                 />
               </div>
@@ -331,12 +356,14 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                         percentage: value,
                       })
                     }
-                    value={increaseValues?.["percentage-increase-1"] || null}
+                    value={
+                      increaseValues?.[`${percentageFieldPreffix}-1`] || null
+                    }
                   />
-                  {increaseValues?.["percentage-increase-1"] && (
+                  {increaseValues?.[`${percentageFieldPreffix}-1`] && (
                     <span>
                       {thousandFormatter(
-                        increaseValues?.["absolute-increase-1"],
+                        increaseValues?.[`${absoluteKeyPreffix}-1`],
                         2
                       )}{" "}
                       {currency}
@@ -354,12 +381,14 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                         percentage: value,
                       })
                     }
-                    value={increaseValues?.["percentage-increase-2"] || null}
+                    value={
+                      increaseValues?.[`${percentageFieldPreffix}-2`] || null
+                    }
                   />
-                  {increaseValues?.["percentage-increase-2"] && (
+                  {increaseValues?.[`${percentageFieldPreffix}-2`] && (
                     <span>
                       {thousandFormatter(
-                        increaseValues?.["absolute-increase-2"],
+                        increaseValues?.[`${absoluteKeyPreffix}-2`],
                         2
                       )}{" "}
                       {currency}
@@ -377,12 +406,14 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                         percentage: value,
                       })
                     }
-                    value={increaseValues?.["percentage-increase-3"] || null}
+                    value={
+                      increaseValues?.[`${percentageFieldPreffix}-3`] || null
+                    }
                   />
-                  {increaseValues?.["percentage-increase-3"] && (
+                  {increaseValues?.[`${percentageFieldPreffix}-3`] && (
                     <span>
                       {thousandFormatter(
-                        increaseValues?.["absolute-increase-3"],
+                        increaseValues?.[`${absoluteKeyPreffix}-3`],
                         2
                       )}{" "}
                       {currency}
@@ -398,7 +429,9 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <Button
                 className="button-run-the-model"
                 onClick={handleRunModel}
-                disabled={!selectedDrivers?.length}
+                disabled={
+                  !selectedDrivers?.[selectedDriversFieldPreffix]?.length
+                }
               >
                 Run the model <ArrowRightOutlined />
               </Button>
@@ -514,6 +547,9 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           </p>
         </>
       </Modal>
+
+      {/* message context holder */}
+      {messageContextHolder}
     </Row>
   );
 };
