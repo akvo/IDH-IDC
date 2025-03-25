@@ -5,7 +5,10 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-const OtherToolResourceList = ({ size = 5, showMoreButton = false }) => {
+const OtherToolResourceList = ({
+  size = otherToolsAndResourcesContent.length,
+  showMoreButton = false,
+}) => {
   const navigate = useNavigate();
 
   return (
