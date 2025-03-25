@@ -275,7 +275,24 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                 <div className="number">2.</div>
                 <div className="label">
                   Set your improved income by choosing a percentage increase in
-                  current income to close the feasible income gap
+                  current income to close the feasible income gap{" "}
+                  <Tooltip
+                    title={
+                      <>
+                        The improved income level is calculated by increasing
+                        your current income by a percentage of the feasible
+                        income gap (feasible income - current income). For
+                        example, if your current income is <b>$1,000</b> and
+                        your feasible income is <b>$2,000</b>, the gap is{" "}
+                        <b>$1,000</b>. A <b>10% increase</b> means adding{" "}
+                        <b>$100</b>, resulting in a new income of <b>$1,100</b>.
+                      </>
+                    }
+                  >
+                    <span>
+                      <QuestionCircleOutline />
+                    </span>
+                  </Tooltip>
                 </div>
               </Space>
               <div className="income-inputs-wrapper">
