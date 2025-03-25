@@ -120,9 +120,11 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     const absoluteKey = `${absoluteKeyPreffix}-${index}`;
 
     const currentIncome = currentDashboardData?.total_current_income || 0;
+    const feasibleIncome = currentDashboardData?.total_feasible_income || 0;
     let absoluteIncreaseValue = currentIncome;
     if (percentage) {
-      absoluteIncreaseValue = currentIncome * (1 + percentage / 100);
+      absoluteIncreaseValue =
+        currentIncome + (feasibleIncome - currentIncome) * (percentage / 100);
     }
     updateOptimizationModelState({
       increaseValues: {
