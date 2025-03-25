@@ -1,38 +1,26 @@
 @import "../../variables.scss";
 
-#explore-studies-page {
-  .explore-content-wrapper {
+#lib-explorer {
+  .lib-content-wrapper {
     margin-top: 24px;
 
-    .ant-input,
-    .ant-input-number {
-      width: 100%;
-    }
+    .lib-page-title-wrapper {
+      .title {
+        color: #01625f;
+        font-family: "RocGrotesk";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 38px;
+      }
 
-    .explore-info-wrapper {
-      width: 100%;
-
-      .explore-info-content {
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-
-        .title {
-          color: #01625f;
-          font-family: "RocGrotesk";
-          font-size: 24px;
-          font-style: normal;
-          font-weight: 700;
-          line-height: 38px;
-        }
-
-        .description {
-          font-family: "TabletGothic";
-          font-size: 14px;
-          font-style: normal;
-          font-weight: 400;
-          line-height: 24px;
-        }
+      .description {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        max-width: 70%;
       }
     }
 
@@ -68,7 +56,7 @@
       }
     }
 
-    .explore-filter-wrapper {
+    .lib-filter-wrapper {
       .ant-select,
       .ant-input {
         width: 100%;
@@ -101,28 +89,5 @@
         background: transparent;
       }
     }
-
-    .table-wrapper {
-      .ant-table-thead {
-        tr {
-          th.ant-table-cell,
-          td.ant-table-row-expand-icon-cell {
-            background: #d1d1d1;
-            color: #000;
-          }
-        }
-      }
-
-      .ant-table-thead > tr > th::before {
-        background: none;
-      }
-    }
-  }
-}
-
-.reference-form-container {
-  .ant-input,
-  .ant-input-number {
-    width: 100%;
   }
 }
