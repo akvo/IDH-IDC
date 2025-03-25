@@ -24,7 +24,7 @@ export const otherToolsAndResourcesContent = [
     image: Image2,
     title: "Cocoa Income Inventory",
     description:
-      "The tool allows you to explore data on cocoa production, income from cocoa and other key indicators from different origins. Play around with the data using an interactive dashboard.",
+      "The tool allows you to explore data on cocoa production, income from cocoa, and other key indicators from different origins. Play around with the data using an interactive dashboard.",
     order: 2,
     button: {
       href: "/cocoa-income-inventory",
@@ -48,9 +48,9 @@ export const otherToolsAndResourcesContent = [
   {
     tag: "Paper",
     image: Image4,
-    title: "Navigating Due Dilligence and Reporting Standards",
+    title: "Navigating Due Diligence and Reporting Standards",
     description:
-      "This paper by IDH, WUR and the Voice Network, provides guidance on how IDH tools and resources can support on Due Diligence and Reporting standards.",
+      "This paper by IDH provides guidance on how IDH tools and resources can support Due Diligence and Reporting standards.",
     order: 4,
     button: {
       href: null,
@@ -69,6 +69,32 @@ export const otherToolsAndResourcesContent = [
       href: "https://www.idhsustainabletrade.com/uploaded/2024/04/DISCO-Procurement-Practices-Position-Paper.pdf",
       type: "new-window",
       text: "Download",
+    },
+  },
+  {
+    tag: "Additional Resources",
+    image: Image5,
+    title: "Aligned Inclusive Living Income Narrative and Indicators",
+    description:
+      "This document provides a narrative and indicators for inclusive living income.",
+    order: 6,
+    button: {
+      href: "https://www.living-income.com/tools-resources/publications",
+      type: "new-window",
+      text: "Learn More",
+    },
+  },
+  {
+    tag: "Additional Resources",
+    image: Image5,
+    title: "IDH Inclusive Business Analysis",
+    description:
+      "Provides insights into the workings and economics of smallholder-inclusive business models, exploring various scenarios and delivering actionable recommendations to enhance efficiency, effectiveness, and sustainability.",
+    order: 7,
+    button: {
+      href: "https://www.idhsustainabletrade.com/business-analytics/",
+      type: "new-window",
+      text: "Learn More",
     },
   },
 ];
