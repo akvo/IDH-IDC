@@ -44,11 +44,7 @@ const LivingIncomeBenchmarkExplorer = () => {
 
         {/* Map & Filter */}
         <Col span={24}>
-          <Row
-            gutter={[12, 12]}
-            align="middle"
-            className="map-filter-container"
-          >
+          <Row gutter={[12, 12]} align="top" className="map-filter-container">
             <Col span={16}>
               <Card className="map-card-wrapper">
                 <Chart
@@ -69,7 +65,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                 />
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={8} className="filter-benchmark-value-wrapper">
               <Card className="filter-card-wrapper">
                 <Row gutter={[20, 20]}>
                   <Col span={24}>
@@ -134,6 +130,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                     </Form>
                   </Col>
                 </Row>
+              </Card>
+              <Card className="benchmark-value-card-wrapper">
+                <div>12286.00 KES</div>
+                <div>Living income benchmark for a household/year</div>
+                <div>
+                  Source: <a>Living Income Benchmark</a> 2023
+                </div>
               </Card>
             </Col>
           </Row>
