@@ -1,11 +1,12 @@
 from typing import List
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from models.living_income_benchmark import (
     LivingIncomeBenchmark,
     LivingIncomeBenchmarkDict,
 )
 from models.cpi import Cpi
+from models.country import Country
 
 # from fastapi import HTTPException, status
 
@@ -99,3 +100,17 @@ def get_by_country_region_year(
         lib["cpi_factor"] = cpi_factor or None
         lib["message"] = None
         return lib
+
+
+def count_lib_by_country(session: Session):
+    res = session.query(
+        Country.id,
+        Country.name,
+        func.count(LivingIncomeBenchmark.id).label("count")
+    ).outerjoin(
+        LivingIncomeBenchmark, Country.id == LivingIncomeBenchmark.country
+    ).group_by(Country.id).having(
+        # Filters out countries with count 0
+        func.count(LivingIncomeBenchmark.id) > 0
+    ).all()
+    return res

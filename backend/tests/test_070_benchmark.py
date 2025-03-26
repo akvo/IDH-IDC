@@ -137,3 +137,18 @@ class TestBenchmarkRoute:
                 "target yourself' option."
             ),
         }
+
+    @pytest.mark.asyncio
+    async def test_count_lib_by_country(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # without cred
+        res = await client.get(
+            app.url_path_for(
+                "lib:count_lib_by_country",
+            )
+        )
+        assert res.status_code == 200
+        res = res.json()
+        res = res[0].keys()
+        assert list(res) == ["country_id", "COUNTRY", "count"]
