@@ -145,7 +145,7 @@
 
         h3 {
           font-size: 20px;
-          min-width: min-content;
+          white-space: nowrap; /* Prevents wrapping */
         }
 
         p {
