@@ -36,9 +36,9 @@ class TestBenchmarkRoute:
             "household_size": 4.0,
             "year": 2020,
             "value": {"lcu": 1200.5, "usd": 2200.5, "eur": 3200.5},
-            "case_year_cpi": None,
-            "last_year_cpi": None,
-            "cpi_factor": None,
+            "case_year_cpi": 5000.0,
+            "last_year_cpi": 7000.0,
+            "cpi_factor": -0.2857142857142857,
             "message": None,
             "household_equiv": None,
             "links": None,
@@ -128,7 +128,7 @@ class TestBenchmarkRoute:
             "links": None,
             "value": {"lcu": 1200.5, "usd": 2200.5, "eur": 3200.5},
             "case_year_cpi": None,
-            "last_year_cpi": None,
+            "last_year_cpi": 7000.0,
             "cpi_factor": None,
             "message": (
                 "This is the benchmark value for 2020, which is the most "

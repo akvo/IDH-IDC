@@ -12,9 +12,11 @@ import {
   Input,
   InputNumber,
   Switch,
+  message,
+  Alert,
 } from "antd";
 import Chart from "../../components/chart";
-import { min, max } from "lodash";
+import { min, max, isEmpty } from "lodash";
 import { api } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
 
@@ -53,6 +55,12 @@ const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
   return adult_size + children_size;
 };
 
+const defaultRegionState = {
+  status: null,
+  loading: false,
+  placeholder: "Select Region",
+};
+
 const LivingIncomeBenchmarkExplorer = () => {
   const [filterForm] = Form.useForm();
   const [libForm] = Form.useForm();
@@ -62,16 +70,20 @@ const LivingIncomeBenchmarkExplorer = () => {
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
   const [regionOptions, setRegionOptions] = useState(false);
-  const [regionState, setRegionState] = useState({
-    status: null,
-    loading: false,
-    disabled: true,
-    placeholder: "Select Region",
-  });
+  const [regionState, setRegionState] = useState(defaultRegionState);
   const [defaultLIB, setDefaultLIB] = useState({});
+  const [showCustomCPIField, setShowCustomCPIField] = useState(false);
+  const [adjustedLIB, setAdjustedLIB] = useState({});
 
+  // Search form
   const selectedCountry = Form.useWatch("country", filterForm);
+  const selectedRegion = Form.useWatch("region", filterForm);
 
+  // Adjusted LIB form
+  const selectedYear = Form.useWatch("year", libForm);
+  const newCPI = Form.useWatch("new_cpi", libForm);
+
+  // handle on selected country
   useEffect(() => {
     if (selectedCountry) {
       setRegionState((prev) => ({ ...prev, loading: true }));
@@ -104,6 +116,7 @@ const LivingIncomeBenchmarkExplorer = () => {
     }
   }, [selectedCountry]);
 
+  // handle onSearch
   const onSearch = (values) => {
     const { country, region } = values;
     let url = `country_region_benchmark?country_id=${country}`;
@@ -125,21 +138,92 @@ const LivingIncomeBenchmarkExplorer = () => {
       let LITarget = 0;
       if (data?.cpi_factor) {
         const caseYearLIB = targetValue * (1 + data.cpi_factor);
-        // incorporate year multiplier
         LITarget = (defHHSize / targetHH) * caseYearLIB;
       } else {
-        // incorporate year multiplier
         LITarget = (defHHSize / targetHH) * targetValue;
       }
       setDefaultLIB({ ...data, LITarget });
     });
   };
 
+  // handle on clear search
   const handleClearSearch = () => {
     filterForm.resetFields();
     setDefaultLIB({});
+    setRegionState(defaultRegionState);
   };
-  console.log(defaultLIB);
+
+  // handle onChange year
+  useEffect(() => {
+    if (selectedYear) {
+      let url = `country_region_benchmark?country_id=${selectedCountry}`;
+      url = `${url}&region_id=${selectedRegion}&year=${selectedYear}`;
+      api.get(url).then((res) => {
+        const { data } = res;
+        const adult = Math.round(data.nr_adults);
+        const child = Math.round(data.household_size - data.nr_adults);
+        const defHHSize = calculateHouseholdSize({
+          adult,
+          child,
+        });
+        const targetHH = data.household_equiv;
+        // Use LCU
+        const targetValue = data.value.lcu;
+        // with CPI calculation
+        // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+        // INFLATION RATE HERE
+        let LITarget = 0;
+        if (data?.cpi_factor) {
+          libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
+          const caseYearLIB = targetValue * (1 + data.cpi_factor);
+          LITarget = (defHHSize / targetHH) * caseYearLIB;
+          setShowCustomCPIField(false);
+        } else {
+          libForm.setFieldValue("inflation_rate", "NA");
+          LITarget = (defHHSize / targetHH) * targetValue;
+          setShowCustomCPIField(true);
+        }
+        libForm.setFieldValue(
+          "adjusted_benchmark_value",
+          `${thousandFormatter(LITarget, 2)} LCU`
+        );
+        setAdjustedLIB({ ...data, LITarget });
+      });
+    }
+  }, [selectedYear, selectedCountry, selectedRegion]);
+
+  console.log(defaultLIB, adjustedLIB);
+  // handle input new CPI value
+  useEffect(() => {
+    if (!isEmpty(adjustedLIB) && newCPI) {
+      const last_year_cpi = adjustedLIB.last_year_cpi;
+      const adult = Math.round(adjustedLIB.nr_adults);
+      const child = Math.round(
+        adjustedLIB.household_size - adjustedLIB.nr_adults
+      );
+      const defHHSize = calculateHouseholdSize({
+        adult,
+        child,
+      });
+      const targetHH = adjustedLIB.household_equiv;
+      // Use LCU
+      const targetValue = adjustedLIB.value.lcu;
+
+      const newCPIFactor = (newCPI - last_year_cpi) / last_year_cpi; // inflation rate
+
+      const caseYearLIB = targetValue * (1 + newCPIFactor);
+      const LITarget = (defHHSize / targetHH) * caseYearLIB;
+
+      libForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
+      libForm.setFieldValue(
+        "new_adjusted_benchmark_value",
+        `${thousandFormatter(LITarget, 2)} LCU`
+      );
+    } else {
+      libForm.setFieldValue("new_inflation_rate", null);
+      libForm.setFieldValue("new_adjusted_benchmark_value", null);
+    }
+  }, [newCPI, adjustedLIB]);
 
   return (
     <ContentLayout
@@ -160,6 +244,16 @@ const LivingIncomeBenchmarkExplorer = () => {
           </div>
         </Col>
         {/* EOL Page title */}
+
+        {regionState.status === 404 && (
+          <Col span={24}>
+            <Alert
+              showIcon
+              type="warning"
+              message="A benchmark for the country is not available."
+            />
+          </Col>
+        )}
 
         {/* Map & Filter */}
         <Col span={24}>
@@ -221,7 +315,6 @@ const LivingIncomeBenchmarkExplorer = () => {
                               options={regionOptions}
                               placeholder={regionState.placeholder}
                               loading={regionState.loading}
-                              disabled={regionState.disabled}
                               style={{ width: "100%" }}
                             />
                           </Form.Item>
@@ -278,7 +371,14 @@ const LivingIncomeBenchmarkExplorer = () => {
         {/* EOL Map & Filter */}
 
         {/* LIB form field */}
-        <Col span={24} className="lib-form-wrapper">
+        <Col
+          span={24}
+          className={`lib-form-wrapper ${
+            regionState.status !== 200 && isEmpty(defaultLIB)
+              ? "hide-visual"
+              : ""
+          }`}
+        >
           <Card>
             <h2>Adjust the income benchmark (optional)</h2>
             <p>
@@ -311,8 +411,8 @@ const LivingIncomeBenchmarkExplorer = () => {
                       <Input {...inputProps} disabled />
                     </Form.Item>
                   </div>
-                  <div>
-                    <p>
+                  <div className={showCustomCPIField ? "" : "hide-visual"}>
+                    <p className="error">
                       No inflation rate available for the selected year. Please
                       manually enter the Consumer Price Index (CPI) for the
                       required time period using the link below. Once you enter
