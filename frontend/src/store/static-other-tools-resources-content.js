@@ -56,7 +56,7 @@ export const otherToolsAndResourcesContent = [
     order: 4,
     button: {
       href: "https://idh.org/resources/living-income-and-living-wage-tools-support-effective-due-diligence",
-      type: "download",
+      type: "new-window",
       text: "Download",
     },
   },
