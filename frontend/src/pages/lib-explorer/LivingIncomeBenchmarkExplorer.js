@@ -88,6 +88,27 @@ const LivingIncomeBenchmarkExplorer = () => {
   const newHhSize = Form.useWatch("new_hh_size", libForm);
   const newAvgNrAdult = Form.useWatch("new_avg_nr_of_adult", libForm);
 
+  // handle fetch map data
+  useEffect(() => {
+    api
+      .get("count-lib-by-country")
+      .then((res) => {
+        setMapData(
+          res.data.map((d) => ({
+            ...d,
+            name: d.COUNTRY,
+            value: d.benchmark_count,
+          }))
+        );
+      })
+      .catch((e) => {
+        console.error(`Error fetch lib map: ${e.response}`);
+      })
+      .finally(() => {
+        setMapLoading(false);
+      });
+  }, []);
+
   // handle on clear search
   const handleClearSearch = useCallback(
     ({ resetFilterFields = true }) => {
@@ -341,18 +362,15 @@ const LivingIncomeBenchmarkExplorer = () => {
                 <Chart
                   wrapper={false}
                   type="CHOROPLETH"
-                  // loading={mapLoading}
+                  loading={mapLoading}
                   height={505}
                   data={mapData}
                   extra={{
-                    seriesName: "Case count by country",
+                    seriesName: "Benchmark count by country",
                     min: min(mapData.map((d) => d.value)),
                     max: max(mapData.map((d) => d.value)),
                     visualMapText: ["Number of benchmark", ""],
                   }}
-                  // callbacks={{
-                  //   onClick: onClickMap,
-                  // }}
                 />
               </Card>
             </Col>
@@ -541,7 +559,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                       size="small"
                       onChange={setIncorporateStepOne}
                       disabled={isEmpty(adjustedLIB)}
-                      value={incorporateStepOne}
+                      checked={incorporateStepOne}
                     />{" "}
                     Take step 1 into account
                   </Form.Item>

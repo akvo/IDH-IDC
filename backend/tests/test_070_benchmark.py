@@ -151,4 +151,4 @@ class TestBenchmarkRoute:
         assert res.status_code == 200
         res = res.json()
         res = res[0].keys()
-        assert list(res) == ["country_id", "COUNTRY", "count"]
+        assert list(res) == ["country_id", "COUNTRY", "benchmark_count"]

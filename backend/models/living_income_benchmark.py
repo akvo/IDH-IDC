@@ -10,7 +10,7 @@ from models.region import Region
 class MapLIBDict(TypedDict):
     country_id: int
     COUNTRY: str
-    count: int
+    benchmark_count: int
 
 
 class LivingIncomeBenchmarkValue(TypedDict):

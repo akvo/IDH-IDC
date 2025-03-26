@@ -55,5 +55,5 @@ def get_count_lib_by_country(
     return [{
         "country_id": row.id,
         "COUNTRY": row.name,
-        "count": row.count
+        "benchmark_count": row.count
     } for row in results]
