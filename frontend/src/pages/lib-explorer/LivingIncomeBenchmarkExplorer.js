@@ -135,6 +135,7 @@ const LivingIncomeBenchmarkExplorer = () => {
       setRegionState(defaultRegionState);
       setRegionOptions([]);
       setNewCPIFactor(null);
+      setIncorporateStepOne(false);
     },
     [filterForm, libForm]
   );
