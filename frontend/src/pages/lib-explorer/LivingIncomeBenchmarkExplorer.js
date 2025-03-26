@@ -16,6 +16,7 @@ import {
 import Chart from "../../components/chart";
 import { min, max } from "lodash";
 import { api } from "../../lib";
+import { thousandFormatter } from "../../components/chart/options/common";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -43,6 +44,15 @@ const numberProps = {
   },
 };
 
+const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
+  // OECD average household size
+  // first adult = 1, next adult 0.5
+  // 1 child = 0.3
+  const adult_size = adult === 1 ? 1 : 1 + (adult - 1) * 0.5;
+  const children_size = child * 0.3;
+  return adult_size + children_size;
+};
+
 const LivingIncomeBenchmarkExplorer = () => {
   const [filterForm] = Form.useForm();
   const [libForm] = Form.useForm();
@@ -58,6 +68,7 @@ const LivingIncomeBenchmarkExplorer = () => {
     disabled: true,
     placeholder: "Select Region",
   });
+  const [defaultLIB, setDefaultLIB] = useState({});
 
   const selectedCountry = Form.useWatch("country", filterForm);
 
@@ -92,6 +103,43 @@ const LivingIncomeBenchmarkExplorer = () => {
         });
     }
   }, [selectedCountry]);
+
+  const onSearch = (values) => {
+    const { country, region } = values;
+    let url = `country_region_benchmark?country_id=${country}`;
+    url = `${url}&region_id=${region}&year=${currentYear}`;
+    api.get(url).then((res) => {
+      const { data } = res;
+      const adult = Math.round(data.nr_adults);
+      const child = Math.round(data.household_size - data.nr_adults);
+      const defHHSize = calculateHouseholdSize({
+        adult,
+        child,
+      });
+      const targetHH = data.household_equiv;
+      // Use LCU
+      const targetValue = data.value.lcu;
+      // with CPI calculation
+      // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+      // INFLATION RATE HERE
+      let LITarget = 0;
+      if (data?.cpi_factor) {
+        const caseYearLIB = targetValue * (1 + data.cpi_factor);
+        // incorporate year multiplier
+        LITarget = (defHHSize / targetHH) * caseYearLIB;
+      } else {
+        // incorporate year multiplier
+        LITarget = (defHHSize / targetHH) * targetValue;
+      }
+      setDefaultLIB({ ...data, LITarget });
+    });
+  };
+
+  const handleClearSearch = () => {
+    filterForm.resetFields();
+    setDefaultLIB({});
+  };
+  console.log(defaultLIB);
 
   return (
     <ContentLayout
@@ -151,8 +199,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                       name="filter-form"
                       className="filter-form-container"
                       layout="vertical"
-                      // initialValues={filterInitialValues}
-                      // onFinish={onFilter}
+                      onFinish={onSearch}
                     >
                       <Row gutter={[16, 16]} className="lib-filter-wrapper">
                         <Col span={24}>
@@ -162,14 +209,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                               {...selectProps}
                               options={countryOptions}
                               placeholder="Select Country"
-                              loading={mapLoading}
                               style={{ width: "100%" }}
                             />
                           </Form.Item>
                         </Col>
                         <Col span={24}>
                           <div className="filter-label">Region</div>
-                          <Form.Item name="source" noStyle>
+                          <Form.Item name="region" noStyle>
                             <Select
                               {...selectProps}
                               options={regionOptions}
@@ -184,8 +230,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                           <Space wrap={true}>
                             <Button
                               className="clear-button"
-                              // onClick={handleClearFilter}
-                              disabled={mapLoading}
+                              onClick={handleClearSearch}
                             >
                               Clear
                             </Button>
@@ -193,7 +238,6 @@ const LivingIncomeBenchmarkExplorer = () => {
                               <Button
                                 className="search-button"
                                 htmlType="submit"
-                                disabled={mapLoading}
                               >
                                 Search
                               </Button>
@@ -207,14 +251,26 @@ const LivingIncomeBenchmarkExplorer = () => {
               </Card>
               <Card className="benchmark-value-card-wrapper">
                 <Space align="center" size="large">
-                  <h3>12286.00 KES</h3>
+                  <h3>{thousandFormatter(defaultLIB?.LITarget || 0, 2)} LCU</h3>
                   <p className="max-width">
                     Living income benchmark for a household/year
                   </p>
                 </Space>
-                <p>
-                  Source: <a>Living Income Benchmark</a> 2023
-                </p>
+                {defaultLIB?.source ? (
+                  <p>
+                    Source:{" "}
+                    <a
+                      href={defaultLIB?.links || "#"}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {defaultLIB.source}
+                    </a>{" "}
+                    {defaultLIB.year}
+                  </p>
+                ) : (
+                  ""
+                )}
               </Card>
             </Col>
           </Row>
