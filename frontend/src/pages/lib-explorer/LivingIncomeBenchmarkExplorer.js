@@ -1,21 +1,50 @@
 import React, { useState } from "react";
 import "./lib-explorer.scss";
 import { ContentLayout } from "../../components/layout";
-import { Row, Col, Form, Card, Space, Select, Button } from "antd";
+import {
+  Row,
+  Col,
+  Form,
+  Card,
+  Space,
+  Select,
+  Button,
+  Input,
+  InputNumber,
+  Switch,
+} from "antd";
 import Chart from "../../components/chart";
 import { min, max } from "lodash";
+
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from(
+  { length: currentYear - 2019 },
+  (_, i) => 2020 + i
+).map((x) => ({ label: x, value: x }));
 
 const selectProps = {
   showSearch: true,
   allowClear: true,
   optionFilterProp: "label",
   style: {
-    width: "100%",
+    width: 135,
+  },
+};
+const inputProps = {
+  style: {
+    width: 135,
+  },
+};
+const numberProps = {
+  controls: false,
+  style: {
+    width: 135,
   },
 };
 
 const LivingIncomeBenchmarkExplorer = () => {
   const [form] = Form.useForm();
+  const [libForm] = Form.useForm();
 
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
@@ -30,7 +59,7 @@ const LivingIncomeBenchmarkExplorer = () => {
       ]}
       wrapperId="lib-explorer"
     >
-      <Row gutter={[20, 20]} className="lib-content-wrapper">
+      <Row gutter={[20, 20]} className="lib-content-container">
         {/* Page title */}
         <Col span={24} className="lib-page-title-wrapper">
           <div className="title">Living income benchmark explorer</div>
@@ -92,6 +121,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                               options={countryOptions}
                               placeholder="Select Country"
                               loading={mapLoading}
+                              style={{ width: "100%" }}
                             />
                           </Form.Item>
                         </Col>
@@ -103,6 +133,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                               options={[]}
                               placeholder="Select Region"
                               loading={mapLoading}
+                              style={{ width: "100%" }}
                             />
                           </Form.Item>
                         </Col>
@@ -132,16 +163,165 @@ const LivingIncomeBenchmarkExplorer = () => {
                 </Row>
               </Card>
               <Card className="benchmark-value-card-wrapper">
-                <div>12286.00 KES</div>
-                <div>Living income benchmark for a household/year</div>
-                <div>
+                <Space align="center" size="large">
+                  <h3>12286.00 KES</h3>
+                  <p className="max-width">
+                    Living income benchmark for a household/year
+                  </p>
+                </Space>
+                <p>
                   Source: <a>Living Income Benchmark</a> 2023
-                </div>
+                </p>
               </Card>
             </Col>
           </Row>
         </Col>
         {/* EOL Map & Filter */}
+
+        {/* LIB form field */}
+        <Col span={24} className="lib-form-wrapper">
+          <Card>
+            <h2>Adjust the income benchmark (optional)</h2>
+            <p>
+              You may need to adjust your income target for a different year (to
+              account for inflation) or for a different household composition.
+              <br />
+              To do so, follow the optional steps below.
+            </p>
+            <Form form={libForm} layout="vertical">
+              {/* Step 1 */}
+              <div className="step-container">
+                <Space className="step-wrapper" align="center">
+                  <div className="number">1.</div>
+                  <div className="label">
+                    Benchmark adjustment for a different year
+                  </div>
+                </Space>
+                <div>
+                  <div className="step-form-item-wrapper">
+                    <Form.Item label="Select year" name="year">
+                      <Select {...selectProps} options={yearOptions} />
+                    </Form.Item>
+                    <Form.Item label="Inflation rate" name="inflation_rate">
+                      <Input {...inputProps} disabled />
+                    </Form.Item>
+                    <Form.Item
+                      label="Adjusted benchmark value for a household/year"
+                      name="adjusted_benchmark_value"
+                    >
+                      <Input {...inputProps} disabled />
+                    </Form.Item>
+                  </div>
+                  <div>
+                    <p>
+                      No inflation rate available for the selected year. Please
+                      manually enter the Consumer Price Index (CPI) for the
+                      required time period using the link below. Once you enter
+                      the value, the inflation rate will update, and the
+                      benchmark will adjust accordingly.
+                    </p>
+                    <p>
+                      <a>Find consumer price index (CPI)</a>
+                    </p>
+                    <div className="step-form-item-wrapper">
+                      <Form.Item label="Insert the CPI value" name="new_cpi">
+                        <InputNumber {...numberProps} />
+                      </Form.Item>
+                      <Form.Item
+                        label="Inflation rate"
+                        name="new_inflation_rate"
+                      >
+                        <Input {...inputProps} disabled />
+                      </Form.Item>
+                      <Form.Item
+                        label="Adjusted benchmark value for a household/year"
+                        name="new_adjusted_benchmark_value"
+                      >
+                        <Input {...inputProps} disabled />
+                      </Form.Item>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* EOL Step 1 */}
+
+              {/* Step 2 */}
+              <div className="step-container">
+                <Space className="step-wrapper" align="center">
+                  <div className="number">2.</div>
+                  <div className="label">
+                    Benchmark adjustment for a different household composition
+                  </div>
+                </Space>
+                <div>
+                  <Form.Item name="take_step_1_into_account">
+                    <Switch size="small" /> Take step 1 into account
+                  </Form.Item>
+                  <div className="step-form-item-wrapper step-2-wrapper">
+                    {/* current composition */}
+                    <div>
+                      <p>Current composition</p>
+                      <div className="step-2-value-wrapper">
+                        <div className="step-2-field-wrapper step-2-current">
+                          <p>Household size: </p>
+                          <Form.Item name="current_hh_size" noStyle>
+                            <Input size="small" disabled />
+                          </Form.Item>
+                        </div>
+                        <div className="step-2-field-wrapper">
+                          <p>Adults: </p>
+                          <Form.Item name="current_adult" noStyle>
+                            <Input size="small" disabled />
+                          </Form.Item>
+                        </div>
+                        <div className="step-2-field-wrapper">
+                          <p>Children: </p>
+                          <Form.Item name="current_child" noStyle>
+                            <Input size="small" disabled />
+                          </Form.Item>
+                        </div>
+                      </div>
+                    </div>
+                    {/* EOL current composition */}
+
+                    {/* new composition */}
+                    <div>
+                      <p>New composition</p>
+                      <div className="step-2-value-wrapper">
+                        <div className="step-2-field-wrapper">
+                          <p>Household size: </p>
+                          <Form.Item name="new_current_hh_size" noStyle>
+                            <InputNumber {...numberProps} size="small" />
+                          </Form.Item>
+                        </div>
+                        <div className="step-2-field-wrapper">
+                          <p>Avg. nr. of adults:</p>
+                          <Form.Item name="new_avg_nr_of_adult" noStyle>
+                            <InputNumber {...numberProps} size="small" />
+                          </Form.Item>
+                        </div>
+                      </div>
+                    </div>
+                    {/* EOL new composition*/}
+
+                    {/* adjusted value */}
+                    <div>
+                      <Form.Item
+                        label="Adjusted benchmark value for a household/year"
+                        name="new_hh_adjusted_benchmark_value"
+                      >
+                        <Input {...inputProps} disabled />
+                      </Form.Item>
+                    </div>
+                    {/* EOL adjusted value */}
+                  </div>
+                </div>
+              </div>
+              {/* EOL Step 2 */}
+            </Form>
+          </Card>
+        </Col>
+        {/* EOL LIB form field */}
       </Row>
     </ContentLayout>
   );
