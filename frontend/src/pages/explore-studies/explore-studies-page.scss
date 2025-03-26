@@ -53,14 +53,18 @@
           justify-content: center;
         }
       }
+    }
 
-      .filter-card-wrapper {
-        border-radius: 20px;
-        background: #d0e2e2;
+    .filter-card-wrapper {
+      border-radius: 20px;
+      background: #d0e2e2;
 
-        .ant-card-body {
-          padding: 12px 20px;
-        }
+      h3 {
+        font-size: 16px;
+      }
+
+      .ant-card-body {
+        padding: 12px 20px;
       }
     }
 

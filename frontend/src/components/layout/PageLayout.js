@@ -45,6 +45,13 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         isPublic: false,
         children: [
           {
+            testid: "nav-menu-lib-explorer",
+            label: "Living income benchmark explorer",
+            key: "/living-income-benchmark-explorer",
+            isInternalUser: true,
+            role: adminRole,
+          },
+          {
             testid: "nav-menu-explore-studies",
             label: "Explore other studies",
             key: "/explore-studies",

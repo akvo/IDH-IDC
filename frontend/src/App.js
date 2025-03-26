@@ -36,6 +36,7 @@ import {
   CocoaIncomeInventory,
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
+import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 
 const optionRoutes = [
   "organisation/options",
@@ -200,6 +201,11 @@ const App = () => {
                 exact
                 path="/explore-studies/:countryId/:commodityId/:driverId"
                 element={<ExploreStudiesPage />}
+              />
+              <Route
+                exact
+                path="/living-income-benchmark-explorer"
+                element={<LivingIncomeBenchmarkExplorer />}
               />
             </Route>
           ) : (

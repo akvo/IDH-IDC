@@ -67,6 +67,17 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
           const suffixText = value ? (value === 1 ? "study" : "studies") : "";
           content += `<div>${value} ${suffixText}</div>`;
         }
+
+        if (!isNaN(data?.benchmark_count)) {
+          // lib explorer page
+          const suffixText = value
+            ? value === 1
+              ? "benchmark available"
+              : "benchmarks available"
+            : "";
+          content += `<div>${value} ${suffixText}</div>`;
+        }
+
         content += `</div>`;
         return content;
       },
