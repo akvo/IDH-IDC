@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./lib-explorer.scss";
 import { ContentLayout } from "../../components/layout";
 import {
@@ -15,6 +15,7 @@ import {
 } from "antd";
 import Chart from "../../components/chart";
 import { min, max } from "lodash";
+import { api } from "../../lib";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -43,13 +44,54 @@ const numberProps = {
 };
 
 const LivingIncomeBenchmarkExplorer = () => {
-  const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
   const [libForm] = Form.useForm();
+
+  const countryOptions = window.master.countries;
 
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
+  const [regionOptions, setRegionOptions] = useState(false);
+  const [regionState, setRegionState] = useState({
+    status: null,
+    loading: false,
+    disabled: true,
+    placeholder: "Select Region",
+  });
 
-  const countryOptions = window.master.countries;
+  const selectedCountry = Form.useWatch("country", filterForm);
+
+  useEffect(() => {
+    if (selectedCountry) {
+      setRegionState((prev) => ({ ...prev, loading: true }));
+      api
+        .get(`region/options?country_id=${selectedCountry}`)
+        .then((res) => {
+          const { data } = res;
+          setRegionOptions(data);
+          setRegionState((prev) => ({
+            ...prev,
+            disabled: false,
+            status: 200,
+            placeholder: "Select or Type Region",
+          }));
+        })
+        .catch((e) => {
+          const { status } = e.response;
+          setRegionOptions([]);
+          setRegionState((prev) => ({
+            ...prev,
+            disabled: false,
+            status: status,
+            placeholder:
+              status === 404 ? "Region not available" : prev.placeholder,
+          }));
+        })
+        .finally(() => {
+          setRegionState((prev) => ({ ...prev, loading: false }));
+        });
+    }
+  }, [selectedCountry]);
 
   return (
     <ContentLayout
@@ -105,7 +147,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                   </Col>
                   <Col span={24}>
                     <Form
-                      form={form}
+                      form={filterForm}
                       name="filter-form"
                       className="filter-form-container"
                       layout="vertical"
@@ -130,9 +172,10 @@ const LivingIncomeBenchmarkExplorer = () => {
                           <Form.Item name="source" noStyle>
                             <Select
                               {...selectProps}
-                              options={[]}
-                              placeholder="Select Region"
-                              loading={mapLoading}
+                              options={regionOptions}
+                              placeholder={regionState.placeholder}
+                              loading={regionState.loading}
+                              disabled={regionState.disabled}
                               style={{ width: "100%" }}
                             />
                           </Form.Item>
