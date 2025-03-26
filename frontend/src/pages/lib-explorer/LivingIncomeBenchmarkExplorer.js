@@ -35,15 +35,28 @@ const selectProps = {
     width: 135,
   },
 };
-const inputProps = {
+const step2InputProps = {
+  style: {
+    width: 50,
+  },
+  className: "step2-input-field",
+};
+const disabledInputProps = {
   style: {
     width: 135,
   },
+  className: "disabled-field",
 };
 const numberProps = {
   controls: false,
   style: {
     width: 135,
+  },
+};
+const step2NumberProps = {
+  controls: false,
+  style: {
+    width: 50,
   },
 };
 
@@ -311,7 +324,7 @@ const LivingIncomeBenchmarkExplorer = () => {
       }
       libForm.setFieldValue(
         "new_hh_adjusted_benchmark_value",
-        thousandFormatter(LITarget, 2)
+        `${thousandFormatter(LITarget, 2)} LCU`
       );
     }
   }, [
@@ -498,13 +511,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                       <Select {...selectProps} options={yearOptions} />
                     </Form.Item>
                     <Form.Item label="Inflation rate" name="inflation_rate">
-                      <Input {...inputProps} disabled />
+                      <Input {...disabledInputProps} disabled />
                     </Form.Item>
                     <Form.Item
                       label="Adjusted benchmark value for a household/year"
                       name="adjusted_benchmark_value"
                     >
-                      <Input {...inputProps} disabled />
+                      <Input {...disabledInputProps} disabled />
                     </Form.Item>
                   </div>
                   <div className={showCustomCPIField ? "" : "hide-visual"}>
@@ -531,13 +544,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                         label="Inflation rate"
                         name="new_inflation_rate"
                       >
-                        <Input {...inputProps} disabled />
+                        <Input {...disabledInputProps} disabled />
                       </Form.Item>
                       <Form.Item
                         label="Adjusted benchmark value for a household/year"
                         name="new_adjusted_benchmark_value"
                       >
-                        <Input {...inputProps} disabled />
+                        <Input {...disabledInputProps} disabled />
                       </Form.Item>
                     </div>
                   </div>
@@ -567,23 +580,23 @@ const LivingIncomeBenchmarkExplorer = () => {
                     {/* current composition */}
                     <div>
                       <p>Current composition</p>
-                      <div className="step-2-value-wrapper">
-                        <div className="step-2-field-wrapper step-2-current">
+                      <div className="step-2-value-wrapper step-2-current">
+                        <div className="step-2-field-wrapper">
                           <p>Household size: </p>
                           <Form.Item name="current_hh_size" noStyle>
-                            <Input {...inputProps} size="small" disabled />
+                            <Input {...step2InputProps} size="small" disabled />
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
                           <p>Adults: </p>
                           <Form.Item name="current_adult" noStyle>
-                            <Input {...inputProps} size="small" disabled />
+                            <Input {...step2InputProps} size="small" disabled />
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
                           <p>Children: </p>
                           <Form.Item name="current_child" noStyle>
-                            <Input {...inputProps} size="small" disabled />
+                            <Input {...step2InputProps} size="small" disabled />
                           </Form.Item>
                         </div>
                       </div>
@@ -597,13 +610,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                         <div className="step-2-field-wrapper">
                           <p>Household size: </p>
                           <Form.Item name="new_hh_size" noStyle>
-                            <InputNumber {...numberProps} size="small" />
+                            <InputNumber {...step2NumberProps} size="small" />
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
                           <p>Avg. nr. of adults:</p>
                           <Form.Item name="new_avg_nr_of_adult" noStyle>
-                            <InputNumber {...numberProps} size="small" />
+                            <InputNumber {...step2NumberProps} size="small" />
                           </Form.Item>
                         </div>
                       </div>
@@ -616,7 +629,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                         label="Adjusted benchmark value for a household/year"
                         name="new_hh_adjusted_benchmark_value"
                       >
-                        <Input {...inputProps} disabled />
+                        <Input {...disabledInputProps} disabled />
                       </Form.Item>
                     </div>
                     {/* EOL adjusted value */}

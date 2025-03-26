@@ -8,6 +8,22 @@
       display: none;
     }
 
+    .disabled-field {
+      background-color: #eaf2f2;
+      border: 1px solid #eaf2f2;
+      color: $primary-color;
+      font-weight: 700;
+      border-radius: 20px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .step2-input-field {
+      background-color: transparent;
+      border: none;
+      color: #000;
+    }
+
     .lib-page-title-wrapper {
       .title {
         color: #01625f;
