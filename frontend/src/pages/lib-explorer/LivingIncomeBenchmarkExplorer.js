@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./lib-explorer.scss";
 import { ContentLayout } from "../../components/layout";
 import {
@@ -12,7 +12,6 @@ import {
   Input,
   InputNumber,
   Switch,
-  message,
   Alert,
 } from "antd";
 import Chart from "../../components/chart";
@@ -71,9 +70,11 @@ const LivingIncomeBenchmarkExplorer = () => {
   const [mapData, setMapData] = useState([]);
   const [regionOptions, setRegionOptions] = useState(false);
   const [regionState, setRegionState] = useState(defaultRegionState);
-  const [defaultLIB, setDefaultLIB] = useState({});
+  const [defaultLIB, setDefaultLIB] = useState({}); // default LIB
   const [showCustomCPIField, setShowCustomCPIField] = useState(false);
-  const [adjustedLIB, setAdjustedLIB] = useState({});
+  const [adjustedLIB, setAdjustedLIB] = useState({}); // from step 1
+  const [incorporateStepOne, setIncorporateStepOne] = useState(false);
+  const [newCPIFactor, setNewCPIFactor] = useState(null);
 
   // Search form
   const selectedCountry = Form.useWatch("country", filterForm);
@@ -82,9 +83,29 @@ const LivingIncomeBenchmarkExplorer = () => {
   // Adjusted LIB form
   const selectedYear = Form.useWatch("year", libForm);
   const newCPI = Form.useWatch("new_cpi", libForm);
+  const newHhSize = Form.useWatch("new_hh_size", libForm);
+  const newAvgNrAdult = Form.useWatch("new_avg_nr_of_adult", libForm);
+
+  // handle on clear search
+  const handleClearSearch = useCallback(
+    ({ resetFilterFields = true }) => {
+      if (resetFilterFields) {
+        filterForm.resetFields();
+      }
+      libForm.resetFields();
+      setDefaultLIB({});
+      setAdjustedLIB({});
+      setShowCustomCPIField(false);
+      setRegionState(defaultRegionState);
+      setRegionOptions([]);
+      setNewCPIFactor(null);
+    },
+    [filterForm, libForm]
+  );
 
   // handle on selected country
   useEffect(() => {
+    handleClearSearch({ resetFilterFields: false });
     if (selectedCountry) {
       setRegionState((prev) => ({ ...prev, loading: true }));
       api
@@ -100,6 +121,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           }));
         })
         .catch((e) => {
+          console.error(`Error handle on selected country: ${e.response}`);
           const { status } = e.response;
           setRegionOptions([]);
           setRegionState((prev) => ({
@@ -114,51 +136,16 @@ const LivingIncomeBenchmarkExplorer = () => {
           setRegionState((prev) => ({ ...prev, loading: false }));
         });
     }
-  }, [selectedCountry]);
+  }, [selectedCountry, handleClearSearch]);
 
   // handle onSearch
   const onSearch = (values) => {
     const { country, region } = values;
     let url = `country_region_benchmark?country_id=${country}`;
     url = `${url}&region_id=${region}&year=${currentYear}`;
-    api.get(url).then((res) => {
-      const { data } = res;
-      const adult = Math.round(data.nr_adults);
-      const child = Math.round(data.household_size - data.nr_adults);
-      const defHHSize = calculateHouseholdSize({
-        adult,
-        child,
-      });
-      const targetHH = data.household_equiv;
-      // Use LCU
-      const targetValue = data.value.lcu;
-      // with CPI calculation
-      // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
-      // INFLATION RATE HERE
-      let LITarget = 0;
-      if (data?.cpi_factor) {
-        const caseYearLIB = targetValue * (1 + data.cpi_factor);
-        LITarget = (defHHSize / targetHH) * caseYearLIB;
-      } else {
-        LITarget = (defHHSize / targetHH) * targetValue;
-      }
-      setDefaultLIB({ ...data, LITarget });
-    });
-  };
-
-  // handle on clear search
-  const handleClearSearch = () => {
-    filterForm.resetFields();
-    setDefaultLIB({});
-    setRegionState(defaultRegionState);
-  };
-
-  // handle onChange year
-  useEffect(() => {
-    if (selectedYear) {
-      let url = `country_region_benchmark?country_id=${selectedCountry}`;
-      url = `${url}&region_id=${selectedRegion}&year=${selectedYear}`;
-      api.get(url).then((res) => {
+    api
+      .get(url)
+      .then((res) => {
         const { data } = res;
         const adult = Math.round(data.nr_adults);
         const child = Math.round(data.household_size - data.nr_adults);
@@ -174,26 +161,63 @@ const LivingIncomeBenchmarkExplorer = () => {
         // INFLATION RATE HERE
         let LITarget = 0;
         if (data?.cpi_factor) {
-          libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
           const caseYearLIB = targetValue * (1 + data.cpi_factor);
           LITarget = (defHHSize / targetHH) * caseYearLIB;
-          setShowCustomCPIField(false);
         } else {
-          libForm.setFieldValue("inflation_rate", "NA");
           LITarget = (defHHSize / targetHH) * targetValue;
-          setShowCustomCPIField(true);
         }
-        libForm.setFieldValue(
-          "adjusted_benchmark_value",
-          `${thousandFormatter(LITarget, 2)} LCU`
-        );
-        setAdjustedLIB({ ...data, LITarget });
+        setDefaultLIB({ ...data, LITarget });
+      })
+      .catch((e) => {
+        console.error(`Error handle onSearch: ${e.response}`);
       });
-    }
-  }, [selectedYear, selectedCountry, selectedRegion]);
+  };
 
-  console.log(defaultLIB, adjustedLIB);
-  // handle input new CPI value
+  // handle onChange year
+  useEffect(() => {
+    if (selectedYear) {
+      let url = `country_region_benchmark?country_id=${selectedCountry}`;
+      url = `${url}&region_id=${selectedRegion}&year=${selectedYear}`;
+      api
+        .get(url)
+        .then((res) => {
+          const { data } = res;
+          const adult = Math.round(data.nr_adults);
+          const child = Math.round(data.household_size - data.nr_adults);
+          const defHHSize = calculateHouseholdSize({
+            adult,
+            child,
+          });
+          const targetHH = data.household_equiv;
+          // Use LCU
+          const targetValue = data.value.lcu;
+          // with CPI calculation
+          // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
+          // INFLATION RATE HERE
+          let LITarget = 0;
+          if (data?.cpi_factor) {
+            libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
+            const caseYearLIB = targetValue * (1 + data.cpi_factor);
+            LITarget = (defHHSize / targetHH) * caseYearLIB;
+            setShowCustomCPIField(false);
+          } else {
+            libForm.setFieldValue("inflation_rate", "NA");
+            LITarget = (defHHSize / targetHH) * targetValue;
+            setShowCustomCPIField(true);
+          }
+          libForm.setFieldValue(
+            "adjusted_benchmark_value",
+            `${thousandFormatter(LITarget, 2)} LCU`
+          );
+          setAdjustedLIB({ ...data, LITarget });
+        })
+        .catch((e) => {
+          console.error(`Error handle onChange year: ${e.response}`);
+        });
+    }
+  }, [selectedYear, selectedCountry, selectedRegion, libForm]);
+
+  // handle benchmark adjustment (Step 1)
   useEffect(() => {
     if (!isEmpty(adjustedLIB) && newCPI) {
       const last_year_cpi = adjustedLIB.last_year_cpi;
@@ -210,6 +234,7 @@ const LivingIncomeBenchmarkExplorer = () => {
       const targetValue = adjustedLIB.value.lcu;
 
       const newCPIFactor = (newCPI - last_year_cpi) / last_year_cpi; // inflation rate
+      setNewCPIFactor(newCPIFactor);
 
       const caseYearLIB = targetValue * (1 + newCPIFactor);
       const LITarget = (defHHSize / targetHH) * caseYearLIB;
@@ -223,7 +248,55 @@ const LivingIncomeBenchmarkExplorer = () => {
       libForm.setFieldValue("new_inflation_rate", null);
       libForm.setFieldValue("new_adjusted_benchmark_value", null);
     }
-  }, [newCPI, adjustedLIB]);
+  }, [newCPI, adjustedLIB, libForm]);
+
+  // handle benchmark adjustment (Step 2)
+  useEffect(() => {
+    const currentLIB = incorporateStepOne ? adjustedLIB : defaultLIB;
+    if (!isEmpty(currentLIB)) {
+      const currHhSize = currentLIB.household_size;
+      const currAdult = Math.round(currentLIB.nr_adults);
+      const currChild = Math.round(currHhSize - currentLIB.nr_adults);
+      libForm.setFieldsValue({
+        current_hh_size: currHhSize,
+        current_adult: currAdult,
+        current_child: currChild,
+      });
+
+      // new hh size
+      const newHhSizeValue = newHhSize || currHhSize;
+      const newAdult = newAvgNrAdult ? newAvgNrAdult : currAdult;
+      const newChild = Math.round(newHhSizeValue - newAdult);
+      const defHHSize = calculateHouseholdSize({
+        adult: Math.round(newAdult),
+        child: newChild,
+      });
+      const targetHH = currentLIB.household_equiv;
+      // Use LCU
+      const targetValue = currentLIB.value.lcu;
+      const cpiFactor = newCPIFactor ? newCPIFactor : currentLIB.cpi_factor;
+
+      let LITarget = currentLIB?.LITarget || 0;
+      if (cpiFactor) {
+        const caseYearLIB = targetValue * (1 + cpiFactor);
+        LITarget = (defHHSize / targetHH) * caseYearLIB;
+      } else {
+        LITarget = (defHHSize / targetHH) * targetValue;
+      }
+      libForm.setFieldValue(
+        "new_hh_adjusted_benchmark_value",
+        thousandFormatter(LITarget, 2)
+      );
+    }
+  }, [
+    incorporateStepOne,
+    adjustedLIB,
+    defaultLIB,
+    libForm,
+    newHhSize,
+    newAvgNrAdult,
+    newCPIFactor,
+  ]);
 
   return (
     <ContentLayout
@@ -374,7 +447,7 @@ const LivingIncomeBenchmarkExplorer = () => {
         <Col
           span={24}
           className={`lib-form-wrapper ${
-            regionState.status !== 200 && isEmpty(defaultLIB)
+            regionState.status !== 200 || isEmpty(defaultLIB)
               ? "hide-visual"
               : ""
           }`}
@@ -454,7 +527,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                 </Space>
                 <div>
                   <Form.Item name="take_step_1_into_account">
-                    <Switch size="small" /> Take step 1 into account
+                    <Switch
+                      size="small"
+                      onChange={setIncorporateStepOne}
+                      disabled={isEmpty(adjustedLIB)}
+                      value={incorporateStepOne}
+                    />{" "}
+                    Take step 1 into account
                   </Form.Item>
                   <div className="step-form-item-wrapper step-2-wrapper">
                     {/* current composition */}
@@ -464,19 +543,19 @@ const LivingIncomeBenchmarkExplorer = () => {
                         <div className="step-2-field-wrapper step-2-current">
                           <p>Household size: </p>
                           <Form.Item name="current_hh_size" noStyle>
-                            <Input size="small" disabled />
+                            <Input {...inputProps} size="small" disabled />
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
                           <p>Adults: </p>
                           <Form.Item name="current_adult" noStyle>
-                            <Input size="small" disabled />
+                            <Input {...inputProps} size="small" disabled />
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
                           <p>Children: </p>
                           <Form.Item name="current_child" noStyle>
-                            <Input size="small" disabled />
+                            <Input {...inputProps} size="small" disabled />
                           </Form.Item>
                         </div>
                       </div>
@@ -489,7 +568,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                       <div className="step-2-value-wrapper">
                         <div className="step-2-field-wrapper">
                           <p>Household size: </p>
-                          <Form.Item name="new_current_hh_size" noStyle>
+                          <Form.Item name="new_hh_size" noStyle>
                             <InputNumber {...numberProps} size="small" />
                           </Form.Item>
                         </div>
