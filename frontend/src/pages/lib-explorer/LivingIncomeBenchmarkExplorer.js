@@ -13,11 +13,13 @@ import {
   InputNumber,
   Switch,
   Alert,
+  Tooltip,
 } from "antd";
 import Chart from "../../components/chart";
 import { min, max, isEmpty } from "lodash";
 import { api } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
+import { QuestionCircleOutline } from "../../lib/icon";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -274,7 +276,10 @@ const LivingIncomeBenchmarkExplorer = () => {
       const targetHH = currentLIB.household_equiv;
       // Use LCU
       const targetValue = currentLIB.value.lcu;
-      const cpiFactor = newCPIFactor ? newCPIFactor : currentLIB.cpi_factor;
+      const cpiFactor =
+        newCPIFactor && incorporateStepOne
+          ? newCPIFactor
+          : currentLIB.cpi_factor;
 
       let LITarget = currentLIB?.LITarget || 0;
       if (cpiFactor) {
@@ -493,7 +498,12 @@ const LivingIncomeBenchmarkExplorer = () => {
                       benchmark will adjust accordingly.
                     </p>
                     <p>
-                      <a>Find consumer price index (CPI)</a>
+                      <a>Find consumer price index (CPI)</a>{" "}
+                      <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for.">
+                        <span>
+                          <QuestionCircleOutline size={14} />
+                        </span>
+                      </Tooltip>
                     </p>
                     <div className="step-form-item-wrapper">
                       <Form.Item label="Insert the CPI value" name="new_cpi">
