@@ -2,7 +2,9 @@ import Image1 from "../assets/images/other-tool-resource/income-measurement-guid
 import Image2 from "../assets/images/other-tool-resource/cocoa-income-inventory.png";
 import Image3 from "../assets/images/other-tool-resource/procurement-library.png";
 import Image4 from "../assets/images/other-tool-resource/reporting-standards.png";
-import Image5 from "../assets/images/other-tool-resource/procurement-pratices-principles.png";
+import Image5 from "../assets/images/other-tool-resource/procurement-practices-paper-by-DISCO.jpg";
+import Image6 from "../assets/images/other-tool-resource/aligned-Inclusive-living-income-narrative-and-indicators.jpg";
+import Image7 from "../assets/images/other-tool-resource/inclusive-business-analytics.jpg";
 // import { ArrowRightOutlined } from "@ant-design/icons";
 
 export const otherToolsAndResourcesContent = [
@@ -53,8 +55,8 @@ export const otherToolsAndResourcesContent = [
       "This paper by IDH provides guidance on how IDH tools and resources can support Due Diligence and Reporting standards.",
     order: 4,
     button: {
-      href: null,
-      type: "download",
+      href: "https://idh.org/resources/living-income-and-living-wage-tools-support-effective-due-diligence",
+      type: "new-window",
       text: "Download",
     },
   },
@@ -72,21 +74,21 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
-    tag: "Additional Resources",
-    image: Image5,
+    tag: "Paper",
+    image: Image6,
     title: "Aligned Inclusive Living Income Narrative and Indicators",
     description:
-      "This document provides a narrative and indicators for inclusive living income.",
+      "This publication by LICOP provides guidance on reporting progress towards living income goals in an inclusive manner to foster better sharing and learning.",
     order: 6,
     button: {
-      href: "https://www.living-income.com/tools-resources/publications",
+      href: "https://www.living-income.com/fileadmin/living_income/The_Concept/Measurement/LICOP_publication_-_Aligned_Inclusive_Living_Income_Narrative_and_Indicators.pdf",
       type: "new-window",
-      text: "Learn More",
+      text: "Download",
     },
   },
   {
-    tag: "Additional Resources",
-    image: Image5,
+    tag: "Tool",
+    image: Image7,
     title: "IDH Inclusive Business Analysis",
     description:
       "Provides insights into the workings and economics of smallholder-inclusive business models, exploring various scenarios and delivering actionable recommendations to enhance efficiency, effectiveness, and sustainability.",
@@ -94,7 +96,7 @@ export const otherToolsAndResourcesContent = [
     button: {
       href: "https://www.idhsustainabletrade.com/business-analytics/",
       type: "new-window",
-      text: "Learn More",
+      text: "Explore the tool",
     },
   },
 ];
