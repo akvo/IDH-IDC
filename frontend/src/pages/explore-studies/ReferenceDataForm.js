@@ -99,7 +99,11 @@ const ReferenceDataForm = ({
       api
         .get(`reference_data/${referenceDataId}`)
         .then((res) => {
-          setInitValues(res.data);
+          const { data } = res;
+          if (data?.visible_to_external_user) {
+            setVisibleToExternalUser(data.visible_to_external_user);
+          }
+          setInitValues(data);
         })
         .finally(() => {
           setLoading(false);
