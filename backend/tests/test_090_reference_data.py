@@ -104,6 +104,7 @@ class TestReferenceRoute:
             "type_price": "Sample Type Price",
             "type_cost_of_production": "Sample Type CoP",
             "type_diversified_income": "Sample Type DI",
+            "visible_to_external_user": False,
         }
 
         # add second data

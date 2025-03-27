@@ -28,6 +28,7 @@ class ReferenceDataDict(TypedDict):
     id: int
     country: int
     commodity: int
+    visible_to_external_user: bool
     region: Optional[str]
     currency: Optional[str]
     year: Optional[str]
@@ -228,6 +229,7 @@ class ReferenceData(Base):
             "type_price": self.type_price,
             "type_cost_of_production": self.type_cost_of_production,
             "type_diversified_income": self.type_diversified_income,
+            "visible_to_external_user": self.visible_to_external_user,
         }
 
     @property
