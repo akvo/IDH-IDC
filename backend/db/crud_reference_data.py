@@ -169,6 +169,7 @@ def add_reference(
         type_price=payload.type_price,
         type_cost_of_production=payload.type_cost_of_production,
         type_diversified_income=payload.type_diversified_income,
+        visible_to_external_user=payload.visible_to_external_user,
     )
     session.add(data)
     session.commit()
@@ -217,6 +218,7 @@ def update_reference(
     data.type_price = payload.type_price
     data.type_cost_of_production = payload.type_cost_of_production
     data.type_diversified_income = payload.type_diversified_income
+    data.visible_to_external_user = payload.visible_to_external_user
 
     session.commit()
     session.flush()

@@ -133,6 +133,7 @@ class TestReferenceRoute:
             "type_price": None,
             "type_cost_of_production": None,
             "type_diversified_income": None,
+            "visible_to_external_user": True,
         }
         res = await client.post(
             app.url_path_for("reference_data:create"),
@@ -267,6 +268,7 @@ class TestReferenceRoute:
             "type_price": None,
             "type_cost_of_production": None,
             "type_diversified_income": None,
+            "visible_to_external_user": False,
         }
         # without cred
         res = await client.put(
