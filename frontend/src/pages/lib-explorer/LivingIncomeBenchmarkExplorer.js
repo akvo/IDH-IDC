@@ -538,7 +538,13 @@ const LivingIncomeBenchmarkExplorer = () => {
                       benchmark will adjust accordingly.
                     </p>
                     <p>
-                      <a>Find consumer price index (CPI)</a>{" "}
+                      <a
+                        href="https://tradingeconomics.com/country-list/consumer-price-index-cpi"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        Find consumer price index (CPI)
+                      </a>{" "}
                       <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for.">
                         <span>
                           <QuestionCircleOutline size={14} />
