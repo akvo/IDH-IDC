@@ -26,6 +26,7 @@ def get_all_reference(
     commodity: Optional[int] = None,
     source: Optional[str] = None,
     driver: Optional[Driver] = None,
+    visible_to_external_user: Optional[bool] = False,
     skip: int = 0,
     limit: int = 10,
 ) -> List[ReferenceDataList]:
@@ -53,6 +54,12 @@ def get_all_reference(
         data = data.filter(ReferenceData.cost_of_production.is_not(None))
     if driver == Driver.diversified_income:
         data = data.filter(ReferenceData.diversified_income.is_not(None))
+
+    # handle filter by visible to external user
+    if visible_to_external_user:
+        data = data.filter(
+            ReferenceData.visible_to_external_user == visible_to_external_user
+        )
 
     count = data.count()
 
