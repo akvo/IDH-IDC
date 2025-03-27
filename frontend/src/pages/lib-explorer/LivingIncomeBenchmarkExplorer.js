@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import "./lib-explorer.scss";
 import { ContentLayout } from "../../components/layout";
 import {
@@ -79,8 +79,6 @@ const LivingIncomeBenchmarkExplorer = () => {
   const [filterForm] = Form.useForm();
   const [libForm] = Form.useForm();
 
-  const countryOptions = window.master.countries;
-
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
   const [regionOptions, setRegionOptions] = useState(false);
@@ -100,6 +98,12 @@ const LivingIncomeBenchmarkExplorer = () => {
   const newCPI = Form.useWatch("new_cpi", libForm);
   const newHhSize = Form.useWatch("new_hh_size", libForm);
   const newAvgNrAdult = Form.useWatch("new_avg_nr_of_adult", libForm);
+
+  const countryOptions = window.master.countries;
+  const filteredCountryOptions = useMemo(() => {
+    const mapCountryIds = mapData.map((d) => d.country_id);
+    return countryOptions.filter((c) => mapCountryIds.includes(c.value));
+  }, [countryOptions, mapData]);
 
   // handle fetch map data
   useEffect(() => {
@@ -240,12 +244,16 @@ const LivingIncomeBenchmarkExplorer = () => {
           } else {
             libForm.setFieldValue("inflation_rate", "NA");
             LITarget = (defHHSize / targetHH) * targetValue;
-            setShowCustomCPIField(true);
+            setShowCustomCPIField(selectedYear > data.year ? true : false);
           }
-          libForm.setFieldValue(
-            "adjusted_benchmark_value",
-            `${thousandFormatter(LITarget, 2)} LCU`
-          );
+          if (selectedYear <= data.year) {
+            libForm.setFieldValue(
+              "adjusted_benchmark_value",
+              `${thousandFormatter(LITarget, 2)} LCU`
+            );
+          } else {
+            libForm.setFieldValue("adjusted_benchmark_value", "NA");
+          }
           setAdjustedLIB({ ...data, LITarget });
         })
         .catch((e) => {
@@ -411,7 +419,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                           <Form.Item name="country" noStyle>
                             <Select
                               {...selectProps}
-                              options={countryOptions}
+                              options={filteredCountryOptions}
                               placeholder="Select Country"
                               style={{ width: "100%" }}
                             />
@@ -442,7 +450,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                                 className="search-button"
                                 htmlType="submit"
                               >
-                                Search
+                                Observe
                               </Button>
                             </Form.Item>
                           </Space>

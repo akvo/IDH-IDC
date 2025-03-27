@@ -34,12 +34,12 @@ def get_by_country_region_year(
     cpi = session.query(Cpi).filter(
         Cpi.country == country,
     )
+    # get CPI from lastest year
+    last_year_cpi = cpi.order_by(Cpi.year.desc()).first()
     # get CPI by case year
     case_year_cpi = cpi.filter(
         Cpi.year == year,
     ).first()
-    # get CPI from lastest year
-    last_year_cpi = cpi.order_by(Cpi.year.desc()).first()
 
     # Calculate CPI factor
     # CPI Factor logic
