@@ -330,9 +330,11 @@ const Welcome = () => {
                   recommend visiting the &quot;Explore Studies&quot; section.
                 </div>
                 <div>
-                  <Button className="button-explore">
-                    Explore <ArrowRightOutlined />
-                  </Button>
+                  <Link to="/living-income-benchmark-explorer">
+                    <Button className="button-explore">
+                      Explore <ArrowRightOutlined />
+                    </Button>
+                  </Link>
                 </div>
               </Card>
             </Col>

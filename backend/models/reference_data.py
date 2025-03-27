@@ -7,6 +7,7 @@ from sqlalchemy import (
     String,
     ForeignKey,
     DateTime,
+    Boolean
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -27,6 +28,7 @@ class ReferenceDataDict(TypedDict):
     id: int
     country: int
     commodity: int
+    visible_to_external_user: bool
     region: Optional[str]
     currency: Optional[str]
     year: Optional[str]
@@ -111,6 +113,7 @@ class ReferenceData(Base):
     type_price = Column(String, nullable=True)
     type_cost_of_production = Column(String, nullable=True)
     type_diversified_income = Column(String, nullable=True)
+    visible_to_external_user = Column(Boolean, nullable=False, default=False)
 
     created_by = Column(Integer, ForeignKey("user.id"), nullable=True)
     created_at = Column(DateTime, nullable=False, server_default=func.now())
@@ -161,6 +164,7 @@ class ReferenceData(Base):
         type_price: Optional[str] = None,
         type_cost_of_production: Optional[str] = None,
         type_diversified_income: Optional[str] = None,
+        visible_to_external_user: Optional[bool] = False,
         created_by: Optional[int] = None,
         id: Optional[int] = None,
     ):
@@ -190,6 +194,7 @@ class ReferenceData(Base):
         self.type_price = type_price
         self.type_cost_of_production = type_cost_of_production
         self.type_diversified_income = type_diversified_income
+        self.visible_to_external_user = visible_to_external_user
         self.created_by = created_by
 
     def __repr__(self) -> int:
@@ -224,6 +229,7 @@ class ReferenceData(Base):
             "type_price": self.type_price,
             "type_cost_of_production": self.type_cost_of_production,
             "type_diversified_income": self.type_diversified_income,
+            "visible_to_external_user": self.visible_to_external_user,
         }
 
     @property
@@ -265,6 +271,7 @@ class ReferenceDataBase(BaseModel):
     type_price: Optional[str] = None
     type_cost_of_production: Optional[str] = None
     type_diversified_income: Optional[str] = None
+    visible_to_external_user: Optional[bool] = False
 
 
 class PaginatedReferenceDataResponse(BaseModel):
