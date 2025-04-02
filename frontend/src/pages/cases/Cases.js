@@ -154,7 +154,10 @@ const Cases = () => {
       defaultSortOrder: "descend",
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (text, record) => {
-        const caseDetailURL = `/case/${record.id}/${stepPath.step1.label}`;
+        const step = record?.has_segment_with_answers
+          ? stepPath.step3.label
+          : stepPath.step1.label;
+        const caseDetailURL = `/case/${record.id}/${step}`;
         const linkText = (
           <Link
             style={{ fontWeight: "bold", color: "#000" }}
