@@ -24,18 +24,24 @@ def get_case_count_by_country(
     # Join with Segment and Country tables
     # and aggregate cases and number_of_farmers by country
     case_count_and_farmers_by_country = (
-        case_query.join(Segment, Case.id == Segment.case)
-        .join(Country, Case.country == Country.id)
+        case_query.join(Country, Case.country == Country.id)  # Join country
+        .outerjoin(
+            Segment, Case.id == Segment.case
+        )  # Include segments but avoid multiplying cases
         .with_entities(
             Case.country,
             Country.name.label("country_name"),
-            func.count(Case.id).label("case_count"),
-            func.sum(Segment.number_of_farmers).label("total_farmers"),
+            func.count(func.distinct(Case.id)).label(
+                "case_count"
+            ),  # Count unique cases per country
+            func.sum(func.coalesce(Segment.number_of_farmers, 0)).label(
+                "total_farmers"
+            ),  # Sum farmers per country
         )
         .group_by(Case.country, Country.name)
         .having(
-            func.count(Case.id) > 0
-        )  # Filter to include only non-zero case counts
+            func.count(func.distinct(Case.id)) > 0
+        )  # Ensure non-zero case count
         .all()
     )
 
