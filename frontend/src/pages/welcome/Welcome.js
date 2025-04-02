@@ -293,7 +293,7 @@ const Welcome = () => {
                   Create a case to go through the income driver assessment and
                   discover how you can improve farmer income.
                 </div>
-                <div>
+                <div className="button-wrapper">
                   <Link to="/cases">
                     <Button className="button-explore">
                       View cases <ArrowRightOutlined />
@@ -311,7 +311,7 @@ const Welcome = () => {
                   Explore whether relevant data on the five income drivers is
                   available for your specific context.
                 </div>
-                <div>
+                <div className="button-wrapper">
                   <Link to="/explore-studies">
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
@@ -329,7 +329,7 @@ const Welcome = () => {
                   To make the data entry process more informed and efficient, we
                   recommend visiting the &quot;Explore Studies&quot; section.
                 </div>
-                <div>
+                <div className="button-wrapper">
                   <Link to="/living-income-benchmark-explorer">
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
