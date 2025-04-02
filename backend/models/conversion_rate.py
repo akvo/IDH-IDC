@@ -2,6 +2,12 @@ from sqlalchemy import Column, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from db.connection import Base
 from typing import Optional
+from enum import Enum
+
+
+class CurrencyEnum(Enum):
+    USD = "USD"
+    EUR = "EUR"
 
 
 class ConversionRate(Base):
@@ -11,6 +17,7 @@ class ConversionRate(Base):
     country = Column(Integer, ForeignKey("country.id"), nullable=False)
     year = Column(Integer, nullable=False)
     value = Column(Float, nullable=False)
+    currency = Column(Enum(CurrencyEnum, name="currency_enum"), nullable=False)
 
     country = relationship("Country", back_populates="conversion_rates")
 

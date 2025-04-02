@@ -26,6 +26,11 @@ def upgrade() -> None:
         sa.Column("country", sa.Integer(), nullable=False),
         sa.Column("year", sa.Integer(), nullable=False),
         sa.Column("value", sa.Float(), nullable=False),
+        sa.Column(
+            "currency",
+            sa.Enum("USD", "EUR", name="currency_enum"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_foreign_key(
