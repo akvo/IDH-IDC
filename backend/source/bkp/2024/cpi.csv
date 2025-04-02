@@ -1,0 +1,1931 @@
+id,country,country_id,year,value
+1,"Afghanistan, Islamic Rep. of",1,2014,101.97
+2,Albania,2,2014,90.72
+3,Algeria,3,2014,164.77
+4,Angola,5,2014,28.45
+5,Anguilla,204,2014,107.17
+6,Antigua and Barbuda,6,2014,95.63
+7,Argentina,7,2014,0.0
+8,"Armenia, Rep. of",8,2014,119.76
+9,"Aruba, Kingdom of the Netherlands",9,2014,93.29
+10,Australia,10,2014,106.08
+11,Austria,11,2014,91.66
+12,"Azerbaijan, Rep. of",12,2014,113.18
+13,"Bahamas, The",13,2014,100.14
+14,"Bahrain, Kingdom of",14,2014,91.28
+15,Bangladesh,15,2014,65.47
+16,Barbados,16,2014,78.4
+17,"Belarus, Rep. of",17,2014,46.81
+18,Belgium,18,2014,100.34
+19,Belize,19,2014,98.97
+20,Benin,20,2014,100.0
+21,Bhutan,22,2014,83.84
+22,Bolivia,23,2014,89.58
+23,Bosnia and Herzegovina,24,2014,100.13
+24,Botswana,25,2014,87.3
+25,Brazil,26,2014,3953.15
+26,British Virgin Islands,27,2014,0.0
+27,Brunei Darussalam,28,2014,100.39
+28,Bulgaria,29,2014,6557.27
+29,Burkina Faso,30,2014,100.92
+30,Burundi,31,2014,88.84
+31,Cabo Verde,32,2014,99.26
+32,Cambodia,33,2014,158.29
+33,Cameroon,34,2014,83.22
+34,Canada,35,2014,125.16
+35,Cayman Islands,36,2014,104.91
+36,Central African Rep.,37,2014,85.74
+37,Chad,38,2014,85.92
+38,Chile,39,2014,87.96
+39,"China, P.R.: Hong Kong",40,2014,88.33
+42,Colombia,41,2014,81.49
+43,"Congo, Dem. Rep.",43,2014,124.76
+44,"Congo, Rep.",44,2014,90.65
+45,Costa Rica,45,2014,92.23
+46,Cote d'Ivoire,46,2014,101.89
+47,"Croatia, Rep. of",47,2014,100.47
+48,"Curaçao, Kingdom of the Netherlands",48,2014,124.16
+49,Cyprus,49,2014,102.14
+50,Czech Rep.,50,2014,99.67
+51,Denmark,51,2014,99.55
+52,Djibouti,52,2014,87.09
+53,Dominica,53,2014,103.12
+54,Dominican Republic,54,2014,87.0
+55,Ecuador,55,2014,99.28
+56,"Egypt, Arab Rep.",56,2014,50.63
+57,El Salvador,57,2014,110.18
+58,"Equatorial Guinea, Rep. of",58,2014,129.88
+59,"Estonia, Rep. of",60,2014,196.01
+60,"Eswatini, Kingdom of",61,2014,74.57
+61,Ethiopia,62,2014,84.38
+62,"Fiji, Rep. of",63,2014,100.01
+63,Finland,64,2014,100.2
+64,France,65,2014,99.96
+65,Gabon,67,2014,89.86
+66,"Gambia, The",68,2014,68.49
+67,Georgia,69,2014,110.25
+68,Germany,70,2014,94.37
+69,Ghana,71,2014,46.95
+70,Greece,72,2014,101.86
+71,Grenada,73,2014,108.16
+72,Guadeloupe,205,2014,99.7
+73,Guatemala,75,2014,0.0
+74,Guinea,76,2014,63.16
+75,Guinea-Bissau,77,2014,99.31
+76,Guyana,78,2014,112.77
+77,Haiti,79,2014,69.88
+78,Honduras,80,2014,276.03
+79,Hungary,82,2014,135.18
+80,Iceland,83,2014,149.16
+81,India,84,2014,117.35
+82,Indonesia,85,2014,113.22
+83,"Iran, Islamic Rep. of",86,2014,22.76
+84,Iraq,87,2014,0.0
+85,Ireland,88,2014,83.09
+86,Israel,89,2014,94.24
+87,Italy,90,2014,99.93
+88,Jamaica,91,2014,83.75
+89,Japan,92,2014,97.45
+90,Jordan,93,2014,94.2
+91,"Kazakhstan, Rep. of",94,2014,43.06
+92,Kenya,95,2014,76.49
+93,Kiribati,96,2014,123.6
+94,"Korea, Rep. of",97,2014,94.2
+95,"Kosovo, Rep. of",98,2014,100.54
+96,Kuwait,99,2014,103.18
+97,Kyrgyz Rep.,100,2014,229.65
+98,Lao People's Dem. Rep.,101,2014,98.46
+99,Latvia,102,2014,99.83
+100,Lebanon,103,2014,100.81
+101,"Lesotho, Kingdom of",104,2014,65.52
+102,Liberia,105,2014,54.81
+103,Libya,106,2014,136.58
+104,Lithuania,107,2014,100.89
+105,Luxembourg,108,2014,99.53
+106,Madagascar,110,2014,87.8
+107,Malawi,111,2014,38.26
+108,Malaysia,112,2014,110.48
+109,Maldives,113,2014,93.65
+110,Mali,114,2014,100.82
+111,Malta,115,2014,96.81
+112,Martinique,206,2014,99.86
+113,"Mauritania, Islamic Rep. of",117,2014,88.54
+114,Mauritius,118,2014,71.9
+115,Mexico,119,2014,85.33
+116,"Micronesia, Federated States of",120,2014,101.64
+117,"Moldova, Rep. of",121,2014,44.69
+118,Mongolia,122,2014,75.66
+119,Montenegro,123,2014,98.47
+120,Montserrat,207,2014,99.67
+121,Morocco,124,2014,95.81
+122,Mozambique,125,2014,82.25
+123,Myanmar,126,2014,109.36
+124,Namibia,127,2014,108.59
+125,Nepal,129,2014,96.13
+126,"Netherlands, The",130,2014,99.4
+127,New Caledonia,131,2014,105.02
+128,New Zealand,132,2014,97.53
+129,Nicaragua,133,2014,183.02
+130,Niger,134,2014,97.3
+131,Nigeria,135,2014,158.82
+132,"North Macedonia, Republic of",136,2014,110.03
+133,Norway,138,2014,97.88
+134,Oman,139,2014,96.42
+135,Pakistan,140,2014,95.8
+136,"Palau, Rep. of",141,2014,99.42
+137,Panama,142,2014,102.63
+138,Papua New Guinea,143,2014,111.33
+139,Paraguay,144,2014,88.09
+140,Peru,145,2014,79.39
+141,Philippines,146,2014,90.56
+142,"Poland, Rep. of",147,2014,123.93
+143,Portugal,148,2014,100.0
+144,Qatar,150,2014,94.78
+145,Romania,151,2014,100.6
+146,Russian Federation,152,2014,131.16
+147,Rwanda,153,2014,101.83
+148,Samoa,154,2014,99.11
+149,"San Marino, Rep. of",208,2014,107.58
+150,"São Tomé and Príncipe, Dem. Rep. of",209,2014,93.89
+151,Saudi Arabia,156,2014,95.28
+152,Senegal,157,2014,100.14
+153,"Serbia, Rep. of",158,2014,180.15
+154,Seychelles,159,2014,100.0
+155,Sierra Leone,160,2014,39.53
+156,Singapore,161,2014,99.48
+157,"Sint Maarten, Kingdom of the Netherlands",162,2014,126.38
+158,Slovak Rep.,163,2014,163.99
+159,"Slovenia, Rep. of",164,2014,100.53
+160,Solomon Islands,165,2014,99.59
+161,Somalia,166,2014,0.0
+162,South Africa,167,2014,70.84
+163,"South Sudan, Rep. of",168,2014,161.49
+164,Spain,169,2014,93.88
+165,Sri Lanka,170,2014,83.69
+166,St. Kitts and Nevis,171,2014,109.87
+167,St. Lucia,172,2014,103.35
+168,St. Vincent and the Grenadines,173,2014,107.68
+169,Sudan,174,2014,429.84
+170,Suriname,175,2014,62.16
+171,Sweden,176,2014,313.49
+172,Switzerland,177,2014,100.91
+173,"Tajikistan, Rep. of",178,2014,467.66
+174,Tanzania,179,2014,77.3
+175,Thailand,180,2014,98.3
+176,"Timor-Leste, Dem. Rep. of",181,2014,98.02
+177,Togo,182,2014,99.57
+178,Tonga,183,2014,86.29
+179,Trinidad and Tobago,184,2014,96.77
+180,Tunisia,185,2014,95.75
+181,Turkey,186,2014,242.02
+182,Uganda,190,2014,86.35
+183,Ukraine,191,2014,116.98
+184,United Arab Emirates,192,2014,93.71
+185,United Kingdom,193,2014,99.63
+186,United States,194,2014,108.57
+187,Uruguay,195,2014,51.48
+188,"Uzbekistan, Rep. of",196,2014,49.16
+189,Vanuatu,197,2014,141.95
+190,"Venezuela, Rep. Bolivariana de",198,2014,658.68
+191,Vietnam,199,2014,87.65
+192,West Bank and Gaza,200,2014,98.79
+193,"Yemen, Rep. of",201,2014,183.58
+194,Zambia,202,2014,141.51
+195,Zimbabwe,203,2014,2.08
+196,"Afghanistan, Islamic Rep. of",1,2015,101.3
+197,Albania,2,2015,93.89
+198,Algeria,3,2015,172.65
+199,Angola,5,2015,31.11
+200,Anguilla,204,2015,106.13
+201,Antigua and Barbuda,6,2015,96.56
+202,Argentina,7,2015,0.0
+203,"Armenia, Rep. of",8,2015,124.23
+204,"Aruba, Kingdom of the Netherlands",9,2015,93.73
+205,Australia,10,2015,107.68
+206,Austria,11,2015,92.48
+207,"Azerbaijan, Rep. of",12,2015,117.73
+208,"Bahamas, The",13,2015,102.01
+209,"Bahrain, Kingdom of",14,2015,92.97
+210,Bangladesh,15,2015,69.53
+211,Barbados,16,2015,77.53
+212,"Belarus, Rep. of",17,2015,53.14
+213,Belgium,18,2015,100.9
+214,Belize,19,2015,98.12
+215,Benin,20,2015,100.22
+216,Bhutan,22,2015,87.65
+217,Bolivia,23,2015,93.22
+218,Bosnia and Herzegovina,24,2015,102.01
+219,Botswana,25,2015,89.97
+220,Brazil,26,2015,4310.12
+221,British Virgin Islands,27,2015,104.94
+222,Brunei Darussalam,28,2015,99.9
+223,Bulgaria,29,2015,6550.41
+224,Burkina Faso,30,2015,101.65
+225,Burundi,31,2015,93.77
+226,Cabo Verde,32,2015,99.39
+227,Cambodia,33,2015,160.23
+228,Cameroon,34,2015,85.45
+229,Canada,35,2015,126.57
+230,Cayman Islands,36,2015,102.45
+231,Central African Rep.,37,2015,86.94
+232,Chad,38,2015,89.68
+233,Chile,39,2015,91.78
+234,"China, P.R.: Hong Kong",40,2015,90.97
+237,Colombia,41,2015,85.56
+238,"Congo, Dem. Rep.",43,2015,125.69
+239,"Congo, Rep.",44,2015,93.53
+240,Costa Rica,45,2015,92.97
+241,Cote d'Ivoire,46,2015,103.16
+242,"Croatia, Rep. of",47,2015,100.0
+243,"Curaçao, Kingdom of the Netherlands",48,2015,123.57
+244,Cyprus,49,2015,100.0
+245,Czech Rep.,50,2015,99.98
+246,Denmark,51,2015,100.0
+247,Djibouti,52,2015,86.35
+248,Dominica,53,2015,102.25
+249,Dominican Republic,54,2015,87.73
+250,Ecuador,55,2015,103.22
+251,"Egypt, Arab Rep.",56,2015,55.88
+252,El Salvador,57,2015,109.37
+253,"Equatorial Guinea, Rep. of",58,2015,132.06
+254,"Estonia, Rep. of",60,2015,195.04
+255,"Eswatini, Kingdom of",61,2015,78.26
+256,Ethiopia,62,2015,92.46
+257,"Fiji, Rep. of",63,2015,101.38
+258,Finland,64,2015,100.0
+259,France,65,2015,100.0
+260,Gabon,67,2015,89.56
+261,"Gambia, The",68,2015,73.16
+262,Georgia,69,2015,114.66
+263,Germany,70,2015,94.85
+264,Ghana,71,2015,55.0
+265,Greece,72,2015,100.09
+266,Grenada,73,2015,107.6
+267,Guadeloupe,205,2015,100.0
+268,Guatemala,75,2015,0.0
+269,Guinea,76,2015,70.6
+270,Guinea-Bissau,77,2015,100.78
+271,Guyana,78,2015,111.64
+272,Haiti,79,2015,74.58
+273,Honduras,80,2015,284.75
+274,Hungary,82,2015,135.1
+275,Iceland,83,2015,151.6
+276,India,84,2015,123.11
+277,Indonesia,85,2015,120.42
+278,"Iran, Islamic Rep. of",86,2015,25.6
+279,Iraq,87,2015,103.56
+280,Ireland,88,2015,82.82
+281,Israel,89,2015,93.68
+282,Italy,90,2015,99.97
+283,Jamaica,91,2015,86.84
+284,Japan,92,2015,98.23
+285,Jordan,93,2015,93.38
+286,"Kazakhstan, Rep. of",94,2015,45.94
+287,Kenya,95,2015,81.52
+288,Kiribati,96,2015,124.31
+289,"Korea, Rep. of",97,2015,94.86
+290,"Kosovo, Rep. of",98,2015,100.0
+291,Kuwait,99,2015,106.55
+292,Kyrgyz Rep.,100,2015,244.58
+293,Lao People's Dem. Rep.,101,2015,99.71
+294,Latvia,102,2015,100.0
+295,Lebanon,103,2015,97.03
+296,"Lesotho, Kingdom of",104,2015,67.63
+297,Liberia,105,2015,59.06
+298,Libya,106,2015,150.78
+299,Lithuania,107,2015,100.0
+300,Luxembourg,108,2015,100.0
+301,Madagascar,110,2015,94.3
+302,Malawi,111,2015,46.63
+303,Malaysia,112,2015,112.81
+304,Maldives,113,2015,94.55
+305,Mali,114,2015,102.28
+306,Malta,115,2015,97.87
+307,Martinique,206,2015,100.0
+308,"Mauritania, Islamic Rep. of",117,2015,91.42
+309,Mauritius,118,2015,72.82
+310,Mexico,119,2015,87.65
+311,"Micronesia, Federated States of",120,2015,101.34
+312,"Moldova, Rep. of",121,2015,49.01
+313,Mongolia,122,2015,80.0
+314,Montenegro,123,2015,100.0
+315,Montserrat,207,2015,98.53
+316,Morocco,124,2015,97.3
+317,Mozambique,125,2015,85.17
+318,Myanmar,126,2015,119.7
+319,Namibia,127,2015,112.27
+320,Nepal,129,2015,103.69
+321,"Netherlands, The",130,2015,100.0
+322,New Caledonia,131,2015,105.62
+323,New Zealand,132,2015,97.82
+324,Nicaragua,133,2015,190.34
+325,Niger,134,2015,96.74
+326,Nigeria,135,2015,173.12
+327,"North Macedonia, Republic of",136,2015,109.7
+328,Norway,138,2015,100.0
+329,Oman,139,2015,96.48
+330,Pakistan,140,2015,98.23
+331,"Palau, Rep. of",141,2015,100.36
+332,Panama,142,2015,102.77
+333,Papua New Guinea,143,2015,118.0
+334,Paraguay,144,2015,90.84
+335,Peru,145,2015,82.09
+336,Philippines,146,2015,91.17
+337,"Poland, Rep. of",147,2015,122.85
+338,Portugal,148,2015,100.48
+339,Qatar,150,2015,96.5
+340,Romania,151,2015,100.0
+341,Russian Federation,152,2015,151.53
+342,Rwanda,153,2015,104.4
+343,Samoa,154,2015,99.82
+344,"San Marino, Rep. of",208,2015,107.73
+345,"São Tomé and Príncipe, Dem. Rep. of",209,2015,98.81
+346,Saudi Arabia,156,2015,96.43
+347,Senegal,157,2015,100.28
+348,"Serbia, Rep. of",158,2015,182.66
+349,Seychelles,159,2015,104.04
+350,Sierra Leone,160,2015,42.17
+351,Singapore,161,2015,98.96
+352,"Sint Maarten, Kingdom of the Netherlands",162,2015,126.8
+353,Slovak Rep.,163,2015,163.46
+354,"Slovenia, Rep. of",164,2015,100.0
+355,Solomon Islands,165,2015,99.02
+356,Somalia,166,2015,100.91
+357,South Africa,167,2015,74.06
+358,"South Sudan, Rep. of",168,2015,246.71
+359,Spain,169,2015,93.41
+360,Sri Lanka,170,2015,86.84
+361,St. Kitts and Nevis,171,2015,107.35
+362,St. Lucia,172,2015,102.34
+363,St. Vincent and the Grenadines,173,2015,105.81
+364,Sudan,174,2015,502.53
+365,Suriname,175,2015,66.44
+366,Sweden,176,2015,313.35
+367,Switzerland,177,2015,99.76
+368,"Tajikistan, Rep. of",178,2015,494.38
+369,Tanzania,179,2015,81.62
+370,Thailand,180,2015,97.42
+371,"Timor-Leste, Dem. Rep. of",181,2015,98.65
+372,Togo,182,2015,102.14
+373,Tonga,183,2015,85.38
+374,Trinidad and Tobago,184,2015,101.29
+375,Tunisia,185,2015,100.0
+376,Turkey,186,2015,260.59
+377,Uganda,190,2015,91.17
+378,Ukraine,191,2015,173.94
+379,United Arab Emirates,192,2015,97.52
+380,United Kingdom,193,2015,99.99
+381,United States,194,2015,108.7
+382,Uruguay,195,2015,55.94
+383,"Uzbekistan, Rep. of",196,2015,53.46
+384,Vanuatu,197,2015,145.48
+385,"Venezuela, Rep. Bolivariana de",198,2015,1460.53
+386,Vietnam,199,2015,88.2
+387,West Bank and Gaza,200,2015,100.2
+388,"Yemen, Rep. of",201,2015,0.0
+389,Zambia,202,2015,155.82
+390,Zimbabwe,203,2015,2.03
+391,"Afghanistan, Islamic Rep. of",1,2016,105.74
+392,Albania,2,2016,93.55
+393,Algeria,3,2016,183.7
+394,Angola,5,2016,40.65
+395,Anguilla,204,2016,105.57
+396,Antigua and Barbuda,6,2016,96.09
+397,Argentina,7,2016,0.0
+398,"Armenia, Rep. of",8,2016,122.49
+399,"Aruba, Kingdom of the Netherlands",9,2016,92.86
+400,Australia,10,2016,109.05
+401,Austria,11,2016,93.3
+402,"Azerbaijan, Rep. of",12,2016,132.38
+403,"Bahamas, The",13,2016,101.66
+404,"Bahrain, Kingdom of",14,2016,95.56
+405,Bangladesh,15,2016,73.36
+406,Barbados,16,2016,78.53
+407,"Belarus, Rep. of",17,2016,59.43
+408,Belgium,18,2016,102.89
+409,Belize,19,2016,98.77
+410,Benin,20,2016,99.42
+411,Bhutan,22,2016,90.47
+412,Bolivia,23,2016,96.6
+413,Bosnia and Herzegovina,24,2016,101.67
+414,Botswana,25,2016,92.5
+415,Brazil,26,2016,4686.79
+416,British Virgin Islands,27,2016,106.05
+417,Brunei Darussalam,28,2016,99.62
+418,Bulgaria,29,2016,6498.09
+419,Burkina Faso,30,2016,102.1
+420,Burundi,31,2016,98.98
+421,Cabo Verde,32,2016,97.99
+422,Cambodia,33,2016,165.06
+423,Cameroon,34,2016,86.2
+424,Canada,35,2016,128.38
+425,Cayman Islands,36,2016,101.81
+426,Central African Rep.,37,2016,91.24
+427,Chad,38,2016,88.97
+428,Chile,39,2016,95.26
+429,"China, P.R.: Hong Kong",40,2016,93.16
+432,Colombia,41,2016,91.99
+433,"Congo, Dem. Rep.",43,2016,129.31
+434,"Congo, Rep.",44,2016,96.51
+435,Costa Rica,45,2016,92.95
+436,Cote d'Ivoire,46,2016,103.91
+437,"Croatia, Rep. of",47,2016,98.88
+438,"Curaçao, Kingdom of the Netherlands",48,2016,123.51
+439,Cyprus,49,2016,98.57
+440,Czech Rep.,50,2016,100.66
+441,Denmark,51,2016,100.25
+442,Djibouti,52,2016,88.71
+443,Dominica,53,2016,102.39
+444,Dominican Republic,54,2016,89.15
+445,Ecuador,55,2016,105.0
+446,"Egypt, Arab Rep.",56,2016,63.59
+447,El Salvador,57,2016,110.03
+448,"Equatorial Guinea, Rep. of",58,2016,133.93
+449,"Estonia, Rep. of",60,2016,195.33
+450,"Eswatini, Kingdom of",61,2016,84.4
+451,Ethiopia,62,2016,98.59
+452,"Fiji, Rep. of",63,2016,105.3
+453,Finland,64,2016,100.35
+454,France,65,2016,100.18
+455,Gabon,67,2016,91.44
+456,"Gambia, The",68,2016,78.44
+457,Georgia,69,2016,117.11
+458,Germany,70,2016,95.32
+459,Ghana,71,2016,64.6
+460,Greece,72,2016,99.27
+461,Grenada,73,2016,109.38
+462,Guadeloupe,205,2016,99.91
+463,Guatemala,75,2016,0.0
+464,Guinea,76,2016,76.37
+465,Guinea-Bissau,77,2016,102.29
+466,Guyana,78,2016,112.58
+467,Haiti,79,2016,83.16
+468,Honduras,80,2016,292.51
+469,Hungary,82,2016,135.63
+470,Iceland,83,2016,154.17
+471,India,84,2016,129.2
+472,Indonesia,85,2016,124.67
+473,"Iran, Islamic Rep. of",86,2016,27.45
+474,Iraq,87,2016,104.13
+475,Ireland,88,2016,82.83
+476,Israel,89,2016,93.16
+477,Italy,90,2016,99.88
+478,Jamaica,91,2016,88.88
+479,Japan,92,2016,98.1
+480,Jordan,93,2016,92.65
+481,"Kazakhstan, Rep. of",94,2016,52.53
+482,Kenya,95,2016,86.66
+483,Kiribati,96,2016,126.69
+484,"Korea, Rep. of",97,2016,95.78
+485,"Kosovo, Rep. of",98,2016,100.27
+486,Kuwait,99,2016,109.96
+487,Kyrgyz Rep.,100,2016,245.53
+488,Lao People's Dem. Rep.,101,2016,101.3
+489,Latvia,102,2016,100.14
+490,Lebanon,103,2016,96.27
+491,"Lesotho, Kingdom of",104,2016,72.09
+492,Liberia,105,2016,64.27
+493,Libya,106,2016,189.77
+494,Lithuania,107,2016,100.91
+495,Luxembourg,108,2016,100.29
+496,Madagascar,110,2016,99.99
+497,Malawi,111,2016,56.75
+498,Malaysia,112,2016,115.17
+499,Maldives,113,2016,95.02
+500,Mali,114,2016,100.44
+501,Malta,115,2016,98.5
+502,Martinique,206,2016,99.76
+503,"Mauritania, Islamic Rep. of",117,2016,92.76
+504,Mauritius,118,2016,73.53
+505,Mexico,119,2016,90.13
+506,"Micronesia, Federated States of",120,2016,100.29
+507,"Moldova, Rep. of",121,2016,52.13
+508,Mongolia,122,2016,80.59
+509,Montenegro,123,2016,99.73
+510,Montserrat,207,2016,98.29
+511,Morocco,124,2016,98.89
+512,Mozambique,125,2016,100.0
+513,Myanmar,126,2016,128.0
+514,Namibia,127,2016,119.82
+515,Nepal,129,2016,112.81
+516,"Netherlands, The",130,2016,100.32
+517,New Caledonia,131,2016,106.23
+518,New Zealand,132,2016,98.45
+519,Nicaragua,133,2016,197.04
+520,Niger,134,2016,98.34
+521,Nigeria,135,2016,200.3
+522,"North Macedonia, Republic of",136,2016,109.44
+523,Norway,138,2016,103.55
+524,Oman,139,2016,97.55
+525,Pakistan,140,2016,101.93
+526,"Palau, Rep. of",141,2016,99.32
+527,Panama,142,2016,103.53
+528,Papua New Guinea,143,2016,125.88
+529,Paraguay,144,2016,94.56
+530,Peru,145,2016,85.01
+531,Philippines,146,2016,92.31
+532,"Poland, Rep. of",147,2016,122.03
+533,Portugal,148,2016,101.09
+534,Qatar,150,2016,99.09
+535,Romania,151,2016,98.46
+536,Russian Federation,152,2016,162.2
+537,Rwanda,153,2016,111.89
+538,Samoa,154,2016,101.13
+539,"San Marino, Rep. of",208,2016,108.35
+540,"São Tomé and Príncipe, Dem. Rep. of",209,2016,104.18
+541,Saudi Arabia,156,2016,98.43
+542,Senegal,157,2016,101.12
+543,"Serbia, Rep. of",158,2016,184.71
+544,Seychelles,159,2016,102.99
+545,Sierra Leone,160,2016,46.76
+546,Singapore,161,2016,98.44
+547,"Sint Maarten, Kingdom of the Netherlands",162,2016,126.94
+548,Slovak Rep.,163,2016,162.61
+549,"Slovenia, Rep. of",164,2016,99.95
+550,Solomon Islands,165,2016,99.53
+551,Somalia,166,2016,100.94
+552,South Africa,167,2016,78.93
+553,"South Sudan, Rep. of",168,2016,1184.2
+554,Spain,169,2016,93.22
+555,Sri Lanka,170,2016,90.28
+556,St. Kitts and Nevis,171,2016,106.61
+557,St. Lucia,172,2016,99.19
+558,St. Vincent and the Grenadines,173,2016,105.65
+559,Sudan,174,2016,591.73
+560,Suriname,175,2016,103.26
+561,Sweden,176,2016,316.43
+562,Switzerland,177,2016,99.33
+563,"Tajikistan, Rep. of",178,2016,524.07
+564,Tanzania,179,2016,85.85
+565,Thailand,180,2016,97.6
+566,"Timor-Leste, Dem. Rep. of",181,2016,97.2
+567,Togo,182,2016,103.46
+568,Tonga,183,2016,87.59
+569,Trinidad and Tobago,184,2016,104.4
+570,Tunisia,185,2016,103.63
+571,Turkey,186,2016,280.85
+572,Uganda,190,2016,96.38
+573,Ukraine,191,2016,198.14
+574,United Arab Emirates,192,2016,99.1
+575,United Kingdom,193,2016,101.0
+576,United States,194,2016,110.07
+577,Uruguay,195,2016,61.33
+578,"Uzbekistan, Rep. of",196,2016,57.81
+579,Vanuatu,197,2016,146.7
+580,"Venezuela, Rep. Bolivariana de",198,2016,5184.14
+581,Vietnam,199,2016,90.55
+582,West Bank and Gaza,200,2016,99.98
+583,"Yemen, Rep. of",201,2016,0.0
+584,Zambia,202,2016,183.66
+585,Zimbabwe,203,2016,2.0
+586,"Afghanistan, Islamic Rep. of",1,2017,111.0
+587,Albania,2,2017,95.47
+588,Algeria,3,2017,193.97
+589,Angola,5,2017,52.79
+590,Anguilla,204,2017,106.94
+591,Antigua and Barbuda,6,2017,98.43
+592,Argentina,7,2017,112.89
+593,"Armenia, Rep. of",8,2017,123.68
+594,"Aruba, Kingdom of the Netherlands",9,2017,91.9
+595,Australia,10,2017,111.18
+596,Austria,11,2017,95.25
+597,"Azerbaijan, Rep. of",12,2017,149.51
+598,"Bahamas, The",13,2017,103.2
+599,"Bahrain, Kingdom of",14,2017,96.88
+600,Bangladesh,15,2017,77.54
+601,Barbados,16,2017,82.18
+602,"Belarus, Rep. of",17,2017,63.02
+603,Belgium,18,2017,105.08
+604,Belize,19,2017,99.9
+605,Benin,20,2017,99.47
+606,Bhutan,22,2017,94.95
+607,Bolivia,23,2017,99.32
+608,Bosnia and Herzegovina,24,2017,103.2
+609,Botswana,25,2017,95.56
+610,Brazil,26,2017,4848.31
+611,British Virgin Islands,27,2017,0.0
+612,Brunei Darussalam,28,2017,98.36
+613,Bulgaria,29,2017,6632.06
+614,Burkina Faso,30,2017,103.62
+615,Burundi,31,2017,114.87
+616,Cabo Verde,32,2017,98.76
+617,Cambodia,33,2017,169.87
+618,Cameroon,34,2017,86.75
+619,Canada,35,2017,130.43
+620,Cayman Islands,36,2017,0.0
+621,Central African Rep.,37,2017,95.06
+622,Chad,38,2017,87.6
+623,Chile,39,2017,97.34
+624,"China, P.R.: Hong Kong",40,2017,94.55
+627,Colombia,41,2017,95.96
+628,"Congo, Dem. Rep.",43,2017,0.0
+629,"Congo, Rep.",44,2017,96.94
+630,Costa Rica,45,2017,94.46
+631,Cote d'Ivoire,46,2017,104.62
+632,"Croatia, Rep. of",47,2017,99.99
+633,"Curaçao, Kingdom of the Netherlands",48,2017,125.47
+634,Cyprus,49,2017,99.1
+635,Czech Rep.,50,2017,103.13
+636,Denmark,51,2017,101.4
+637,Djibouti,52,2017,89.22
+638,Dominica,53,2017,102.69
+639,Dominican Republic,54,2017,92.07
+640,Ecuador,55,2017,105.44
+641,"Egypt, Arab Rep.",56,2017,82.36
+642,El Salvador,57,2017,111.15
+643,"Equatorial Guinea, Rep. of",58,2017,134.92
+644,"Estonia, Rep. of",60,2017,202.01
+645,"Eswatini, Kingdom of",61,2017,89.65
+646,Ethiopia,62,2017,109.12
+647,"Fiji, Rep. of",63,2017,108.83
+648,Finland,64,2017,101.11
+649,France,65,2017,101.22
+650,Gabon,67,2017,93.87
+651,"Gambia, The",68,2017,84.75
+652,Georgia,69,2017,124.18
+653,Germany,70,2017,96.76
+654,Ghana,71,2017,72.59
+655,Greece,72,2017,100.38
+656,Grenada,73,2017,110.37
+657,Guadeloupe,205,2017,0.0
+658,Guatemala,75,2017,0.0
+659,Guinea,76,2017,83.18
+660,Guinea-Bissau,77,2017,104.02
+661,Guyana,78,2017,114.72
+662,Haiti,79,2017,92.05
+663,Honduras,80,2017,304.02
+664,Hungary,82,2017,138.82
+665,Iceland,83,2017,156.88
+666,India,84,2017,133.5
+667,Indonesia,85,2017,129.42
+668,"Iran, Islamic Rep. of",86,2017,29.66
+669,Iraq,87,2017,104.33
+670,Ireland,88,2017,83.13
+671,Israel,89,2017,93.4
+672,Italy,90,2017,101.1
+673,Jamaica,91,2017,92.78
+674,Japan,92,2017,98.58
+675,Jordan,93,2017,95.73
+676,"Kazakhstan, Rep. of",94,2017,56.44
+677,Kenya,95,2017,93.59
+678,Kiribati,96,2017,127.14
+679,"Korea, Rep. of",97,2017,97.65
+680,"Kosovo, Rep. of",98,2017,101.77
+681,Kuwait,99,2017,112.35
+682,Kyrgyz Rep.,100,2017,253.33
+683,Lao People's Dem. Rep.,101,2017,102.14
+684,Latvia,102,2017,103.08
+685,Lebanon,103,2017,100.43
+686,"Lesotho, Kingdom of",104,2017,75.29
+687,Liberia,105,2017,72.26
+688,Libya,106,2017,238.73
+689,Lithuania,107,2017,104.66
+690,Luxembourg,108,2017,102.03
+691,Madagascar,110,2017,108.6
+692,Malawi,111,2017,63.3
+693,Malaysia,112,2017,119.63
+694,Maldives,113,2017,97.7
+695,Mali,114,2017,102.21
+696,Malta,115,2017,99.85
+697,Martinique,206,2017,100.32
+698,"Mauritania, Islamic Rep. of",117,2017,94.85
+699,Mauritius,118,2017,76.23
+700,Mexico,119,2017,95.57
+701,"Micronesia, Federated States of",120,2017,100.87
+702,"Moldova, Rep. of",121,2017,55.55
+703,Mongolia,122,2017,84.05
+704,Montenegro,123,2017,102.1
+705,Montserrat,207,2017,99.46
+706,Morocco,124,2017,99.64
+707,Mozambique,125,2017,115.11
+708,Myanmar,126,2017,133.85
+709,Namibia,127,2017,127.19
+710,Nepal,129,2017,116.9
+711,"Netherlands, The",130,2017,101.7
+712,New Caledonia,131,2017,0.0
+713,New Zealand,132,2017,100.27
+714,Nicaragua,133,2017,204.63
+715,Niger,134,2017,101.09
+716,Nigeria,135,2017,233.35
+717,"North Macedonia, Republic of",136,2017,110.92
+718,Norway,138,2017,105.49
+719,Oman,139,2017,99.1
+720,Pakistan,140,2017,106.09
+721,"Palau, Rep. of",141,2017,100.73
+722,Panama,142,2017,104.43
+723,Papua New Guinea,143,2017,132.7
+724,Paraguay,144,2017,97.96
+725,Peru,145,2017,87.56
+726,Philippines,146,2017,94.94
+727,"Poland, Rep. of",147,2017,124.57
+728,Portugal,148,2017,102.48
+729,Qatar,150,2017,99.48
+730,Romania,151,2017,99.77
+731,Russian Federation,152,2017,168.18
+732,Rwanda,153,2017,121.16
+733,Samoa,154,2017,102.9
+734,"San Marino, Rep. of",208,2017,109.49
+735,"São Tomé and Príncipe, Dem. Rep. of",209,2017,110.1
+736,Saudi Arabia,156,2017,97.6
+737,Senegal,157,2017,102.45
+738,"Serbia, Rep. of",158,2017,190.49
+739,Seychelles,159,2017,105.93
+740,Sierra Leone,160,2017,55.28
+741,Singapore,161,2017,99.0
+742,"Sint Maarten, Kingdom of the Netherlands",162,2017,129.72
+743,Slovak Rep.,163,2017,164.74
+744,"Slovenia, Rep. of",164,2017,101.37
+745,Solomon Islands,165,2017,100.01
+746,Somalia,166,2017,104.93
+747,South Africa,167,2017,83.02
+748,"South Sudan, Rep. of",168,2017,3408.74
+749,Spain,169,2017,95.05
+750,Sri Lanka,170,2017,97.23
+751,St. Kitts and Nevis,171,2017,107.35
+752,St. Lucia,172,2017,99.29
+753,St. Vincent and the Grenadines,173,2017,107.93
+754,Sudan,174,2017,783.16
+755,Suriname,175,2017,125.98
+756,Sweden,176,2017,322.11
+757,Switzerland,177,2017,99.86
+758,"Tajikistan, Rep. of",178,2017,0.0
+759,Tanzania,179,2017,90.41
+760,Thailand,180,2017,98.25
+761,"Timor-Leste, Dem. Rep. of",181,2017,97.71
+762,Togo,182,2017,102.44
+763,Tonga,183,2017,94.17
+764,Trinidad and Tobago,184,2017,106.36
+765,Tunisia,185,2017,109.13
+766,Turkey,186,2017,312.14
+767,Uganda,190,2017,101.4
+768,Ukraine,191,2017,226.75
+769,United Arab Emirates,192,2017,101.05
+770,United Kingdom,193,2017,103.58
+771,United States,194,2017,112.41
+772,Uruguay,195,2017,65.15
+773,"Uzbekistan, Rep. of",196,2017,65.83
+774,Vanuatu,197,2017,151.23
+775,"Venezuela, Rep. Bolivariana de",198,2017,0.0
+776,Vietnam,199,2017,93.74
+777,West Bank and Gaza,200,2017,100.2
+778,"Yemen, Rep. of",201,2017,0.0
+779,Zambia,202,2017,195.74
+780,Zimbabwe,203,2017,2.01
+781,"Afghanistan, Islamic Rep. of",1,2018,111.69
+782,Albania,2,2018,97.41
+783,Algeria,3,2018,202.25
+784,Angola,5,2018,63.15
+785,Anguilla,204,2018,107.34
+786,Antigua and Barbuda,6,2018,99.61
+787,Argentina,7,2018,151.58
+788,"Armenia, Rep. of",8,2018,126.79
+789,"Aruba, Kingdom of the Netherlands",9,2018,95.23
+790,Australia,10,2018,113.3
+791,Austria,11,2018,97.15
+792,"Azerbaijan, Rep. of",12,2018,152.9
+793,"Bahamas, The",13,2018,105.54
+794,"Bahrain, Kingdom of",14,2018,98.9
+795,Bangladesh,15,2018,81.84
+796,Barbados,16,2018,85.2
+797,"Belarus, Rep. of",17,2018,66.09
+798,Belgium,18,2018,107.24
+799,Belize,19,2018,100.17
+800,Benin,20,2018,100.38
+801,Bhutan,22,2018,97.54
+802,Bolivia,23,2018,101.58
+803,Bosnia and Herzegovina,24,2018,105.54
+804,Botswana,25,2018,98.66
+805,Brazil,26,2018,5025.99
+806,British Virgin Islands,27,2018,0.0
+807,Brunei Darussalam,28,2018,99.37
+808,Bulgaria,29,2018,6818.72
+809,Burkina Faso,30,2018,105.64
+810,Burundi,31,2018,111.63
+811,Cabo Verde,32,2018,100.0
+812,Cambodia,33,2018,174.05
+813,Cameroon,34,2018,87.68
+814,Canada,35,2018,133.38
+815,Cayman Islands,36,2018,0.0
+816,Central African Rep.,37,2018,96.59
+817,Chad,38,2018,91.34
+818,Chile,39,2018,99.71
+819,"China, P.R.: Hong Kong",40,2018,96.83
+822,Colombia,41,2018,99.07
+823,"Congo, Dem. Rep.",43,2018,0.0
+824,"Congo, Rep.",44,2018,98.06
+825,Costa Rica,45,2018,96.56
+826,Cote d'Ivoire,46,2018,105.0
+827,"Croatia, Rep. of",47,2018,101.49
+828,"Curaçao, Kingdom of the Netherlands",48,2018,128.71
+829,Cyprus,49,2018,100.52
+830,Czech Rep.,50,2018,105.34
+831,Denmark,51,2018,102.23
+832,Djibouti,52,2018,89.35
+833,Dominica,53,2018,103.71
+834,Dominican Republic,54,2018,95.35
+835,Ecuador,55,2018,105.21
+836,"Egypt, Arab Rep.",56,2018,94.22
+837,El Salvador,57,2018,112.36
+838,"Equatorial Guinea, Rep. of",58,2018,136.35
+839,"Estonia, Rep. of",60,2018,208.95
+840,"Eswatini, Kingdom of",61,2018,93.97
+841,Ethiopia,62,2018,124.22
+842,"Fiji, Rep. of",63,2018,113.27
+843,Finland,64,2018,102.2
+844,France,65,2018,103.09
+845,Gabon,67,2018,98.33
+846,"Gambia, The",68,2018,90.27
+847,Georgia,69,2018,127.43
+848,Germany,70,2018,98.43
+849,Ghana,71,2018,78.26
+850,Greece,72,2018,101.01
+851,Grenada,73,2018,111.26
+852,Guadeloupe,205,2018,0.0
+853,Guatemala,75,2018,0.0
+854,Guinea,76,2018,91.35
+855,Guinea-Bissau,77,2018,104.42
+856,Guyana,78,2018,116.19
+857,Haiti,79,2018,103.54
+858,Honduras,80,2018,317.23
+859,Hungary,82,2018,142.78
+860,Iceland,83,2018,161.09
+861,India,84,2018,138.76
+862,Indonesia,85,2018,133.56
+863,"Iran, Islamic Rep. of",86,2018,35.01
+864,Iraq,87,2018,104.71
+865,Ireland,88,2018,83.53
+866,Israel,89,2018,94.14
+867,Italy,90,2018,102.25
+868,Jamaica,91,2018,96.24
+869,Japan,92,2018,99.55
+870,Jordan,93,2018,100.0
+871,"Kazakhstan, Rep. of",94,2018,59.92
+872,Kenya,95,2018,97.98
+873,Kiribati,96,2018,127.86
+874,"Korea, Rep. of",97,2018,99.09
+875,"Kosovo, Rep. of",98,2018,102.84
+876,Kuwait,99,2018,112.96
+877,Kyrgyz Rep.,100,2018,257.24
+878,Lao People's Dem. Rep.,101,2018,104.23
+879,Latvia,102,2018,105.69
+880,Lebanon,103,2018,106.54
+881,"Lesotho, Kingdom of",104,2018,78.87
+882,Liberia,105,2018,89.28
+883,Libya,106,2018,270.18
+884,Lithuania,107,2018,107.49
+885,Luxembourg,108,2018,103.59
+886,Madagascar,110,2018,117.93
+887,Malawi,111,2018,71.16
+888,Malaysia,112,2018,120.68
+889,Maldives,113,2018,97.57
+890,Mali,114,2018,102.52
+891,Malta,115,2018,101.0
+892,Martinique,206,2018,0.0
+893,"Mauritania, Islamic Rep. of",117,2018,97.76
+894,Mauritius,118,2018,78.68
+895,Mexico,119,2018,100.26
+896,"Micronesia, Federated States of",120,2018,102.39
+897,"Moldova, Rep. of",121,2018,57.25
+898,Mongolia,122,2018,89.79
+899,Montenegro,123,2018,104.77
+900,Montserrat,207,2018,100.77
+901,Morocco,124,2018,101.44
+902,Mozambique,125,2018,119.62
+903,Myanmar,126,2018,143.05
+904,Namibia,127,2018,132.65
+905,Nepal,129,2018,121.65
+906,"Netherlands, The",130,2018,103.44
+907,New Caledonia,131,2018,0.0
+908,New Zealand,132,2018,101.88
+909,Nicaragua,133,2018,214.76
+910,Niger,134,2018,104.09
+911,Nigeria,135,2018,261.58
+912,"North Macedonia, Republic of",136,2018,112.53
+913,Norway,138,2018,108.41
+914,Oman,139,2018,99.98
+915,Pakistan,140,2018,111.48
+916,"Palau, Rep. of",141,2018,102.85
+917,Panama,142,2018,105.23
+918,Papua New Guinea,143,2018,138.5
+919,Paraguay,144,2018,101.86
+920,Peru,145,2018,88.88
+921,Philippines,146,2018,99.98
+922,"Poland, Rep. of",147,2018,126.83
+923,Portugal,148,2018,103.5
+924,Qatar,150,2018,99.73
+925,Romania,151,2018,104.39
+926,Russian Federation,152,2018,173.02
+927,Rwanda,153,2018,120.78
+928,Samoa,154,2018,107.22
+929,"San Marino, Rep. of",208,2018,0.0
+930,"São Tomé and Príncipe, Dem. Rep. of",209,2018,118.77
+931,Saudi Arabia,156,2018,100.0
+932,Senegal,157,2018,102.92
+933,"Serbia, Rep. of",158,2018,194.23
+934,Seychelles,159,2018,109.85
+935,Sierra Leone,160,2018,64.15
+936,Singapore,161,2018,99.44
+937,"Sint Maarten, Kingdom of the Netherlands",162,2018,0.0
+938,Slovak Rep.,163,2018,168.88
+939,"Slovenia, Rep. of",164,2018,103.14
+940,Solomon Islands,165,2018,103.48
+941,Somalia,166,2018,109.41
+942,South Africa,167,2018,86.77
+943,"South Sudan, Rep. of",168,2018,6255.09
+944,Spain,169,2018,96.64
+945,Sri Lanka,170,2018,99.31
+946,St. Kitts and Nevis,171,2018,106.24
+947,St. Lucia,172,2018,101.21
+948,St. Vincent and the Grenadines,173,2018,110.43
+949,Sudan,174,2018,1278.84
+950,Suriname,175,2018,0.0
+951,Sweden,176,2018,328.4
+952,Switzerland,177,2018,100.79
+953,"Tajikistan, Rep. of",178,2018,0.0
+954,Tanzania,179,2018,93.57
+955,Thailand,180,2018,99.3
+956,"Timor-Leste, Dem. Rep. of",181,2018,99.95
+957,Togo,182,2018,103.39
+958,Tonga,183,2018,98.91
+959,Trinidad and Tobago,184,2018,107.44
+960,Tunisia,185,2018,117.11
+961,Turkey,186,2018,363.13
+962,Uganda,190,2018,104.05
+963,Ukraine,191,2018,251.58
+964,United Arab Emirates,192,2018,104.15
+965,United Kingdom,193,2018,105.96
+966,United States,194,2018,115.16
+967,Uruguay,195,2018,70.1
+968,"Uzbekistan, Rep. of",196,2018,77.36
+969,Vanuatu,197,2018,154.75
+970,"Venezuela, Rep. Bolivariana de",198,2018,0.0
+971,Vietnam,199,2018,97.06
+972,West Bank and Gaza,200,2018,100.0
+973,"Yemen, Rep. of",201,2018,0.0
+974,Zambia,202,2018,210.41
+975,Zimbabwe,203,2018,2.23
+976,"Afghanistan, Islamic Rep. of",1,2019,114.26
+977,Albania,2,2019,98.79
+978,Algeria,3,2019,206.2
+979,Angola,5,2019,73.94
+980,Anguilla,204,2019,108.22
+981,Antigua and Barbuda,6,2019,101.04
+982,Argentina,7,2019,232.75
+983,"Armenia, Rep. of",8,2019,128.62
+984,"Aruba, Kingdom of the Netherlands",9,2019,99.29
+985,Australia,10,2019,115.13
+986,Austria,11,2019,98.64
+987,"Azerbaijan, Rep. of",12,2019,156.89
+988,"Bahamas, The",13,2019,108.17
+989,"Bahrain, Kingdom of",14,2019,99.9
+990,Bangladesh,15,2019,86.42
+991,Barbados,16,2019,88.7
+992,"Belarus, Rep. of",17,2019,69.79
+993,Belgium,18,2019,108.78
+994,Belize,19,2019,100.36
+995,Benin,20,2019,101.12
+996,Bhutan,22,2019,100.2
+997,Bolivia,23,2019,103.45
+998,Bosnia and Herzegovina,24,2019,108.17
+999,Botswana,25,2019,101.39
+1000,Brazil,26,2019,5213.61
+1001,British Virgin Islands,27,2019,0.0
+1002,Brunei Darussalam,28,2019,98.98
+1003,Bulgaria,29,2019,7030.35
+1004,Burkina Faso,30,2019,102.23
+1005,Burundi,31,2019,110.87
+1006,Cabo Verde,32,2019,101.11
+1007,Cambodia,33,2019,177.43
+1008,Cameroon,34,2019,89.83
+1009,Canada,35,2019,135.98
+1010,Cayman Islands,36,2019,0.0
+1011,Central African Rep.,37,2019,99.18
+1012,Chad,38,2019,90.46
+1013,Chile,39,2019,102.26
+1014,"China, P.R.: Hong Kong",40,2019,99.62
+1017,Colombia,41,2019,102.56
+1018,"Congo, Dem. Rep.",43,2019,0.0
+1019,"Congo, Rep.",44,2019,100.23
+1020,Costa Rica,45,2019,98.59
+1021,Cote d'Ivoire,46,2019,103.83
+1022,"Croatia, Rep. of",47,2019,102.28
+1023,"Curaçao, Kingdom of the Netherlands",48,2019,132.08
+1024,Cyprus,49,2019,100.77
+1025,Czech Rep.,50,2019,108.34
+1026,Denmark,51,2019,103.0
+1027,Djibouti,52,2019,92.31
+1028,Dominica,53,2019,105.27
+1029,Dominican Republic,54,2019,97.08
+1030,Ecuador,55,2019,105.49
+1031,"Egypt, Arab Rep.",56,2019,102.84
+1032,El Salvador,57,2019,112.44
+1033,"Equatorial Guinea, Rep. of",58,2019,138.44
+1034,"Estonia, Rep. of",60,2019,213.71
+1035,"Eswatini, Kingdom of",61,2019,96.41
+1036,Ethiopia,62,2019,143.86
+1037,"Fiji, Rep. of",63,2019,115.28
+1038,Finland,64,2019,103.25
+1039,France,65,2019,104.23
+1040,Gabon,67,2019,100.75
+1041,"Gambia, The",68,2019,96.7
+1042,Georgia,69,2019,133.61
+1043,Germany,70,2019,99.86
+1044,Ghana,71,2019,83.85
+1045,Greece,72,2019,101.26
+1046,Grenada,73,2019,111.92
+1047,Guadeloupe,205,2019,0.0
+1048,Guatemala,75,2019,0.0
+1049,Guinea,76,2019,100.0
+1050,Guinea-Bissau,77,2019,104.68
+1051,Guyana,78,2019,118.62
+1052,Haiti,79,2019,122.9
+1053,Honduras,80,2019,331.08
+1054,Hungary,82,2019,147.54
+1055,Iceland,83,2019,165.95
+1056,India,84,2019,143.93
+1057,Indonesia,85,2019,137.6
+1058,"Iran, Islamic Rep. of",86,2019,48.98
+1059,Iraq,87,2019,104.5
+1060,Ireland,88,2019,84.31
+1061,Israel,89,2019,94.94
+1062,Italy,90,2019,102.88
+1063,Jamaica,91,2019,100.0
+1064,Japan,92,2019,100.02
+1065,Jordan,93,2019,100.76
+1066,"Kazakhstan, Rep. of",94,2019,63.12
+1067,Kenya,95,2019,103.12
+1068,Kiribati,96,2019,125.54
+1069,"Korea, Rep. of",97,2019,99.47
+1070,"Kosovo, Rep. of",98,2019,105.59
+1071,Kuwait,99,2019,114.19
+1072,Kyrgyz Rep.,100,2019,260.15
+1073,Lao People's Dem. Rep.,101,2019,107.69
+1074,Latvia,102,2019,108.66
+1075,Lebanon,103,2019,109.74
+1076,"Lesotho, Kingdom of",104,2019,82.96
+1077,Liberia,105,2019,113.36
+1078,Libya,106,2019,264.33
+1079,Lithuania,107,2019,110.0
+1080,Luxembourg,108,2019,105.39
+1081,Madagascar,110,2019,124.55
+1082,Malawi,111,2019,77.83
+1083,Malaysia,112,2019,121.48
+1084,Maldives,113,2019,97.78
+1085,Mali,114,2019,100.82
+1086,Malta,115,2019,102.66
+1087,Martinique,206,2019,0.0
+1088,"Mauritania, Islamic Rep. of",117,2019,100.01
+1089,Mauritius,118,2019,79.0
+1090,Mexico,119,2019,103.9
+1091,"Micronesia, Federated States of",120,2019,104.36
+1092,"Moldova, Rep. of",121,2019,60.02
+1093,Mongolia,122,2019,96.34
+1094,Montenegro,123,2019,105.15
+1095,Montserrat,207,2019,99.69
+1096,Morocco,124,2019,101.75
+1097,Mozambique,125,2019,122.97
+1098,Myanmar,126,2019,155.67
+1099,Namibia,127,2019,137.59
+1100,Nepal,129,2019,128.42
+1101,"Netherlands, The",130,2019,106.16
+1102,New Caledonia,131,2019,0.0
+1103,New Zealand,132,2019,103.53
+1104,Nicaragua,133,2019,226.3
+1105,Niger,134,2019,101.5
+1106,Nigeria,135,2019,291.39
+1107,"North Macedonia, Republic of",136,2019,113.4
+1108,Norway,138,2019,110.76
+1109,Oman,139,2019,100.48
+1110,Pakistan,140,2019,123.27
+1111,"Palau, Rep. of",141,2019,103.13
+1112,Panama,142,2019,104.86
+1113,Papua New Guinea,143,2019,143.95
+1114,Paraguay,144,2019,104.67
+1115,Peru,145,2019,90.88
+1116,Philippines,146,2019,102.38
+1117,"Poland, Rep. of",147,2019,129.65
+1118,Portugal,148,2019,103.85
+1119,Qatar,150,2019,99.07
+1120,Romania,151,2019,108.38
+1121,Russian Federation,152,2019,180.75
+1122,Rwanda,153,2019,124.83
+1123,Samoa,154,2019,108.27
+1124,"San Marino, Rep. of",208,2019,0.0
+1125,"São Tomé and Príncipe, Dem. Rep. of",209,2019,127.94
+1126,Saudi Arabia,156,2019,97.91
+1127,Senegal,157,2019,104.74
+1128,"Serbia, Rep. of",158,2019,197.82
+1129,Seychelles,159,2019,111.84
+1130,Sierra Leone,160,2019,73.64
+1131,Singapore,161,2019,100.0
+1132,"Sint Maarten, Kingdom of the Netherlands",162,2019,0.0
+1133,Slovak Rep.,163,2019,173.38
+1134,"Slovenia, Rep. of",164,2019,104.82
+1135,Solomon Islands,165,2019,105.17
+1136,Somalia,166,2019,114.56
+1137,South Africa,167,2019,90.34
+1138,"South Sudan, Rep. of",168,2019,11712.11
+1139,Spain,169,2019,97.31
+1140,Sri Lanka,170,2019,102.81
+1141,St. Kitts and Nevis,171,2019,105.88
+1142,St. Lucia,172,2019,101.76
+1143,St. Vincent and the Grenadines,173,2019,111.44
+1144,Sudan,174,2019,1930.97
+1145,Suriname,175,2019,140.63
+1146,Sweden,176,2019,334.26
+1147,Switzerland,177,2019,101.16
+1148,"Tajikistan, Rep. of",178,2019,0.0
+1149,Tanzania,179,2019,96.81
+1150,Thailand,180,2019,100.0
+1151,"Timor-Leste, Dem. Rep. of",181,2019,100.91
+1152,Togo,182,2019,104.09
+1153,Tonga,183,2019,100.08
+1154,Trinidad and Tobago,184,2019,108.52
+1155,Tunisia,185,2019,124.98
+1156,Turkey,186,2019,418.24
+1157,Uganda,190,2019,107.03
+1158,Ukraine,191,2019,271.43
+1159,United Arab Emirates,192,2019,102.14
+1160,United Kingdom,193,2019,107.8
+1161,United States,194,2019,117.24
+1162,Uruguay,195,2019,75.63
+1163,"Uzbekistan, Rep. of",196,2019,88.6
+1164,Vanuatu,197,2019,159.03
+1165,"Venezuela, Rep. Bolivariana de",198,2019,0.0
+1166,Vietnam,199,2019,99.77
+1167,West Bank and Gaza,200,2019,101.58
+1168,"Yemen, Rep. of",201,2019,0.0
+1169,Zambia,202,2019,229.67
+1170,Zimbabwe,203,2019,7.91
+1171,"Afghanistan, Islamic Rep. of",1,2020,0.0
+1172,Albania,2,2020,100.39
+1173,Algeria,3,2020,211.18
+1174,Angola,5,2020,90.4
+1175,Anguilla,204,2020,107.71
+1176,Antigua and Barbuda,6,2020,101.67
+1177,Argentina,7,2020,330.54
+1178,"Armenia, Rep. of",8,2020,130.18
+1179,"Aruba, Kingdom of the Netherlands",9,2020,0.0
+1180,Australia,10,2020,116.1
+1181,Austria,11,2020,100.0
+1182,"Azerbaijan, Rep. of",12,2020,161.22
+1183,"Bahamas, The",13,2020,108.21
+1184,"Bahrain, Kingdom of",14,2020,97.58
+1185,Bangladesh,15,2020,91.34
+1186,Barbados,16,2020,0.0
+1187,"Belarus, Rep. of",17,2020,73.66
+1188,Belgium,18,2020,109.59
+1189,Belize,19,2020,100.48
+1190,Benin,20,2020,104.17
+1191,Bhutan,22,2020,105.84
+1192,Bolivia,23,2020,104.42
+1193,Bosnia and Herzegovina,24,2020,108.21
+1194,Botswana,25,2020,103.31
+1195,Brazil,26,2020,5381.06
+1196,British Virgin Islands,27,2020,0.0
+1197,Brunei Darussalam,28,2020,100.9
+1198,Bulgaria,29,2020,7147.93
+1199,Burkina Faso,30,2020,104.15
+1200,Burundi,31,2020,118.98
+1201,Cabo Verde,32,2020,101.72
+1202,Cambodia,33,2020,182.65
+1203,Cameroon,34,2020,92.02
+1204,Canada,35,2020,136.96
+1205,Cayman Islands,36,2020,0.0
+1206,Central African Rep.,37,2020,100.88
+1207,Chad,38,2020,94.5
+1208,Chile,39,2020,105.37
+1209,"China, P.R.: Hong Kong",40,2020,99.87
+1212,Colombia,41,2020,105.15
+1213,"Congo, Dem. Rep.",43,2020,0.0
+1214,"Congo, Rep.",44,2020,102.02
+1215,Costa Rica,45,2020,99.3
+1216,Cote d'Ivoire,46,2020,106.35
+1217,"Croatia, Rep. of",47,2020,102.43
+1218,"Curaçao, Kingdom of the Netherlands",48,2020,0.0
+1219,Cyprus,49,2020,100.13
+1220,Czech Rep.,50,2020,111.77
+1221,Denmark,51,2020,103.43
+1222,Djibouti,52,2020,93.95
+1223,Dominica,53,2020,104.5
+1224,Dominican Republic,54,2020,100.75
+1225,Ecuador,55,2020,105.13
+1226,"Egypt, Arab Rep.",56,2020,108.03
+1227,El Salvador,57,2020,112.03
+1228,"Equatorial Guinea, Rep. of",58,2020,145.04
+1229,"Estonia, Rep. of",60,2020,212.76
+1230,"Eswatini, Kingdom of",61,2020,0.0
+1231,Ethiopia,62,2020,173.14
+1232,"Fiji, Rep. of",63,2020,112.28
+1233,Finland,64,2020,103.55
+1234,France,65,2020,104.73
+1235,Gabon,67,2020,102.11
+1236,"Gambia, The",68,2020,102.43
+1237,Georgia,69,2020,140.56
+1238,Germany,70,2020,100.0
+1239,Ghana,71,2020,92.14
+1240,Greece,72,2020,100.0
+1241,Grenada,73,2020,111.09
+1242,Guadeloupe,205,2020,0.0
+1243,Guatemala,75,2020,0.0
+1244,Guinea,76,2020,110.6
+1245,Guinea-Bissau,77,2020,105.87
+1246,Guyana,78,2020,119.79
+1247,Haiti,79,2020,150.92
+1248,Honduras,80,2020,342.57
+1249,Hungary,82,2020,152.45
+1250,Iceland,83,2020,170.68
+1251,India,84,2020,153.47
+1252,Indonesia,85,2020,140.25
+1253,"Iran, Islamic Rep. of",86,2020,63.96
+1254,Iraq,87,2020,105.1
+1255,Ireland,88,2020,84.03
+1256,Israel,89,2020,94.36
+1257,Italy,90,2020,102.73
+1258,Jamaica,91,2020,105.23
+1259,Japan,92,2020,99.99
+1260,Jordan,93,2020,101.1
+1261,"Kazakhstan, Rep. of",94,2020,67.36
+1262,Kenya,95,2020,108.69
+1263,Kiribati,96,2020,128.74
+1264,"Korea, Rep. of",97,2020,100.0
+1265,"Kosovo, Rep. of",98,2020,105.8
+1266,Kuwait,99,2020,116.59
+1267,Kyrgyz Rep.,100,2020,276.61
+1268,Lao People's Dem. Rep.,101,2020,113.18
+1269,Latvia,102,2020,108.9
+1270,Lebanon,103,2020,202.87
+1271,"Lesotho, Kingdom of",104,2020,87.09
+1272,Liberia,105,2020,132.58
+1273,Libya,106,2020,268.16
+1274,Lithuania,107,2020,111.31
+1275,Luxembourg,108,2020,106.26
+1276,Madagascar,110,2020,129.78
+1277,Malawi,111,2020,84.54
+1278,Malaysia,112,2020,120.1
+1279,Maldives,113,2020,96.44
+1280,Mali,114,2020,101.26
+1281,Malta,115,2020,103.32
+1282,Martinique,206,2020,0.0
+1283,"Mauritania, Islamic Rep. of",117,2020,102.4
+1284,Mauritius,118,2020,81.04
+1285,Mexico,119,2020,107.43
+1286,"Micronesia, Federated States of",120,2020,104.93
+1287,"Moldova, Rep. of",121,2020,62.28
+1288,Mongolia,122,2020,100.0
+1289,Montenegro,123,2020,104.88
+1290,Montserrat,207,2020,97.8
+1291,Morocco,124,2020,102.46
+1292,Mozambique,125,2020,127.25
+1293,Myanmar,126,2020,0.0
+1294,Namibia,127,2020,140.62
+1295,Nepal,129,2020,134.91
+1296,"Netherlands, The",130,2020,107.51
+1297,New Caledonia,131,2020,0.0
+1298,New Zealand,132,2020,105.3
+1299,Nicaragua,133,2020,234.63
+1300,Niger,134,2020,104.44
+1301,Nigeria,135,2020,329.98
+1302,"North Macedonia, Republic of",136,2020,114.76
+1303,Norway,138,2020,112.18
+1304,Oman,139,2020,100.07
+1305,Pakistan,140,2020,135.28
+1306,"Palau, Rep. of",141,2020,103.35
+1307,Panama,142,2020,103.23
+1308,Papua New Guinea,143,2020,150.96
+1309,Paraguay,144,2020,106.52
+1310,Peru,145,2020,92.7
+1311,Philippines,146,2020,104.83
+1312,"Poland, Rep. of",147,2020,134.03
+1313,Portugal,148,2020,103.83
+1314,Qatar,150,2020,96.55
+1315,Romania,151,2020,111.24
+1316,Russian Federation,152,2020,186.86
+1317,Rwanda,153,2020,137.12
+1318,Samoa,154,2020,106.57
+1319,"San Marino, Rep. of",208,2020,0.0
+1320,"São Tomé and Príncipe, Dem. Rep. of",209,2020,140.5
+1321,Saudi Arabia,156,2020,101.28
+1322,Senegal,157,2020,107.4
+1323,"Serbia, Rep. of",158,2020,200.93
+1324,Seychelles,159,2020,113.18
+1325,Sierra Leone,160,2020,83.54
+1326,Singapore,161,2020,99.82
+1327,"Sint Maarten, Kingdom of the Netherlands",162,2020,0.0
+1328,Slovak Rep.,163,2020,176.74
+1329,"Slovenia, Rep. of",164,2020,104.76
+1330,Solomon Islands,165,2020,108.28
+1331,Somalia,166,2020,119.27
+1332,South Africa,167,2020,93.24
+1333,"South Sudan, Rep. of",168,2020,15187.77
+1334,Spain,169,2020,97.0
+1335,Sri Lanka,170,2020,109.14
+1336,St. Kitts and Nevis,171,2020,104.65
+1337,St. Lucia,172,2020,99.97
+1338,St. Vincent and the Grenadines,173,2020,110.74
+1339,Sudan,174,2020,5083.43
+1340,Suriname,175,2020,189.7
+1341,Sweden,176,2020,335.92
+1342,Switzerland,177,2020,100.42
+1343,"Tajikistan, Rep. of",178,2020,0.0
+1344,Tanzania,179,2020,100.0
+1345,Thailand,180,2020,99.15
+1346,"Timor-Leste, Dem. Rep. of",181,2020,0.0
+1347,Togo,182,2020,105.86
+1348,Tonga,183,2020,99.73
+1349,Trinidad and Tobago,184,2020,109.17
+1350,Tunisia,185,2020,132.02
+1351,Turkey,186,2020,469.59
+1352,Uganda,190,2020,110.58
+1353,Ukraine,191,2020,278.84
+1354,United Arab Emirates,192,2020,100.01
+1355,United Kingdom,193,2020,108.87
+1356,United States,194,2020,118.69
+1357,Uruguay,195,2020,83.0
+1358,"Uzbekistan, Rep. of",196,2020,100.0
+1359,Vanuatu,197,2020,167.5
+1360,"Venezuela, Rep. Bolivariana de",198,2020,0.0
+1361,Vietnam,199,2020,102.98
+1362,West Bank and Gaza,200,2020,100.83
+1363,"Yemen, Rep. of",201,2020,0.0
+1364,Zambia,202,2020,265.8
+1365,Zimbabwe,203,2020,52.02
+1366,"Afghanistan, Islamic Rep. of",1,2021,0.0
+1367,Albania,2,2021,102.44
+1368,Algeria,3,2021,226.44
+1369,Angola,5,2021,113.68
+1370,Anguilla,204,2021,109.64
+1371,Antigua and Barbuda,6,2021,103.77
+1372,Argentina,7,2021,490.55
+1373,"Armenia, Rep. of",8,2021,139.53
+1374,"Aruba, Kingdom of the Netherlands",9,2021,0.0
+1375,Australia,10,2021,119.43
+1376,Austria,11,2021,102.77
+1377,"Azerbaijan, Rep. of",12,2021,171.94
+1378,"Bahamas, The",13,2021,111.35
+1379,"Bahrain, Kingdom of",14,2021,96.99
+1380,Bangladesh,15,2021,96.4
+1381,Barbados,16,2021,0.0
+1382,"Belarus, Rep. of",17,2021,80.63
+1383,Belgium,18,2021,112.26
+1384,Belize,19,2021,103.73
+1385,Benin,20,2021,105.98
+1386,Bhutan,22,2021,113.62
+1387,Bolivia,23,2021,105.19
+1388,Bosnia and Herzegovina,24,2021,111.35
+1389,Botswana,25,2021,110.79
+1390,Brazil,26,2021,5827.78
+1391,British Virgin Islands,27,2021,0.0
+1392,Brunei Darussalam,28,2021,102.65
+1393,Bulgaria,29,2021,7383.65
+1394,Burkina Faso,30,2021,107.96
+1395,Burundi,31,2021,128.98
+1396,Cabo Verde,32,2021,103.61
+1397,Cambodia,33,2021,187.98
+1398,Cameroon,34,2021,94.11
+1399,Canada,35,2021,141.61
+1400,Cayman Islands,36,2021,0.0
+1401,Central African Rep.,37,2021,105.18
+1402,Chad,38,2021,93.76
+1403,Chile,39,2021,110.14
+1404,"China, P.R.: Hong Kong",40,2021,101.43
+1407,Colombia,41,2021,108.82
+1408,"Congo, Dem. Rep.",43,2021,0.0
+1409,"Congo, Rep.",44,2021,103.78
+1410,Costa Rica,45,2021,101.02
+1411,Cote d'Ivoire,46,2021,110.7
+1412,"Croatia, Rep. of",47,2021,105.05
+1413,"Curaçao, Kingdom of the Netherlands",48,2021,0.0
+1414,Cyprus,49,2021,102.58
+1415,Czech Rep.,50,2021,116.06
+1416,Denmark,51,2021,105.35
+1417,Djibouti,52,2021,95.07
+1418,Dominica,53,2021,106.05
+1419,Dominican Republic,54,2021,109.06
+1420,Ecuador,55,2021,105.27
+1421,"Egypt, Arab Rep.",56,2021,113.66
+1422,El Salvador,57,2021,115.91
+1423,"Equatorial Guinea, Rep. of",58,2021,144.9
+1424,"Estonia, Rep. of",60,2021,222.66
+1425,"Eswatini, Kingdom of",61,2021,0.0
+1426,Ethiopia,62,2021,219.61
+1427,"Fiji, Rep. of",63,2021,112.46
+1428,Finland,64,2021,105.82
+1429,France,65,2021,106.45
+1430,Gabon,67,2021,103.22
+1431,"Gambia, The",68,2021,109.98
+1432,Georgia,69,2021,154.01
+1433,Germany,70,2021,103.07
+1434,Ghana,71,2021,101.32
+1435,Greece,72,2021,101.22
+1436,Grenada,73,2021,112.45
+1437,Guadeloupe,205,2021,0.0
+1438,Guatemala,75,2021,0.0
+1439,Guinea,76,2021,124.53
+1440,Guinea-Bissau,77,2021,108.24
+1441,Guyana,78,2021,125.82
+1442,Haiti,79,2021,176.33
+1443,Honduras,80,2021,357.92
+1444,Hungary,82,2021,160.24
+1445,Iceland,83,2021,178.26
+1446,India,84,2021,161.34
+1447,Indonesia,85,2021,142.43
+1448,"Iran, Islamic Rep. of",86,2021,91.71
+1449,Iraq,87,2021,111.45
+1450,Ireland,88,2021,86.0
+1451,Israel,89,2021,95.78
+1452,Italy,90,2021,104.66
+1453,Jamaica,91,2021,111.4
+1454,Japan,92,2021,99.76
+1455,Jordan,93,2021,102.46
+1456,"Kazakhstan, Rep. of",94,2021,72.77
+1457,Kenya,95,2021,115.33
+1458,Kiribati,96,2021,131.39
+1459,"Korea, Rep. of",97,2021,102.5
+1460,"Kosovo, Rep. of",98,2021,109.35
+1461,Kuwait,99,2021,120.58
+1462,Kyrgyz Rep.,100,2021,309.54
+1463,Lao People's Dem. Rep.,101,2021,117.44
+1464,Latvia,102,2021,112.46
+1465,Lebanon,103,2021,516.82
+1466,"Lesotho, Kingdom of",104,2021,92.36
+1467,Liberia,105,2021,142.94
+1468,Libya,106,2021,275.85
+1469,Lithuania,107,2021,116.53
+1470,Luxembourg,108,2021,108.94
+1471,Madagascar,110,2021,137.33
+1472,Malawi,111,2021,92.43
+1473,Malaysia,112,2021,123.08
+1474,Maldives,113,2021,96.97
+1475,Mali,114,2021,105.23
+1476,Malta,115,2021,104.87
+1477,Martinique,206,2021,0.0
+1478,"Mauritania, Islamic Rep. of",117,2021,106.05
+1479,Mauritius,118,2021,84.31
+1480,Mexico,119,2021,113.54
+1481,"Micronesia, Federated States of",120,2021,108.28
+1482,"Moldova, Rep. of",121,2021,65.46
+1483,Mongolia,122,2021,107.35
+1484,Montenegro,123,2021,107.41
+1485,Montserrat,207,2021,100.35
+1486,Morocco,124,2021,103.9
+1487,Mozambique,125,2021,135.41
+1488,Myanmar,126,2021,0.0
+1489,Namibia,127,2021,145.71
+1490,Nepal,129,2021,140.51
+1491,"Netherlands, The",130,2021,110.39
+1492,New Caledonia,131,2021,0.0
+1493,New Zealand,132,2021,109.45
+1494,Nicaragua,133,2021,246.2
+1495,Niger,134,2021,108.45
+1496,Nigeria,135,2021,385.93
+1497,"North Macedonia, Republic of",136,2021,118.46
+1498,Norway,138,2021,116.09
+1499,Oman,139,2021,101.75
+1500,Pakistan,140,2021,148.12
+1501,"Palau, Rep. of",141,2021,106.05
+1502,Panama,142,2021,104.91
+1503,Papua New Guinea,143,2021,157.73
+1504,Paraguay,144,2021,111.62
+1505,Peru,145,2021,96.66
+1506,Philippines,146,2021,108.94
+1507,"Poland, Rep. of",147,2021,140.8
+1508,Portugal,148,2021,105.15
+1509,Qatar,150,2021,98.78
+1510,Romania,151,2021,116.86
+1511,Russian Federation,152,2021,199.37
+1512,Rwanda,153,2021,136.58
+1513,Samoa,154,2021,109.91
+1514,"San Marino, Rep. of",208,2021,0.0
+1515,"São Tomé and Príncipe, Dem. Rep. of",209,2021,151.93
+1516,Saudi Arabia,156,2021,104.38
+1517,Senegal,157,2021,109.74
+1518,"Serbia, Rep. of",158,2021,209.14
+1519,Seychelles,159,2021,124.24
+1520,Sierra Leone,160,2021,93.46
+1521,Singapore,161,2021,102.12
+1522,"Sint Maarten, Kingdom of the Netherlands",162,2021,0.0
+1523,Slovak Rep.,163,2021,182.31
+1524,"Slovenia, Rep. of",164,2021,106.77
+1525,Solomon Islands,165,2021,108.16
+1526,Somalia,166,2021,124.79
+1527,South Africa,167,2021,97.54
+1528,"South Sudan, Rep. of",168,2021,16785.03
+1529,Spain,169,2021,100.0
+1530,Sri Lanka,170,2021,116.79
+1531,St. Kitts and Nevis,171,2021,105.9
+1532,St. Lucia,172,2021,102.38
+1533,St. Vincent and the Grenadines,173,2021,112.48
+1534,Sudan,174,2021,23337.7
+1535,Suriname,175,2021,301.85
+1536,Sweden,176,2021,343.19
+1537,Switzerland,177,2021,101.01
+1538,"Tajikistan, Rep. of",178,2021,0.0
+1539,Tanzania,179,2021,103.69
+1540,Thailand,180,2021,100.37
+1541,"Timor-Leste, Dem. Rep. of",181,2021,0.0
+1542,Togo,182,2021,110.29
+1543,Tonga,183,2021,105.35
+1544,Trinidad and Tobago,184,2021,111.41
+1545,Tunisia,185,2021,139.55
+1546,Turkey,186,2021,561.61
+1547,Uganda,190,2021,113.02
+1548,Ukraine,191,2021,304.95
+1549,United Arab Emirates,192,2021,100.0
+1550,United Kingdom,193,2021,111.61
+1551,United States,194,2021,124.27
+1552,Uruguay,195,2021,89.44
+1553,"Uzbekistan, Rep. of",196,2021,110.85
+1554,Vanuatu,197,2021,171.43
+1555,"Venezuela, Rep. Bolivariana de",198,2021,0.0
+1556,Vietnam,199,2021,104.87
+1557,West Bank and Gaza,200,2021,102.08
+1558,"Yemen, Rep. of",201,2021,0.0
+1559,Zambia,202,2021,324.33
+1560,Zimbabwe,203,2021,103.28
+1561,"Afghanistan, Islamic Rep. of",1,2022,0.0
+1562,Albania,2,2022,109.32
+1563,Algeria,3,2022,247.42
+1564,Angola,5,2022,137.96
+1565,Anguilla,204,2022,115.73
+1566,Antigua and Barbuda,6,2022,111.59
+1567,Argentina,7,2022,845.87
+1568,"Armenia, Rep. of",8,2022,151.59
+1569,"Aruba, Kingdom of the Netherlands",9,2022,0.0
+1570,Australia,10,2022,127.3
+1571,Austria,11,2022,111.55
+1572,"Azerbaijan, Rep. of",12,2022,195.76
+1573,"Bahamas, The",13,2022,117.59
+1574,"Bahrain, Kingdom of",14,2022,100.51
+1575,Bangladesh,15,2022,103.82
+1576,Barbados,16,2022,102.96
+1577,"Belarus, Rep. of",17,2022,92.89
+1578,Belgium,18,2022,123.03
+1579,Belize,19,2022,110.24
+1580,Benin,20,2022,107.41
+1581,Bhutan,22,2022,120.02
+1582,Bolivia,23,2022,107.03
+1583,Bosnia and Herzegovina,24,2022,117.59
+1584,Botswana,25,2022,123.71
+1585,Brazil,26,2022,6368.6
+1586,British Virgin Islands,27,2022,0.0
+1587,Brunei Darussalam,28,2022,106.43
+1588,Bulgaria,29,2022,8515.22
+1589,Burkina Faso,30,2022,123.39
+1590,Burundi,31,2022,153.23
+1591,Cabo Verde,32,2022,111.83
+1592,Cambodia,33,2022,198.02
+1593,Cameroon,34,2022,99.99
+1594,Canada,35,2022,151.24
+1595,Cayman Islands,36,2022,0.0
+1596,Central African Rep.,37,2022,111.05
+1597,Chad,38,2022,99.19
+1598,Chile,39,2022,122.96
+1599,"China, P.R.: Hong Kong",40,2022,103.34
+1602,Colombia,41,2022,119.9
+1603,"Congo, Dem. Rep.",43,2022,0.0
+1604,"Congo, Rep.",44,2022,106.93
+1605,Costa Rica,45,2022,109.37
+1606,Cote d'Ivoire,46,2022,116.54
+1607,"Croatia, Rep. of",47,2022,116.38
+1608,"Curaçao, Kingdom of the Netherlands",48,2022,0.0
+1609,Cyprus,49,2022,111.19
+1610,Czech Rep.,50,2022,133.58
+1611,Denmark,51,2022,113.46
+1612,Djibouti,52,2022,99.99
+1613,Dominica,53,2022,114.31
+1614,Dominican Republic,54,2022,118.67
+1615,Ecuador,55,2022,108.92
+1616,"Egypt, Arab Rep.",56,2022,129.46
+1617,El Salvador,57,2022,124.25
+1618,"Equatorial Guinea, Rep. of",58,2022,151.83
+1619,"Estonia, Rep. of",60,2022,265.85
+1620,"Eswatini, Kingdom of",61,2022,0.0
+1621,Ethiopia,62,2022,294.03
+1622,"Fiji, Rep. of",63,2022,117.54
+1623,Finland,64,2022,113.36
+1624,France,65,2022,112.01
+1625,Gabon,67,2022,107.59
+1626,"Gambia, The",68,2022,122.64
+1627,Georgia,69,2022,172.34
+1628,Germany,70,2022,110.15
+1629,Ghana,71,2022,132.99
+1630,Greece,72,2022,110.99
+1631,Grenada,73,2022,115.35
+1632,Guadeloupe,205,2022,0.0
+1633,Guatemala,75,2022,0.0
+1634,Guinea,76,2022,137.6
+1635,Guinea-Bissau,77,2022,118.41
+1636,Guyana,78,2022,133.52
+1637,Haiti,79,2022,236.26
+1638,Honduras,80,2022,390.45
+1639,Hungary,82,2022,183.65
+1640,Iceland,83,2022,193.07
+1641,India,84,2022,172.15
+1642,Indonesia,85,2022,148.43
+1643,"Iran, Islamic Rep. of",86,2022,131.59
+1644,Iraq,87,2022,117.02
+1645,Ireland,88,2022,92.73
+1646,Israel,89,2022,99.99
+1647,Italy,90,2022,113.24
+1648,Jamaica,91,2022,122.93
+1649,Japan,92,2022,102.25
+1650,Jordan,93,2022,106.79
+1651,"Kazakhstan, Rep. of",94,2022,83.71
+1652,Kenya,95,2022,124.16
+1653,Kiribati,96,2022,0.0
+1654,"Korea, Rep. of",97,2022,107.72
+1655,"Kosovo, Rep. of",98,2022,122.01
+1656,Kuwait,99,2022,125.38
+1657,Kyrgyz Rep.,100,2022,352.63
+1658,Lao People's Dem. Rep.,101,2022,144.39
+1659,Latvia,102,2022,131.93
+1660,Lebanon,103,2022,1401.65
+1661,"Lesotho, Kingdom of",104,2022,100.0
+1662,Liberia,105,2022,153.8
+1663,Libya,106,2022,288.29
+1664,Lithuania,107,2022,139.49
+1665,Luxembourg,108,2022,115.84
+1666,Madagascar,110,2022,148.53
+1667,Malawi,111,2022,111.8
+1668,Malaysia,112,2022,127.23
+1669,Maldives,113,2022,99.23
+1670,Mali,114,2022,115.36
+1671,Malta,115,2022,111.32
+1672,Martinique,206,2022,0.0
+1673,"Mauritania, Islamic Rep. of",117,2022,116.15
+1674,Mauritius,118,2022,93.39
+1675,Mexico,119,2022,122.51
+1676,"Micronesia, Federated States of",120,2022,114.14
+1677,"Moldova, Rep. of",121,2022,84.27
+1678,Mongolia,122,2022,123.61
+1679,Montenegro,123,2022,121.41
+1680,Montserrat,207,2022,103.34
+1681,Morocco,124,2022,110.82
+1682,Mozambique,125,2022,149.33
+1683,Myanmar,126,2022,0.0
+1684,Namibia,127,2022,154.57
+1685,Nepal,129,2022,151.26
+1686,"Netherlands, The",130,2022,121.43
+1687,New Caledonia,131,2022,0.0
+1688,New Zealand,132,2022,117.3
+1689,Nicaragua,133,2022,271.97
+1690,Niger,134,2022,113.03
+1691,Nigeria,135,2022,458.66
+1692,"North Macedonia, Republic of",136,2022,135.29
+1693,Norway,138,2022,122.78
+1694,Oman,139,2022,104.3
+1695,Pakistan,140,2022,177.56
+1696,"Palau, Rep. of",141,2022,119.15
+1697,Panama,142,2022,107.91
+1698,Papua New Guinea,143,2022,166.01
+1699,Paraguay,144,2022,122.52
+1700,Peru,145,2022,104.71
+1701,Philippines,146,2022,115.28
+1702,"Poland, Rep. of",147,2022,161.12
+1703,Portugal,148,2022,113.38
+1704,Qatar,150,2022,103.71
+1705,Romania,151,2022,132.98
+1706,Russian Federation,152,2022,0.0
+1707,Rwanda,153,2022,160.75
+1708,Samoa,154,2022,121.96
+1709,"San Marino, Rep. of",208,2022,0.0
+1710,"São Tomé and Príncipe, Dem. Rep. of",209,2022,179.29
+1711,Saudi Arabia,156,2022,106.97
+1712,Senegal,157,2022,120.38
+1713,"Serbia, Rep. of",158,2022,234.2
+1714,Seychelles,159,2022,127.5
+1715,Sierra Leone,160,2022,118.89
+1716,Singapore,161,2022,108.37
+1717,"Sint Maarten, Kingdom of the Netherlands",162,2022,0.0
+1718,Slovak Rep.,163,2022,205.6
+1719,"Slovenia, Rep. of",164,2022,116.2
+1720,Solomon Islands,165,2022,114.13
+1721,Somalia,166,2022,133.25
+1722,South Africa,167,2022,104.41
+1723,"South Sudan, Rep. of",168,2022,15662.56
+1724,Spain,169,2022,108.39
+1725,Sri Lanka,170,2022,174.87
+1726,St. Kitts and Nevis,171,2022,108.73
+1727,St. Lucia,172,2022,108.91
+1728,St. Vincent and the Grenadines,173,2022,118.85
+1729,Sudan,174,2022,55732.39
+1730,Suriname,175,2022,460.16
+1731,Sweden,176,2022,371.91
+1732,Switzerland,177,2022,103.87
+1733,"Tajikistan, Rep. of",178,2022,0.0
+1734,Tanzania,179,2022,108.2
+1735,Thailand,180,2022,106.47
+1736,"Timor-Leste, Dem. Rep. of",181,2022,0.0
+1737,Togo,182,2022,119.08
+1738,Tonga,183,2022,116.91
+1739,Trinidad and Tobago,184,2022,117.91
+1740,Tunisia,185,2022,151.14
+1741,Turkey,186,2022,967.71
+1742,Uganda,190,2022,121.15
+1743,Ukraine,191,2022,366.5
+1744,United Arab Emirates,192,2022,104.83
+1745,United Kingdom,193,2022,120.45
+1746,United States,194,2022,134.21
+1747,Uruguay,195,2022,97.58
+1748,"Uzbekistan, Rep. of",196,2022,123.54
+1749,Vanuatu,197,2022,182.88
+1750,"Venezuela, Rep. Bolivariana de",198,2022,0.0
+1751,Vietnam,199,2022,108.18
+1752,West Bank and Gaza,200,2022,105.9
+1753,"Yemen, Rep. of",201,2022,0.0
+1754,Zambia,202,2022,359.98
+1755,Zimbabwe,203,2022,211.41
+1756,"Afghanistan, Islamic Rep. of",1,2023,0.0
+1757,Albania,2,2023,114.53
+1758,Algeria,3,2023,270.49
+1759,Angola,5,2023,156.79
+1760,Anguilla,204,2023,119.67
+1761,Antigua and Barbuda,6,2023,117.24
+1762,Argentina,7,2023,1975.01
+1763,"Armenia, Rep. of",8,2023,154.59
+1764,"Aruba, Kingdom of the Netherlands",9,2023,0.0
+1765,Australia,10,2023,134.43
+1766,Austria,11,2023,120.27
+1767,"Azerbaijan, Rep. of",12,2023,212.96
+1768,"Bahamas, The",13,2023,121.18
+1769,"Bahrain, Kingdom of",14,2023,100.58
+1770,Bangladesh,15,2023,114.09
+1771,Barbados,16,2023,113.04
+1772,"Belarus, Rep. of",17,2023,97.54
+1773,Belgium,18,2023,128.02
+1774,Belize,19,2023,115.08
+1775,Benin,20,2023,110.34
+1776,Bhutan,22,2023,125.1
+1777,Bolivia,23,2023,109.79
+1778,Bosnia and Herzegovina,24,2023,0.0
+1779,Botswana,25,2023,129.98
+1780,Brazil,26,2023,6661.15
+1781,British Virgin Islands,27,2023,0.0
+1782,Brunei Darussalam,28,2023,106.81
+1783,Bulgaria,29,2023,9319.29
+1784,Burkina Faso,30,2023,124.3
+1785,Burundi,31,2023,194.52
+1786,Cabo Verde,32,2023,116.0
+1787,Cambodia,33,2023,202.24
+1788,Cameroon,34,2023,107.37
+1789,Canada,35,2023,157.11
+1790,Cayman Islands,36,2023,0.0
+1791,Central African Rep.,37,2023,114.36
+1792,Chad,38,2023,109.94
+1793,Chile,39,2023,132.28
+1794,"China, P.R.: Hong Kong",40,2023,105.51
+1797,Colombia,41,2023,133.97
+1798,"Congo, Dem. Rep.",43,2023,0.0
+1799,"Congo, Rep.",44,2023,111.53
+1800,Costa Rica,45,2023,109.95
+1801,Cote d'Ivoire,46,2023,121.66
+1802,"Croatia, Rep. of",47,2023,125.62
+1803,"Curaçao, Kingdom of the Netherlands",48,2023,0.0
+1804,Cyprus,49,2023,115.12
+1805,Czech Rep.,50,2023,147.83
+1806,Denmark,51,2023,117.21
+1807,Djibouti,52,2023,101.48
+1808,Dominica,53,2023,118.29
+1809,Dominican Republic,54,2023,124.34
+1810,Ecuador,55,2023,111.33
+1811,"Egypt, Arab Rep.",56,2023,173.33
+1812,El Salvador,57,2023,129.28
+1813,"Equatorial Guinea, Rep. of",58,2023,0.0
+1814,"Estonia, Rep. of",60,2023,290.2
+1815,"Eswatini, Kingdom of",61,2023,0.0
+1816,Ethiopia,62,2023,382.89
+1817,"Fiji, Rep. of",63,2023,0.0
+1818,Finland,64,2023,120.45
+1819,France,65,2023,117.47
+1820,Gabon,67,2023,111.5
+1821,"Gambia, The",68,2023,143.46
+1822,Georgia,69,2023,176.62
+1823,Germany,70,2023,116.7
+1824,Ghana,71,2023,183.68
+1825,Greece,72,2023,114.83
+1826,Grenada,73,2023,118.46
+1827,Guadeloupe,205,2023,0.0
+1828,Guatemala,75,2023,0.0
+1829,Guinea,76,2023,148.34
+1830,Guinea-Bissau,77,2023,0.0
+1831,Guyana,78,2023,137.28
+1832,Haiti,79,2023,323.23
+1833,Honduras,80,2023,416.47
+1834,Hungary,82,2023,215.1
+1835,Iceland,83,2023,209.94
+1836,India,84,2023,181.88
+1837,Indonesia,85,2023,153.88
+1838,"Iran, Islamic Rep. of",86,2023,190.26
+1839,Iraq,87,2023,0.0
+1840,Ireland,88,2023,98.58
+1841,Israel,89,2023,104.22
+1842,Italy,90,2023,119.61
+1843,Jamaica,91,2023,130.88
+1844,Japan,92,2023,105.59
+1845,Jordan,93,2023,109.02
+1846,"Kazakhstan, Rep. of",94,2023,96.04
+1847,Kenya,95,2023,133.69
+1848,Kiribati,96,2023,0.0
+1849,"Korea, Rep. of",97,2023,111.59
+1850,"Kosovo, Rep. of",98,2023,128.04
+1851,Kuwait,99,2023,129.95
+1852,Kyrgyz Rep.,100,2023,390.55
+1853,Lao People's Dem. Rep.,101,2023,189.49
+1854,Latvia,102,2023,143.72
+1855,Lebanon,103,2023,4504.1
+1856,"Lesotho, Kingdom of",104,2023,106.34
+1857,Liberia,105,2023,169.32
+1858,Libya,106,2023,295.13
+1859,Lithuania,107,2023,152.21
+1860,Luxembourg,108,2023,120.18
+1861,Madagascar,110,2023,163.2
+1862,Malawi,111,2023,143.98
+1863,Malaysia,112,2023,130.4
+1864,Maldives,113,2023,102.13
+1865,Mali,114,2023,117.73
+1866,Malta,115,2023,116.99
+1867,Martinique,206,2023,0.0
+1868,"Mauritania, Islamic Rep. of",117,2023,121.9
+1869,Mauritius,118,2023,99.97
+1870,Mexico,119,2023,129.28
+1871,"Micronesia, Federated States of",120,2023,0.0
+1872,"Moldova, Rep. of",121,2023,95.57
+1873,Mongolia,122,2023,136.41
+1874,Montenegro,123,2023,131.84
+1875,Montserrat,207,2023,102.22
+1876,Morocco,124,2023,117.57
+1877,Mozambique,125,2023,159.97
+1878,Myanmar,126,2023,0.0
+1879,Namibia,127,2023,163.66
+1880,Nepal,129,2023,162.02
+1881,"Netherlands, The",130,2023,126.09
+1882,New Caledonia,131,2023,0.0
+1883,New Zealand,132,2023,124.03
+1884,Nicaragua,133,2023,294.78
+1885,Niger,134,2023,117.22
+1886,Nigeria,135,2023,571.77
+1887,"North Macedonia, Republic of",136,2023,147.96
+1888,Norway,138,2023,129.56
+1889,Oman,139,2023,105.29
+1890,Pakistan,140,2023,232.19
+1891,"Palau, Rep. of",141,2023,134.4
+1892,Panama,142,2023,109.52
+1893,Papua New Guinea,143,2023,169.83
+1894,Paraguay,144,2023,128.19
+1895,Peru,145,2023,111.47
+1896,Philippines,146,2023,122.18
+1897,"Poland, Rep. of",147,2023,179.69
+1898,Portugal,148,2023,118.27
+1899,Qatar,150,2023,106.85
+1900,Romania,151,2023,146.8
+1901,Russian Federation,152,2023,0.0
+1902,Rwanda,153,2023,192.56
+1903,Samoa,154,2023,131.86
+1904,"San Marino, Rep. of",208,2023,0.0
+1905,"São Tomé and Príncipe, Dem. Rep. of",209,2023,217.41
+1906,Saudi Arabia,156,2023,109.45
+1907,Senegal,157,2023,0.0
+1908,"Serbia, Rep. of",158,2023,263.18
+1909,Seychelles,159,2023,126.18
+1910,Sierra Leone,160,2023,175.54
+1911,Singapore,161,2023,113.59
+1912,"Sint Maarten, Kingdom of the Netherlands",162,2023,0.0
+1913,Slovak Rep.,163,2023,227.25
+1914,"Slovenia, Rep. of",164,2023,124.85
+1915,Solomon Islands,165,2023,120.84
+1916,Somalia,166,2023,141.38
+1917,South Africa,167,2023,110.75
+1918,"South Sudan, Rep. of",168,2023,16035.77
+1919,Spain,169,2023,112.22
+1920,Sri Lanka,170,2023,203.79
+1921,St. Kitts and Nevis,171,2023,112.59
+1922,St. Lucia,172,2023,113.34
+1923,St. Vincent and the Grenadines,173,2023,124.28
+1924,Sudan,174,2023,0.0
+1925,Suriname,175,2023,0.0
+1926,Sweden,176,2023,403.71
+1927,Switzerland,177,2023,106.09
+1928,"Tajikistan, Rep. of",178,2023,0.0
+1929,Tanzania,179,2023,112.31
+1930,Thailand,180,2023,107.78
+1931,"Timor-Leste, Dem. Rep. of",181,2023,0.0
+1932,Togo,182,2023,0.0
+1933,Tonga,183,2023,124.33
+1934,Trinidad and Tobago,184,2023,123.37
+1935,Tunisia,185,2023,165.24
+1936,Turkey,186,2023,1488.91
+1937,Uganda,190,2023,127.63
+1938,Ukraine,191,2023,413.59
+1939,United Arab Emirates,192,2023,0.0
+1940,United Kingdom,193,2023,128.63
+1941,United States,194,2023,139.74
+1942,Uruguay,195,2023,103.31
+1943,"Uzbekistan, Rep. of",196,2023,0.0
+1944,Vanuatu,197,2023,0.0
+1945,"Venezuela, Rep. Bolivariana de",198,2023,0.0
+1946,Vietnam,199,2023,111.7
+1947,West Bank and Gaza,200,2023,112.12
+1948,"Yemen, Rep. of",201,2023,0.0
+1949,Zambia,202,2023,399.17
+1950,Zimbabwe,203,2023,0.0
