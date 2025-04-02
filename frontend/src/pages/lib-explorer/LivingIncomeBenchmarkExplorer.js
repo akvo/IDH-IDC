@@ -100,10 +100,22 @@ const LivingIncomeBenchmarkExplorer = () => {
   const newAvgNrAdult = Form.useWatch("new_avg_nr_of_adult", libForm);
 
   const countryOptions = window.master.countries;
+  const currencies = window.master.currencies;
+
   const filteredCountryOptions = useMemo(() => {
     const mapCountryIds = mapData.map((d) => d.country_id);
     return countryOptions.filter((c) => mapCountryIds.includes(c.value));
   }, [countryOptions, mapData]);
+
+  const currencyUnit = useMemo(() => {
+    filterForm.setFieldValue("region", null);
+    if (selectedCountry) {
+      return (
+        currencies.find((c) => c.country === selectedCountry)?.label || "LCU"
+      );
+    }
+    return "LCU";
+  }, [currencies, selectedCountry, filterForm]);
 
   // handle fetch map data
   useEffect(() => {
@@ -249,7 +261,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           if (selectedYear <= data.year) {
             libForm.setFieldValue(
               "adjusted_benchmark_value",
-              `${thousandFormatter(LITarget, 2)} LCU`
+              `${thousandFormatter(LITarget, 2)} ${currencyUnit}`
             );
           } else {
             libForm.setFieldValue("adjusted_benchmark_value", "NA");
@@ -260,7 +272,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           console.error(`Error handle onChange year: ${e.response}`);
         });
     }
-  }, [selectedYear, selectedCountry, selectedRegion, libForm]);
+  }, [selectedYear, selectedCountry, selectedRegion, libForm, currencyUnit]);
 
   // handle benchmark adjustment (Step 1)
   useEffect(() => {
@@ -287,13 +299,13 @@ const LivingIncomeBenchmarkExplorer = () => {
       libForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
       libForm.setFieldValue(
         "new_adjusted_benchmark_value",
-        `${thousandFormatter(LITarget, 2)} LCU`
+        `${thousandFormatter(LITarget, 2)} ${currencyUnit}`
       );
     } else {
       libForm.setFieldValue("new_inflation_rate", null);
       libForm.setFieldValue("new_adjusted_benchmark_value", null);
     }
-  }, [newCPI, adjustedLIB, libForm]);
+  }, [newCPI, adjustedLIB, libForm, currencyUnit]);
 
   // handle benchmark adjustment (Step 2)
   useEffect(() => {
@@ -333,7 +345,7 @@ const LivingIncomeBenchmarkExplorer = () => {
       }
       libForm.setFieldValue(
         "new_hh_adjusted_benchmark_value",
-        `${thousandFormatter(LITarget, 2)} LCU`
+        `${thousandFormatter(LITarget, 2)} ${currencyUnit}`
       );
     }
   }, [
@@ -344,6 +356,7 @@ const LivingIncomeBenchmarkExplorer = () => {
     newHhSize,
     newAvgNrAdult,
     newCPIFactor,
+    currencyUnit,
   ]);
 
   return (
@@ -462,7 +475,10 @@ const LivingIncomeBenchmarkExplorer = () => {
               </Card>
               <Card className="benchmark-value-card-wrapper">
                 <Space align="center" size="large">
-                  <h3>{thousandFormatter(defaultLIB?.LITarget || 0, 2)} LCU</h3>
+                  <h3>
+                    {thousandFormatter(defaultLIB?.LITarget || 0, 2)}{" "}
+                    {currencyUnit}
+                  </h3>
                   <p className="max-width">
                     Living income benchmark for a household/year
                   </p>
@@ -471,7 +487,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                   <p>
                     Source:{" "}
                     <a
-                      href={defaultLIB?.links || "#"}
+                      href={
+                        defaultLIB?.links && defaultLIB?.links !== 0
+                          ? defaultLIB.links
+                          : "#"
+                      }
                       target="_blank"
                       rel="noreferrer noopener"
                     >
