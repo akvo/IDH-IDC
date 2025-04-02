@@ -417,6 +417,23 @@
         }
       }
     }
+    .slick-dots-bottom {
+      bottom: 8px;
+    }
+  }
+
+  .binning-carousel {
+    padding-top: 12px;
+    padding-bottom: 20px;
+
+    .carousel-arrows-wrapper {
+      margin-top: 14%;
+    }
+
+    .slick-dots,
+    .slick-dots-bottom {
+      bottom: -15px;
+    }
   }
 
   .adjust-income-target-wrapper {
