@@ -73,25 +73,30 @@ def get_case_count_by_country_and_company(
     if company:
         case_query = case_query.filter(Case.company == company)
 
-    # Use LEFT JOIN to include cases without a company
     case_count_and_farmers_by_country_and_company = (
-        case_query.join(Segment, Case.id == Segment.case)
-        .join(Country, Case.country == Country.id)
+        case_query.join(Country, Case.country == Country.id)  # Join country
         .outerjoin(
             Company, Case.company == Company.id
-        )  # Use outerjoin to include cases with no company
+        )  # Keep cases even if no company
+        .outerjoin(
+            Segment, Case.id == Segment.case
+        )  # Include segments but avoid multiplying cases
         .with_entities(
             Case.country,
             Country.name.label("country_name"),
             Company.id.label("company_id"),
             Company.name.label("company_name"),
-            func.count(Case.id).label("case_count"),
-            func.sum(Segment.number_of_farmers).label("total_farmers"),
+            func.count(func.distinct(Case.id)).label(
+                "case_count"
+            ),  # Count unique cases per country & company
+            func.sum(func.coalesce(Segment.number_of_farmers, 0)).label(
+                "total_farmers"
+            ),  # Sum farmers per country & company
         )
         .group_by(Case.country, Country.name, Company.id, Company.name)
         .having(
-            func.count(Case.id) > 0
-        )  # Filter to include only non-zero case counts
+            func.count(func.distinct(Case.id)) > 0
+        )  # Ensure non-zero case count
         .all()
     )
 
