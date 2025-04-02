@@ -83,7 +83,7 @@ def get_by_country_region_year(
             lib = lib.serialize
             lib["case_year_cpi"] = case_year_cpi_value or None
             lib["last_year_cpi"] = last_year_cpi_value or None
-            lib["cpi_factor"] = cpi_factor or None
+            lib["cpi_factor"] = None
             lib["message"] = (
                 f"This is the benchmark value for {lib['year']}, which is the "
                 "most recent available. If you wish to adjust it for "
@@ -99,7 +99,7 @@ def get_by_country_region_year(
         lib = lib.serialize
         lib["case_year_cpi"] = case_year_cpi_value or None
         lib["last_year_cpi"] = last_year_cpi_value or None
-        lib["cpi_factor"] = cpi_factor or None
+        lib["cpi_factor"] = None
         lib["message"] = None
         return lib
 
