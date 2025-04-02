@@ -40,16 +40,23 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
           </>
         ),
         key: "nav-menu-explorers-dropdown",
-        isInternalUser: true,
-        role: adminRole,
+        isInternalUser: false,
+        role: allUserRole,
         isPublic: false,
         children: [
+          {
+            testid: "nav-menu-lib-explorer",
+            label: "Living income benchmark explorer",
+            key: "/living-income-benchmark-explorer",
+            isInternalUser: false,
+            role: allUserRole,
+          },
           {
             testid: "nav-menu-explore-studies",
             label: "Explore other studies",
             key: "/explore-studies",
-            isInternalUser: true,
-            role: adminRole,
+            isInternalUser: false,
+            role: allUserRole,
           },
         ],
       },
@@ -124,7 +131,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         role: allUserRole,
       },
     ];
-    const items = menuList.filter((item) => {
+    const filterByUser = (item) => {
       if (!userRole && !isLoggedIn) {
         return item.isPublic;
       }
@@ -135,6 +142,13 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         return item?.role?.includes(userRole);
       }
       return false;
+    };
+    const items = menuList.filter((item) => {
+      const children = item?.children?.filter((child) => {
+        return filterByUser(child);
+      });
+      item["children"] = children;
+      return filterByUser(item);
     });
     return items;
   }, [userRole, isInternalUser, isLoggedIn, loading, signOut, navigate, host]);

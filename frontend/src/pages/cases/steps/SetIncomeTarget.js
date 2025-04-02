@@ -498,8 +498,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                   <Alert
                     showIcon
                     type="warning"
-                    message="A benchmark for the country is not available; please switch
-                    to manual target."
+                    message="A benchmark for the country is not available; please switch to manual target."
                   />
                 </Col>
               )}

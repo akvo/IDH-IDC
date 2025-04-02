@@ -11,6 +11,7 @@ import {
   Modal,
   Tooltip,
   Space,
+  Checkbox,
 } from "antd";
 import { api } from "../../lib";
 import { QuestionCircleOutlined } from "@ant-design/icons";
@@ -79,6 +80,7 @@ const ReferenceDataForm = ({
   const [initValues, setInitValues] = useState({});
   const [loading, setLoading] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [visibleToExternalUser, setVisibleToExternalUser] = useState(false);
 
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
     ct.commodities.map((c) => ({
@@ -97,7 +99,11 @@ const ReferenceDataForm = ({
       api
         .get(`reference_data/${referenceDataId}`)
         .then((res) => {
-          setInitValues(res.data);
+          const { data } = res;
+          if (data?.visible_to_external_user) {
+            setVisibleToExternalUser(data.visible_to_external_user);
+          }
+          setInitValues(data);
         })
         .finally(() => {
           setLoading(false);
@@ -108,6 +114,7 @@ const ReferenceDataForm = ({
   const clearForm = () => {
     form.resetFields();
     setInitValues({});
+    setVisibleToExternalUser(false);
   };
 
   const onFinish = (values) => {
@@ -116,6 +123,7 @@ const ReferenceDataForm = ({
       ...values,
       currency: "",
       range: null,
+      visible_to_external_user: visibleToExternalUser,
     };
     onSave({
       payload: payload,
@@ -284,6 +292,18 @@ const ReferenceDataForm = ({
                       ]}
                     >
                       <Input />
+                    </Form.Item>
+                  </Col>
+                  <Col span={24}>
+                    <Form.Item name="visible_to_external_user" noStyle>
+                      <Checkbox
+                        onChange={(e) =>
+                          setVisibleToExternalUser(e.target.checked)
+                        }
+                        checked={visibleToExternalUser}
+                      >
+                        Visible to external user
+                      </Checkbox>
                     </Form.Item>
                   </Col>
                   <Col span={24}>
