@@ -32,9 +32,18 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.PrimaryKeyConstraint("id"),
-    )
-    op.create_foreign_key(
-        None, "conversion_rate", "country", ["country"], ["id"]
+        sa.ForeignKeyConstraint(
+            ["country"],
+            ["country.id"],
+            name="conversion_rate_country_constraint",
+            ondelete="CASCADE",
+        ),
+        sa.UniqueConstraint(
+            "country",
+            "year",
+            "currency",
+            name="conversion_rate_country_year_currency_unique",
+        ),
     )
     op.create_index(
         op.f("ix_conversion_rate_id"), "conversion_rate", ["id"], unique=True
@@ -43,4 +52,10 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_index(op.f("ix_conversion_rate_id"), table_name="conversion_rate")
+    op.drop_constraint(
+        "conversion_rate_country_year_currency_unique",
+        "conversion_rate",
+        type_="unique",
+    )
     op.drop_table("conversion_rate")
+    op.execute("DROP TYPE currency_enum")
