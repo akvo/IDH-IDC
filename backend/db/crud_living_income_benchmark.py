@@ -35,7 +35,9 @@ def get_by_country_region_year(
         Cpi.country == country,
     )
     # get CPI from lastest year
-    last_year_cpi = cpi.order_by(Cpi.year.desc()).first()
+    last_year_cpi = (
+        cpi.filter(Cpi.value != 0).order_by(Cpi.year.desc()).first()
+    )
     # get CPI by case year
     case_year_cpi = cpi.filter(
         Cpi.year == year,
@@ -103,14 +105,21 @@ def get_by_country_region_year(
 
 
 def count_lib_by_country(session: Session):
-    res = session.query(
-        Country.id,
-        Country.name,
-        func.count(LivingIncomeBenchmark.id).label("count")
-    ).outerjoin(
-        LivingIncomeBenchmark, Country.id == LivingIncomeBenchmark.country
-    ).group_by(Country.id).having(
-        # Filters out countries with count 0
-        func.count(LivingIncomeBenchmark.id) > 0
-    ).all()
+    res = (
+        session.query(
+            Country.id,
+            Country.name,
+            func.count(LivingIncomeBenchmark.id).label("count"),
+        )
+        .outerjoin(
+            LivingIncomeBenchmark, Country.id == LivingIncomeBenchmark.country
+        )
+        .group_by(Country.id)
+        .having(
+            # Filters out countries with count 0
+            func.count(LivingIncomeBenchmark.id)
+            > 0
+        )
+        .all()
+    )
     return res

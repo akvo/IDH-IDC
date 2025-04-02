@@ -28,6 +28,7 @@ def seeder_benchmark(session: Session):
             "country_id": "country",
         }
     )
+    filtered_cr = filtered_cr.dropna(subset=["value"])
     filtered_cr = filtered_cr.fillna(0)
     for index, row in filtered_cr.iterrows():
         # find prev cpi
@@ -128,6 +129,7 @@ def seeder_benchmark(session: Session):
             "country_id": "country",
         }
     )
+    filtered_cpi = filtered_cpi.dropna(subset=["value"])
     filtered_cpi = filtered_cpi.fillna(0)
     for index, row in filtered_cpi.iterrows():
         # find prev cpi

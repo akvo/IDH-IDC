@@ -16,7 +16,7 @@ id,region,country_id,country
 15,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",[119],['Mexico']
 16,Non-metropolitan Urban / Lake Naivasha,[95],['Kenya']
 17,Peri-Urban / Lower Volta Region,[71],['Ghana']
-18,Rural / All,"[7, 19, 30, 34, 38, 46, 'East Timor', 56, 57, 67, 80, 101, 110, 124, 125, 129, 135, 142, 143, 145, 153, 179, 182, 185, 202, 203]","['Argentina', 'Belize', 'Burkina Faso', 'Cameroon', 'Chad', ""Cote d'Ivoire"", 'East Timor', 'Egypt, Arab Rep.', 'El Salvador', 'Gabon', 'Honduras', 'Lao PDR', 'Madagascar', 'Morocco', 'Mozambique', 'Nepal', 'Nigeria', 'Panama', 'Papua New Guinea', 'Peru', 'Rwanda', 'Tanzania', 'Togo', 'Tunisia', 'Zambia', 'Zimbabwe']"
+18,Rural / All,"[7, 19, 30, 34, 38, 46, 181, 56, 57, 67, 80, 101, 110, 124, 125, 129, 135, 142, 143, 145, 153, 179, 182, 185, 202, 203]","['Argentina', 'Belize', 'Burkina Faso', 'Cameroon', 'Chad', ""Cote d'Ivoire"", 'Timor-Leste', 'Egypt, Arab Rep.', 'El Salvador', 'Gabon', 'Honduras', 'Lao PDR', 'Madagascar', 'Morocco', 'Mozambique', 'Nepal', 'Nigeria', 'Panama', 'Papua New Guinea', 'Peru', 'Rwanda', 'Tanzania', 'Togo', 'Tunisia', 'Zambia', 'Zimbabwe']"
 19,Rural / All/ Congo Kinshasa,[43],"['Congo, Dem. Rep.']"
 20,Rural / Andhra Pradesh,[84],['India']
 21,"Rural / Bhadohi, Uttar Pradesh",[84],['India']
