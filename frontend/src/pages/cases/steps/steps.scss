@@ -714,6 +714,13 @@
 }
 
 #closing-gap {
+  .button-delete-scenario {
+    border-radius: 20px;
+    background-color: transparent;
+    border: 1px solid red;
+    color: red;
+  }
+
   .card-section-wrapper {
     .step-wrapper {
       font-size: 16px;
