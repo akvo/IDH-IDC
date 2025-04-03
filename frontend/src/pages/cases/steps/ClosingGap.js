@@ -215,9 +215,15 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     return scenarioModeling?.config?.scenarioData?.map((item) => ({
       label: item.name,
       key: item.key,
-      children: <ScenarioModelingForm currentScenarioData={item} />,
+      children: (
+        <ScenarioModelingForm
+          showDeleteButton={scenarioModeling?.config?.scenarioData?.length > 1}
+          currentScenarioData={item}
+          setActiveScenario={setActiveScenario}
+        />
+      ),
     }));
-  }, [scenarioModeling?.config?.scenarioData]);
+  }, [scenarioModeling?.config?.scenarioData, setActiveScenario]);
 
   return (
     <Row id="closing-gap" gutter={[24, 24]}>

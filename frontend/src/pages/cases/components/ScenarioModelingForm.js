@@ -1,14 +1,52 @@
-import React from "react";
-import { Row, Col, Form, Input, Select, Tooltip, Space } from "antd";
+import React, { useState } from "react";
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  Select,
+  Tooltip,
+  Space,
+  Button,
+  Popconfirm,
+} from "antd";
 import { CaseUIState, CaseVisualState } from "../store";
 import { selectProps } from "../../../lib";
 import { SegmentTabsWrapper } from "../layout";
 import ScenarioModelingIncomeDriversAndChart from "./ScenarioModelingIncomeDriversAndChart";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 
-const ScenarioModelingForm = ({ currentScenarioData }) => {
+const ScenarioModelingForm = ({
+  currentScenarioData,
+  showDeleteButton,
+  setActiveScenario,
+}) => {
   const [scenarioDetailForm] = Form.useForm();
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
+
+  const [deleting, setDeleting] = useState(false);
+  const [current, setCurrent] = useState(currentScenarioData);
+
+  const onDeleteScenario = () => {
+    setDeleting(true);
+    const remainScenarios = scenarioModeling.config.scenarioData.filter(
+      (sd) => sd.key !== currentScenarioData.key
+    );
+    CaseVisualState.update((s) => ({
+      ...s,
+      scenarioModeling: {
+        ...s.scenarioModeling,
+        config: {
+          ...s.scenarioModeling.config,
+          scenarioData: remainScenarios,
+        },
+      },
+    }));
+    setActiveScenario(remainScenarios[0]?.key);
+    setCurrent(remainScenarios[0]);
+    setDeleting(false);
+  };
 
   const onScenarioDetailFormValuesChange = (changedValue) => {
     CaseVisualState.update((s) => ({
@@ -35,6 +73,27 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
 
   return (
     <Row gutter={[20, 20]} className="scenario-modeling-form-container">
+      <Col span={24} align="end" style={{ textAlign: "right" }}>
+        {showDeleteButton ? (
+          <Popconfirm
+            title="Delete"
+            description="Are you sure want to delete current scenario?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => onDeleteScenario()}
+            okButtonProps={{
+              loading: deleting,
+              disabled: deleting,
+            }}
+          >
+            <Button size="small" className="button-delete-scenario">
+              <DeleteOutlined /> Delete
+            </Button>
+          </Popconfirm>
+        ) : (
+          ""
+        )}
+      </Col>
       <Col span={24}>
         <Form
           layout="vertical"
@@ -42,9 +101,9 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
           form={scenarioDetailForm}
           onValuesChange={onScenarioDetailFormValuesChange}
           initialValues={{
-            name: currentScenarioData?.name || null,
-            description: currentScenarioData?.description || null,
-            percentage: currentScenarioData?.percentage || true,
+            name: current?.name || null,
+            description: current?.description || null,
+            percentage: current?.percentage || true,
           }}
         >
           <Row align="middle" gutter={[20, 20]}>
@@ -94,7 +153,7 @@ const ScenarioModelingForm = ({ currentScenarioData }) => {
       <Col span={24}>
         <SegmentTabsWrapper>
           <ScenarioModelingIncomeDriversAndChart
-            currentScenarioData={currentScenarioData}
+            currentScenarioData={current}
           />
         </SegmentTabsWrapper>
       </Col>
