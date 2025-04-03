@@ -29,6 +29,7 @@ import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
 import { stepPath } from "./store";
 import { resetCurrentCaseState } from "./store/current_case";
+import { resetCaseVisualState } from "./store/case_visual";
 import { ViewSummaryModal } from "../../components/utils";
 
 const { Search } = Input;
@@ -361,6 +362,8 @@ const Cases = () => {
   useEffect(() => {
     // reset currentCase state
     resetCurrentCaseState();
+    // reset case visual state
+    resetCaseVisualState();
   }, []);
 
   useEffect(() => {

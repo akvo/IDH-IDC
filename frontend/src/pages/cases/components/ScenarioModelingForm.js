@@ -20,6 +20,7 @@ const ScenarioModelingForm = ({
   currentScenarioData,
   showDeleteButton,
   setActiveScenario,
+  deleteButtonPosition,
 }) => {
   const [scenarioDetailForm] = Form.useForm();
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
@@ -74,7 +75,7 @@ const ScenarioModelingForm = ({
   return (
     <Row gutter={[20, 20]} className="scenario-modeling-form-container">
       <Col span={24} align="end" style={{ textAlign: "right" }}>
-        {showDeleteButton ? (
+        {showDeleteButton && deleteButtonPosition !== "tab-item" ? (
           <Popconfirm
             title="Delete"
             description="Are you sure want to delete current scenario?"

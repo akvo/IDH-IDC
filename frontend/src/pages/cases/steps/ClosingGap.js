@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
-import { Row, Col, Space, Card, Button, Tabs, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Row, Col, Space, Card, Button, Tabs, message, Popconfirm } from "antd";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
 import { isEmpty, orderBy, isEqual } from "lodash";
 import {
@@ -16,6 +16,7 @@ import { api, removeUndefinedObjectValue } from "../../../lib";
  */
 
 const MAX_SCENARIO = 3;
+const deleteButtonPosition = "tab-item";
 
 const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   const navigate = useNavigate();
@@ -24,8 +25,29 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     CaseVisualState.useState((s) => s);
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
-  const [activeScenario, setActiveScenario] = useState(
-    scenarioModeling?.config?.scenarioData?.[0]?.key || null
+  const [activeScenario, setActiveScenario] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const onDeleteScenario = useCallback(
+    ({ currentScenarioData, scenarioDataState }) => {
+      setDeleting(true);
+      const remainScenarios = scenarioDataState.filter(
+        (sd) => sd.key !== currentScenarioData.key
+      );
+      CaseVisualState.update((s) => ({
+        ...s,
+        scenarioModeling: {
+          ...s.scenarioModeling,
+          config: {
+            ...s.scenarioModeling.config,
+            scenarioData: remainScenarios,
+          },
+        },
+      }));
+      setActiveScenario(remainScenarios[0]?.key);
+      setDeleting(false);
+    },
+    []
   );
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -212,18 +234,56 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   };
 
   const scenarioTabItems = useMemo(() => {
+    const showDeleteButton = scenarioModeling?.config?.scenarioData?.length > 1;
     return scenarioModeling?.config?.scenarioData?.map((item) => ({
-      label: item.name,
+      label: (
+        <Space>
+          {item.name}
+          {deleteButtonPosition === "tab-item" && showDeleteButton ? (
+            <Popconfirm
+              title="Delete"
+              description="Are you sure want to delete current scenario?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() =>
+                onDeleteScenario({
+                  currentScenarioData: item,
+                  scenarioDataState: scenarioModeling?.config?.scenarioData,
+                })
+              }
+              okButtonProps={{
+                loading: deleting,
+                disabled: deleting,
+              }}
+            >
+              <Button
+                icon={<DeleteOutlined style={{ marginLeft: 12 }} />}
+                size="small"
+                className="button-delete-scenario"
+                style={{ border: "none" }}
+              />
+            </Popconfirm>
+          ) : (
+            ""
+          )}
+        </Space>
+      ),
       key: item.key,
       children: (
         <ScenarioModelingForm
-          showDeleteButton={scenarioModeling?.config?.scenarioData?.length > 1}
+          showDeleteButton={showDeleteButton}
           currentScenarioData={item}
           setActiveScenario={setActiveScenario}
+          deleteButtonPosition={deleteButtonPosition}
         />
       ),
     }));
-  }, [scenarioModeling?.config?.scenarioData, setActiveScenario]);
+  }, [
+    scenarioModeling?.config?.scenarioData,
+    setActiveScenario,
+    deleting,
+    onDeleteScenario,
+  ]);
 
   return (
     <Row id="closing-gap" gutter={[24, 24]}>
@@ -272,7 +332,9 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
           type="card"
           tabBarGutter={5}
           items={scenarioTabItems}
-          activeKey={activeScenario}
+          activeKey={
+            activeScenario || scenarioModeling?.config?.scenarioData?.[0]?.key
+          }
           onChange={(val) => {
             setActiveScenario(val);
           }}
