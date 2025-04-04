@@ -9,13 +9,13 @@ id,region,country_id,country
 8,Coffee or Cocoa growing regions / Northwest Espírito Santo,[26],['Brazil']
 9,Municipality of Ensenada / Baja California,[119],['Mexico']
 10,Municipality of San Quintín / Baja California,[119],['Mexico']
-11,Non-Metropolitan Urban / All,"[39, 7]","['Argentina', 'Chile']"
+11,Non-Metropolitan Urban / All,"[7, 39]","['Argentina', 'Chile']"
 12,Non-Metropolitan Urban / Ziway Region,[62],['Ethiopia']
 13,"Non-metropolitan / State of São Paulo, non-metropolitan areas",[26],['Brazil']
 14,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",[119],['Mexico']
 15,Non-metropolitan Urban / Lake Naivasha,[95],['Kenya']
 16,Peri-Urban / Lower Volta Region,[71],['Ghana']
-17,Rural / All,"[129, 7, 135, 142, 143, 145, 19, 153, 30, 34, 38, 46, 179, 181, 182, 56, 57, 185, 186, 67, 202, 203, 80, 101, 110, 124, 125]","['Argentina', 'Peru', 'Belize', 'Turkiye', 'El Salvador', 'Gabon', 'Togo', 'Zambia', 'Madagascar', 'Tanzania', 'Nigeria', 'Panama', 'Burkina Faso', 'Mozambique', ""Cote d'Ivoire"", 'Tunisia', 'Rwanda', 'Egypt, Arab Rep.', 'Papua New Guinea', 'Timor-Leste', 'Lao PDR', 'Cameroon', 'Honduras', 'Chad', 'Zimbabwe', 'Morocco', 'Nepal']"
+17,Rural / All,"[7, 19, 30, 34, 38, 46, 56, 57, 67, 80, 110, 124, 125, 135, 142, 143, 145, 153, 179, 182, 185, 186, 202, 203]","['Argentina', 'Belize', 'Burkina Faso', 'Cameroon', 'Chad', ""Cote d'Ivoire"", 'Egypt, Arab Rep.', 'El Salvador', 'Gabon', 'Honduras', 'Madagascar', 'Morocco', 'Mozambique', 'Nigeria', 'Panama', 'Papua New Guinea', 'Peru', 'Rwanda', 'Tanzania', 'Togo', 'Tunisia', 'Turkey', 'Zambia', 'Zimbabwe']"
 18,Rural / All/ Congo Kinshasa,[43],"['Congo, Dem. Rep.']"
 19,Rural / Andhra Pradesh,[84],['India']
 20,"Rural / Bhadohi, Uttar Pradesh",[84],['India']
@@ -51,7 +51,7 @@ id,region,country_id,country
 50,Rural Guji zone / Oromia Region,[62],['Ethiopia']
 51,"Rural coffee-growing regions / Comayagua, Copán, and El Paraíso",[80],['Honduras']
 52,Rural-Urban / Northwest,[133],['Nicaragua']
-53,Urban / All,"[33, 34, 67, 170, 80, 179, 180, 182, 57, 186, 93]","['Sri Lanka', 'Thailand', 'Cambodia', 'Jordan', 'Tanzania', 'Turkiye', 'Honduras', 'Cameroon', 'El Salvador', 'Gabon', 'Togo']"
+53,Urban / All,"[33, 34, 57, 67, 80, 93, 170, 179, 180, 182, 186]","['Cambodia', 'Cameroon', 'El Salvador', 'Gabon', 'Honduras', 'Jordan', 'Sri Lanka', 'Tanzania', 'Thailand', 'Togo', 'Turkey']"
 54,Urban / Chengdu,[40],['China']
 55,Urban / Dhaka City,[15],['Bangladesh']
 56,Urban / Hangzhou,[40],['China']
@@ -71,14 +71,3 @@ id,region,country_id,country
 70,Urban / Zhengzhou,[40],['China']
 71,Urban-Rural / Caribbean coast,[41],['Colombia']
 72,Yucatán / Rural Areas and Small Towns in Yucatan,[119],['Mexico']
-73,All / All,[118],['Mauritius']
-74,Rural / Central Sulawesi,[85],['Indonesia']
-75,Rural / Economic Zone 4,[199],['Vietnam']
-76,Rural / Rural Aceh,[85],['Indonesia']
-77,Rural / Rural Lampung Province,[85],['Indonesia']
-78,"Rural / Rural Rembang, Central Java",[85],['Indonesia']
-79,Rural Areas and Small Towns / All coffee and cocoa growing regions,[145],['Peru']
-80,Urban /,[75],['Guatemala']
-81,Urban / Ho Chi Minh City,[199],['Vietnam']
-82,Urban / Urban Banten Province,[85],['Indonesia']
-83,Urban / Urban West Java Province (SUBANG AND GARUT),[85],['Indonesia']

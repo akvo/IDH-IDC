@@ -20,7 +20,7 @@ from routes.company import company_route
 from routes.map import map_route
 from routes.optimization import optimization_route
 from routes.procurement_library.assessment_question import (
-    assessment_question_route
+    assessment_question_route,
 )
 from routes.procurement_library.practice import practice_route
 from routes.procurement_library.procurement_process import (
