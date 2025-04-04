@@ -296,7 +296,9 @@ const CaseForm = ({ updateCurrentCase = () => {} }) => {
                 <DatePicker
                   picker="year"
                   disabledDate={(current) => {
-                    return current && dayjs(current).year() > dayjs().year();
+                    const currentYear = dayjs().year();
+                    const selectedYear = dayjs(current).year();
+                    return selectedYear < 2020 || selectedYear > currentYear;
                   }}
                   disabled={!enableEditCase}
                   style={{ width: "100%" }}

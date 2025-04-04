@@ -29,6 +29,7 @@ import { isEmpty } from "lodash";
 import { adminRole } from "../../store/static";
 import { stepPath } from "./store";
 import { resetCurrentCaseState } from "./store/current_case";
+import { resetCaseVisualState } from "./store/case_visual";
 import { ViewSummaryModal } from "../../components/utils";
 
 const { Search } = Input;
@@ -229,11 +230,16 @@ const Cases = () => {
       key: "created_at",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.year - b.year,
+      render: (text) => {
+        const datetime = new Date(text);
+        const dateOnly = datetime.toLocaleDateString("en-CA");
+        return dateOnly;
+      },
     },
     {
       title: "Case Owner",
       key: "created_by",
-      width: "20%",
+      width: "12%",
       render: (row) => {
         // case owner row.created_by !== userEmail
         if (!adminRole.includes(userRole)) {
@@ -241,8 +247,8 @@ const Cases = () => {
         }
         if (row.id === showChangeOwnerForm) {
           return (
-            <Row align="center" gutter={[6, 6]}>
-              <Col span={20}>
+            <Row align="middle" justify="start" gutter={[6, 6]} wrap>
+              <Col>
                 <DebounceSelect
                   placeholder="Search for a user"
                   value={selectedUser}
@@ -254,17 +260,17 @@ const Cases = () => {
                   size="small"
                 />
               </Col>
-              <Col span={4}>
-                <Space align="center">
+              <Col>
+                <Space align="center" size="small">
                   <Button
                     size="small"
-                    icon={<SaveOutlined />}
+                    icon={<SaveOutlined style={{ fontSize: 12 }} />}
                     shape="circle"
                     onClick={() => handleOnUpdateCaseOwner(row)}
                   />
                   <Button
                     size="small"
-                    icon={<CloseOutlined />}
+                    icon={<CloseOutlined style={{ fontSize: 12 }} />}
                     shape="circle"
                     onClick={() => setShowChangeOwnerForm(null)}
                   />
@@ -295,13 +301,16 @@ const Cases = () => {
       render: (val) => {
         const status = Object.entries(CaseStatusEnum)
           .map(([key, value]) => {
+            if (value === CaseStatusEnum.INCOMPLETED) {
+              return "IN PROGRESS";
+            }
             if (value === val) {
               return key;
             }
             return null;
           })
           .filter((x) => x !== null);
-        return status[0];
+        return <span style={{ fontSize: 13 }}>{status[0]}</span>;
       },
     },
     {
@@ -353,6 +362,8 @@ const Cases = () => {
   useEffect(() => {
     // reset currentCase state
     resetCurrentCaseState();
+    // reset case visual state
+    resetCaseVisualState();
   }, []);
 
   useEffect(() => {

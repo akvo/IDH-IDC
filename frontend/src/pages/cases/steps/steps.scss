@@ -417,6 +417,23 @@
         }
       }
     }
+    .slick-dots-bottom {
+      bottom: 8px;
+    }
+  }
+
+  .binning-carousel {
+    padding-top: 12px;
+    padding-bottom: 20px;
+
+    .carousel-arrows-wrapper {
+      margin-top: 14%;
+    }
+
+    .slick-dots,
+    .slick-dots-bottom {
+      bottom: -15px;
+    }
   }
 
   .adjust-income-target-wrapper {
@@ -697,6 +714,13 @@
 }
 
 #closing-gap {
+  .button-delete-scenario {
+    border-radius: 20px;
+    background-color: transparent;
+    border: 1px solid red;
+    color: red;
+  }
+
   .card-section-wrapper {
     .step-wrapper {
       font-size: 16px;

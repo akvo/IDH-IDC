@@ -156,7 +156,10 @@ const Welcome = () => {
     if (findMapData?.country_id) {
       setTableLoading(true);
       setSelectedCountryId(findMapData.country_id);
-      fetchTableData({ countryId: findMapData.country_id });
+      fetchTableData({
+        countryId: findMapData.country_id,
+        companyId: selectedCaseToDisplay,
+      });
     }
   };
 
