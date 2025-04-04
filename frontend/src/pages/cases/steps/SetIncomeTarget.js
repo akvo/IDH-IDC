@@ -11,6 +11,7 @@ import {
   Space,
   message,
   Alert,
+  Modal,
 } from "antd";
 import {
   CurrentCaseState,
@@ -549,6 +550,7 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
 
   return (
     <div id="set-income-target">
+      {contextHolder}
       <Form
         form={form}
         layout="vertical"
@@ -573,7 +575,13 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
           {renderTargetInput(setTargetYourself)}
         </Row>
       </Form>
-      {contextHolder}
+      {/* TODO:: This modal opened when lib year !== case year */}
+      <Modal
+        open
+        title="No benchmark available for the year you selected"
+        centered
+        okText="Save new benchmark value"
+      ></Modal>
     </div>
   );
 };
