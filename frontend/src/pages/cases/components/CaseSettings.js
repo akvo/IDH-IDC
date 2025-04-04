@@ -53,6 +53,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
   useEffect(() => {
     // handle initial load
+    form.resetFields();
+    setFormData({ segments: [""] });
     if (currentCase.id) {
       // focus commodity
       const focusCommodityValue = {
@@ -140,7 +142,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       };
       setFormData(formDataTmp);
     }
-  }, [currentCase, updateCaseUI]);
+  }, [currentCase, updateCaseUI, form]);
 
   const onValuesChange = (changedValues) => {
     // secondary breakdown handle
