@@ -13,13 +13,12 @@ import {
   InputNumber,
   Switch,
   Alert,
-  Tooltip,
 } from "antd";
 import Chart from "../../components/chart";
 import { min, max, isEmpty } from "lodash";
 import { api } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
-import { QuestionCircleOutline } from "../../lib/icon";
+import { NewCpiForm } from "../../components/utils";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -46,12 +45,6 @@ const disabledInputProps = {
     width: 135,
   },
   className: "disabled-field",
-};
-const numberProps = {
-  controls: false,
-  style: {
-    width: 135,
-  },
 };
 const step2NumberProps = {
   controls: false,
@@ -557,37 +550,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                       the value, the inflation rate will update, and the
                       benchmark will adjust accordingly.
                     </p>
-                    <p>
-                      <a
-                        href="https://tradingeconomics.com/country-list/consumer-price-index-cpi"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        Find consumer price index (CPI)
-                      </a>{" "}
-                      <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for.">
-                        <span>
-                          <QuestionCircleOutline size={14} />
-                        </span>
-                      </Tooltip>
-                    </p>
-                    <div className="step-form-item-wrapper">
-                      <Form.Item label="Insert the CPI value" name="new_cpi">
-                        <InputNumber {...numberProps} />
-                      </Form.Item>
-                      <Form.Item
-                        label="Inflation rate"
-                        name="new_inflation_rate"
-                      >
-                        <Input {...disabledInputProps} disabled />
-                      </Form.Item>
-                      <Form.Item
-                        label="Adjusted benchmark value for a household/year"
-                        name="new_adjusted_benchmark_value"
-                      >
-                        <Input {...disabledInputProps} disabled />
-                      </Form.Item>
-                    </div>
+                    <NewCpiForm />
                   </div>
                 </div>
               </div>
