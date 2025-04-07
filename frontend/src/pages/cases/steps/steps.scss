@@ -48,6 +48,18 @@
   .ant-card-body {
     padding: 20px;
 
+    .lib-value-wrapper {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
+
+      a {
+        color: #fff;
+        text-decoration: underline;
+      }
+    }
+
     .income-target-value {
       font-family: "RocGrotesk";
       font-weight: bold;
@@ -56,6 +68,10 @@
 
     .income-target-text {
       max-width: 225px;
+    }
+
+    .lib-source-text {
+      width: 500px;
     }
   }
 }
@@ -91,6 +107,28 @@
         text-underline-offset: auto;
       }
     }
+  }
+}
+
+#set-income-target {
+  .adjusted-benchmark-value-wrapper {
+    display: flex;
+    align-items: end;
+    gap: 24px;
+    padding-bottom: 10px;
+
+    .ant-form-item {
+      margin: 0;
+    }
+  }
+  .disabled-field {
+    background-color: #eaf2f2;
+    border: 1px solid #eaf2f2;
+    color: $primary-color;
+    font-weight: 700;
+    border-radius: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 

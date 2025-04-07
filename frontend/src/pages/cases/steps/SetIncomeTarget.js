@@ -12,6 +12,8 @@ import {
   message,
   Alert,
   Modal,
+  Input,
+  Button,
 } from "antd";
 import {
   CurrentCaseState,
@@ -29,8 +31,10 @@ import {
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
 import { NewCpiForm } from "../../../components/utils";
+import { EditOutlined } from "@ant-design/icons";
 
 const formStyle = { width: "100%" };
+const showInformationAboutLIBCard = false;
 
 const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
   // OECD average household size
@@ -57,6 +61,10 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
   );
   const [messageApi, contextHolder] = message.useMessage();
   const [newCpiModalVisible, setNewCpiModalVisible] = useState(false);
+  const [newCPIState, setNewCPIState] = useState({
+    newCPI: null,
+    newCPIFactor: null,
+  });
 
   const setTargetYourself = Form.useWatch(
     `${segment.id}-set_target_yourself`,
@@ -71,29 +79,41 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
       const benchmark = segment?.benchmark;
       const currencyUnit = currentCase?.currency;
       const last_year_cpi = benchmark.last_year_cpi;
-      const adult = Math.round(benchmark.nr_adults);
-      const child = Math.round(benchmark.household_size - benchmark.nr_adults);
       const defHHSize = calculateHouseholdSize({
-        adult,
-        child,
+        adult: segment.adult,
+        child: segment.child,
       });
       const targetHH = benchmark.household_equiv;
-      // Use LCU
-      const targetValue = benchmark.value.lcu;
+      const targetValue =
+        benchmark.value?.[currencyUnit?.toLowerCase()] || benchmark.value.lcu;
       const newCPIFactor = (newCPI - last_year_cpi) / last_year_cpi; // inflation rate
-      // setNewCPIFactor(newCPIFactor);
       const caseYearLIB = targetValue * (1 + newCPIFactor);
       const LITarget = (defHHSize / targetHH) * caseYearLIB;
+      setNewCPIState({
+        newCPI,
+        newCPIFactor,
+      });
       cpiForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
       cpiForm.setFieldValue(
         "new_adjusted_benchmark_value",
         `${thousandFormatter(LITarget, 2)} ${currencyUnit}`
       );
     } else {
+      setNewCPIState({
+        newCPI: null,
+        newCPIFactor: null,
+      });
       cpiForm.setFieldValue("new_inflation_rate", null);
       cpiForm.setFieldValue("new_adjusted_benchmark_value", null);
     }
-  }, [newCPI, segment?.benchmark, cpiForm, currentCase?.currency]);
+  }, [
+    newCPI,
+    segment?.benchmark,
+    cpiForm,
+    currentCase?.currency,
+    segment.adult,
+    segment.child,
+  ]);
 
   const handleOnSaveAdjustedBenchmarkByNewCpi = () => {
     const adjustedBenchmark = cpiForm.getFieldValue(
@@ -106,6 +126,70 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
       setNewCpiModalVisible(false);
     }
   };
+
+  const isAdjustBenchmarkUsingCPIValuesVisible = useMemo(() => {
+    return (
+      (segment?.benchmark?.value?.[currentCase?.currency?.toLowerCase()] ||
+        segment?.benchmark?.value?.lcu) &&
+      segment?.benchmark?.year !== currentCase.year
+    );
+  }, [segment?.benchmark, currentCase?.currency, currentCase?.year]);
+
+  const greenLIBValue = useMemo(() => {
+    if (isAdjustBenchmarkUsingCPIValuesVisible) {
+      return "NA";
+    }
+    return `${
+      segment.target ? thousandFormatter(segment.target.toFixed(2)) : 0
+    } ${currentCase.currency}`;
+  }, [
+    isAdjustBenchmarkUsingCPIValuesVisible,
+    segment?.target,
+    currentCase?.currency,
+  ]);
+
+  useEffect(() => {
+    // handle ajusted benchmark using CPI values onLoad
+    if (isAdjustBenchmarkUsingCPIValuesVisible && segment?.target) {
+      const value = `${
+        segment.target ? thousandFormatter(segment.target.toFixed(2)) : 0
+      } ${currentCase.currency}`;
+      form.setFieldValue("new_benchmark_value", value);
+      cpiForm.setFieldValue("new_adjusted_benchmark_value", value);
+
+      // calculate new CPI value and inflation rate on load
+      const benchmark = segment?.benchmark;
+      const last_year_cpi = benchmark.last_year_cpi;
+      const defHHSize = calculateHouseholdSize({
+        adult: segment.adult,
+        child: segment.child,
+      });
+      const targetHH = benchmark.household_equiv;
+
+      const targetValue =
+        benchmark.value?.[currentCase?.currency?.toLowerCase()] ||
+        benchmark.value.lcu;
+
+      const caseYearLIB = (segment.target * targetHH) / defHHSize;
+      const newCPIFactor = caseYearLIB / targetValue - 1;
+      const newCPI = last_year_cpi * (1 + newCPIFactor);
+
+      setNewCPIState({
+        newCPI,
+        newCPIFactor,
+      });
+
+      cpiForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
+      cpiForm.setFieldValue("new_cpi", newCPI.toFixed(2));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    form,
+    cpiForm,
+    segment?.benchmark,
+    currentCase?.currency,
+    isAdjustBenchmarkUsingCPIValuesVisible,
+  ]);
 
   const initialIncomeTargetValue = useMemo(() => {
     const values = {};
@@ -212,6 +296,8 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
           // handle have benchmark value but year !== case year
           if (targetValue && currentCase?.year !== data?.year) {
             // show new CPI Form
+            updateCurrentSegmentState({ target: null });
+            //
             setNewCpiModalVisible(true);
             return;
           }
@@ -329,7 +415,23 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
       const targetValue =
         segment.benchmark.value?.[currentCase.currency.toLowerCase()] ||
         segment.benchmark.value.lcu;
-      // with CPI calculation
+
+      // adjust using manual CPI value
+      if (newCPIState?.newCPIFactor && isAdjustBenchmarkUsingCPIValuesVisible) {
+        const caseYearLIB = targetValue * (1 + newCPIState.newCPIFactor);
+        const LITarget =
+          (householdSize / segment.benchmark.household_equiv) * caseYearLIB;
+        form.setFieldValue(
+          "new_benchmark_value",
+          `${thousandFormatter(LITarget.toFixed(2))} ${currentCase.currency}`
+        );
+        updateCurrentSegmentState({
+          target: LITarget,
+        });
+        return;
+      }
+
+      // with CPI calculation provide by API
       // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
       if (segment.benchmark?.cpi_factor) {
         const caseYearLIB = targetValue * (1 + segment.benchmark.cpi_factor);
@@ -565,39 +667,81 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
                 <>
                   <Col span={24}>
                     <Card className="card-income-target-wrapper">
-                      <Space size={50}>
-                        <div className="income-target-value">
-                          {`${
-                            segment.target
-                              ? thousandFormatter(segment.target.toFixed(2))
-                              : 0
-                          } ${currentCase.currency}`}
-                        </div>
-                        <div className="income-target-text">
-                          Living income benchmark value for a household per year
-                        </div>
-                      </Space>
-                    </Card>
-                  </Col>
-                  <Col span={24}>
-                    <Card className="card-lib-wrapper">
-                      <Row align="middle">
-                        <Col span={12} className="lib-text">
-                          Information about Living Income Benchmark
-                        </Col>
-                        <Col span={12} align="end" className="lib-source">
+                      <div className="lib-value-wrapper">
+                        <Space size={50}>
+                          <div className="income-target-value">
+                            {greenLIBValue}
+                          </div>
+                          <div className="income-target-text">
+                            Living income benchmark value for a household per
+                            year
+                          </div>
+                        </Space>
+                        <div className="lib-source-text">
                           Source:{" "}
                           <a
                             href={segment.benchmark?.links}
                             target="_blank"
                             rel="noreferrer"
                           >{`${segment.benchmark?.source}`}</a>
-                        </Col>
-                      </Row>
+                        </div>
+                      </div>
                     </Card>
                   </Col>
+
+                  {showInformationAboutLIBCard ? (
+                    <Col span={24}>
+                      <Card className="card-lib-wrapper">
+                        <Row align="middle">
+                          <Col span={12} className="lib-text">
+                            Information about Living Income Benchmark
+                          </Col>
+                          <Col span={12} align="end" className="lib-source">
+                            Source:{" "}
+                            <a
+                              href={segment.benchmark?.links}
+                              target="_blank"
+                              rel="noreferrer"
+                            >{`${segment.benchmark?.source}`}</a>
+                          </Col>
+                        </Row>
+                      </Card>
+                    </Col>
+                  ) : (
+                    ""
+                  )}
                 </>
               )}
+
+              {/* Show adjust benchmark using CPI values */}
+              {isAdjustBenchmarkUsingCPIValuesVisible ? (
+                <Col span={24}>
+                  <p>
+                    No living income benchmark is available for the selected
+                    year in the case settings. To ensure accuracy, you adjusted
+                    the benchmark value using CPI data. The value below reflects
+                    your saved adjusted benchmark for a household per year.
+                  </p>
+                  <div className="adjusted-benchmark-value-wrapper">
+                    <Form.Item name="new_benchmark_value" label="New Value">
+                      <Input
+                        style={{ width: 200 }}
+                        className="disabled-field"
+                        disabled
+                      />
+                    </Form.Item>
+                    <Button
+                      className="button-green"
+                      onClick={() => setNewCpiModalVisible(true)}
+                    >
+                      <EditOutlined /> Adjust benchmark using CPI values
+                    </Button>
+                  </div>
+                </Col>
+              ) : (
+                ""
+              )}
+              {/* EOL Show adjust benchmark using CPI values */}
             </Row>
           </Col>
         );
@@ -633,7 +777,8 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
           {renderTargetInput(setTargetYourself)}
         </Row>
       </Form>
-      {/* TODO:: This modal opened when lib year !== case year */}
+
+      {/* This modal opened when lib year !== case year and benchmark available */}
       <Modal
         open={newCpiModalVisible}
         title="No benchmark available for the year you selected"
