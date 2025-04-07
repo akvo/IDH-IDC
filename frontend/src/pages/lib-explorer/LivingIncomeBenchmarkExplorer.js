@@ -241,7 +241,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
           // INFLATION RATE HERE
           let LITarget = 0;
-          if (data?.cpi_factor) {
+          if (data?.cpi_factor || data?.cpi_factor === 0) {
             libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
             const caseYearLIB = targetValue * (1 + data.cpi_factor);
             LITarget = (defHHSize / targetHH) * caseYearLIB;
@@ -352,6 +352,20 @@ const LivingIncomeBenchmarkExplorer = () => {
     currencyUnit,
   ]);
 
+  const onClickMap = ({ name: selectedCountry, value }) => {
+    if (isNaN(value)) {
+      return;
+    }
+    const findMapData = mapData.find(
+      (d) => d.name.toLowerCase() === selectedCountry.toLowerCase()
+    );
+    if (findMapData?.country_id) {
+      handleClearSearch({ resetFilterFields: false });
+      const countryId = parseInt(findMapData?.country_id);
+      filterForm.setFieldValue("country", countryId);
+    }
+  };
+
   return (
     <ContentLayout
       breadcrumbItems={[
@@ -397,7 +411,10 @@ const LivingIncomeBenchmarkExplorer = () => {
                     seriesName: "Benchmark count by country",
                     min: min(mapData.map((d) => d.value)),
                     max: max(mapData.map((d) => d.value)),
-                    visualMapText: ["Number of benchmark", ""],
+                    visualMapText: ["Available benchmarks", ""],
+                  }}
+                  callbacks={{
+                    onClick: onClickMap,
                   }}
                 />
               </Card>
@@ -456,7 +473,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                                 className="search-button"
                                 htmlType="submit"
                               >
-                                Observe
+                                Search
                               </Button>
                             </Form.Item>
                           </Space>
@@ -513,7 +530,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           <Card>
             <h2>Adjust the income benchmark (optional)</h2>
             <p>
-              You may need to adjust your income target for a different year (to
+              You may want to adjust your income target for a different year (to
               account for inflation) or for a different household composition.
               <br />
               To do so, follow the optional steps below.
@@ -539,7 +556,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                       label="Adjusted benchmark value for a household/year"
                       name="adjusted_benchmark_value"
                     >
-                      <Input {...disabledInputProps} disabled />
+                      <Input
+                        {...disabledInputProps}
+                        style={{ width: 300 }}
+                        disabled
+                      />
                     </Form.Item>
                   </div>
                   <div className={showCustomCPIField ? "" : "hide-visual"}>
@@ -550,7 +571,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                       the value, the inflation rate will update, and the
                       benchmark will adjust accordingly.
                     </p>
-                    <NewCpiForm />
+                    <NewCpiForm
+                      adjustedBenchmarkValueFieldProps={{
+                        style: { width: 300 },
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -612,7 +637,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
-                          <p>Avg. nr. of adults:</p>
+                          <p>Nr. of adults</p>
                           <Form.Item name="new_avg_nr_of_adult" noStyle>
                             <InputNumber {...step2NumberProps} size="small" />
                           </Form.Item>
@@ -627,7 +652,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                         label="Adjusted benchmark value for a household/year"
                         name="new_hh_adjusted_benchmark_value"
                       >
-                        <Input {...disabledInputProps} disabled />
+                        <Input
+                          {...disabledInputProps}
+                          style={{ width: 300 }}
+                          disabled
+                        />
                       </Form.Item>
                     </div>
                     {/* EOL adjusted value */}

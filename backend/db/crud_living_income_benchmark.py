@@ -104,7 +104,7 @@ def get_by_country_region_year(
             lib["value"]["eur"] = eur_value
             lib["case_year_cpi"] = case_year_cpi_value
             lib["last_year_cpi"] = last_year_cpi_value
-            lib["cpi_factor"] = cpi_factor
+            lib["cpi_factor"] = cpi_factor or None
             lib["message"] = None
             return lib
         else:
@@ -137,7 +137,7 @@ def get_by_country_region_year(
         lib["value"]["eur"] = eur_value
         lib["case_year_cpi"] = case_year_cpi_value or None
         lib["last_year_cpi"] = last_year_cpi_value or None
-        lib["cpi_factor"] = None
+        lib["cpi_factor"] = 0
         lib["message"] = None
         return lib
 
