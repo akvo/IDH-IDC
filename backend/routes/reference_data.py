@@ -17,7 +17,7 @@ from models.reference_data import (
     Driver,
     ReferenceCountByCountryDict,
 )
-from middleware import verify_admin
+from middleware import verify_admin, verify_user
 
 security = HTTPBearer()
 reference_data_routes = APIRouter()
@@ -43,6 +43,11 @@ def get_all(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    user = verify_user(session=session, authenticated=req.state.authenticated)
+    user = user.to_user_info
+    is_internal_user = user.get('internal_user', False)
+    visible_to_external_user = not is_internal_user
+
     logText = "/reference_data | on Search explore studies by"
     if country:
         logger.info(f"{logText} country: {country}")
@@ -59,6 +64,7 @@ def get_all(
         country=country,
         source=source,
         driver=driver,
+        visible_to_external_user=visible_to_external_user,
         skip=(limit * (page - 1)),
         limit=limit,
     )

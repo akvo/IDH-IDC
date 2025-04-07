@@ -51,6 +51,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 }
             ],
             "total": 1,
@@ -93,6 +94,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 }
             ],
             "total": 1,
@@ -135,6 +137,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 }
             ],
             "total": 1,
@@ -177,6 +180,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 }
             ],
             "total": 1,
@@ -217,6 +221,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 },
                 {
                     "id": 1,
@@ -232,6 +237,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 },
             ],
             "total": 2,
@@ -272,6 +278,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 },
                 {
                     "id": 1,
@@ -287,6 +294,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 },
             ],
             "total": 2,
@@ -327,6 +335,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 },
                 {
                     "id": 1,
@@ -342,6 +351,7 @@ class TestCaseWithFilterRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "has_segment_with_answers": False,
                 },
             ],
             "total": 2,

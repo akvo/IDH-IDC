@@ -107,12 +107,12 @@
         ]
       },
       "properties": {
-        "name": "Afghanistan",
+        "COUNTRY": "Afghanistan",
         "ISO": "AF",
         "COUNTRYAFF": "Afghanistan",
         "AFF_ISO": "AF",
         "FID_2": 1,
-        "New_COUNTRY": "Afghanistan"
+        "name": "Afghanistan"
       },
       "id": 1
     },
@@ -147,12 +147,12 @@
         ]
       },
       "properties": {
-        "name": "Albania",
+        "COUNTRY": "Albania",
         "ISO": "AL",
         "COUNTRYAFF": "Albania",
         "AFF_ISO": "AL",
         "FID_2": 2,
-        "New_COUNTRY": "Albania"
+        "name": "Albania"
       },
       "id": 2
     },
@@ -314,12 +314,12 @@
         ]
       },
       "properties": {
-        "name": "Algeria",
+        "COUNTRY": "Algeria",
         "ISO": "DZ",
         "COUNTRYAFF": "Algeria",
         "AFF_ISO": "DZ",
         "FID_2": 3,
-        "New_COUNTRY": "Algeria"
+        "name": "Algeria"
       },
       "id": 3
     },
@@ -338,12 +338,12 @@
         ]
       },
       "properties": {
-        "name": "American Samoa",
+        "COUNTRY": "American Samoa",
         "ISO": "AS",
         "COUNTRYAFF": "United States",
         "AFF_ISO": "US",
         "FID_2": 4,
-        "New_COUNTRY": "American Samoa"
+        "name": "American Samoa"
       },
       "id": 4
     },
@@ -361,12 +361,12 @@
         ]
       },
       "properties": {
-        "name": "Andorra",
+        "COUNTRY": "Andorra",
         "ISO": "AD",
         "COUNTRYAFF": "Andorra",
         "AFF_ISO": "AD",
         "FID_2": 5,
-        "New_COUNTRY": "Andorra"
+        "name": "Andorra"
       },
       "id": 5
     },
@@ -488,12 +488,12 @@
         ]
       },
       "properties": {
-        "name": "Angola",
+        "COUNTRY": "Angola",
         "ISO": "AO",
         "COUNTRYAFF": "Angola",
         "AFF_ISO": "AO",
         "FID_2": 6,
-        "New_COUNTRY": "Angola"
+        "name": "Angola"
       },
       "id": 6
     },
@@ -512,12 +512,12 @@
         ]
       },
       "properties": {
-        "name": "Antigua and Barbuda",
+        "COUNTRY": "Antigua and Barbuda",
         "ISO": "AG",
         "COUNTRYAFF": "Antigua and Barbuda",
         "AFF_ISO": "AG",
         "FID_2": 9,
-        "New_COUNTRY": "Antigua and Barbuda"
+        "name": "Antigua and Barbuda"
       },
       "id": 9
     },
@@ -766,12 +766,12 @@
         ]
       },
       "properties": {
-        "name": "Argentina",
+        "COUNTRY": "Argentina",
         "ISO": "AR",
         "COUNTRYAFF": "Argentina",
         "AFF_ISO": "AR",
         "FID_2": 10,
-        "New_COUNTRY": "Argentina"
+        "name": "Argentina"
       },
       "id": 10
     },
@@ -807,12 +807,12 @@
         ]
       },
       "properties": {
-        "name": "Armenia",
+        "COUNTRY": "Armenia",
         "ISO": "AM",
         "COUNTRYAFF": "Armenia",
         "AFF_ISO": "AM",
         "FID_2": 11,
-        "New_COUNTRY": "Armenia"
+        "name": "Armenia"
       },
       "id": 11
     },
@@ -1230,12 +1230,12 @@
         ]
       },
       "properties": {
-        "name": "Australia",
+        "COUNTRY": "Australia",
         "ISO": "AU",
         "COUNTRYAFF": "Australia",
         "AFF_ISO": "AU",
         "FID_2": 13,
-        "New_COUNTRY": "Australia"
+        "name": "Australia"
       },
       "id": 13
     },
@@ -1284,12 +1284,12 @@
         ]
       },
       "properties": {
-        "name": "Austria",
+        "COUNTRY": "Austria",
         "ISO": "AT",
         "COUNTRYAFF": "Austria",
         "AFF_ISO": "AT",
         "FID_2": 14,
-        "New_COUNTRY": "Austria"
+        "name": "Austria"
       },
       "id": 14
     },
@@ -1362,12 +1362,12 @@
         ]
       },
       "properties": {
-        "name": "Azerbaijan",
+        "COUNTRY": "Azerbaijan",
         "ISO": "AZ",
         "COUNTRYAFF": "Azerbaijan",
         "AFF_ISO": "AZ",
         "FID_2": 15,
-        "New_COUNTRY": "Azerbaijan"
+        "name": "Azerbaijan"
       },
       "id": 15
     },
@@ -1416,12 +1416,12 @@
         ]
       },
       "properties": {
-        "name": "Bahamas",
+        "COUNTRY": "Bahamas",
         "ISO": "BS",
         "COUNTRYAFF": "Bahamas",
         "AFF_ISO": "BS",
         "FID_2": 17,
-        "New_COUNTRY": "Bahamas, The"
+        "name": "Bahamas, The"
       },
       "id": 17
     },
@@ -1440,12 +1440,12 @@
         ]
       },
       "properties": {
-        "name": "Bahrain",
+        "COUNTRY": "Bahrain",
         "ISO": "BH",
         "COUNTRYAFF": "Bahrain",
         "AFF_ISO": "BH",
         "FID_2": 18,
-        "New_COUNTRY": "Bahrain"
+        "name": "Bahrain"
       },
       "id": 18
     },
@@ -1527,12 +1527,12 @@
         ]
       },
       "properties": {
-        "name": "Bangladesh",
+        "COUNTRY": "Bangladesh",
         "ISO": "BD",
         "COUNTRYAFF": "Bangladesh",
         "AFF_ISO": "BD",
         "FID_2": 19,
-        "New_COUNTRY": "Bangladesh"
+        "name": "Bangladesh"
       },
       "id": 19
     },
@@ -1551,12 +1551,12 @@
         ]
       },
       "properties": {
-        "name": "Barbados",
+        "COUNTRY": "Barbados",
         "ISO": "BB",
         "COUNTRYAFF": "Barbados",
         "AFF_ISO": "BB",
         "FID_2": 20,
-        "New_COUNTRY": "Barbados"
+        "name": "Barbados"
       },
       "id": 20
     },
@@ -1617,12 +1617,12 @@
         ]
       },
       "properties": {
-        "name": "Belarus",
+        "COUNTRY": "Belarus",
         "ISO": "BY",
         "COUNTRYAFF": "Belarus",
         "AFF_ISO": "BY",
         "FID_2": 21,
-        "New_COUNTRY": "Belarus"
+        "name": "Belarus"
       },
       "id": 21
     },
@@ -1658,12 +1658,12 @@
         ]
       },
       "properties": {
-        "name": "Belgium",
+        "COUNTRY": "Belgium",
         "ISO": "BE",
         "COUNTRYAFF": "Belgium",
         "AFF_ISO": "BE",
         "FID_2": 22,
-        "New_COUNTRY": "Belgium"
+        "name": "Belgium"
       },
       "id": 22
     },
@@ -1691,12 +1691,12 @@
         ]
       },
       "properties": {
-        "name": "Belize",
+        "COUNTRY": "Belize",
         "ISO": "BZ",
         "COUNTRYAFF": "Belize",
         "AFF_ISO": "BZ",
         "FID_2": 23,
-        "New_COUNTRY": "Belize"
+        "name": "Belize"
       },
       "id": 23
     },
@@ -1741,12 +1741,12 @@
         ]
       },
       "properties": {
-        "name": "Benin",
+        "COUNTRY": "Benin",
         "ISO": "BJ",
         "COUNTRYAFF": "Benin",
         "AFF_ISO": "BJ",
         "FID_2": 24,
-        "New_COUNTRY": "Benin"
+        "name": "Benin"
       },
       "id": 24
     },
@@ -1798,12 +1798,12 @@
         ]
       },
       "properties": {
-        "name": "Bhutan",
+        "COUNTRY": "Bhutan",
         "ISO": "BT",
         "COUNTRYAFF": "Bhutan",
         "AFF_ISO": "BT",
         "FID_2": 26,
-        "New_COUNTRY": "Bhutan"
+        "name": "Bhutan"
       },
       "id": 26
     },
@@ -1912,12 +1912,12 @@
         ]
       },
       "properties": {
-        "name": "Bolivia",
+        "COUNTRY": "Bolivia",
         "ISO": "BO",
         "COUNTRYAFF": "Bolivia, Plurinational State of",
         "AFF_ISO": "BO",
         "FID_2": 27,
-        "New_COUNTRY": "Bolivia"
+        "name": "Bolivia"
       },
       "id": 27
     },
@@ -1954,12 +1954,12 @@
         ]
       },
       "properties": {
-        "name": "Bosnia and Herzegovina",
+        "COUNTRY": "Bosnia and Herzegovina",
         "ISO": "BA",
         "COUNTRYAFF": "Bosnia and Herzegovina",
         "AFF_ISO": "BA",
         "FID_2": 29,
-        "New_COUNTRY": "Bosnia and Herzegovina"
+        "name": "Bosnia and Herzegovina"
       },
       "id": 29
     },
@@ -2030,12 +2030,12 @@
         ]
       },
       "properties": {
-        "name": "Botswana",
+        "COUNTRY": "Botswana",
         "ISO": "BW",
         "COUNTRYAFF": "Botswana",
         "AFF_ISO": "BW",
         "FID_2": 30,
-        "New_COUNTRY": "Botswana"
+        "name": "Botswana"
       },
       "id": 30
     },
@@ -2448,12 +2448,12 @@
         ]
       },
       "properties": {
-        "name": "Brazil",
+        "COUNTRY": "Brazil",
         "ISO": "BR",
         "COUNTRYAFF": "Brazil",
         "AFF_ISO": "BR",
         "FID_2": 32,
-        "New_COUNTRY": "Brazil"
+        "name": "Brazil"
       },
       "id": 32
     },
@@ -2475,12 +2475,12 @@
         ]
       },
       "properties": {
-        "name": "Brunei Darussalam",
+        "COUNTRY": "Brunei Darussalam",
         "ISO": "BN",
         "COUNTRYAFF": "Brunei Darussalam",
         "AFF_ISO": "BN",
         "FID_2": 35,
-        "New_COUNTRY": "Brunei Darussalam"
+        "name": "Brunei Darussalam"
       },
       "id": 35
     },
@@ -2534,12 +2534,12 @@
         ]
       },
       "properties": {
-        "name": "Bulgaria",
+        "COUNTRY": "Bulgaria",
         "ISO": "BG",
         "COUNTRYAFF": "Bulgaria",
         "AFF_ISO": "BG",
         "FID_2": 36,
-        "New_COUNTRY": "Bulgaria"
+        "name": "Bulgaria"
       },
       "id": 36
     },
@@ -2607,12 +2607,12 @@
         ]
       },
       "properties": {
-        "name": "Burkina Faso",
+        "COUNTRY": "Burkina Faso",
         "ISO": "BF",
         "COUNTRYAFF": "Burkina Faso",
         "AFF_ISO": "BF",
         "FID_2": 37,
-        "New_COUNTRY": "Burkina Faso"
+        "name": "Burkina Faso"
       },
       "id": 37
     },
@@ -2644,12 +2644,12 @@
         ]
       },
       "properties": {
-        "name": "Burundi",
+        "COUNTRY": "Burundi",
         "ISO": "BI",
         "COUNTRYAFF": "Burundi",
         "AFF_ISO": "BI",
         "FID_2": 38,
-        "New_COUNTRY": "Burundi"
+        "name": "Burundi"
       },
       "id": 38
     },
@@ -2668,12 +2668,12 @@
         ]
       },
       "properties": {
-        "name": "Cabo Verde",
+        "COUNTRY": "Cabo Verde",
         "ISO": "CV",
         "COUNTRYAFF": "Cabo Verde",
         "AFF_ISO": "CV",
         "FID_2": 39,
-        "New_COUNTRY": "Cabo Verde"
+        "name": "Cabo Verde"
       },
       "id": 39
     },
@@ -2738,12 +2738,12 @@
         ]
       },
       "properties": {
-        "name": "Cambodia",
+        "COUNTRY": "Cambodia",
         "ISO": "KH",
         "COUNTRYAFF": "Cambodia",
         "AFF_ISO": "KH",
         "FID_2": 40,
-        "New_COUNTRY": "Cambodia"
+        "name": "Cambodia"
       },
       "id": 40
     },
@@ -2845,12 +2845,12 @@
         ]
       },
       "properties": {
-        "name": "Cameroon",
+        "COUNTRY": "Cameroon",
         "ISO": "CM",
         "COUNTRYAFF": "Cameroon",
         "AFF_ISO": "CM",
         "FID_2": 41,
-        "New_COUNTRY": "Cameroon"
+        "name": "Cameroon"
       },
       "id": 41
     },
@@ -4275,12 +4275,12 @@
         ]
       },
       "properties": {
-        "name": "Canada",
+        "COUNTRY": "Canada",
         "ISO": "CA",
         "COUNTRYAFF": "Canada",
         "AFF_ISO": "CA",
         "FID_2": 42,
-        "New_COUNTRY": "Canada"
+        "name": "Canada"
       },
       "id": 42
     },
@@ -4379,12 +4379,12 @@
         ]
       },
       "properties": {
-        "name": "Central African Republic",
+        "COUNTRY": "Central African Republic",
         "ISO": "CF",
         "COUNTRYAFF": "Central African Republic",
         "AFF_ISO": "CF",
         "FID_2": 45,
-        "New_COUNTRY": "Central African Republic"
+        "name": "Central African Republic"
       },
       "id": 45
     },
@@ -4470,12 +4470,12 @@
         ]
       },
       "properties": {
-        "name": "Chad",
+        "COUNTRY": "Chad",
         "ISO": "TD",
         "COUNTRYAFF": "Chad",
         "AFF_ISO": "TD",
         "FID_2": 46,
-        "New_COUNTRY": "Chad"
+        "name": "Chad"
       },
       "id": 46
     },
@@ -4849,12 +4849,12 @@
         ]
       },
       "properties": {
-        "name": "Chile",
+        "COUNTRY": "Chile",
         "ISO": "CL",
         "COUNTRYAFF": "Chile",
         "AFF_ISO": "CL",
         "FID_2": 47,
-        "New_COUNTRY": "Chile"
+        "name": "Chile"
       },
       "id": 47
     },
@@ -5777,12 +5777,12 @@
         ]
       },
       "properties": {
-        "name": "China",
+        "COUNTRY": "China",
         "ISO": "CN",
         "COUNTRYAFF": "China",
         "AFF_ISO": "CN",
         "FID_2": 48,
-        "New_COUNTRY": "China"
+        "name": "China"
       },
       "id": 48
     },
@@ -5933,12 +5933,12 @@
         ]
       },
       "properties": {
-        "name": "Colombia",
+        "COUNTRY": "Colombia",
         "ISO": "CO",
         "COUNTRYAFF": "Colombia",
         "AFF_ISO": "CO",
         "FID_2": 51,
-        "New_COUNTRY": "Colombia"
+        "name": "Colombia"
       },
       "id": 51
     },
@@ -5958,12 +5958,12 @@
         ]
       },
       "properties": {
-        "name": "Comoros",
+        "COUNTRY": "Comoros",
         "ISO": "KM",
         "COUNTRYAFF": "Comoros",
         "AFF_ISO": "KM",
         "FID_2": 52,
-        "New_COUNTRY": "Comoros"
+        "name": "Comoros"
       },
       "id": 52
     },
@@ -6060,12 +6060,12 @@
         ]
       },
       "properties": {
-        "name": "Congo",
+        "COUNTRY": "Congo",
         "ISO": "CG",
         "COUNTRYAFF": "Congo",
         "AFF_ISO": "CG",
         "FID_2": 53,
-        "New_COUNTRY": "Congo, Rep."
+        "name": "Congo, Rep."
       },
       "id": 53
     },
@@ -6248,12 +6248,12 @@
         ]
       },
       "properties": {
-        "name": "Congo DRC",
+        "COUNTRY": "Congo DRC",
         "ISO": "CD",
         "COUNTRYAFF": "Congo, The Democratic Republic of the",
         "AFF_ISO": "CD",
         "FID_2": 54,
-        "New_COUNTRY": "Congo, Dem. Rep."
+        "name": "Congo, Dem. Rep."
       },
       "id": 54
     },
@@ -6299,12 +6299,12 @@
         ]
       },
       "properties": {
-        "name": "Costa Rica",
+        "COUNTRY": "Costa Rica",
         "ISO": "CR",
         "COUNTRYAFF": "Costa Rica",
         "AFF_ISO": "CR",
         "FID_2": 56,
-        "New_COUNTRY": "Costa Rica"
+        "name": "Costa Rica"
       },
       "id": 56
     },
@@ -6376,12 +6376,12 @@
         ]
       },
       "properties": {
-        "name": "Cote d'Ivoire",
+        "COUNTRY": "Cote d'Ivoire",
         "ISO": "CI",
         "COUNTRYAFF": "Côte d'Ivoire",
         "AFF_ISO": "CI",
         "FID_2": 57,
-        "New_COUNTRY": "Cote d'Ivoire"
+        "name": "Cote d'Ivoire"
       },
       "id": 57
     },
@@ -6446,12 +6446,12 @@
         ]
       },
       "properties": {
-        "name": "Croatia",
+        "COUNTRY": "Croatia",
         "ISO": "HR",
         "COUNTRYAFF": "Croatia",
         "AFF_ISO": "HR",
         "FID_2": 58,
-        "New_COUNTRY": "Croatia"
+        "name": "Croatia"
       },
       "id": 58
     },
@@ -6531,12 +6531,12 @@
         ]
       },
       "properties": {
-        "name": "Cuba",
+        "COUNTRY": "Cuba",
         "ISO": "CU",
         "COUNTRYAFF": "Cuba",
         "AFF_ISO": "CU",
         "FID_2": 59,
-        "New_COUNTRY": "Cuba"
+        "name": "Cuba"
       },
       "id": 59
     },
@@ -6560,12 +6560,12 @@
         ]
       },
       "properties": {
-        "name": "Cyprus",
+        "COUNTRY": "Cyprus",
         "ISO": "CY",
         "COUNTRYAFF": "Cyprus",
         "AFF_ISO": "CY",
         "FID_2": 61,
-        "New_COUNTRY": "Cyprus"
+        "name": "Cyprus"
       },
       "id": 61
     },
@@ -6608,12 +6608,12 @@
         ]
       },
       "properties": {
-        "name": "Czech Republic",
+        "COUNTRY": "Czech Republic",
         "ISO": "CZ",
         "COUNTRYAFF": "Czechia",
         "AFF_ISO": "CZ",
         "FID_2": 62,
-        "New_COUNTRY": "Czechia"
+        "name": "Czechia"
       },
       "id": 62
     },
@@ -6694,12 +6694,12 @@
         ]
       },
       "properties": {
-        "name": "Denmark",
+        "COUNTRY": "Denmark",
         "ISO": "DK",
         "COUNTRYAFF": "Denmark",
         "AFF_ISO": "DK",
         "FID_2": 63,
-        "New_COUNTRY": "Denmark"
+        "name": "Denmark"
       },
       "id": 63
     },
@@ -6728,12 +6728,12 @@
         ]
       },
       "properties": {
-        "name": "Djibouti",
+        "COUNTRY": "Djibouti",
         "ISO": "DJ",
         "COUNTRYAFF": "Djibouti",
         "AFF_ISO": "DJ",
         "FID_2": 64,
-        "New_COUNTRY": "Djibouti"
+        "name": "Djibouti"
       },
       "id": 64
     },
@@ -6751,12 +6751,12 @@
         ]
       },
       "properties": {
-        "name": "Dominica",
+        "COUNTRY": "Dominica",
         "ISO": "DM",
         "COUNTRYAFF": "Dominica",
         "AFF_ISO": "DM",
         "FID_2": 65,
-        "New_COUNTRY": "Dominica"
+        "name": "Dominica"
       },
       "id": 65
     },
@@ -6794,12 +6794,12 @@
         ]
       },
       "properties": {
-        "name": "Dominican Republic",
+        "COUNTRY": "Dominican Republic",
         "ISO": "DO",
         "COUNTRYAFF": "Dominican Republic",
         "AFF_ISO": "DO",
         "FID_2": 66,
-        "New_COUNTRY": "Dominican Republic"
+        "name": "Dominican Republic"
       },
       "id": 66
     },
@@ -6872,12 +6872,12 @@
         ]
       },
       "properties": {
-        "name": "Ecuador",
+        "COUNTRY": "Ecuador",
         "ISO": "EC",
         "COUNTRYAFF": "Ecuador",
         "AFF_ISO": "EC",
         "FID_2": 67,
-        "New_COUNTRY": "Ecuador"
+        "name": "Ecuador"
       },
       "id": 67
     },
@@ -6952,12 +6952,12 @@
         ]
       },
       "properties": {
-        "name": "Egypt",
+        "COUNTRY": "Egypt",
         "ISO": "EG",
         "COUNTRYAFF": "Egypt",
         "AFF_ISO": "EG",
         "FID_2": 68,
-        "New_COUNTRY": "Egypt, Arab Rep."
+        "name": "Egypt, Arab Rep."
       },
       "id": 68
     },
@@ -6983,12 +6983,12 @@
         ]
       },
       "properties": {
-        "name": "El Salvador",
+        "COUNTRY": "El Salvador",
         "ISO": "SV",
         "COUNTRYAFF": "El Salvador",
         "AFF_ISO": "SV",
         "FID_2": 69,
-        "New_COUNTRY": "El Salvador"
+        "name": "El Salvador"
       },
       "id": 69
     },
@@ -7021,12 +7021,12 @@
         ]
       },
       "properties": {
-        "name": "Equatorial Guinea",
+        "COUNTRY": "Equatorial Guinea",
         "ISO": "GQ",
         "COUNTRYAFF": "Equatorial Guinea",
         "AFF_ISO": "GQ",
         "FID_2": 70,
-        "New_COUNTRY": "Equatorial Guinea"
+        "name": "Equatorial Guinea"
       },
       "id": 70
     },
@@ -7086,12 +7086,12 @@
         ]
       },
       "properties": {
-        "name": "Eritrea",
+        "COUNTRY": "Eritrea",
         "ISO": "ER",
         "COUNTRYAFF": "Eritrea",
         "AFF_ISO": "ER",
         "FID_2": 71,
-        "New_COUNTRY": "Eritrea"
+        "name": "Eritrea"
       },
       "id": 71
     },
@@ -7148,12 +7148,12 @@
         ]
       },
       "properties": {
-        "name": "Estonia",
+        "COUNTRY": "Estonia",
         "ISO": "EE",
         "COUNTRYAFF": "Estonia",
         "AFF_ISO": "EE",
         "FID_2": 72,
-        "New_COUNTRY": "Estonia"
+        "name": "Estonia"
       },
       "id": 72
     },
@@ -7178,12 +7178,12 @@
         ]
       },
       "properties": {
-        "name": "Eswatini",
+        "COUNTRY": "Eswatini",
         "ISO": "SZ",
         "COUNTRYAFF": "Eswatini",
         "AFF_ISO": "SZ",
         "FID_2": 73,
-        "New_COUNTRY": "Eswatini"
+        "name": "Eswatini"
       },
       "id": 73
     },
@@ -7275,12 +7275,12 @@
         ]
       },
       "properties": {
-        "name": "Ethiopia",
+        "COUNTRY": "Ethiopia",
         "ISO": "ET",
         "COUNTRYAFF": "Ethiopia",
         "AFF_ISO": "ET",
         "FID_2": 74,
-        "New_COUNTRY": "Ethiopia"
+        "name": "Ethiopia"
       },
       "id": 74
     },
@@ -7299,12 +7299,12 @@
         ]
       },
       "properties": {
-        "name": "Faroe Islands",
+        "COUNTRY": "Faroe Islands",
         "ISO": "FO",
         "COUNTRYAFF": "Denmark",
         "AFF_ISO": "DK",
         "FID_2": 76,
-        "New_COUNTRY": "Denmark"
+        "name": "Denmark"
       },
       "id": 76
     },
@@ -7342,12 +7342,12 @@
         ]
       },
       "properties": {
-        "name": "Fiji",
+        "COUNTRY": "Fiji",
         "ISO": "FJ",
         "COUNTRYAFF": "Fiji",
         "AFF_ISO": "FJ",
         "FID_2": 77,
-        "New_COUNTRY": "Fiji"
+        "name": "Fiji"
       },
       "id": 77
     },
@@ -7418,12 +7418,12 @@
         ]
       },
       "properties": {
-        "name": "Finland",
+        "COUNTRY": "Finland",
         "ISO": "FI",
         "COUNTRYAFF": "Finland",
         "AFF_ISO": "FI",
         "FID_2": 78,
-        "New_COUNTRY": "Finland"
+        "name": "Finland"
       },
       "id": 78
     },
@@ -7541,12 +7541,12 @@
         ]
       },
       "properties": {
-        "name": "France",
+        "COUNTRY": "France",
         "ISO": "FR",
         "COUNTRYAFF": "France",
         "AFF_ISO": "FR",
         "FID_2": 79,
-        "New_COUNTRY": "France"
+        "name": "France"
       },
       "id": 79
     },
@@ -7587,12 +7587,12 @@
         ]
       },
       "properties": {
-        "name": "French Guiana",
+        "COUNTRY": "French Guiana",
         "ISO": "GF",
         "COUNTRYAFF": "France",
         "AFF_ISO": "FR",
         "FID_2": 80,
-        "New_COUNTRY": "French Guiana"
+        "name": "French Guiana"
       },
       "id": 80
     },
@@ -7610,12 +7610,12 @@
         ]
       },
       "properties": {
-        "name": "French Polynesia",
+        "COUNTRY": "French Polynesia",
         "ISO": "PF",
         "COUNTRYAFF": "France",
         "AFF_ISO": "FR",
         "FID_2": 81,
-        "New_COUNTRY": "French Polynesia"
+        "name": "French Polynesia"
       },
       "id": 81
     },
@@ -7684,12 +7684,12 @@
         ]
       },
       "properties": {
-        "name": "Gabon",
+        "COUNTRY": "Gabon",
         "ISO": "GA",
         "COUNTRYAFF": "Gabon",
         "AFF_ISO": "GA",
         "FID_2": 83,
-        "New_COUNTRY": "Gabon"
+        "name": "Gabon"
       },
       "id": 83
     },
@@ -7720,12 +7720,12 @@
         ]
       },
       "properties": {
-        "name": "Gambia",
+        "COUNTRY": "Gambia",
         "ISO": "GM",
         "COUNTRYAFF": "Gambia",
         "AFF_ISO": "GM",
         "FID_2": 84,
-        "New_COUNTRY": "Gambia, The"
+        "name": "Gambia, The"
       },
       "id": 84
     },
@@ -7776,12 +7776,12 @@
         ]
       },
       "properties": {
-        "name": "Georgia",
+        "COUNTRY": "Georgia",
         "ISO": "GE",
         "COUNTRYAFF": "Georgia",
         "AFF_ISO": "GE",
         "FID_2": 85,
-        "New_COUNTRY": "Georgia"
+        "name": "Georgia"
       },
       "id": 85
     },
@@ -7866,12 +7866,12 @@
         ]
       },
       "properties": {
-        "name": "Germany",
+        "COUNTRY": "Germany",
         "ISO": "DE",
         "COUNTRYAFF": "Germany",
         "AFF_ISO": "DE",
         "FID_2": 86,
-        "New_COUNTRY": "Germany"
+        "name": "Germany"
       },
       "id": 86
     },
@@ -7927,12 +7927,12 @@
         ]
       },
       "properties": {
-        "name": "Ghana",
+        "COUNTRY": "Ghana",
         "ISO": "GH",
         "COUNTRYAFF": "Ghana",
         "AFF_ISO": "GH",
         "FID_2": 87,
-        "New_COUNTRY": "Ghana"
+        "name": "Ghana"
       },
       "id": 87
     },
@@ -8065,12 +8065,12 @@
         ]
       },
       "properties": {
-        "name": "Greece",
+        "COUNTRY": "Greece",
         "ISO": "GR",
         "COUNTRYAFF": "Greece",
         "AFF_ISO": "GR",
         "FID_2": 90,
-        "New_COUNTRY": "Greece"
+        "name": "Greece"
       },
       "id": 90
     },
@@ -8386,12 +8386,12 @@
         ]
       },
       "properties": {
-        "name": "Greenland",
+        "COUNTRY": "Greenland",
         "ISO": "GL",
         "COUNTRYAFF": "Denmark",
         "AFF_ISO": "DK",
         "FID_2": 91,
-        "New_COUNTRY": "Greenland"
+        "name": "Greenland"
       },
       "id": 91
     },
@@ -8410,12 +8410,12 @@
         ]
       },
       "properties": {
-        "name": "Grenada",
+        "COUNTRY": "Grenada",
         "ISO": "GD",
         "COUNTRYAFF": "Grenada",
         "AFF_ISO": "GD",
         "FID_2": 92,
-        "New_COUNTRY": "Grenada"
+        "name": "Grenada"
       },
       "id": 92
     },
@@ -8460,12 +8460,12 @@
         ]
       },
       "properties": {
-        "name": "Guatemala",
+        "COUNTRY": "Guatemala",
         "ISO": "GT",
         "COUNTRYAFF": "Guatemala",
         "AFF_ISO": "GT",
         "FID_2": 95,
-        "New_COUNTRY": "Guatemala"
+        "name": "Guatemala"
       },
       "id": 95
     },
@@ -8539,12 +8539,12 @@
         ]
       },
       "properties": {
-        "name": "Guinea",
+        "COUNTRY": "Guinea",
         "ISO": "GN",
         "COUNTRYAFF": "Guinea",
         "AFF_ISO": "GN",
         "FID_2": 97,
-        "New_COUNTRY": "Guinea"
+        "name": "Guinea"
       },
       "id": 97
     },
@@ -8572,12 +8572,12 @@
         ]
       },
       "properties": {
-        "name": "Guinea-Bissau",
+        "COUNTRY": "Guinea-Bissau",
         "ISO": "GW",
         "COUNTRYAFF": "Guinea-Bissau",
         "AFF_ISO": "GW",
         "FID_2": 98,
-        "New_COUNTRY": "Guinea-Bissau"
+        "name": "Guinea-Bissau"
       },
       "id": 98
     },
@@ -8643,12 +8643,12 @@
         ]
       },
       "properties": {
-        "name": "Guyana",
+        "COUNTRY": "Guyana",
         "ISO": "GY",
         "COUNTRYAFF": "Guyana",
         "AFF_ISO": "GY",
         "FID_2": 99,
-        "New_COUNTRY": "Guyana"
+        "name": "Guyana"
       },
       "id": 99
     },
@@ -8687,12 +8687,12 @@
         ]
       },
       "properties": {
-        "name": "Haiti",
+        "COUNTRY": "Haiti",
         "ISO": "HT",
         "COUNTRYAFF": "Haiti",
         "AFF_ISO": "HT",
         "FID_2": 100,
-        "New_COUNTRY": "Haiti"
+        "name": "Haiti"
       },
       "id": 100
     },
@@ -8742,12 +8742,12 @@
         ]
       },
       "properties": {
-        "name": "Honduras",
+        "COUNTRY": "Honduras",
         "ISO": "HN",
         "COUNTRYAFF": "Honduras",
         "AFF_ISO": "HN",
         "FID_2": 102,
-        "New_COUNTRY": "Honduras"
+        "name": "Honduras"
       },
       "id": 102
     },
@@ -8789,12 +8789,12 @@
         ]
       },
       "properties": {
-        "name": "Hungary",
+        "COUNTRY": "Hungary",
         "ISO": "HU",
         "COUNTRYAFF": "Hungary",
         "AFF_ISO": "HU",
         "FID_2": 103,
-        "New_COUNTRY": "Hungary"
+        "name": "Hungary"
       },
       "id": 103
     },
@@ -8847,12 +8847,12 @@
         ]
       },
       "properties": {
-        "name": "Iceland",
+        "COUNTRY": "Iceland",
         "ISO": "IS",
         "COUNTRYAFF": "Iceland",
         "AFF_ISO": "IS",
         "FID_2": 104,
-        "New_COUNTRY": "Iceland"
+        "name": "Iceland"
       },
       "id": 104
     },
@@ -9230,12 +9230,12 @@
         ]
       },
       "properties": {
-        "name": "India",
+        "COUNTRY": "India",
         "ISO": "IN",
         "COUNTRYAFF": "India",
         "AFF_ISO": "IN",
         "FID_2": 105,
-        "New_COUNTRY": "India"
+        "name": "India"
       },
       "id": 105
     },
@@ -10125,12 +10125,12 @@
         ]
       },
       "properties": {
-        "name": "Indonesia",
+        "COUNTRY": "Indonesia",
         "ISO": "ID",
         "COUNTRYAFF": "Indonesia",
         "AFF_ISO": "ID",
         "FID_2": 106,
-        "New_COUNTRY": "Indonesia"
+        "name": "Indonesia"
       },
       "id": 106
     },
@@ -10276,12 +10276,12 @@
         ]
       },
       "properties": {
-        "name": "Iran",
+        "COUNTRY": "Iran",
         "ISO": "IR",
         "COUNTRYAFF": "Iran, Islamic Republic of",
         "AFF_ISO": "IR",
         "FID_2": 107,
-        "New_COUNTRY": "Iran, Islamic Rep."
+        "name": "Iran, Islamic Rep."
       },
       "id": 107
     },
@@ -10346,12 +10346,12 @@
         ]
       },
       "properties": {
-        "name": "Iraq",
+        "COUNTRY": "Iraq",
         "ISO": "IQ",
         "COUNTRYAFF": "Iraq",
         "AFF_ISO": "IQ",
         "FID_2": 108,
-        "New_COUNTRY": "Iraq"
+        "name": "Iraq"
       },
       "id": 108
     },
@@ -10395,12 +10395,12 @@
         ]
       },
       "properties": {
-        "name": "Ireland",
+        "COUNTRY": "Ireland",
         "ISO": "IE",
         "COUNTRYAFF": "Ireland",
         "AFF_ISO": "IE",
         "FID_2": 109,
-        "New_COUNTRY": "Ireland"
+        "name": "Ireland"
       },
       "id": 109
     },
@@ -10455,12 +10455,12 @@
         ]
       },
       "properties": {
-        "name": "Israel",
+        "COUNTRY": "Israel",
         "ISO": "IL",
         "COUNTRYAFF": "Israel",
         "AFF_ISO": "IL",
         "FID_2": 111,
-        "New_COUNTRY": "Israel"
+        "name": "Israel"
       },
       "id": 111
     },
@@ -10604,12 +10604,12 @@
         ]
       },
       "properties": {
-        "name": "Italy",
+        "COUNTRY": "Italy",
         "ISO": "IT",
         "COUNTRYAFF": "Italy",
         "AFF_ISO": "IT",
         "FID_2": 112,
-        "New_COUNTRY": "Italy"
+        "name": "Italy"
       },
       "id": 112
     },
@@ -10634,12 +10634,12 @@
         ]
       },
       "properties": {
-        "name": "Jamaica",
+        "COUNTRY": "Jamaica",
         "ISO": "JM",
         "COUNTRYAFF": "Jamaica",
         "AFF_ISO": "JM",
         "FID_2": 113,
-        "New_COUNTRY": "Jamaica"
+        "name": "Jamaica"
       },
       "id": 113
     },
@@ -10851,12 +10851,12 @@
         ]
       },
       "properties": {
-        "name": "Japan",
+        "COUNTRY": "Japan",
         "ISO": "JP",
         "COUNTRYAFF": "Japan",
         "AFF_ISO": "JP",
         "FID_2": 114,
-        "New_COUNTRY": "Japan"
+        "name": "Japan"
       },
       "id": 114
     },
@@ -10897,12 +10897,12 @@
         ]
       },
       "properties": {
-        "name": "Jordan",
+        "COUNTRY": "Jordan",
         "ISO": "JO",
         "COUNTRYAFF": "Jordan",
         "AFF_ISO": "JO",
         "FID_2": 116,
-        "New_COUNTRY": "Jordan"
+        "name": "Jordan"
       },
       "id": 116
     },
@@ -11165,12 +11165,12 @@
         ]
       },
       "properties": {
-        "name": "Kazakhstan",
+        "COUNTRY": "Kazakhstan",
         "ISO": "KZ",
         "COUNTRYAFF": "Kazakhstan",
         "AFF_ISO": "KZ",
         "FID_2": 118,
-        "New_COUNTRY": "Kazakhstan"
+        "name": "Kazakhstan"
       },
       "id": 118
     },
@@ -11238,12 +11238,12 @@
         ]
       },
       "properties": {
-        "name": "Kenya",
+        "COUNTRY": "Kenya",
         "ISO": "KE",
         "COUNTRYAFF": "Kenya",
         "AFF_ISO": "KE",
         "FID_2": 119,
-        "New_COUNTRY": "Kenya"
+        "name": "Kenya"
       },
       "id": 119
     },
@@ -11262,12 +11262,12 @@
         ]
       },
       "properties": {
-        "name": "Kiribati",
+        "COUNTRY": "Kiribati",
         "ISO": "KI",
         "COUNTRYAFF": "Kiribati",
         "AFF_ISO": "KI",
         "FID_2": 120,
-        "New_COUNTRY": "Kiribati"
+        "name": "Kiribati"
       },
       "id": 120
     },
@@ -11291,12 +11291,12 @@
         ]
       },
       "properties": {
-        "name": "Kuwait",
+        "COUNTRY": "Kuwait",
         "ISO": "KW",
         "COUNTRYAFF": "Kuwait",
         "AFF_ISO": "KW",
         "FID_2": 121,
-        "New_COUNTRY": "Kuwait"
+        "name": "Kuwait"
       },
       "id": 121
     },
@@ -11390,12 +11390,12 @@
         ]
       },
       "properties": {
-        "name": "Kyrgyzstan",
+        "COUNTRY": "Kyrgyzstan",
         "ISO": "KG",
         "COUNTRYAFF": "Kyrgyzstan",
         "AFF_ISO": "KG",
         "FID_2": 122,
-        "New_COUNTRY": "Kyrgyz Republic"
+        "name": "Kyrgyz Republic"
       },
       "id": 122
     },
@@ -11506,12 +11506,12 @@
         ]
       },
       "properties": {
-        "name": "Laos",
+        "COUNTRY": "Laos",
         "ISO": "LA",
         "COUNTRYAFF": "Lao People's Democratic Republic",
         "AFF_ISO": "LA",
         "FID_2": 123,
-        "New_COUNTRY": "Lao PDR"
+        "name": "Lao PDR"
       },
       "id": 123
     },
@@ -11557,12 +11557,12 @@
         ]
       },
       "properties": {
-        "name": "Latvia",
+        "COUNTRY": "Latvia",
         "ISO": "LV",
         "COUNTRYAFF": "Latvia",
         "AFF_ISO": "LV",
         "FID_2": 124,
-        "New_COUNTRY": "Latvia"
+        "name": "Latvia"
       },
       "id": 124
     },
@@ -11586,12 +11586,12 @@
         ]
       },
       "properties": {
-        "name": "Lebanon",
+        "COUNTRY": "Lebanon",
         "ISO": "LB",
         "COUNTRYAFF": "Lebanon",
         "AFF_ISO": "LB",
         "FID_2": 125,
-        "New_COUNTRY": "Lebanon"
+        "name": "Lebanon"
       },
       "id": 125
     },
@@ -11620,12 +11620,12 @@
         ]
       },
       "properties": {
-        "name": "Lesotho",
+        "COUNTRY": "Lesotho",
         "ISO": "LS",
         "COUNTRYAFF": "Lesotho",
         "AFF_ISO": "LS",
         "FID_2": 126,
-        "New_COUNTRY": "Lesotho"
+        "name": "Lesotho"
       },
       "id": 126
     },
@@ -11670,12 +11670,12 @@
         ]
       },
       "properties": {
-        "name": "Liberia",
+        "COUNTRY": "Liberia",
         "ISO": "LR",
         "COUNTRYAFF": "Liberia",
         "AFF_ISO": "LR",
         "FID_2": 127,
-        "New_COUNTRY": "Liberia"
+        "name": "Liberia"
       },
       "id": 127
     },
@@ -11771,12 +11771,12 @@
         ]
       },
       "properties": {
-        "name": "Libya",
+        "COUNTRY": "Libya",
         "ISO": "LY",
         "COUNTRYAFF": "Libya",
         "AFF_ISO": "LY",
         "FID_2": 128,
-        "New_COUNTRY": "Libya"
+        "name": "Libya"
       },
       "id": 128
     },
@@ -11794,12 +11794,12 @@
         ]
       },
       "properties": {
-        "name": "Liechtenstein",
+        "COUNTRY": "Liechtenstein",
         "ISO": "LI",
         "COUNTRYAFF": "Liechtenstein",
         "AFF_ISO": "LI",
         "FID_2": 129,
-        "New_COUNTRY": "Liechtenstein"
+        "name": "Liechtenstein"
       },
       "id": 129
     },
@@ -11837,12 +11837,12 @@
         ]
       },
       "properties": {
-        "name": "Lithuania",
+        "COUNTRY": "Lithuania",
         "ISO": "LT",
         "COUNTRYAFF": "Lithuania",
         "AFF_ISO": "LT",
         "FID_2": 130,
-        "New_COUNTRY": "Lithuania"
+        "name": "Lithuania"
       },
       "id": 130
     },
@@ -11862,12 +11862,12 @@
         ]
       },
       "properties": {
-        "name": "Luxembourg",
+        "COUNTRY": "Luxembourg",
         "ISO": "LU",
         "COUNTRYAFF": "Luxembourg",
         "AFF_ISO": "LU",
         "FID_2": 131,
-        "New_COUNTRY": "Luxembourg"
+        "name": "Luxembourg"
       },
       "id": 131
     },
@@ -11954,12 +11954,12 @@
         ]
       },
       "properties": {
-        "name": "Madagascar",
+        "COUNTRY": "Madagascar",
         "ISO": "MG",
         "COUNTRYAFF": "Madagascar",
         "AFF_ISO": "MG",
         "FID_2": 132,
-        "New_COUNTRY": "Madagascar"
+        "name": "Madagascar"
       },
       "id": 132
     },
@@ -12018,12 +12018,12 @@
         ]
       },
       "properties": {
-        "name": "Malawi",
+        "COUNTRY": "Malawi",
         "ISO": "MW",
         "COUNTRYAFF": "Malawi",
         "AFF_ISO": "MW",
         "FID_2": 134,
-        "New_COUNTRY": "Malawi"
+        "name": "Malawi"
       },
       "id": 134
     },
@@ -12158,12 +12158,12 @@
         ]
       },
       "properties": {
-        "name": "Malaysia",
+        "COUNTRY": "Malaysia",
         "ISO": "MY",
         "COUNTRYAFF": "Malaysia",
         "AFF_ISO": "MY",
         "FID_2": 135,
-        "New_COUNTRY": "Malaysia"
+        "name": "Malaysia"
       },
       "id": 135
     },
@@ -12181,12 +12181,12 @@
         ]
       },
       "properties": {
-        "name": "Maldives",
+        "COUNTRY": "Maldives",
         "ISO": "MV",
         "COUNTRYAFF": "Maldives",
         "AFF_ISO": "MV",
         "FID_2": 136,
-        "New_COUNTRY": "Maldives"
+        "name": "Maldives"
       },
       "id": 136
     },
@@ -12303,12 +12303,12 @@
         ]
       },
       "properties": {
-        "name": "Mali",
+        "COUNTRY": "Mali",
         "ISO": "ML",
         "COUNTRYAFF": "Mali",
         "AFF_ISO": "ML",
         "FID_2": 137,
-        "New_COUNTRY": "Mali"
+        "name": "Mali"
       },
       "id": 137
     },
@@ -12327,12 +12327,12 @@
         ]
       },
       "properties": {
-        "name": "Malta",
+        "COUNTRY": "Malta",
         "ISO": "MT",
         "COUNTRYAFF": "Malta",
         "AFF_ISO": "MT",
         "FID_2": 138,
-        "New_COUNTRY": "Malta"
+        "name": "Malta"
       },
       "id": 138
     },
@@ -12350,12 +12350,12 @@
         ]
       },
       "properties": {
-        "name": "Marshall Islands",
+        "COUNTRY": "Marshall Islands",
         "ISO": "MH",
         "COUNTRYAFF": "Marshall Islands",
         "AFF_ISO": "MH",
         "FID_2": 139,
-        "New_COUNTRY": "Marshall Islands"
+        "name": "Marshall Islands"
       },
       "id": 139
     },
@@ -12446,12 +12446,12 @@
         ]
       },
       "properties": {
-        "name": "Mauritania",
+        "COUNTRY": "Mauritania",
         "ISO": "MR",
         "COUNTRYAFF": "Mauritania",
         "AFF_ISO": "MR",
         "FID_2": 141,
-        "New_COUNTRY": "Mauritania"
+        "name": "Mauritania"
       },
       "id": 141
     },
@@ -12470,12 +12470,12 @@
         ]
       },
       "properties": {
-        "name": "Mauritius",
+        "COUNTRY": "Mauritius",
         "ISO": "MU",
         "COUNTRYAFF": "Mauritius",
         "AFF_ISO": "MU",
         "FID_2": 142,
-        "New_COUNTRY": "Mauritius"
+        "name": "Mauritius"
       },
       "id": 142
     },
@@ -12716,12 +12716,12 @@
         ]
       },
       "properties": {
-        "name": "Mexico",
+        "COUNTRY": "Mexico",
         "ISO": "MX",
         "COUNTRYAFF": "Mexico",
         "AFF_ISO": "MX",
         "FID_2": 144,
-        "New_COUNTRY": "Mexico"
+        "name": "Mexico"
       },
       "id": 144
     },
@@ -12740,12 +12740,12 @@
         ]
       },
       "properties": {
-        "name": "Micronesia",
+        "COUNTRY": "Micronesia",
         "ISO": "FM",
         "COUNTRYAFF": "Micronesia, Federated States of",
         "AFF_ISO": "FM",
         "FID_2": 145,
-        "New_COUNTRY": "Micronesia, Fed. Sts."
+        "name": "Micronesia, Fed. Sts."
       },
       "id": 145
     },
@@ -12782,12 +12782,12 @@
         ]
       },
       "properties": {
-        "name": "Moldova",
+        "COUNTRY": "Moldova",
         "ISO": "MD",
         "COUNTRYAFF": "Moldova, Republic of",
         "AFF_ISO": "MD",
         "FID_2": 146,
-        "New_COUNTRY": "Moldova"
+        "name": "Moldova"
       },
       "id": 146
     },
@@ -12805,12 +12805,12 @@
         ]
       },
       "properties": {
-        "name": "Monaco",
+        "COUNTRY": "Monaco",
         "ISO": "MC",
         "COUNTRYAFF": "Monaco",
         "AFF_ISO": "MC",
         "FID_2": 147,
-        "New_COUNTRY": "Monaco"
+        "name": "Monaco"
       },
       "id": 147
     },
@@ -13050,12 +13050,12 @@
         ]
       },
       "properties": {
-        "name": "Mongolia",
+        "COUNTRY": "Mongolia",
         "ISO": "MN",
         "COUNTRYAFF": "Mongolia",
         "AFF_ISO": "MN",
         "FID_2": 148,
-        "New_COUNTRY": "Mongolia"
+        "name": "Mongolia"
       },
       "id": 148
     },
@@ -13082,12 +13082,12 @@
         ]
       },
       "properties": {
-        "name": "Montenegro",
+        "COUNTRY": "Montenegro",
         "ISO": "ME",
         "COUNTRYAFF": "Montenegro",
         "AFF_ISO": "ME",
         "FID_2": 149,
-        "New_COUNTRY": "Montenegro"
+        "name": "Montenegro"
       },
       "id": 149
     },
@@ -13252,12 +13252,12 @@
         ]
       },
       "properties": {
-        "name": "Morocco",
+        "COUNTRY": "Morocco",
         "ISO": "MA",
         "COUNTRYAFF": "Morocco",
         "AFF_ISO": "MA",
         "FID_2": 151,
-        "New_COUNTRY": "Morocco"
+        "name": "Morocco"
       },
       "id": 151
     },
@@ -13391,12 +13391,12 @@
         ]
       },
       "properties": {
-        "name": "Mozambique",
+        "COUNTRY": "Mozambique",
         "ISO": "MZ",
         "COUNTRYAFF": "Mozambique",
         "AFF_ISO": "MZ",
         "FID_2": 152,
-        "New_COUNTRY": "Mozambique"
+        "name": "Mozambique"
       },
       "id": 152
     },
@@ -13576,12 +13576,12 @@
         ]
       },
       "properties": {
-        "name": "Myanmar",
+        "COUNTRY": "Myanmar",
         "ISO": "MM",
         "COUNTRYAFF": "Myanmar",
         "AFF_ISO": "MM",
         "FID_2": 153,
-        "New_COUNTRY": "Myanmar"
+        "name": "Myanmar"
       },
       "id": 153
     },
@@ -13664,12 +13664,12 @@
         ]
       },
       "properties": {
-        "name": "Namibia",
+        "COUNTRY": "Namibia",
         "ISO": "NA",
         "COUNTRYAFF": "Namibia",
         "AFF_ISO": "NA",
         "FID_2": 154,
-        "New_COUNTRY": "Namibia"
+        "name": "Namibia"
       },
       "id": 154
     },
@@ -13687,12 +13687,12 @@
         ]
       },
       "properties": {
-        "name": "Nauru",
+        "COUNTRY": "Nauru",
         "ISO": "NR",
         "COUNTRYAFF": "Nauru",
         "AFF_ISO": "NR",
         "FID_2": 155,
-        "New_COUNTRY": "Nauru"
+        "name": "Nauru"
       },
       "id": 155
     },
@@ -13780,12 +13780,12 @@
         ]
       },
       "properties": {
-        "name": "Nepal",
+        "COUNTRY": "Nepal",
         "ISO": "NP",
         "COUNTRYAFF": "Nepal",
         "AFF_ISO": "NP",
         "FID_2": 156,
-        "New_COUNTRY": "Nepal"
+        "name": "Nepal"
       },
       "id": 156
     },
@@ -13834,12 +13834,12 @@
         ]
       },
       "properties": {
-        "name": "Netherlands",
+        "COUNTRY": "Netherlands",
         "ISO": "NL",
         "COUNTRYAFF": "Netherlands",
         "AFF_ISO": "NL",
         "FID_2": 157,
-        "New_COUNTRY": "Netherlands"
+        "name": "Netherlands"
       },
       "id": 157
     },
@@ -13868,12 +13868,12 @@
         ]
       },
       "properties": {
-        "name": "New Caledonia",
+        "COUNTRY": "New Caledonia",
         "ISO": "NC",
         "COUNTRYAFF": "France",
         "AFF_ISO": "FR",
         "FID_2": 158,
-        "New_COUNTRY": "New Caledonia"
+        "name": "New Caledonia"
       },
       "id": 158
     },
@@ -13991,12 +13991,12 @@
         ]
       },
       "properties": {
-        "name": "New Zealand",
+        "COUNTRY": "New Zealand",
         "ISO": "NZ",
         "COUNTRYAFF": "New Zealand",
         "AFF_ISO": "NZ",
         "FID_2": 159,
-        "New_COUNTRY": "New Zealand"
+        "name": "New Zealand"
       },
       "id": 159
     },
@@ -14046,12 +14046,12 @@
         ]
       },
       "properties": {
-        "name": "Nicaragua",
+        "COUNTRY": "Nicaragua",
         "ISO": "NI",
         "COUNTRYAFF": "Nicaragua",
         "AFF_ISO": "NI",
         "FID_2": 160,
-        "New_COUNTRY": "Nicaragua"
+        "name": "Nicaragua"
       },
       "id": 160
     },
@@ -14141,12 +14141,12 @@
         ]
       },
       "properties": {
-        "name": "Niger",
+        "COUNTRY": "Niger",
         "ISO": "NE",
         "COUNTRYAFF": "Niger",
         "AFF_ISO": "NE",
         "FID_2": 161,
-        "New_COUNTRY": "Niger"
+        "name": "Niger"
       },
       "id": 161
     },
@@ -14249,12 +14249,12 @@
         ]
       },
       "properties": {
-        "name": "Nigeria",
+        "COUNTRY": "Nigeria",
         "ISO": "NG",
         "COUNTRYAFF": "Nigeria",
         "AFF_ISO": "NG",
         "FID_2": 162,
-        "New_COUNTRY": "Nigeria"
+        "name": "Nigeria"
       },
       "id": 162
     },
@@ -14340,12 +14340,12 @@
         ]
       },
       "properties": {
-        "name": "North Korea",
+        "COUNTRY": "North Korea",
         "ISO": "KP",
         "COUNTRYAFF": "Korea, Democratic People's Republic of",
         "AFF_ISO": "KP",
         "FID_2": 165,
-        "New_COUNTRY": "North Korea"
+        "name": "North Korea"
       },
       "id": 165
     },
@@ -14373,12 +14373,12 @@
         ]
       },
       "properties": {
-        "name": "North Macedonia",
+        "COUNTRY": "North Macedonia",
         "ISO": "MK",
         "COUNTRYAFF": "North Macedonia",
         "AFF_ISO": "MK",
         "FID_2": 166,
-        "New_COUNTRY": "North Macedonia"
+        "name": "North Macedonia"
       },
       "id": 166
     },
@@ -14537,12 +14537,12 @@
         ]
       },
       "properties": {
-        "name": "Norway",
+        "COUNTRY": "Norway",
         "ISO": "NO",
         "COUNTRYAFF": "Norway",
         "AFF_ISO": "NO",
         "FID_2": 168,
-        "New_COUNTRY": "Norway"
+        "name": "Norway"
       },
       "id": 168
     },
@@ -14606,12 +14606,12 @@
         ]
       },
       "properties": {
-        "name": "Oman",
+        "COUNTRY": "Oman",
         "ISO": "OM",
         "COUNTRYAFF": "Oman",
         "AFF_ISO": "OM",
         "FID_2": 169,
-        "New_COUNTRY": "Oman"
+        "name": "Oman"
       },
       "id": 169
     },
@@ -14774,12 +14774,12 @@
         ]
       },
       "properties": {
-        "name": "Pakistan",
+        "COUNTRY": "Pakistan",
         "ISO": "PK",
         "COUNTRYAFF": "Pakistan",
         "AFF_ISO": "PK",
         "FID_2": 170,
-        "New_COUNTRY": "Pakistan"
+        "name": "Pakistan"
       },
       "id": 170
     },
@@ -14798,12 +14798,12 @@
         ]
       },
       "properties": {
-        "name": "Palau",
+        "COUNTRY": "Palau",
         "ISO": "PW",
         "COUNTRYAFF": "Palau",
         "AFF_ISO": "PW",
         "FID_2": 171,
-        "New_COUNTRY": "Palau"
+        "name": "Palau"
       },
       "id": 171
     },
@@ -14848,12 +14848,12 @@
         ]
       },
       "properties": {
-        "name": "Palestinian Territory",
+        "COUNTRY": "Palestinian Territory",
         "ISO": "PS",
         "COUNTRYAFF": "Palestine, State of",
         "AFF_ISO": "PS",
         "FID_2": 172,
-        "New_COUNTRY": "West Bank and Gaza"
+        "name": "West Bank and Gaza"
       },
       "id": 172
     },
@@ -14911,12 +14911,12 @@
         ]
       },
       "properties": {
-        "name": "Panama",
+        "COUNTRY": "Panama",
         "ISO": "PA",
         "COUNTRYAFF": "Panama",
         "AFF_ISO": "PA",
         "FID_2": 173,
-        "New_COUNTRY": "Panama"
+        "name": "Panama"
       },
       "id": 173
     },
@@ -15092,12 +15092,12 @@
         ]
       },
       "properties": {
-        "name": "Papua New Guinea",
+        "COUNTRY": "Papua New Guinea",
         "ISO": "PG",
         "COUNTRYAFF": "Papua New Guinea",
         "AFF_ISO": "PG",
         "FID_2": 174,
-        "New_COUNTRY": "Papua New Guinea"
+        "name": "Papua New Guinea"
       },
       "id": 174
     },
@@ -15162,12 +15162,12 @@
         ]
       },
       "properties": {
-        "name": "Paraguay",
+        "COUNTRY": "Paraguay",
         "ISO": "PY",
         "COUNTRYAFF": "Paraguay",
         "AFF_ISO": "PY",
         "FID_2": 175,
-        "New_COUNTRY": "Paraguay"
+        "name": "Paraguay"
       },
       "id": 175
     },
@@ -15313,12 +15313,12 @@
         ]
       },
       "properties": {
-        "name": "Peru",
+        "COUNTRY": "Peru",
         "ISO": "PE",
         "COUNTRYAFF": "Peru",
         "AFF_ISO": "PE",
         "FID_2": 176,
-        "New_COUNTRY": "Peru"
+        "name": "Peru"
       },
       "id": 176
     },
@@ -15591,12 +15591,12 @@
         ]
       },
       "properties": {
-        "name": "Philippines",
+        "COUNTRY": "Philippines",
         "ISO": "PH",
         "COUNTRYAFF": "Philippines",
         "AFF_ISO": "PH",
         "FID_2": 177,
-        "New_COUNTRY": "Philippines"
+        "name": "Philippines"
       },
       "id": 177
     },
@@ -15665,12 +15665,12 @@
         ]
       },
       "properties": {
-        "name": "Poland",
+        "COUNTRY": "Poland",
         "ISO": "PL",
         "COUNTRYAFF": "Poland",
         "AFF_ISO": "PL",
         "FID_2": 179,
-        "New_COUNTRY": "Poland"
+        "name": "Poland"
       },
       "id": 179
     },
@@ -15715,12 +15715,12 @@
         ]
       },
       "properties": {
-        "name": "Portugal",
+        "COUNTRY": "Portugal",
         "ISO": "PT",
         "COUNTRYAFF": "Portugal",
         "AFF_ISO": "PT",
         "FID_2": 180,
-        "New_COUNTRY": "Portugal"
+        "name": "Portugal"
       },
       "id": 180
     },
@@ -15742,12 +15742,12 @@
         ]
       },
       "properties": {
-        "name": "Puerto Rico",
+        "COUNTRY": "Puerto Rico",
         "ISO": "PR",
         "COUNTRYAFF": "United States",
         "AFF_ISO": "US",
         "FID_2": 181,
-        "New_COUNTRY": "Puerto Rico"
+        "name": "Puerto Rico"
       },
       "id": 181
     },
@@ -15772,12 +15772,12 @@
         ]
       },
       "properties": {
-        "name": "Qatar",
+        "COUNTRY": "Qatar",
         "ISO": "QA",
         "COUNTRYAFF": "Qatar",
         "AFF_ISO": "QA",
         "FID_2": 182,
-        "New_COUNTRY": "Qatar"
+        "name": "Qatar"
       },
       "id": 182
     },
@@ -15841,12 +15841,12 @@
         ]
       },
       "properties": {
-        "name": "Romania",
+        "COUNTRY": "Romania",
         "ISO": "RO",
         "COUNTRYAFF": "Romania",
         "AFF_ISO": "RO",
         "FID_2": 184,
-        "New_COUNTRY": "Romania"
+        "name": "Romania"
       },
       "id": 184
     },
@@ -17132,12 +17132,12 @@
         ]
       },
       "properties": {
-        "name": "Russian Federation",
+        "COUNTRY": "Russian Federation",
         "ISO": "RU",
         "COUNTRYAFF": "Russian Federation",
         "AFF_ISO": "RU",
         "FID_2": 185,
-        "New_COUNTRY": "Russian Federation"
+        "name": "Russian Federation"
       },
       "id": 185
     },
@@ -17171,12 +17171,12 @@
         ]
       },
       "properties": {
-        "name": "Rwanda",
+        "COUNTRY": "Rwanda",
         "ISO": "RW",
         "COUNTRYAFF": "Rwanda",
         "AFF_ISO": "RW",
         "FID_2": 186,
-        "New_COUNTRY": "Rwanda"
+        "name": "Rwanda"
       },
       "id": 186
     },
@@ -17198,12 +17198,12 @@
         ]
       },
       "properties": {
-        "name": "Saint Kitts and Nevis",
+        "COUNTRY": "Saint Kitts and Nevis",
         "ISO": "KN",
         "COUNTRYAFF": "Saint Kitts and Nevis",
         "AFF_ISO": "KN",
         "FID_2": 191,
-        "New_COUNTRY": "St. Kitts and Nevis"
+        "name": "St. Kitts and Nevis"
       },
       "id": 191
     },
@@ -17221,12 +17221,12 @@
         ]
       },
       "properties": {
-        "name": "Saint Lucia",
+        "COUNTRY": "Saint Lucia",
         "ISO": "LC",
         "COUNTRYAFF": "Saint Lucia",
         "AFF_ISO": "LC",
         "FID_2": 192,
-        "New_COUNTRY": "St. Lucia"
+        "name": "St. Lucia"
       },
       "id": 192
     },
@@ -17245,12 +17245,12 @@
         ]
       },
       "properties": {
-        "name": "Saint Vincent and the Grenadines",
+        "COUNTRY": "Saint Vincent and the Grenadines",
         "ISO": "VC",
         "COUNTRYAFF": "Saint Vincent and the Grenadines",
         "AFF_ISO": "VC",
         "FID_2": 195,
-        "New_COUNTRY": "St. Vincent and the Grenadines"
+        "name": "St. Vincent and the Grenadines"
       },
       "id": 195
     },
@@ -17279,12 +17279,12 @@
         ]
       },
       "properties": {
-        "name": "Samoa",
+        "COUNTRY": "Samoa",
         "ISO": "WS",
         "COUNTRYAFF": "Samoa",
         "AFF_ISO": "WS",
         "FID_2": 196,
-        "New_COUNTRY": "Samoa"
+        "name": "Samoa"
       },
       "id": 196
     },
@@ -17302,12 +17302,12 @@
         ]
       },
       "properties": {
-        "name": "San Marino",
+        "COUNTRY": "San Marino",
         "ISO": "SM",
         "COUNTRYAFF": "San Marino",
         "AFF_ISO": "SM",
         "FID_2": 197,
-        "New_COUNTRY": "San Marino, Rep. Of"
+        "name": "San Marino, Rep. Of"
       },
       "id": 197
     },
@@ -17326,12 +17326,12 @@
         ]
       },
       "properties": {
-        "name": "Sao Tome and Principe",
+        "COUNTRY": "Sao Tome and Principe",
         "ISO": "ST",
         "COUNTRYAFF": "São Tomé and Príncipe",
         "AFF_ISO": "ST",
         "FID_2": 198,
-        "New_COUNTRY": "Sao Tome and Principe"
+        "name": "Sao Tome and Principe"
       },
       "id": 198
     },
@@ -17432,12 +17432,12 @@
         ]
       },
       "properties": {
-        "name": "Saudi Arabia",
+        "COUNTRY": "Saudi Arabia",
         "ISO": "SA",
         "COUNTRYAFF": "Saudi Arabia",
         "AFF_ISO": "SA",
         "FID_2": 199,
-        "New_COUNTRY": "Saudi Arabia"
+        "name": "Saudi Arabia"
       },
       "id": 199
     },
@@ -17501,12 +17501,12 @@
         ]
       },
       "properties": {
-        "name": "Senegal",
+        "COUNTRY": "Senegal",
         "ISO": "SN",
         "COUNTRYAFF": "Senegal",
         "AFF_ISO": "SN",
         "FID_2": 200,
-        "New_COUNTRY": "Senegal"
+        "name": "Senegal"
       },
       "id": 200
     },
@@ -17555,12 +17555,12 @@
         ]
       },
       "properties": {
-        "name": "Serbia",
+        "COUNTRY": "Serbia",
         "ISO": "RS",
         "COUNTRYAFF": "Serbia",
         "AFF_ISO": "RS",
         "FID_2": 201,
-        "New_COUNTRY": "Serbia"
+        "name": "Serbia"
       },
       "id": 201
     },
@@ -17578,12 +17578,12 @@
         ]
       },
       "properties": {
-        "name": "Seychelles",
+        "COUNTRY": "Seychelles",
         "ISO": "SC",
         "COUNTRYAFF": "Seychelles",
         "AFF_ISO": "SC",
         "FID_2": 202,
-        "New_COUNTRY": "Seychelles"
+        "name": "Seychelles"
       },
       "id": 202
     },
@@ -17623,12 +17623,12 @@
         ]
       },
       "properties": {
-        "name": "Sierra Leone",
+        "COUNTRY": "Sierra Leone",
         "ISO": "SL",
         "COUNTRYAFF": "Sierra Leone",
         "AFF_ISO": "SL",
         "FID_2": 203,
-        "New_COUNTRY": "Sierra Leone"
+        "name": "Sierra Leone"
       },
       "id": 203
     },
@@ -17647,12 +17647,12 @@
         ]
       },
       "properties": {
-        "name": "Singapore",
+        "COUNTRY": "Singapore",
         "ISO": "SG",
         "COUNTRYAFF": "Singapore",
         "AFF_ISO": "SG",
         "FID_2": 204,
-        "New_COUNTRY": "Singapore"
+        "name": "Singapore"
       },
       "id": 204
     },
@@ -17692,12 +17692,12 @@
         ]
       },
       "properties": {
-        "name": "Slovakia",
+        "COUNTRY": "Slovakia",
         "ISO": "SK",
         "COUNTRYAFF": "Slovakia",
         "AFF_ISO": "SK",
         "FID_2": 206,
-        "New_COUNTRY": "Slovakia"
+        "name": "Slovakia"
       },
       "id": 206
     },
@@ -17727,12 +17727,12 @@
         ]
       },
       "properties": {
-        "name": "Slovenia",
+        "COUNTRY": "Slovenia",
         "ISO": "SI",
         "COUNTRYAFF": "Slovenia",
         "AFF_ISO": "SI",
         "FID_2": 207,
-        "New_COUNTRY": "Slovenia"
+        "name": "Slovenia"
       },
       "id": 207
     },
@@ -17809,12 +17809,12 @@
         ]
       },
       "properties": {
-        "name": "Solomon Islands",
+        "COUNTRY": "Solomon Islands",
         "ISO": "SB",
         "COUNTRYAFF": "Solomon Islands",
         "AFF_ISO": "SB",
         "FID_2": 208,
-        "New_COUNTRY": "Solomon Islands"
+        "name": "Solomon Islands"
       },
       "id": 208
     },
@@ -17893,12 +17893,12 @@
         ]
       },
       "properties": {
-        "name": "Somalia",
+        "COUNTRY": "Somalia",
         "ISO": "SO",
         "COUNTRYAFF": "Somalia",
         "AFF_ISO": "SO",
         "FID_2": 209,
-        "New_COUNTRY": "Somalia"
+        "name": "Somalia"
       },
       "id": 209
     },
@@ -18034,12 +18034,12 @@
         ]
       },
       "properties": {
-        "name": "South Africa",
+        "COUNTRY": "South Africa",
         "ISO": "ZA",
         "COUNTRYAFF": "South Africa",
         "AFF_ISO": "ZA",
         "FID_2": 210,
-        "New_COUNTRY": "South Africa"
+        "name": "South Africa"
       },
       "id": 210
     },
@@ -18093,12 +18093,12 @@
         ]
       },
       "properties": {
-        "name": "South Korea",
+        "COUNTRY": "South Korea",
         "ISO": "KR",
         "COUNTRYAFF": "Korea, Republic of",
         "AFF_ISO": "KR",
         "FID_2": 212,
-        "New_COUNTRY": "Korea, Republic of"
+        "name": "Korea, Republic of"
       },
       "id": 212
     },
@@ -18198,12 +18198,12 @@
         ]
       },
       "properties": {
-        "name": "South Sudan",
+        "COUNTRY": "South Sudan",
         "ISO": "SS",
         "COUNTRYAFF": "South Sudan",
         "AFF_ISO": "SS",
         "FID_2": 213,
-        "New_COUNTRY": "South Sudan"
+        "name": "South Sudan"
       },
       "id": 213
     },
@@ -18318,12 +18318,12 @@
         ]
       },
       "properties": {
-        "name": "Spain",
+        "COUNTRY": "Spain",
         "ISO": "ES",
         "COUNTRYAFF": "Spain",
         "AFF_ISO": "ES",
         "FID_2": 214,
-        "New_COUNTRY": "Spain"
+        "name": "Spain"
       },
       "id": 214
     },
@@ -18356,12 +18356,12 @@
         ]
       },
       "properties": {
-        "name": "Sri Lanka",
+        "COUNTRY": "Sri Lanka",
         "ISO": "LK",
         "COUNTRYAFF": "Sri Lanka",
         "AFF_ISO": "LK",
         "FID_2": 215,
-        "New_COUNTRY": "Sri Lanka"
+        "name": "Sri Lanka"
       },
       "id": 215
     },
@@ -18478,12 +18478,12 @@
         ]
       },
       "properties": {
-        "name": "Sudan",
+        "COUNTRY": "Sudan",
         "ISO": "SD",
         "COUNTRYAFF": "Sudan",
         "AFF_ISO": "SD",
         "FID_2": 216,
-        "New_COUNTRY": "Sudan"
+        "name": "Sudan"
       },
       "id": 216
     },
@@ -18532,12 +18532,12 @@
         ]
       },
       "properties": {
-        "name": "Suriname",
+        "COUNTRY": "Suriname",
         "ISO": "SR",
         "COUNTRYAFF": "Suriname",
         "AFF_ISO": "SR",
         "FID_2": 217,
-        "New_COUNTRY": "Suriname"
+        "name": "Suriname"
       },
       "id": 217
     },
@@ -18623,12 +18623,12 @@
         ]
       },
       "properties": {
-        "name": "Svalbard",
+        "COUNTRY": "Svalbard",
         "ISO": "SJ",
         "COUNTRYAFF": "Norway",
         "AFF_ISO": "NO",
         "FID_2": 218,
-        "New_COUNTRY": "Norway"
+        "name": "Norway"
       },
       "id": 218
     },
@@ -18742,12 +18742,12 @@
         ]
       },
       "properties": {
-        "name": "Sweden",
+        "COUNTRY": "Sweden",
         "ISO": "SE",
         "COUNTRYAFF": "Sweden",
         "AFF_ISO": "SE",
         "FID_2": 219,
-        "New_COUNTRY": "Sweden"
+        "name": "Sweden"
       },
       "id": 219
     },
@@ -18783,12 +18783,12 @@
         ]
       },
       "properties": {
-        "name": "Switzerland",
+        "COUNTRY": "Switzerland",
         "ISO": "CH",
         "COUNTRYAFF": "Switzerland",
         "AFF_ISO": "CH",
         "FID_2": 220,
-        "New_COUNTRY": "Switzerland"
+        "name": "Switzerland"
       },
       "id": 220
     },
@@ -18837,12 +18837,12 @@
         ]
       },
       "properties": {
-        "name": "Syria",
+        "COUNTRY": "Syria",
         "ISO": "SY",
         "COUNTRYAFF": "Syrian Arab Republic",
         "AFF_ISO": "SY",
         "FID_2": 221,
-        "New_COUNTRY": "Syrian Arab Rep."
+        "name": "Syrian Arab Rep."
       },
       "id": 221
     },
@@ -18931,12 +18931,12 @@
         ]
       },
       "properties": {
-        "name": "Tajikistan",
+        "COUNTRY": "Tajikistan",
         "ISO": "TJ",
         "COUNTRYAFF": "Tajikistan",
         "AFF_ISO": "TJ",
         "FID_2": 222,
-        "New_COUNTRY": "Tajikistan"
+        "name": "Tajikistan"
       },
       "id": 222
     },
@@ -19034,12 +19034,12 @@
         ]
       },
       "properties": {
-        "name": "Tanzania",
+        "COUNTRY": "Tanzania",
         "ISO": "TZ",
         "COUNTRYAFF": "Tanzania, United Republic of",
         "AFF_ISO": "TZ",
         "FID_2": 223,
-        "New_COUNTRY": "Tanzania, United Republic of"
+        "name": "Tanzania, United Republic of"
       },
       "id": 223
     },
@@ -19185,12 +19185,12 @@
         ]
       },
       "properties": {
-        "name": "Thailand",
+        "COUNTRY": "Thailand",
         "ISO": "TH",
         "COUNTRYAFF": "Thailand",
         "AFF_ISO": "TH",
         "FID_2": 224,
-        "New_COUNTRY": "Thailand"
+        "name": "Thailand"
       },
       "id": 224
     },
@@ -19231,12 +19231,12 @@
         ]
       },
       "properties": {
-        "name": "Timor-Leste",
+        "COUNTRY": "Timor-Leste",
         "ISO": "TL",
         "COUNTRYAFF": "Timor-Leste",
         "AFF_ISO": "TL",
         "FID_2": 225,
-        "New_COUNTRY": "Timor-Leste"
+        "name": "Timor-Leste"
       },
       "id": 225
     },
@@ -19277,12 +19277,12 @@
         ]
       },
       "properties": {
-        "name": "Togo",
+        "COUNTRY": "Togo",
         "ISO": "TG",
         "COUNTRYAFF": "Togo",
         "AFF_ISO": "TG",
         "FID_2": 226,
-        "New_COUNTRY": "Togo"
+        "name": "Togo"
       },
       "id": 226
     },
@@ -19301,12 +19301,12 @@
         ]
       },
       "properties": {
-        "name": "Tonga",
+        "COUNTRY": "Tonga",
         "ISO": "TO",
         "COUNTRYAFF": "Tonga",
         "AFF_ISO": "TO",
         "FID_2": 228,
-        "New_COUNTRY": "Tonga"
+        "name": "Tonga"
       },
       "id": 228
     },
@@ -19328,12 +19328,12 @@
         ]
       },
       "properties": {
-        "name": "Trinidad and Tobago",
+        "COUNTRY": "Trinidad and Tobago",
         "ISO": "TT",
         "COUNTRYAFF": "Trinidad and Tobago",
         "AFF_ISO": "TT",
         "FID_2": 229,
-        "New_COUNTRY": "Trinidad and Tobago"
+        "name": "Trinidad and Tobago"
       },
       "id": 229
     },
@@ -19392,12 +19392,12 @@
         ]
       },
       "properties": {
-        "name": "Tunisia",
+        "COUNTRY": "Tunisia",
         "ISO": "TN",
         "COUNTRYAFF": "Tunisia",
         "AFF_ISO": "TN",
         "FID_2": 230,
-        "New_COUNTRY": "Tunisia"
+        "name": "Tunisia"
       },
       "id": 230
     },
@@ -19545,12 +19545,12 @@
         ]
       },
       "properties": {
-        "name": "Turkiye",
+        "COUNTRY": "Turkiye",
         "ISO": "TR",
         "COUNTRYAFF": "Turkiye",
         "AFF_ISO": "TR",
         "FID_2": 231,
-        "New_COUNTRY": "Turkiye"
+        "name": "Turkiye"
       },
       "id": 231
     },
@@ -19641,12 +19641,12 @@
         ]
       },
       "properties": {
-        "name": "Turkmenistan",
+        "COUNTRY": "Turkmenistan",
         "ISO": "TM",
         "COUNTRYAFF": "Turkmenistan",
         "AFF_ISO": "TM",
         "FID_2": 232,
-        "New_COUNTRY": "Turkmenistan"
+        "name": "Turkmenistan"
       },
       "id": 232
     },
@@ -19664,12 +19664,12 @@
         ]
       },
       "properties": {
-        "name": "Tuvalu",
+        "COUNTRY": "Tuvalu",
         "ISO": "TV",
         "COUNTRYAFF": "Tuvalu",
         "AFF_ISO": "TV",
         "FID_2": 234,
-        "New_COUNTRY": "Tuvalu"
+        "name": "Tuvalu"
       },
       "id": 234
     },
@@ -19731,12 +19731,12 @@
         ]
       },
       "properties": {
-        "name": "Uganda",
+        "COUNTRY": "Uganda",
         "ISO": "UG",
         "COUNTRYAFF": "Uganda",
         "AFF_ISO": "UG",
         "FID_2": 235,
-        "New_COUNTRY": "Uganda"
+        "name": "Uganda"
       },
       "id": 235
     },
@@ -19861,12 +19861,12 @@
         ]
       },
       "properties": {
-        "name": "Ukraine",
+        "COUNTRY": "Ukraine",
         "ISO": "UA",
         "COUNTRYAFF": "Ukraine",
         "AFF_ISO": "UA",
         "FID_2": 236,
-        "New_COUNTRY": "Ukraine"
+        "name": "Ukraine"
       },
       "id": 236
     },
@@ -19906,12 +19906,12 @@
         ]
       },
       "properties": {
-        "name": "United Arab Emirates",
+        "COUNTRY": "United Arab Emirates",
         "ISO": "AE",
         "COUNTRYAFF": "United Arab Emirates",
         "AFF_ISO": "AE",
         "FID_2": 237,
-        "New_COUNTRY": "United Arab Emirates"
+        "name": "United Arab Emirates"
       },
       "id": 237
     },
@@ -20046,12 +20046,12 @@
         ]
       },
       "properties": {
-        "name": "United Kingdom",
+        "COUNTRY": "United Kingdom",
         "ISO": "GB",
         "COUNTRYAFF": "United Kingdom",
         "AFF_ISO": "GB",
         "FID_2": 238,
-        "New_COUNTRY": "United Kingdom"
+        "name": "United Kingdom"
       },
       "id": 238
     },
@@ -20767,12 +20767,12 @@
         ]
       },
       "properties": {
-        "name": "United States",
+        "COUNTRY": "United States",
         "ISO": "US",
         "COUNTRYAFF": "United States",
         "AFF_ISO": "US",
         "FID_2": 239,
-        "New_COUNTRY": "United States"
+        "name": "United States"
       },
       "id": 239
     },
@@ -20822,12 +20822,12 @@
         ]
       },
       "properties": {
-        "name": "Uruguay",
+        "COUNTRY": "Uruguay",
         "ISO": "UY",
         "COUNTRYAFF": "Uruguay",
         "AFF_ISO": "UY",
         "FID_2": 241,
-        "New_COUNTRY": "Uruguay"
+        "name": "Uruguay"
       },
       "id": 241
     },
@@ -20933,12 +20933,12 @@
         ]
       },
       "properties": {
-        "name": "Uzbekistan",
+        "COUNTRY": "Uzbekistan",
         "ISO": "UZ",
         "COUNTRYAFF": "Uzbekistan",
         "AFF_ISO": "UZ",
         "FID_2": 243,
-        "New_COUNTRY": "Uzbekistan"
+        "name": "Uzbekistan"
       },
       "id": 243
     },
@@ -20969,12 +20969,12 @@
         ]
       },
       "properties": {
-        "name": "Vanuatu",
+        "COUNTRY": "Vanuatu",
         "ISO": "VU",
         "COUNTRYAFF": "Vanuatu",
         "AFF_ISO": "VU",
         "FID_2": 244,
-        "New_COUNTRY": "Vanuatu"
+        "name": "Vanuatu"
       },
       "id": 244
     },
@@ -21124,12 +21124,12 @@
         ]
       },
       "properties": {
-        "name": "Venezuela",
+        "COUNTRY": "Venezuela",
         "ISO": "VE",
         "COUNTRYAFF": "Venezuela, Bolivarian Republic of",
         "AFF_ISO": "VE",
         "FID_2": 246,
-        "New_COUNTRY": "Venezuela, RB"
+        "name": "Venezuela, RB"
       },
       "id": 246
     },
@@ -21281,12 +21281,12 @@
         ]
       },
       "properties": {
-        "name": "Vietnam",
+        "COUNTRY": "Vietnam",
         "ISO": "VN",
         "COUNTRYAFF": "Viet Nam",
         "AFF_ISO": "VN",
         "FID_2": 247,
-        "New_COUNTRY": "Vietnam"
+        "name": "Vietnam"
       },
       "id": 247
     },
@@ -21365,12 +21365,12 @@
         ]
       },
       "properties": {
-        "name": "Yemen",
+        "COUNTRY": "Yemen",
         "ISO": "YE",
         "COUNTRYAFF": "Yemen",
         "AFF_ISO": "YE",
         "FID_2": 249,
-        "New_COUNTRY": "Yemen, Rep."
+        "name": "Yemen, Rep."
       },
       "id": 249
     },
@@ -21470,12 +21470,12 @@
         ]
       },
       "properties": {
-        "name": "Zambia",
+        "COUNTRY": "Zambia",
         "ISO": "ZM",
         "COUNTRYAFF": "Zambia",
         "AFF_ISO": "ZM",
         "FID_2": 250,
-        "New_COUNTRY": "Zambia"
+        "name": "Zambia"
       },
       "id": 250
     },
@@ -21542,12 +21542,12 @@
         ]
       },
       "properties": {
-        "name": "Zimbabwe",
+        "COUNTRY": "Zimbabwe",
         "ISO": "ZW",
         "COUNTRYAFF": "Zimbabwe",
         "AFF_ISO": "ZW",
         "FID_2": 251,
-        "New_COUNTRY": "Zimbabwe"
+        "name": "Zimbabwe"
       },
       "id": 251
     }

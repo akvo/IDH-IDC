@@ -47,4 +47,8 @@ const defaultCaseVisualState = {
 
 const CaseVisualState = new Store(defaultCaseVisualState);
 
+export const resetCaseVisualState = () => {
+  CaseVisualState.update(() => defaultCaseVisualState);
+};
+
 export default CaseVisualState;

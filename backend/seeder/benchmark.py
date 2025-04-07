@@ -7,6 +7,7 @@ from utils.truncator import truncatedb
 from sqlalchemy.orm import Session
 from models.living_income_benchmark import LivingIncomeBenchmark
 from models.cpi import Cpi
+from models.conversion_rate import ConversionRate
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MASTER_DIR = BASE_DIR + "/source/master/"
@@ -14,6 +15,49 @@ sys.path.append(BASE_DIR)
 
 
 def seeder_benchmark(session: Session):
+    # conversion rate
+    truncatedb(session=session, table="conversion_rate")
+    conversion_rate = pd.read_csv(MASTER_DIR + "conversion_rate.csv")
+    # Filter rows where the list does not contain any string values
+    filtered_cr = conversion_rate[
+        conversion_rate["country_id"] != conversion_rate["country"]
+    ]
+    filtered_cr.drop(columns=["country"], inplace=True)
+    filtered_cr = filtered_cr.rename(
+        columns={
+            "country_id": "country",
+        }
+    )
+    filtered_cr = filtered_cr.dropna(subset=["value"])
+    filtered_cr = filtered_cr.fillna(0)
+    for index, row in filtered_cr.iterrows():
+        # find prev cpi
+        cr = (
+            session.query(ConversionRate)
+            .filter(ConversionRate.id == row["id"])
+            .first()
+        )
+        if cr:
+            # update
+            cr.country = row["country"]
+            cr.year = row["year"]
+            cr.value = row["value"]
+            cr.currency = row["currency"]
+        else:
+            # create
+            cr = ConversionRate(
+                id=row["id"],
+                country=row["country"],
+                year=row["year"],
+                value=row["value"],
+                currency=row["currency"],
+            )
+            session.add(cr)
+        session.commit()
+        session.flush()
+        session.refresh(cr)
+    print("[DATABASE UPDATED]: Conversion Rate")
+
     # living income benchmark
     truncatedb(session=session, table="living_income_benchmark")
     li_benchmark = pd.read_csv(MASTER_DIR + "li_benchmark.csv")
@@ -85,6 +129,7 @@ def seeder_benchmark(session: Session):
             "country_id": "country",
         }
     )
+    filtered_cpi = filtered_cpi.dropna(subset=["value"])
     filtered_cpi = filtered_cpi.fillna(0)
     for index, row in filtered_cpi.iterrows():
         # find prev cpi

@@ -7,6 +7,12 @@ from models.country import Country
 from models.region import Region
 
 
+class MapLIBDict(TypedDict):
+    country_id: int
+    COUNTRY: str
+    benchmark_count: int
+
+
 class LivingIncomeBenchmarkValue(TypedDict):
     lcu: float
     usd: float

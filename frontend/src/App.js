@@ -36,6 +36,7 @@ import {
   CocoaIncomeInventory,
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
+import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 
 const optionRoutes = [
   "organisation/options",
@@ -185,6 +186,18 @@ const App = () => {
               <Route exact path="/old-cases/new" element={<OldCase />} />
               <Route exact path="/old-cases/:caseId" element={<OldCase />} />
               {/* EOL Case */}
+
+              {/* for all logged in user route */}
+              <Route
+                exact
+                path="/explore-studies"
+                element={<ExploreStudiesPage />}
+              />
+              <Route
+                exact
+                path="/living-income-benchmark-explorer"
+                element={<LivingIncomeBenchmarkExplorer />}
+              />
             </Route>
           ) : (
             ""
@@ -198,8 +211,8 @@ const App = () => {
               />
               <Route
                 exact
-                path="/explore-studies/:countryId/:commodityId/:driverId"
-                element={<ExploreStudiesPage />}
+                path="/living-income-benchmark-explorer"
+                element={<LivingIncomeBenchmarkExplorer />}
               />
             </Route>
           ) : (

@@ -2,9 +2,10 @@ import React, { useMemo, useState, useRef } from "react";
 import Chart from "../../../components/chart";
 import { range } from "lodash";
 import { getFunctionDefaultValue } from "../../../lib";
-import { Row, Col, Space, Card } from "antd";
+import { Row, Col, Space, Card, Carousel, Button } from "antd";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { VisualCardWrapper } from "../components";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -247,6 +248,7 @@ const ChartBinningHeatmapSensitivityAnalysis = ({ segment, data, origin }) => {
   const elBinningChart1 = useRef(null);
   const elBinningChart2 = useRef(null);
   const elBinningChart3 = useRef(null);
+  const binningCarousel = useRef(null);
   const refs = [elBinningChart1, elBinningChart2, elBinningChart3];
 
   const binningData = useMemo(() => {
@@ -351,7 +353,7 @@ const ChartBinningHeatmapSensitivityAnalysis = ({ segment, data, origin }) => {
   const renderHeatChart = () => {
     const charts = binningData.binCharts.map((b, key) => {
       const oddKey = (key + 1) % 2 > 0;
-      const spanChart = oddKey ? 8 : 16;
+      const spanChart = oddKey ? 8 : 8;
       // const filename = `Income Levels for ${b.binName} : ${b.binValue.toFixed(
       //   2
       // )}`;
@@ -375,20 +377,44 @@ const ChartBinningHeatmapSensitivityAnalysis = ({ segment, data, origin }) => {
           />
         </VisualCardWrapper>
       );
-      const leftContent = oddKey ? chart : rowTitle;
-      const rightContent = oddKey ? rowTitle : chart;
+      const leftContent = oddKey ? chart : chart;
+      const rightContent = oddKey ? rowTitle : rowTitle;
       return (
-        <Col span={24} key={key}>
-          <Card className="card-visual-wrapper no-padding">
-            <Row gutter={[24, 24]} ref={refs[key]} align="middle">
-              <Col span={24 - spanChart}>{leftContent}</Col>
-              <Col span={spanChart}>{rightContent}</Col>
-            </Row>
-          </Card>
-        </Col>
+        <Card className="card-visual-wrapper no-padding" key={key}>
+          <Row gutter={[24, 24]} ref={refs[key]} align="middle">
+            <Col span={24 - spanChart}>{leftContent}</Col>
+            <Col span={spanChart}>{rightContent}</Col>
+          </Row>
+        </Card>
       );
     });
-    return <Row gutter={[24, 48]}>{charts}</Row>;
+    return (
+      <Row gutter={[24, 24]}>
+        <Col span={24} className="carousel-container binning-carousel">
+          <div className="carousel-arrows-wrapper">
+            <div className="arrow-left">
+              <Button
+                className="button-arrow-carousel"
+                type="link"
+                icon={<LeftOutlined />}
+                onClick={() => binningCarousel?.current?.prev()}
+              />
+            </div>
+            <div className="arrow-right">
+              <Button
+                className="button-arrow-carousel"
+                type="link"
+                icon={<RightOutlined />}
+                onClick={() => binningCarousel?.current?.next()}
+              />
+            </div>
+          </div>
+          <Carousel autoplay ref={binningCarousel}>
+            {charts}
+          </Carousel>
+        </Col>
+      </Row>
+    );
   };
 
   return <div>{renderHeatChart()}</div>;

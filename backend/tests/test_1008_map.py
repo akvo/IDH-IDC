@@ -38,7 +38,7 @@ class TestMapRoute:
         res = res.json()
         assert res == [
             {
-                "case_count": 3,
+                "case_count": 11,
                 "COUNTRY": "Bali",
                 "country_id": 2,
                 "total_farmers": 28,
@@ -71,11 +71,19 @@ class TestMapRoute:
         res = res.json()
         assert res == [
             {
-                "COUNTRY": "Bali",
-                "case_count": 3,
-                "company": "Company Updated",
-                "company_id": 1,
                 "country_id": 2,
+                "COUNTRY": "Bali",
+                "case_count": 2,
                 "total_farmers": 28,
+                "company_id": 1,
+                "company": "Company Updated",
+            },
+            {
+                "country_id": 2,
+                "COUNTRY": "Bali",
+                "case_count": 9,
+                "total_farmers": 0,
+                "company_id": None,
+                "company": None,
             },
         ]
