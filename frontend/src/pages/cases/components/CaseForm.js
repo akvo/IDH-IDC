@@ -28,6 +28,7 @@ import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
+import { QuestionCircleOutline } from "../../../lib/icon";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -215,7 +216,12 @@ const CaseForm = ({ updateCurrentCase = () => {} }) => {
                 onChange={(value) => updateCurrentCase("private", value)}
                 disabled={!enableEditCase}
               />{" "}
-              Private case
+              Private case{" "}
+              <Tooltip title="The details of a private case are visible only to you and any users you choose to add to the case.">
+                <span>
+                  <QuestionCircleOutline size={14} />
+                </span>
+              </Tooltip>
             </Form.Item>
           }
         >
