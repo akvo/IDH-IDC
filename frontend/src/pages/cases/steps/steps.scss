@@ -848,3 +848,36 @@
     }
   }
 }
+
+// Global - for modal New CPI on set income target page
+.adjust-benchmark-modal-wrapper {
+  font-family: "TabletGothic";
+
+  a {
+    text-decoration: underline;
+    color: #000;
+  }
+
+  .ant-modal-title {
+    font-family: "RocGrotesk";
+    font-weight: 900;
+    font-size: 20px;
+  }
+
+  .ant-modal-body {
+    .step-form-item-wrapper {
+      display: flex;
+      gap: 20px;
+    }
+
+    .disabled-field {
+      background-color: #eaf2f2;
+      border: 1px solid #eaf2f2;
+      color: $primary-color;
+      font-weight: 700;
+      border-radius: 20px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  }
+}

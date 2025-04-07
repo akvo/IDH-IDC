@@ -12,13 +12,7 @@ from models.conversion_rate import ConversionRate, CurrencyEnum
 # from fastapi import HTTPException, status
 
 
-def get_all_lib(session: Session) -> List[LivingIncomeBenchmarkDict]:
-    return session.query(LivingIncomeBenchmark).all()
-
-
-def get_by_country_region_year(
-    session: Session, country: int, region: int, year: int
-) -> LivingIncomeBenchmarkDict:
+def get_conversion_rate(session: Session, country: int, year: int):
     # query conversion rate by country and year
     conversion_rate = session.query(ConversionRate).filter(
         and_(ConversionRate.country == country, ConversionRate.year == year)
@@ -33,7 +27,16 @@ def get_by_country_region_year(
     usd_rate = usd.value if usd else 0
     eur_rate = eur.value if eur else 0
     # EOL query conversion rate by country and year
+    return usd_rate, eur_rate
 
+
+def get_all_lib(session: Session) -> List[LivingIncomeBenchmarkDict]:
+    return session.query(LivingIncomeBenchmark).all()
+
+
+def get_by_country_region_year(
+    session: Session, country: int, region: int, year: int
+) -> LivingIncomeBenchmarkDict:
     lib = (
         session.query(LivingIncomeBenchmark)
         .filter(
@@ -87,6 +90,9 @@ def get_by_country_region_year(
         if not lib:
             return None
 
+        usd_rate, eur_rate = get_conversion_rate(
+            session=session, country=country, year=lib.year
+        )
         usd_value = lib.lcu / usd_rate if usd_rate else 0
         eur_value = lib.lcu / eur_rate if eur_rate else 0
 
@@ -120,6 +126,9 @@ def get_by_country_region_year(
             #     detail=f"Benchmark not available for the year {year}.",
             # )
     else:
+        usd_rate, eur_rate = get_conversion_rate(
+            session=session, country=country, year=year
+        )
         usd_value = lib.lcu / usd_rate if usd_rate else 0
         eur_value = lib.lcu / eur_rate if eur_rate else 0
 
