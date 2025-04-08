@@ -295,7 +295,7 @@ const ChartBinningDriversSensitivityAnalysis = ({
         <br />
         <br />
         Consult this graph to determine exactly at which level(s) of{" "}
-        {binName ? binName : ""} your current selections of {xAxisName} and
+        {binName ? binName : ""} your current selections of {xAxisName} and{" "}
         {yAxisName} meet or fail to meet your income target. For more detailed
         exploration of specific combinations, refer to the heatmaps below.
       </>
