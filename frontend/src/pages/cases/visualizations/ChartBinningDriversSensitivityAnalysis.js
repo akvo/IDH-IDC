@@ -287,11 +287,11 @@ const ChartBinningDriversSensitivityAnalysis = ({
         <br />
         <br />
         When a data point is within the dark orange zone, it means your income
-        target is achieved at the current combination of {xAxisName},{yAxisName}
-        , and {binName ? binName : ""}. When a data point falls within the light
-        orange zone, the selected levels of {xAxisName} and {yAxisName} are
-        feasible, but the income target is not yet achieved at this particular
-        level of {binName ? binName : ""}.
+        target is achieved at the current combination of {xAxisName},{" "}
+        {yAxisName}, and {binName ? binName : ""}. When a data point falls
+        within the light orange zone, the selected levels of {xAxisName} and{" "}
+        {yAxisName} are feasible, but the income target is not yet achieved at
+        this particular level of {binName ? binName : ""}.
         <br />
         <br />
         Consult this graph to determine exactly at which level(s) of{" "}
