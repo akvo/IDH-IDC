@@ -219,7 +219,7 @@ const getOptions = ({
 };
 
 const lineChartTooltipText = (
-  <>
+  <span>
     We calculate what value for the Y-axis driver should be to reach the income
     target. For any commodities in the crop category, we use the formula:
     &apos;Income target = (Area x Volume x Price) - (Area x CoP) + diversified
@@ -229,7 +229,7 @@ const lineChartTooltipText = (
     all the values for the other drivers and income target are known. By
     transforming the mentioned formulas, we can then calculate what the value
     should be for the Y-axis driver.
-  </>
+  </span>
 );
 
 const ChartBinningDriversSensitivityAnalysis = ({
