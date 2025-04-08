@@ -13,13 +13,12 @@ import {
   InputNumber,
   Switch,
   Alert,
-  Tooltip,
 } from "antd";
 import Chart from "../../components/chart";
 import { min, max, isEmpty } from "lodash";
-import { api } from "../../lib";
+import { api, roundToOneDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
-import { QuestionCircleOutline } from "../../lib/icon";
+import { NewCpiForm } from "../../components/utils";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -47,26 +46,11 @@ const disabledInputProps = {
   },
   className: "disabled-field",
 };
-const numberProps = {
-  controls: false,
-  style: {
-    width: 135,
-  },
-};
 const step2NumberProps = {
   controls: false,
   style: {
     width: 50,
   },
-};
-
-const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
-  // OECD average household size
-  // first adult = 1, next adult 0.5
-  // 1 child = 0.3
-  const adult_size = adult === 1 ? 1 : 1 + (adult - 1) * 0.5;
-  const children_size = child * 0.3;
-  return adult_size + children_size;
 };
 
 const defaultRegionState = {
@@ -200,25 +184,34 @@ const LivingIncomeBenchmarkExplorer = () => {
       .get(url)
       .then((res) => {
         const { data } = res;
-        const adult = Math.round(data.nr_adults);
-        const child = Math.round(data.household_size - data.nr_adults);
-        const defHHSize = calculateHouseholdSize({
-          adult,
-          child,
-        });
-        const targetHH = data.household_equiv;
+        // TODO:: Delete
+        // const adult = roundToOneDecimal(data.nr_adults);
+        // const child = roundToOneDecimal(data.household_size - data.nr_adults);
+        // const defHHSize = calculateHouseholdSize({
+        //   adult,
+        //   child,
+        // });
+        // const targetHH = data.household_equiv;
+        // EOL Delete
+
         // Use LCU
         const targetValue = data.value.lcu;
         // with CPI calculation
         // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
         // INFLATION RATE HERE
-        let LITarget = 0;
+
+        // let LITarget = 0; TODO:: Delete
+        let LITarget = targetValue;
         if (data?.cpi_factor) {
-          const caseYearLIB = targetValue * (1 + data.cpi_factor);
-          LITarget = (defHHSize / targetHH) * caseYearLIB;
-        } else {
-          LITarget = (defHHSize / targetHH) * targetValue;
+          LITarget = targetValue * (1 + data.cpi_factor);
+          // const caseYearLIB = targetValue * (1 + data.cpi_factor); TODO:: Delete
+          // LITarget = (defHHSize / targetHH) * caseYearLIB; TODO:: Delete
         }
+        // TODO:: Delete
+        // else {
+        //   LITarget = (defHHSize / targetHH) * targetValue;
+        // }
+        // EOL Delete
         setDefaultLIB({ ...data, LITarget });
       })
       .catch((e) => {
@@ -235,27 +228,33 @@ const LivingIncomeBenchmarkExplorer = () => {
         .get(url)
         .then((res) => {
           const { data } = res;
-          const adult = Math.round(data.nr_adults);
-          const child = Math.round(data.household_size - data.nr_adults);
-          const defHHSize = calculateHouseholdSize({
-            adult,
-            child,
-          });
-          const targetHH = data.household_equiv;
+          // TODO:: Delete
+          // const adult = roundToOneDecimal(data.nr_adults);
+          // const child = roundToOneDecimal(data.household_size - data.nr_adults);
+          // const defHHSize = calculateHouseholdSize({
+          //   adult,
+          //   child,
+          // });
+          // const targetHH = data.household_equiv;
+          // EOL Delete
+
           // Use LCU
           const targetValue = data.value.lcu;
           // with CPI calculation
           // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
           // INFLATION RATE HERE
-          let LITarget = 0;
-          if (data?.cpi_factor) {
+
+          // let LITarget = 0; TODO:: Delete
+          let LITarget = targetValue;
+          if (data?.cpi_factor || data?.cpi_factor === 0) {
             libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
-            const caseYearLIB = targetValue * (1 + data.cpi_factor);
-            LITarget = (defHHSize / targetHH) * caseYearLIB;
+            LITarget = targetValue * (1 + data.cpi_factor);
+            // const caseYearLIB = targetValue * (1 + data.cpi_factor); TODO:: Delete
+            // LITarget = (defHHSize / targetHH) * caseYearLIB; TODO:: Delete
             setShowCustomCPIField(false);
           } else {
             libForm.setFieldValue("inflation_rate", "NA");
-            LITarget = (defHHSize / targetHH) * targetValue;
+            // LITarget = (defHHSize / targetHH) * targetValue; TODO:: Delete
             setShowCustomCPIField(selectedYear > data.year ? true : false);
           }
           if (selectedYear <= data.year) {
@@ -278,23 +277,31 @@ const LivingIncomeBenchmarkExplorer = () => {
   useEffect(() => {
     if (!isEmpty(adjustedLIB) && newCPI) {
       const last_year_cpi = adjustedLIB.last_year_cpi;
-      const adult = Math.round(adjustedLIB.nr_adults);
-      const child = Math.round(
-        adjustedLIB.household_size - adjustedLIB.nr_adults
-      );
-      const defHHSize = calculateHouseholdSize({
-        adult,
-        child,
-      });
-      const targetHH = adjustedLIB.household_equiv;
+
+      // TODO:: Delete
+      // const adult = roundToOneDecimal(adjustedLIB.nr_adults);
+      // const child = roundToOneDecimal(
+      //   adjustedLIB.household_size - adjustedLIB.nr_adults
+      // );
+      // const defHHSize = calculateHouseholdSize({
+      //   adult,
+      //   child,
+      // });
+      // const targetHH = adjustedLIB.household_equiv;
+      // EOL Delete
+
       // Use LCU
       const targetValue = adjustedLIB.value.lcu;
 
       const newCPIFactor = (newCPI - last_year_cpi) / last_year_cpi; // inflation rate
       setNewCPIFactor(newCPIFactor);
 
-      const caseYearLIB = targetValue * (1 + newCPIFactor);
-      const LITarget = (defHHSize / targetHH) * caseYearLIB;
+      const LITarget = targetValue * (1 + newCPIFactor);
+
+      // TODO:: Delete
+      // const caseYearLIB = targetValue * (1 + newCPIFactor);
+      // const LITarget = (defHHSize / targetHH) * caseYearLIB;
+      // EOL Delete
 
       libForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
       libForm.setFieldValue(
@@ -312,8 +319,8 @@ const LivingIncomeBenchmarkExplorer = () => {
     const currentLIB = incorporateStepOne ? adjustedLIB : defaultLIB;
     if (!isEmpty(currentLIB)) {
       const currHhSize = currentLIB.household_size;
-      const currAdult = Math.round(currentLIB.nr_adults);
-      const currChild = Math.round(currHhSize - currentLIB.nr_adults);
+      const currAdult = roundToOneDecimal(currentLIB.nr_adults);
+      const currChild = roundToOneDecimal(currHhSize - currentLIB.nr_adults);
       libForm.setFieldsValue({
         current_hh_size: currHhSize,
         current_adult: currAdult,
@@ -323,9 +330,9 @@ const LivingIncomeBenchmarkExplorer = () => {
       // new hh size
       const newHhSizeValue = newHhSize || currHhSize;
       const newAdult = newAvgNrAdult ? newAvgNrAdult : currAdult;
-      const newChild = Math.round(newHhSizeValue - newAdult);
+      const newChild = roundToOneDecimal(newHhSizeValue - newAdult);
       const defHHSize = calculateHouseholdSize({
-        adult: Math.round(newAdult),
+        adult: roundToOneDecimal(newAdult),
         child: newChild,
       });
       const targetHH = currentLIB.household_equiv;
@@ -358,6 +365,20 @@ const LivingIncomeBenchmarkExplorer = () => {
     newCPIFactor,
     currencyUnit,
   ]);
+
+  const onClickMap = ({ name: selectedCountry, value }) => {
+    if (isNaN(value)) {
+      return;
+    }
+    const findMapData = mapData.find(
+      (d) => d.name.toLowerCase() === selectedCountry.toLowerCase()
+    );
+    if (findMapData?.country_id) {
+      handleClearSearch({ resetFilterFields: false });
+      const countryId = parseInt(findMapData?.country_id);
+      filterForm.setFieldValue("country", countryId);
+    }
+  };
 
   return (
     <ContentLayout
@@ -404,7 +425,10 @@ const LivingIncomeBenchmarkExplorer = () => {
                     seriesName: "Benchmark count by country",
                     min: min(mapData.map((d) => d.value)),
                     max: max(mapData.map((d) => d.value)),
-                    visualMapText: ["Number of benchmark", ""],
+                    visualMapText: ["Available benchmarks", ""],
+                  }}
+                  callbacks={{
+                    onClick: onClickMap,
                   }}
                 />
               </Card>
@@ -463,7 +487,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                                 className="search-button"
                                 htmlType="submit"
                               >
-                                Observe
+                                Search
                               </Button>
                             </Form.Item>
                           </Space>
@@ -520,7 +544,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           <Card>
             <h2>Adjust the income benchmark (optional)</h2>
             <p>
-              You may need to adjust your income target for a different year (to
+              You may want to adjust your income target for a different year (to
               account for inflation) or for a different household composition.
               <br />
               To do so, follow the optional steps below.
@@ -546,7 +570,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                       label="Adjusted benchmark value for a household/year"
                       name="adjusted_benchmark_value"
                     >
-                      <Input {...disabledInputProps} disabled />
+                      <Input
+                        {...disabledInputProps}
+                        style={{ width: 300 }}
+                        disabled
+                      />
                     </Form.Item>
                   </div>
                   <div className={showCustomCPIField ? "" : "hide-visual"}>
@@ -557,37 +585,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                       the value, the inflation rate will update, and the
                       benchmark will adjust accordingly.
                     </p>
-                    <p>
-                      <a
-                        href="https://tradingeconomics.com/country-list/consumer-price-index-cpi"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        Find consumer price index (CPI)
-                      </a>{" "}
-                      <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for.">
-                        <span>
-                          <QuestionCircleOutline size={14} />
-                        </span>
-                      </Tooltip>
-                    </p>
-                    <div className="step-form-item-wrapper">
-                      <Form.Item label="Insert the CPI value" name="new_cpi">
-                        <InputNumber {...numberProps} />
-                      </Form.Item>
-                      <Form.Item
-                        label="Inflation rate"
-                        name="new_inflation_rate"
-                      >
-                        <Input {...disabledInputProps} disabled />
-                      </Form.Item>
-                      <Form.Item
-                        label="Adjusted benchmark value for a household/year"
-                        name="new_adjusted_benchmark_value"
-                      >
-                        <Input {...disabledInputProps} disabled />
-                      </Form.Item>
-                    </div>
+                    <NewCpiForm
+                      adjustedBenchmarkValueFieldProps={{
+                        style: { width: 300 },
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -649,7 +651,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                           </Form.Item>
                         </div>
                         <div className="step-2-field-wrapper">
-                          <p>Avg. nr. of adults:</p>
+                          <p>Nr. of adults</p>
                           <Form.Item name="new_avg_nr_of_adult" noStyle>
                             <InputNumber {...step2NumberProps} size="small" />
                           </Form.Item>
@@ -664,7 +666,11 @@ const LivingIncomeBenchmarkExplorer = () => {
                         label="Adjusted benchmark value for a household/year"
                         name="new_hh_adjusted_benchmark_value"
                       >
-                        <Input {...disabledInputProps} disabled />
+                        <Input
+                          {...disabledInputProps}
+                          style={{ width: 300 }}
+                          disabled
+                        />
                       </Form.Item>
                     </div>
                     {/* EOL adjusted value */}

@@ -65,7 +65,9 @@ const LabelWithTooltip = ({ name, tooltip }) => (
   <Space align="center">
     <div>{name}</div>
     <Tooltip placement="right" title={tooltip} color="#26605f">
-      <QuestionCircleOutlined />
+      <span>
+        <QuestionCircleOutlined />
+      </span>
     </Tooltip>
   </Space>
 );

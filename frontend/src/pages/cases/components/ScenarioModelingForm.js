@@ -132,7 +132,9 @@ const ScenarioModelingForm = ({
                       title="Please choose whether you would like to express the changes in current values using percentages or absolute values."
                       color="#26605f"
                     >
-                      <InfoCircleOutlined />
+                      <span>
+                        <InfoCircleOutlined />
+                      </span>
                     </Tooltip>
                   </Space>
                 }

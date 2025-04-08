@@ -92,10 +92,10 @@ const ChoroplethMap = ({ data, chartTitle, extra = {} }) => {
         ? extra.visualMapText
         : ["High", "Low"],
       textGap: 20,
-      min: extra?.min || 0,
+      min: extra?.max === extra?.min ? 0 : extra?.min,
       max: extra?.max
         ? extra?.max === extra?.min
-          ? extra?.max + 5
+          ? extra?.max
           : extra?.max
         : 100,
       left: "right",

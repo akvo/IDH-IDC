@@ -201,4 +201,21 @@ export const renderPercentageTag = (type = "default", value = 0) => {
   }
 };
 
+export const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
+  // OECD average household size
+  // first adult = 1, next adult 0.5
+  // 1 child = 0.3
+  if (adult <= 0) {
+    return child * 0.3;
+  }
+  const adult_size = adult === 1 ? 1 : 1 + (adult - 1) * 0.5;
+  const children_size = child * 0.3;
+  return adult_size + children_size;
+};
+
+export const roundToOneDecimal = (value) => {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? Math.trunc(rounded) : rounded;
+};
+
 export { default as api } from "./api";

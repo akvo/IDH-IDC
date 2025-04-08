@@ -15,7 +15,7 @@ describe("Landing page", () => {
 
     expect(wrapper.getByTestId("logo-image")).toBeInTheDocument();
     // expect(wrapper.getByText("About IDC")).toBeInTheDocument();
-    expect(wrapper.getByText("Sign in")).toBeInTheDocument();
+    expect(wrapper.getByText("Sign in to IDC")).toBeInTheDocument();
   });
 
   it("should render jumbotron image with title, subtitle, and learn more button", () => {

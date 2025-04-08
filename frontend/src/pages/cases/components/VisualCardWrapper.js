@@ -80,9 +80,11 @@ const VisualCardWrapper = ({
           <Col span={14}>
             <Space align="center">
               <div className="title">{title}</div>
-              {tooltipText ? (
+              {tooltipText && tooltipText !== "" ? (
                 <Tooltip className="info-tooltip" title={tooltipText}>
-                  <InfoCircleOutlined />
+                  <span>
+                    <InfoCircleOutlined />
+                  </span>
                 </Tooltip>
               ) : (
                 ""

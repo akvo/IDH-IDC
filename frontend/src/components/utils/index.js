@@ -21,3 +21,4 @@ export { default as ShowLabelButton } from "./ShowLabelButton";
 export { default as DataSecurityProvisionModal } from "./DataSecurityProvisionModal";
 export { default as ViewSummaryModal } from "./ViewSummaryModal";
 export { default as OtherToolResourceList } from "./OtherToolResourceList";
+export { default as NewCpiForm } from "./NewCpiForm";

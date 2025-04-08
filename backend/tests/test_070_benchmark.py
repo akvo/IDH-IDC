@@ -38,7 +38,7 @@ class TestBenchmarkRoute:
             "value": {"lcu": 1200.5, "usd": 0.0, "eur": 0.0},
             "case_year_cpi": 5000.0,
             "last_year_cpi": 7000.0,
-            "cpi_factor": None,
+            "cpi_factor": 0.0,
             "message": None,
             "household_equiv": None,
             "links": None,

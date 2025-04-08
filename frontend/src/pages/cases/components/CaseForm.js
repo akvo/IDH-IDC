@@ -14,7 +14,6 @@ import {
   Radio,
   Switch,
 } from "antd";
-import { InfoCircleTwoTone } from "@ant-design/icons";
 import {
   countryOptions,
   focusCommodityOptions,
@@ -28,6 +27,7 @@ import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
+import { QuestionCircleOutline } from "../../../lib/icon";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -215,7 +215,12 @@ const CaseForm = ({ updateCurrentCase = () => {} }) => {
                 onChange={(value) => updateCurrentCase("private", value)}
                 disabled={!enableEditCase}
               />{" "}
-              Private case
+              Private case{" "}
+              <Tooltip title="The details of a private case are visible only to you and any users you choose to add to the case.">
+                <span>
+                  <QuestionCircleOutline size={14} />
+                </span>
+              </Tooltip>
             </Form.Item>
           }
         >
@@ -282,7 +287,9 @@ const CaseForm = ({ updateCurrentCase = () => {} }) => {
                       title="Please enter the year for which you are providing data. This year will also be used to retrieve a living income benchmark, if it is available for the specified region. If a benchmark for this year is not available, we will use the most recent available benchmark value."
                       placement="topRight"
                     >
-                      <InfoCircleTwoTone twoToneColor="#1677ff" />
+                      <span>
+                        <QuestionCircleOutline size={14} />
+                      </span>
                     </Tooltip>
                   </Space>
                 }

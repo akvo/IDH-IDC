@@ -97,7 +97,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       },
       {
         testid: "nav-menu-login",
-        label: <Link className="nav-sign-in"> Sign in</Link>,
+        label: <Link className="nav-sign-in"> Sign in to IDC</Link>,
         key: "/login",
         isPublic: true,
         role: [],
