@@ -7,6 +7,7 @@ import { IncomeDriversDropdown } from "../components";
 import { uniqBy, capitalize, groupBy, snakeCase } from "lodash";
 import { CaseVisualState, CurrentCaseState } from "../store";
 
+const showDriversBreakdownValue = false;
 const otherCommodities = ["secondary", "tertiary"];
 
 const currentColors = [
@@ -74,6 +75,7 @@ const ChartIncomeDriverAcrossSegments = () => {
         label: q.text,
         type: "focus",
         value: q.id,
+        default_value: q.default_value,
         childrens: q.childrens.map((q) => ({ ...q, type: "focus" })),
       }))
       .filter((x) => x.value !== 2); // remove land driver from dropdown
@@ -119,7 +121,6 @@ const ChartIncomeDriverAcrossSegments = () => {
     return [...focusRes, ...diversifiedRes];
   }, [dashboardData]);
 
-  // TODO:: fix the legend filtering when change the legend text to have an enter
   const chartData = useMemo(() => {
     setLoading(true);
     if (!driverOptionsDropdown.length) {
@@ -160,7 +161,41 @@ const ChartIncomeDriverAcrossSegments = () => {
                 };
               });
             }
-            if (selectedDriver) {
+
+            // show current feasible value
+            if (selectedDriver && !showDriversBreakdownValue) {
+              stack = driverOptionsDropdown
+                .filter((d) => d.value === selectedDriver)
+                .map((d, di) => {
+                  let value = 0;
+                  // Calculate focus commodity
+                  if (d.type === "focus") {
+                    const answer = selectedSegmentData.answers
+                      .filter((a) => a.commodityFocus && a.name === x)
+                      .find((a) => a.questionId === d.value);
+                    value = answer && answer.value ? answer.value : 0;
+                  }
+                  // diversified
+                  if (d.type === "diversified" && d.value === "diversified") {
+                    value =
+                      selectedSegmentData?.[`total_${x}_diversified_income`] ||
+                      0;
+                  }
+                  value = value ? parseFloat(value.toFixed(2)) : value;
+                  return {
+                    name: `${capitalize(x)}\n${d.label}`,
+                    title: `${capitalize(x)}\n${d.label}`,
+                    value: value,
+                    total: value,
+                    order: di,
+                    color: colors[di],
+                    stack: x,
+                  };
+                });
+            }
+
+            // show value with breakdown
+            if (selectedDriver && showDriversBreakdownValue) {
               const findDriver = driverOptionsDropdown.find(
                 (d) => d.value === selectedDriver
               );
@@ -284,13 +319,29 @@ const ChartIncomeDriverAcrossSegments = () => {
   const chartGrid = (selectedDriver) => {
     switch (selectedDriver) {
       case 3: // volume
-        return { right: 115, left: 45, bottom: 20 };
+        return {
+          right: showDriversBreakdownValue ? 115 : 80,
+          left: 45,
+          bottom: 20,
+        };
       case 4: // price
-        return { right: 175, left: 55, bottom: 20 };
+        return {
+          right: showDriversBreakdownValue ? 200 : 80,
+          left: 65,
+          bottom: 20,
+        };
       case 5: // cost of production
-        return { right: 215, left: 50, bottom: 20 };
+        return {
+          right: showDriversBreakdownValue ? 215 : 140,
+          left: 40,
+          bottom: 20,
+        };
       default: // diversified income
-        return { right: 200, left: 30, bottom: 20 };
+        return {
+          right: showDriversBreakdownValue ? 200 : 140,
+          left: 35,
+          bottom: 20,
+        };
     }
   };
 
@@ -330,7 +381,7 @@ const ChartIncomeDriverAcrossSegments = () => {
                     grid: chartGrid(selectedDriver),
                     showLabel: showLabel,
                   })}
-                  height={600}
+                  height={showDriversBreakdownValue ? 600 : 450}
                 />
               </Col>
             </Row>
