@@ -277,9 +277,9 @@ const ChartBinningHeatmapSensitivityAnalysis = ({ segment, data, origin }) => {
     const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
     const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
     // label
-    const label = `At what level of ${yAxisName}, ${xAxisName}, ${
+    const label = `At what level of ${xAxisName}, ${yAxisName}, ${
       binName ? binName : ""
-    } will we reach the income target?`;
+    } do farmers reach the income target?`;
     setLabel(label);
 
     return {
