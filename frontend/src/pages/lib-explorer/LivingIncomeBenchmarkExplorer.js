@@ -16,7 +16,7 @@ import {
 } from "antd";
 import Chart from "../../components/chart";
 import { min, max, isEmpty } from "lodash";
-import { api } from "../../lib";
+import { api, roundToOneDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { NewCpiForm } from "../../components/utils";
 
@@ -51,15 +51,6 @@ const step2NumberProps = {
   style: {
     width: 50,
   },
-};
-
-const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
-  // OECD average household size
-  // first adult = 1, next adult 0.5
-  // 1 child = 0.3
-  const adult_size = adult === 1 ? 1 : 1 + (adult - 1) * 0.5;
-  const children_size = child * 0.3;
-  return adult_size + children_size;
 };
 
 const defaultRegionState = {
@@ -193,8 +184,8 @@ const LivingIncomeBenchmarkExplorer = () => {
       .get(url)
       .then((res) => {
         const { data } = res;
-        const adult = Math.round(data.nr_adults);
-        const child = Math.round(data.household_size - data.nr_adults);
+        const adult = roundToOneDecimal(data.nr_adults);
+        const child = roundToOneDecimal(data.household_size - data.nr_adults);
         const defHHSize = calculateHouseholdSize({
           adult,
           child,
@@ -228,8 +219,8 @@ const LivingIncomeBenchmarkExplorer = () => {
         .get(url)
         .then((res) => {
           const { data } = res;
-          const adult = Math.round(data.nr_adults);
-          const child = Math.round(data.household_size - data.nr_adults);
+          const adult = roundToOneDecimal(data.nr_adults);
+          const child = roundToOneDecimal(data.household_size - data.nr_adults);
           const defHHSize = calculateHouseholdSize({
             adult,
             child,
@@ -271,8 +262,8 @@ const LivingIncomeBenchmarkExplorer = () => {
   useEffect(() => {
     if (!isEmpty(adjustedLIB) && newCPI) {
       const last_year_cpi = adjustedLIB.last_year_cpi;
-      const adult = Math.round(adjustedLIB.nr_adults);
-      const child = Math.round(
+      const adult = roundToOneDecimal(adjustedLIB.nr_adults);
+      const child = roundToOneDecimal(
         adjustedLIB.household_size - adjustedLIB.nr_adults
       );
       const defHHSize = calculateHouseholdSize({
@@ -305,8 +296,8 @@ const LivingIncomeBenchmarkExplorer = () => {
     const currentLIB = incorporateStepOne ? adjustedLIB : defaultLIB;
     if (!isEmpty(currentLIB)) {
       const currHhSize = currentLIB.household_size;
-      const currAdult = Math.round(currentLIB.nr_adults);
-      const currChild = Math.round(currHhSize - currentLIB.nr_adults);
+      const currAdult = roundToOneDecimal(currentLIB.nr_adults);
+      const currChild = roundToOneDecimal(currHhSize - currentLIB.nr_adults);
       libForm.setFieldsValue({
         current_hh_size: currHhSize,
         current_adult: currAdult,
@@ -316,9 +307,9 @@ const LivingIncomeBenchmarkExplorer = () => {
       // new hh size
       const newHhSizeValue = newHhSize || currHhSize;
       const newAdult = newAvgNrAdult ? newAvgNrAdult : currAdult;
-      const newChild = Math.round(newHhSizeValue - newAdult);
+      const newChild = roundToOneDecimal(newHhSizeValue - newAdult);
       const defHHSize = calculateHouseholdSize({
-        adult: Math.round(newAdult),
+        adult: roundToOneDecimal(newAdult),
         child: newChild,
       });
       const targetHH = currentLIB.household_equiv;
