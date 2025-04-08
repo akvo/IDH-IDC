@@ -184,25 +184,34 @@ const LivingIncomeBenchmarkExplorer = () => {
       .get(url)
       .then((res) => {
         const { data } = res;
-        const adult = roundToOneDecimal(data.nr_adults);
-        const child = roundToOneDecimal(data.household_size - data.nr_adults);
-        const defHHSize = calculateHouseholdSize({
-          adult,
-          child,
-        });
-        const targetHH = data.household_equiv;
+        // TODO:: Delete
+        // const adult = roundToOneDecimal(data.nr_adults);
+        // const child = roundToOneDecimal(data.household_size - data.nr_adults);
+        // const defHHSize = calculateHouseholdSize({
+        //   adult,
+        //   child,
+        // });
+        // const targetHH = data.household_equiv;
+        // EOL Delete
+
         // Use LCU
         const targetValue = data.value.lcu;
         // with CPI calculation
         // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
         // INFLATION RATE HERE
-        let LITarget = 0;
+
+        // let LITarget = 0; TODO:: Delete
+        let LITarget = targetValue;
         if (data?.cpi_factor) {
-          const caseYearLIB = targetValue * (1 + data.cpi_factor);
-          LITarget = (defHHSize / targetHH) * caseYearLIB;
-        } else {
-          LITarget = (defHHSize / targetHH) * targetValue;
+          LITarget = targetValue * (1 + data.cpi_factor);
+          // const caseYearLIB = targetValue * (1 + data.cpi_factor); TODO:: Delete
+          // LITarget = (defHHSize / targetHH) * caseYearLIB; TODO:: Delete
         }
+        // TODO:: Delete
+        // else {
+        //   LITarget = (defHHSize / targetHH) * targetValue;
+        // }
+        // EOL Delete
         setDefaultLIB({ ...data, LITarget });
       })
       .catch((e) => {
@@ -219,27 +228,33 @@ const LivingIncomeBenchmarkExplorer = () => {
         .get(url)
         .then((res) => {
           const { data } = res;
-          const adult = roundToOneDecimal(data.nr_adults);
-          const child = roundToOneDecimal(data.household_size - data.nr_adults);
-          const defHHSize = calculateHouseholdSize({
-            adult,
-            child,
-          });
-          const targetHH = data.household_equiv;
+          // TODO:: Delete
+          // const adult = roundToOneDecimal(data.nr_adults);
+          // const child = roundToOneDecimal(data.household_size - data.nr_adults);
+          // const defHHSize = calculateHouseholdSize({
+          //   adult,
+          //   child,
+          // });
+          // const targetHH = data.household_equiv;
+          // EOL Delete
+
           // Use LCU
           const targetValue = data.value.lcu;
           // with CPI calculation
           // Case year LI Benchmark = Latest Benchmark*(1-CPI factor)
           // INFLATION RATE HERE
-          let LITarget = 0;
+
+          // let LITarget = 0; TODO:: Delete
+          let LITarget = targetValue;
           if (data?.cpi_factor || data?.cpi_factor === 0) {
             libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
-            const caseYearLIB = targetValue * (1 + data.cpi_factor);
-            LITarget = (defHHSize / targetHH) * caseYearLIB;
+            LITarget = targetValue * (1 + data.cpi_factor);
+            // const caseYearLIB = targetValue * (1 + data.cpi_factor); TODO:: Delete
+            // LITarget = (defHHSize / targetHH) * caseYearLIB; TODO:: Delete
             setShowCustomCPIField(false);
           } else {
             libForm.setFieldValue("inflation_rate", "NA");
-            LITarget = (defHHSize / targetHH) * targetValue;
+            // LITarget = (defHHSize / targetHH) * targetValue; TODO:: Delete
             setShowCustomCPIField(selectedYear > data.year ? true : false);
           }
           if (selectedYear <= data.year) {
@@ -262,23 +277,31 @@ const LivingIncomeBenchmarkExplorer = () => {
   useEffect(() => {
     if (!isEmpty(adjustedLIB) && newCPI) {
       const last_year_cpi = adjustedLIB.last_year_cpi;
-      const adult = roundToOneDecimal(adjustedLIB.nr_adults);
-      const child = roundToOneDecimal(
-        adjustedLIB.household_size - adjustedLIB.nr_adults
-      );
-      const defHHSize = calculateHouseholdSize({
-        adult,
-        child,
-      });
-      const targetHH = adjustedLIB.household_equiv;
+
+      // TODO:: Delete
+      // const adult = roundToOneDecimal(adjustedLIB.nr_adults);
+      // const child = roundToOneDecimal(
+      //   adjustedLIB.household_size - adjustedLIB.nr_adults
+      // );
+      // const defHHSize = calculateHouseholdSize({
+      //   adult,
+      //   child,
+      // });
+      // const targetHH = adjustedLIB.household_equiv;
+      // EOL Delete
+
       // Use LCU
       const targetValue = adjustedLIB.value.lcu;
 
       const newCPIFactor = (newCPI - last_year_cpi) / last_year_cpi; // inflation rate
       setNewCPIFactor(newCPIFactor);
 
-      const caseYearLIB = targetValue * (1 + newCPIFactor);
-      const LITarget = (defHHSize / targetHH) * caseYearLIB;
+      const LITarget = targetValue * (1 + newCPIFactor);
+
+      // TODO:: Delete
+      // const caseYearLIB = targetValue * (1 + newCPIFactor);
+      // const LITarget = (defHHSize / targetHH) * caseYearLIB;
+      // EOL Delete
 
       libForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
       libForm.setFieldValue(
