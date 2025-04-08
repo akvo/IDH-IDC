@@ -27,6 +27,8 @@ import {
   selectProps,
   api,
   removeUndefinedObjectValue,
+  roundToOneDecimal,
+  calculateHouseholdSize,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
@@ -35,15 +37,6 @@ import { EditOutlined } from "@ant-design/icons";
 
 const formStyle = { width: "100%" };
 const showInformationAboutLIBCard = false;
-
-const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
-  // OECD average household size
-  // first adult = 1, next adult 0.5
-  // 1 child = 0.3
-  const adult_size = adult === 1 ? 1 : 1 + (adult - 1) * 0.5;
-  const children_size = child * 0.3;
-  return adult_size + children_size;
-};
 
 /**
  * STEP 1
@@ -318,8 +311,8 @@ const SetIncomeTarget = ({ segment, setbackfunction, setnextfunction }) => {
             return;
           }
           //
-          const adult = Math.round(data.nr_adults);
-          const child = Math.round(data.household_size - data.nr_adults);
+          const adult = roundToOneDecimal(data.nr_adults);
+          const child = roundToOneDecimal(data.household_size - data.nr_adults);
           // setBenchmark(data);
           const defHHSize = calculateHouseholdSize({
             adult,
