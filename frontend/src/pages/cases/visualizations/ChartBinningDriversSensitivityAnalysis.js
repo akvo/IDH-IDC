@@ -240,6 +240,7 @@ const ChartBinningDriversSensitivityAnalysis = ({
 }) => {
   const [label, setLabel] = useState(null);
   const [chartTitle, setChartTitle] = useState(null);
+  const [description, setDescription] = useState(null);
 
   const elLineChart = useRef(null);
 
@@ -273,10 +274,34 @@ const ChartBinningDriversSensitivityAnalysis = ({
     const xAxisName = bins.find((b) => b.name === "x-axis-driver")?.value || "";
     const yAxisName = bins.find((b) => b.name === "y-axis-driver")?.value || "";
     // label
-    const label = `At what level of ${yAxisName}, ${xAxisName}, ${
+    const label = `At what level of ${xAxisName}, ${yAxisName}, ${
       binName ? binName : ""
-    } will we reach the income target?`;
+    } do farmers reach the income target?`;
+
+    const description = (
+      <>
+        This line graph illustrates whether the income target is reached at
+        different levels of {binName ? binName : ""}, given your selected
+        combination of {xAxisName} (horizontal axis) and {yAxisName} (vertical
+        axis).
+        <br />
+        <br />
+        When a data point is within the dark orange zone, it means your income
+        target is achieved at the current combination of {xAxisName},{" "}
+        {yAxisName}, and {binName ? binName : ""}. When a data point falls
+        within the light orange zone, the selected levels of {xAxisName} and{" "}
+        {yAxisName} are feasible, but the income target is not yet achieved at
+        this particular level of {binName ? binName : ""}.
+        <br />
+        <br />
+        Consult this graph to determine exactly at which level(s) of{" "}
+        {binName ? binName : ""} your current selections of {xAxisName} and
+        {yAxisName} meet or fail to meet your income target. For more detailed
+        exploration of specific combinations, refer to the heatmaps below.
+      </>
+    );
     setLabel(label);
+    setDescription(description);
     // chart title
     setChartTitle("Influence of income drivers on reaching the income target");
 
@@ -342,25 +367,14 @@ const ChartBinningDriversSensitivityAnalysis = ({
         <Col span={8}>
           <Space direction="vertical">
             <div className="section-title">{label}</div>
-            <div className="section-description">
-              This line graph illustrates how different levels of the binning
-              driver, in combination with the X and Y-axis drivers, affect
-              farmers progress toward reaching the income target. By examining
-              this line graph, you can make informed decisions about the
-              feasibility of reaching the income target for farmers. For more
-              granular information related to each line, please refer to the
-              respective heatmaps provided below.
-              <br />
-              <br />
-              <b>Insight:</b> When the lines are within the dark orange zone, it
-              signals that the income target has been successfully achieved
-              within feasible levels of the income drivers. On the other hand,
-              if a line falls into the light orange zone, it indicates that the
-              income drivers are within their feasible values, but the income
-              target is not reached. This information allows you to assess which
-              combinations of income driver levels are most likely to lead to
-              the desired income target.
-            </div>
+            <div className="section-description">{description}</div>
+            <Space align="center" style={{ marginTop: "5px" }}>
+              <Image src={SensitivityAnalisysImg} preview={false} width={75} />
+              <p>
+                The orange zone represents the range between current and
+                feasible values for the X and Y-axis drivers.
+              </p>
+            </Space>
           </Space>
         </Col>
         <Col span={16}>
@@ -378,13 +392,6 @@ const ChartBinningDriversSensitivityAnalysis = ({
               override={getOptions({ ...binningData, origin: origin })}
             />
           </VisualCardWrapper>
-          <Space align="center" style={{ marginTop: "5px" }}>
-            <Image src={SensitivityAnalisysImg} preview={false} width={75} />
-            <p>
-              The orange zone indicates the range of current to feasible values
-              for the X and Y-axis drivers.
-            </p>
-          </Space>
         </Col>
       </Row>
     </Card>
