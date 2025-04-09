@@ -29,4 +29,8 @@ const defaultCaseUIState = {
 
 const CaseUIState = new Store(defaultCaseUIState);
 
+export const resetCaseUIState = () => {
+  CaseUIState.update(() => defaultCaseUIState);
+};
+
 export default CaseUIState;

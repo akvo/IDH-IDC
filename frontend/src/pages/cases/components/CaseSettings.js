@@ -242,6 +242,10 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           ...s,
           ...data,
         }));
+        updateCaseUI("general", {
+          ...general,
+          activeSegmentId: data?.segments?.[0]?.id || null,
+        });
         messageApi.open({
           type: "success",
           content: "Case setting saved successfully.",

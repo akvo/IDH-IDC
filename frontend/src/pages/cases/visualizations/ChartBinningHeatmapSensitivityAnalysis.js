@@ -388,6 +388,11 @@ const ChartBinningHeatmapSensitivityAnalysis = ({ segment, data, origin }) => {
         </Card>
       );
     });
+
+    if (!charts.length) {
+      return "";
+    }
+
     return (
       <Row gutter={[24, 24]}>
         <Col span={24} className="carousel-container binning-carousel">
