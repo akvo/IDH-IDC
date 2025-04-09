@@ -9,6 +9,7 @@ import {
   Modal,
   Tooltip,
   message,
+  Alert,
 } from "antd";
 import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
@@ -185,13 +186,42 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     }));
   });
 
+  const renderIncreaseError = useMemo(() => {
+    if (optimizationResult) {
+      const { optimization_result } = optimizationResult;
+      const optimizedValues = orderBy(optimization_result, "key");
+      const errors = optimizedValues?.filter((v) => v.increase_error);
+      const errorText =
+        "This income increase is not possible with adjustments only to the selected income drivers. Maximum possible % increase with this driver selection is: ";
+      const alerts = errors.map(({ key, max_percentage }) => {
+        const maxPercent = max_percentage * 100;
+        return (
+          <Alert
+            key={`increase-error-${key}`}
+            message={`Increase ${key} - ${errorText}${maxPercent?.toFixed(2)}%`}
+            type="error"
+            showIcon
+            style={{ fontFamily: "TabletGothic" }}
+          />
+        );
+      });
+      return (
+        <Col span={24}>
+          <Space direction="vertical">{alerts}</Space>
+        </Col>
+      );
+    }
+    return null;
+  }, [optimizationResult]);
+
   const chartData = useMemo(() => {
     if (optimizationResult) {
       const { optimization_result } = optimizationResult;
       const optimizedValues = orderBy(optimization_result, "key");
-      const drivers = optimizedValues?.flatMap(
-        (v) => v?.value?.optimization
-      )?.[0];
+      const drivers =
+        optimizedValues
+          ?.filter((v) => !v.increase_error)
+          ?.flatMap((v) => v?.value?.optimization)?.[0] || {};
 
       const labels = {};
       Object.keys(drivers).forEach((key) => {
@@ -215,7 +245,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       const data = Object.entries(labels).map(([key, label]) => {
         const currentValues = [];
         const increasedValues = optimizedValues.map((val) => {
-          const valueTmp = val.value.optimization[key];
+          const valueTmp = val?.value?.optimization?.[key] || [];
           const currentValue =
             valueTmp.find((v) => v.name === "current")?.value || 0;
 
@@ -441,6 +471,9 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           </Row>
         </Card>
       </Col>
+      {/* INCREASE ERROR */}
+      {renderIncreaseError}
+      {/* EOL INCREASE ERROR */}
       <Col span={24} style={{ display: chartData?.length ? "" : "none" }}>
         <Card className="card-visual-wrapper">
           <Row gutter={[20, 20]} align="middle">
