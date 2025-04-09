@@ -404,11 +404,15 @@ async def run_model(
     adjusted_current_answers = {
         f"current-{key}": value for key, value in adjusted_current_values
     }
+    # TODO:: fix the calculate_total_income function when we have parent and
+    # sub drivers combined value
     adjusted_current_income, _ = calculate_total_income(
         commodities=questions,
         segment_data={"answers": adjusted_current_answers},
         mode="current",
     )
+    # print(adjusted_current_answers, "==========")
+    # print(_)
 
     # recalculate current value
     adjusted_feasible_answers = {
@@ -443,6 +447,8 @@ async def run_model(
             adjusted_current_income
             + (adjusted_feasible_income - adjusted_current_income) * percentage
         )
+        # print(percentage, target_p, "====", current_income, feasible_income)
+        # print(adjusted_current_income, adjusted_feasible_income)
 
         # INCREASE ERROR CHECK
         if true_feasible_income < target_p:
