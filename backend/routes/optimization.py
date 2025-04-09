@@ -165,6 +165,38 @@ def calculate_total_income(
     return total_income, updated_answers
 
 
+def calculate_true_feasible_income(
+    parameter_bounds, editable_indices, current_values, questions
+):
+    values = []
+    for param in parameter_bounds:
+        qid, first, second = param
+        find_curr_values = next((v for k, v in current_values if k == qid), 0)
+        if qid in editable_indices:
+            if find_curr_values > first:
+                values.append((qid, first))
+            else:
+                values.append((qid, second))
+        else:
+            values.append((qid, find_curr_values))
+
+    answers = {f"tf-{key}": value for key, value in values}
+    tf_income, _ = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": answers},
+        mode="tf",
+    )
+    return tf_income
+
+
+def find_max_percentage(true_feasible_income, current_income, feasible_income):
+    denominator = feasible_income - current_income
+    if denominator == 0:
+        return 0
+    percentage = (true_feasible_income - current_income) / (denominator)
+    return percentage
+
+
 def optimize_income(
     parameter_bounds,
     current_values,
@@ -389,14 +421,43 @@ async def run_model(
     )
     # EOL REMAP CURRENT/FEASIBLE VALUE
 
+    true_feasible_income = calculate_true_feasible_income(
+        parameter_bounds=parameter_bounds,
+        editable_indices=editable_indices,
+        current_values=adjusted_current_values,
+        questions=questions,
+    )
+    max_percentage = find_max_percentage(
+        true_feasible_income=true_feasible_income,
+        current_income=adjusted_current_income,
+        feasible_income=adjusted_feasible_income,
+    )
+
     # loop optimize in percentages param
     optimization_result = []
     for i, percentage in enumerate(percentages):
+        increase = i + 1
+
         # use adjusted income to calculate target_p
         target_p = (
             adjusted_current_income
             + (adjusted_feasible_income - adjusted_current_income) * percentage
         )
+
+        # INCREASE ERROR CHECK
+        if true_feasible_income < target_p:
+            optimization_result.append(
+                {
+                    "key": increase,
+                    "name": f"percentage_{increase}",
+                    "value": {},
+                    "percentage": percentage,
+                    "increase_error": True,
+                    "max_percentage": max_percentage,
+                }
+            )
+            continue
+        # EOL INCREASE ERROR CHECK
 
         result = optimize_income(
             parameter_bounds=parameter_bounds,
@@ -434,7 +495,7 @@ async def run_model(
                 {"name": "feasible", "value": feasible or 0},
                 {"name": "optimized", "value": optimized or 0},
             ]
-        increase = i + 1
+
         value = {}
         value["target_p"] = target_p
         value["achieved_income"] = achieved_income
@@ -445,6 +506,8 @@ async def run_model(
                 "name": f"percentage_{increase}",
                 "value": value,
                 "percentage": percentage,
+                "increase_error": False,
+                "max_percentage": None,
             }
         )
 
