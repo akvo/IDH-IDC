@@ -8,7 +8,8 @@ from typing import List, Optional
 from db.crud_segment import get_segment_by_id
 from db.crud_question import (
     get_question_by_case,
-    get_cost_production_questions
+    get_cost_production_questions,
+    get_loss_questions,
 )
 from db.connection import get_session
 from models.case_commodity import CaseCommodityType
@@ -259,6 +260,11 @@ async def run_model(
     cop_qids = [f"-{key}" for key in flatten_cop_questions.keys()]
     # EOL GENERATE list of COP question IDS
 
+    # LOSS qids
+    loss_qids = get_loss_questions(session=session)
+    loss_qids = [f"-{value}" for value in loss_qids]
+    # EOLS LOSS qids
+
     segment = get_segment_by_id(
         session=session, id=segment_id
     ).serialize_with_answers
@@ -346,6 +352,11 @@ async def run_model(
     adjusted_feasible_values = []
     for key, current, feasible in parameter_bounds:
         key_in_cop = any(val in key for val in cop_qids)
+        key_in_loss = any(val in key for val in loss_qids)
+        if key_in_loss and feasible > current:
+            adjusted_current_values.append((key, feasible))
+            adjusted_feasible_values.append((key, current))
+            continue
         if key_in_cop and feasible > current:
             adjusted_current_values.append((key, feasible))
             adjusted_feasible_values.append((key, current))
@@ -359,8 +370,7 @@ async def run_model(
 
     # recalculate current value
     adjusted_current_answers = {
-        f"current-{key}": value
-        for key, value in adjusted_current_values
+        f"current-{key}": value for key, value in adjusted_current_values
     }
     adjusted_current_income, _ = calculate_total_income(
         commodities=questions,
@@ -370,8 +380,7 @@ async def run_model(
 
     # recalculate current value
     adjusted_feasible_answers = {
-        f"feasible-{key}": value
-        for key, value in adjusted_feasible_values
+        f"feasible-{key}": value for key, value in adjusted_feasible_values
     }
     adjusted_feasible_income, _ = calculate_total_income(
         commodities=questions,
@@ -385,9 +394,8 @@ async def run_model(
     for i, percentage in enumerate(percentages):
         # use adjusted income to calculate target_p
         target_p = (
-            adjusted_current_income + (
-                adjusted_feasible_income - adjusted_current_income
-            ) * percentage
+            adjusted_current_income
+            + (adjusted_feasible_income - adjusted_current_income) * percentage
         )
 
         result = optimize_income(
@@ -431,12 +439,14 @@ async def run_model(
         value["target_p"] = target_p
         value["achieved_income"] = achieved_income
         value["optimization"] = results
-        optimization_result.append({
-            "key": increase,
-            "name": f"percentage_{increase}",
-            "value": value,
-            "percentage": percentage
-        })
+        optimization_result.append(
+            {
+                "key": increase,
+                "name": f"percentage_{increase}",
+                "value": value,
+                "percentage": percentage,
+            }
+        )
 
     return {
         "target_income": segment.get("target", 0),
