@@ -153,8 +153,17 @@ def get_question_by_created_by(session: Session, created_by=int):
 
 def get_cost_production_questions(session: Session):
     COST_PRODUCTION_QID = 5
-    questions = session.query(Question).filter(
-        Question.id == COST_PRODUCTION_QID
-    ).all()
+    questions = (
+        session.query(Question)
+        .filter(Question.id == COST_PRODUCTION_QID)
+        .all()
+    )
     questions = [question.serialize_with_child for question in questions]
+    return questions
+
+
+def get_loss_questions(session: Session):
+    LOSS_QID = 9
+    questions = session.query(Question).filter(Question.id == LOSS_QID).all()
+    questions = [q.id for q in questions]
     return questions

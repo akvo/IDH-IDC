@@ -30,6 +30,7 @@ import { adminRole } from "../../store/static";
 import { stepPath } from "./store";
 import { resetCurrentCaseState } from "./store/current_case";
 import { resetCaseVisualState } from "./store/case_visual";
+import { resetCaseUIState } from "./store/case_ui";
 import { ViewSummaryModal } from "../../components/utils";
 
 const { Search } = Input;
@@ -364,6 +365,8 @@ const Cases = () => {
     resetCurrentCaseState();
     // reset case visual state
     resetCaseVisualState();
+    // reset case ui state
+    resetCaseUIState();
   }, []);
 
   useEffect(() => {

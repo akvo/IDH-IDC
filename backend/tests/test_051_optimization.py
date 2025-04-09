@@ -50,7 +50,6 @@ class TestOptimizationRoute:
                 {
                     "key": 1,
                     "name": "percentage_1",
-                    "percentage": 0.5,
                     "value": {
                         "target_p": 0.4,
                         "achieved_income": 0.4,
@@ -67,11 +66,13 @@ class TestOptimizationRoute:
                             ],
                         },
                     },
+                    "percentage": 0.5,
+                    "increase_error": False,
+                    "max_percentage": None,
                 },
                 {
                     "key": 2,
                     "name": "percentage_2",
-                    "percentage": 0.75,
                     "value": {
                         "target_p": 0.4,
                         "achieved_income": 0.4,
@@ -88,11 +89,13 @@ class TestOptimizationRoute:
                             ],
                         },
                     },
+                    "percentage": 0.75,
+                    "increase_error": False,
+                    "max_percentage": None,
                 },
                 {
                     "key": 3,
                     "name": "percentage_3",
-                    "percentage": 1,
                     "value": {
                         "target_p": 0.4,
                         "achieved_income": 0.4,
@@ -109,6 +112,9 @@ class TestOptimizationRoute:
                             ],
                         },
                     },
+                    "percentage": 1.0,
+                    "increase_error": False,
+                    "max_percentage": None,
                 },
             ],
         }
