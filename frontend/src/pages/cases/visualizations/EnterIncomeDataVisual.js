@@ -9,12 +9,15 @@ const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
 
-  const currentSegment = useMemo(
-    () =>
-      currentCase.segments.find((segment) => segment.id === activeSegmentId) ||
-      null,
-    [currentCase.segments, activeSegmentId]
-  );
+  const currentSegment = useMemo(() => {
+    const findCase = currentCase.segments.find(
+      (segment) => segment.id === activeSegmentId
+    );
+    if (!findCase) {
+      return currentCase.segments?.[0] || null;
+    }
+    return findCase;
+  }, [currentCase.segments, activeSegmentId]);
 
   if (!currentSegment) {
     return <Tag color="error">Failed to load current segment data</Tag>;
