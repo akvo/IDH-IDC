@@ -70,7 +70,7 @@ const ChartExploreIncomeDriverBreakdown = () => {
       return [];
     }
     const focusCommodityAnswers = selectedSegmentData.answers.filter(
-      (a) => a.commodityFocus && a.question.question_type !== "diversified"
+      (a) => a.commodityFocus && a?.question?.question_type !== "diversified"
     );
     const driverQuestions =
       uniqBy(
@@ -90,7 +90,8 @@ const ChartExploreIncomeDriverBreakdown = () => {
       .map((x) => {
         const commodity = selectedSegmentData.answers.find(
           (a) =>
-            a.commodityType === x && a.question.question_type !== "diversified"
+            a?.commodityType === x &&
+            a?.question?.question_type !== "diversified"
         );
         if (!commodity) {
           return false;
@@ -109,7 +110,7 @@ const ChartExploreIncomeDriverBreakdown = () => {
       .filter(
         (a) =>
           a.commodityType === "diversified" &&
-          a.question.question_type === "diversified"
+          a.question?.question_type === "diversified"
       )
       .flatMap((a) => a.question);
     diversifiedQuestions = uniqBy(diversifiedQuestions, "id").map((q) => ({
@@ -220,8 +221,8 @@ const ChartExploreIncomeDriverBreakdown = () => {
                   (a) =>
                     a.name === x &&
                     a.commodityType === d.type &&
-                    !a.question.parent &&
-                    a.question.question_type !== "diversified"
+                    !a?.question?.parent &&
+                    a?.question?.question_type !== "diversified"
                 );
                 value =
                   nonFocusCommodity && nonFocusCommodity?.value
