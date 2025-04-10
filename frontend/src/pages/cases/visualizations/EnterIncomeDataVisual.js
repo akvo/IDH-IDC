@@ -30,7 +30,8 @@ const EnterIncomeDataVisual = () => {
           <div className="label">Living income benchmark for a household</div>
           <Space align="center">
             <div className="value">
-              {thousandFormatter(currentSegment.target, 2)}
+              {thousandFormatter(currentSegment.target, 2)}{" "}
+              {currentCase.currency}
             </div>
             <div className="label"> / year</div>
           </Space>
