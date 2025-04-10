@@ -227,6 +227,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
   };
 
   const handleOnClickComplete = () => {
+    handleSaveVisualization({ allowNavigate: false });
     api
       .put(`case/update-status/${currentCase.id}?status=1`)
       .then(() => {
