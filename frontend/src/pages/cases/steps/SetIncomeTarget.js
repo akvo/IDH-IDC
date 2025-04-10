@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect, useState } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Form,
@@ -57,12 +57,10 @@ const SetIncomeTarget = ({
   const stepSetIncomeTargetState = CaseUIState.useState(
     (s) => s.stepSetIncomeTarget
   );
+  const newCpiModalVisible =
+    stepSetIncomeTargetState?.newCpiModalVisible || false;
+
   const [messageApi, contextHolder] = message.useMessage();
-  const [newCpiModalVisible, setNewCpiModalVisible] = useState(false);
-  const [newCPIState, setNewCPIState] = useState({
-    newCPI: null,
-    newCPIFactor: null,
-  });
 
   const setTargetYourself = Form.useWatch(
     `${segment.id}-set_target_yourself`,
@@ -70,6 +68,27 @@ const SetIncomeTarget = ({
   );
 
   const newCPI = Form.useWatch(`${segment.id}-new_cpi`, cpiForm);
+
+  const setNewCpiModalVisible = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      stepSetIncomeTarget: {
+        ...s.stepSetIncomeTarget,
+        newCpiModalVisible: value,
+      },
+    }));
+  };
+
+  const setNewCPIState = ({ newCPI, newCPIFactor }) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      stepSetIncomeTarget: {
+        ...s.stepSetIncomeTarget,
+        newCPI,
+        newCPIFactor,
+      },
+    }));
+  };
 
   // handle when reset field when Do you want to set an income target yourself change
   useEffect(() => {
@@ -157,12 +176,18 @@ const SetIncomeTarget = ({
   }, [segment?.benchmark, currentCase?.currency]);
 
   const isAdjustBenchmarkUsingCPIValuesVisible = useMemo(() => {
-    return (
+    if (
       (segment?.benchmark?.value?.[currentCase?.currency?.toLowerCase()] ||
         segment?.benchmark?.value?.lcu) &&
       segment?.benchmark?.year !== currentCase.year
-    );
-  }, [segment?.benchmark, currentCase?.currency, currentCase?.year]);
+    ) {
+      return true;
+    }
+    if (cpiForm) {
+      cpiForm.resetFields();
+    }
+    return false;
+  }, [segment?.benchmark, currentCase?.currency, currentCase?.year, cpiForm]);
 
   const greenLIBValue = useMemo(() => {
     if (
@@ -183,8 +208,8 @@ const SetIncomeTarget = ({
     stepSetIncomeTargetState?.regionOptionStatus,
   ]);
 
+  // handle ajusted benchmark using CPI values onLoad
   useEffect(() => {
-    // handle ajusted benchmark using CPI values onLoad
     if (isAdjustBenchmarkUsingCPIValuesVisible && segment?.target) {
       const value = `${
         segment.target ? thousandFormatter(segment.target.toFixed(2)) : 0
@@ -222,6 +247,9 @@ const SetIncomeTarget = ({
         newCPIFactor.toFixed(2)
       );
       cpiForm.setFieldValue(`${segment.id}-new_cpi`, newCPI.toFixed(2));
+    } else {
+      form.setFieldValue(`${segment.id}-new_benchmark_value`, null);
+      cpiForm.resetFields();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -480,8 +508,12 @@ const SetIncomeTarget = ({
         segment.benchmark.value.lcu;
 
       // adjust using manual CPI value
-      if (newCPIState?.newCPIFactor && isAdjustBenchmarkUsingCPIValuesVisible) {
-        const caseYearLIB = targetValue * (1 + newCPIState.newCPIFactor);
+      if (
+        stepSetIncomeTargetState?.newCPIFactor &&
+        isAdjustBenchmarkUsingCPIValuesVisible
+      ) {
+        const caseYearLIB =
+          targetValue * (1 + stepSetIncomeTargetState.newCPIFactor);
         const LITarget =
           (householdSize / segment.benchmark.household_equiv) * caseYearLIB;
         form.setFieldValue(

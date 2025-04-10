@@ -34,6 +34,18 @@ security = HTTPBearer()
 case_route = APIRouter()
 
 
+def get_segment_benchmark(session: Session, case):
+    for segment in case["segments"]:
+        benchmark = crud_lib.get_by_country_region_year(
+            session=session,
+            country=case["country"],
+            region=segment["region"],
+            year=case["year"],
+        )
+        segment["benchmark"] = benchmark
+    return case
+
+
 @case_route.post(
     "/case",
     response_model=CaseDict,
@@ -243,7 +255,9 @@ def update_case(
         case = crud_case.case_updated_by(
             session=session, case_id=case_id, user_id=user.id
         )
-    return case.to_case_detail
+    case = case.to_case_detail
+    case = get_segment_benchmark(session=session, case=case)
+    return case
 
 
 @case_route.get(
@@ -264,14 +278,7 @@ def get_case_by_id(
     )
     case = crud_case.get_case_by_id(session=session, id=case_id)
     case = case.to_case_detail
-    for segment in case["segments"]:
-        benchmark = crud_lib.get_by_country_region_year(
-            session=session,
-            country=case["country"],
-            region=segment["region"],
-            year=case["year"],
-        )
-        segment["benchmark"] = benchmark
+    case = get_segment_benchmark(session=session, case=case)
     return case
 
 

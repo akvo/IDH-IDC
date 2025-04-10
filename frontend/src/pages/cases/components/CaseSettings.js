@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, message } from "antd";
 import { CaseForm } from ".";
@@ -22,7 +22,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
   const currentCase = CurrentCaseState.useState((s) => s);
   const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
-  const { enableEditCase } = general;
+  const { enableEditCase, activeSegmentId } = general;
 
   const [prevCaseSettingValue, setPrevCaseSettingValue] = useState({});
   const [formData, setFormData] = useState({ segments: [""] });
@@ -41,6 +41,31 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       ...s,
       [key]: value,
     }));
+  }, []);
+
+  const setNewCpiModalVisible = (value) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      stepSetIncomeTarget: {
+        ...s.stepSetIncomeTarget,
+        newCpiModalVisible: value,
+      },
+    }));
+  };
+
+  const setNewCPIState = ({ newCPI, newCPIFactor }) => {
+    CaseUIState.update((s) => ({
+      ...s,
+      stepSetIncomeTarget: {
+        ...s.stepSetIncomeTarget,
+        newCPI,
+        newCPIFactor,
+      },
+    }));
+  };
+
+  const isOnStep1Page = useMemo(() => {
+    return window.location.pathname?.includes(stepPath.step1.label);
   }, []);
 
   useEffect(
@@ -234,9 +259,47 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       .then((res) => {
         setPrevCaseSettingValue(filteredCurrentValue);
         const { data } = res;
+
+        const newActiveSegmentId =
+          activeSegmentId || data?.segments?.[0]?.id || null;
+
+        const activeSegment = data?.segments?.find(
+          (s) => s.id === newActiveSegmentId
+        );
+        const benchmark = activeSegment?.benchmark || {};
+
+        // handle trigger new CPI adjustment modal
+        let updatedData = { ...data };
+        if (isOnStep1Page) {
+          if (
+            (benchmark?.value?.[data?.currency?.toLowerCase()] ||
+              benchmark?.value?.lcu) &&
+            benchmark?.year !== data.year
+          ) {
+            updatedData = {
+              ...data,
+              segments: data?.segments?.map((segment) => {
+                if (segment.id === newActiveSegmentId) {
+                  return {
+                    ...segment,
+                    target: 0,
+                  };
+                }
+                return segment;
+              }),
+            };
+            setNewCpiModalVisible(true);
+            setNewCPIState({ newCPI: null, newCPIFactor: null });
+          } else {
+            setNewCpiModalVisible(false);
+          }
+        }
+        // EOL handle trigger new CPI adjustment modal
+
+        // update global state
         CurrentCaseState.update((s) => ({
           ...s,
-          ...data,
+          ...updatedData,
         }));
         PrevCaseState.update((s) => ({
           ...s,
@@ -244,8 +307,10 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         }));
         updateCaseUI("general", {
           ...general,
-          activeSegmentId: data?.segments?.[0]?.id || null,
+          activeSegmentId: newActiveSegmentId,
         });
+        // EOL update global state
+
         messageApi.open({
           type: "success",
           content: "Case setting saved successfully.",
@@ -253,7 +318,9 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         setTimeout(() => {
           form.resetFields();
           handleCancel();
-          navigate(`/case/${data.id}/${stepPath.step1.label}`);
+          if (window.location.pathname === "/cases") {
+            navigate(`/case/${data.id}/${stepPath.step1.label}`);
+          }
         }, 100);
       })
       .catch((e) => {
