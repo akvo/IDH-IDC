@@ -24,6 +24,11 @@ import { stepPath, CaseUIState } from "../store";
 
 const { Sider, Content } = Layout;
 const buttonPrevNextPosition = "bottom";
+const options = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
 
 const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
   const navigate = useNavigate();
@@ -89,8 +94,8 @@ const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
 
 const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
-  const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
 
+  const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
   const [siderCollapsed, setSiderCollapsed] = useState(false);
 
   const layoutSize = useMemo(() => {
@@ -186,15 +191,28 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                   { title: currentCase?.name, href: "" },
                 ]}
                 breadcrumbRightContent={
-                  <Space>
-                    <Button
-                      className="button-green-transparent"
-                      icon={<SettingOutlined />}
-                      onClick={() => setCaseSettingModalVisible(true)}
-                    >
-                      Case settings
-                    </Button>
-                    {buttonPrevNextPosition === "top" && <ButtonPrevNext />}
+                  <Space direction="vertical" align="end">
+                    <div>
+                      {currentCase.updated_by
+                        ? `Last update by ${currentCase?.updated_by} ${
+                            currentCase?.updated_at
+                              ? `on ${new Date(
+                                  currentCase?.updated_at
+                                ).toLocaleString("en-US", options)}`
+                              : ""
+                          }`
+                        : null}
+                    </div>
+                    <Space>
+                      <Button
+                        className="button-green-transparent"
+                        icon={<SettingOutlined />}
+                        onClick={() => setCaseSettingModalVisible(true)}
+                      >
+                        Case settings
+                      </Button>
+                      {buttonPrevNextPosition === "top" && <ButtonPrevNext />}
+                    </Space>
                   </Space>
                 }
               >
