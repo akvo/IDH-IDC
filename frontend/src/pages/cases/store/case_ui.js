@@ -24,6 +24,9 @@ const defaultCaseUIState = {
     regionOptions: [],
     regionOptionStatus: null,
     regionOptionLoading: false,
+    newCpiModalVisible: false,
+    newCPI: null,
+    newCPIFactor: null,
   },
 };
 

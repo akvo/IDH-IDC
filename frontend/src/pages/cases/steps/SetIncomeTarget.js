@@ -85,6 +85,7 @@ const SetIncomeTarget = ({
   }, [setTargetYourself, form, cpiForm, segment.id]);
 
   // handle benchmark adjustment (Step 1)
+  console.log(newCPI);
   useEffect(() => {
     if (!isEmpty(segment?.benchmark) && newCPI) {
       const benchmark = segment?.benchmark;
@@ -157,11 +158,19 @@ const SetIncomeTarget = ({
   }, [segment?.benchmark, currentCase?.currency]);
 
   const isAdjustBenchmarkUsingCPIValuesVisible = useMemo(() => {
-    return (
+    if (
       (segment?.benchmark?.value?.[currentCase?.currency?.toLowerCase()] ||
         segment?.benchmark?.value?.lcu) &&
       segment?.benchmark?.year !== currentCase.year
-    );
+    ) {
+      // handle trigger adjust benchmark by CPI modal after case settings updated
+      setNewCpiModalVisible(true);
+      return true;
+    }
+    if (cpiForm) {
+      cpiForm.resetFields();
+    }
+    return false;
   }, [segment?.benchmark, currentCase?.currency, currentCase?.year]);
 
   const greenLIBValue = useMemo(() => {
@@ -183,8 +192,8 @@ const SetIncomeTarget = ({
     stepSetIncomeTargetState?.regionOptionStatus,
   ]);
 
+  // handle ajusted benchmark using CPI values onLoad
   useEffect(() => {
-    // handle ajusted benchmark using CPI values onLoad
     if (isAdjustBenchmarkUsingCPIValuesVisible && segment?.target) {
       const value = `${
         segment.target ? thousandFormatter(segment.target.toFixed(2)) : 0
