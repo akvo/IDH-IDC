@@ -58,7 +58,12 @@ const generateSegmentAnswersPayload = ({
 /**
  * STEP 2
  */
-const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
+const EnterIncomeData = ({
+  segment,
+  setbackfunction,
+  setnextfunction,
+  setsavefunction,
+}) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const prevCaseSegments = PrevCaseState.useState((s) => s.segments);
@@ -77,100 +82,105 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
     }));
   };
 
-  const handleSaveIncomeData = useCallback(() => {
-    if (!enableEditCase) {
-      return;
-    }
+  const handleSaveIncomeData = useCallback(
+    ({ allowNavigate = false }) => {
+      if (!enableEditCase) {
+        return;
+      }
 
-    const allAnswers = currentCase?.segments?.flatMap((s) => s.answers);
-    if (!isEmpty(allAnswers)) {
-      // detect is payload updated
-      const isUpdated =
-        prevCaseSegments
-          .map((prev) => {
-            prev = {
-              ...prev,
-              benchmark: null, // set to null
-              answers: removeUndefinedObjectValue(prev?.answers || {}),
-            };
-            let findPayload = currentCase.segments.find(
-              (curr) => curr.id === prev.id
-            );
-            if (!findPayload) {
-              // handle deleted segment
-              return true;
-            }
-            findPayload = {
-              ...findPayload,
-              benchmark: null, // set to null
-              answers: removeUndefinedObjectValue(findPayload?.answers || {}),
-            };
-            const equal = isEqual(
-              removeUndefinedObjectValue(prev),
-              removeUndefinedObjectValue(findPayload)
-            );
-            return !equal;
-          })
-          .filter((x) => x)?.length > 0;
+      const allAnswers = currentCase?.segments?.flatMap((s) => s.answers);
+      if (!isEmpty(allAnswers)) {
+        // detect is payload updated
+        const isUpdated =
+          prevCaseSegments
+            .map((prev) => {
+              prev = {
+                ...prev,
+                benchmark: null, // set to null
+                answers: removeUndefinedObjectValue(prev?.answers || {}),
+              };
+              let findPayload = currentCase.segments.find(
+                (curr) => curr.id === prev.id
+              );
+              if (!findPayload) {
+                // handle deleted segment
+                return true;
+              }
+              findPayload = {
+                ...findPayload,
+                benchmark: null, // set to null
+                answers: removeUndefinedObjectValue(findPayload?.answers || {}),
+              };
+              const equal = isEqual(
+                removeUndefinedObjectValue(prev),
+                removeUndefinedObjectValue(findPayload)
+              );
+              return !equal;
+            })
+            .filter((x) => x)?.length > 0;
 
-      const segmentPayloads = currentCase.segments.map((s) => {
-        let answerPayload = [];
-        if (!isEmpty(s?.answers)) {
-          answerPayload = generateSegmentAnswersPayload({ ...s });
-        }
-        return {
-          id: s.id,
-          name: s.name,
-          case: s.case,
-          region: s.region,
-          target: s.target,
-          adult: s.adult,
-          child: s.child,
-          answers: answerPayload,
-        };
-      });
-
-      upateCaseButtonState({ loading: true });
-      api
-        .put(`/segment?updated=${isUpdated}`, segmentPayloads)
-        .then((res) => {
-          const { data } = res;
-          PrevCaseState.update((s) => ({
-            ...s,
-            segments: data,
-          }));
-          messageApi.open({
-            type: "success",
-            content: "Income data saved successfully.",
-          });
-          setTimeout(() => {
-            navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
-          }, 100);
-        })
-        .catch((e) => {
-          console.error(e);
-          const { status, data } = e.response;
-          let errorText = "Failed to save income data.";
-          if (status === 403) {
-            errorText = data.detail;
+        const segmentPayloads = currentCase.segments.map((s) => {
+          let answerPayload = [];
+          if (!isEmpty(s?.answers)) {
+            answerPayload = generateSegmentAnswersPayload({ ...s });
           }
-          messageApi.open({
-            type: "error",
-            content: errorText,
-          });
-        })
-        .finally(() => {
-          upateCaseButtonState({ loading: false });
+          return {
+            id: s.id,
+            name: s.name,
+            case: s.case,
+            region: s.region,
+            target: s.target,
+            adult: s.adult,
+            child: s.child,
+            answers: answerPayload,
+          };
         });
-    }
-  }, [
-    currentCase.id,
-    currentCase.segments,
-    messageApi,
-    navigate,
-    prevCaseSegments,
-    enableEditCase,
-  ]);
+
+        upateCaseButtonState({ loading: true });
+        api
+          .put(`/segment?updated=${isUpdated}`, segmentPayloads)
+          .then((res) => {
+            const { data } = res;
+            PrevCaseState.update((s) => ({
+              ...s,
+              segments: data,
+            }));
+            messageApi.open({
+              type: "success",
+              content: "Income data saved successfully.",
+            });
+            if (allowNavigate) {
+              setTimeout(() => {
+                navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
+              }, 100);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            const { status, data } = e.response;
+            let errorText = "Failed to save income data.";
+            if (status === 403) {
+              errorText = data.detail;
+            }
+            messageApi.open({
+              type: "error",
+              content: errorText,
+            });
+          })
+          .finally(() => {
+            upateCaseButtonState({ loading: false });
+          });
+      }
+    },
+    [
+      currentCase.id,
+      currentCase.segments,
+      messageApi,
+      navigate,
+      prevCaseSegments,
+      enableEditCase,
+    ]
+  );
 
   const backFunction = useCallback(() => {
     navigate(-1);
@@ -178,7 +188,11 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
   }, [navigate]);
 
   const nextFunction = useCallback(() => {
-    handleSaveIncomeData();
+    handleSaveIncomeData({ allowNavigate: true });
+  }, [handleSaveIncomeData]);
+
+  const saveFunction = useCallback(() => {
+    handleSaveIncomeData({ allowNavigate: false });
   }, [handleSaveIncomeData]);
 
   useEffect(() => {
@@ -188,7 +202,17 @@ const EnterIncomeData = ({ segment, setbackfunction, setnextfunction }) => {
     if (setnextfunction) {
       setnextfunction(nextFunction);
     }
-  }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
+    if (setsavefunction) {
+      setsavefunction(saveFunction);
+    }
+  }, [
+    setbackfunction,
+    setnextfunction,
+    setsavefunction,
+    backFunction,
+    nextFunction,
+    saveFunction,
+  ]);
 
   const totalIncome = useMemo(() => {
     if (isEmpty(sectionTotalValues)) {

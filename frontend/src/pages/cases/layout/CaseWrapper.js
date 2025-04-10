@@ -30,7 +30,7 @@ const options = {
   day: "numeric",
 };
 
-const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
+const CaseSidebar = ({ step, caseId, siderCollapsed, onSave }) => {
   const navigate = useNavigate();
 
   const sidebarItems = useMemo(() => {
@@ -82,9 +82,12 @@ const CaseSidebar = ({ step, caseId, siderCollapsed }) => {
         direction="vertical"
         items={sidebarItems}
         className="case-step-wrapper"
-        onChange={(val) =>
-          navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`)
-        }
+        onChange={(val) => {
+          if (onSave) {
+            onSave();
+          }
+          navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`);
+        }}
         current={findStepPathValue ? findStepPathValue - 1 : 1}
         size="small"
       />
@@ -108,6 +111,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   // Use refs to store the functions
   const backFunctionRef = useRef(() => {});
   const nextFunctionRef = useRef(() => {});
+  const saveFunctionRef = useRef(() => {});
 
   const handleBack = () => {
     backFunctionRef.current();
@@ -115,6 +119,10 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   const handleNext = () => {
     nextFunctionRef.current();
+  };
+
+  const handleSave = () => {
+    saveFunctionRef.current();
   };
 
   const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
@@ -173,6 +181,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                   step={step}
                   caseId={caseId}
                   siderCollapsed={siderCollapsed}
+                  onSave={handleSave}
                 />
               </Sider>
             </Affix>
@@ -225,6 +234,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                     React.cloneElement(children, {
                       setbackfunction: (fn) => (backFunctionRef.current = fn),
                       setnextfunction: (fn) => (nextFunctionRef.current = fn),
+                      setsavefunction: (fn) => (saveFunctionRef.current = fn),
                     })
                   ) : null
                 ) : (

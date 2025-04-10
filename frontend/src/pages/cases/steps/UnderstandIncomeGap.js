@@ -13,7 +13,11 @@ import {
 /**
  * STEP 3
  */
-const UnderstandIncomeGap = ({ setbackfunction, setnextfunction }) => {
+const UnderstandIncomeGap = ({
+  setbackfunction,
+  setnextfunction,
+  setsavefunction,
+}) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
 
@@ -33,7 +37,16 @@ const UnderstandIncomeGap = ({ setbackfunction, setnextfunction }) => {
     if (setnextfunction) {
       setnextfunction(nextFunction);
     }
-  }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
+    if (setsavefunction) {
+      setsavefunction(() => console.info("no save function needed"));
+    }
+  }, [
+    setbackfunction,
+    setnextfunction,
+    setsavefunction,
+    backFunction,
+    nextFunction,
+  ]);
 
   return (
     <Row id="understand-income-gap" gutter={[24, 24]}>
