@@ -37,6 +37,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 const AssessImpactMitigationStrategies = ({
   setbackfunction,
   setnextfunction,
+  setsavefunction,
 }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -59,72 +60,79 @@ const AssessImpactMitigationStrategies = ({
     }));
   };
 
-  const handleSaveVisualization = useCallback(() => {
-    if (!enableEditCase) {
-      return;
-    }
+  const handleSaveVisualization = useCallback(
+    ({ allowNavigate = false }) => {
+      if (!enableEditCase) {
+        return;
+      }
 
-    upateCaseButtonState({ loading: true });
-    const payloads = [sensitivityAnalysis];
-    // sensitivity analysis
-    const isBinningDataUpdated = !isEqual(
-      removeUndefinedObjectValue(prevSensitivityAnalysis?.config),
-      removeUndefinedObjectValue(sensitivityAnalysis?.config)
-    );
-    // save only when the payloads is provided
-    if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
-      // Save
-      api
-        .sendCompressedData(
-          `visualization?updated=${isBinningDataUpdated}`,
-          payloads
-        )
-        .then(() => {
-          CaseVisualState.update((s) => ({
-            ...s,
-            prevSensitivityAnalysis: {
-              ...sensitivityAnalysis,
-            },
-          }));
-          messageApi.open({
-            type: "success",
-            content:
-              "Assess impact of mitigation strategies saved successfully.",
+      upateCaseButtonState({ loading: true });
+      const payloads = [sensitivityAnalysis];
+      // sensitivity analysis
+      const isBinningDataUpdated = !isEqual(
+        removeUndefinedObjectValue(prevSensitivityAnalysis?.config),
+        removeUndefinedObjectValue(sensitivityAnalysis?.config)
+      );
+      // save only when the payloads is provided
+      if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
+        // Save
+        api
+          .sendCompressedData(
+            `visualization?updated=${isBinningDataUpdated}`,
+            payloads
+          )
+          .then(() => {
+            CaseVisualState.update((s) => ({
+              ...s,
+              prevSensitivityAnalysis: {
+                ...sensitivityAnalysis,
+              },
+            }));
+            messageApi.open({
+              type: "success",
+              content:
+                "Assess impact of mitigation strategies saved successfully.",
+            });
+            if (allowNavigate) {
+              setTimeout(() => {
+                navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
+              }, 100);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            const { status, data } = e.response;
+            let errorText =
+              "Failed to save assess impact of mitigation strategies.";
+            if (status === 403) {
+              errorText = data.detail;
+            }
+            messageApi.open({
+              type: "error",
+              content: errorText,
+            });
+          })
+          .finally(() => {
+            upateCaseButtonState({ loading: false });
           });
+      } else {
+        upateCaseButtonState({ loading: false });
+        if (allowNavigate) {
           setTimeout(() => {
             navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
           }, 100);
-        })
-        .catch((e) => {
-          console.error(e);
-          const { status, data } = e.response;
-          let errorText =
-            "Failed to save assess impact of mitigation strategies.";
-          if (status === 403) {
-            errorText = data.detail;
-          }
-          messageApi.open({
-            type: "error",
-            content: errorText,
-          });
-        })
-        .finally(() => {
-          upateCaseButtonState({ loading: false });
-        });
-    } else {
-      upateCaseButtonState({ loading: false });
-      setTimeout(() => {
-        navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
-      }, 100);
-    }
-  }, [
-    currentCase.id,
-    enableEditCase,
-    messageApi,
-    navigate,
-    prevSensitivityAnalysis,
-    sensitivityAnalysis,
-  ]);
+        }
+      }
+    },
+    [
+      currentCase.id,
+      enableEditCase,
+      messageApi,
+      navigate,
+      prevSensitivityAnalysis,
+      sensitivityAnalysis,
+    ]
+  );
 
   const backFunction = useCallback(() => {
     navigate(-1);
@@ -132,7 +140,11 @@ const AssessImpactMitigationStrategies = ({
   }, [navigate]);
 
   const nextFunction = useCallback(() => {
-    handleSaveVisualization();
+    handleSaveVisualization({ allowNavigate: true });
+  }, [handleSaveVisualization]);
+
+  const saveFunction = useCallback(() => {
+    handleSaveVisualization({ allowNavigate: false });
   }, [handleSaveVisualization]);
 
   const updateCaseVisualSensitivityAnalysisState = (updatedValue) => {
@@ -152,7 +164,17 @@ const AssessImpactMitigationStrategies = ({
     if (setnextfunction) {
       setnextfunction(nextFunction);
     }
-  }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
+    if (setsavefunction) {
+      setsavefunction(saveFunction);
+    }
+  }, [
+    setbackfunction,
+    setnextfunction,
+    setsavefunction,
+    backFunction,
+    nextFunction,
+    saveFunction,
+  ]);
 
   const dataSource = useMemo(() => {
     if (!selectedSegment) {

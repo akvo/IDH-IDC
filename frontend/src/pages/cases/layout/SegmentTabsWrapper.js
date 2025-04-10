@@ -4,7 +4,12 @@ import { CurrentCaseState, CaseUIState } from "../store";
 import "../steps/steps.scss";
 import { orderBy } from "lodash";
 
-const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
+const SegmentTabsWrapper = ({
+  children,
+  setbackfunction,
+  setnextfunction,
+  setsavefunction,
+}) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const childrenCount = React.Children.count(children);
@@ -21,6 +26,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
                     segment,
                     setbackfunction,
                     setnextfunction,
+                    setsavefunction,
                   })
                 : null
             )
@@ -31,6 +37,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
                       segment,
                       setbackfunction,
                       setnextfunction,
+                      setsavefunction,
                     })
                   : null
                 : null
@@ -41,6 +48,7 @@ const SegmentTabsWrapper = ({ children, setbackfunction, setnextfunction }) => {
     children,
     setbackfunction,
     setnextfunction,
+    setsavefunction,
     childrenCount,
   ]);
 

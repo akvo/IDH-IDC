@@ -18,7 +18,7 @@ import { api, removeUndefinedObjectValue } from "../../../lib";
 const MAX_SCENARIO = 3;
 const deleteButtonPosition = "tab-item";
 
-const ClosingGap = ({ setbackfunction, setnextfunction }) => {
+const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const { scenarioModeling, dashboardData, prevScenarioModeling } =
@@ -59,57 +59,61 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     }));
   };
 
-  const handleSaveVisualization = useCallback(() => {
-    if (!enableEditCase) {
-      return;
-    }
+  const handleSaveVisualization = useCallback(
+    ({ allowNavigate = false }) => {
+      if (!enableEditCase) {
+        console.info(allowNavigate);
+        return;
+      }
 
-    upateCaseButtonState({ loading: true });
-    const payloads = [scenarioModeling];
-    // scenario modeling
-    const isScenarioUpdated = !isEqual(
-      removeUndefinedObjectValue(prevScenarioModeling?.config),
-      removeUndefinedObjectValue(scenarioModeling?.config)
-    );
-    // save only when the payloads is provided
-    if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
-      // Save
-      api
-        .sendCompressedData(
-          `visualization?updated=${isScenarioUpdated}`,
-          payloads
-        )
-        .then(() => {
-          CaseVisualState.update((s) => ({
-            ...s,
-            prevScenarioModeling: {
-              ...scenarioModeling,
-            },
-          }));
-          messageApi.open({
-            type: "success",
-            content: "Scenario modeling value saved successfully.",
+      upateCaseButtonState({ loading: true });
+      const payloads = [scenarioModeling];
+      // scenario modeling
+      const isScenarioUpdated = !isEqual(
+        removeUndefinedObjectValue(prevScenarioModeling?.config),
+        removeUndefinedObjectValue(scenarioModeling?.config)
+      );
+      // save only when the payloads is provided
+      if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
+        // Save
+        api
+          .sendCompressedData(
+            `visualization?updated=${isScenarioUpdated}`,
+            payloads
+          )
+          .then(() => {
+            CaseVisualState.update((s) => ({
+              ...s,
+              prevScenarioModeling: {
+                ...scenarioModeling,
+              },
+            }));
+            messageApi.open({
+              type: "success",
+              content: "Scenario modeling value saved successfully.",
+            });
+          })
+          .catch((e) => {
+            console.error(e);
+            const { status, data } = e.response;
+            let errorText = "Failed to save scenario modeling value.";
+            if (status === 403) {
+              errorText = data.detail;
+            }
+            messageApi.open({
+              type: "error",
+              content: errorText,
+            });
+          })
+          .finally(() => {
+            upateCaseButtonState({ loading: false });
           });
-        })
-        .catch((e) => {
-          console.error(e);
-          const { status, data } = e.response;
-          let errorText = "Failed to save scenario modeling value.";
-          if (status === 403) {
-            errorText = data.detail;
-          }
-          messageApi.open({
-            type: "error",
-            content: errorText,
-          });
-        })
-        .finally(() => {
-          upateCaseButtonState({ loading: false });
-        });
-    } else {
-      upateCaseButtonState({ loading: false });
-    }
-  }, [enableEditCase, messageApi, prevScenarioModeling, scenarioModeling]);
+      } else {
+        upateCaseButtonState({ loading: false });
+      }
+    },
+    [enableEditCase, messageApi, prevScenarioModeling, scenarioModeling]
+  );
 
   const backFunction = useCallback(() => {
     navigate(-1);
@@ -117,7 +121,11 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   }, [navigate]);
 
   const nextFunction = useCallback(() => {
-    handleSaveVisualization();
+    handleSaveVisualization({ allowNavigate: true });
+  }, [handleSaveVisualization]);
+
+  const saveFunction = useCallback(() => {
+    handleSaveVisualization({ allowNavigate: false });
   }, [handleSaveVisualization]);
 
   useEffect(() => {
@@ -127,7 +135,17 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
     if (setnextfunction) {
       setnextfunction(nextFunction);
     }
-  }, [setbackfunction, setnextfunction, backFunction, nextFunction]);
+    if (setsavefunction) {
+      setsavefunction(saveFunction);
+    }
+  }, [
+    setbackfunction,
+    setnextfunction,
+    setsavefunction,
+    backFunction,
+    nextFunction,
+    saveFunction,
+  ]);
 
   // handle initial scenario data for all segments (run only once)
   useEffect(() => {
@@ -209,6 +227,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction }) => {
   };
 
   const handleOnClickComplete = () => {
+    handleSaveVisualization({ allowNavigate: false });
     api
       .put(`case/update-status/${currentCase.id}?status=1`)
       .then(() => {
