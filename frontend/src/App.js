@@ -169,7 +169,7 @@ const App = () => {
               <Route exact path="/home" element={<Home />} />
 
               {/* TODO:: Manage new cases step route to show in development */}
-              {!host !== "incomedrivercalculator.idhtrade.org" && (
+              {host !== "incomedrivercalculator.idhtrade.org" && (
                 <>
                   <Route exact path="/cases" element={<Cases />} />
                   <Route exact path="/case/:caseId/:step" element={<Case />} />

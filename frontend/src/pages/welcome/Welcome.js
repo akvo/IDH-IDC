@@ -22,6 +22,7 @@ const defData = {
 };
 
 const Welcome = () => {
+  const host = window.location.hostname;
   const { fullname: username, internal_user: isInternalUser } =
     UserState.useState((s) => s);
   const { companyHavingCaseOptions, companyOptions } = UIState.useState(
@@ -297,7 +298,13 @@ const Welcome = () => {
                   discover how you can improve farmer income.
                 </div>
                 <div className="button-wrapper">
-                  <Link to="/cases">
+                  <Link
+                    to={
+                      host === "incomedrivercalculator.idhtrade.org"
+                        ? "/old-cases"
+                        : "/cases"
+                    }
+                  >
                     <Button className="button-explore">
                       View cases <ArrowRightOutlined />
                     </Button>
