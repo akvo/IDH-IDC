@@ -15,7 +15,7 @@ id,region,country_id,country
 14,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",[119],['Mexico']
 15,Non-metropolitan Urban / Lake Naivasha,[95],['Kenya']
 16,Peri-Urban / Lower Volta Region,[71],['Ghana']
-17,Rural / All,"[129, 7, 135, 142, 143, 145, 19, 153, 30, 34, 38, 46, 179, 181, 182, 56, 57, 185, 186, 67, 202, 203, 80, 101, 110, 124, 125]","['Argentina', 'Peru', 'Belize', 'Turkiye', 'El Salvador', 'Gabon', 'Togo', 'Zambia', 'Madagascar', 'Tanzania', 'Nigeria', 'Panama', 'Burkina Faso', 'Mozambique', ""Cote d'Ivoire"", 'Tunisia', 'Rwanda', 'Egypt, Arab Rep.', 'Papua New Guinea', 'Timor-Leste', 'Lao PDR', 'Cameroon', 'Honduras', 'Chad', 'Zimbabwe', 'Morocco', 'Nepal']"
+17,Rural / All,"[129, 7, 135, 142, 143, 145, 19, 153, 30, 34, 38, 46, 179, 181, 182, 56, 57, 185, 186, 67, 202, 203, 80, 101, 110, 124, 125]","['Morocco', 'Papua New Guinea', 'El Salvador', 'Panama', 'Burkina Faso', 'Rwanda', 'Nigeria', 'Argentina', 'Cameroon', 'Chad', 'Belize', 'Gabon', 'Tunisia', 'Egypt, Arab Rep.', 'Peru', 'Zimbabwe', 'Tanzania', ""Cote d'Ivoire"", 'Honduras', 'Turkiye', 'Mozambique', 'Nepal', 'Madagascar', 'Lao PDR', 'Togo', 'Zambia', 'Timor-Leste']"
 18,Rural / All/ Congo Kinshasa,[43],"['Congo, Dem. Rep.']"
 19,Rural / Andhra Pradesh,[84],['India']
 20,"Rural / Bhadohi, Uttar Pradesh",[84],['India']
@@ -51,7 +51,7 @@ id,region,country_id,country
 50,Rural Guji zone / Oromia Region,[62],['Ethiopia']
 51,"Rural coffee-growing regions / Comayagua, Copán, and El Paraíso",[80],['Honduras']
 52,Rural-Urban / Northwest,[133],['Nicaragua']
-53,Urban / All,"[33, 34, 67, 170, 80, 179, 180, 182, 57, 186, 93]","['Sri Lanka', 'Thailand', 'Cambodia', 'Jordan', 'Tanzania', 'Turkiye', 'Honduras', 'Cameroon', 'El Salvador', 'Gabon', 'Togo']"
+53,Urban / All,"[33, 34, 67, 170, 80, 179, 180, 182, 57, 186, 93]","['Jordan', 'El Salvador', 'Cameroon', 'Tanzania', 'Sri Lanka', 'Togo', 'Honduras', 'Turkiye', 'Thailand', 'Cambodia', 'Gabon']"
 54,Urban / Chengdu,[40],['China']
 55,Urban / Dhaka City,[15],['Bangladesh']
 56,Urban / Hangzhou,[40],['China']
