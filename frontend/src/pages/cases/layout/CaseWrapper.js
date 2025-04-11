@@ -11,6 +11,10 @@ import {
   Space,
   Alert,
   Spin,
+  Modal,
+  Select,
+  Divider,
+  Table,
 } from "antd";
 import { ContentLayout } from "../../../components/layout";
 import {
@@ -18,9 +22,14 @@ import {
   ArrowRightOutlined,
   MenuOutlined,
   SettingOutlined,
+  ShareAltOutlined,
+  MinusCircleOutlined,
 } from "@ant-design/icons";
-import { CaseSettings } from "../components";
+import { CaseSettings, DebounceSelect } from "../components";
 import { stepPath, CaseUIState } from "../store";
+import { UserState } from "../../../store";
+import { adminRole, casePermission } from "../../../store/static";
+import { api } from "../../../lib";
 
 const { Sider, Content } = Layout;
 const buttonPrevNextPosition = "bottom";
@@ -97,9 +106,25 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave }) => {
 
 const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
+  const {
+    id: userId,
+    email: userEmail,
+    role: userRole,
+  } = UserState.useState((s) => s);
+
+  const isCaseOwner =
+    userEmail === currentCase?.created_by || userId === currentCase?.created_by;
+  const isAdmin = adminRole.includes(userRole);
+
+  const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
 
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
   const [siderCollapsed, setSiderCollapsed] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [userCaseAccessDataSource, setUserCaseAccessDataSource] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedPermission, setSelectedPermission] = useState(null);
+  const [loadingUserCase, setLoadingUserCase] = useState(false);
 
   const layoutSize = useMemo(() => {
     if (!siderCollapsed) {
@@ -125,7 +150,63 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     saveFunctionRef.current();
   };
 
-  const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
+  /* Support add User Access */
+  const fetchUsers = (searchValue) => {
+    return api
+      .get(`user/search_dropdown?search=${searchValue}`)
+      .then((res) => res.data);
+  };
+
+  /* Support add User Access */
+  const handleOnClickAddUserCaseAccess = () => {
+    if (currentCase.id) {
+      setLoadingUserCase(true);
+      const payload = {
+        user: selectedUser?.value,
+        permission: selectedPermission,
+      };
+      api
+        .post(`case_access/${currentCase.id}`, payload)
+        .then((res) => {
+          setUserCaseAccessDataSource((prev) => {
+            return [...prev, res.data];
+          });
+          setSelectedUser(null);
+          setSelectedPermission(null);
+        })
+        .catch((e) => {
+          console.error(e);
+        })
+        .finally(() => {
+          setLoadingUserCase(false);
+        });
+    }
+  };
+
+  /* Support add User Access */
+  const handleOnClickRemoveUserAccess = (row) => {
+    if (currentCase?.id) {
+      api
+        .delete(`case_access/${currentCase.id}?access_id=${row.id}`)
+        .then(() => {
+          setUserCaseAccessDataSource((prev) => {
+            return prev.filter((p) => p.id !== row.id);
+          });
+        });
+    }
+  };
+
+  /* Support add User Access */
+  const handleOnClickShareAccess = () => {
+    if (currentCase?.id) {
+      api.get(`case_access/${currentCase.id}`).then((res) => {
+        setUserCaseAccessDataSource(res.data);
+        setTimeout(() => {
+          setShowShareModal(true);
+        }, 100);
+      });
+    }
+  };
 
   const ButtonPrevNext = () => (
     <Space>
@@ -210,7 +291,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                                 ).toLocaleString("en-US", options)}`
                               : ""
                           }`
-                        : null}
+                        : ""}
                     </div>
                     <Space>
                       <Button
@@ -220,6 +301,17 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                       >
                         Case settings
                       </Button>
+                      {isCaseOwner || isAdmin ? (
+                        <Button
+                          className="button-green-transparent"
+                          icon={<ShareAltOutlined />}
+                          onClick={handleOnClickShareAccess}
+                        >
+                          Share
+                        </Button>
+                      ) : (
+                        ""
+                      )}
                       {buttonPrevNextPosition === "top" && <ButtonPrevNext />}
                     </Space>
                   </Space>
@@ -267,6 +359,84 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
         handleCancel={() => setCaseSettingModalVisible(false)}
         enableEditCase={true}
       />
+
+      {/* Support add User Access */}
+      <Modal
+        title="Share Case Access to Users"
+        open={showShareModal}
+        onCancel={() => setShowShareModal(false)}
+        width={650}
+        footer={false}
+      >
+        <Row gutter={[16, 16]} align="center">
+          <Col span={12}>
+            <DebounceSelect
+              placeholder="Search for a user"
+              value={selectedUser}
+              fetchOptions={fetchUsers}
+              onChange={(value) => setSelectedUser(value)}
+              style={{
+                width: "100%",
+              }}
+            />
+          </Col>
+          <Col span={8}>
+            <Select
+              showSearch
+              value={selectedPermission}
+              placeholder="Select permission"
+              options={casePermission.map((x) => ({ label: x, value: x }))}
+              optionFilterProp="label"
+              style={{ width: "100%" }}
+              onChange={setSelectedPermission}
+            />
+          </Col>
+          <Col span={4} align="end" style={{ float: "right" }}>
+            <Button
+              onClick={() => handleOnClickAddUserCaseAccess()}
+              disabled={!selectedUser || !selectedPermission}
+              loading={loadingUserCase}
+            >
+              Add
+            </Button>
+          </Col>
+        </Row>
+        <Divider />
+        <Table
+          size="small"
+          columns={[
+            {
+              key: "user",
+              title: "User",
+              width: "65%",
+              dataIndex: "label",
+            },
+            {
+              key: "permission",
+              title: "Permission",
+              dataIndex: "permission",
+            },
+            {
+              key: "action",
+              render: (row) => {
+                return (
+                  <Button
+                    size="small"
+                    type="ghost"
+                    icon={<MinusCircleOutlined />}
+                    onClick={() => handleOnClickRemoveUserAccess(row)}
+                  />
+                );
+              },
+            },
+          ]}
+          dataSource={userCaseAccessDataSource}
+          bordered
+          title={() => <b>User Case Access</b>}
+          pagination={false}
+          loading={loadingUserCase}
+        />
+      </Modal>
     </Row>
   );
 };
