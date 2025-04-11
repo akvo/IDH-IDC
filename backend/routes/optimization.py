@@ -179,6 +179,68 @@ def calculate_total_income(
     return total_income, updated_answers
 
 
+def find_parents_to_remove(
+    parameter_bounds, editable_indices, questions, answers
+):
+    parents_to_remove = set()
+
+    for key, _, _ in parameter_bounds:
+        if key in editable_indices:
+            continue
+
+        case_commodity_id, qid = key.split("-")
+        case_commodity = find_case_commodity_by_case_commodity_id(
+            data=questions, case_commodity_id=int(case_commodity_id)
+        )
+
+        if not case_commodity:
+            # print(f"Case commodity not found for ID {case_commodity_id}")
+            continue
+
+        case_commodity_questions = case_commodity.get("questions", [])
+        _, child_to_parent = flatten_questions(case_commodity_questions)
+
+        # print("child_to_parent:", child_to_parent)
+
+        qid = int(qid)
+        if qid in child_to_parent.values():
+            print(f"{qid} is a parent")
+
+            child_ids = [
+                cid for cid, pid in child_to_parent.items() if pid == qid
+            ]
+            # print(f"Child IDs for parent {qid}: {child_ids}")
+
+            for child_id in child_ids:
+                answer_key = f"current-{case_commodity_id}-{child_id}"
+                # print(
+                #     f"Checking answer for child {child_id}: {answer_key} ->
+                # {answers.get(answer_key)}"
+                # )
+
+                if answer_key in answers and answers[answer_key] is not None:
+                    # print(f"Parent {qid} marked for removal")
+                    parents_to_remove.add(qid)
+                    break
+
+    # print("Parents to remove:", parents_to_remove)
+    return list(parents_to_remove)
+
+
+def filter_parameter_bounds(
+    parameter_bounds, editable_indices, questions, answers
+):
+    parents_to_remove = find_parents_to_remove(
+        parameter_bounds, editable_indices, questions, answers
+    )
+    print(parents_to_remove, "[]")
+    return [
+        (key, low, high)
+        for (key, low, high) in parameter_bounds
+        if int(key.split("-")[1]) not in parents_to_remove
+    ]
+
+
 def calculate_true_feasible_income(
     parameter_bounds, editable_indices, current_values, questions
 ):
@@ -362,55 +424,69 @@ async def run_model(
     actual_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
     # check for parents of editable_indices and remove the value from bounds
-    parents_to_remove = []
-    for key, low, high in parameter_bounds:
-        if key not in editable_indices:
-            continue
-        case_commodity_id = key.split("-")[0]
-        qid = key.split("-")[1]
-        case_commodity = find_case_commodity_by_case_commodity_id(
-            data=questions, case_commodity_id=int(case_commodity_id)
-        )
-        case_commodity_questions = (
-            case_commodity.get("questions", []) if case_commodity else []
-        )
-        _, child_to_parent = flatten_questions(case_commodity_questions)
-        keys = set(child_to_parent.keys())  # All dictionary keys
-        values = set(child_to_parent.values())  # All dictionary values
-        # Find elements that appear as both keys and values
-        # meaning this value is parent question
-        keys_as_values = list(keys.intersection(values))
+    # parents_to_remove = []
+    # for key, low, high in parameter_bounds:
+    #     if key not in editable_indices:
+    #         continue
+    #     case_commodity_id = key.split("-")[0]
+    #     qid = key.split("-")[1]
+    #     case_commodity = find_case_commodity_by_case_commodity_id(
+    #         data=questions, case_commodity_id=int(case_commodity_id)
+    #     )
+    #     case_commodity_questions = (
+    #         case_commodity.get("questions", []) if case_commodity else []
+    #     )
+    #     _, child_to_parent = flatten_questions(case_commodity_questions)
+    #     keys = set(child_to_parent.keys())  # All dictionary keys
+    #     values = set(child_to_parent.values())  # All dictionary values
+    #     # Find elements that appear as both keys and values
+    #     # meaning this value is parent question
+    #     keys_as_values = list(keys.intersection(values))
 
-        # Find values in left that appear in any string in right
-        editable_indices_qids = [
-            int(v.split("-")[1]) for v in editable_indices
-        ]
-        appeared_values = list(
-            set(keys_as_values) & set(editable_indices_qids)
-        )
-        # Remove appeared_values from left list
-        keys_as_values = [
-            x for x in keys_as_values if x not in appeared_values
-        ]
+    #     # Find values in left that appear in any string in right
+    #     editable_indices_qids = [
+    #         int(v.split("-")[1]) for v in editable_indices
+    #     ]
+    #     appeared_values = list(
+    #         set(keys_as_values) & set(editable_indices_qids)
+    #     )
+    #     # Remove appeared_values from left list
+    #     keys_as_values = [
+    #         x for x in keys_as_values if x not in appeared_values
+    #     ]
 
-        parents_to_remove += (
-            get_parents(child_to_parent, key=int(qid)) + keys_as_values
-        )
-    parents_to_remove = list(set(parents_to_remove))
+    #     parents_to_remove += (
+    #         get_parents(child_to_parent, key=int(qid)) + keys_as_values
+    #     )
+    # parents_to_remove = list(set(parents_to_remove))
+    #
+    # parameter_bounds = [
+    #     tup
+    #     for tup in parameter_bounds
+    #     if int(tup[0].split("-")[1]) not in parents_to_remove
+    # ]
+    #
+    # actual_bounds = [
+    #     tup
+    #     for tup in actual_bounds
+    #     if int(tup[0].split("-")[1]) not in parents_to_remove
+    # ]
 
-    parameter_bounds = [
-        tup
-        for tup in parameter_bounds
-        if int(tup[0].split("-")[1]) not in parents_to_remove
-    ]
+    parameter_bounds = filter_parameter_bounds(
+        parameter_bounds=parameter_bounds,
+        editable_indices=editable_indices,
+        questions=questions,
+        answers=segment_answers,
+    )
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
-    actual_bounds = [
-        tup
-        for tup in actual_bounds
-        if int(tup[0].split("-")[1]) not in parents_to_remove
-    ]
+    actual_bounds = filter_parameter_bounds(
+        parameter_bounds=actual_bounds,
+        editable_indices=editable_indices,
+        questions=questions,
+        answers=segment_answers,
+    )
     # Sort using integer conversion
     actual_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
