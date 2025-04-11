@@ -303,7 +303,11 @@ const LivingIncomeBenchmarkExplorer = () => {
       // const LITarget = (defHHSize / targetHH) * caseYearLIB;
       // EOL Delete
 
-      libForm.setFieldValue("new_inflation_rate", newCPIFactor.toFixed(2));
+      const newCPIFactorPercentage = newCPIFactor * 100;
+      libForm.setFieldValue(
+        "new_inflation_rate",
+        newCPIFactorPercentage.toFixed(2)
+      );
       libForm.setFieldValue(
         "new_adjusted_benchmark_value",
         `${thousandFormatter(LITarget, 2)} ${currencyUnit}`
