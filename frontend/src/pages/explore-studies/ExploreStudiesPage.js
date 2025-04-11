@@ -360,12 +360,12 @@ const ExploreStudiesPage = () => {
           }
           if (value && d?.unit) {
             value = `${value} ${
-              values?.[d.unit] ? `(${values[d.unit]})` : "(Unit NA)"
+              values?.[d.unit] ? `${values[d.unit]}` : "(unit NA)"
             }`;
           }
           if (value && d?.type) {
             value = `${value} ${
-              values?.[d.type] ? ` - type: ${values[d.type]}` : " - type NA"
+              values?.[d.type] ? ` - (${values[d.type]})` : "(type NA)"
             }`;
           }
           return {
