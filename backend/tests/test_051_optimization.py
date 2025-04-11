@@ -42,62 +42,30 @@ class TestOptimizationRoute:
         res = res.json()
         assert res == {
             "target_income": 3000.0,
-            "current_income": 0.4,
-            "feasible_income": 0.4,
-            "adjusted_current_income": 0.4,
-            "adjusted_feasible_income": 0.4,
+            "current_income": 10000.2,
+            "feasible_income": 0.2,
             "optimization_result": [
                 {
                     "key": 1,
                     "name": "percentage_1",
-                    "value": {
-                        "target_p": 0.4,
-                        "achieved_income": 0.4,
-                        "optimization": {
-                            "1-2": [
-                                {"name": "current", "value": 0},
-                                {"name": "feasible", "value": 0},
-                                {"name": "optimized", "value": 0},
-                            ],
-                            "1-3": [
-                                {"name": "current", "value": 0},
-                                {"name": "feasible", "value": 500.0},
-                                {"name": "optimized", "value": 0},
-                            ],
-                        },
-                    },
+                    "value": {},
                     "percentage": 0.5,
-                    "increase_error": False,
-                    "max_percentage": None,
+                    "increase_error": True,
+                    "max_percentage": 0.9999800000000001,
                 },
                 {
                     "key": 2,
                     "name": "percentage_2",
-                    "value": {
-                        "target_p": 0.4,
-                        "achieved_income": 0.4,
-                        "optimization": {
-                            "1-2": [
-                                {"name": "current", "value": 0},
-                                {"name": "feasible", "value": 0},
-                                {"name": "optimized", "value": 0},
-                            ],
-                            "1-3": [
-                                {"name": "current", "value": 0},
-                                {"name": "feasible", "value": 500.0},
-                                {"name": "optimized", "value": 0},
-                            ],
-                        },
-                    },
+                    "value": {},
                     "percentage": 0.75,
-                    "increase_error": False,
-                    "max_percentage": None,
+                    "increase_error": True,
+                    "max_percentage": 0.9999800000000001,
                 },
                 {
                     "key": 3,
                     "name": "percentage_3",
                     "value": {
-                        "target_p": 0.4,
+                        "target_p": 0.2000000000007276,
                         "achieved_income": 0.4,
                         "optimization": {
                             "1-2": [

@@ -4,15 +4,17 @@ import numpy as np
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from collections import defaultdict
 
 from db.crud_segment import get_segment_by_id
 from db.crud_question import (
     get_question_by_case,
-    get_cost_production_questions,
-    get_loss_questions,
+    # get_cost_production_questions,
+    # get_loss_questions,
 )
 from db.connection import get_session
-from models.case_commodity import CaseCommodityType
+
+# from models.case_commodity import CaseCommodityType
 
 from scipy.optimize import minimize
 
@@ -35,12 +37,6 @@ def get_parents(data: dict, key: int):
         key = data[key]  # Get the parent of the current key
         parents.append(key)  # Store the parent
     return parents
-
-
-def extract_dependencies(formula) -> List[str]:
-    if not isinstance(formula, str):
-        return []
-    return placeholder_pattern.findall(formula)
 
 
 def evaluate_formula(
@@ -84,6 +80,59 @@ def flatten_questions(questions):
     return flat_questions, child_to_parent
 
 
+def get_parents_chain(qid, child_to_parent):
+    chain = []
+    while qid in child_to_parent:
+        parent = child_to_parent[qid]
+        chain.append(parent)
+        qid = parent
+    return chain
+
+
+def calculate_values(
+    flat_questions,
+    child_to_parent,
+    field_key,
+    updated_answers,
+    mode,
+    case_commodity_id,
+):
+    parent_to_children = defaultdict(list)
+    for child, parent in child_to_parent.items():
+        parent_to_children[parent].append(child)
+
+    # Sort by depth (deepest first)
+    sorted_questions = sorted(
+        flat_questions.items(),
+        key=lambda x: len(get_parents_chain(x[0], child_to_parent)),
+        reverse=True,
+    )
+
+    for question_id, question in sorted_questions:
+        question_key = f"{field_key}-{question_id}"
+
+        if question_key in updated_answers:
+            continue  # already provided in answers
+
+        if "default_value" in question and question["default_value"]:
+            updated_answers[question_key] = evaluate_formula(
+                question["default_value"],
+                updated_answers,
+                mode,
+                case_commodity_id,
+                question_id=question_id,
+            )
+        else:
+            children = parent_to_children.get(question_id, [])
+            if children:
+                updated_answers[question_key] = sum(
+                    updated_answers.get(f"{field_key}-{child}", 0) or 0
+                    for child in children
+                )
+            else:
+                updated_answers[question_key] = 0
+
+
 def calculate_total_income(
     commodities: list, segment_data: dict, mode: str = "current"
 ) -> tuple:
@@ -94,73 +143,38 @@ def calculate_total_income(
     for commodity in commodities:
         case_commodity_id = commodity["case_commodity_id"]
         field_key = f"{mode}-{case_commodity_id}"
+
         flat_questions, child_to_parent = flatten_questions(
             commodity.get("questions", [])
         )
 
-        for question_id, question in flat_questions.items():
-            question_key = f"{field_key}-{question_id}"
-            if "default_value" in question and question["default_value"]:
-                updated_answers[question_key] = evaluate_formula(
-                    question["default_value"],
-                    updated_answers,
-                    mode,
-                    case_commodity_id,
-                )
-            elif question_id in child_to_parent:
-                children = [
-                    qid
-                    for qid, p in child_to_parent.items()
-                    if p == question_id
-                ]
-                updated_answers[question_key] = sum(
-                    updated_answers.get(f"{field_key}-{child}", 0) or 0
-                    for child in children
-                )
-            elif question_key not in updated_answers:
-                updated_answers[question_key] = 0
+        # Core: caculate all of question values
+        calculate_values(
+            flat_questions,
+            child_to_parent,
+            field_key,
+            updated_answers,
+            mode,
+            case_commodity_id,
+        )
 
-        for question_id, question in flat_questions.items():
-            if question.get("question_type") == "aggregator":
-                q_key = f"{field_key}-{question_id}"
-                if q_key not in updated_answers or updated_answers[q_key] == 0:
-                    if (
-                        "default_value" in question
-                        and question["default_value"]
-                    ):
-                        updated_answers[q_key] = evaluate_formula(
-                            question["default_value"],
-                            updated_answers,
-                            mode,
-                            case_commodity_id,
-                        )
-                    else:
-                        children = [
-                            qid
-                            for qid, p in child_to_parent.items()
-                            if p == question_id
-                        ]
-                        updated_answers[q_key] = sum(
-                            updated_answers.get(f"{field_key}-{child}", 0)
-                            for child in children
-                        )
-
-        # only use aggregator
-        if (
-            commodity["case_commodity_type"]
-            != CaseCommodityType.diversified.value
-        ):
-            commodity_income = updated_answers.get(f"{field_key}-{1}", 0)
+        # Get income from aggregator (id = 1) or
+        # sum of root/child if diversified
+        income = 0
+        if commodity["case_commodity_type"] != "diversified":
+            income = updated_answers.get(f"{field_key}-1", 0) or 0
         else:
-            diversified_qids = [
+            root_question_ids = [
                 q["id"] for q in commodity.get("questions", [])
             ]
-            commodity_income = sum(
-                updated_answers.get(f"{field_key}-{qid}", 0) or 0
-                for qid in diversified_qids
+            income = (
+                sum(
+                    updated_answers.get(f"{field_key}-{qid}", 0) or 0
+                    for qid in root_question_ids
+                )
+                or 0
             )
-        # updated_answers[f"{field_key}-income"] = commodity_income
-        total_income += commodity_income
+        total_income += income
 
     return total_income, updated_answers
 
@@ -206,6 +220,14 @@ def optimize_income(
     penalty_factor,
 ):
     """Optimizes income based on editable parameters."""
+    # print("=========== TARGET P")
+    # print(target_p)
+    # print("=========== PARAMETER BOUNDS")
+    # print(parameter_bounds)
+    # print("=========== CURRENT VALUES")
+    # print(current_values)
+    # print("=========== DRIVERS")
+    # print(editable_indices)
 
     def objective_function(params):
         params_dict = {
@@ -228,6 +250,7 @@ def optimize_income(
                 params_dict.get(k, 0) - dict(current_values).get(k, 0)
             ) / (dict(current_values).get(k, 0) + 1e-9)
             penalty += penalty_factor * percentage_change**2
+        # print(neg_net_income, penalty, "in")
         return neg_net_income + penalty
 
     def constraint_function(params):
@@ -287,14 +310,14 @@ async def run_model(
     """Runs the optimization model for a given case and segment."""
 
     # GENERATE list of COP question IDS
-    cop_questions = get_cost_production_questions(session=session)
-    flatten_cop_questions, _ = flatten_questions(cop_questions)
-    cop_qids = [f"-{key}" for key in flatten_cop_questions.keys()]
+    # cop_questions = get_cost_production_questions(session=session)
+    # flatten_cop_questions, _ = flatten_questions(cop_questions)
+    # cop_qids = [f"-{key}" for key in flatten_cop_questions.keys()]
     # EOL GENERATE list of COP question IDS
 
     # LOSS qids
-    loss_qids = get_loss_questions(session=session)
-    loss_qids = [f"-{value}" for value in loss_qids]
+    # loss_qids = get_loss_questions(session=session)
+    # loss_qids = [f"-{value}" for value in loss_qids]
     # EOLS LOSS qids
 
     segment = get_segment_by_id(
@@ -308,6 +331,8 @@ async def run_model(
         commodities=questions, segment_data=segment, mode="feasible"
     )
     segment_answers = segment.get("answers", {})
+    print("=== CURRENT FEASIBLE INCOME ===")
+    print(current_income, feasible_income)
 
     # Extract (case_commodity_id, question_id) pairs
     # while ignoring question_id = 1
@@ -317,7 +342,8 @@ async def run_model(
         if k.split("-")[2] != "1"
     }
 
-    # Build parameter bounds
+    # Build parameter bound
+    actual_bounds = []
     parameter_bounds = []
     for case_commodity_id, qid in question_ids:
         key = f"{case_commodity_id}-{qid}"
@@ -329,8 +355,11 @@ async def run_model(
         else:
             # normal current/feasible value
             parameter_bounds.append((key, current_value, feasible_value))
+        # add to actual_bounds
+        actual_bounds.append((key, current_value, feasible_value))
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
+    actual_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
     # check for parents of editable_indices and remove the value from bounds
     parents_to_remove = []
@@ -377,26 +406,55 @@ async def run_model(
     # Sort using integer conversion
     parameter_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
 
+    actual_bounds = [
+        tup
+        for tup in actual_bounds
+        if int(tup[0].split("-")[1]) not in parents_to_remove
+    ]
+    # Sort using integer conversion
+    actual_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
+
+    # Populate current/feasible values
+    current_values = []
+    for key, current, _ in actual_bounds:
+        current_values.append((key, current))
+    # EOL Populate current/feasible values
+
+    print("===========TEST====================")
+    test_answers = {f"current-{key}": value for key, value in current_values}
+    # sub drivers combined value
+    test_income, _ = calculate_total_income(
+        commodities=questions,
+        segment_data={"answers": test_answers},
+        mode="current",
+    )
+    # print(test_answers)
+    print(test_income, "TEST INCOME")
+    print("===============================")
+
+    """
     # REMAP CURRENT/FEASIBLE VALUE
     # handle adjust current feasible value by check feasible < current
     # and check by cost driver feasible > current
     adjusted_current_values = []
     adjusted_feasible_values = []
     for key, current, feasible in parameter_bounds:
-        key_in_cop = any(val in key for val in cop_qids)
-        key_in_loss = any(val in key for val in loss_qids)
-        if key_in_loss and feasible > current:
-            adjusted_current_values.append((key, feasible))
-            adjusted_feasible_values.append((key, current))
-            continue
-        if key_in_cop and feasible > current:
-            adjusted_current_values.append((key, feasible))
-            adjusted_feasible_values.append((key, current))
-            continue
-        if not key_in_cop and feasible < current:
-            adjusted_current_values.append((key, feasible))
-            adjusted_feasible_values.append((key, current))
-            continue
+        # SWAP LOGIC
+        # key_in_cop = any(val in key for val in cop_qids)
+        # key_in_loss = any(val in key for val in loss_qids)
+        # if key_in_loss and feasible > current:
+        #     adjusted_current_values.append((key, feasible))
+        #     adjusted_feasible_values.append((key, current))
+        #     continue
+        # if key_in_cop and feasible > current:
+        #     adjusted_current_values.append((key, feasible))
+        #     adjusted_feasible_values.append((key, current))
+        #     continue
+        # if not key_in_cop and feasible < current:
+        #     adjusted_current_values.append((key, feasible))
+        #     adjusted_feasible_values.append((key, current))
+        #     continue
+        # EOL SWAP LOGIC
         adjusted_current_values.append((key, current))
         adjusted_feasible_values.append((key, feasible))
 
@@ -411,8 +469,6 @@ async def run_model(
         segment_data={"answers": adjusted_current_answers},
         mode="current",
     )
-    # print(adjusted_current_answers, "==========")
-    # print(_)
 
     # recalculate current value
     adjusted_feasible_answers = {
@@ -424,17 +480,18 @@ async def run_model(
         mode="feasible",
     )
     # EOL REMAP CURRENT/FEASIBLE VALUE
+    """
 
     true_feasible_income = calculate_true_feasible_income(
         parameter_bounds=parameter_bounds,
         editable_indices=editable_indices,
-        current_values=adjusted_current_values,
+        current_values=current_values,
         questions=questions,
     )
     max_percentage = find_max_percentage(
         true_feasible_income=true_feasible_income,
-        current_income=adjusted_current_income,
-        feasible_income=adjusted_feasible_income,
+        current_income=current_income,
+        feasible_income=feasible_income,
     )
 
     # loop optimize in percentages param
@@ -444,8 +501,7 @@ async def run_model(
 
         # use adjusted income to calculate target_p
         target_p = (
-            adjusted_current_income
-            + (adjusted_feasible_income - adjusted_current_income) * percentage
+            current_income + (feasible_income - current_income) * percentage
         )
         # print(percentage, target_p, "====", current_income, feasible_income)
         # print(adjusted_current_income, adjusted_feasible_income)
@@ -467,7 +523,7 @@ async def run_model(
 
         result = optimize_income(
             parameter_bounds=parameter_bounds,
-            current_values=adjusted_current_values,
+            current_values=current_values,
             editable_indices=editable_indices,
             target_p=target_p,
             questions=questions,
@@ -493,8 +549,8 @@ async def run_model(
         results = {}
         for key in editable_indices:
             # use adjusted current/feasible values here
-            current = adjusted_current_answers.get(f"current-{key}", 0)
-            feasible = adjusted_feasible_answers.get(f"feasible-{key}", 0)
+            current = segment_answers.get(f"current-{key}", 0)
+            feasible = segment_answers.get(f"feasible-{key}", 0)
             optimized = optimized_answers.get(f"optimized-{key}", 0)
             results[key] = [
                 {"name": "current", "value": current or 0},
@@ -521,7 +577,5 @@ async def run_model(
         "target_income": segment.get("target", 0),
         "current_income": current_income,
         "feasible_income": feasible_income,
-        "adjusted_current_income": adjusted_current_income,
-        "adjusted_feasible_income": adjusted_feasible_income,
         "optimization_result": optimization_result,
     }

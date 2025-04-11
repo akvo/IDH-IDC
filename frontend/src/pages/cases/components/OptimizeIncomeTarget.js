@@ -217,11 +217,11 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const chartData = useMemo(() => {
     if (optimizationResult) {
       const { optimization_result } = optimizationResult;
-      const optimizedValues = orderBy(optimization_result, "key");
+      const optimizedValues = orderBy(optimization_result, "key")?.filter(
+        (v) => !v.increase_error
+      );
       const drivers =
-        optimizedValues
-          ?.filter((v) => !v.increase_error)
-          ?.flatMap((v) => v?.value?.optimization)?.[0] || {};
+        optimizedValues?.flatMap((v) => v?.value?.optimization)?.[0] || {};
 
       const labels = {};
       Object.keys(drivers).forEach((key) => {
