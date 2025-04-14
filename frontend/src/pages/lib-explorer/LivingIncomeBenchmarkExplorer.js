@@ -306,7 +306,7 @@ const LivingIncomeBenchmarkExplorer = () => {
       const newCPIFactorPercentage = newCPIFactor * 100;
       libForm.setFieldValue(
         "new_inflation_rate",
-        newCPIFactorPercentage.toFixed(2)
+        `${newCPIFactorPercentage.toFixed(2)} %`
       );
       libForm.setFieldValue(
         "new_adjusted_benchmark_value",
