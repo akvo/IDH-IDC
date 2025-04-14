@@ -256,7 +256,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           question: question,
           group: caseCommodity,
         });
-        labels[key] = `${question.text}${
+        labels[key] = `${question?.text}${
           unit && unit !== "" ? ` (${unit})` : ""
         }`;
       });

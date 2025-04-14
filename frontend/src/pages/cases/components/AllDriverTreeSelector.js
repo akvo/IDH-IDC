@@ -172,10 +172,14 @@ const AllDriverTreeSelector = ({
               return q;
             })
             .flatMap((x) => x);
+          // check childs
+          const childrensWithoutAggregator = qg?.questions?.filter(
+            (q) => q?.question_type !== "aggregator"
+          )?.length;
           return {
             value: qg.id,
             label: qg.commodity_name,
-            selectable: false,
+            selectable: childrensWithoutAggregator > 0 ? false : true,
             children: generateDriverOptions({
               group: qg,
               questions: skipAggregator,
@@ -229,11 +233,14 @@ const AllDriverTreeSelector = ({
   // Apply disabled state dynamically
   const modifiedTreeData = useMemo(() => {
     const applySelectableState = (nodes) =>
-      nodes.map((node) => ({
-        ...node,
-        selectable: !disabledNodes[node.value], // Only allow selection if not marked
-        children: node.children ? applySelectableState(node.children) : null,
-      }));
+      nodes.map((node) => {
+        const isInitiallySelectable = node.selectable !== false;
+        return {
+          ...node,
+          selectable: isInitiallySelectable && !disabledNodes[node.value],
+          children: node.children ? applySelectableState(node.children) : null,
+        };
+      });
 
     return applySelectableState(incomeDriverOptions);
   }, [incomeDriverOptions, disabledNodes]);
