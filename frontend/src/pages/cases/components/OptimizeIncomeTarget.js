@@ -31,6 +31,9 @@ const colors = [
 ];
 
 const unitName = ({ currentCase, question, group }) => {
+  if (!question?.unit) {
+    return "";
+  }
   return question.unit
     .split("/")
     .map((u) => u.trim())
