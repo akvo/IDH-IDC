@@ -85,6 +85,7 @@ const Case = () => {
 
   const [loading, setLoading] = useState(true);
   const currentCase = CurrentCaseState.useState((s) => s);
+  const prevCase = PrevCaseState.useState((s) => s);
   const { questionGroups, totalIncomeQuestions } = CaseVisualState.useState(
     (s) => s
   );
@@ -259,6 +260,21 @@ const Case = () => {
   // fetch region data
   useEffect(() => {
     if (currentCase?.country) {
+      if (currentCase?.country !== prevCase?.country) {
+        // reset segments region, target, and benchmark if country changed
+        CurrentCaseState.update((s) => ({
+          ...s,
+          segments: s.segments.map((segment) => ({
+            ...segment,
+            region: null,
+            target: null,
+            adult: null,
+            child: null,
+            benchmark: null,
+          })),
+        }));
+        // EOL reset segments region, target, and benchmark
+      }
       updateStepIncomeTargetState("regionOptionLoading", true);
       api
         .get(`region/options?country_id=${currentCase.country}`)
@@ -275,7 +291,7 @@ const Case = () => {
           updateStepIncomeTargetState("regionOptionLoading", false);
         });
     }
-  }, [currentCase?.country]);
+  }, [currentCase?.country, prevCase?.country]);
 
   // generate dashboard data
   useEffect(() => {

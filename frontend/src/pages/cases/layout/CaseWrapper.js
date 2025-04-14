@@ -362,7 +362,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
       {/* Support add User Access */}
       <Modal
-        title="Share Case Access to Users"
+        title="Share this case with others"
         open={showShareModal}
         onCancel={() => setShowShareModal(false)}
         width={650}
@@ -432,7 +432,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
           ]}
           dataSource={userCaseAccessDataSource}
           bordered
-          title={() => <b>User Case Access</b>}
+          title={() => <b>Users who can access this case</b>}
           pagination={false}
           loading={loadingUserCase}
         />

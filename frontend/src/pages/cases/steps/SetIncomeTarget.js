@@ -272,11 +272,14 @@ const SetIncomeTarget = ({
       }
       if (["target", "region", "adult", "child"].includes(key)) {
         values[`${segment.id}-${key}`] = value;
+      } else {
+        values[`${segment.id}-${key}`] = null;
       }
     });
+    form.setFieldsValue(values);
     return values;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // maybe need:: eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segment, form]);
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -426,6 +429,24 @@ const SetIncomeTarget = ({
       updateCurrentSegmentState,
     ]
   );
+
+  // handle show new CPI form when segment region not saved into DB yet
+  useEffect(() => {
+    if (
+      (currentCase.year || currentCase.country) &&
+      isEmpty(segment?.benchmark) &&
+      segment?.region
+    ) {
+      fetchBenchmark({ region: segment.region });
+    }
+  }, [
+    currentCase?.year,
+    currentCase?.country,
+    segment?.region,
+    segment?.benchmark,
+    fetchBenchmark,
+    form,
+  ]);
 
   const preventNegativeValue = (fieldName) => [
     () => ({
