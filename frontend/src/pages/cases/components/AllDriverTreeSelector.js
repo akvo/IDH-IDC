@@ -129,7 +129,7 @@ const AllDriverTreeSelector = ({
 
     // GENERATE PRIMARY DRIVERS
     const primaryGroup = incomeDataDrivers.find((d) => d.type === "primary");
-    const primaryDrivers = primaryGroup.questionGroups.map((qg) => {
+    const primaryDrivers = primaryGroup?.questionGroups?.map((qg) => {
       // skip the aggregator question
       const skipAggregator = qg.questions
         .map((q) => {
@@ -162,7 +162,7 @@ const AllDriverTreeSelector = ({
         value: driver.groupName,
         title: driver.groupName,
         selectable: false,
-        children: driver.questionGroups.map((qg) => {
+        children: driver?.questionGroups?.map((qg) => {
           // skip the aggregator question
           const skipAggregator = qg.questions
             .map((q) => {

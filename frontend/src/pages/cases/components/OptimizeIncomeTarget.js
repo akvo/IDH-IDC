@@ -474,24 +474,33 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <Button className="button-clear-optimize-result">
                 Clear results
               </Button>
-              <Popconfirm
-                placement="bottom"
-                description={
-                  !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
-                  disableRunModelByIfSelectedIncreaseValuesNA
-                    ? "Please complete step 2 before run the model."
-                    : null
-                }
-                color="#fff"
-                trigger="hover"
-                showCancel={false}
-                okButtonProps={{
-                  style: {
-                    display: "none",
-                  },
-                }}
-                icon={null}
-              >
+              {!selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
+              disableRunModelByIfSelectedIncreaseValuesNA ? (
+                <Popconfirm
+                  placement="bottom"
+                  description="Please complete step 1 and step 2 before run the model."
+                  color="#fff"
+                  trigger="hover"
+                  showCancel={false}
+                  okButtonProps={{
+                    style: {
+                      display: "none",
+                    },
+                  }}
+                  icon={null}
+                >
+                  <Button
+                    className="button-run-the-model"
+                    onClick={handleRunModel}
+                    disabled={
+                      !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
+                      disableRunModelByIfSelectedIncreaseValuesNA
+                    }
+                  >
+                    Run the model <ArrowRightOutlined />
+                  </Button>
+                </Popconfirm>
+              ) : (
                 <Button
                   className="button-run-the-model"
                   onClick={handleRunModel}
@@ -502,7 +511,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                 >
                   Run the model <ArrowRightOutlined />
                 </Button>
-              </Popconfirm>
+              )}
             </Col>
           </Row>
         </Card>
