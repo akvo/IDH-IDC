@@ -10,6 +10,7 @@ import {
   Tooltip,
   message,
   Alert,
+  Popconfirm,
 } from "antd";
 import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
@@ -19,7 +20,7 @@ import { api, flatten } from "../../../lib";
 import VisualCardWrapper from "./VisualCardWrapper";
 import Chart from "../../../components/chart";
 import { commodities } from "../../../store/static";
-import { orderBy, uniqBy } from "lodash";
+import { isEmpty, orderBy, uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
 
 const colors = [
@@ -99,6 +100,21 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     }));
   };
 
+  const disableRunModelByIfSelectedIncreaseValuesNA = useMemo(() => {
+    if (!isEmpty(increaseValues) && selectedSegment) {
+      const increaseValueAvailable = Object.entries(increaseValues)
+        .map(([key, value]) => {
+          if (key.includes(selectedSegment) && value) {
+            return key;
+          }
+          return null;
+        })
+        .filter((x) => x);
+      return increaseValueAvailable?.length <= 0;
+    }
+    return true;
+  }, [selectedSegment, increaseValues]);
+
   const currentSegment = useMemo(() => {
     return currentCaseState?.segments?.find((s) => s.id === selectedSegment);
   }, [selectedSegment, currentCaseState]);
@@ -122,7 +138,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
 
     const currentIncome = currentDashboardData?.total_current_income || 0;
     const feasibleIncome = currentDashboardData?.total_feasible_income || 0;
-    let absoluteIncreaseValue = currentIncome;
+    let absoluteIncreaseValue = 0;
     if (percentage) {
       absoluteIncreaseValue =
         currentIncome + (feasibleIncome - currentIncome) * (percentage / 100);
@@ -458,15 +474,35 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <Button className="button-clear-optimize-result">
                 Clear results
               </Button>
-              <Button
-                className="button-run-the-model"
-                onClick={handleRunModel}
-                disabled={
-                  !selectedDrivers?.[selectedDriversFieldPreffix]?.length
+              <Popconfirm
+                placement="bottom"
+                description={
+                  !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
+                  disableRunModelByIfSelectedIncreaseValuesNA
+                    ? "Please complete step 2 before run the model."
+                    : null
                 }
+                color="#fff"
+                trigger="hover"
+                showCancel={false}
+                okButtonProps={{
+                  style: {
+                    display: "none",
+                  },
+                }}
+                icon={null}
               >
-                Run the model <ArrowRightOutlined />
-              </Button>
+                <Button
+                  className="button-run-the-model"
+                  onClick={handleRunModel}
+                  disabled={
+                    !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
+                    disableRunModelByIfSelectedIncreaseValuesNA
+                  }
+                >
+                  Run the model <ArrowRightOutlined />
+                </Button>
+              </Popconfirm>
             </Col>
           </Row>
         </Card>

@@ -662,6 +662,12 @@
         background: #ffc505;
         color: #01625f;
         font-weight: 500;
+
+        &:disabled {
+          border: 1px solid $muted-color;
+          background: $muted-color;
+          color: #000;
+        }
       }
     }
   }
