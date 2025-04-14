@@ -27,7 +27,7 @@ import {
   selectProps,
   api,
   removeUndefinedObjectValue,
-  roundToOneDecimal,
+  roundToDecimal,
   calculateHouseholdSize,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
@@ -347,8 +347,8 @@ const SetIncomeTarget = ({
             return;
           }
           //
-          const adult = roundToOneDecimal(data.nr_adults);
-          const child = roundToOneDecimal(data.household_size - data.nr_adults);
+          const adult = roundToDecimal(data.nr_adults);
+          const child = roundToDecimal(data.household_size - data.nr_adults);
           // setBenchmark(data);
           const defHHSize = calculateHouseholdSize({
             adult,

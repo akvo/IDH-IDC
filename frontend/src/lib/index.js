@@ -213,9 +213,10 @@ export const calculateHouseholdSize = ({ adult = 0, child = 0 }) => {
   return adult_size + children_size;
 };
 
-export const roundToOneDecimal = (value) => {
-  const rounded = Math.round(value * 10) / 10;
-  return Number.isInteger(rounded) ? Math.trunc(rounded) : rounded;
+export const roundToDecimal = (value, decimal = 1) => {
+  const factor = Math.pow(10, decimal);
+  const rounded = Math.round(value * factor) / factor;
+  return parseFloat(rounded.toString()); // auto remove trailing zeros
 };
 
 export { default as api } from "./api";
