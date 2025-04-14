@@ -128,41 +128,9 @@ const AllDriverTreeSelector = ({
     // EOL GENERATE ARRAY TO STORE QID HAS FEASIBLE ANSWER
 
     // GENERATE PRIMARY DRIVERS
-    const primaryGroup = incomeDataDrivers.find((d) => d.type === "primary");
-    const primaryDrivers = primaryGroup?.questionGroups?.map((qg) => {
-      // skip the aggregator question
-      const skipAggregator = qg.questions
-        .map((q) => {
-          if (q.question_type === "aggregator") {
-            return q.childrens;
-          }
-          return q;
-        })
-        .flatMap((x) => x);
-      return {
-        value: qg.id,
-        label: `Primary commodity: ${qg.commodity_name}`,
-        selectable: false,
-        children: generateDriverOptions({
-          group: qg,
-          questions: skipAggregator,
-          qidWithFeasibleAnswer,
-          level: 1,
-        }),
-      };
-    });
-    // EOL GENERATE PRIMARY DRIVERS
-
-    // GENERATE DIVERSIFIED DRIVERS
-    const diversifiedGroup = incomeDataDrivers.find(
-      (d) => d.type === "diversified"
-    );
-    const diversifiedDrivers = [diversifiedGroup]?.map((driver) => {
-      return {
-        value: driver?.groupName,
-        title: driver?.groupName,
-        selectable: false,
-        children: driver?.questionGroups?.map((qg) => {
+    const primaryGroup = incomeDataDrivers?.find((d) => d.type === "primary");
+    const primaryDrivers = primaryGroup?.questionGroups
+      ? primaryGroup?.questionGroups?.map((qg) => {
           // skip the aggregator question
           const skipAggregator = qg.questions
             .map((q) => {
@@ -172,14 +140,10 @@ const AllDriverTreeSelector = ({
               return q;
             })
             .flatMap((x) => x);
-          // check childs
-          const childrensWithoutAggregator = qg?.questions?.filter(
-            (q) => q?.question_type !== "aggregator"
-          )?.length;
           return {
             value: qg.id,
-            label: qg.commodity_name,
-            selectable: childrensWithoutAggregator > 0 ? false : true,
+            label: `Primary commodity: ${qg.commodity_name}`,
+            selectable: false,
             children: generateDriverOptions({
               group: qg,
               questions: skipAggregator,
@@ -187,9 +151,49 @@ const AllDriverTreeSelector = ({
               level: 1,
             }),
           };
-        }),
-      };
-    });
+        })
+      : [];
+    // EOL GENERATE PRIMARY DRIVERS
+
+    // GENERATE DIVERSIFIED DRIVERS
+    const diversifiedGroup = incomeDataDrivers.find(
+      (d) => d.type === "diversified"
+    );
+    const diversifiedDrivers = diversifiedGroup
+      ? [diversifiedGroup]?.map((driver) => {
+          return {
+            value: driver?.groupName,
+            title: driver?.groupName,
+            selectable: false,
+            children: driver?.questionGroups?.map((qg) => {
+              // skip the aggregator question
+              const skipAggregator = qg.questions
+                .map((q) => {
+                  if (q.question_type === "aggregator") {
+                    return q.childrens;
+                  }
+                  return q;
+                })
+                .flatMap((x) => x);
+              // check childs
+              const childrensWithoutAggregator = qg?.questions?.filter(
+                (q) => q?.question_type !== "aggregator"
+              )?.length;
+              return {
+                value: qg.id,
+                label: qg.commodity_name,
+                selectable: childrensWithoutAggregator > 0 ? false : true,
+                children: generateDriverOptions({
+                  group: qg,
+                  questions: skipAggregator,
+                  qidWithFeasibleAnswer,
+                  level: 1,
+                }),
+              };
+            }),
+          };
+        })
+      : [];
     // EOL GENERATE DIVERSIFIED DRIVERS
 
     return [...primaryDrivers, ...diversifiedDrivers];
