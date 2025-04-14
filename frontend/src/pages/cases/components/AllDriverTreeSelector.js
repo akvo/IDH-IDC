@@ -157,10 +157,10 @@ const AllDriverTreeSelector = ({
     const diversifiedGroup = incomeDataDrivers.find(
       (d) => d.type === "diversified"
     );
-    const diversifiedDrivers = [diversifiedGroup].map((driver) => {
+    const diversifiedDrivers = [diversifiedGroup]?.map((driver) => {
       return {
-        value: driver.groupName,
-        title: driver.groupName,
+        value: driver?.groupName,
+        title: driver?.groupName,
         selectable: false,
         children: driver?.questionGroups?.map((qg) => {
           // skip the aggregator question
