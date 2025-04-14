@@ -269,7 +269,8 @@ const EnterIncomeDataDriver = ({
   ) => {
     if (!question?.parent) {
       if (question?.question_type === "aggregator") {
-        updateSectionTotalValues(commodity.commodity_type, fieldName, values);
+        const value = values?.[`${fieldKey}-${question.id}`] || 0;
+        updateSectionTotalValues(commodity.commodity_type, fieldName, value);
       } else if (question?.question_type === "diversified") {
         const diversifiedQuestions = flattenQuestionList.filter(
           (q) => q.question_type === "diversified"
