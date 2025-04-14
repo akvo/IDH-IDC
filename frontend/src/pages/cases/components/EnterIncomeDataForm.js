@@ -23,6 +23,7 @@ import {
   getFunctionDefaultValue,
   determineDecimalRound,
   calculateIncomePercentage,
+  roundToDecimal,
 } from "../../../lib";
 import { commodities } from "../../../store/static";
 import { CaseUIState, CurrentCaseState } from "../store";
@@ -334,11 +335,14 @@ const EnterIncomeDataDriver = ({
 
     const parentQuestionField = `${fieldKey}-${question?.parent}`;
     if (parentQuestion) {
-      form.setFieldValue(parentQuestionField, sumAllChildrensValues);
+      form.setFieldValue(
+        parentQuestionField,
+        roundToDecimal(sumAllChildrensValues)
+      );
       updateSectionTotalValues(
         commodity.commodity_type,
         fieldName,
-        sumAllChildrensValues
+        roundToDecimal(sumAllChildrensValues)
       );
     }
 
@@ -400,8 +404,8 @@ const EnterIncomeDataDriver = ({
           // use parent value if they already have value
           const formValue =
             parentQuestionValue || parentQuestionValue === 0
-              ? parentQuestionValue
-              : sumAllChildrensValues;
+              ? roundToDecimal(parentQuestionValue)
+              : roundToDecimal(sumAllChildrensValues);
           // EOL use parent value if they already have value
           form.setFieldValue(parentQuestionField, formValue);
           updateSectionTotalValues(
