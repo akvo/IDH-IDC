@@ -272,11 +272,14 @@ const SetIncomeTarget = ({
       }
       if (["target", "region", "adult", "child"].includes(key)) {
         values[`${segment.id}-${key}`] = value;
+      } else {
+        values[`${segment.id}-${key}`] = null;
       }
     });
+    form.setFieldsValue(values);
     return values;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // maybe need:: eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segment, form]);
 
   const updateCurrentSegmentState = useCallback(
     (updatedSegmentValue) => {
@@ -442,6 +445,7 @@ const SetIncomeTarget = ({
     segment?.region,
     segment?.benchmark,
     fetchBenchmark,
+    form,
   ]);
 
   const preventNegativeValue = (fieldName) => [
