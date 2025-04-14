@@ -427,6 +427,23 @@ const SetIncomeTarget = ({
     ]
   );
 
+  // handle show new CPI form when segment region not saved into DB yet
+  useEffect(() => {
+    if (
+      (currentCase.year || currentCase.country) &&
+      isEmpty(segment?.benchmark) &&
+      segment?.region
+    ) {
+      fetchBenchmark({ region: segment.region });
+    }
+  }, [
+    currentCase?.year,
+    currentCase?.country,
+    segment?.region,
+    segment?.benchmark,
+    fetchBenchmark,
+  ]);
+
   const preventNegativeValue = (fieldName) => [
     () => ({
       validator(_, value) {

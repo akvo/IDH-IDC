@@ -268,8 +268,31 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         );
         const benchmark = activeSegment?.benchmark || {};
 
-        // handle trigger new CPI adjustment modal
         let updatedData = { ...data };
+        // update segment region value
+        // this handle when the segment value not saved yet to DB
+        // but the Case Settings is updated, so we use the currectCase state value
+        updatedData = {
+          ...updatedData,
+          segments: updatedData?.segments?.map((segment) => {
+            const findCurrentSegment = currentCase?.segments?.find(
+              (s) => s.id === segment.id
+            );
+            if (findCurrentSegment) {
+              return {
+                ...segment,
+                child: findCurrentSegment?.child || null,
+                adult: findCurrentSegment?.adult || null,
+                region: findCurrentSegment?.region || null,
+                target: 0,
+              };
+            }
+            return segment;
+          }),
+        };
+        // EOL update segment region value
+
+        // handle trigger new CPI adjustment modal
         if (isOnStep1Page) {
           if (
             (benchmark?.value?.[data?.currency?.toLowerCase()] ||
