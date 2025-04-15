@@ -611,8 +611,10 @@ async def run_model(
             key: value
             for (key, _, _), value in zip(parameter_bounds, optimized_values)
         }
+        # ROUND::when calculate the achieved income we should use rounded value
+        # round to 2 decimals
         optimized_answers = {
-            f"optimized-{key}": value
+            f"optimized-{key}": round(value, 2)
             for key, value in optimized_params_dict.items()
         }
         achieved_income, _ = calculate_total_income(
