@@ -437,17 +437,13 @@ const SetIncomeTarget = ({
             child: null,
             target: null,
           });
-          messageApi.open({
-            type: "error",
-            content: content,
-          });
+          console.error(content);
         });
     },
     [
       currentCase,
       form,
       cpiForm,
-      messageApi,
       segment.id,
       showBenchmarNotification,
       updateCurrentSegmentState,
