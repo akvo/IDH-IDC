@@ -128,9 +128,10 @@ const SetIncomeTarget = ({
         newCPI,
         newCPIFactor,
       });
+      const percentageCPIFactor = newCPIFactor * 100;
       cpiForm.setFieldValue(
         `${segment.id}-new_inflation_rate`,
-        newCPIFactor.toFixed(2)
+        `${percentageCPIFactor.toFixed(2)} %`
       );
       cpiForm.setFieldValue(
         `${segment.id}-new_adjusted_benchmark_value`,
