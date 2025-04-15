@@ -13,12 +13,14 @@ import {
   InputNumber,
   Switch,
   Alert,
+  Tooltip,
 } from "antd";
 import Chart from "../../components/chart";
 import { min, max, isEmpty } from "lodash";
 import { api, roundToDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { NewCpiForm } from "../../components/utils";
+import { QuestionCircleOutline } from "../../lib/icon";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -548,8 +550,8 @@ const LivingIncomeBenchmarkExplorer = () => {
           <Card>
             <h2>Adjust the income benchmark (optional)</h2>
             <p>
-              You may want to adjust your income target for a different year (to
-              account for inflation) or for a different household composition.
+              You can adjust the benchmark if you need values for a different
+              year or household composition.
               <br />
               To do so, follow the optional steps below.
             </p>
@@ -564,7 +566,19 @@ const LivingIncomeBenchmarkExplorer = () => {
                 </Space>
                 <div>
                   <div className="step-form-item-wrapper">
-                    <Form.Item label="Select year" name="year">
+                    <Form.Item
+                      label={
+                        <Space align="center" size={5}>
+                          Select year
+                          <Tooltip title="Choose the year you want to adjust the benchmark to. This is usually the current or target year for your scenario.">
+                            <span>
+                              <QuestionCircleOutline />
+                            </span>
+                          </Tooltip>
+                        </Space>
+                      }
+                      name="year"
+                    >
                       <Select {...selectProps} options={yearOptions} />
                     </Form.Item>
                     <Form.Item label="Inflation rate" name="inflation_rate">
@@ -583,11 +597,10 @@ const LivingIncomeBenchmarkExplorer = () => {
                   </div>
                   <div className={showCustomCPIField ? "" : "hide-visual"}>
                     <p className="error">
-                      No inflation rate available for the selected year. Please
-                      manually enter the Consumer Price Index (CPI) for the
-                      required time period using the link below. Once you enter
-                      the value, the inflation rate will update, and the
-                      benchmark will adjust accordingly.
+                      A Living Income Benchmark is available for the selected
+                      region, but not for the year you selected. Enter the CPI
+                      for that year to calculate inflation and update the
+                      benchmark.
                     </p>
                     <NewCpiForm
                       adjustedBenchmarkValueFieldProps={{
@@ -604,7 +617,17 @@ const LivingIncomeBenchmarkExplorer = () => {
                 <Space className="step-wrapper" align="center">
                   <div className="number">2.</div>
                   <div className="label">
-                    Benchmark adjustment for a different household composition
+                    <Space align="center" size={5}>
+                      Benchmark adjustment for a different household composition
+                      <Tooltip
+                        placement="right"
+                        title="The current benchmark is based on the average household composition used by the benchmark source. You can adjust it below to match your own target household size."
+                      >
+                        <span>
+                          <QuestionCircleOutline />
+                        </span>
+                      </Tooltip>
+                    </Space>
                   </div>
                 </Space>
                 <div>
@@ -615,7 +638,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                       disabled={isEmpty(adjustedLIB)}
                       checked={incorporateStepOne}
                     />{" "}
-                    Take step 1 into account
+                    Use adjusted value from Step 1
                   </Form.Item>
                   <div className="step-form-item-wrapper step-2-wrapper">
                     {/* current composition */}
