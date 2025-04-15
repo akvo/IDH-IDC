@@ -10,7 +10,6 @@ import {
   Card,
   Space,
   message,
-  Alert,
   Modal,
   Input,
   Button,
@@ -203,9 +202,10 @@ const SetIncomeTarget = ({
     ) {
       return "NA";
     }
-    return `${
-      segment.target ? thousandFormatter(segment.target.toFixed(2)) : 0
-    } ${currentCase.currency}`;
+    const target = segment.target
+      ? thousandFormatter(segment.target.toFixed(2))
+      : 0;
+    return target ? `${target} ${currentCase.currency}` : "NA";
   }, [
     isAdjustBenchmarkUsingCPIValuesVisible,
     segment?.target,
@@ -419,6 +419,13 @@ const SetIncomeTarget = ({
           // show notification
           const { statusText, data } = e.response;
           const content = data?.detail || statusText;
+          updateCurrentSegmentState({
+            region: null,
+            benchmark: null,
+            adult: null,
+            child: null,
+            target: null,
+          });
           messageApi.open({
             type: "error",
             content: content,
@@ -908,11 +915,9 @@ const SetIncomeTarget = ({
               {(stepSetIncomeTargetState.regionOptionStatus === 404 ||
                 isBenchmarkNotAvailable) && (
                 <Col span={24}>
-                  <Alert
-                    showIcon
-                    type="warning"
-                    message="A benchmark for the country is not available; please switch to manual target."
-                  />
+                  <p>
+                    No living income benchmark is available for this country.
+                  </p>
                 </Col>
               )}
 
