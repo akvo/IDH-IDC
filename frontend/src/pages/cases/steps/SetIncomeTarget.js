@@ -810,10 +810,10 @@ const SetIncomeTarget = ({
                             year
                           </div>
                         </Space>
-                        {greenLIBValue &&
-                        greenLIBValue !== "NA" &&
-                        segment?.benchmark?.source ? (
-                          <div className="lib-text-button-wrapper">
+                        <div className="lib-text-button-wrapper">
+                          {greenLIBValue &&
+                          greenLIBValue !== "NA" &&
+                          segment?.benchmark?.source ? (
                             <div className="lib-source-text">
                               Source:{" "}
                               <a
@@ -822,61 +822,61 @@ const SetIncomeTarget = ({
                                 rel="noreferrer"
                               >{`${segment.benchmark?.source}`}</a>
                             </div>
-                            <div className="button-wrapper">
-                              <Tooltip
-                                title={
-                                  <>
-                                    Living income is the net annual income
-                                    required for a household in a particular
-                                    place to afford a decent standard of living
-                                    for all members of that household. Elements
-                                    of a decent standard of living include:
-                                    food, water, housing, education, healthcare,
-                                    transport, clothing, and other essential
-                                    needs including provision for unexpected
-                                    events. To find out more, visit{" "}
-                                    <a
-                                      href="https://www.living-income.com/the-concept"
-                                      target="_blank"
-                                      rel="noreferrer noopener"
-                                      style={{
-                                        color: "#fff",
-                                        textDecoration: "underline",
-                                      }}
-                                    >
-                                      https://www.living-income.com/the-concept
-                                    </a>
-                                  </>
-                                }
-                              >
-                                <Button
-                                  icon={<QuestionCircleOutlined />}
-                                  type="ghost"
-                                  style={{
-                                    color: "#fff",
-                                    fontSize: 16,
-                                  }}
-                                />
-                              </Tooltip>
+                          ) : (
+                            ""
+                          )}
+                          <div className="button-wrapper">
+                            <Tooltip
+                              title={
+                                <>
+                                  Living income is the net annual income
+                                  required for a household in a particular place
+                                  to afford a decent standard of living for all
+                                  members of that household. Elements of a
+                                  decent standard of living include: food,
+                                  water, housing, education, healthcare,
+                                  transport, clothing, and other essential needs
+                                  including provision for unexpected events. To
+                                  find out more, visit{" "}
+                                  <a
+                                    href="https://www.living-income.com/the-concept"
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    style={{
+                                      color: "#fff",
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    https://www.living-income.com/the-concept
+                                  </a>
+                                </>
+                              }
+                            >
                               <Button
-                                icon={<FileTextOutlined />}
+                                icon={<QuestionCircleOutlined />}
                                 type="ghost"
                                 style={{
                                   color: "#fff",
                                   fontSize: 16,
                                 }}
-                                onClick={() => {
-                                  window.open(
-                                    "/files/explanation-contextualisation-benchmarks.pdf",
-                                    "_blank"
-                                  );
-                                }}
                               />
-                            </div>
+                            </Tooltip>
+                            <Button
+                              icon={<FileTextOutlined />}
+                              type="ghost"
+                              style={{
+                                color: "#fff",
+                                fontSize: 16,
+                              }}
+                              onClick={() => {
+                                window.open(
+                                  "/files/explanation-contextualisation-benchmarks.pdf",
+                                  "_blank"
+                                );
+                              }}
+                            />
                           </div>
-                        ) : (
-                          ""
-                        )}
+                        </div>
                       </div>
                     </Card>
                   </Col>
@@ -920,10 +920,11 @@ const SetIncomeTarget = ({
               {isAdjustBenchmarkUsingCPIValuesVisible ? (
                 <Col span={24}>
                   <p>
-                    No living income benchmark is available for the selected
-                    year in the case settings. To ensure accuracy, you adjusted
-                    the benchmark value using CPI data. The value below reflects
-                    your saved adjusted benchmark for a household per year.
+                    A benchmark is available for your region, but not for the
+                    year you selected in the case settings. To estimate a value
+                    for that year, you adjusted the benchmark using CPI data.
+                    The value shown below is the inflation-adjusted benchmark
+                    for a household per year.
                   </p>
                   <div className="adjusted-benchmark-value-wrapper">
                     <Form.Item
