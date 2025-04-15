@@ -11,6 +11,7 @@ import {
   message,
   Alert,
   Popconfirm,
+  Table,
 } from "antd";
 import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
@@ -22,6 +23,8 @@ import Chart from "../../../components/chart";
 import { commodities } from "../../../store/static";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
+
+const SHOW_OPTIMIZE_RESULT_AS = "TABLE"; // change to "CHART" or "TABLE"
 
 const colors = [
   "#05615e", // green,
@@ -234,7 +237,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   }, [optimizationResult]);
 
   const chartData = useMemo(() => {
-    if (optimizationResult) {
+    if (optimizationResult && SHOW_OPTIMIZE_RESULT_AS === "CHART") {
       const { optimization_result } = optimizationResult;
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
@@ -301,6 +304,112 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     }
     setRefreshChart(false);
     return [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshChart, currentCaseState]);
+
+  const tableData = useMemo(() => {
+    if (optimizationResult && SHOW_OPTIMIZE_RESULT_AS === "TABLE") {
+      const { optimization_result } = optimizationResult;
+      const optimizedValues = orderBy(optimization_result, "key")?.filter(
+        (v) => !v.increase_error
+      );
+
+      // generate columns
+      const increaseColumns = optimizedValues.map((opt) => ({
+        title: `Increase ${opt.key}`,
+        dataIndex: `increase_${opt.key}`,
+        name: `increase_${opt.key}`,
+      }));
+      const columns = [
+        {
+          title: "Driver",
+          dataIndex: "driver",
+          key: "driver",
+        },
+        {
+          title: "Current",
+          dataIndex: "current",
+          key: "current",
+        },
+        ...increaseColumns,
+      ];
+      // EOL generate columns
+
+      // generate dataSource
+      const drivers =
+        optimizedValues?.flatMap((v) => v?.value?.optimization)?.[0] || {};
+
+      const labels = {};
+      Object.keys(drivers).forEach((key) => {
+        const [caseCommodityId, qid] = key.split("-");
+        const question = flattenedQuestionGroups.find(
+          (q) => q.id === parseInt(qid)
+        );
+        const caseCommodity = currentCaseState?.case_commodities?.find(
+          (c) => c.id === parseInt(caseCommodityId)
+        );
+        const unit = unitName({
+          currentCaseState,
+          question: question,
+          group: caseCommodity,
+        });
+        labels[key] = `${question?.text}${
+          unit && unit !== "" ? ` (${unit})` : ""
+        }`;
+      });
+      // add total labels
+      labels["total_income"] = "Total Income";
+
+      const dataSource = [];
+      Object.entries(labels).forEach(([key, label]) => {
+        const data = {
+          key,
+          driver: label,
+        };
+        if (key === "total_income") {
+          optimizedValues.forEach((val) => {
+            const achievedIncome = val?.value?.achieved_income || 0; // optimization income result
+            data["current"] = thousandFormatter(
+              currentDashboardData?.total_current_income || 0,
+              2
+            );
+            data[`increase_${val.key}`] = thousandFormatter(achievedIncome, 2);
+          });
+        } else {
+          optimizedValues.forEach((val) => {
+            const valueTmp = val?.value?.optimization?.[key] || [];
+            const currentValue =
+              valueTmp.find((v) => v.name === "current")?.value || 0;
+
+            const optimizedValue =
+              valueTmp.find((v) => v.name === "optimized")?.value || 0;
+            const optimizedPercentage = currentValue
+              ? ((optimizedValue - currentValue) / currentValue) * 100
+              : 0;
+
+            data["current"] = thousandFormatter(currentValue, 2);
+            data[`increase_${val.key}_absolute`] = thousandFormatter(
+              optimizedValue,
+              2
+            );
+            data[`increase_${val.key}`] = `${thousandFormatter(
+              optimizedPercentage,
+              2
+            )}%`;
+          });
+        }
+        dataSource.push(data);
+      });
+      // EOL generate dataSource
+      return {
+        columns: columns,
+        dataSource: dataSource,
+      };
+    }
+    return {
+      columns: [],
+      dataSource: [],
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshChart, currentCaseState]);
 
@@ -522,36 +631,56 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
       {/* INCREASE ERROR */}
       {renderIncreaseError}
       {/* EOL INCREASE ERROR */}
-      <Col span={24} style={{ display: chartData?.length ? "" : "none" }}>
+      <Col
+        span={24}
+        style={{
+          display:
+            chartData?.length || tableData?.dataSource?.length ? "" : "none",
+        }}
+      >
         <Card className="card-visual-wrapper">
           <Row gutter={[20, 20]} align="middle">
             <Col span={18}>
-              <VisualCardWrapper
-                bordered={true}
-                title="Optimal driver values to react your target"
-                showLabel={showLabel}
-                setShowLabel={setShowLabel}
-                exportElementRef={chartRef}
-                exportFilename="Optimal driver values to react your target"
-              >
-                <Chart
-                  wrapper={false}
-                  type="COLUMN-BAR"
-                  data={chartData}
-                  loading={!chartData?.length}
-                  height={window.innerHeight * 0.4}
-                  extra={{
-                    axisTitle: { y: "Percentage Value" },
-                    xAxisLabel: {
-                      margin: 20,
-                      align: "center",
-                    },
-                  }}
-                  grid={{ bottom: 60, right: 5, left: 70 }}
+              {SHOW_OPTIMIZE_RESULT_AS === "CHART" ? (
+                <VisualCardWrapper
+                  bordered={true}
+                  title="Optimal driver values to react your target"
                   showLabel={showLabel}
-                  percentage={true}
+                  setShowLabel={setShowLabel}
+                  exportElementRef={chartRef}
+                  exportFilename="Optimal driver values to react your target"
+                >
+                  <Chart
+                    wrapper={false}
+                    type="COLUMN-BAR"
+                    data={chartData}
+                    loading={!chartData?.length}
+                    height={window.innerHeight * 0.4}
+                    extra={{
+                      axisTitle: { y: "Percentage Value" },
+                      xAxisLabel: {
+                        margin: 20,
+                        align: "center",
+                      },
+                    }}
+                    grid={{ bottom: 60, right: 5, left: 70 }}
+                    showLabel={showLabel}
+                    percentage={true}
+                  />
+                </VisualCardWrapper>
+              ) : (
+                ""
+              )}
+
+              {SHOW_OPTIMIZE_RESULT_AS === "TABLE" ? (
+                <Table
+                  pagination={false}
+                  columns={tableData.columns}
+                  dataSource={tableData.dataSource}
                 />
-              </VisualCardWrapper>
+              ) : (
+                ""
+              )}
             </Col>
             <Col span={6}>
               <Space direction="vertical">
