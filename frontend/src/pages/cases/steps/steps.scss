@@ -70,8 +70,22 @@
       max-width: 225px;
     }
 
+    .lib-text-button-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .lib-source-text {
-      width: 500px;
+      min-width: 275px;
+      max-width: 500px;
+    }
+
+    .button-wrapper {
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      text-align: right;
     }
   }
 }
