@@ -995,11 +995,11 @@ const SetIncomeTarget = ({
         onOk={() => handleOnSaveAdjustedBenchmarkByNewCpi()}
       >
         <p>
-          If you still want to use a Living Income Benchmark for the year you
-          selected, please manually enter the Consumer Price Index (CPI) for the
-          required time period using the link below. Once you enter the value,
-          the inflation rate will update, and the benchmark will adjust
-          accordingly.
+          A Living Income Benchmark is available for your region, but not for
+          the year you selected in your case settings. To adjust the benchmark
+          for that year, please enter the Consumer Price Index (CPI) for your
+          selected year. This will allow the system to calculate inflation and
+          update the benchmark accordingly.
         </p>
         <Form form={cpiForm} layout="vertical">
           <NewCpiForm

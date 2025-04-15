@@ -40,7 +40,7 @@ const NewCpiForm = ({
         >
           Find consumer price index (CPI)
         </a>{" "}
-        <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for.">
+        <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for. After clicking the link, select the relevant country to view CPI values from previous years.">
           <span>
             <QuestionCircleOutline size={14} />
           </span>
