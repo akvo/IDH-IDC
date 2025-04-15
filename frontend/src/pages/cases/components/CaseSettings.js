@@ -308,12 +308,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           year: currYear,
           country: currCountry,
           currency: currCurrency,
-        } = currentCase;
-        if (
-          prevYear !== currYear ||
-          prevCountry !== currCountry ||
-          prevCurrency !== currCurrency
-        ) {
+        } = data;
+        if (prevCountry !== currCountry) {
           updatedData = {
             ...updatedData,
             segments: updatedData?.segments?.map((segment) => {
@@ -323,6 +319,19 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
                 adult: null,
                 region: null,
                 target: null,
+                benchmark: null,
+              };
+            }),
+          };
+        }
+        if (prevYear !== currYear || prevCurrency !== currCurrency) {
+          updatedData = {
+            ...updatedData,
+            segments: updatedData?.segments?.map((segment) => {
+              return {
+                ...segment,
+                target: null,
+                benchmark: null,
               };
             }),
           };
