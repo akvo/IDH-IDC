@@ -172,19 +172,25 @@ const SetIncomeTarget = ({
 
   const isBenchmarkNotAvailable = useMemo(() => {
     if (!isEmpty(segment?.benchmark)) {
-      const lcu = segment?.benchmark?.value?.lcu;
-      const benchmark =
-        segment?.benchmark?.value?.[currentCase?.currency?.toLowerCase()];
-      return !benchmark && !lcu;
+      const benchmark = segment?.benchmark;
+      const lcu = benchmark?.value?.lcu;
+      const nonLCUBenchmark =
+        benchmark?.value?.[currentCase?.currency?.toLowerCase()];
+      return !nonLCUBenchmark && !lcu;
     }
     return false;
   }, [segment?.benchmark, currentCase?.currency]);
 
   const isAdjustBenchmarkUsingCPIValuesVisible = useMemo(() => {
+    const benchmark = segment?.benchmark;
+    const benchmarkValue =
+      segment?.benchmark?.value?.[currentCase?.currency?.toLowerCase()] ||
+      segment?.benchmark?.value?.lcu;
     if (
-      (segment?.benchmark?.value?.[currentCase?.currency?.toLowerCase()] ||
-        segment?.benchmark?.value?.lcu) &&
-      segment?.benchmark?.year !== currentCase.year
+      !isEmpty(benchmark) &&
+      benchmarkValue &&
+      benchmark?.year !== currentCase.year &&
+      benchmark?.cpi_factor === null
     ) {
       return true;
     }
@@ -378,7 +384,12 @@ const SetIncomeTarget = ({
             data.value?.[currentCase.currency.toLowerCase()] || data.value.lcu;
 
           // handle have benchmark value but year !== case year
-          if (targetValue && currentCase?.year !== data?.year) {
+          // show when cpi_factor = null
+          if (
+            !isEmpty(data) &&
+            data?.cpi_factor === null &&
+            currentCase?.year !== data?.year
+          ) {
             // show new CPI Form
             updateCurrentSegmentState({ target: null });
             form.setFieldValue(`${segment.id}-new_benchmark_value`, null);
@@ -426,17 +437,13 @@ const SetIncomeTarget = ({
             child: null,
             target: null,
           });
-          messageApi.open({
-            type: "error",
-            content: content,
-          });
+          console.error(content);
         });
     },
     [
       currentCase,
       form,
       cpiForm,
-      messageApi,
       segment.id,
       showBenchmarNotification,
       updateCurrentSegmentState,
@@ -446,7 +453,7 @@ const SetIncomeTarget = ({
   // handle show new CPI form when segment region not saved into DB yet
   useEffect(() => {
     if (
-      (currentCase.year || currentCase.country) &&
+      (currentCase.year || currentCase.country || currentCase.currency) &&
       isEmpty(segment?.benchmark) &&
       segment?.region
     ) {
@@ -455,6 +462,7 @@ const SetIncomeTarget = ({
   }, [
     currentCase?.year,
     currentCase?.country,
+    currentCase?.currency,
     segment?.region,
     segment?.benchmark,
     fetchBenchmark,

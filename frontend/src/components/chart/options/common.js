@@ -1,6 +1,9 @@
 import { upperFirst, take } from "lodash";
 
 export const thousandFormatter = (value, toFixed = null) => {
+  if (value === null || isNaN(value)) {
+    return 0;
+  }
   if (toFixed !== null) {
     value = parseFloat(value)?.toFixed(toFixed);
   }
