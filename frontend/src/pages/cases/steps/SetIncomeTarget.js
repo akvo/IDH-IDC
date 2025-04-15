@@ -14,6 +14,7 @@ import {
   Modal,
   Input,
   Button,
+  Tooltip,
 } from "antd";
 import {
   CurrentCaseState,
@@ -33,7 +34,11 @@ import {
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
 import { NewCpiForm } from "../../../components/utils";
-import { EditOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  FileTextOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
 
 const formStyle = { width: "100%" };
 const showInformationAboutLIBCard = false;
@@ -123,9 +128,10 @@ const SetIncomeTarget = ({
         newCPI,
         newCPIFactor,
       });
+      const percentageCPIFactor = newCPIFactor * 100;
       cpiForm.setFieldValue(
         `${segment.id}-new_inflation_rate`,
-        newCPIFactor.toFixed(2)
+        `${percentageCPIFactor.toFixed(2)} %`
       );
       cpiForm.setFieldValue(
         `${segment.id}-new_adjusted_benchmark_value`,
@@ -804,18 +810,73 @@ const SetIncomeTarget = ({
                             year
                           </div>
                         </Space>
-                        {segment?.benchmark?.source ? (
-                          <div className="lib-source-text">
-                            Source:{" "}
-                            <a
-                              href={segment.benchmark?.links}
-                              target="_blank"
-                              rel="noreferrer"
-                            >{`${segment.benchmark?.source}`}</a>
+                        <div className="lib-text-button-wrapper">
+                          {greenLIBValue &&
+                          greenLIBValue !== "NA" &&
+                          segment?.benchmark?.source ? (
+                            <div className="lib-source-text">
+                              Source:{" "}
+                              <a
+                                href={segment.benchmark?.links}
+                                target="_blank"
+                                rel="noreferrer"
+                              >{`${segment.benchmark?.source}`}</a>
+                            </div>
+                          ) : (
+                            ""
+                          )}
+                          <div className="button-wrapper">
+                            <Tooltip
+                              title={
+                                <>
+                                  Living income is the net annual income
+                                  required for a household in a particular place
+                                  to afford a decent standard of living for all
+                                  members of that household. Elements of a
+                                  decent standard of living include: food,
+                                  water, housing, education, healthcare,
+                                  transport, clothing, and other essential needs
+                                  including provision for unexpected events. To
+                                  find out more, visit{" "}
+                                  <a
+                                    href="https://www.living-income.com/the-concept"
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    style={{
+                                      color: "#fff",
+                                      textDecoration: "underline",
+                                    }}
+                                  >
+                                    https://www.living-income.com/the-concept
+                                  </a>
+                                </>
+                              }
+                            >
+                              <Button
+                                icon={<QuestionCircleOutlined />}
+                                type="ghost"
+                                style={{
+                                  color: "#fff",
+                                  fontSize: 16,
+                                }}
+                              />
+                            </Tooltip>
+                            <Button
+                              icon={<FileTextOutlined />}
+                              type="ghost"
+                              style={{
+                                color: "#fff",
+                                fontSize: 16,
+                              }}
+                              onClick={() => {
+                                window.open(
+                                  "/files/explanation-contextualisation-benchmarks.pdf",
+                                  "_blank"
+                                );
+                              }}
+                            />
                           </div>
-                        ) : (
-                          ""
-                        )}
+                        </div>
                       </div>
                     </Card>
                   </Col>
@@ -859,10 +920,11 @@ const SetIncomeTarget = ({
               {isAdjustBenchmarkUsingCPIValuesVisible ? (
                 <Col span={24}>
                   <p>
-                    No living income benchmark is available for the selected
-                    year in the case settings. To ensure accuracy, you adjusted
-                    the benchmark value using CPI data. The value below reflects
-                    your saved adjusted benchmark for a household per year.
+                    A benchmark is available for your region, but not for the
+                    year you selected in the case settings. To estimate a value
+                    for that year, you adjusted the benchmark using CPI data.
+                    The value shown below is the inflation-adjusted benchmark
+                    for a household per year.
                   </p>
                   <div className="adjusted-benchmark-value-wrapper">
                     <Form.Item
@@ -935,11 +997,11 @@ const SetIncomeTarget = ({
         onOk={() => handleOnSaveAdjustedBenchmarkByNewCpi()}
       >
         <p>
-          If you still want to use a Living Income Benchmark for the year you
-          selected, please manually enter the Consumer Price Index (CPI) for the
-          required time period using the link below. Once you enter the value,
-          the inflation rate will update, and the benchmark will adjust
-          accordingly.
+          A Living Income Benchmark is available for your region, but not for
+          the year you selected in your case settings. To adjust the benchmark
+          for that year, please enter the Consumer Price Index (CPI) for your
+          selected year. This will allow the system to calculate inflation and
+          update the benchmark accordingly.
         </p>
         <Form form={cpiForm} layout="vertical">
           <NewCpiForm

@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Tooltip, Input, InputNumber } from "antd";
+import { Form, Tooltip, Input, InputNumber, Space } from "antd";
 import { QuestionCircleOutline } from "../../lib/icon";
 
 const defDisabledInputProps = {
@@ -40,7 +40,7 @@ const NewCpiForm = ({
         >
           Find consumer price index (CPI)
         </a>{" "}
-        <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for.">
+        <Tooltip title="Find the CPI value for the year you want to calculate a benchmark value for. After clicking the link, select the relevant country to view CPI values from previous years.">
           <span>
             <QuestionCircleOutline size={14} />
           </span>
@@ -51,7 +51,29 @@ const NewCpiForm = ({
           <InputNumber {...numberProps} />
         </Form.Item>
         <Form.Item
-          label="Inflation rate"
+          label={
+            <Space align="center" size={5}>
+              Inflation rate
+              <Tooltip>
+                <Tooltip
+                  title={
+                    <>
+                      The inflation rate is calculated by comparing the CPI of
+                      the selected year and the benchmark year. The inflation
+                      rate is calculated as follows: (CPI in selected year – CPI
+                      in benchmark year) ÷ CPI in benchmark year The result is
+                      shown as a percentage and is used to adjust the benchmark
+                      for inflation.
+                    </>
+                  }
+                >
+                  <span>
+                    <QuestionCircleOutline />
+                  </span>
+                </Tooltip>
+              </Tooltip>
+            </Space>
+          }
           name={`${fieldPreffix}new_inflation_rate`}
         >
           <Input {...disabledInputProps} disabled />
