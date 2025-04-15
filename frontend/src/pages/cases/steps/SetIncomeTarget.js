@@ -809,8 +809,10 @@ const SetIncomeTarget = ({
                             year
                           </div>
                         </Space>
-                        <div className="lib-text-button-wrapper">
-                          {segment?.benchmark?.source ? (
+                        {greenLIBValue &&
+                        greenLIBValue !== "NA" &&
+                        segment?.benchmark?.source ? (
+                          <div className="lib-text-button-wrapper">
                             <div className="lib-source-text">
                               Source:{" "}
                               <a
@@ -819,61 +821,61 @@ const SetIncomeTarget = ({
                                 rel="noreferrer"
                               >{`${segment.benchmark?.source}`}</a>
                             </div>
-                          ) : (
-                            ""
-                          )}
-                          <div className="button-wrapper">
-                            <Tooltip
-                              title={
-                                <>
-                                  Living income is the net annual income
-                                  required for a household in a particular place
-                                  to afford a decent standard of living for all
-                                  members of that household. Elements of a
-                                  decent standard of living include: food,
-                                  water, housing, education, healthcare,
-                                  transport, clothing, and other essential needs
-                                  including provision for unexpected events. To
-                                  find out more, visit{" "}
-                                  <a
-                                    href="https://www.living-income.com/the-concept"
-                                    target="_blank"
-                                    rel="noreferrer noopener"
-                                    style={{
-                                      color: "#fff",
-                                      textDecoration: "underline",
-                                    }}
-                                  >
-                                    https://www.living-income.com/the-concept
-                                  </a>
-                                </>
-                              }
-                            >
+                            <div className="button-wrapper">
+                              <Tooltip
+                                title={
+                                  <>
+                                    Living income is the net annual income
+                                    required for a household in a particular
+                                    place to afford a decent standard of living
+                                    for all members of that household. Elements
+                                    of a decent standard of living include:
+                                    food, water, housing, education, healthcare,
+                                    transport, clothing, and other essential
+                                    needs including provision for unexpected
+                                    events. To find out more, visit{" "}
+                                    <a
+                                      href="https://www.living-income.com/the-concept"
+                                      target="_blank"
+                                      rel="noreferrer noopener"
+                                      style={{
+                                        color: "#fff",
+                                        textDecoration: "underline",
+                                      }}
+                                    >
+                                      https://www.living-income.com/the-concept
+                                    </a>
+                                  </>
+                                }
+                              >
+                                <Button
+                                  icon={<QuestionCircleOutlined />}
+                                  type="ghost"
+                                  style={{
+                                    color: "#fff",
+                                    fontSize: 16,
+                                  }}
+                                />
+                              </Tooltip>
                               <Button
-                                icon={<QuestionCircleOutlined />}
+                                icon={<FileTextOutlined />}
                                 type="ghost"
                                 style={{
                                   color: "#fff",
                                   fontSize: 16,
                                 }}
+                                onClick={() => {
+                                  window.open(
+                                    "/files/explanation-contextualisation-benchmarks.pdf",
+                                    "_blank"
+                                  );
+                                }}
                               />
-                            </Tooltip>
-                            <Button
-                              icon={<FileTextOutlined />}
-                              type="ghost"
-                              style={{
-                                color: "#fff",
-                                fontSize: 16,
-                              }}
-                              onClick={() => {
-                                window.open(
-                                  "/files/explanation-contextualisation-benchmarks.pdf",
-                                  "_blank"
-                                );
-                              }}
-                            />
+                            </div>
                           </div>
-                        </div>
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </Card>
                   </Col>
