@@ -20,6 +20,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
+  const prevCase = PrevCaseState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
   const { enableEditCase, activeSegmentId } = general;
@@ -292,11 +293,46 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         };
         // EOL update segment region value
 
+        // handle when year / country/ currency updated
+        const {
+          year: prevYear,
+          country: prevCountry,
+          currency: prevCurrency,
+        } = prevCase;
+        const {
+          year: currYear,
+          country: currCountry,
+          currency: currCurrency,
+        } = currentCase;
+        if (
+          prevYear !== currYear ||
+          prevCountry !== currCountry ||
+          prevCurrency !== currCurrency
+        ) {
+          updatedData = {
+            ...updatedData,
+            segments: updatedData?.segments?.map((segment) => {
+              return {
+                ...segment,
+                child: null,
+                adult: null,
+                region: null,
+                target: null,
+              };
+            }),
+          };
+        }
+        // EOL handle when year / country / currency updated
+
         // handle trigger new CPI adjustment modal
+        // show when cpi_factor = null
         if (isOnStep1Page) {
+          const benchmarkValue =
+            benchmark?.value?.[data?.currency?.toLowerCase()] ||
+            benchmark?.value?.lcu;
           if (
-            (benchmark?.value?.[data?.currency?.toLowerCase()] ||
-              benchmark?.value?.lcu) &&
+            benchmarkValue &&
+            benchmark?.cpi_factor === null &&
             benchmark?.year !== data.year
           ) {
             updatedData = {
