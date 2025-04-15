@@ -358,7 +358,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
         }`;
       });
       // add total labels
-      labels["total_income"] = "Total Income";
+      labels["total_income"] = `Total Income (${currentCaseState.currency})`;
 
       const dataSource = [];
       Object.entries(labels).forEach(([key, label]) => {
