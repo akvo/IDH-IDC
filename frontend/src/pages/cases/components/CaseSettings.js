@@ -78,9 +78,14 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   );
 
   useEffect(() => {
+    if (currentCase?.id || !currentCase?.id) {
+      form.resetFields();
+      setFormData({ segments: [""] });
+    }
+  }, [currentCase?.id, form]);
+
+  useEffect(() => {
     // handle initial load
-    form.resetFields();
-    setFormData({ segments: [""] });
     if (currentCase.id) {
       // focus commodity
       const focusCommodityValue = {
