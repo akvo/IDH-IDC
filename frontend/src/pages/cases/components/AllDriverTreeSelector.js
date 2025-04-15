@@ -165,32 +165,63 @@ const AllDriverTreeSelector = ({
             value: driver?.groupName,
             title: driver?.groupName,
             selectable: false,
-            children: driver?.questionGroups?.map((qg) => {
-              // skip the aggregator question
-              const skipAggregator = qg.questions
-                .map((q) => {
-                  if (q.question_type === "aggregator") {
-                    return q.childrens;
+            children: driver?.questionGroups
+              ?.map((qg) => {
+                const isDiversified =
+                  qg?.case_commodity_type === "diversified" ||
+                  qg?.commodity_type === "diversified";
+                // find agregator
+                const findAggregator = qg.questions.find(
+                  (q) => q.question_type === "aggregator"
+                );
+                // skip the aggregator question
+                const skipAggregator = qg.questions
+                  .map((q) => {
+                    if (q.question_type === "aggregator") {
+                      return q.childrens;
+                    }
+                    return q;
+                  })
+                  .flatMap((x) => x);
+                // check childs
+                const childrensWithoutAggregator = qg?.questions?.filter(
+                  (q) => q?.question_type !== "aggregator"
+                )?.length;
+                let value = qg.id;
+                if (!isDiversified && findAggregator?.id) {
+                  value = `${qg.id}-${findAggregator.id}`;
+                }
+
+                // if diversified childrens doesn't have segment answers
+                // do not include in drivers selector
+                if (isDiversified) {
+                  const answerQids = Object.keys(segment?.answers).filter(
+                    (key) => key.includes("feasible-")
+                  );
+                  const diversifiedQids = qg?.questions?.map(
+                    (q) => `feasible-${qg.id}-${q.id}`
+                  );
+                  const hasCommon = diversifiedQids.some((item) =>
+                    answerQids.includes(item)
+                  );
+                  if (!hasCommon) {
+                    return null;
                   }
-                  return q;
-                })
-                .flatMap((x) => x);
-              // check childs
-              const childrensWithoutAggregator = qg?.questions?.filter(
-                (q) => q?.question_type !== "aggregator"
-              )?.length;
-              return {
-                value: qg.id,
-                label: qg.commodity_name,
-                selectable: childrensWithoutAggregator > 0 ? false : true,
-                children: generateDriverOptions({
-                  group: qg,
-                  questions: skipAggregator,
-                  qidWithFeasibleAnswer,
-                  level: 1,
-                }),
-              };
-            }),
+                }
+                // EOL
+                return {
+                  value: value,
+                  label: qg.commodity_name,
+                  selectable: childrensWithoutAggregator > 0 ? false : true,
+                  children: generateDriverOptions({
+                    group: qg,
+                    questions: skipAggregator,
+                    qidWithFeasibleAnswer,
+                    level: 1,
+                  }),
+                };
+              })
+              .filter((x) => x),
           };
         })
       : [];
