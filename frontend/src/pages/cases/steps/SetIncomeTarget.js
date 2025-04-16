@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from "react";
+import React, { useCallback, useMemo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Form,
@@ -70,6 +70,8 @@ const SetIncomeTarget = ({
     `${segment.id}-set_target_yourself`,
     form
   );
+
+  const [benchmarkNotFound, setBenchmarkNotFound] = useState(false);
 
   const newCPI = Form.useWatch(`${segment.id}-new_cpi`, cpiForm);
 
@@ -334,6 +336,7 @@ const SetIncomeTarget = ({
       api
         .get(url)
         .then((res) => {
+          setBenchmarkNotFound(false);
           // data represent LI Benchmark value
           const { data } = res;
           // if data value by currency not found or 0 return a NA notif
@@ -428,10 +431,11 @@ const SetIncomeTarget = ({
           // reset field and benchmark value
           // resetBenchmark({ region: region });
           // show notification
-          const { statusText, data } = e.response;
+          const { statusText, data, status } = e.response;
+          setBenchmarkNotFound(status === 404);
           const content = data?.detail || statusText;
           updateCurrentSegmentState({
-            region: null,
+            region: region,
             benchmark: null,
             adult: null,
             child: null,
@@ -921,10 +925,12 @@ const SetIncomeTarget = ({
               )}
 
               {(stepSetIncomeTargetState.regionOptionStatus === 404 ||
-                isBenchmarkNotAvailable) && (
+                isBenchmarkNotAvailable ||
+                benchmarkNotFound) && (
                 <Col span={24}>
                   <p>
-                    No living income benchmark is available for this country.
+                    No living income benchmark is available for this country
+                    (region).
                   </p>
                 </Col>
               )}

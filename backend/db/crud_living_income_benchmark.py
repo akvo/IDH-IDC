@@ -75,13 +75,14 @@ def get_by_country_region_year(
         ) / last_year_cpi_value
 
     if not lib:
-        # get LI benchmark from lastest year
+        # get LI benchmark from latest year
         lib = (
             session.query(LivingIncomeBenchmark)
             .filter(
                 and_(
                     LivingIncomeBenchmark.country == country,
                     LivingIncomeBenchmark.region == region,
+                    LivingIncomeBenchmark.year != 0,
                 )
             )
             .order_by(LivingIncomeBenchmark.year.desc())
