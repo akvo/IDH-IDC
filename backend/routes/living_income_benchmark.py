@@ -8,7 +8,7 @@ from typing import List
 from db.connection import get_session
 from models.living_income_benchmark import (
     LivingIncomeBenchmarkDict,
-    MapLIBDict
+    MapLIBDict,
 )
 
 security = HTTPBearer()
@@ -35,7 +35,7 @@ def get_by_country_region_year(
     if not res:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Benchmark value not found."
+            detail="Benchmark value not found.",
         )
     return res
 
@@ -52,8 +52,11 @@ def get_count_lib_by_country(
     session: Session = Depends(get_session),
 ):
     results = crud_lib.count_lib_by_country(session=session)
-    return [{
-        "country_id": row.id,
-        "COUNTRY": row.name,
-        "benchmark_count": row.count
-    } for row in results]
+    return [
+        {
+            "country_id": row.id,
+            "COUNTRY": row.name,
+            "benchmark_count": row.count,
+        }
+        for row in results
+    ]
