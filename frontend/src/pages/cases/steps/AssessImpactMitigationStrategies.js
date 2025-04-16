@@ -393,10 +393,10 @@ const AssessImpactMitigationStrategies = ({
         </div>
         <Carousel autoplay ref={carouselChartRef}>
           <div>
-            <ChartBiggestImpactOnIncome />
+            <ChartMonetaryImpactOnIncome />
           </div>
           <div>
-            <ChartMonetaryImpactOnIncome />
+            <ChartBiggestImpactOnIncome />
           </div>
         </Carousel>
       </Col>
