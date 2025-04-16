@@ -159,37 +159,39 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
         case: currentCase.id,
         config: {
           ...s.scenarioModeling.config,
-          scenarioData: scenarioModeling.config.scenarioData.map((scenario) => {
-            if (isEmpty(scenario?.scenarioValues)) {
+          scenarioData: s.scenarioModeling.config.scenarioData.map(
+            (scenario) => {
+              if (isEmpty(scenario?.scenarioValues)) {
+                return {
+                  ...scenario,
+                  scenarioValues: dashboardData.map((d) => {
+                    return {
+                      name: d.name,
+                      segmentId: d.id,
+                      selectedDrivers: [],
+                      allNewValues: {},
+                      currentSegmentValue: d,
+                      updatedSegmentScenarioValue: d,
+                      updatedSegment: {},
+                    };
+                  }),
+                };
+              }
+              // add currentSegmentValue
               return {
                 ...scenario,
-                scenarioValues: dashboardData.map((d) => {
+                scenarioValues: scenario?.scenarioValues?.map((sv) => {
+                  const findDashboardData = dashboardData.find(
+                    (d) => d.id === sv.segmentId
+                  );
                   return {
-                    name: d.name,
-                    segmentId: d.id,
-                    selectedDrivers: [],
-                    allNewValues: {},
-                    currentSegmentValue: d,
-                    updatedSegmentScenarioValue: d,
-                    updatedSegment: {},
+                    ...sv,
+                    currentSegmentValue: findDashboardData || {},
                   };
                 }),
               };
             }
-            // add currentSegmentValue
-            return {
-              ...scenario,
-              scenarioValues: scenario?.scenarioValues?.map((sv) => {
-                const findDashboardData = dashboardData.find(
-                  (d) => d.id === sv.segmentId
-                );
-                return {
-                  ...sv,
-                  currentSegmentValue: findDashboardData || {},
-                };
-              }),
-            };
-          }),
+          ),
         },
       },
     }));

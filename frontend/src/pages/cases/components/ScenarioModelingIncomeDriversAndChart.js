@@ -663,7 +663,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 </Col>
                 <Col span={4} align="end">
                   {thousandFormatter(
-                    currentScenarioData.scenarioValues.find(
+                    currentScenarioData?.scenarioValues?.find(
                       (s) => s.segmentId === segment.id
                     )?.updatedSegmentScenarioValue?.total_current_income || 0,
                     2
