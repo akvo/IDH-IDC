@@ -194,36 +194,24 @@ def find_parents_to_remove(
         )
 
         if not case_commodity:
-            # print(f"Case commodity not found for ID {case_commodity_id}")
             continue
 
         case_commodity_questions = case_commodity.get("questions", [])
         _, child_to_parent = flatten_questions(case_commodity_questions)
 
-        # print("child_to_parent:", child_to_parent)
-
         qid = int(qid)
         if qid in child_to_parent.values():
-            print(f"{qid} is a parent")
-
             child_ids = [
                 cid for cid, pid in child_to_parent.items() if pid == qid
             ]
-            # print(f"Child IDs for parent {qid}: {child_ids}")
 
             for child_id in child_ids:
                 answer_key = f"current-{case_commodity_id}-{child_id}"
-                # print(
-                #     f"Checking answer for child {child_id}: {answer_key} ->
-                # {answers.get(answer_key)}"
-                # )
-
                 if answer_key in answers and answers[answer_key] is not None:
-                    # print(f"Parent {qid} marked for removal")
-                    parents_to_remove.add(qid)
+                    full_key = f"{case_commodity_id}-{qid}"
+                    parents_to_remove.add(full_key)
                     break
 
-    # print("Parents to remove:", parents_to_remove)
     return list(parents_to_remove)
 
 
@@ -233,11 +221,14 @@ def filter_parameter_bounds(
     parents_to_remove = find_parents_to_remove(
         parameter_bounds, editable_indices, questions, answers
     )
-    print(parents_to_remove, "[]")
+    print("BEGIN ====== filter_parameter_bounds =======")
+    print(parents_to_remove)
+    print(parameter_bounds)
+    print("EOL ====== filter_parameter_bounds =======")
     return [
         (key, low, high)
         for (key, low, high) in parameter_bounds
-        if int(key.split("-")[1]) not in parents_to_remove
+        if key not in parents_to_remove
     ]
 
 
@@ -271,6 +262,36 @@ def find_max_percentage(true_feasible_income, current_income, feasible_income):
         return 0
     percentage = (true_feasible_income - current_income) / (denominator)
     return percentage
+
+
+def clean_segment_answers(segment_answers):
+    # Step 1: Build a map of all qids per commodity
+    commodity_qid_map = {}
+
+    for key in segment_answers:
+        parts = key.split("-")
+        if len(parts) != 3:
+            continue  # skip malformed keys
+
+        _, commodity_id, qid = parts
+        if commodity_id not in commodity_qid_map:
+            commodity_qid_map[commodity_id] = set()
+        commodity_qid_map[commodity_id].add(qid)
+
+    # Step 2: Create a new dict excluding qid=1 if it's not the only one
+    filtered_answers = {}
+    for key, value in segment_answers.items():
+        parts = key.split("-")
+        if len(parts) != 3:
+            continue
+
+        _, commodity_id, qid = parts
+
+        if qid == "1" and len(commodity_qid_map[commodity_id]) > 1:
+            continue  # skip this key, it's qid=1 and there are other qids
+        filtered_answers[key] = value
+
+    return filtered_answers
 
 
 def optimize_income(
@@ -393,16 +414,22 @@ async def run_model(
         commodities=questions, segment_data=segment, mode="feasible"
     )
     segment_answers = segment.get("answers", {})
+    print(segment_answers, "SEGMENT ANSWERS")
     print("=== CURRENT FEASIBLE INCOME ===")
     print(current_income, feasible_income)
 
     # Extract (case_commodity_id, question_id) pairs
     # while ignoring question_id = 1
+    # question_ids = {
+    #     (k.split("-")[1], k.split("-")[2])
+    #     for k in segment_answers.keys()
+    #     if k.split("-")[2] != "1"
+    # }
+    cleaned_answers = clean_segment_answers(segment_answers=segment_answers)
     question_ids = {
-        (k.split("-")[1], k.split("-")[2])
-        for k in segment_answers.keys()
-        if k.split("-")[2] != "1"
+        (k.split("-")[1], k.split("-")[2]) for k in cleaned_answers.keys()
     }
+    print(question_ids, "QUESTION IDS")
 
     # Build parameter bound
     actual_bounds = []
@@ -489,6 +516,7 @@ async def run_model(
     )
     # Sort using integer conversion
     actual_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
+    print(actual_bounds, "ACTUAL")
 
     # Populate current/feasible values
     current_values = []
