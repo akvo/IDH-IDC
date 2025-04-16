@@ -150,6 +150,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
   ]);
 
   // handle initial scenario data for all segments (run only once)
+  // and when dashboard data updated
   useEffect(() => {
     CaseVisualState.update((s) => ({
       ...s,
@@ -182,13 +183,10 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
                 const findDashboardData = dashboardData.find(
                   (d) => d.id === sv.segmentId
                 );
-                if (isEmpty(sv?.currentSegmentValue)) {
-                  return {
-                    ...sv,
-                    currentSegmentValue: findDashboardData || {},
-                  };
-                }
-                return sv;
+                return {
+                  ...sv,
+                  currentSegmentValue: findDashboardData || {},
+                };
               }),
             };
           }),
@@ -196,7 +194,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
       },
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dashboardData]);
   // EOL handle initial scenario data for all segments
 
   const handleAddScenario = () => {
