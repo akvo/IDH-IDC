@@ -15,6 +15,7 @@ import {
   Select,
   Divider,
   Table,
+  message,
 } from "antd";
 import { ContentLayout } from "../../../components/layout";
 import {
@@ -26,7 +27,7 @@ import {
   MinusCircleOutlined,
 } from "@ant-design/icons";
 import { CaseSettings, DebounceSelect } from "../components";
-import { stepPath, CaseUIState } from "../store";
+import { stepPath, CaseUIState, CurrentCaseState } from "../store";
 import { UserState } from "../../../store";
 import { adminRole, casePermission } from "../../../store/static";
 import { api } from "../../../lib";
@@ -39,8 +40,12 @@ const options = {
   day: "numeric",
 };
 
-const CaseSidebar = ({ step, caseId, siderCollapsed, onSave }) => {
+const step1CheckWarningText =
+  "Please complete Step 1 by setting the segment target before proceeding.";
+
+const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
   const navigate = useNavigate();
+  const currentCaseSegments = CurrentCaseState.useState((s) => s.segments);
 
   const sidebarItems = useMemo(() => {
     if (siderCollapsed) {
@@ -85,18 +90,32 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave }) => {
     (path) => path.label === step
   )?.value;
 
+  const handleOnChangeSteps = (val) => {
+    // check segment target before move to step 2 forward
+    const segmentWithNoTarget = currentCaseSegments.filter(
+      (segment) => !segment.target
+    );
+    if (segmentWithNoTarget?.length > 0 && findStepPathValue === 1) {
+      messageApi.open({
+        type: "warning",
+        content: step1CheckWarningText,
+      });
+      return;
+    }
+    // EOL check segment target before move to step 2 forward
+    if (onSave) {
+      onSave();
+    }
+    navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`);
+  };
+
   return (
     <div className="case-step-container">
       <Steps
         direction="vertical"
         items={sidebarItems}
         className="case-step-wrapper"
-        onChange={(val) => {
-          if (onSave) {
-            onSave();
-          }
-          navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`);
-        }}
+        onChange={handleOnChangeSteps}
         current={findStepPathValue ? findStepPathValue - 1 : 1}
         size="small"
       />
@@ -116,6 +135,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
     userEmail === currentCase?.created_by || userId === currentCase?.created_by;
   const isAdmin = adminRole.includes(userRole);
 
+  const isInFirstStep = window.location.pathname.includes(stepPath.step1.label);
   const isInLastStep = window.location.pathname.includes(stepPath.step5.label);
 
   const [caseSettingModalVisible, setCaseSettingModalVisible] = useState(false);
@@ -125,6 +145,8 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedPermission, setSelectedPermission] = useState(null);
   const [loadingUserCase, setLoadingUserCase] = useState(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const layoutSize = useMemo(() => {
     if (!siderCollapsed) {
@@ -143,6 +165,18 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   };
 
   const handleNext = () => {
+    // check segment target before move to step 2 forward
+    const segmentWithNoTarget = currentCase?.segments?.filter(
+      (segment) => !segment.target
+    );
+    if (isInFirstStep && segmentWithNoTarget?.length > 0) {
+      messageApi.open({
+        type: "warning",
+        content: step1CheckWarningText,
+      });
+      return;
+    }
+    // EOL check segment target before move to step 2 forward
     nextFunctionRef.current();
   };
 
@@ -214,6 +248,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
         disabled={caseButtonState.loading}
         onClick={handleBack}
         className="button-green-transparent"
+        style={{ display: isInFirstStep ? "none" : "" }}
       >
         <ArrowLeftOutlined /> Back
       </Button>
@@ -236,6 +271,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   return (
     <Row id="case-detail" className="case-container">
+      {contextHolder}
       <Col span={24}>
         <Row gutter={[0, 0]}>
           <Col span={layoutSize.left}>
@@ -263,6 +299,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                   caseId={caseId}
                   siderCollapsed={siderCollapsed}
                   onSave={handleSave}
+                  messageApi={messageApi}
                 />
               </Sider>
             </Affix>
