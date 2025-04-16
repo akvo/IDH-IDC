@@ -160,70 +160,95 @@ const AllDriverTreeSelector = ({
       (d) => d.type === "diversified"
     );
     const diversifiedDrivers = diversifiedGroup
-      ? [diversifiedGroup]?.map((driver) => {
-          return {
-            value: driver?.groupName,
-            title: driver?.groupName,
-            selectable: false,
-            children: driver?.questionGroups
-              ?.map((qg) => {
-                const isDiversified =
-                  qg?.case_commodity_type === "diversified" ||
-                  qg?.commodity_type === "diversified";
-                // find agregator
-                const findAggregator = qg.questions.find(
-                  (q) => q.question_type === "aggregator"
-                );
-                // skip the aggregator question
-                const skipAggregator = qg.questions
-                  .map((q) => {
-                    if (q.question_type === "aggregator") {
-                      return q.childrens;
-                    }
-                    return q;
-                  })
-                  .flatMap((x) => x);
-                // check childs
-                const childrensWithoutAggregator = qg?.questions?.filter(
-                  (q) => q?.question_type !== "aggregator"
-                )?.length;
-                let value = qg.id;
-                if (!isDiversified && findAggregator?.id) {
-                  value = `${qg.id}-${findAggregator.id}`;
-                }
-
-                // if diversified childrens doesn't have segment answers
-                // do not include in drivers selector
-                if (isDiversified) {
+      ? [diversifiedGroup]
+          ?.map((driver) => {
+            return {
+              value: driver?.groupName,
+              title: driver?.groupName,
+              selectable: false,
+              children: driver?.questionGroups
+                ?.map((qg) => {
                   const answerQids = Object.keys(segment?.answers).filter(
                     (key) => key.includes("feasible-")
                   );
-                  const diversifiedQids = qg?.questions?.map(
-                    (q) => `feasible-${qg.id}-${q.id}`
+                  const isSecondary =
+                    qg?.case_commodity_type === "secondary" ||
+                    qg?.commodity_type === "secondary";
+                  const isTertiary =
+                    qg?.case_commodity_type === "tertiary" ||
+                    qg?.commodity_type === "tertiary";
+                  const isDiversified =
+                    qg?.case_commodity_type === "diversified" ||
+                    qg?.commodity_type === "diversified";
+                  // find agregator
+                  const findAggregator = qg.questions.find(
+                    (q) => q.question_type === "aggregator"
                   );
-                  const hasCommon = diversifiedQids.some((item) =>
-                    answerQids.includes(item)
-                  );
-                  if (!hasCommon) {
-                    return null;
+                  // skip the aggregator question
+                  const skipAggregator = qg.questions
+                    .map((q) => {
+                      if (q.question_type === "aggregator") {
+                        return q.childrens;
+                      }
+                      return q;
+                    })
+                    .flatMap((x) => x);
+                  // check childs
+                  const childrenWithoutAggregator = qg?.questions?.filter(
+                    (q) => q?.question_type !== "aggregator"
+                  )?.length;
+
+                  let value = qg.id;
+                  if (!isDiversified && findAggregator?.id) {
+                    value = `${qg.id}-${findAggregator.id}`;
                   }
-                }
-                // EOL
-                return {
-                  value: value,
-                  label: qg.commodity_name,
-                  selectable: childrensWithoutAggregator > 0 ? false : true,
-                  children: generateDriverOptions({
-                    group: qg,
-                    questions: skipAggregator,
-                    qidWithFeasibleAnswer,
-                    level: 1,
-                  }),
-                };
-              })
-              .filter((x) => x),
-          };
-        })
+
+                  // if secondary or tertiary
+                  // check answers available
+                  if (isSecondary || isTertiary) {
+                    // check aggregator answers defined
+                    const aggQids = qg?.questions?.map(
+                      (q) => `feasible-${qg.id}-${q.id}`
+                    );
+                    const hasCommon = aggQids.some((item) =>
+                      answerQids.includes(item)
+                    );
+                    if (!hasCommon) {
+                      return null;
+                    }
+                  }
+                  // EOL
+
+                  // if diversified childrens doesn't have segment answers
+                  // do not include in drivers selector
+                  if (isDiversified) {
+                    const diversifiedQids = qg?.questions?.map(
+                      (q) => `feasible-${qg.id}-${q.id}`
+                    );
+                    const hasCommon = diversifiedQids.some((item) =>
+                      answerQids.includes(item)
+                    );
+                    if (!hasCommon) {
+                      return null;
+                    }
+                  }
+                  // EOL
+                  return {
+                    value: value,
+                    label: qg.commodity_name,
+                    selectable: childrenWithoutAggregator > 0 ? false : true,
+                    children: generateDriverOptions({
+                      group: qg,
+                      questions: skipAggregator,
+                      qidWithFeasibleAnswer,
+                      level: 1,
+                    }),
+                  };
+                })
+                .filter((x) => x),
+            };
+          })
+          .filter((x) => x?.children?.length)
       : [];
     // EOL GENERATE DIVERSIFIED DRIVERS
 
