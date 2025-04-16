@@ -24,7 +24,11 @@ const defaultCaseVisualState = {
     case: null,
     tab: "sensitivity_analysis",
     config: {
-      optimizationModel: {},
+      optimizationModel: {
+        selectedDrivers: [],
+        increaseValues: {},
+        optimizationResult: {},
+      },
     },
   },
   scenarioModeling: {

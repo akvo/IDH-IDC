@@ -209,7 +209,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   });
 
   const renderIncreaseError = useMemo(() => {
-    if (optimizationResult) {
+    if (!isEmpty(optimizationResult)) {
       const { optimization_result } = optimizationResult;
       const optimizedValues = orderBy(optimization_result, "key");
       const errors = optimizedValues?.filter((v) => v.increase_error);
@@ -237,7 +237,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   }, [optimizationResult]);
 
   const chartData = useMemo(() => {
-    if (optimizationResult && SHOW_OPTIMIZE_RESULT_AS === "CHART") {
+    if (!isEmpty(optimizationResult) && SHOW_OPTIMIZE_RESULT_AS === "CHART") {
       const { optimization_result } = optimizationResult;
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
@@ -308,7 +308,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   }, [refreshChart, currentCaseState]);
 
   const tableData = useMemo(() => {
-    if (optimizationResult && SHOW_OPTIMIZE_RESULT_AS === "TABLE") {
+    if (!isEmpty(optimizationResult) && SHOW_OPTIMIZE_RESULT_AS === "TABLE") {
       const { optimization_result } = optimizationResult;
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
@@ -412,6 +412,31 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshChart, currentCaseState]);
+
+  const handleClearResult = () => {
+    // reset increase values
+    const filteredIncreaseValues = Object.fromEntries(
+      Object.entries(increaseValues).filter(
+        ([key]) =>
+          !key.startsWith(absoluteKeyPreffix) &&
+          !key.startsWith(percentageFieldPreffix) &&
+          key.includes("_") // keep only keys with prefix
+      )
+    );
+
+    updateOptimizationModelState({
+      // reset selected drivers
+      selectedDrivers: {
+        ...selectedDrivers,
+        [selectedDriversFieldPreffix]: [],
+      },
+      // reset increase values
+      increaseValues: filteredIncreaseValues,
+      // reset optimization result
+      optimizationResult: {},
+    });
+    setRefreshChart(true);
+  };
 
   return (
     <Row gutter={[24, 24]}>
@@ -583,7 +608,10 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               </div>
             </Col>
             <Col span={24} className="optimize-button-wrapper">
-              <Button className="button-clear-optimize-result">
+              <Button
+                className="button-clear-optimize-result"
+                onClick={handleClearResult}
+              >
                 Clear results
               </Button>
               {!selectedDrivers?.[selectedDriversFieldPreffix]?.length ||

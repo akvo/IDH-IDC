@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { TreeSelect } from "antd";
 import { CaseUIState, CaseVisualState } from "../store";
 
@@ -236,34 +236,45 @@ const AllDriverTreeSelector = ({
   );
 
   // Update disabled state based on selection
-  const updateSelectableNodes = (selectedValues) => {
-    if (!multiple) {
-      // Only apply for multiple select mode
-      return;
-    }
-
-    const newNonSelectableNodes = {};
-
-    selectedValues.forEach((selected) => {
-      // Mark all ancestors (parents) as non-selectable
-      let parent = treeMap[selected]?.parent;
-      while (parent) {
-        newNonSelectableNodes[parent] = true;
-        parent = treeMap[parent]?.parent;
+  const updateSelectableNodes = useCallback(
+    (selectedValues) => {
+      if (!multiple) {
+        // Only apply for multiple select mode
+        return;
       }
 
-      // Mark all descendants (children) as non-selectable
-      const markNonSelectable = (node) => {
-        if (node) {
-          newNonSelectableNodes[node] = true;
-          treeMap[node]?.children.forEach(markNonSelectable);
-        }
-      };
-      markNonSelectable(selected);
-    });
+      const newNonSelectableNodes = {};
 
-    setDisabledNodes(newNonSelectableNodes); // Store non-selectable nodes
-  };
+      selectedValues.forEach((selected) => {
+        // Mark all ancestors (parents) as non-selectable
+        let parent = treeMap[selected]?.parent;
+        while (parent) {
+          newNonSelectableNodes[parent] = true;
+          parent = treeMap[parent]?.parent;
+        }
+
+        // Mark all descendants (children) as non-selectable
+        const markNonSelectable = (node) => {
+          if (node) {
+            newNonSelectableNodes[node] = true;
+            treeMap[node]?.children.forEach(markNonSelectable);
+          }
+        };
+        markNonSelectable(selected);
+      });
+
+      setDisabledNodes(newNonSelectableNodes); // Store non-selectable nodes
+    },
+    [multiple, treeMap]
+  );
+
+  useEffect(() => {
+    if (multiple && value && value.length > 0) {
+      updateSelectableNodes(value); // Recalculate disabled nodes
+    } else {
+      setDisabledNodes({}); // Reset if value is empty or not in multiple mode
+    }
+  }, [value, multiple, updateSelectableNodes]);
 
   // Apply disabled state dynamically
   const modifiedTreeData = useMemo(() => {
@@ -297,7 +308,6 @@ const AllDriverTreeSelector = ({
         }
         if (multiple) {
           if (!maxCount || newValue.length <= maxCount) {
-            updateSelectableNodes(newValue);
             onChange(newValue);
           }
         } else {
