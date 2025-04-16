@@ -27,7 +27,7 @@ const ScenarioModelingForm = ({
   const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
 
   const [deleting, setDeleting] = useState(false);
-  const [current, setCurrent] = useState({});
+  const [current, setCurrent] = useState(currentScenarioData);
 
   useEffect(() => {
     setCurrent(currentScenarioData);
