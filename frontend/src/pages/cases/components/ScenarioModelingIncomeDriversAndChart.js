@@ -46,7 +46,8 @@ const Question = ({
         scenarioModelingForm.setFieldValue(key, value);
       }
     });
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const currentValue = useMemo(() => {
     if (selectedDriver) {

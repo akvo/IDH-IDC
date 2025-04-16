@@ -25,7 +25,9 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
     CaseVisualState.useState((s) => s);
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
-  const [activeScenario, setActiveScenario] = useState(null);
+  const [activeScenario, setActiveScenario] = useState(
+    scenarioModeling?.config?.scenarioData?.[0]?.key || null
+  );
   const [deleting, setDeleting] = useState(false);
 
   const onDeleteScenario = useCallback(
@@ -156,31 +158,45 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
         case: currentCase.id,
         config: {
           ...s.scenarioModeling.config,
-          scenarioData: s.scenarioModeling.config.scenarioData.map(
-            (scenario) => {
-              if (isEmpty(scenario?.scenarioValues)) {
-                return {
-                  ...scenario,
-                  scenarioValues: dashboardData.map((d) => {
-                    return {
-                      name: d.name,
-                      segmentId: d.id,
-                      selectedDrivers: [],
-                      allNewValues: {},
-                      currentSegmentValue: d,
-                      updatedSegmentScenarioValue: d,
-                      updatedSegment: {},
-                    };
-                  }),
-                };
-              }
-              return scenario;
+          scenarioData: scenarioModeling.config.scenarioData.map((scenario) => {
+            if (isEmpty(scenario?.scenarioValues)) {
+              return {
+                ...scenario,
+                scenarioValues: dashboardData.map((d) => {
+                  return {
+                    name: d.name,
+                    segmentId: d.id,
+                    selectedDrivers: [],
+                    allNewValues: {},
+                    currentSegmentValue: d,
+                    updatedSegmentScenarioValue: d,
+                    updatedSegment: {},
+                  };
+                }),
+              };
             }
-          ),
+            // add currentSegmentValue
+            return {
+              ...scenario,
+              scenarioValues: scenario?.scenarioValues?.map((sv) => {
+                const findDashboardData = dashboardData.find(
+                  (d) => d.id === sv.segmentId
+                );
+                if (isEmpty(sv?.currentSegmentValue)) {
+                  return {
+                    ...sv,
+                    currentSegmentValue: findDashboardData || {},
+                  };
+                }
+                return sv;
+              }),
+            };
+          }),
         },
       },
     }));
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // EOL handle initial scenario data for all segments
 
   const handleAddScenario = () => {
