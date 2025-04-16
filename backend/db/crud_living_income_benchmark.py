@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, func
+from sqlalchemy import and_, func, distinct
 from models.living_income_benchmark import (
     LivingIncomeBenchmark,
     LivingIncomeBenchmarkDict,
@@ -147,17 +147,13 @@ def count_lib_by_country(session: Session):
         session.query(
             Country.id,
             Country.name,
-            func.count(LivingIncomeBenchmark.id).label("count"),
+            func.count(distinct(LivingIncomeBenchmark.region)).label("count"),
         )
         .outerjoin(
             LivingIncomeBenchmark, Country.id == LivingIncomeBenchmark.country
         )
         .group_by(Country.id)
-        .having(
-            # Filters out countries with count 0
-            func.count(LivingIncomeBenchmark.id)
-            > 0
-        )
+        .having(func.count(distinct(LivingIncomeBenchmark.region)) > 0)
         .all()
     )
     return res
