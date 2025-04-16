@@ -386,16 +386,16 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
             const optimizedPercentage = currentValue
               ? ((optimizedValue - currentValue) / currentValue) * 100
               : 0;
-
-            data["current"] = thousandFormatter(currentValue, 2);
-            data[`increase_${val.key}_absolute`] = thousandFormatter(
-              optimizedValue,
-              2
-            );
-            data[`increase_${val.key}`] = `${thousandFormatter(
+            const absoluteIncreaseValue = thousandFormatter(optimizedValue, 2);
+            const percentageIncreaseValue = thousandFormatter(
               optimizedPercentage,
               2
-            )}%`;
+            );
+
+            data["current"] = thousandFormatter(currentValue, 2);
+            data[
+              `increase_${val.key}`
+            ] = `${absoluteIncreaseValue} (${percentageIncreaseValue}%)`;
           });
         }
         dataSource.push(data);
