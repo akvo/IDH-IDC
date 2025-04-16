@@ -25,7 +25,9 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
     CaseVisualState.useState((s) => s);
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
-  const [activeScenario, setActiveScenario] = useState(null);
+  const [activeScenario, setActiveScenario] = useState(
+    scenarioModeling?.config?.scenarioData?.[0]?.key || null
+  );
   const [deleting, setDeleting] = useState(false);
 
   const onDeleteScenario = useCallback(
@@ -148,6 +150,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
   ]);
 
   // handle initial scenario data for all segments (run only once)
+  // and when dashboard data updated
   useEffect(() => {
     CaseVisualState.update((s) => ({
       ...s,
@@ -174,13 +177,26 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
                   }),
                 };
               }
-              return scenario;
+              // add currentSegmentValue
+              return {
+                ...scenario,
+                scenarioValues: scenario?.scenarioValues?.map((sv) => {
+                  const findDashboardData = dashboardData.find(
+                    (d) => d.id === sv.segmentId
+                  );
+                  return {
+                    ...sv,
+                    currentSegmentValue: findDashboardData || {},
+                  };
+                }),
+              };
             }
           ),
         },
       },
     }));
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dashboardData]);
   // EOL handle initial scenario data for all segments
 
   const handleAddScenario = () => {

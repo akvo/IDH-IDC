@@ -2,7 +2,7 @@ import React, { useMemo, useState, useRef } from "react";
 import { Card, Row, Col, Space, Select } from "antd";
 import { VisualCardWrapper } from "../components";
 import { selectProps } from "../../../lib";
-import { CaseVisualState, CurrentCaseState } from "../store";
+import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { orderBy } from "lodash";
 import Chart from "../../../components/chart";
 
@@ -29,50 +29,72 @@ const generateTargetChartData = (data) => {
 };
 
 const generateChartData = (data, current = false) => {
-  return data.map((d) => {
+  return data.flatMap((d) => {
     const incomeTarget = d?.currentSegmentValue?.target || 0;
+
     const currentTotalIncome =
       d?.currentSegmentValue?.total_current_income || 0;
-
     const newTotalIncome =
       d?.updatedSegmentScenarioValue?.total_current_income || 0;
-    const additionalValue = newTotalIncome
-      ? newTotalIncome - currentTotalIncome
-      : 0;
 
-    let gapValue = incomeTarget - newTotalIncome;
-    gapValue = gapValue < 0 ? 0 : gapValue;
+    // const currentAdditionalValue = currentTotalIncome
+    //   ? currentTotalIncome - currentTotalIncome
+    //   : 0;
+    // const newAdditionalValue = newTotalIncome
+    //   ? newTotalIncome - currentTotalIncome
+    //   : 0;
 
-    return {
-      name: current ? d.name : `${d.scenarioName}-${d.name}`,
-      target: Math.round(incomeTarget),
-      stack: [
-        {
-          name: "Current total\nhousehold income",
-          title: "Current total\nhousehold income",
-          value: Math.round(currentTotalIncome),
-          total: Math.round(currentTotalIncome),
-          color: "#1B625F",
-          order: 1,
-        },
-        {
-          name: "Additional income\nwhen income drivers\nare changed",
-          title: "Additional income\nwhen income drivers\nare changed",
-          value: Math.round(additionalValue),
-          total: Math.round(additionalValue),
-          color: "#49D985",
-          order: 2,
-        },
-        {
-          name: "Gap",
-          title: "Gap",
-          value: Math.round(gapValue),
-          total: Math.round(gapValue),
-          color: "#F9CB21",
-          order: 3,
-        },
-      ],
-    };
+    let currentGapValue = incomeTarget - currentTotalIncome;
+    currentGapValue = currentGapValue < 0 ? 0 : currentGapValue;
+    let newGapValue = incomeTarget - newTotalIncome;
+    newGapValue = newGapValue < 0 ? 0 : newGapValue;
+
+    return [
+      {
+        name: current ? d.name : `Current ${d.name}`,
+        target: Math.round(incomeTarget),
+        stack: [
+          {
+            name: "Household income",
+            title: "Household income",
+            value: Math.round(currentTotalIncome),
+            total: Math.round(currentTotalIncome),
+            color: "#1B625F",
+            order: 1,
+          },
+          {
+            name: "Gap",
+            title: "Gap",
+            value: Math.round(currentGapValue),
+            total: Math.round(currentGapValue),
+            color: "#F9CB21", // "#F9CB21": yellow | "#49D985": green
+            order: 2,
+          },
+        ],
+      },
+      {
+        name: current ? d.name : `New ${d.scenarioName}-${d.name}`,
+        target: Math.round(incomeTarget),
+        stack: [
+          {
+            name: "Household income",
+            title: "Household income",
+            value: Math.round(newTotalIncome),
+            total: Math.round(newTotalIncome),
+            color: "#1B625F",
+            order: 1,
+          },
+          {
+            name: "Gap",
+            title: "Gap",
+            value: Math.round(newGapValue),
+            total: Math.round(newGapValue),
+            color: "#F9CB21", // "#F9CB21": yellow | "#49D985": green
+            order: 2,
+          },
+        ],
+      },
+    ];
   });
 };
 
@@ -80,9 +102,13 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { scenarioModeling } = CaseVisualState.useState((s) => s);
   const scenarioData = scenarioModeling.config.scenarioData;
+  const activeSegmentId = CaseUIState.useState(
+    (s) => s.general.activeSegmentId
+  );
 
   const [selectedScenarioSegmentChart, setSelectedScenarioSegmentChart] =
-    useState([]);
+    useState([`${activeScenario}-${activeSegmentId}`]);
+
   const [showLabel, setShowLabel] = useState(false);
   const chartRef = useRef(null);
 
@@ -188,6 +214,7 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
                 placeholder="Select Scenario - Segment"
                 mode="multiple"
                 onChange={setSelectedScenarioSegmentChart}
+                value={selectedScenarioSegmentChart}
               />
             </div>
           </Space>

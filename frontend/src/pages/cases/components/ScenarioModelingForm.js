@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -28,6 +28,10 @@ const ScenarioModelingForm = ({
 
   const [deleting, setDeleting] = useState(false);
   const [current, setCurrent] = useState(currentScenarioData);
+
+  useEffect(() => {
+    setCurrent(currentScenarioData);
+  }, [currentScenarioData]);
 
   const onDeleteScenario = () => {
     setDeleting(true);
