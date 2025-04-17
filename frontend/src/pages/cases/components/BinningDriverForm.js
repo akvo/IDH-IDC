@@ -24,6 +24,7 @@ const BinningDriverForm = ({
   hidden,
   dataSource = [],
   selected = [],
+  setBinningDriverOptions = () => {},
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
@@ -46,8 +47,9 @@ const BinningDriverForm = ({
           unitName: x.unitName,
         };
       });
+    setBinningDriverOptions(res);
     return res;
-  }, [selectedSegment, dataSource]);
+  }, [selectedSegment, dataSource, setBinningDriverOptions]);
 
   const options = useMemo(() => {
     if (!selected.length) {
