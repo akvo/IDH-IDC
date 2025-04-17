@@ -174,8 +174,10 @@ const CocoaIncomeInventory = () => {
           </p>
           <p>
             We gratefully acknowledge the valuable data contributions from Barry
-            Callebaut, Cargill, ECOM, Fairtrade International, IDH, KIT, and
-            Mars. The following organisations were instrumental in designing the
+            Callebaut, Cargill, ECOM, Fairtrade International, IDH, KIT, Mars
+            and Rainforest Alliance.
+            <br />
+            The following organisations were instrumental in designing the
             questions collected in the Cocoa Income Inventory: KIT, Südwind,
             Agri-Logic, Sustainable Food Lab, with additional input from members
             of the Alliance of Living Income in Cocoa (ALICO) (members of ALICO
