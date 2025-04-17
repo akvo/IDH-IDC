@@ -444,11 +444,8 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
     <Row gutter={[24, 24]}>
       <Col span={24}>
         <Card className="card-section-wrapper optimize-income-target-wrapper">
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20, 10]}>
             <Col span={24}>
-              <div className="title">
-                What is the best way to increase income within feasible ranges?
-              </div>
               <div className="description">
                 Below we provide an optimisation model that helps you determine
                 the most effective way to increase income by adjusting key
@@ -467,9 +464,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   </Tooltip>
                 </div>
               </Space>
-              <div className="description">
-                You can enter up to 5 scenario’s.
-              </div>
+              <div className="description">You can select up to 5 drivers</div>
               <div>
                 <AllDriverTreeSelector
                   multiple={true}
@@ -486,18 +481,17 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
               <Space className="step-wrapper" align="center">
                 <div className="number">2.</div>
                 <div className="label">
-                  Set your improved income by choosing a percentage increase in
-                  current income to close the feasible income gap{" "}
+                  Specify income adjustments to explore different outcomes{" "}
                   <Tooltip
                     title={
                       <>
-                        The improved income level is calculated by increasing
+                        The adjusted income level is calculated by increasing
                         your current income by a percentage of the feasible
                         income gap (feasible income - current income). For
-                        example, if your current income is <b>$1,000</b> and
-                        your feasible income is <b>$2,000</b>, the gap is{" "}
-                        <b>$1,000</b>. A <b>10% increase</b> means adding{" "}
-                        <b>$100</b>, resulting in a new income of <b>$1,100</b>.
+                        example, if your current income is $1,000 and your
+                        feasible income is $2,000, the gap is $1,000. A 10%
+                        increase means adding $100, resulting in a new income of
+                        $1,100.
                       </>
                     }
                   >
@@ -507,6 +501,10 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   </Tooltip>
                 </div>
               </Space>
+              <div className="description">
+                Enter percentages to change your current income based on the gap
+                with your feasible income.
+              </div>
               <div className="income-inputs-wrapper">
                 <div>
                   <label>Current income</label>
@@ -533,7 +531,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   />
                 </div>
                 <div>
-                  <label>Increase 1</label>
+                  <label>Adjustment 1 (%)</label>
                   <InputNumber
                     controls={false}
                     addonAfter="%"
@@ -558,7 +556,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   )}
                 </div>
                 <div>
-                  <label>Increase 2</label>
+                  <label>Adjustment 2 (%)</label>
                   <InputNumber
                     controls={false}
                     addonAfter="%"
@@ -583,7 +581,7 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
                   )}
                 </div>
                 <div>
-                  <label>Increase 3</label>
+                  <label>Adjustment 3 (%)</label>
                   <InputNumber
                     controls={false}
                     addonAfter="%"

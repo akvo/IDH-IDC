@@ -546,6 +546,12 @@
 
   .optimize-income-target-wrapper {
     padding: 10px 0;
+    background-color: #eaf2f2;
+    color: $primary-color;
+    //
+    box-shadow: 0px 0px 7px -2px rgba(1, 98, 95, 0.25);
+    -webkit-box-shadow: 0px 0px 7px -2px rgba(1, 98, 95, 0.25);
+    -moz-box-shadow: 0px 0px 7px -2px rgba(1, 98, 95, 0.25);
 
     .title {
       font-family: "RocGrotesk";
@@ -588,7 +594,7 @@
     }
 
     .optimize-income-target-step-wrapper {
-      padding: 20px 0;
+      padding: 15px 0;
 
       .step-wrapper {
         width: 100%;
@@ -597,7 +603,7 @@
         border-bottom: 1px solid var(--light-40, #d8d8d8);
 
         .number {
-          color: #01625f;
+          color: $primary-color;
           font-family: "RocGrotesk";
           font-size: 16px;
           font-style: normal;
@@ -610,9 +616,9 @@
         }
 
         .label {
-          color: #fff;
+          color: $primary-color;
           font-family: "TabletGothic";
-          font-size: 18px;
+          font-size: 16px;
           font-style: normal;
           font-weight: 700;
           line-height: 157.15%;
@@ -620,6 +626,7 @@
       }
 
       .income-inputs-wrapper {
+        margin-top: 20px;
         display: flex;
         justify-content: space-between;
         gap: 20px;
@@ -642,12 +649,11 @@
 
           label,
           span {
-            color: #fff;
+            color: $primary-color;
             font-family: "TabletGothic";
             font-size: 14px;
             font-style: normal;
             font-weight: 400;
-            // line-height
           }
         }
 
@@ -665,9 +671,9 @@
 
       .button-clear-optimize-result {
         border-radius: 40px;
-        border: 1px solid #fff;
+        border: 1px solid $primary-color;
         background-color: transparent;
-        color: #fff;
+        color: $primary-color;
         font-weight: 500;
       }
 
