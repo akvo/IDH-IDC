@@ -488,7 +488,9 @@ const AssessImpactMitigationStrategies = ({
         </Card>
       </Col>
       <Col span={24}>
-        <OptimizeIncomeTarget />
+        <Card className="card-content-wrapper">
+          <OptimizeIncomeTarget />
+        </Card>
       </Col>
       {/* EOL Optimize Income Target */}
     </Row>

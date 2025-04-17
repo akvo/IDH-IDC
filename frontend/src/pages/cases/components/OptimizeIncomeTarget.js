@@ -675,7 +675,7 @@ const OptimizeIncomeTarget = () => {
             chartData?.length || tableData?.dataSource?.length ? "" : "none",
         }}
       >
-        <Card className="card-visual-wrapper">
+        <Card className="card-visual-wrapper no-padding">
           <Row gutter={[20, 20]} align="middle">
             <Col span={18}>
               {SHOW_OPTIMIZE_RESULT_AS === "CHART" ? (
@@ -710,11 +710,14 @@ const OptimizeIncomeTarget = () => {
               )}
 
               {SHOW_OPTIMIZE_RESULT_AS === "TABLE" ? (
-                <Table
-                  pagination={false}
-                  columns={tableData.columns}
-                  dataSource={tableData.dataSource}
-                />
+                <div className="optimize-table-wrapper">
+                  <Table
+                    pagination={false}
+                    columns={tableData.columns}
+                    dataSource={tableData.dataSource}
+                    bordered
+                  />
+                </div>
               ) : (
                 ""
               )}
