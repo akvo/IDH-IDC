@@ -22,6 +22,7 @@ const SegmentForm = () => {
 
   const [messageApi, messageContextHolder] = message.useMessage();
 
+  // TODO ::  check after delete success and save segment, the segment tabs become empty
   const onDelete = ({ field = {}, remove = () => {} }) => {
     // delete segment
     const segmentIndex = field?.name;
