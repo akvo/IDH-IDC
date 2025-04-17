@@ -23,6 +23,7 @@ import Chart from "../../../components/chart";
 import { commodities } from "../../../store/static";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
+import SegmentSelector from "./SegmentSelector";
 
 const SHOW_OPTIMIZE_RESULT_AS = "TABLE"; // change to "CHART" or "TABLE"
 
@@ -55,7 +56,7 @@ const unitName = ({ currentCase, question, group }) => {
     .join("/");
 };
 
-const OptimizeIncomeTarget = ({ selectedSegment }) => {
+const OptimizeIncomeTarget = () => {
   const currentCaseState = CurrentCaseState.useState((s) => s);
   const questionGroups = CaseVisualState.useState((s) => s.questionGroups);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
@@ -70,6 +71,8 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
   const [showModelDetail, setShowModelDetail] = useState(false);
   const [refreshChart, setRefreshChart] = useState(true);
   const [showLabel, setShowLabel] = useState(false);
+  const [selectedSegment, setSelectedSegment] = useState(null);
+
   const chartRef = useRef(null);
   const [messageApi, messageContextHolder] = message.useMessage();
 
@@ -446,6 +449,12 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
         <Card className="card-section-wrapper optimize-income-target-wrapper">
           <Row gutter={[20, 10]}>
             <Col span={24}>
+              <SegmentSelector
+                selectedSegment={selectedSegment}
+                setSelectedSegment={setSelectedSegment}
+              />
+            </Col>
+            <Col span={24}>
               <div className="description">
                 Below we provide an optimisation model that helps you determine
                 the most effective way to increase income by adjusting key
@@ -732,7 +741,6 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           </Row>
         </Card>
       </Col>
-
       <Modal
         title="About the model"
         open={showModelDetail}
@@ -787,7 +795,6 @@ const OptimizeIncomeTarget = ({ selectedSegment }) => {
           </p>
         </>
       </Modal>
-
       {/* message context holder */}
       {messageContextHolder}
     </Row>
