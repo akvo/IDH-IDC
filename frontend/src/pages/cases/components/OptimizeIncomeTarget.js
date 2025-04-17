@@ -725,18 +725,19 @@ const OptimizeIncomeTarget = () => {
             <Col span={6}>
               <Space direction="vertical">
                 <div className="section-title">
-                  What is the optimal change in income drivers to maximize
-                  income within feasible limits?
+                  What is the optimal and feasible change in selected drivers to
+                  reach your adjusted income target?
                 </div>
                 <div className="section-description">
-                  This graph compares your current income driver values with
-                  optimized scenarios, showing how different adjustments
-                  influence income. It helps identify which changes lead to the
-                  most efficient income increase while staying within feasible
-                  ranges.
+                  This table shows how your current income driver values would
+                  need to change to meet your adjusted income target. It
+                  reflects the smallest possible changes across the selected
+                  drivers, while staying within feasible limits. Use it to
+                  understand which adjustments are possible and which drivers
+                  contribute most toward reaching your goal.
                   <br />
                   <br />
-                  For more details about the model,{" "}
+                  For more details about this optimisation model,{" "}
                   <a onClick={() => setShowModelDetail(true)}>click here</a>.
                 </div>
               </Space>
