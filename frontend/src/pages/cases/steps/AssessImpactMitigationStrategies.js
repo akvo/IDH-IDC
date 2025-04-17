@@ -48,6 +48,7 @@ const AssessImpactMitigationStrategies = ({
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [binningDriverOptions, setBinningDriverOptions] = useState([]);
 
   const carouselChartRef = useRef(null);
 
@@ -436,6 +437,7 @@ const AssessImpactMitigationStrategies = ({
                       binningValues.find((b) => b.id === segment.id)?.selected
                     }
                     hidden={selectedSegment !== segment.id}
+                    setBinningDriverOptions={setBinningDriverOptions}
                   />
                 ))}
               </Form>
@@ -450,6 +452,7 @@ const AssessImpactMitigationStrategies = ({
 
             {/* Sensitivity Analysis Chart */}
             <Col span={24}>
+              {/* LINE GRAPH */}
               {dashboardData.map((segment) =>
                 selectedSegment === segment.id ? (
                   <ChartBinningDriversSensitivityAnalysis
@@ -457,10 +460,12 @@ const AssessImpactMitigationStrategies = ({
                     segment={segment}
                     data={sensitivityAnalysis.config}
                     origin={dataSource}
+                    binningDriverOptions={binningDriverOptions}
                     setAdjustTargetVisible={() => {}}
                   />
                 ) : null
               )}
+              {/* EOL LINE GRAPH */}
             </Col>
             <Col span={24}>
               {dashboardData.map((segment) =>
