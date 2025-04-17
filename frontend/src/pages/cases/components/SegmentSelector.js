@@ -20,7 +20,7 @@ const SegmentSelector = ({ selectedSegment, setSelectedSegment }) => {
   return (
     <Radio.Group value={selectedSegment} onChange={handleChangeSegmentSelector}>
       {orderBy(dashboardData, ["id"]).map((d) => (
-        <Radio.Button key={d.id} value={d.id}>
+        <Radio.Button key={d.id} value={d.id} style={{ fontWeight: "normal" }}>
           {d.name}
         </Radio.Button>
       ))}
