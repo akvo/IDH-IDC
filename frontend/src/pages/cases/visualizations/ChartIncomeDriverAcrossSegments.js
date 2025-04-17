@@ -70,15 +70,14 @@ const ChartIncomeDriverAcrossSegments = () => {
         focusCommodityAnswers.map((a) => a.question),
         "id"
       ).find((q) => !q.parent)?.childrens || [];
-    const focusRes = driverQuestions
-      .map((q) => ({
-        label: q.text,
-        type: "focus",
-        value: q.id,
-        default_value: q.default_value,
-        childrens: q.childrens.map((q) => ({ ...q, type: "focus" })),
-      }))
-      .filter((x) => x.value !== 2); // remove land driver from dropdown
+    const focusRes = driverQuestions.map((q) => ({
+      label: q.text,
+      type: "focus",
+      value: q.id,
+      default_value: q.default_value,
+      childrens: q.childrens.map((q) => ({ ...q, type: "focus" })),
+    }));
+    // .filter((x) => x.value !== 2); // remove land driver from dropdown
     // add secondary - tertiary value
     const additonalCommodities = otherCommodities
       .map((x) => {
@@ -318,6 +317,12 @@ const ChartIncomeDriverAcrossSegments = () => {
 
   const chartGrid = (selectedDriver) => {
     switch (selectedDriver) {
+      case 2: // land
+        return {
+          right: showDriversBreakdownValue ? 115 : 80,
+          left: 65,
+          bottom: 20,
+        };
       case 3: // volume
         return {
           right: showDriversBreakdownValue ? 115 : 80,
@@ -327,19 +332,19 @@ const ChartIncomeDriverAcrossSegments = () => {
       case 4: // price
         return {
           right: showDriversBreakdownValue ? 200 : 80,
-          left: 65,
+          left: 55,
           bottom: 20,
         };
       case 5: // cost of production
         return {
           right: showDriversBreakdownValue ? 215 : 140,
-          left: 40,
+          left: 45,
           bottom: 20,
         };
       default: // diversified income
         return {
           right: showDriversBreakdownValue ? 200 : 140,
-          left: 35,
+          left: 55,
           bottom: 20,
         };
     }
