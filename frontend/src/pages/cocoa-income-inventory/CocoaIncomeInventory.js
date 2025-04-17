@@ -66,9 +66,9 @@ const CocoaIncomeInventory = () => {
           <h2>About the Cocoa Income Inventory</h2>
           <div className="about-description-wrapper">
             <p>
-              The Cocoa Income Inventory provides publicly accessible, validated
-              data on cocoa farming household incomes in an aggregated and
-              anonymized format. This comprehensive and harmonized dataset
+              The Cocoa Income Inventory (CII) provides publicly accessible,
+              validated data on cocoa farming household incomes in an aggregated
+              and anonymized format. This comprehensive and harmonized dataset
               offers valuable insights into the impact of interventions,
               supporting informed decision-making and fostering learning across
               the cocoa sector.
@@ -174,8 +174,10 @@ const CocoaIncomeInventory = () => {
           </p>
           <p>
             We gratefully acknowledge the valuable data contributions from Barry
-            Callebaut, Cargill, ECOM, Fairtrade International, IDH, KIT, and
-            Mars. The following organisations were instrumental in designing the
+            Callebaut, Cargill, ECOM, Fairtrade International, IDH, KIT, Mars
+            and Rainforest Alliance.
+            <br />
+            The following organisations were instrumental in designing the
             questions collected in the Cocoa Income Inventory: KIT, Südwind,
             Agri-Logic, Sustainable Food Lab, with additional input from members
             of the Alliance of Living Income in Cocoa (ALICO) (members of ALICO

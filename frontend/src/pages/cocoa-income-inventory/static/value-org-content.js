@@ -12,7 +12,7 @@ export const valueOrgContent = [
   },
   {
     icon: InsightIcon,
-    title: "Enhanced Decision MakingGreater Insights for Strategic Planning",
+    title: "Greater Insights for Strategic Planning",
     description:
       "Then, follow the prompts to input the relevant data for each income driver, including breakdown levels where applicable.",
   },
