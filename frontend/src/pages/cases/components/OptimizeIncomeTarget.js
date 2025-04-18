@@ -24,6 +24,7 @@ import { commodities } from "../../../store/static";
 import { isEmpty, orderBy, uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
 import SegmentSelector from "./SegmentSelector";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const SHOW_OPTIMIZE_RESULT_AS = "TABLE"; // change to "CHART" or "TABLE"
 
@@ -183,6 +184,48 @@ const OptimizeIncomeTarget = () => {
       });
       return;
     }
+
+    // track event - Optimize income target - selected drivers pair
+    const driverPair = editable_indices
+      .map((key) => {
+        const [caseCommodityId, qId] = key.split("-");
+        const commodity = questionGroups.find(
+          (qg) =>
+            qg?.id === parseInt(caseCommodityId) ||
+            qg?.case_commodity_id === parseInt(caseCommodityId)
+        );
+        const question = flattenedQuestionGroups.find(
+          (q) => q?.id === parseInt(qId)
+        );
+        if (commodity?.commodity_name && question?.text) {
+          return `${question?.text} (${commodity?.commodity_name})`;
+        }
+        return null;
+      })
+      .filter((x) => x)
+      .join(" - ");
+    if (driverPair) {
+      CustomEvent.trackEvent(
+        "Optimization model - Select the drivers you can influence",
+        "on run optimization model",
+        "Selected Drivers Pair",
+        1, // Event Value
+        {
+          dimension11: driverPair, // Custom Dimension: Track combination of x-y-bin
+        }
+      );
+      console.info(
+        "track event",
+        "Optimization model - Select the drivers you can influence",
+        "on run optimization model",
+        "Selected Drivers Pair",
+        1,
+        {
+          dimension11: driverPair,
+        }
+      );
+    }
+    // EOL track event - Optimize income target - selected drivers pair
 
     // run the model
     const payload = {
