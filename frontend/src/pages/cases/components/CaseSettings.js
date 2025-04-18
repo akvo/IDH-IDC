@@ -14,7 +14,10 @@ import {
   PrevCaseState,
   stepPath,
 } from "../store";
-import { isEqual } from "lodash";
+import { isEqual, isEmpty } from "lodash";
+import { UserState } from "../../../store";
+import { countryOptions, focusCommodityOptions } from "../../../store/static";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
@@ -29,6 +32,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [formData, setFormData] = useState({ segments: [""] });
   const [isSaving, setIsSaving] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+
+  const { internal_user: userInternal } = UserState.useState((s) => s);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
@@ -257,12 +262,46 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     const isUpdated = !isEqual(filteredPrevValue, filteredCurrentValue);
     // EOL detect is payload updated
 
+    const isNewCase = isEmpty(currentCase?.id);
     const apiCall = currentCase.id
       ? api.put(`case/${currentCase.id}?updated=${isUpdated}`, payload)
       : api.post("case", payload);
 
     apiCall
       .then((res) => {
+        // track event: external user create new case (PoC)
+        if (!userInternal && isNewCase) {
+          const reportedCountry = countryOptions.find(
+            (co) => co.value === data.country
+          );
+          const reportedCommodity = focusCommodityOptions.find(
+            (fc) => fc.value === data.focus_commodity
+          );
+          CustomEvent.trackEvent(
+            "Case Overview",
+            "Create new case",
+            "External users Country wise",
+            1,
+            {
+              dimension3: reportedCountry
+                ? reportedCountry.label
+                : data.country,
+            }
+          );
+          CustomEvent.trackEvent(
+            "Case Overview",
+            "Create new case",
+            "External users Commodity wise",
+            1,
+            {
+              dimension4: reportedCommodity
+                ? reportedCommodity.label
+                : data.focus_commodity,
+            }
+          );
+        }
+        // EOL track event
+
         setPrevCaseSettingValue(filteredCurrentValue);
         const { data } = res;
 
