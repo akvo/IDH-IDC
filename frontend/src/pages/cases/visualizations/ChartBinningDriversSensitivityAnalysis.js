@@ -303,13 +303,14 @@ const ChartBinningDriversSensitivityAnalysis = ({
         for a given {binValue} level.
         <br />
         <br />
-        <Image src={SensitivityAnalisysImg} preview={false} width={75} /> The
-        horizontal orange band shows the feasible range for {yAxisName}{" "}
+        The horizontal orange band shows the feasible range for {yAxisName}{" "}
         (Y-axis), and the vertical orange band does the same for {xAxisName}{" "}
         (X-axis). Where these bands overlap, a dark orange zone appears. This
         means the income target is reached using feasible values for both
         drivers. If you do not see an orange band on one of the axes, it means
         that driver’s values fall outside the current and feasible range.
+        <br />
+        <Image src={SensitivityAnalisysImg} preview={false} width={80} />
       </>
     );
     setLabel(label);
