@@ -31,6 +31,7 @@ import { stepPath, CaseUIState, CurrentCaseState } from "../store";
 import { UserState } from "../../../store";
 import { adminRole, casePermission } from "../../../store/static";
 import { api } from "../../../lib";
+import { usePiwikTrackPageTime } from "../../../hooks";
 
 const { Sider, Content } = Layout;
 const buttonPrevNextPosition = "bottom";
@@ -124,6 +125,9 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
 };
 
 const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
+  // track time
+  usePiwikTrackPageTime();
+
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const {
     id: userId,
