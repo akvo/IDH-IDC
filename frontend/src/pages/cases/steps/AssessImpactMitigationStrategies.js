@@ -30,6 +30,7 @@ import { commodities } from "../../../store/static";
 import { api } from "../../../lib";
 import { removeUndefinedObjectValue } from "../../../lib";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 /**
  * STEP 4
@@ -49,6 +50,7 @@ const AssessImpactMitigationStrategies = ({
 
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [binningDriverOptions, setBinningDriverOptions] = useState([]);
+  const [driverPair, setDriverPair] = useState({});
 
   const carouselChartRef = useRef(null);
 
@@ -298,6 +300,7 @@ const AssessImpactMitigationStrategies = ({
 
     if (valueName === "x-axis-driver") {
       const dataValue = dataSource.find((d) => d.name === value);
+      setDriverPair((prev) => ({ ...prev, xAxisName: dataValue?.name || "" }));
       allValues = {
         ...allValues,
         [`${segmentId}_x-axis-driver`]: dataValue?.name,
@@ -309,6 +312,7 @@ const AssessImpactMitigationStrategies = ({
     }
     if (valueName === "y-axis-driver") {
       const dataValue = dataSource.find((d) => d.name === value);
+      setDriverPair((prev) => ({ ...prev, yAxisName: dataValue?.name || "" }));
       allValues = {
         ...allValues,
         [`${segmentId}_y-axis-driver`]: dataValue?.name,
@@ -320,6 +324,7 @@ const AssessImpactMitigationStrategies = ({
     }
     if (valueName === "binning-driver-name") {
       const dataValue = dataSource.find((d) => d.name === value);
+      setDriverPair((prev) => ({ ...prev, binName: dataValue?.name || "" }));
       allValues = {
         ...allValues,
         [`${segmentId}_binning-driver-name`]: dataValue?.name,
@@ -348,6 +353,33 @@ const AssessImpactMitigationStrategies = ({
     });
     form.setFieldsValue(filteredValues);
   };
+
+  // handle track event
+  useEffect(() => {
+    if (!isEmpty(driverPair) && Object.keys(driverPair)?.length === 3) {
+      const { xAxisName, yAxisName, binName } = driverPair;
+      const combinedSelection = `${xAxisName} - ${yAxisName} - ${binName}`;
+      CustomEvent.trackEvent(
+        "Sensitivity Analysis - Which pairs of drivers have a strong impact on income", // Event Category
+        "on driver selection", // Event Action
+        "Driver Pair Selection", // Event Name
+        1, // Event Value
+        {
+          dimension10: combinedSelection, // Custom Dimension: Track combination of x-y-bin
+        }
+      );
+      console.info(
+        "track event",
+        "Sensitivity Analysis - Which pairs of drivers have a strong impact on income",
+        "on driver selection",
+        "Driver Pair Selection",
+        1,
+        {
+          dimension10: combinedSelection,
+        }
+      );
+    }
+  }, [driverPair]);
 
   return (
     <Row id="assess-impact-mitigation-strategies" gutter={[24, 24]}>

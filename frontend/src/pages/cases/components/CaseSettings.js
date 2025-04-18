@@ -17,6 +17,7 @@ import {
 import { isEqual, isEmpty } from "lodash";
 import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
+import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
