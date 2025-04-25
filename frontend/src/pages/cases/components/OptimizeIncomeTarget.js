@@ -733,7 +733,7 @@ const OptimizeIncomeTarget = () => {
         }}
       >
         <Card className="card-visual-wrapper no-padding">
-          <Row gutter={[20, 20]} align="middle">
+          <Row gutter={[20, 20]} align="start">
             <Col span={18}>
               {SHOW_OPTIMIZE_RESULT_AS === "CHART" ? (
                 <VisualCardWrapper
