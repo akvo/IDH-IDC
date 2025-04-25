@@ -362,20 +362,24 @@ const OptimizeIncomeTarget = () => {
 
       // generate columns
       const increaseColumns = optimizedValues.map((opt) => ({
-        title: `Increase ${opt.key}`,
+        title: `Adjustment ${opt.key}`,
         dataIndex: `increase_${opt.key}`,
         name: `increase_${opt.key}`,
+        align: "left",
+        width: "20%",
       }));
       const columns = [
         {
-          title: "Driver",
+          title: "Income driver",
           dataIndex: "driver",
           key: "driver",
+          width: "25%",
         },
         {
-          title: "Current",
+          title: "Current value",
           dataIndex: "current",
           key: "current",
+          align: "left",
         },
         ...increaseColumns,
       ];
@@ -399,13 +403,23 @@ const OptimizeIncomeTarget = () => {
           question: question,
           group: caseCommodity,
         });
-        labels[key] = `${question?.text}${
-          unit && unit !== "" ? ` (${unit})` : ""
-        }`;
+        const driverName = (
+          <Space direction="vertical">
+            <div>{question.text}</div>
+            <div>{unit && unit !== "" ? ` (${unit})` : ""}</div>
+          </Space>
+        );
+        labels[key] = driverName;
       });
       // add total labels
       if (!isEmpty(labels)) {
-        labels["total_income"] = `Total Income (${currentCaseState.currency})`;
+        const totalIncomeLabel = (
+          <Space direction="vertical">
+            <div>Total income</div>
+            <div>{currentCaseState.currency}</div>
+          </Space>
+        );
+        labels["total_income"] = totalIncomeLabel;
       }
 
       const dataSource = [];
@@ -719,7 +733,7 @@ const OptimizeIncomeTarget = () => {
         }}
       >
         <Card className="card-visual-wrapper no-padding">
-          <Row gutter={[20, 20]} align="middle">
+          <Row gutter={[20, 20]} align="start">
             <Col span={18}>
               {SHOW_OPTIMIZE_RESULT_AS === "CHART" ? (
                 <VisualCardWrapper
@@ -753,13 +767,28 @@ const OptimizeIncomeTarget = () => {
               )}
 
               {SHOW_OPTIMIZE_RESULT_AS === "TABLE" ? (
-                <div className="optimize-table-wrapper">
-                  <Table
-                    pagination={false}
-                    columns={tableData.columns}
-                    dataSource={tableData.dataSource}
-                    bordered
-                  />
+                <div>
+                  <div className="optimize-table-wrapper">
+                    <Table
+                      pagination={false}
+                      columns={tableData.columns}
+                      dataSource={tableData.dataSource?.filter(
+                        (d) => d.key !== "total_income"
+                      )} // exclude total_income from main table
+                      bordered
+                    />
+                  </div>
+                  <div className="total-income-table-wrapper">
+                    <Table
+                      pagination={false}
+                      columns={tableData.columns}
+                      dataSource={tableData.dataSource?.filter(
+                        (d) => d.key === "total_income"
+                      )} // show only total_income
+                      showHeader={false}
+                      style={{ border: "none" }}
+                    />
+                  </div>
                 </div>
               ) : (
                 ""

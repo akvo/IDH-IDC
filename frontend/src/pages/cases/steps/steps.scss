@@ -695,9 +695,15 @@
 
   .optimize-table-wrapper {
     //
-    box-shadow: 0px 0px 7px -2px rgba(0, 0, 0, 0.25);
-    -webkit-box-shadow: 0px 0px 7px -2px rgba(0, 0, 0, 0.25);
-    -moz-box-shadow: 0px 0px 7px -2px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 0px 7px -2px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0px 0px 7px -2px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0px 0px 7px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  .total-income-table-wrapper {
+    .ant-table-wrapper .ant-table-tbody > tr > td {
+      border: none;
+    }
   }
 }
 
