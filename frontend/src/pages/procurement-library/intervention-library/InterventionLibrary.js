@@ -125,18 +125,6 @@ const InterventionLibrary = () => {
           <h1>The Intervention Library</h1>
           <Form form={form} onFinish={handleOnFinish} layout="vertical">
             <Form.Item
-              label="Procurement practice title or keyword"
-              name="search"
-            >
-              <Input
-                placeholder="Search"
-                prefix={<SearchIcon />}
-                size="large"
-                style={{ minWidth: 280 }}
-                allowClear
-              />
-            </Form.Item>
-            <Form.Item
               label="Procurement Process"
               name="procurement_process_ids"
             >
@@ -172,6 +160,18 @@ const InterventionLibrary = () => {
                     <span>{`+${omittedValues?.length}`}</span>
                   </Tooltip>
                 )}
+                allowClear
+              />
+            </Form.Item>
+            <Form.Item
+              label="Procurement practice title or keyword"
+              name="search"
+            >
+              <Input
+                placeholder="Search"
+                prefix={<SearchIcon />}
+                size="large"
+                style={{ minWidth: 280 }}
                 allowClear
               />
             </Form.Item>
