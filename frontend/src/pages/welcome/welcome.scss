@@ -213,4 +213,17 @@
       line-height: 142.857%;
     }
   }
+
+  .summary-table-wrapper {
+    .ant-card-body {
+      padding: 0;
+    }
+  }
+
+  .button-icon-arrow-down {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: default;
+  }
 }
