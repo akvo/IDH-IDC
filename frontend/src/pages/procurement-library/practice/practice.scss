@@ -124,9 +124,10 @@
             font-size: 32px !important;
             font-style: normal;
             font-weight: 700;
-            line-height: 42px; /* 131.25% */
+            line-height: 48px;
             margin-block-start: 0;
             margin-block-end: 12px;
+            margin-bottom: 18px !important;
           }
           p {
             max-width: 729px;
@@ -192,6 +193,9 @@
             word-break: break-word;
           }
           .ant-tabs-left {
+            .ant-tabs-nav {
+              min-height: 320px;
+            }
             & > .ant-tabs-content-holder {
               border-left: none;
               padding-left: 24px;
