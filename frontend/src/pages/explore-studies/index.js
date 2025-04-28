@@ -22,11 +22,10 @@ export const driverOptions = [
 ];
 
 const sources = [
-  "Farmfit",
+  "Farmer survey data",
   "Desk research",
   "IDH internal",
-  "SDM Data",
-  "FAO",
+  "IBA",
   "Other",
 ];
 export const sourceOptions = sources.map((x) => ({ label: x, value: x }));
