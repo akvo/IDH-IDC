@@ -9,13 +9,13 @@ id,region,country_id,country
 8,Coffee or Cocoa growing regions / Northwest Espírito Santo,[26],['Brazil']
 9,Municipality of Ensenada / Baja California,[119],['Mexico']
 10,Municipality of San Quintín / Baja California,[119],['Mexico']
-11,Non-Metropolitan Urban / All,"[39, 7]","['Argentina', 'Chile']"
+11,Non-Metropolitan Urban / All,"[39, 7]","['Chile', 'Argentina']"
 12,Non-Metropolitan Urban / Ziway Region,[62],['Ethiopia']
 13,"Non-metropolitan / State of São Paulo, non-metropolitan areas",[26],['Brazil']
 14,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",[119],['Mexico']
 15,Non-metropolitan Urban / Lake Naivasha,[95],['Kenya']
 16,Peri-Urban / Lower Volta Region,[71],['Ghana']
-17,Rural / All,"[129, 7, 135, 142, 143, 145, 19, 153, 30, 34, 38, 46, 179, 181, 182, 56, 57, 185, 186, 67, 202, 203, 80, 101, 110, 124, 125]","['Rwanda', 'Belize', 'Nigeria', 'Peru', 'Egypt, Arab Rep.', 'Argentina', 'Chad', 'Honduras', 'Cameroon', 'Togo', 'Lao PDR', 'Nepal', 'Tunisia', 'Madagascar', 'Panama', 'Turkiye', 'Burkina Faso', 'Tanzania', ""Cote d'Ivoire"", 'Mozambique', 'Timor-Leste', 'Papua New Guinea', 'Gabon', 'Zambia', 'El Salvador', 'Zimbabwe', 'Morocco']"
+17,Rural / All,"[129, 7, 135, 142, 143, 145, 19, 153, 30, 34, 38, 46, 179, 181, 182, 56, 57, 185, 186, 67, 202, 203, 80, 101, 110, 124, 125]","['Nepal', 'Lao PDR', 'Madagascar', 'Rwanda', 'El Salvador', 'Honduras', 'Tanzania', 'Panama', 'Chad', 'Burkina Faso', 'Zambia', 'Cameroon', ""Cote d'Ivoire"", 'Belize', 'Gabon', 'Mozambique', 'Togo', 'Tunisia', 'Zimbabwe', 'Peru', 'Morocco', 'Argentina', 'Turkiye', 'Nigeria', 'Egypt, Arab Rep.', 'Timor-Leste', 'Papua New Guinea']"
 18,Rural / All/ Congo Kinshasa,[43],"['Congo, Dem. Rep.']"
 19,Rural / Andhra Pradesh,[84],['India']
 20,"Rural / Bhadohi, Uttar Pradesh",[84],['India']
@@ -51,7 +51,7 @@ id,region,country_id,country
 50,Rural Guji zone / Oromia Region,[62],['Ethiopia']
 51,"Rural coffee-growing regions / Comayagua, Copán, and El Paraíso",[80],['Honduras']
 52,Rural-Urban / Northwest,[133],['Nicaragua']
-53,Urban / All,"[33, 34, 67, 170, 80, 179, 180, 182, 57, 186, 93]","['Jordan', 'Cambodia', 'Cameroon', 'Thailand', 'Togo', 'Tanzania', 'Sri Lanka', 'Turkiye', 'Gabon', 'El Salvador', 'Honduras']"
+53,Urban / All,"[33, 34, 67, 170, 80, 179, 180, 182, 57, 186, 93]","['Cambodia', 'Sri Lanka', 'Thailand', 'Turkiye', 'Gabon', 'El Salvador', 'Honduras', 'Togo', 'Tanzania', 'Jordan', 'Cameroon']"
 54,Urban / Chengdu,[40],['China']
 55,Urban / Dhaka City,[15],['Bangladesh']
 56,Urban / Hangzhou,[40],['China']
