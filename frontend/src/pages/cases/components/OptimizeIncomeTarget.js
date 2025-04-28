@@ -372,6 +372,12 @@ const OptimizeIncomeTarget = () => {
         name: `increase_${opt.key}`,
         align: "left",
         width: "20%",
+        render: (text, row) => {
+          if (row.key === "total_income") {
+            return <b>{text}</b>;
+          }
+          return text;
+        },
       }));
       const columns = [
         {
@@ -386,6 +392,12 @@ const OptimizeIncomeTarget = () => {
           key: "current",
           align: "left",
           width: "20%",
+          render: (text, row) => {
+            if (row.key === "total_income") {
+              return <b>{text}</b>;
+            }
+            return text;
+          },
         },
         ...increaseColumns,
       ];
@@ -427,7 +439,7 @@ const OptimizeIncomeTarget = () => {
       // add total labels
       if (!isEmpty(labels)) {
         const totalIncomeLabel = (
-          <div>Total income ({currentCaseState.currency})</div>
+          <b>Total income ({currentCaseState.currency})</b>
         );
         labels["total_income"] = totalIncomeLabel;
       }
