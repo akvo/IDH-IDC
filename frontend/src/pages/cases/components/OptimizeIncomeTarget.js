@@ -300,14 +300,19 @@ const OptimizeIncomeTarget = () => {
         const caseCommodity = currentCaseState?.case_commodities?.find(
           (c) => c.id === parseInt(caseCommodityId)
         );
+        const commodity = commodities.find(
+          (c) => c.id === caseCommodity?.commodity
+        );
+        const driver =
+          question?.id === 1 && commodity?.name
+            ? commodity?.name
+            : question.text;
         const unit = unitName({
           currentCaseState,
           question: question,
           group: caseCommodity,
         });
-        labels[key] = `${question?.text}${
-          unit && unit !== "" ? ` (${unit})` : ""
-        }`;
+        labels[key] = `${driver}${unit && unit !== "" ? ` (${unit})` : ""}`;
       });
 
       const data = Object.entries(labels).map(([key, label]) => {
@@ -399,6 +404,13 @@ const OptimizeIncomeTarget = () => {
         const caseCommodity = currentCaseState?.case_commodities?.find(
           (c) => c.id === parseInt(caseCommodityId)
         );
+        const commodity = commodities.find(
+          (c) => c.id === caseCommodity?.commodity
+        );
+        const driver =
+          question?.id === 1 && commodity?.name
+            ? commodity?.name
+            : question.text;
         const unit = unitName({
           currentCaseState,
           question: question,
@@ -406,7 +418,7 @@ const OptimizeIncomeTarget = () => {
         });
         const driverName = (
           <Space direction="vertical">
-            <div>{question.text}</div>
+            <div>{driver}</div>
             <div>{unit && unit !== "" ? ` (${unit})` : ""}</div>
           </Space>
         );
