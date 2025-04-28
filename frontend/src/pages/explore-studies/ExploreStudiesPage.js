@@ -143,47 +143,44 @@ const ExploreStudiesPage = () => {
 
   const isAdmin = useMemo(() => adminRole.includes(userRole), [userRole]);
 
-  const fetchMapData = useCallback(
-    (country, commodity, driver, source) => {
-      setLoading(true);
-      let url = "reference_data/count_by_country";
-      const params = [];
+  const fetchMapData = useCallback((country, commodity, driver, source) => {
+    setLoading(true);
+    let url = "reference_data/count_by_country";
+    const params = [];
 
-      if (country || countryId) {
-        params.push(`country=${country ? country : countryId}`);
-      }
-      if (commodity || commodityId) {
-        params.push(`commodity=${commodity ? commodity : commodityId}`);
-      }
-      if (driver || driverId) {
-        params.push(`driver=${driver ? driver : driverId}`);
-      }
-      if (source) {
-        params.push(`source=${source}`);
-      }
-      if (params.length > 0) {
-        url += "?" + params.join("&");
-      }
+    if (country) {
+      params.push(`country=${country}`);
+    }
+    if (commodity) {
+      params.push(`commodity=${commodity}`);
+    }
+    if (driver) {
+      params.push(`driver=${driver}`);
+    }
+    if (source) {
+      params.push(`source=${source}`);
+    }
+    if (params.length > 0) {
+      url += "?" + params.join("&");
+    }
 
-      api
-        .get(url)
-        .then((res) => {
-          const data = res?.data?.map((d) => ({
-            ...d,
-            name: d.COUNTRY,
-            value: d.count,
-          }));
-          setMapData(data);
-        })
-        .catch((e) => {
-          console.error(e.response);
-        })
-        .finally(() => {
-          setMapLoading(false);
-        });
-    },
-    [countryId, commodityId, driverId]
-  );
+    api
+      .get(url)
+      .then((res) => {
+        const data = res?.data?.map((d) => ({
+          ...d,
+          name: d.COUNTRY,
+          value: d.count,
+        }));
+        setMapData(data);
+      })
+      .catch((e) => {
+        console.error(e.response);
+      })
+      .finally(() => {
+        setMapLoading(false);
+      });
+  }, []);
 
   const filteredCountryOptions = useMemo(() => {
     const mapCountryIds = mapData.map((d) => d.country_id);
@@ -194,14 +191,14 @@ const ExploreStudiesPage = () => {
     (country, commodity, driver, source) => {
       setLoading(true);
       let url = `reference_data?page=${currentPage}&limit=${perPage}`;
-      if (country || countryId) {
-        url = `${url}&country=${country ? country : countryId}`;
+      if (country) {
+        url = `${url}&country=${country}`;
       }
-      if (commodity || commodityId) {
-        url = `${url}&commodity=${commodity ? commodity : commodityId}`;
+      if (commodity) {
+        url = `${url}&commodity=${commodity}`;
       }
-      if (driver || driverId) {
-        url = `${url}&driver=${driver ? driver : driverId}`;
+      if (driver) {
+        url = `${url}&driver=${driver}`;
       }
       if (source) {
         url = `${url}&source=${source}`;
@@ -222,26 +219,26 @@ const ExploreStudiesPage = () => {
           setLoading(false);
         });
     },
-    [currentPage, countryId, commodityId, driverId]
+    [currentPage]
   );
 
   useMemo(() => {
     if (countryId) {
       setFilterInitialValues((prev) => ({
         ...prev,
-        country: parseInt(countryId),
+        country: countryId === "null" ? null : parseInt(countryId),
       }));
     }
     if (commodityId) {
       setFilterInitialValues((prev) => ({
         ...prev,
-        commodity: parseInt(commodityId),
+        commodity: commodityId === "null" ? null : parseInt(commodityId),
       }));
     }
     if (driverId) {
       setFilterInitialValues((prev) => ({
         ...prev,
-        driver: driverId,
+        driver: driverId === "null" ? null : driverId,
       }));
     }
   }, [countryId, commodityId, driverId]);
@@ -383,9 +380,10 @@ const ExploreStudiesPage = () => {
     if (!isEmpty(location?.state)) {
       const { country, commodity, driver, source } = location.state;
       setFilterInitialValues({
-        country: parseInt(country),
-        commodity: parseInt(commodity),
-        driver: driver,
+        country: !country || country === "null" ? null : parseInt(country),
+        commodity:
+          !commodity || commodity === "null" ? null : parseInt(commodity),
+        driver: !driver || driver === "null" ? null : driver,
         source: source,
       });
       fetchReferenceData(country, commodity, driver, source);
@@ -497,24 +495,14 @@ const ExploreStudiesPage = () => {
     }
     // EOL track event: most searched on Explore Studies
 
+    setFilterInitialValues({
+      country: country,
+      commodity: commodity,
+      driver: driver,
+      source: source,
+    });
     if (countryId && commodityId && driverId) {
-      setFilterInitialValues({});
-      navigate("/explore-studies", {
-        state: {
-          country,
-          commodity,
-          driver,
-          source,
-        },
-      });
-    } else {
-      setFilterInitialValues({
-        country: country,
-        commodity: commodity,
-        driver: driver,
-        source: source,
-      });
-      fetchReferenceData(country, commodity, driver, source);
+      navigate("/explore-studies", { replace: true });
     }
   };
 
@@ -523,7 +511,7 @@ const ExploreStudiesPage = () => {
     form.setFieldsValue({});
     setFilterInitialValues({});
     if (countryId && commodityId && driverId) {
-      navigate("/explore-studies");
+      navigate("/explore-studies", { replace: true });
     } else {
       fetchReferenceData();
       fetchMapData();
@@ -583,10 +571,15 @@ const ExploreStudiesPage = () => {
 
   const handleSelectOnClear = ({ name }) => {
     // handle onClear by clear button on Select dropdown form field
+    setCurrentPage(1);
     setFilterInitialValues((prev) => ({
       ...prev,
       [name]: null,
     }));
+    if (countryId && commodityId && driverId) {
+      navigate("/explore-studies", { replace: true });
+      return;
+    }
   };
 
   return (

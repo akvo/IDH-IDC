@@ -195,6 +195,11 @@ const App = () => {
               />
               <Route
                 exact
+                path="/explore-studies/:countryId/:commodityId/:driverId"
+                element={<ExploreStudiesPage />}
+              />
+              <Route
+                exact
                 path="/living-income-benchmark-explorer"
                 element={<LivingIncomeBenchmarkExplorer />}
               />
@@ -207,6 +212,11 @@ const App = () => {
               <Route
                 exact
                 path="/explore-studies"
+                element={<ExploreStudiesPage />}
+              />
+              <Route
+                exact
+                path="/explore-studies/:countryId/:commodityId/:driverId"
                 element={<ExploreStudiesPage />}
               />
               <Route
