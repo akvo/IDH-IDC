@@ -383,11 +383,21 @@ const EnterIncomeDataDriver = ({
           fieldKey
         );
 
+        const parentQuestionField = `${fieldKey}-${question?.parent}`;
+
+        // TODO :: remove this code to fix issue total income/section total
+        /**
+         * e.g. primary section total should be 1400
+         * but if this part of code active the section total become 1600
+        const parentQuestionValue =
+          initialDriverValues?.[parentQuestionField] || 0;
+
         const allChildrensValues = calculateChildrenValues(
           question,
           fieldKey,
           initialDriverValues
         );
+
         const sumAllChildrensValues = parentQuestion?.default_value
           ? getFunctionDefaultValue(
               parentQuestion,
@@ -395,11 +405,6 @@ const EnterIncomeDataDriver = ({
               allChildrensValues
             )
           : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-
-        const parentQuestionField = `${fieldKey}-${question?.parent}`;
-        const parentQuestionValue =
-          initialDriverValues?.[parentQuestionField] || 0;
-
         if (parentQuestion) {
           // use parent value if they already have value
           const formValue =
@@ -414,6 +419,8 @@ const EnterIncomeDataDriver = ({
             sumAllChildrensValues
           );
         }
+        */
+        // EOL remove this code to fix issue total income/section total
 
         if (parentQuestion?.parent) {
           onLoad({ key: parentQuestionField });
