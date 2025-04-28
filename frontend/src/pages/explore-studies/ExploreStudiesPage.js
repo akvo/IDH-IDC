@@ -581,6 +581,14 @@ const ExploreStudiesPage = () => {
     }
   };
 
+  const handleSelectOnClear = ({ name }) => {
+    // handle onClear by clear button on Select dropdown form field
+    setFilterInitialValues((prev) => ({
+      ...prev,
+      [name]: null,
+    }));
+  };
+
   return (
     <ContentLayout
       breadcrumbItems={[
@@ -675,6 +683,9 @@ const ExploreStudiesPage = () => {
                               options={filteredCountryOptions}
                               placeholder="Select Country"
                               loading={mapLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "country" })
+                              }
                             />
                           </Form.Item>
                         </Col>
@@ -686,6 +697,9 @@ const ExploreStudiesPage = () => {
                               options={sourceOptions}
                               placeholder="Select Source"
                               loading={mapLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "source" })
+                              }
                             />
                           </Form.Item>
                         </Col>
@@ -697,6 +711,9 @@ const ExploreStudiesPage = () => {
                               options={commodityOptions}
                               placeholder="Select Commodity"
                               loading={mapLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "commodity" })
+                              }
                             />
                           </Form.Item>
                         </Col>
@@ -708,6 +725,9 @@ const ExploreStudiesPage = () => {
                               options={driverOptions}
                               placeholder="Select Driver"
                               loading={mapLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "driver" })
+                              }
                             />
                           </Form.Item>
                         </Col>
