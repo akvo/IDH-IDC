@@ -429,7 +429,7 @@ async def run_model(
     question_ids = {
         (k.split("-")[1], k.split("-")[2]) for k in cleaned_answers.keys()
     }
-    print(question_ids, "QUESTION IDS")
+    # print(question_ids, "QUESTION IDS")
 
     # Build parameter bound
     actual_bounds = []
@@ -516,7 +516,7 @@ async def run_model(
     )
     # Sort using integer conversion
     actual_bounds.sort(key=lambda x: tuple(map(int, x[0].split("-"))))
-    print(actual_bounds, "ACTUAL")
+    # print(actual_bounds, "ACTUAL")
 
     # Populate current/feasible values
     current_values = []
@@ -533,7 +533,7 @@ async def run_model(
         mode="current",
     )
     # print(test_answers)
-    print(test_income, "TEST INCOME")
+    print(test_income, "CURRENT INCOME")
     print("===============================")
 
     """
@@ -566,8 +566,6 @@ async def run_model(
     adjusted_current_answers = {
         f"current-{key}": value for key, value in adjusted_current_values
     }
-    # TODO:: fix the calculate_total_income function when we have parent and
-    # sub drivers combined value
     adjusted_current_income, _ = calculate_total_income(
         commodities=questions,
         segment_data={"answers": adjusted_current_answers},
@@ -603,12 +601,9 @@ async def run_model(
     for i, percentage in enumerate(percentages):
         increase = i + 1
 
-        # use adjusted income to calculate target_p
         target_p = (
             current_income + (feasible_income - current_income) * percentage
         )
-        # print(percentage, target_p, "====", current_income, feasible_income)
-        # print(adjusted_current_income, adjusted_feasible_income)
 
         # INCREASE ERROR CHECK
         if true_feasible_income < target_p:
@@ -634,6 +629,9 @@ async def run_model(
             penalty_factor=1000,
         )
 
+        print(
+            f"============== OPTIMIZED VALUE ({percentage}) ================="
+        )
         optimized_values = result.x
         optimized_params_dict = {
             key: value
@@ -642,14 +640,18 @@ async def run_model(
         # ROUND::when calculate the achieved income we should use rounded value
         # round to 2 decimals
         optimized_answers = {
-            f"optimized-{key}": round(value, 2)
+            f"optimized-{key}": round(
+                value, 2
+            )  # this round impact the achieved income !== target_p
             for key, value in optimized_params_dict.items()
         }
+        # print(optimized_answers)
         achieved_income, _ = calculate_total_income(
             commodities=questions,
             segment_data={"answers": optimized_answers},
             mode="optimized",
         )
+        print("=============== EOL OPTIMIZED VALUE ==================")
 
         # create editable_indices_result
         results = {}
