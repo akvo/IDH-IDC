@@ -308,7 +308,7 @@ const OptimizeIncomeTarget = () => {
             ? commodity?.name
             : question.text;
         const unit = unitName({
-          currentCaseState,
+          currentCase: currentCaseState,
           question: question,
           group: caseCommodity,
         });
@@ -424,7 +424,7 @@ const OptimizeIncomeTarget = () => {
             ? commodity?.name
             : question.text;
         const unit = unitName({
-          currentCaseState,
+          currentCase: currentCaseState,
           question: question,
           group: caseCommodity,
         });
