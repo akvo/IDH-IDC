@@ -373,13 +373,14 @@ const OptimizeIncomeTarget = () => {
           title: "Income driver",
           dataIndex: "driver",
           key: "driver",
-          width: "25%",
+          width: "20%",
         },
         {
           title: "Current value",
           dataIndex: "current",
           key: "current",
           align: "left",
+          width: "20%",
         },
         ...increaseColumns,
       ];
@@ -414,10 +415,7 @@ const OptimizeIncomeTarget = () => {
       // add total labels
       if (!isEmpty(labels)) {
         const totalIncomeLabel = (
-          <Space direction="vertical">
-            <div>Total income</div>
-            <div>{currentCaseState.currency}</div>
-          </Space>
+          <div>Total income ({currentCaseState.currency})</div>
         );
         labels["total_income"] = totalIncomeLabel;
       }
