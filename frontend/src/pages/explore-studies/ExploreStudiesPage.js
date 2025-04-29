@@ -30,6 +30,7 @@ import Chart from "../../components/chart";
 const selectProps = {
   showSearch: true,
   allowClear: true,
+  mode: "multiple",
   optionFilterProp: "label",
   style: {
     width: "100%",
@@ -148,18 +149,19 @@ const ExploreStudiesPage = () => {
     let url = "reference_data/count_by_country";
     const params = [];
 
-    if (country) {
-      params.push(`country=${country}`);
+    if (country?.length) {
+      country.forEach((cid) => params.push(`country=${cid}`));
     }
-    if (commodity) {
-      params.push(`commodity=${commodity}`);
+    if (commodity?.length) {
+      commodity.forEach((comid) => params.push(`commodity=${comid}`));
     }
-    if (driver) {
-      params.push(`driver=${driver}`);
+    if (driver?.length) {
+      driver.forEach((drv) => params.push(`driver=${drv}`));
     }
-    if (source) {
-      params.push(`source=${source}`);
+    if (source?.length) {
+      source.forEach((src) => params.push(`source=${src}`));
     }
+
     if (params.length > 0) {
       url += "?" + params.join("&");
     }
@@ -191,18 +193,25 @@ const ExploreStudiesPage = () => {
     (country, commodity, driver, source) => {
       setLoading(true);
       let url = `reference_data?page=${currentPage}&limit=${perPage}`;
-      if (country) {
-        url = `${url}&country=${country}`;
+      const params = [];
+
+      if (country?.length) {
+        country.forEach((cid) => params.push(`country=${cid}`));
       }
-      if (commodity) {
-        url = `${url}&commodity=${commodity}`;
+      if (commodity?.length) {
+        commodity.forEach((comid) => params.push(`commodity=${comid}`));
       }
-      if (driver) {
-        url = `${url}&driver=${driver}`;
+      if (driver?.length) {
+        driver.forEach((drv) => params.push(`driver=${drv}`));
       }
-      if (source) {
-        url = `${url}&source=${source}`;
+      if (source?.length) {
+        source.forEach((src) => params.push(`source=${src}`));
       }
+
+      if (params.length > 0) {
+        url += "&" + params.join("&");
+      }
+      console.log(url);
       api
         .get(url)
         .then((res) => {

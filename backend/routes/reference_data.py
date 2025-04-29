@@ -3,7 +3,7 @@ import db.crud_reference_data as crud_ref
 
 from math import ceil
 from http import HTTPStatus
-from fastapi import APIRouter, Request, Depends, HTTPException, Response
+from fastapi import APIRouter, Request, Depends, HTTPException, Response, Query
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import Optional, List
@@ -36,16 +36,22 @@ def get_all(
     req: Request,
     page: int = 1,
     limit: int = 10,
-    country: Optional[int] = None,
-    commodity: Optional[int] = None,
-    source: Optional[str] = None,
-    driver: Optional[Driver] = None,
+    country: Optional[List[int]] = Query(
+        None, description="List of country ids"
+    ),
+    commodity: Optional[List[int]] = Query(
+        None, description="List of commodity ids"
+    ),
+    source: Optional[List[str]] = Query(None, description="List of sources"),
+    driver: Optional[List[Driver]] = Query(
+        None, description="List of drivers"
+    ),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
     user = verify_user(session=session, authenticated=req.state.authenticated)
     user = user.to_user_info
-    is_internal_user = user.get('internal_user', False)
+    is_internal_user = user.get("internal_user", False)
     visible_to_external_user = not is_internal_user
 
     logText = "/reference_data | on Search explore studies by"
@@ -56,7 +62,7 @@ def get_all(
     if source:
         logger.info(f"{logText} source: {source}")
     if driver:
-        logger.info(f"{logText} driver: {driver.value}")
+        logger.info(f"{logText} driver: {[d.value for d in driver]}")
 
     data = crud_ref.get_all_reference(
         session=session,
@@ -92,10 +98,16 @@ def get_all(
 )
 def count_reference_data_by_country(
     req: Request,
-    country: Optional[int] = None,
-    commodity: Optional[int] = None,
-    source: Optional[str] = None,
-    driver: Optional[Driver] = None,
+    country: Optional[List[int]] = Query(
+        None, description="List of country ids"
+    ),
+    commodity: Optional[List[int]] = Query(
+        None, description="List of commodity ids"
+    ),
+    source: Optional[List[str]] = Query(None, description="List of sources"),
+    driver: Optional[List[Driver]] = Query(
+        None, description="List of drivers"
+    ),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
