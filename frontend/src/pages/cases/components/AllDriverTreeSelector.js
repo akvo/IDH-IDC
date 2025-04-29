@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, { useMemo } from "react";
 import { TreeSelect } from "antd";
 import { CaseUIState, CaseVisualState } from "../store";
 
@@ -84,18 +84,18 @@ const generateDriverOptions = ({
 };
 
 // Flatten tree structure for fast lookups
-const flattenTree = (nodes, parent = null, map = {}) => {
-  nodes.forEach((node) => {
-    map[node.value] = {
-      parent,
-      children: node.children?.map((child) => child.value) || [],
-    };
-    if (node.children) {
-      flattenTree(node.children, node.value, map);
-    }
-  });
-  return map;
-};
+// const flattenTree = (nodes, parent = null, map = {}) => {
+//   nodes.forEach((node) => {
+//     map[node.value] = {
+//       parent,
+//       children: node.children?.map((child) => child.value) || [],
+//     };
+//     if (node.children) {
+//       flattenTree(node.children, node.value, map);
+//     }
+//   });
+//   return map;
+// };
 
 const AllDriverTreeSelector = ({
   onChange,
@@ -105,10 +105,11 @@ const AllDriverTreeSelector = ({
   dropdownStyle = {},
   style = {},
   maxCount = null,
+  disabledNodes = {},
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
-  const [disabledNodes, setDisabledNodes] = useState({});
+  // const [disabledNodes, setDisabledNodes] = useState({});
 
   // Generate tree structure
   const incomeDriverOptions = useMemo(() => {
@@ -253,53 +254,55 @@ const AllDriverTreeSelector = ({
     // EOL GENERATE DIVERSIFIED DRIVERS
 
     return [...primaryDrivers, ...diversifiedDrivers];
-  }, [incomeDataDrivers, segment]);
+  }, [incomeDataDrivers, segment?.answers]);
 
-  const treeMap = useMemo(
-    () => flattenTree(incomeDriverOptions),
-    [incomeDriverOptions]
-  );
+  // TODO :: REMOVE
+  // const treeMap = useMemo(
+  //   () => flattenTree(incomeDriverOptions),
+  //   [incomeDriverOptions]
+  // );
 
   // Update disabled state based on selection
-  const updateSelectableNodes = useCallback(
-    (selectedValues) => {
-      if (!multiple) {
-        // Only apply for multiple select mode
-        return;
-      }
+  // const updateSelectableNodes = useCallback(
+  //   (selectedValues) => {
+  //     if (!multiple) {
+  //       // Only apply for multiple select mode
+  //       return;
+  //     }
 
-      const newNonSelectableNodes = {};
+  //     const newNonSelectableNodes = {};
 
-      selectedValues.forEach((selected) => {
-        // Mark all ancestors (parents) as non-selectable
-        let parent = treeMap[selected]?.parent;
-        while (parent) {
-          newNonSelectableNodes[parent] = true;
-          parent = treeMap[parent]?.parent;
-        }
+  //     selectedValues?.forEach((selected) => {
+  //       // Mark all ancestors (parents) as non-selectable
+  //       let parent = treeMap[selected]?.parent;
+  //       while (parent) {
+  //         newNonSelectableNodes[parent] = true;
+  //         parent = treeMap[parent]?.parent;
+  //       }
 
-        // Mark all descendants (children) as non-selectable
-        const markNonSelectable = (node) => {
-          if (node) {
-            newNonSelectableNodes[node] = true;
-            treeMap[node]?.children.forEach(markNonSelectable);
-          }
-        };
-        markNonSelectable(selected);
-      });
+  //       // Mark all descendants (children) as non-selectable
+  //       const markNonSelectable = (node) => {
+  //         if (node) {
+  //           newNonSelectableNodes[node] = true;
+  //           treeMap[node]?.children.forEach(markNonSelectable);
+  //         }
+  //       };
+  //       markNonSelectable(selected);
+  //     });
 
-      setDisabledNodes(newNonSelectableNodes); // Store non-selectable nodes
-    },
-    [multiple, treeMap]
-  );
+  //     setDisabledNodes(newNonSelectableNodes); // Store non-selectable nodes
+  //   },
+  //   [treeMap, multiple]
+  // );
 
-  useEffect(() => {
-    if (multiple && value && value.length > 0) {
-      updateSelectableNodes(value); // Recalculate disabled nodes
-    } else {
-      setDisabledNodes({}); // Reset if value is empty or not in multiple mode
-    }
-  }, [value, multiple, updateSelectableNodes]);
+  // useEffect(() => {
+  //   if (multiple && value && value.length > 0) {
+  //     updateSelectableNodes(value); // Recalculate disabled nodes
+  //   } else {
+  //     setDisabledNodes({}); // Reset if value is empty or not in multiple mode
+  //   }
+  // }, [value, multiple, updateSelectableNodes]);
+  // EOL REMOVE
 
   // Apply disabled state dynamically
   const modifiedTreeData = useMemo(() => {
@@ -309,6 +312,7 @@ const AllDriverTreeSelector = ({
         return {
           ...node,
           selectable: isInitiallySelectable && !disabledNodes[node.value],
+          disabled: disabledNodes[node.value],
           children: node.children ? applySelectableState(node.children) : null,
         };
       });
