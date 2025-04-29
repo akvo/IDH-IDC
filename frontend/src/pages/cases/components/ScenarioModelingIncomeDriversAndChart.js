@@ -49,6 +49,19 @@ const Question = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const currentSelectedDriversValue = useMemo(() => {
+    const findScenario = currentScenarioData?.scenarioValues?.find(
+      (sv) => sv.segmentId === segment.id
+    );
+    return findScenario?.selectedDrivers?.reduce(
+      (acc, curr) => ({
+        ...acc,
+        [curr.value]: curr.field,
+      }),
+      {}
+    );
+  }, [currentScenarioData?.scenarioValues, segment?.id]);
+
   const currentValue = useMemo(() => {
     if (selectedDriver) {
       return segment?.answers?.[`current-${selectedDriver}`] || 0;
@@ -86,6 +99,7 @@ const Question = ({
               width: "400px",
             }}
             segment={segment}
+            disabledNodes={currentSelectedDriversValue}
           />
         </Form.Item>
       </Col>

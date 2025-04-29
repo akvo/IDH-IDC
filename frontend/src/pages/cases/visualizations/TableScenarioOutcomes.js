@@ -131,6 +131,7 @@ const TableScenarioOutcomes = ({
               (sv) => sv.segmentId === currentDashboardData.id
             );
             const scenarioDriverValues = scenarioSegment?.selectedDrivers
+              ?.filter((d) => d.value) // filter undefined/null value
               ?.map((driver) => {
                 // scenario field
                 const [, scenarioKey, segmentId, index] =

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import {
   Button,
   Card,
@@ -26,6 +26,8 @@ import { QuestionCircleOutline } from "../../../lib/icon";
 import SegmentSelector from "./SegmentSelector";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
+// TODO :: Optimize value not saved into DB if we doesn't fill sensitivity analysis line chart form
+// should we add new visualization config type?
 const SHOW_OPTIMIZE_RESULT_AS = "TABLE"; // change to "CHART" or "TABLE"
 
 const colors = [
@@ -73,7 +75,9 @@ const OptimizeIncomeTarget = () => {
   const [refreshChart, setRefreshChart] = useState(true);
   const [showLabel, setShowLabel] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [refresh, setRefresh] = useState(true);
 
+  const buttonRunModelRef = useRef(null);
   const chartRef = useRef(null);
   const [messageApi, messageContextHolder] = message.useMessage();
 
@@ -91,6 +95,8 @@ const OptimizeIncomeTarget = () => {
   const percentageFieldPreffix = `${selectedSegment}_percentage-increase`;
   const absoluteKeyPreffix = `${selectedSegment}_absolute-increase`;
   const selectedDriversFieldPreffix = `${selectedSegment}_selected-drivers`;
+  const optimizedPreffix = "_optimized";
+  const optimizationResultPreffix = `${selectedSegment}${optimizedPreffix}`;
 
   const currency = currentCaseState?.currency || "";
 
@@ -99,6 +105,7 @@ const OptimizeIncomeTarget = () => {
       ...s,
       sensitivityAnalysis: {
         ...s.sensitivityAnalysis,
+        case: s.sensitivityAnalysis.case || currentCaseState.id,
         config: {
           ...s.sensitivityAnalysis.config,
           optimizationModel: {
@@ -161,6 +168,54 @@ const OptimizeIncomeTarget = () => {
       },
     });
   };
+
+  useEffect(() => {
+    // handle automated recalculation if total income updated
+    if (
+      refresh &&
+      currentDashboardData?.total_current_income !==
+        optimizationResult?.[optimizationResultPreffix]?.current_income
+    ) {
+      let updatedIncreaseValues = {};
+      Object.entries(increaseValues).map(([key, value]) => {
+        if (key.includes(percentageFieldPreffix) && value) {
+          const [, preffix] = key.split("_");
+          const [, , index] = preffix.split("-");
+          const percentage = value;
+          const absoluteKey = `${absoluteKeyPreffix}-${index}`;
+          const currentIncome = currentDashboardData?.total_current_income || 0;
+          const feasibleIncome =
+            currentDashboardData?.total_feasible_income || 0;
+          let absoluteIncreaseValue = 0;
+          if (percentage) {
+            absoluteIncreaseValue =
+              currentIncome +
+              (feasibleIncome - currentIncome) * (percentage / 100);
+          }
+          updatedIncreaseValues = {
+            ...updatedIncreaseValues,
+            [absoluteKey]: absoluteIncreaseValue,
+          };
+        }
+      });
+      updateOptimizationModelState({
+        increaseValues: {
+          ...increaseValues,
+          ...updatedIncreaseValues,
+        },
+      });
+      if (buttonRunModelRef?.current) {
+        buttonRunModelRef.current.click();
+      }
+      setRefresh(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    currentDashboardData?.total_current_income,
+    currentDashboardData?.total_feasible_income,
+    optimizationResult,
+    increaseValues,
+  ]);
 
   const handleRunModel = () => {
     const percentages = Object.entries(increaseValues)
@@ -239,8 +294,21 @@ const OptimizeIncomeTarget = () => {
       )
       .then((res) => {
         const { data } = res;
+        // clear optimization result from prev config
+        let cleanedOptimizationResult = optimizationResult;
+        if (!isEmpty(optimizationResult)) {
+          cleanedOptimizationResult = Object.keys(optimizationResult)
+            .filter((key) => key.includes(optimizedPreffix))
+            .reduce((obj, key) => {
+              obj[key] = optimizationResult[key];
+              return obj;
+            }, {});
+        }
         updateOptimizationModelState({
-          optimizationResult: data,
+          optimizationResult: {
+            ...cleanedOptimizationResult,
+            [optimizationResultPreffix]: data,
+          },
         });
         setRefreshChart(true);
       });
@@ -255,8 +323,9 @@ const OptimizeIncomeTarget = () => {
   });
 
   const renderIncreaseError = useMemo(() => {
-    if (!isEmpty(optimizationResult)) {
-      const { optimization_result } = optimizationResult;
+    if (!isEmpty(optimizationResult?.[optimizationResultPreffix])) {
+      const { optimization_result } =
+        optimizationResult[optimizationResultPreffix];
       const optimizedValues = orderBy(optimization_result, "key");
       const errors = optimizedValues?.filter((v) => v.increase_error);
       const errorText =
@@ -280,11 +349,15 @@ const OptimizeIncomeTarget = () => {
       );
     }
     return null;
-  }, [optimizationResult]);
+  }, [optimizationResult, optimizationResultPreffix]);
 
   const chartData = useMemo(() => {
-    if (!isEmpty(optimizationResult) && SHOW_OPTIMIZE_RESULT_AS === "CHART") {
-      const { optimization_result } = optimizationResult;
+    if (
+      !isEmpty(optimizationResult?.[optimizationResultPreffix]) &&
+      SHOW_OPTIMIZE_RESULT_AS === "CHART"
+    ) {
+      const { optimization_result } =
+        optimizationResult[optimizationResultPreffix];
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
       );
@@ -356,11 +429,19 @@ const OptimizeIncomeTarget = () => {
     setRefreshChart(false);
     return [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshChart, currentCaseState]);
+  }, [
+    refreshChart,
+    currentCaseState,
+    currentDashboardData?.total_current_income,
+  ]);
 
   const tableData = useMemo(() => {
-    if (!isEmpty(optimizationResult) && SHOW_OPTIMIZE_RESULT_AS === "TABLE") {
-      const { optimization_result } = optimizationResult;
+    if (
+      !isEmpty(optimizationResult?.[optimizationResultPreffix]) &&
+      SHOW_OPTIMIZE_RESULT_AS === "TABLE"
+    ) {
+      const { optimization_result } =
+        optimizationResult[optimizationResultPreffix];
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
       );
@@ -495,7 +576,11 @@ const OptimizeIncomeTarget = () => {
       dataSource: [],
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshChart, currentCaseState]);
+  }, [
+    refreshChart,
+    currentCaseState,
+    currentDashboardData?.total_current_income,
+  ]);
 
   const handleClearResult = () => {
     // reset increase values
@@ -517,7 +602,10 @@ const OptimizeIncomeTarget = () => {
       // reset increase values
       increaseValues: filteredIncreaseValues,
       // reset optimization result
-      optimizationResult: {},
+      optimizationResult: {
+        ...optimizationResult,
+        [optimizationResultPreffix]: {},
+      },
     });
     setRefreshChart(true);
   };
@@ -736,6 +824,7 @@ const OptimizeIncomeTarget = () => {
                     !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
                     disableRunModelByIfSelectedIncreaseValuesNA
                   }
+                  ref={buttonRunModelRef}
                 >
                   Run the model <ArrowRightOutlined />
                 </Button>
@@ -794,6 +883,7 @@ const OptimizeIncomeTarget = () => {
                     <Table
                       pagination={false}
                       columns={tableData.columns}
+                      loading={tableData.dataSource?.length}
                       dataSource={tableData.dataSource?.filter(
                         (d) => d.key !== "total_income"
                       )} // exclude total_income from main table
@@ -804,6 +894,7 @@ const OptimizeIncomeTarget = () => {
                     <Table
                       pagination={false}
                       columns={tableData.columns}
+                      loading={tableData.dataSource?.length}
                       dataSource={tableData.dataSource?.filter(
                         (d) => d.key === "total_income"
                       )} // show only total_income
