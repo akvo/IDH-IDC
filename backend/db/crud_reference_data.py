@@ -78,6 +78,7 @@ def count_reference_data_by_country(
     commodity: Optional[List[int]] = None,
     source: Optional[List[str]] = None,
     driver: Optional[List[Driver]] = None,
+    visible_to_external_user: Optional[bool] = False,
 ) -> List[dict]:
     data = session.query(
         ReferenceData.country.label("country_id"),
@@ -104,6 +105,12 @@ def count_reference_data_by_country(
             data = data.filter(ReferenceData.diversified_income.is_not(None))
         data = data.filter(ReferenceData.diversified_income.is_not(None))
 
+    # handle filter by visible to external user
+    if visible_to_external_user:
+        data = data.filter(
+            ReferenceData.visible_to_external_user == visible_to_external_user
+        )
+
     data = data.join(Country, ReferenceData.country == Country.id).group_by(
         ReferenceData.country, Country.name
     )
@@ -116,6 +123,60 @@ def count_reference_data_by_country(
         }
         for row in data.all()
     ]
+
+
+def reduce_filter_dropdown(
+    session: Session,
+    country: List[int],
+    visible_to_external_user: Optional[bool] = False,
+) -> dict:
+    data = session.query(ReferenceData).filter(
+        ReferenceData.country.in_(country)
+    )
+    # handle filter by visible to external user
+    if visible_to_external_user:
+        data = data.filter(
+            ReferenceData.visible_to_external_user == visible_to_external_user
+        )
+    data = data.all()
+
+    country_set = set()
+    source_set = set()
+    commodity_set = set()
+    driver_set = set()
+
+    if not data:
+        return {
+            "country": list(country_set),
+            "source": list(source_set),
+            "commodity": list(commodity_set),
+            "driver": list(driver_set),
+        }
+
+    for item in data:
+        if item.country is not None:
+            country_set.add(item.country)
+        if item.source:
+            source_set.add(item.source)
+        if item.commodity:
+            commodity_set.add(item.commodity)
+        if item.area is not None:
+            driver_set.add(Driver.area.value)
+        if item.price is not None:
+            driver_set.add(Driver.price.value)
+        if item.volume is not None:
+            driver_set.add(Driver.volume.value)
+        if item.cost_of_production is not None:
+            driver_set.add(Driver.cost_of_production.value)
+        if item.diversified_income is not None:
+            driver_set.add(Driver.diversified_income.value)
+
+    return {
+        "country": list(country_set),
+        "source": list(source_set),
+        "commodity": list(commodity_set),
+        "driver": list(driver_set),
+    }
 
 
 def get_reference_value(

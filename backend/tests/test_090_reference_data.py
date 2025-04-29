@@ -229,12 +229,37 @@ class TestReferenceRoute:
         )
         assert res.status_code in [200, 404]
 
-        # Pagination test
+    @pytest.mark.asyncio
+    async def test_get_reference_data_reduce_filter_dropdown(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
         res = await client.get(
-            app.url_path_for("reference_data:get_all") + "?page=2&limit=1",
+            app.url_path_for("reference_data:reduce_filter_dropdown")
+            + "?country=100",
+            headers={"Authorization": f"Bearer {non_admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "country": [],
+            "commodity": [],
+            "source": [],
+            "driver": [],
+        }
+
+        res = await client.get(
+            app.url_path_for("reference_data:reduce_filter_dropdown")
+            + "?country=1",
             headers={"Authorization": f"Bearer {admin_account.token}"},
         )
-        assert res.status_code in [200, 404]
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "country": [1],
+            "commodity": [1],
+            "source": ["Sample Source", "Sample Source 2"],
+            "driver": res["driver"],
+        }
 
     @pytest.mark.asyncio
     async def test_get_reference_data_by_id(

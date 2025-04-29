@@ -16,6 +16,7 @@ from models.reference_data import (
     ReferenceValueList,
     Driver,
     ReferenceCountByCountryDict,
+    ReferenceFilter,
 )
 from middleware import verify_admin, verify_user
 
@@ -111,12 +112,44 @@ def count_reference_data_by_country(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
+    user = verify_user(session=session, authenticated=req.state.authenticated)
+    user = user.to_user_info
+    is_internal_user = user.get("internal_user", False)
+    visible_to_external_user = not is_internal_user
+
     res = crud_ref.count_reference_data_by_country(
         session=session,
         country=country,
         commodity=commodity,
         source=source,
         driver=driver,
+        visible_to_external_user=visible_to_external_user,
+    )
+    return res
+
+
+@reference_data_routes.get(
+    "/reference_data/reduce_filter_dropdown",
+    response_model=ReferenceFilter,
+    summary="get reference value to reduce_filter_dropdown by country",
+    name="reference_data:reduce_filter_dropdown",
+    tags=["Reference Data"],
+)
+def reduce_filter_dropdown(
+    req: Request,
+    country: List[int] = Query(description="List of country ids"),
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    user = verify_user(session=session, authenticated=req.state.authenticated)
+    user = user.to_user_info
+    is_internal_user = user.get("internal_user", False)
+    visible_to_external_user = not is_internal_user
+
+    res = crud_ref.reduce_filter_dropdown(
+        session=session,
+        country=country,
+        visible_to_external_user=visible_to_external_user,
     )
     return res
 

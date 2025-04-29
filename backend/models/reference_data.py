@@ -7,7 +7,7 @@ from sqlalchemy import (
     String,
     ForeignKey,
     DateTime,
-    Boolean
+    Boolean,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -79,6 +79,13 @@ class ReferenceCountByCountryDict(TypedDict):
     country_id: int
     COUNTRY: str
     count: int
+
+
+class ReferenceFilter(TypedDict):
+    country: Optional[List[int]] = []
+    commodity: Optional[List[int]] = []
+    source: Optional[List[str]] = []
+    driver: Optional[List[str]] = []
 
 
 class ReferenceData(Base):
