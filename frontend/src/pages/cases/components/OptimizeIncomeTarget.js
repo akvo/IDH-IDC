@@ -103,6 +103,7 @@ const OptimizeIncomeTarget = () => {
       ...s,
       sensitivityAnalysis: {
         ...s.sensitivityAnalysis,
+        case: s.sensitivityAnalysis.case || currentCaseState.id,
         config: {
           ...s.sensitivityAnalysis.config,
           optimizationModel: {
