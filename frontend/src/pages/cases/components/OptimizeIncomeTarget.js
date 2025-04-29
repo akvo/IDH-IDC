@@ -26,6 +26,8 @@ import { QuestionCircleOutline } from "../../../lib/icon";
 import SegmentSelector from "./SegmentSelector";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
+// TODO :: Optimize value not saved into DB if we doesn't fill sensitivity analysis line chart form
+// should we add new visualization config type?
 const SHOW_OPTIMIZE_RESULT_AS = "TABLE"; // change to "CHART" or "TABLE"
 
 const colors = [
@@ -91,6 +93,8 @@ const OptimizeIncomeTarget = () => {
   const percentageFieldPreffix = `${selectedSegment}_percentage-increase`;
   const absoluteKeyPreffix = `${selectedSegment}_absolute-increase`;
   const selectedDriversFieldPreffix = `${selectedSegment}_selected-drivers`;
+  const optimizedPreffix = "_optimized";
+  const optimizationResultPreffix = `${selectedSegment}${optimizedPreffix}`;
 
   const currency = currentCaseState?.currency || "";
 
@@ -239,8 +243,21 @@ const OptimizeIncomeTarget = () => {
       )
       .then((res) => {
         const { data } = res;
+        // clear optimization result from prev config
+        let cleanedOptimizationResult = optimizationResult;
+        if (!isEmpty(optimizationResult)) {
+          cleanedOptimizationResult = Object.keys(optimizationResult)
+            .filter((key) => key.includes(optimizedPreffix))
+            .reduce((obj, key) => {
+              obj[key] = optimizationResult[key];
+              return obj;
+            }, {});
+        }
         updateOptimizationModelState({
-          optimizationResult: data,
+          optimizationResult: {
+            ...cleanedOptimizationResult,
+            [optimizationResultPreffix]: data,
+          },
         });
         setRefreshChart(true);
       });
@@ -255,8 +272,9 @@ const OptimizeIncomeTarget = () => {
   });
 
   const renderIncreaseError = useMemo(() => {
-    if (!isEmpty(optimizationResult)) {
-      const { optimization_result } = optimizationResult;
+    if (!isEmpty(optimizationResult?.[optimizationResultPreffix])) {
+      const { optimization_result } =
+        optimizationResult[optimizationResultPreffix];
       const optimizedValues = orderBy(optimization_result, "key");
       const errors = optimizedValues?.filter((v) => v.increase_error);
       const errorText =
@@ -280,11 +298,15 @@ const OptimizeIncomeTarget = () => {
       );
     }
     return null;
-  }, [optimizationResult]);
+  }, [optimizationResult, optimizationResultPreffix]);
 
   const chartData = useMemo(() => {
-    if (!isEmpty(optimizationResult) && SHOW_OPTIMIZE_RESULT_AS === "CHART") {
-      const { optimization_result } = optimizationResult;
+    if (
+      !isEmpty(optimizationResult?.[optimizationResultPreffix]) &&
+      SHOW_OPTIMIZE_RESULT_AS === "CHART"
+    ) {
+      const { optimization_result } =
+        optimizationResult[optimizationResultPreffix];
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
       );
@@ -356,11 +378,19 @@ const OptimizeIncomeTarget = () => {
     setRefreshChart(false);
     return [];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshChart, currentCaseState]);
+  }, [
+    refreshChart,
+    currentCaseState,
+    currentDashboardData?.total_current_income,
+  ]);
 
   const tableData = useMemo(() => {
-    if (!isEmpty(optimizationResult) && SHOW_OPTIMIZE_RESULT_AS === "TABLE") {
-      const { optimization_result } = optimizationResult;
+    if (
+      !isEmpty(optimizationResult?.[optimizationResultPreffix]) &&
+      SHOW_OPTIMIZE_RESULT_AS === "TABLE"
+    ) {
+      const { optimization_result } =
+        optimizationResult[optimizationResultPreffix];
       const optimizedValues = orderBy(optimization_result, "key")?.filter(
         (v) => !v.increase_error
       );
@@ -495,7 +525,11 @@ const OptimizeIncomeTarget = () => {
       dataSource: [],
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshChart, currentCaseState]);
+  }, [
+    refreshChart,
+    currentCaseState,
+    currentDashboardData?.total_current_income,
+  ]);
 
   const handleClearResult = () => {
     // reset increase values
@@ -517,7 +551,10 @@ const OptimizeIncomeTarget = () => {
       // reset increase values
       increaseValues: filteredIncreaseValues,
       // reset optimization result
-      optimizationResult: {},
+      optimizationResult: {
+        ...optimizationResult,
+        [optimizationResultPreffix]: {},
+      },
     });
     setRefreshChart(true);
   };
