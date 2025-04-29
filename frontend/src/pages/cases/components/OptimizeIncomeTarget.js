@@ -13,7 +13,11 @@ import {
   Popconfirm,
   Table,
 } from "antd";
-import { ArrowRightOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import {
+  ArrowRightOutlined,
+  ArrowLeftOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
@@ -520,7 +524,26 @@ const OptimizeIncomeTarget = () => {
       // add total labels
       if (!isEmpty(labels)) {
         const totalIncomeLabel = (
-          <b>Total income ({currentCaseState.currency})</b>
+          <Space align="middle">
+            <div>
+              <b>Total income ({currentCaseState.currency})</b>
+            </div>
+            <Tooltip
+              title={
+                <>
+                  The income figures shown below each adjustment (e.g.
+                  Adjustment 1, 2, 3) in the green box above may differ slightly
+                  from the <i>Total income</i> values displayed here. This is
+                  because the table shows rounded driver values, and the total
+                  income in this row is calculated using those rounded values.
+                </>
+              }
+            >
+              <span>
+                <InfoCircleOutlined style={{ fontSize: 13 }} />
+              </span>
+            </Tooltip>
+          </Space>
         );
         labels["total_income"] = totalIncomeLabel;
       }
