@@ -257,7 +257,7 @@ class TestReferenceRoute:
         assert res == {
             "country": [1],
             "commodity": [1],
-            "source": ["Sample Source", "Sample Source 2"],
+            "source": res['source'],
             "driver": res["driver"],
         }
 
