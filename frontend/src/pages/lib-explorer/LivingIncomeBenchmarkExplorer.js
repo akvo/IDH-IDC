@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "antd";
 import Chart from "../../components/chart";
-import { min, max, isEmpty } from "lodash";
+import { min, max, isEmpty, orderBy } from "lodash";
 import { api, roundToDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { NewCpiForm } from "../../components/utils";
@@ -473,7 +473,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                           <Form.Item name="region" noStyle>
                             <Select
                               {...selectProps}
-                              options={regionOptions}
+                              options={orderBy(regionOptions, ["value"])}
                               placeholder={regionState.placeholder}
                               loading={regionState.loading}
                               style={{ width: "100%" }}
