@@ -20,16 +20,16 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { upperFirst, isEmpty, min, max } from "lodash";
 import ReferenceDataForm from "./ReferenceDataForm";
 import { api } from "../../lib";
-import { driverOptions } from ".";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { thousandFormatter } from "../../components/chart/options/common";
-import { sourceOptions } from ".";
+import { sourceOptions, driverOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import Chart from "../../components/chart";
 
 const selectProps = {
   showSearch: true,
   allowClear: true,
+  mode: "multiple",
   optionFilterProp: "label",
   style: {
     width: "100%",
@@ -112,6 +112,12 @@ const defData = {
   total: 0,
   total_page: 1,
 };
+const defReduceFilterDropdown = {
+  country: [],
+  source: [],
+  commodity: [],
+  driver: [],
+};
 
 const ExploreStudiesPage = () => {
   const [form] = Form.useForm();
@@ -133,6 +139,12 @@ const ExploreStudiesPage = () => {
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
 
+  const countryFilter = Form.useWatch("country", form);
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [reduceFilterDropdown, setReduceFilterDropdown] = useState(
+    defReduceFilterDropdown
+  );
+
   const countryOptions = window.master.countries;
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
     ct.commodities.map((c) => ({
@@ -141,6 +153,31 @@ const ExploreStudiesPage = () => {
     }))
   );
 
+  useEffect(() => {
+    setFilterLoading(true);
+    if (countryFilter?.length) {
+      let url = "reference_data/reduce_filter_dropdown";
+      const params = countryFilter.map((cid) => `country=${cid}`);
+      if (params.length > 0) {
+        url += "?" + params.join("&");
+      }
+      api
+        .get(url)
+        .then((res) => {
+          setReduceFilterDropdown(res.data);
+        })
+        .catch((e) => {
+          console.error(e.response);
+        })
+        .finally(() => {
+          setFilterLoading(false);
+        });
+    } else {
+      setReduceFilterDropdown(defReduceFilterDropdown);
+      setFilterLoading(false);
+    }
+  }, [countryFilter]);
+
   const isAdmin = useMemo(() => adminRole.includes(userRole), [userRole]);
 
   const fetchMapData = useCallback((country, commodity, driver, source) => {
@@ -148,18 +185,19 @@ const ExploreStudiesPage = () => {
     let url = "reference_data/count_by_country";
     const params = [];
 
-    if (country) {
-      params.push(`country=${country}`);
+    if (country?.length) {
+      country.forEach((cid) => params.push(`country=${cid}`));
     }
-    if (commodity) {
-      params.push(`commodity=${commodity}`);
+    if (commodity?.length) {
+      commodity.forEach((comid) => params.push(`commodity=${comid}`));
     }
-    if (driver) {
-      params.push(`driver=${driver}`);
+    if (driver?.length) {
+      driver.forEach((drv) => params.push(`driver=${drv}`));
     }
-    if (source) {
-      params.push(`source=${source}`);
+    if (source?.length) {
+      source.forEach((src) => params.push(`source=${src}`));
     }
+
     if (params.length > 0) {
       url += "?" + params.join("&");
     }
@@ -191,17 +229,23 @@ const ExploreStudiesPage = () => {
     (country, commodity, driver, source) => {
       setLoading(true);
       let url = `reference_data?page=${currentPage}&limit=${perPage}`;
-      if (country) {
-        url = `${url}&country=${country}`;
+      const params = [];
+
+      if (country?.length) {
+        country.forEach((cid) => params.push(`country=${cid}`));
       }
-      if (commodity) {
-        url = `${url}&commodity=${commodity}`;
+      if (commodity?.length) {
+        commodity.forEach((comid) => params.push(`commodity=${comid}`));
       }
-      if (driver) {
-        url = `${url}&driver=${driver}`;
+      if (driver?.length) {
+        driver.forEach((drv) => params.push(`driver=${drv}`));
       }
-      if (source) {
-        url = `${url}&source=${source}`;
+      if (source?.length) {
+        source.forEach((src) => params.push(`source=${src}`));
+      }
+
+      if (params.length > 0) {
+        url += "&" + params.join("&");
       }
       api
         .get(url)
@@ -687,9 +731,16 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="source" noStyle>
                             <Select
                               {...selectProps}
-                              options={sourceOptions}
+                              options={sourceOptions.filter((cm) => {
+                                if (reduceFilterDropdown?.source?.length) {
+                                  return reduceFilterDropdown.source.includes(
+                                    cm.value
+                                  );
+                                }
+                                return cm;
+                              })}
                               placeholder="Select Source"
-                              loading={mapLoading}
+                              loading={mapLoading || filterLoading}
                               onClear={() =>
                                 handleSelectOnClear({ name: "source" })
                               }
@@ -701,9 +752,16 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="commodity" noStyle>
                             <Select
                               {...selectProps}
-                              options={commodityOptions}
+                              options={commodityOptions.filter((cm) => {
+                                if (reduceFilterDropdown?.commodity?.length) {
+                                  return reduceFilterDropdown.commodity.includes(
+                                    cm.value
+                                  );
+                                }
+                                return cm;
+                              })}
                               placeholder="Select Commodity"
-                              loading={mapLoading}
+                              loading={mapLoading || filterLoading}
                               onClear={() =>
                                 handleSelectOnClear({ name: "commodity" })
                               }
@@ -715,9 +773,16 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="driver" noStyle>
                             <Select
                               {...selectProps}
-                              options={driverOptions}
+                              options={driverOptions.filter((cm) => {
+                                if (reduceFilterDropdown?.driver?.length) {
+                                  return reduceFilterDropdown.driver.includes(
+                                    cm.value
+                                  );
+                                }
+                                return cm;
+                              })}
                               placeholder="Select Driver"
-                              loading={mapLoading}
+                              loading={mapLoading || filterLoading}
                               onClear={() =>
                                 handleSelectOnClear({ name: "driver" })
                               }
