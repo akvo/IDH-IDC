@@ -170,138 +170,139 @@ id,country_id,region_id,country,region,source,household_size,nr_adults,year,LCU,
 175,84.0,68,India,"Urban / Tiruppur, Tamil Nadu",Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,343200.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/urban-india/
 176,85.0,76,Indonesia,Rural / Central Sulawesi,Living Income Reference Value,4.0,2.0,2024.0,63258648.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-central-sulawesi-indonesia/
 177,85.0,79,Indonesia,Rural / Rural Aceh,Living Income Reference Value,4.0,2.0,2024.0,64353828.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-aceh-indonesia/
-178,85.0,80,Indonesia,Rural / Rural Lampung Province,Living Income Reference Value,4.0,2.0,,63876888.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-report-for-rural-lampung-province-indonesia/
-179,85.0,81,Indonesia,"Rural / Rural Rembang, Central Java",Living Income Reference Value,4.0,2.0,2024.0,63984048.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-report-for-rural-rembang-central-java-indonesia/
-180,85.0,97,Indonesia,Urban / Urban Banten Province,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,89779536.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-report-for-urban-banten-indonesia/
-181,85.0,98,Indonesia,Urban / Urban West Java Province (SUBANG AND GARUT),Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,76633944.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-report-for-urban-west-java-indonesia/
-182,93.0,53,Jordan,Urban / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,487.64,0,0,2.25,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-jordan/
-183,93.0,53,Jordan,Urban / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,5921.76,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/
-184,93.0,53,Jordan,Urban / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,6517.44,0,0,2.25,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-jordan/
-185,95.0,15,Kenya,Non-metropolitan Urban / Lake Naivasha,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,48432.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/non-metropolitan-urban-kenya/
-186,95.0,15,Kenya,Non-metropolitan Urban / Lake Naivasha,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,627012.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/
-187,95.0,15,Kenya,Non-metropolitan Urban / Lake Naivasha,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,656112.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/non-metropolitan-urban-kenya/
-188,95.0,27,Kenya,Rural / Kericho,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,44068.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-kericho-kenya/
-189,95.0,27,Kenya,Rural / Kericho,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,570492.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/
-190,95.0,27,Kenya,Rural / Kericho,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,596976.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-kericho-kenya/
-191,101.0,17,Lao PDR,Rural / All,Living Income Reference Value,4.5,2.0,2024.0,69199656.0,0,0,2.25,https://www.globallivingwage.org/reference-value/living-income-and-living-wage-reference-value-for-rural-lao-pdr/
-192,110.0,17,Madagascar,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,580155.0,0,0,2.4,https://www.globallivingwage.org/living-income-reference-value-rural-madagascar/
-193,110.0,17,Madagascar,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,7823664.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/
-194,110.0,17,Madagascar,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,8317020.0,0,0,2.4,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-madagascar/
-195,111.0,39,Malawi,Rural / Southern Region,Calculated from  Global Living Wage Coalition,5.0,2.0,2019.0,135461.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/
-196,111.0,39,Malawi,Rural / Southern Region,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,2836308.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/
-197,111.0,39,Malawi,Rural / Southern Region,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,3782304.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/
-198,118.0,73,Mauritius,All / All,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,485916.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/mauritius/
-199,119.0,9,Mexico,Municipality of Ensenada / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2022.0,24021.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/
-200,119.0,9,Mexico,Municipality of Ensenada / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,323208.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/
-201,119.0,9,Mexico,Municipality of Ensenada / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,339288.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/
-202,119.0,10,Mexico,Municipality of San Quintín / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2022.0,25638.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/
-203,119.0,10,Mexico,Municipality of San Quintín / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,302832.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/
-204,119.0,10,Mexico,Municipality of San Quintín / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,317892.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/
-205,119.0,14,Mexico,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,18571.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/
-206,119.0,14,Mexico,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,235704.0,0,0,2.1,https://globallivingwage.org/living-income-reference-value-rural-mozambique/
-207,119.0,14,Mexico,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,247440.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/
-208,119.0,47,Mexico,Rural Areas and Small Towns / Rural Areas and Small Towns of Nayarit,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,17535.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/
-209,119.0,47,Mexico,Rural Areas and Small Towns / Rural Areas and Small Towns of Nayarit,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,226752.0,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-rural-morocco/
-210,119.0,47,Mexico,Rural Areas and Small Towns / Rural Areas and Small Towns of Nayarit,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,238032.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/
-211,119.0,72,Mexico,Yucatán / Rural Areas and Small Towns in Yucatan,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,17296.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/
-212,119.0,72,Mexico,Yucatán / Rural Areas and Small Towns in Yucatan,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,216444.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/
-213,119.0,72,Mexico,Yucatán / Rural Areas and Small Towns in Yucatan,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,227208.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/
-214,124.0,17,Morocco,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,3556.8,0,0,2.25,https://www.globallivingwage.org/living-wage-reference-value-rural-morocco/
-215,124.0,17,Morocco,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,45040.32,0,0,2.25,https://globallivingwage.org/living-income-reference-value-rural-nigeria/
-216,124.0,17,Morocco,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,49158.72,0,0,2.25,https://www.globallivingwage.org/reference-value/living-wage-reference-value-rural-morocco/
-217,125.0,17,Mozambique,Rural / All,Global Living Wage Coalition,5.5,2.0,2022.0,10652.0,0,0,2.55,https://globallivingwage.org/living-income-reference-value-rural-mozambique/
-218,125.0,17,Mozambique,Rural / All,Global Living Wage Coalition,5.5,2.0,2023.0,138804.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/
-219,125.0,17,Mozambique,Rural / All,Global Living Wage Coalition,5.5,2.0,2024.0,138804.0,0,0,2.55,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-mozambique/
-220,129.0,17,Nepal,Rural / All,Global Living Wage Coalition,4.0,2.0,2024.0,364548.0,0,0,2.1,https://www.globallivingwage.org/reference-value/living-wage-and-living-income-reference-value-for-rural-nepal/
-221,133.0,52,Nicaragua,Rural-Urban / Northwest,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,15901.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/
-222,133.0,52,Nicaragua,Rural-Urban / Northwest,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,219864.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/
-223,133.0,52,Nicaragua,Rural-Urban / Northwest,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,231684.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/
-224,133.0,57,Nicaragua,Urban / Managua Free Trade Zone,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,20094.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/
-225,133.0,57,Nicaragua,Urban / Managua Free Trade Zone,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,275940.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/urban-pakistan/
-226,133.0,57,Nicaragua,Urban / Managua Free Trade Zone,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,288348.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/
-227,135.0,17,Nigeria,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,191909.0,0,0,2.4,https://globallivingwage.org/living-income-reference-value-rural-nigeria/
-228,135.0,17,Nigeria,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,2795376.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/
-229,140.0,28,Pakistan,Rural / Khyber Pakhtunkhwa (KP),Calculated from Global Living Wage Coalition,6.0,2.0,2022.0,65142.0,0,0,2.7,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/
-230,140.0,28,Pakistan,Rural / Khyber Pakhtunkhwa (KP),Calculated from Global Living Wage Coalition,6.0,2.0,2023.0,1035060.0,0,0,2.7,https://globallivingwage.org/resource-library/?fwp_country=peru
-231,140.0,28,Pakistan,Rural / Khyber Pakhtunkhwa (KP),Calculated from Global Living Wage Coalition,6.0,2.0,2024.0,1131372.0,0,0,2.7,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/
-232,140.0,37,Pakistan,Rural / Sialkot,Calculated from  Global Living Wage Coalition,5.5,2.0,2022.0,49677.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/
-233,140.0,37,Pakistan,Rural / Sialkot,Calculated from  Global Living Wage Coalition,5.5,2.0,2023.0,789324.0,0,0,2.55,https://globallivingwage.org/living-income-reference-value-rural-papua-new-guinea/
-234,140.0,37,Pakistan,Rural / Sialkot,Calculated from  Global Living Wage Coalition,5.5,2.0,2024.0,862776.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/
-235,140.0,66,Pakistan,Urban / Sialkot,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,52749.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/urban-pakistan/
-236,140.0,66,Pakistan,Urban / Sialkot,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,806040.0,0,0,2.4,https://globallivingwage.org/resource-library/?fwp_country=peru
-237,142.0,17,Panama,Rural / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,897.12,0,0,2.1,https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/
-238,142.0,17,Panama,Rural / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,10946.88,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-239,142.0,17,Panama,Rural / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,12398.4,0,0,2.1,https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/
-240,143.0,17,Papua New Guinea,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,1744.0,0,0,2.4,https://globallivingwage.org/living-income-reference-value-rural-papua-new-guinea/
-241,143.0,17,Papua New Guinea,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,21120.0,0,0,2.4,https://globallivingwage.org/resource-library/?fwp_country=peru
-242,143.0,17,Papua New Guinea,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,21144.0,0,0,2.4,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-papua-new-guinea/
-243,145.0,17,Peru,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,2320.0,0,0,2.4,https://www.globallivingwage.org/living-income-reference-value-rural-peru/
-244,145.0,17,Peru,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,29700.0,0,0,2.4,https://www.globallivingwage.org/living-wage-reference-value-urban-sri-lanka/
-245,145.0,17,Peru,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,30264.0,0,0,2.4,https://globallivingwage.org/reference-value/living-income-reference-value-rural-peru/
-246,145.0,82,Peru,Rural Areas and Small Towns / All coffee and cocoa growing regions,Global Living Wage Coalition,4.0,2.0,2023.0,2530.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-247,145.0,44,Peru,Rural Areas and Small Towns / Cajamarca,Global Living Wage Coalition,4.0,2.0,2022.0,25752.0,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-peru/
-248,145.0,44,Peru,Rural Areas and Small Towns / Cajamarca,Global Living Wage Coalition,4.0,2.0,2022.0,2146.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-249,145.0,45,Peru,Rural Areas and Small Towns / Cusco,Global Living Wage Coalition,4.0,2.0,2022.0,28308.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/
-250,145.0,45,Peru,Rural Areas and Small Towns / Cusco,Global Living Wage Coalition,4.0,2.0,2022.0,2359.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-251,145.0,46,Peru,Rural Areas and Small Towns / Junín,Global Living Wage Coalition,4.0,2.0,2022.0,25212.0,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-rwanda/
-252,145.0,46,Peru,Rural Areas and Small Towns / Junín,Global Living Wage Coalition,4.0,2.0,2022.0,2101.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-253,145.0,48,Peru,Rural Areas and Small Towns / Rural coffee and cocoa growing regions,Global Living Wage Coalition,4.0,2.0,2023.0,30360.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/
-254,145.0,48,Peru,Rural Areas and Small Towns / Rural coffee and cocoa growing regions,Global Living Wage Coalition,4.0,2.0,2024.0,30936.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-of-san-martin-peru/
-255,145.0,49,Peru,Rural Areas and Small Towns / San Martín,Global Living Wage Coalition,4.0,2.0,2022.0,28452.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-256,145.0,49,Peru,Rural Areas and Small Towns / San Martín,Global Living Wage Coalition,4.0,2.0,2022.0,2371.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
-257,146.0,26,Philippines,Rural / Ilocos Sur Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,24742.0,0,0,2.25,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/
-258,146.0,26,Philippines,Rural / Ilocos Sur Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,301980.0,0,0,2.25,https://www.globallivingwage.org/living-income-reference-value-rural-tanzania/
-259,146.0,26,Philippines,Rural / Ilocos Sur Province,Global Living Wage Coalition,4.5,2.0,2024.0,313440.0,0,0,2.25,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/
-260,153.0,17,Rwanda,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,221932.0,0,0,2.4,https://www.globallivingwage.org/living-income-reference-value-rural-rwanda/
-261,153.0,17,Rwanda,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,3332088.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/
-262,153.0,17,Rwanda,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,3369324.0,0,0,2.4,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-rwanda/
-263,153.0,43,Rwanda,Rural / coffee-producing households in the Western province,New Foresight,5.4,2.0,2023.0,2565276.0,0,0,2.52,https://www.globallivingwage.org/living-wage-reference-value-urban-thailand/
-264,167.0,40,South Africa,Rural / Western Cape Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,7916.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/
-265,167.0,40,South Africa,Rural / Western Cape Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,104304.0,0,0,2.25,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/
-266,167.0,40,South Africa,Rural / Western Cape Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,108924.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/
-267,170.0,25,Sri Lanka,Rural / Estate Sector,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,68839.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/
-268,170.0,25,Sri Lanka,Rural / Estate Sector,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,915192.0,0,0,2.25,https://www.globallivingwage.org/living-wage-reference-value-rural-tunisia/
-269,170.0,25,Sri Lanka,Rural / Estate Sector,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,936804.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/
-270,170.0,53,Sri Lanka,Urban / All,Global Living Wage Coalition,4.0,2.0,2022.0,123987.2,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-urban-sri-lanka/
-271,170.0,53,Sri Lanka,Urban / All,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,2013465.6,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-turkey/
-272,170.0,53,Sri Lanka,Urban / All,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,2226105.6,0,0,2.1,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-sri-lanka/
-273,179.0,17,Tanzania,Rural / All,Global Living Wage Coalition,5.5,2.0,2022.0,495629.0,0,0,2.55,https://www.globallivingwage.org/living-income-reference-value-rural-tanzania/
-274,179.0,17,Tanzania,Rural / All,Global Living Wage Coalition,5.5,2.0,2023.0,6159132.0,0,0,2.55,https://www.globallivingwage.org/living-wage-reference-value-urban-turkey/
-275,179.0,17,Tanzania,Rural / All,Global Living Wage Coalition,5.5,2.0,2024.0,6349680.0,0,0,2.55,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-tanzania/
-276,179.0,53,Tanzania,Urban / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,660700.43,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/
-277,179.0,53,Tanzania,Urban / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,8210459.4,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/
-278,179.0,53,Tanzania,Urban / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,9788304.24,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/
-279,180.0,53,Thailand,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,24285.6,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-urban-thailand/
-280,180.0,53,Thailand,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,292096.8,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/rural-vietnam/
-281,180.0,53,Thailand,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,309398.4,0,0,2.1,https://www.globallivingwage.org/reference-value/living-wage-reference-value-urban-thailand/
-282,182.0,17,Togo,Rural / All,Global Living Wage Coalition,5.5,2.0,2023.0,1790472.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/urban-vietnam/
-283,182.0,17,Togo,Rural / All,Global Living Wage Coalition,5.5,2.0,2024.0,1866420.0,0,0,2.55,https://www.globallivingwage.org/reference-value/living-income-reference-value-for-rural-togo/
-284,182.0,42,Togo,Rural / coffee-producing households in the Wawa prefecture,New Foresight,5.7,2.0,2023.0,2971452.0,0,0,2.61,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/
-285,182.0,53,Togo,Urban / All,Calculated from Global Living Wage Coalition,5.0,2.0,2023.0,2385090.24,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/
-286,182.0,53,Togo,Urban / All,Calculated from Global Living Wage Coalition,5.0,2.0,2024.0,2603424.72,0,0,2.4,https://www.globallivingwage.org/reference-value/living-wage-reference-value-for-urban-togo/
-287,185.0,17,Tunisia,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2020.0,967.98,0,0,2.25,https://www.globallivingwage.org/living-wage-reference-value-rural-tunisia/
-288,185.0,17,Tunisia,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,14506.56,0,0,2.25,
-289,185.0,17,Tunisia,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,18974.16,0,0,2.25,https://www.globallivingwage.org/reference-value/living-wage-reference-value-rural-tunisia/
-290,186.0,17,Turkey,Rural / All,Global Living Wage Coalition,4.0,2.0,2020.0,3551.0,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-turkey/
-291,186.0,17,Turkey,Rural / All,Global Living Wage Coalition,4.0,2.0,2023.0,123636.0,0,0,2.1,
-292,186.0,53,Turkey,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2021.0,5707.8,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-urban-turkey/
-293,186.0,53,Turkey,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,169095.84,0,0,2.1,
-294,190.0,29,Uganda,Rural / Lake Victoria Basin,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,1102589.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/
-295,190.0,29,Uganda,Rural / Lake Victoria Basin,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,13878528.0,0,0,2.4,
-296,190.0,29,Uganda,Rural / Lake Victoria Basin,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,14423256.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/
-297,199.0,78,Vietnam,Rural / Economic Zone 4,Calculated from  Global Living Wage Coalition,4.0,2.0,2020.0,7729194.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/rural-vietnam/
-298,199.0,33,Vietnam,Rural / Minimum Wage Region 4,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,121875948.0,0,0,2.1,
-299,199.0,33,Vietnam,Rural / Minimum Wage Region 4,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,127290192.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-report-for-minimum-wage-region-4-vietnam/
-300,199.0,96,Vietnam,Urban / Ho Chi Minh City,Calculated from  Global Living Wage Coalition,4.0,2.0,2020.0,11862692.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/urban-vietnam/
-301,199.0,59,Vietnam,Urban / Minimum Wage Region 1,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,160856628.0,0,0,2.1,
-302,199.0,59,Vietnam,Urban / Minimum Wage Region 1,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,167665596.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-minimum-wage-region-1-vietnam/
-303,199.0,60,Vietnam,Urban / Minimum Wage Region 2,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,147362616.0,0,0,2.1,
-304,199.0,60,Vietnam,Urban / Minimum Wage Region 2,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,153600396.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-minimum-wage-region-2-vietnam/
-305,199.0,61,Vietnam,Urban / Minimum Wage Region 3,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,143111172.0,0,0,2.1,
-306,199.0,61,Vietnam,Urban / Minimum Wage Region 3,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,149168988.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-minimum-wage-region-3-vietnam/
-307,202.0,17,Zambia,Rural / All,Calculated from  Global Living Wage Coalition,6.0,2.0,2022.0,4107.84,0,0,2.7,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/
-308,202.0,17,Zambia,Rural / All,Calculated from  Global Living Wage Coalition,6.0,2.0,2023.0,54109.44,0,0,2.7,
-309,202.0,17,Zambia,Rural / All,Calculated from  Global Living Wage Coalition,6.0,2.0,2024.0,66337.92,0,0,2.7,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/
-310,203.0,17,Zimbabwe,Rural / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,364.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/
-311,203.0,17,Zimbabwe,Rural / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,4368.0,0,0,2.4,
-312,203.0,17,Zimbabwe,Rural / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,5439.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/
+178,85.0,80,Indonesia,Rural / Rural Lampung Province,Living Income Reference Value,4.0,2.0,2024.0,63876888.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-report-for-rural-lampung-province-indonesia/
+179,85.0,80,Indonesia,Rural / Rural Lampung Province,Living Income Reference Value,4.0,2.0,,63876888.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-report-for-rural-lampung-province-indonesia/
+180,85.0,81,Indonesia,"Rural / Rural Rembang, Central Java",Living Income Reference Value,4.0,2.0,2024.0,63984048.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-report-for-rural-rembang-central-java-indonesia/
+181,85.0,97,Indonesia,Urban / Urban Banten Province,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,89779536.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-report-for-urban-banten-indonesia/
+182,85.0,98,Indonesia,Urban / Urban West Java Province (SUBANG AND GARUT),Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,76633944.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-report-for-urban-west-java-indonesia/
+183,93.0,53,Jordan,Urban / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,487.64,0,0,2.25,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-jordan/
+184,93.0,53,Jordan,Urban / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,5921.76,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/
+185,93.0,53,Jordan,Urban / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,6517.44,0,0,2.25,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-jordan/
+186,95.0,15,Kenya,Non-metropolitan Urban / Lake Naivasha,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,48432.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/non-metropolitan-urban-kenya/
+187,95.0,15,Kenya,Non-metropolitan Urban / Lake Naivasha,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,627012.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/
+188,95.0,15,Kenya,Non-metropolitan Urban / Lake Naivasha,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,656112.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/non-metropolitan-urban-kenya/
+189,95.0,27,Kenya,Rural / Kericho,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,44068.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-kericho-kenya/
+190,95.0,27,Kenya,Rural / Kericho,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,570492.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/
+191,95.0,27,Kenya,Rural / Kericho,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,596976.0,0,0,2.4,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-kericho-kenya/
+192,101.0,17,Lao PDR,Rural / All,Living Income Reference Value,4.5,2.0,2024.0,69199656.0,0,0,2.25,https://www.globallivingwage.org/reference-value/living-income-and-living-wage-reference-value-for-rural-lao-pdr/
+193,110.0,17,Madagascar,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,580155.0,0,0,2.4,https://www.globallivingwage.org/living-income-reference-value-rural-madagascar/
+194,110.0,17,Madagascar,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,7823664.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/
+195,110.0,17,Madagascar,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,8317020.0,0,0,2.4,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-madagascar/
+196,111.0,39,Malawi,Rural / Southern Region,Calculated from  Global Living Wage Coalition,5.0,2.0,2019.0,135461.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/
+197,111.0,39,Malawi,Rural / Southern Region,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,2836308.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/
+198,111.0,39,Malawi,Rural / Southern Region,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,3782304.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/rural-malawi/
+199,118.0,73,Mauritius,All / All,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,485916.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/mauritius/
+200,119.0,9,Mexico,Municipality of Ensenada / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2022.0,24021.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/
+201,119.0,9,Mexico,Municipality of Ensenada / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,323208.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/
+202,119.0,9,Mexico,Municipality of Ensenada / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,339288.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/
+203,119.0,10,Mexico,Municipality of San Quintín / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2022.0,25638.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/
+204,119.0,10,Mexico,Municipality of San Quintín / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,302832.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/
+205,119.0,10,Mexico,Municipality of San Quintín / Baja California,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,317892.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico-san-quintin/
+206,119.0,14,Mexico,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,18571.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/
+207,119.0,14,Mexico,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,235704.0,0,0,2.1,https://globallivingwage.org/living-income-reference-value-rural-mozambique/
+208,119.0,14,Mexico,"Non-metropolitan Urban & Rural / Michoacán, northwestern regions",Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,247440.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-michoacan-mexico/
+209,119.0,47,Mexico,Rural Areas and Small Towns / Rural Areas and Small Towns of Nayarit,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,17535.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/
+210,119.0,47,Mexico,Rural Areas and Small Towns / Rural Areas and Small Towns of Nayarit,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,226752.0,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-rural-morocco/
+211,119.0,47,Mexico,Rural Areas and Small Towns / Rural Areas and Small Towns of Nayarit,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,238032.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-nayarit-mexico/
+212,119.0,72,Mexico,Yucatán / Rural Areas and Small Towns in Yucatan,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,17296.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/
+213,119.0,72,Mexico,Yucatán / Rural Areas and Small Towns in Yucatan,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,216444.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-baja-california-mexico/
+214,119.0,72,Mexico,Yucatán / Rural Areas and Small Towns in Yucatan,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,227208.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-yucatan-mexico/
+215,124.0,17,Morocco,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,3556.8,0,0,2.25,https://www.globallivingwage.org/living-wage-reference-value-rural-morocco/
+216,124.0,17,Morocco,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,45040.32,0,0,2.25,https://globallivingwage.org/living-income-reference-value-rural-nigeria/
+217,124.0,17,Morocco,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,49158.72,0,0,2.25,https://www.globallivingwage.org/reference-value/living-wage-reference-value-rural-morocco/
+218,125.0,17,Mozambique,Rural / All,Global Living Wage Coalition,5.5,2.0,2022.0,10652.0,0,0,2.55,https://globallivingwage.org/living-income-reference-value-rural-mozambique/
+219,125.0,17,Mozambique,Rural / All,Global Living Wage Coalition,5.5,2.0,2023.0,138804.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/
+220,125.0,17,Mozambique,Rural / All,Global Living Wage Coalition,5.5,2.0,2024.0,138804.0,0,0,2.55,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-mozambique/
+221,129.0,17,Nepal,Rural / All,Global Living Wage Coalition,4.0,2.0,2024.0,364548.0,0,0,2.1,https://www.globallivingwage.org/reference-value/living-wage-and-living-income-reference-value-for-rural-nepal/
+222,133.0,52,Nicaragua,Rural-Urban / Northwest,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,15901.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/
+223,133.0,52,Nicaragua,Rural-Urban / Northwest,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,219864.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/
+224,133.0,52,Nicaragua,Rural-Urban / Northwest,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,231684.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/northwest-nicaragua/
+225,133.0,57,Nicaragua,Urban / Managua Free Trade Zone,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,20094.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/
+226,133.0,57,Nicaragua,Urban / Managua Free Trade Zone,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,275940.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/urban-pakistan/
+227,133.0,57,Nicaragua,Urban / Managua Free Trade Zone,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,288348.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/managua-nicaragua/
+228,135.0,17,Nigeria,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,191909.0,0,0,2.4,https://globallivingwage.org/living-income-reference-value-rural-nigeria/
+229,135.0,17,Nigeria,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,2795376.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/
+230,140.0,28,Pakistan,Rural / Khyber Pakhtunkhwa (KP),Calculated from Global Living Wage Coalition,6.0,2.0,2022.0,65142.0,0,0,2.7,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/
+231,140.0,28,Pakistan,Rural / Khyber Pakhtunkhwa (KP),Calculated from Global Living Wage Coalition,6.0,2.0,2023.0,1035060.0,0,0,2.7,https://globallivingwage.org/resource-library/?fwp_country=peru
+232,140.0,28,Pakistan,Rural / Khyber Pakhtunkhwa (KP),Calculated from Global Living Wage Coalition,6.0,2.0,2024.0,1131372.0,0,0,2.7,https://www.globallivingwage.org/living-wage-benchmarks/living-income-for-rural-kp-pakistan/
+233,140.0,37,Pakistan,Rural / Sialkot,Calculated from  Global Living Wage Coalition,5.5,2.0,2022.0,49677.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/
+234,140.0,37,Pakistan,Rural / Sialkot,Calculated from  Global Living Wage Coalition,5.5,2.0,2023.0,789324.0,0,0,2.55,https://globallivingwage.org/living-income-reference-value-rural-papua-new-guinea/
+235,140.0,37,Pakistan,Rural / Sialkot,Calculated from  Global Living Wage Coalition,5.5,2.0,2024.0,862776.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/rural-pakistan/
+236,140.0,66,Pakistan,Urban / Sialkot,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,52749.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/urban-pakistan/
+237,140.0,66,Pakistan,Urban / Sialkot,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,806040.0,0,0,2.4,https://globallivingwage.org/resource-library/?fwp_country=peru
+238,142.0,17,Panama,Rural / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,897.12,0,0,2.1,https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/
+239,142.0,17,Panama,Rural / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,10946.88,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+240,142.0,17,Panama,Rural / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,12398.4,0,0,2.1,https://globallivingwage.org/reference-value/living-wage-reference-value-rural-panama/
+241,143.0,17,Papua New Guinea,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,1744.0,0,0,2.4,https://globallivingwage.org/living-income-reference-value-rural-papua-new-guinea/
+242,143.0,17,Papua New Guinea,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,21120.0,0,0,2.4,https://globallivingwage.org/resource-library/?fwp_country=peru
+243,143.0,17,Papua New Guinea,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,21144.0,0,0,2.4,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-papua-new-guinea/
+244,145.0,17,Peru,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,2320.0,0,0,2.4,https://www.globallivingwage.org/living-income-reference-value-rural-peru/
+245,145.0,17,Peru,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,29700.0,0,0,2.4,https://www.globallivingwage.org/living-wage-reference-value-urban-sri-lanka/
+246,145.0,17,Peru,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,30264.0,0,0,2.4,https://globallivingwage.org/reference-value/living-income-reference-value-rural-peru/
+247,145.0,82,Peru,Rural Areas and Small Towns / All coffee and cocoa growing regions,Global Living Wage Coalition,4.0,2.0,2023.0,2530.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+248,145.0,44,Peru,Rural Areas and Small Towns / Cajamarca,Global Living Wage Coalition,4.0,2.0,2022.0,25752.0,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-peru/
+249,145.0,44,Peru,Rural Areas and Small Towns / Cajamarca,Global Living Wage Coalition,4.0,2.0,2022.0,2146.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+250,145.0,45,Peru,Rural Areas and Small Towns / Cusco,Global Living Wage Coalition,4.0,2.0,2022.0,28308.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/
+251,145.0,45,Peru,Rural Areas and Small Towns / Cusco,Global Living Wage Coalition,4.0,2.0,2022.0,2359.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+252,145.0,46,Peru,Rural Areas and Small Towns / Junín,Global Living Wage Coalition,4.0,2.0,2022.0,25212.0,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-rwanda/
+253,145.0,46,Peru,Rural Areas and Small Towns / Junín,Global Living Wage Coalition,4.0,2.0,2022.0,2101.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+254,145.0,48,Peru,Rural Areas and Small Towns / Rural coffee and cocoa growing regions,Global Living Wage Coalition,4.0,2.0,2023.0,30360.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/
+255,145.0,48,Peru,Rural Areas and Small Towns / Rural coffee and cocoa growing regions,Global Living Wage Coalition,4.0,2.0,2024.0,30936.0,0,0,2.1,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-areas-of-san-martin-peru/
+256,145.0,49,Peru,Rural Areas and Small Towns / San Martín,Global Living Wage Coalition,4.0,2.0,2022.0,28452.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+257,145.0,49,Peru,Rural Areas and Small Towns / San Martín,Global Living Wage Coalition,4.0,2.0,2022.0,2371.0,0,0,2.1,https://globallivingwage.org/resource-library/?fwp_country=peru
+258,146.0,26,Philippines,Rural / Ilocos Sur Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,24742.0,0,0,2.25,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/
+259,146.0,26,Philippines,Rural / Ilocos Sur Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,301980.0,0,0,2.25,https://www.globallivingwage.org/living-income-reference-value-rural-tanzania/
+260,146.0,26,Philippines,Rural / Ilocos Sur Province,Global Living Wage Coalition,4.5,2.0,2024.0,313440.0,0,0,2.25,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/
+261,153.0,17,Rwanda,Rural / All,Global Living Wage Coalition,5.0,2.0,2022.0,221932.0,0,0,2.4,https://www.globallivingwage.org/living-income-reference-value-rural-rwanda/
+262,153.0,17,Rwanda,Rural / All,Global Living Wage Coalition,5.0,2.0,2023.0,3332088.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/
+263,153.0,17,Rwanda,Rural / All,Global Living Wage Coalition,5.0,2.0,2024.0,3369324.0,0,0,2.4,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-rwanda/
+264,153.0,43,Rwanda,Rural / coffee-producing households in the Western province,New Foresight,5.4,2.0,2023.0,2565276.0,0,0,2.52,https://www.globallivingwage.org/living-wage-reference-value-urban-thailand/
+265,167.0,40,South Africa,Rural / Western Cape Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,7916.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/
+266,167.0,40,South Africa,Rural / Western Cape Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,104304.0,0,0,2.25,https://globallivingwage.org/living-wage-benchmarks/living-wage-for-rural-ilocos-philippines/
+267,167.0,40,South Africa,Rural / Western Cape Province,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,108924.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/rural-south-africa/
+268,170.0,25,Sri Lanka,Rural / Estate Sector,Calculated from  Global Living Wage Coalition,4.5,2.0,2022.0,68839.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/
+269,170.0,25,Sri Lanka,Rural / Estate Sector,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,915192.0,0,0,2.25,https://www.globallivingwage.org/living-wage-reference-value-rural-tunisia/
+270,170.0,25,Sri Lanka,Rural / Estate Sector,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,936804.0,0,0,2.25,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-estimate-for-sri-lanka/
+271,170.0,53,Sri Lanka,Urban / All,Global Living Wage Coalition,4.0,2.0,2022.0,123987.2,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-urban-sri-lanka/
+272,170.0,53,Sri Lanka,Urban / All,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,2013465.6,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-turkey/
+273,170.0,53,Sri Lanka,Urban / All,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,2226105.6,0,0,2.1,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-sri-lanka/
+274,179.0,17,Tanzania,Rural / All,Global Living Wage Coalition,5.5,2.0,2022.0,495629.0,0,0,2.55,https://www.globallivingwage.org/living-income-reference-value-rural-tanzania/
+275,179.0,17,Tanzania,Rural / All,Global Living Wage Coalition,5.5,2.0,2023.0,6159132.0,0,0,2.55,https://www.globallivingwage.org/living-wage-reference-value-urban-turkey/
+276,179.0,17,Tanzania,Rural / All,Global Living Wage Coalition,5.5,2.0,2024.0,6349680.0,0,0,2.55,https://www.globallivingwage.org/reference-value/living-income-reference-value-rural-tanzania/
+277,179.0,53,Tanzania,Urban / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,660700.43,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/
+278,179.0,53,Tanzania,Urban / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,8210459.4,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/
+279,179.0,53,Tanzania,Urban / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,9788304.24,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value-urban-tanzania/
+280,180.0,53,Thailand,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2022.0,24285.6,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-urban-thailand/
+281,180.0,53,Thailand,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,292096.8,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/rural-vietnam/
+282,180.0,53,Thailand,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2024.0,309398.4,0,0,2.1,https://www.globallivingwage.org/reference-value/living-wage-reference-value-urban-thailand/
+283,182.0,17,Togo,Rural / All,Global Living Wage Coalition,5.5,2.0,2023.0,1790472.0,0,0,2.55,https://www.globallivingwage.org/living-wage-benchmarks/urban-vietnam/
+284,182.0,17,Togo,Rural / All,Global Living Wage Coalition,5.5,2.0,2024.0,1866420.0,0,0,2.55,https://www.globallivingwage.org/reference-value/living-income-reference-value-for-rural-togo/
+285,182.0,42,Togo,Rural / coffee-producing households in the Wawa prefecture,New Foresight,5.7,2.0,2023.0,2971452.0,0,0,2.61,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/
+286,182.0,53,Togo,Urban / All,Calculated from Global Living Wage Coalition,5.0,2.0,2023.0,2385090.24,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/
+287,182.0,53,Togo,Urban / All,Calculated from Global Living Wage Coalition,5.0,2.0,2024.0,2603424.72,0,0,2.4,https://www.globallivingwage.org/reference-value/living-wage-reference-value-for-urban-togo/
+288,185.0,17,Tunisia,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2020.0,967.98,0,0,2.25,https://www.globallivingwage.org/living-wage-reference-value-rural-tunisia/
+289,185.0,17,Tunisia,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2023.0,14506.56,0,0,2.25,
+290,185.0,17,Tunisia,Rural / All,Calculated from  Global Living Wage Coalition,4.5,2.0,2024.0,18974.16,0,0,2.25,https://www.globallivingwage.org/reference-value/living-wage-reference-value-rural-tunisia/
+291,186.0,17,Turkey,Rural / All,Global Living Wage Coalition,4.0,2.0,2020.0,3551.0,0,0,2.1,https://www.globallivingwage.org/living-income-reference-value-rural-turkey/
+292,186.0,17,Turkey,Rural / All,Global Living Wage Coalition,4.0,2.0,2023.0,123636.0,0,0,2.1,
+293,186.0,53,Turkey,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2021.0,5707.8,0,0,2.1,https://www.globallivingwage.org/living-wage-reference-value-urban-turkey/
+294,186.0,53,Turkey,Urban / All,Calculated from  Global Living Wage Coalition,4.0,2.0,2023.0,169095.84,0,0,2.1,
+295,190.0,29,Uganda,Rural / Lake Victoria Basin,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,1102589.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/
+296,190.0,29,Uganda,Rural / Lake Victoria Basin,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,13878528.0,0,0,2.4,
+297,190.0,29,Uganda,Rural / Lake Victoria Basin,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,14423256.0,0,0,2.4,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-lake-victoria-basin-uganda/
+298,199.0,78,Vietnam,Rural / Economic Zone 4,Calculated from  Global Living Wage Coalition,4.0,2.0,2020.0,7729194.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/rural-vietnam/
+299,199.0,33,Vietnam,Rural / Minimum Wage Region 4,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,121875948.0,0,0,2.1,
+300,199.0,33,Vietnam,Rural / Minimum Wage Region 4,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,127290192.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-report-for-minimum-wage-region-4-vietnam/
+301,199.0,96,Vietnam,Urban / Ho Chi Minh City,Calculated from  Global Living Wage Coalition,4.0,2.0,2020.0,11862692.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/urban-vietnam/
+302,199.0,59,Vietnam,Urban / Minimum Wage Region 1,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,160856628.0,0,0,2.1,
+303,199.0,59,Vietnam,Urban / Minimum Wage Region 1,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,167665596.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-minimum-wage-region-1-vietnam/
+304,199.0,60,Vietnam,Urban / Minimum Wage Region 2,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,147362616.0,0,0,2.1,
+305,199.0,60,Vietnam,Urban / Minimum Wage Region 2,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,153600396.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-minimum-wage-region-2-vietnam/
+306,199.0,61,Vietnam,Urban / Minimum Wage Region 3,Calculated from Global Living Wage Coalition,4.0,2.0,2023.0,143111172.0,0,0,2.1,
+307,199.0,61,Vietnam,Urban / Minimum Wage Region 3,Calculated from Global Living Wage Coalition,4.0,2.0,2024.0,149168988.0,0,0,2.1,https://www.globallivingwage.org/living-wage-benchmarks/living-wage-for-minimum-wage-region-3-vietnam/
+308,202.0,17,Zambia,Rural / All,Calculated from  Global Living Wage Coalition,6.0,2.0,2022.0,4107.84,0,0,2.7,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/
+309,202.0,17,Zambia,Rural / All,Calculated from  Global Living Wage Coalition,6.0,2.0,2023.0,54109.44,0,0,2.7,
+310,202.0,17,Zambia,Rural / All,Calculated from  Global Living Wage Coalition,6.0,2.0,2024.0,66337.92,0,0,2.7,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zambia/
+311,203.0,17,Zimbabwe,Rural / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2022.0,364.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/
+312,203.0,17,Zimbabwe,Rural / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2023.0,4368.0,0,0,2.4,
+313,203.0,17,Zimbabwe,Rural / All,Calculated from  Global Living Wage Coalition,5.0,2.0,2024.0,5439.0,0,0,2.4,https://globallivingwage.org/reference-value/living-wage-reference-value%e2%81%a0-rural-zimbabwe/
