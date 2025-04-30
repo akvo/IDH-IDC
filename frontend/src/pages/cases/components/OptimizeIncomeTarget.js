@@ -177,6 +177,7 @@ const OptimizeIncomeTarget = () => {
     // handle automated recalculation if total income updated
     if (
       refresh &&
+      !isEmpty(increaseValues) &&
       currentDashboardData?.total_current_income !==
         optimizationResult?.[optimizationResultPreffix]?.current_income
     ) {

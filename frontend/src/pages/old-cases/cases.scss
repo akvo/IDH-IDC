@@ -169,7 +169,7 @@
           h2 {
             &.section-title {
               // background: #e6f7ff;
-              font-size: 0.9rem;
+              font-size: 0.9rem !important;
               margin: -10px -24px 0 -24px;
               padding: 10px 24px;
               position: relative;
@@ -183,7 +183,7 @@
           }
           h3 {
             background: #ffffff;
-            font-size: 14px;
+            font-size: 14px !important;
             padding: 10px 24px;
             font-weight: bold;
             margin: 0px;
@@ -328,7 +328,7 @@
       h2 {
         color: #00403e;
         font-family: "RocGrotesk";
-        font-size: 28px;
+        font-size: 24px !important;
         font-style: normal;
         font-weight: 700;
         line-height: 48px;
@@ -465,6 +465,10 @@
     font-family: "TabletGothic";
 
     .scenario-tabs-container {
+      h2 {
+        font-size: 20px !important;
+      }
+
       .ant-tabs-nav .ant-tabs-tab {
         border: 1px solid #cfcfcf;
       }
@@ -522,6 +526,10 @@
   }
 
   #income-overview-chart {
+    h2 {
+      font-size: 20px !important;
+    }
+
     .income-overview-chart-wrapper {
       padding: 0 20px;
     }
@@ -605,6 +613,11 @@
   }
 
   h2.income-target-value {
+    font-size: 22px !important;
     font-family: "TabletGothicBold" !important;
+  }
+
+  .total-income-text-data-field {
+    font-size: 22px !important;
   }
 }
