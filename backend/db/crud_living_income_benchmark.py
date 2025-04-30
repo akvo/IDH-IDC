@@ -30,6 +30,37 @@ def get_conversion_rate(session: Session, country: int, year: int):
     return usd_rate, eur_rate
 
 
+def get_cpi_by_year(
+    session: Session, country: int, year: int, current_year: int
+):
+    # get CPI by country
+    cpi = session.query(Cpi).filter(
+        Cpi.country == country,
+    )
+    # get CPI from latest year
+    # (latest year CPI means from the year of benchmark available)
+    last_year_cpi = (
+        cpi.filter(and_(Cpi.value != 0, Cpi.year == current_year)).first()
+    )
+    # get CPI by case year / selected year
+    case_year_cpi = cpi.filter(
+        Cpi.year == year,
+    ).first()
+
+    # Calculate CPI factor
+    # CPI Factor logic
+    case_year_cpi_value = case_year_cpi.value if case_year_cpi else 0
+    last_year_cpi_value = last_year_cpi.value if last_year_cpi else 0
+    # Inflation rate formula
+    # (Case year CPI - Latest  Year CPI)/Latest  Year CPI = CPI factor
+    cpi_factor = None
+    if case_year_cpi_value and last_year_cpi_value:
+        cpi_factor = (
+            case_year_cpi_value - last_year_cpi_value
+        ) / last_year_cpi_value
+    return cpi_factor, case_year_cpi_value, last_year_cpi_value
+
+
 def get_all_lib(session: Session) -> List[LivingIncomeBenchmarkDict]:
     return session.query(LivingIncomeBenchmark).all()
 
@@ -49,31 +80,6 @@ def get_by_country_region_year(
         .first()
     )
 
-    # get CPI by country
-    cpi = session.query(Cpi).filter(
-        Cpi.country == country,
-    )
-    # get CPI from lastest year
-    last_year_cpi = (
-        cpi.filter(Cpi.value != 0).order_by(Cpi.year.desc()).first()
-    )
-    # get CPI by case year
-    case_year_cpi = cpi.filter(
-        Cpi.year == year,
-    ).first()
-
-    # Calculate CPI factor
-    # CPI Factor logic
-    case_year_cpi_value = case_year_cpi.value if case_year_cpi else 0
-    last_year_cpi_value = last_year_cpi.value if last_year_cpi else 0
-    # Inflation rate formula
-    # (Case year CPI - Latest  Year CPI)/Latest  Year CPI = CPI factor
-    cpi_factor = None
-    if case_year_cpi_value and last_year_cpi_value:
-        cpi_factor = (
-            case_year_cpi_value - last_year_cpi_value
-        ) / last_year_cpi_value
-
     if not lib:
         # get LI benchmark from latest year
         lib = (
@@ -91,6 +97,12 @@ def get_by_country_region_year(
         if not lib:
             return None
 
+        # get CPI
+        cpi_factor, case_year_cpi_value, last_year_cpi_value = get_cpi_by_year(
+            session=session, country=country, year=year, current_year=lib.year
+        )
+
+        # get conversion rate
         usd_rate, eur_rate = get_conversion_rate(
             session=session, country=country, year=lib.year
         )
@@ -127,6 +139,12 @@ def get_by_country_region_year(
             #     detail=f"Benchmark not available for the year {year}.",
             # )
     else:
+        # get CPI
+        cpi_factor, case_year_cpi_value, last_year_cpi_value = get_cpi_by_year(
+            session=session, country=country, year=year, current_year=lib.year
+        )
+
+        # get conversion rate
         usd_rate, eur_rate = get_conversion_rate(
             session=session, country=country, year=year
         )
