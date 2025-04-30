@@ -80,7 +80,6 @@ const ChartIncomeGap = () => {
       };
     });
   }, [dashboardData]);
-  console.log(chartData);
 
   return (
     <Card className="card-visual-wrapper">
@@ -113,10 +112,11 @@ const ChartIncomeGap = () => {
               What is the current income of the farmers and their income gap?
             </div>
             <div className="section-description">
-              This graph helps you explore the composition of household income
-              and identify the gap between current income and the income target.
-              Use it to uncover variations across segments and consider where
-              tailored strategies might be needed.
+              The visual on the left allows you to select and compare specific
+              combinations of scenarios and segments. You can explore how
+              household income composition and income gaps vary across segments
+              in the scenarios you create. Up to five combinations can be shown
+              at once.
             </div>
           </Space>
         </Col>
