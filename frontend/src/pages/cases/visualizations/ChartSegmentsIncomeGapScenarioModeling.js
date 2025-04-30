@@ -78,9 +78,17 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
   const chartRef = useRef(null);
 
   const chartData = useMemo(() => {
-    const scenarioValues = currentScenarioData?.scenarioValues || [];
+    const scenarioValues = currentScenarioData?.scenarioValues?.map((sv) => {
+      const findSegment = currentCase?.segments?.find(
+        (s) => s.id === sv.segmentId
+      );
+      return {
+        ...sv,
+        name: findSegment?.name || sv.name,
+      };
+    });
     return generateChartData(scenarioValues, true);
-  }, [currentScenarioData]);
+  }, [currentScenarioData, currentCase?.segments]);
 
   const targetChartData = useMemo(
     () => generateTargetChartData(chartData),

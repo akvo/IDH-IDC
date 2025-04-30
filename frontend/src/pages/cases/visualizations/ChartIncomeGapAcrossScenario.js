@@ -184,9 +184,9 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
             scenarioKey: sd.key,
             scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
             scenarioName: sd.name,
-            segmentName: findSegment?.name || "",
+            segmentName: findSegment?.name || sv.name,
             ...sv,
-            name: `${findSegment?.name || ""} - ${sd.name}`,
+            name: `${findSegment?.name || sv.name} - ${sd.name}`,
           };
         });
       })
