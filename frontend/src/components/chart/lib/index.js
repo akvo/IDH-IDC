@@ -20,6 +20,7 @@ export const getColumnStackBarOptions = ({
   series = [],
   showLabel = false,
   grid = {},
+  legend = {},
 }) => {
   if (isEmpty(series) || !series) {
     return NoData;
@@ -38,6 +39,7 @@ export const getColumnStackBarOptions = ({
       top: 15,
       left: "right",
       orient: "vertical",
+      ...legend,
     },
     tooltip: {
       trigger: "axis",
