@@ -80,6 +80,7 @@ const ChartIncomeGap = () => {
       };
     });
   }, [dashboardData]);
+  console.log(chartData);
 
   return (
     <Card className="card-visual-wrapper">

@@ -30,8 +30,14 @@ const ScenarioModelingForm = ({
   const [current, setCurrent] = useState(currentScenarioData);
 
   useEffect(() => {
+    const { name, description, percentage } = currentScenarioData;
+    scenarioDetailForm.setFieldsValue({
+      name,
+      description,
+      percentage,
+    });
     setCurrent(currentScenarioData);
-  }, [currentScenarioData]);
+  }, [currentScenarioData, scenarioDetailForm]);
 
   const onDeleteScenario = () => {
     setDeleting(true);
