@@ -62,10 +62,11 @@ const TableScenarioOutcomes = ({
   const tableRef = useRef(null);
 
   const segmentOptions = useMemo(() => {
-    return currentCase.segments.map((s) => ({
+    const res = currentCase.segments.map((s) => ({
       label: s.name,
       value: s.id,
     }));
+    return orderBy(res, ["value"]);
   }, [currentCase.segments]);
 
   const scenarioOutcomeColumns = useMemo(() => {
@@ -131,6 +132,7 @@ const TableScenarioOutcomes = ({
               (sv) => sv.segmentId === currentDashboardData.id
             );
             const scenarioDriverValues = scenarioSegment?.selectedDrivers
+              ?.filter((d) => d.value) // filter undefined/null value
               ?.map((driver) => {
                 // scenario field
                 const [, scenarioKey, segmentId, index] =

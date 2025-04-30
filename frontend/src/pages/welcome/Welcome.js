@@ -294,10 +294,12 @@ const Welcome = () => {
                   <h3>Case Overview</h3>
                 </div>
                 <div className="description">
-                  Create a case to go through the income driver assessment and
-                  discover how you can improve farmer income.
+                  Create a case for your program, to go through the income
+                  driver assessment and model strategies to bridge the income
+                  gap.
                 </div>
                 <div className="button-wrapper">
+                  {/* TODO :: Update route to new case step */}
                   <Link
                     to={
                       host === "incomedrivercalculator.idhtrade.org"
@@ -313,16 +315,16 @@ const Welcome = () => {
               </Card>
             </Col>
             <Col span={7}>
-              <Card className="floating-card-item explore-studies-card-wrapper">
+              <Card className="floating-card-item lib-card-wrapper">
                 <div className="title">
-                  <h3>Explore Studies</h3>
+                  <h3>Living income benchmarks</h3>
                 </div>
                 <div className="description">
-                  Explore whether relevant data on the five income drivers is
-                  available for your specific context.
+                  Explore the available living income benchmarks through an
+                  interactive dashboard.
                 </div>
                 <div className="button-wrapper">
-                  <Link to="/explore-studies">
+                  <Link to="/living-income-benchmark-explorer">
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
                     </Button>
@@ -331,16 +333,17 @@ const Welcome = () => {
               </Card>
             </Col>
             <Col span={7}>
-              <Card className="floating-card-item lib-card-wrapper">
+              <Card className="floating-card-item explore-studies-card-wrapper">
                 <div className="title">
-                  <h3>Living income benchmarks</h3>
+                  <h3>Explore Tools & Resources</h3>
                 </div>
                 <div className="description">
-                  To make the data entry process more informed and efficient, we
-                  recommend visiting the &quot;Explore Studies&quot; section.
+                  Explore relevant tools and resources developed by IDH and its
+                  partners to guide company action towards improving farmer
+                  livelihoods.
                 </div>
                 <div className="button-wrapper">
-                  <Link to="/living-income-benchmark-explorer">
+                  <Link to="/tools-and-resources">
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
                     </Button>

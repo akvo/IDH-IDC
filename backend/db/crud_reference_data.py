@@ -22,10 +22,10 @@ class PaginatedReferenceData(TypedDict):
 
 def get_all_reference(
     session: Session,
-    country: Optional[int] = None,
-    commodity: Optional[int] = None,
-    source: Optional[str] = None,
-    driver: Optional[Driver] = None,
+    country: Optional[List[int]] = None,
+    commodity: Optional[List[int]] = None,
+    source: Optional[List[str]] = None,
+    driver: Optional[List[Driver]] = None,
     visible_to_external_user: Optional[bool] = False,
     skip: int = 0,
     limit: int = 10,
@@ -37,23 +37,22 @@ def get_all_reference(
     )
 
     if country:
-        data = data.filter(ReferenceData.country == country)
+        data = data.filter(ReferenceData.country.in_(country))
     if commodity:
-        data = data.filter(ReferenceData.commodity == commodity)
+        data = data.filter(ReferenceData.commodity.in_(commodity))
     if source:
-        data = data.filter(
-            ReferenceData.source.ilike(f"%{source.lower().strip()}%")
-        )
-    if driver == Driver.area:
-        data = data.filter(ReferenceData.area.is_not(None))
-    if driver == Driver.price:
-        data = data.filter(ReferenceData.price.is_not(None))
-    if driver == Driver.volume:
-        data = data.filter(ReferenceData.volume.is_not(None))
-    if driver == Driver.cost_of_production:
-        data = data.filter(ReferenceData.cost_of_production.is_not(None))
-    if driver == Driver.diversified_income:
-        data = data.filter(ReferenceData.diversified_income.is_not(None))
+        data = data.filter(ReferenceData.source.in_(source))
+    if driver:
+        if Driver.area in driver:
+            data = data.filter(ReferenceData.area.is_not(None))
+        if Driver.price in driver:
+            data = data.filter(ReferenceData.price.is_not(None))
+        if Driver.volume in driver:
+            data = data.filter(ReferenceData.volume.is_not(None))
+        if Driver.cost_of_production in driver:
+            data = data.filter(ReferenceData.cost_of_production.is_not(None))
+        if Driver.diversified_income in driver:
+            data = data.filter(ReferenceData.diversified_income.is_not(None))
 
     # handle filter by visible to external user
     if visible_to_external_user:
@@ -75,10 +74,11 @@ def get_all_reference(
 
 def count_reference_data_by_country(
     session: Session,
-    country: Optional[int] = None,
-    commodity: Optional[int] = None,
-    source: Optional[str] = None,
-    driver: Optional[Driver] = None,
+    country: Optional[List[int]] = None,
+    commodity: Optional[List[int]] = None,
+    source: Optional[List[str]] = None,
+    driver: Optional[List[Driver]] = None,
+    visible_to_external_user: Optional[bool] = False,
 ) -> List[dict]:
     data = session.query(
         ReferenceData.country.label("country_id"),
@@ -87,23 +87,29 @@ def count_reference_data_by_country(
     )
 
     if country:
-        data = data.filter(ReferenceData.country == country)
+        data = data.filter(ReferenceData.country.in_(country))
     if commodity:
-        data = data.filter(ReferenceData.commodity == commodity)
+        data = data.filter(ReferenceData.commodity.in_(commodity))
     if source:
-        data = data.filter(
-            ReferenceData.source.ilike("%{}%".format(source.lower().strip()))
-        )
-    if driver == Driver.area:
-        data = data.filter(ReferenceData.area.is_not(None))
-    if driver == Driver.price:
-        data = data.filter(ReferenceData.price.is_not(None))
-    if driver == Driver.volume:
-        data = data.filter(ReferenceData.volume.is_not(None))
-    if driver == Driver.cost_of_production:
-        data = data.filter(ReferenceData.cost_of_production.is_not(None))
-    if driver == Driver.diversified_income:
+        data = data.filter(ReferenceData.source.in_(source))
+    if driver:
+        if Driver.area in driver:
+            data = data.filter(ReferenceData.area.is_not(None))
+        if Driver.price in driver:
+            data = data.filter(ReferenceData.price.is_not(None))
+        if Driver.volume in driver:
+            data = data.filter(ReferenceData.volume.is_not(None))
+        if Driver.cost_of_production in driver:
+            data = data.filter(ReferenceData.cost_of_production.is_not(None))
+        if Driver.diversified_income in driver:
+            data = data.filter(ReferenceData.diversified_income.is_not(None))
         data = data.filter(ReferenceData.diversified_income.is_not(None))
+
+    # handle filter by visible to external user
+    if visible_to_external_user:
+        data = data.filter(
+            ReferenceData.visible_to_external_user == visible_to_external_user
+        )
 
     data = data.join(Country, ReferenceData.country == Country.id).group_by(
         ReferenceData.country, Country.name
@@ -117,6 +123,60 @@ def count_reference_data_by_country(
         }
         for row in data.all()
     ]
+
+
+def reduce_filter_dropdown(
+    session: Session,
+    country: List[int],
+    visible_to_external_user: Optional[bool] = False,
+) -> dict:
+    data = session.query(ReferenceData).filter(
+        ReferenceData.country.in_(country)
+    )
+    # handle filter by visible to external user
+    if visible_to_external_user:
+        data = data.filter(
+            ReferenceData.visible_to_external_user == visible_to_external_user
+        )
+    data = data.all()
+
+    country_set = set()
+    source_set = set()
+    commodity_set = set()
+    driver_set = set()
+
+    if not data:
+        return {
+            "country": list(country_set),
+            "source": list(source_set),
+            "commodity": list(commodity_set),
+            "driver": list(driver_set),
+        }
+
+    for item in data:
+        if item.country is not None:
+            country_set.add(item.country)
+        if item.source:
+            source_set.add(item.source)
+        if item.commodity:
+            commodity_set.add(item.commodity)
+        if item.area is not None:
+            driver_set.add(Driver.area.value)
+        if item.price is not None:
+            driver_set.add(Driver.price.value)
+        if item.volume is not None:
+            driver_set.add(Driver.volume.value)
+        if item.cost_of_production is not None:
+            driver_set.add(Driver.cost_of_production.value)
+        if item.diversified_income is not None:
+            driver_set.add(Driver.diversified_income.value)
+
+    return {
+        "country": list(country_set),
+        "source": list(source_set),
+        "commodity": list(commodity_set),
+        "driver": list(driver_set),
+    }
 
 
 def get_reference_value(

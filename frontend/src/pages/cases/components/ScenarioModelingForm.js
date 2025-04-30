@@ -30,8 +30,14 @@ const ScenarioModelingForm = ({
   const [current, setCurrent] = useState(currentScenarioData);
 
   useEffect(() => {
+    const { name, description, percentage } = currentScenarioData;
+    scenarioDetailForm.setFieldsValue({
+      name,
+      description,
+      percentage,
+    });
     setCurrent(currentScenarioData);
-  }, [currentScenarioData]);
+  }, [currentScenarioData, scenarioDetailForm]);
 
   const onDeleteScenario = () => {
     setDeleting(true);
@@ -111,10 +117,14 @@ const ScenarioModelingForm = ({
             percentage: current?.percentage || true,
           }}
         >
-          <Row align="middle" gutter={[20, 20]}>
+          <Row align="top" gutter={[20, 20]}>
             <Col span={6}>
               <Form.Item name="name" label="Give your scenario a name">
-                <Input disabled={!enableEditCase} />
+                <Input
+                  disabled={!enableEditCase}
+                  maxLength={15}
+                  showCount={true}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -122,7 +132,7 @@ const ScenarioModelingForm = ({
                 name="description"
                 label="Describe here what the scenario entails"
               >
-                <Input disabled={!enableEditCase} />
+                <Input.TextArea disabled={!enableEditCase} rows={1} />
               </Form.Item>
             </Col>
             <Col span={6}>

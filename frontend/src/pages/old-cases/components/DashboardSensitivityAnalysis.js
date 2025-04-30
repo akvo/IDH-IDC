@@ -704,7 +704,7 @@ const DashboardSensitivityAnalysis = ({
   return (
     <Row id="sensitivity-analysis" gutter={[24, 24]}>
       <Col span={24} className="income-driver-dashboard">
-        <Row gutter={[24, 24]} align="middle">
+        <Row gutter={[24, 24]} align="top">
           <Col span={10} className="settings-wrapper">
             <h2>Perform a sensitivity analysis</h2>
             <p>

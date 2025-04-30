@@ -18,6 +18,7 @@ import { api } from "../../../lib";
 import { ImpactAreaIcons, ProcurementBadge } from "../components";
 import "./intervention-library.scss";
 import { IMPACT_AREA_OPTIONS } from "../config";
+import { PLState } from "../../../store";
 
 const PAGE_SIZE = 12;
 const { useForm } = Form;
@@ -28,7 +29,7 @@ const InterventionLibrary = () => {
   const [practices, setPractices] = useState([]);
   const [total, setTotal] = useState(0);
   const [procurementProcesses, setProcurementProcesses] = useState([]);
-  const [filter, setFilter] = useState({});
+  const filter = PLState.useState((s) => s.filter);
 
   const [form] = useForm();
   const navigate = useNavigate();
@@ -83,7 +84,9 @@ const InterventionLibrary = () => {
   );
 
   const handleOnFinish = (payload) => {
-    setFilter(payload);
+    PLState.update((s) => {
+      s.filter = payload;
+    });
     setPage(1);
     setLoading(true);
     fetchData(true);
@@ -123,19 +126,12 @@ const InterventionLibrary = () => {
       <div className="intervention-library-content">
         <div className="intervention-library-content-header">
           <h1>The Intervention Library</h1>
-          <Form form={form} onFinish={handleOnFinish} layout="vertical">
-            <Form.Item
-              label="Procurement practice title or keyword"
-              name="search"
-            >
-              <Input
-                placeholder="Search"
-                prefix={<SearchIcon />}
-                size="large"
-                style={{ minWidth: 280 }}
-                allowClear
-              />
-            </Form.Item>
+          <Form
+            form={form}
+            onFinish={handleOnFinish}
+            layout="vertical"
+            initialValues={filter}
+          >
             <Form.Item
               label="Procurement Process"
               name="procurement_process_ids"
@@ -172,6 +168,23 @@ const InterventionLibrary = () => {
                     <span>{`+${omittedValues?.length}`}</span>
                   </Tooltip>
                 )}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                showSearch
+                allowClear
+              />
+            </Form.Item>
+            <Form.Item
+              label="Procurement practice title or keyword"
+              name="search"
+            >
+              <Input
+                placeholder="Search"
+                prefix={<SearchIcon />}
+                size="large"
+                style={{ minWidth: 280 }}
                 allowClear
               />
             </Form.Item>

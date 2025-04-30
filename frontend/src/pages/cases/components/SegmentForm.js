@@ -98,6 +98,8 @@ const SegmentForm = () => {
                         width="100%"
                         placeholder="Segment name"
                         disabled={!enableEditCase}
+                        maxLength={15}
+                        showCount={true}
                       />
                     </Form.Item>
                   </Col>

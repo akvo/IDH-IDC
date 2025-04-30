@@ -138,6 +138,7 @@ def get_by_country_region_year(
         lib["value"]["eur"] = eur_value
         lib["case_year_cpi"] = case_year_cpi_value or None
         lib["last_year_cpi"] = last_year_cpi_value or None
+        # CPI Factor == 0 because benchmark value available for that year
         lib["cpi_factor"] = 0
         lib["message"] = None
         return lib

@@ -425,7 +425,9 @@ const DataFields = ({
                       align="middle"
                     >
                       <Col span={13}>
-                        <h2>Total Income</h2>
+                        <h2 className="total-income-text-data-field">
+                          Total Income
+                        </h2>
                       </Col>
                       <Col span={4}>
                         <InputNumber

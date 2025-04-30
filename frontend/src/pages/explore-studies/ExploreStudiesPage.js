@@ -20,16 +20,16 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { upperFirst, isEmpty, min, max } from "lodash";
 import ReferenceDataForm from "./ReferenceDataForm";
 import { api } from "../../lib";
-import { driverOptions } from ".";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { thousandFormatter } from "../../components/chart/options/common";
-import { sourceOptions } from ".";
+import { sourceOptions, driverOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import Chart from "../../components/chart";
 
 const selectProps = {
   showSearch: true,
   allowClear: true,
+  mode: "multiple",
   optionFilterProp: "label",
   style: {
     width: "100%",
@@ -112,6 +112,12 @@ const defData = {
   total: 0,
   total_page: 1,
 };
+const defReduceFilterDropdown = {
+  country: [],
+  source: [],
+  commodity: [],
+  driver: [],
+};
 
 const ExploreStudiesPage = () => {
   const [form] = Form.useForm();
@@ -133,6 +139,12 @@ const ExploreStudiesPage = () => {
   const [mapLoading, setMapLoading] = useState(true);
   const [mapData, setMapData] = useState([]);
 
+  const countryFilter = Form.useWatch("country", form);
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [reduceFilterDropdown, setReduceFilterDropdown] = useState(
+    defReduceFilterDropdown
+  );
+
   const countryOptions = window.master.countries;
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
     ct.commodities.map((c) => ({
@@ -141,49 +153,72 @@ const ExploreStudiesPage = () => {
     }))
   );
 
-  const isAdmin = useMemo(() => adminRole.includes(userRole), [userRole]);
-
-  const fetchMapData = useCallback(
-    (country, commodity, driver, source) => {
-      setLoading(true);
-      let url = "reference_data/count_by_country";
-      const params = [];
-
-      if (country || countryId) {
-        params.push(`country=${country ? country : countryId}`);
-      }
-      if (commodity || commodityId) {
-        params.push(`commodity=${commodity ? commodity : commodityId}`);
-      }
-      if (driver || driverId) {
-        params.push(`driver=${driver ? driver : driverId}`);
-      }
-      if (source) {
-        params.push(`source=${source}`);
-      }
+  useEffect(() => {
+    setFilterLoading(true);
+    if (countryFilter?.length) {
+      let url = "reference_data/reduce_filter_dropdown";
+      const params = countryFilter.map((cid) => `country=${cid}`);
       if (params.length > 0) {
         url += "?" + params.join("&");
       }
-
       api
         .get(url)
         .then((res) => {
-          const data = res?.data?.map((d) => ({
-            ...d,
-            name: d.COUNTRY,
-            value: d.count,
-          }));
-          setMapData(data);
+          setReduceFilterDropdown(res.data);
         })
         .catch((e) => {
           console.error(e.response);
         })
         .finally(() => {
-          setMapLoading(false);
+          setFilterLoading(false);
         });
-    },
-    [countryId, commodityId, driverId]
-  );
+    } else {
+      setReduceFilterDropdown(defReduceFilterDropdown);
+      setFilterLoading(false);
+    }
+  }, [countryFilter]);
+
+  const isAdmin = useMemo(() => adminRole.includes(userRole), [userRole]);
+
+  const fetchMapData = useCallback((country, commodity, driver, source) => {
+    setLoading(true);
+    let url = "reference_data/count_by_country";
+    const params = [];
+
+    if (country?.length) {
+      country.forEach((cid) => params.push(`country=${cid}`));
+    }
+    if (commodity?.length) {
+      commodity.forEach((comid) => params.push(`commodity=${comid}`));
+    }
+    if (driver?.length) {
+      driver.forEach((drv) => params.push(`driver=${drv}`));
+    }
+    if (source?.length) {
+      source.forEach((src) => params.push(`source=${src}`));
+    }
+
+    if (params.length > 0) {
+      url += "?" + params.join("&");
+    }
+
+    api
+      .get(url)
+      .then((res) => {
+        const data = res?.data?.map((d) => ({
+          ...d,
+          name: d.COUNTRY,
+          value: d.count,
+        }));
+        setMapData(data);
+      })
+      .catch((e) => {
+        console.error(e.response);
+      })
+      .finally(() => {
+        setMapLoading(false);
+      });
+  }, []);
 
   const filteredCountryOptions = useMemo(() => {
     const mapCountryIds = mapData.map((d) => d.country_id);
@@ -194,17 +229,23 @@ const ExploreStudiesPage = () => {
     (country, commodity, driver, source) => {
       setLoading(true);
       let url = `reference_data?page=${currentPage}&limit=${perPage}`;
-      if (country || countryId) {
-        url = `${url}&country=${country ? country : countryId}`;
+      const params = [];
+
+      if (country?.length) {
+        country.forEach((cid) => params.push(`country=${cid}`));
       }
-      if (commodity || commodityId) {
-        url = `${url}&commodity=${commodity ? commodity : commodityId}`;
+      if (commodity?.length) {
+        commodity.forEach((comid) => params.push(`commodity=${comid}`));
       }
-      if (driver || driverId) {
-        url = `${url}&driver=${driver ? driver : driverId}`;
+      if (driver?.length) {
+        driver.forEach((drv) => params.push(`driver=${drv}`));
       }
-      if (source) {
-        url = `${url}&source=${source}`;
+      if (source?.length) {
+        source.forEach((src) => params.push(`source=${src}`));
+      }
+
+      if (params.length > 0) {
+        url += "&" + params.join("&");
       }
       api
         .get(url)
@@ -222,26 +263,26 @@ const ExploreStudiesPage = () => {
           setLoading(false);
         });
     },
-    [currentPage, countryId, commodityId, driverId]
+    [currentPage]
   );
 
   useMemo(() => {
     if (countryId) {
       setFilterInitialValues((prev) => ({
         ...prev,
-        country: parseInt(countryId),
+        country: countryId === "null" ? null : parseInt(countryId),
       }));
     }
     if (commodityId) {
       setFilterInitialValues((prev) => ({
         ...prev,
-        commodity: parseInt(commodityId),
+        commodity: commodityId === "null" ? null : parseInt(commodityId),
       }));
     }
     if (driverId) {
       setFilterInitialValues((prev) => ({
         ...prev,
-        driver: driverId,
+        driver: driverId === "null" ? null : driverId,
       }));
     }
   }, [countryId, commodityId, driverId]);
@@ -383,9 +424,10 @@ const ExploreStudiesPage = () => {
     if (!isEmpty(location?.state)) {
       const { country, commodity, driver, source } = location.state;
       setFilterInitialValues({
-        country: parseInt(country),
-        commodity: parseInt(commodity),
-        driver: driver,
+        country: !country || country === "null" ? null : parseInt(country),
+        commodity:
+          !commodity || commodity === "null" ? null : parseInt(commodity),
+        driver: !driver || driver === "null" ? null : driver,
         source: source,
       });
       fetchReferenceData(country, commodity, driver, source);
@@ -497,24 +539,14 @@ const ExploreStudiesPage = () => {
     }
     // EOL track event: most searched on Explore Studies
 
+    setFilterInitialValues({
+      country: country,
+      commodity: commodity,
+      driver: driver,
+      source: source,
+    });
     if (countryId && commodityId && driverId) {
-      setFilterInitialValues({});
-      navigate("/explore-studies", {
-        state: {
-          country,
-          commodity,
-          driver,
-          source,
-        },
-      });
-    } else {
-      setFilterInitialValues({
-        country: country,
-        commodity: commodity,
-        driver: driver,
-        source: source,
-      });
-      fetchReferenceData(country, commodity, driver, source);
+      navigate("/explore-studies", { replace: true });
     }
   };
 
@@ -523,7 +555,7 @@ const ExploreStudiesPage = () => {
     form.setFieldsValue({});
     setFilterInitialValues({});
     if (countryId && commodityId && driverId) {
-      navigate("/explore-studies");
+      navigate("/explore-studies", { replace: true });
     } else {
       fetchReferenceData();
       fetchMapData();
@@ -578,6 +610,19 @@ const ExploreStudiesPage = () => {
         ...prev,
         country: countryId,
       }));
+    }
+  };
+
+  const handleSelectOnClear = ({ name }) => {
+    // handle onClear by clear button on Select dropdown form field
+    setCurrentPage(1);
+    setFilterInitialValues((prev) => ({
+      ...prev,
+      [name]: null,
+    }));
+    if (countryId && commodityId && driverId) {
+      navigate("/explore-studies", { replace: true });
+      return;
     }
   };
 
@@ -675,6 +720,9 @@ const ExploreStudiesPage = () => {
                               options={filteredCountryOptions}
                               placeholder="Select Country"
                               loading={mapLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "country" })
+                              }
                             />
                           </Form.Item>
                         </Col>
@@ -683,9 +731,19 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="source" noStyle>
                             <Select
                               {...selectProps}
-                              options={sourceOptions}
+                              options={sourceOptions.filter((cm) => {
+                                if (reduceFilterDropdown?.source?.length) {
+                                  return reduceFilterDropdown.source.includes(
+                                    cm.value
+                                  );
+                                }
+                                return cm;
+                              })}
                               placeholder="Select Source"
-                              loading={mapLoading}
+                              loading={mapLoading || filterLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "source" })
+                              }
                             />
                           </Form.Item>
                         </Col>
@@ -694,9 +752,19 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="commodity" noStyle>
                             <Select
                               {...selectProps}
-                              options={commodityOptions}
+                              options={commodityOptions.filter((cm) => {
+                                if (reduceFilterDropdown?.commodity?.length) {
+                                  return reduceFilterDropdown.commodity.includes(
+                                    cm.value
+                                  );
+                                }
+                                return cm;
+                              })}
                               placeholder="Select Commodity"
-                              loading={mapLoading}
+                              loading={mapLoading || filterLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "commodity" })
+                              }
                             />
                           </Form.Item>
                         </Col>
@@ -705,9 +773,19 @@ const ExploreStudiesPage = () => {
                           <Form.Item name="driver" noStyle>
                             <Select
                               {...selectProps}
-                              options={driverOptions}
+                              options={driverOptions.filter((cm) => {
+                                if (reduceFilterDropdown?.driver?.length) {
+                                  return reduceFilterDropdown.driver.includes(
+                                    cm.value
+                                  );
+                                }
+                                return cm;
+                              })}
                               placeholder="Select Driver"
-                              loading={mapLoading}
+                              loading={mapLoading || filterLoading}
+                              onClear={() =>
+                                handleSelectOnClear({ name: "driver" })
+                              }
                             />
                           </Form.Item>
                         </Col>

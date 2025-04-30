@@ -5,8 +5,11 @@ import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { orderBy } from "lodash";
 import Chart from "../../../components/chart";
+import { getColumnStackBarOptions } from "../../../components/chart/lib";
 
-const MAX_SCENARIO_SEGMENT = 6;
+// Change to STACK_BAR or GROUP_STACK_BAR to change chart type
+const CHART_TYPE = "GROUP_STACK_BAR";
+const MAX_SCENARIO_SEGMENT = 5;
 
 const generateTargetChartData = (data) => {
   const target = [
@@ -51,7 +54,7 @@ const generateChartData = (data, current = false) => {
 
     return [
       {
-        name: current ? d.name : `Current ${d.name}`,
+        name: current ? d.segmentName : `Current ${d.segmentName}`,
         target: Math.round(incomeTarget),
         stack: [
           {
@@ -73,7 +76,9 @@ const generateChartData = (data, current = false) => {
         ],
       },
       {
-        name: current ? d.name : `New ${d.scenarioName}-${d.name}`,
+        name: current
+          ? d.segmentName
+          : `New ${d.scenarioName}-${d.segmentName}`,
         target: Math.round(incomeTarget),
         stack: [
           {
@@ -97,6 +102,45 @@ const generateChartData = (data, current = false) => {
     ];
   });
 };
+
+const seriesTmp = [
+  {
+    key: "total_current_income",
+    name: "Current Household Income",
+    type: "bar",
+    stack: "current",
+    color: "#9cc2c1",
+  },
+  {
+    key: "scenario_total_income",
+    name: "Household Income in new Scenario",
+    type: "bar",
+    stack: "feasible",
+    color: "#1b726f",
+  },
+  {
+    key: "current_income_gap",
+    name: "Current Income Gap",
+    type: "bar",
+    stack: "current",
+    color: "#ffeeb8",
+  },
+  {
+    key: "scenario_income_gap",
+    name: "Income Gap in new Scenario",
+    type: "bar",
+    stack: "feasible",
+    color: "#fecb21",
+  },
+  {
+    key: "target",
+    name: "Income Target",
+    type: "line",
+    symbol: "diamond",
+    symbolSize: 15,
+    color: "#000",
+  },
+];
 
 const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -129,15 +173,22 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
     return res;
   }, [scenarioData, currentCase.segments]);
 
-  const chartData = useMemo(() => {
-    const scenarioValues = scenarioData
+  const scenarioValues = useMemo(() => {
+    return scenarioData
       .flatMap((sd) => {
-        return sd.scenarioValues.map((sv) => ({
-          scenarioKey: sd.key,
-          scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
-          scenarioName: sd.name,
-          ...sv,
-        }));
+        return sd.scenarioValues.map((sv) => {
+          const findSegment = currentCase?.segments?.find(
+            (s) => s.id === sv.segmentId
+          );
+          return {
+            scenarioKey: sd.key,
+            scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
+            scenarioName: sd.name,
+            segmentName: findSegment?.name || sv.name,
+            ...sv,
+            name: `${findSegment?.name || sv.name} - ${sd.name}`,
+          };
+        });
       })
       .filter((sv) => {
         if (selectedScenarioSegmentChart.length) {
@@ -145,13 +196,108 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
         }
         return sv.scenarioKey === activeScenario;
       });
-    return generateChartData(scenarioValues);
-  }, [scenarioData, selectedScenarioSegmentChart, activeScenario]);
+  }, [
+    scenarioData,
+    selectedScenarioSegmentChart,
+    activeScenario,
+    currentCase?.segments,
+  ]);
 
-  const targetChartData = useMemo(
-    () => generateTargetChartData(chartData),
-    [chartData]
-  );
+  const chartData = useMemo(() => {
+    if (CHART_TYPE === "STACK_BAR") {
+      return generateChartData(scenarioValues);
+    }
+
+    // GROUP_STACK_BAR
+    const res = seriesTmp.map((tmp) => {
+      const data = scenarioValues.map((d) => {
+        const { currentSegmentValue, updatedSegmentScenarioValue, name } = d;
+
+        let value = 0;
+        if (tmp.key === "total_current_income") {
+          value = currentSegmentValue?.total_current_income || 0;
+        }
+        if (tmp.key === "current_income_gap") {
+          const { target, total_current_income } = currentSegmentValue;
+          const currentIncomeGap =
+            target - total_current_income < 0
+              ? 0
+              : target - total_current_income;
+          value = currentIncomeGap;
+        }
+        if (tmp.key === "scenario_total_income") {
+          value = updatedSegmentScenarioValue?.total_current_income || 0;
+        }
+        if (tmp.key === "scenario_income_gap") {
+          const { target, total_current_income } = updatedSegmentScenarioValue;
+          const scenarioIncomeGap =
+            target - total_current_income < 0
+              ? 0
+              : target - total_current_income;
+          value = scenarioIncomeGap;
+        }
+
+        return {
+          name: name,
+          value: Math.round(value),
+        };
+      });
+      return {
+        ...tmp,
+        data: data,
+      };
+    });
+    return res;
+  }, [scenarioValues]);
+
+  const targetChartData = useMemo(() => {
+    if (CHART_TYPE === "STACK_BAR") {
+      return generateTargetChartData(chartData);
+    }
+    return [];
+  }, [chartData]);
+
+  const chartParams = useMemo(() => {
+    if (CHART_TYPE === "STACK_BAR") {
+      return {
+        type: "BARSTACK",
+        data: chartData,
+        targetData: targetChartData,
+        showLabel: showLabel,
+        grid: { top: 60, right: 5, left: 35, bottom: 10 },
+        extra: {
+          axisTitle: { y: `Income ${currentCase?.currency || ""}` },
+          legend: {
+            top: 0,
+            left: "top",
+            orient: "horizontal",
+          },
+        },
+      };
+    }
+    // GROUP_STACK_BAR
+    return {
+      type: "BAR",
+      override: getColumnStackBarOptions({
+        series: chartData,
+        origin: scenarioValues,
+        yAxis: { name: `Income (${currentCase.currency})` },
+        showLabel: showLabel,
+        grid: { top: 65, right: 5, left: 30, bottom: 10 },
+        legend: {
+          orient: "horizontal",
+          left: "top",
+          top: 0,
+        },
+      }),
+    };
+  }, [
+    chartData,
+    currentCase?.currency,
+    scenarioValues,
+    showLabel,
+    targetChartData,
+  ]);
 
   return (
     <Card className="card-visual-wrapper">
@@ -167,21 +313,9 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
           >
             <Chart
               wrapper={false}
-              type="BARSTACK"
-              data={chartData}
-              targetData={targetChartData}
               loading={!chartData.length}
-              extra={{
-                axisTitle: { y: `Income ${currentCase?.currency || ""}` },
-                legend: {
-                  top: 0,
-                  left: "top",
-                  orient: "horizontal",
-                },
-              }}
-              grid={{ top: 60, right: 5, left: 35, bottom: 10 }}
-              showLabel={showLabel}
-              height={385}
+              height={400}
+              {...chartParams}
             />
           </VisualCardWrapper>
         </Col>

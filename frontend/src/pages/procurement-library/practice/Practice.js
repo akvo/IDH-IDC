@@ -24,7 +24,7 @@ const Practice = () => {
 
   const [primaryDesc, secondaryDesc] =
     practice?.intervention_definition?.split(
-      /<h3>(?:Additional Details:|Process:|Details of the process:|Additional details:|Additional Detail:)<\/h3>/
+      /<h3>(?:Additional Details:|Process:|Details of the process:|Additional details:|Additional Detail:|Additional Information:)<\/h3>/
     ) || [];
   const isEnv =
     practice?.scores?.find(

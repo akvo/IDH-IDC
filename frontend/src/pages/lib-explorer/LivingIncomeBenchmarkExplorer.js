@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from "antd";
 import Chart from "../../components/chart";
-import { min, max, isEmpty } from "lodash";
+import { min, max, isEmpty, orderBy } from "lodash";
 import { api, roundToDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { NewCpiForm } from "../../components/utils";
@@ -248,7 +248,8 @@ const LivingIncomeBenchmarkExplorer = () => {
 
           // let LITarget = 0; TODO:: Delete
           let LITarget = targetValue;
-          if (data?.cpi_factor || data?.cpi_factor === 0) {
+          const isCPIAvailable = data?.cpi_factor || data?.cpi_factor === 0;
+          if (isCPIAvailable) {
             libForm.setFieldValue("inflation_rate", data.cpi_factor.toFixed(2));
             LITarget = targetValue * (1 + data.cpi_factor);
             // const caseYearLIB = targetValue * (1 + data.cpi_factor); TODO:: Delete
@@ -259,7 +260,7 @@ const LivingIncomeBenchmarkExplorer = () => {
             // LITarget = (defHHSize / targetHH) * targetValue; TODO:: Delete
             setShowCustomCPIField(selectedYear > data.year ? true : false);
           }
-          if (selectedYear <= data.year) {
+          if (selectedYear <= data.year || isCPIAvailable) {
             libForm.setFieldValue(
               "adjusted_benchmark_value",
               `${thousandFormatter(LITarget, 2)} ${currencyUnit}`
@@ -473,7 +474,7 @@ const LivingIncomeBenchmarkExplorer = () => {
                           <Form.Item name="region" noStyle>
                             <Select
                               {...selectProps}
-                              options={regionOptions}
+                              options={orderBy(regionOptions, ["value"])}
                               placeholder={regionState.placeholder}
                               loading={regionState.loading}
                               style={{ width: "100%" }}

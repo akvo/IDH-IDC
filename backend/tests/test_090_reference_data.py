@@ -187,6 +187,21 @@ class TestReferenceRoute:
             "total_page": 1,
         }
 
+        # Filter test
+        res = await client.get(
+            app.url_path_for("reference_data:get_all")
+            + "?country=1&source=Simple Source",
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code in [200, 404]
+
+        # Pagination test
+        res = await client.get(
+            app.url_path_for("reference_data:get_all") + "?page=2&limit=1",
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code in [200, 404]
+
     @pytest.mark.asyncio
     async def test_get_reference_data_count_by_country(
         self, app: FastAPI, session: Session, client: AsyncClient
@@ -205,6 +220,46 @@ class TestReferenceRoute:
         assert res.status_code == 200
         res = res.json()
         assert res == [{"COUNTRY": "Indonesia", "count": 2, "country_id": 1}]
+
+        # Filter test
+        res = await client.get(
+            app.url_path_for("reference_data:get_all")
+            + "?country=1&source=Simple Source",
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code in [200, 404]
+
+    @pytest.mark.asyncio
+    async def test_get_reference_data_reduce_filter_dropdown(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        res = await client.get(
+            app.url_path_for("reference_data:reduce_filter_dropdown")
+            + "?country=100",
+            headers={"Authorization": f"Bearer {non_admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "country": [],
+            "commodity": [],
+            "source": [],
+            "driver": [],
+        }
+
+        res = await client.get(
+            app.url_path_for("reference_data:reduce_filter_dropdown")
+            + "?country=1",
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == {
+            "country": [1],
+            "commodity": [1],
+            "source": res['source'],
+            "driver": res["driver"],
+        }
 
     @pytest.mark.asyncio
     async def test_get_reference_data_by_id(
