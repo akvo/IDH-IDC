@@ -176,14 +176,19 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   const scenarioValues = useMemo(() => {
     return scenarioData
       .flatMap((sd) => {
-        return sd.scenarioValues.map((sv) => ({
-          scenarioKey: sd.key,
-          scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
-          scenarioName: sd.name,
-          segmentName: sv.name,
-          ...sv,
-          name: `${sv.name} - ${sd.name}`,
-        }));
+        return sd.scenarioValues.map((sv) => {
+          const findSegment = currentCase?.segments?.find(
+            (s) => s.id === sv.segmentId
+          );
+          return {
+            scenarioKey: sd.key,
+            scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
+            scenarioName: sd.name,
+            segmentName: findSegment?.name || "",
+            ...sv,
+            name: `${findSegment?.name || ""} - ${sd.name}`,
+          };
+        });
       })
       .filter((sv) => {
         if (selectedScenarioSegmentChart.length) {
@@ -191,7 +196,12 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
         }
         return sv.scenarioKey === activeScenario;
       });
-  }, [scenarioData, selectedScenarioSegmentChart, activeScenario]);
+  }, [
+    scenarioData,
+    selectedScenarioSegmentChart,
+    activeScenario,
+    currentCase?.segments,
+  ]);
 
   const chartData = useMemo(() => {
     if (CHART_TYPE === "STACK_BAR") {
