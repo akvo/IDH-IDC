@@ -1000,8 +1000,8 @@ const OptimizeIncomeTarget = () => {
         <>
           <p>
             This analysis compares current and optimised values of key income
-            drivers using an optimization model. The model applies a
-            mathematical approach to maximize income by adjusting selected
+            drivers using an optimisation model. The model applies a
+            mathematical approach to maximise income by adjusting selected
             driver values while ensuring changes stay within feasible ranges.
           </p>
           <p>
@@ -1016,7 +1016,7 @@ const OptimizeIncomeTarget = () => {
             </li>
             <li>
               Editable Drivers: Only selected income drivers are changed during
-              optimization. The remaining income drivers remain at their current
+              optimisation. The remaining income drivers remain at their current
               levels.
             </li>
             <li>
@@ -1026,8 +1026,8 @@ const OptimizeIncomeTarget = () => {
             </li>
           </ul>
           <p>
-            Please note that optimization is a guide, not a certainty: This
-            optimization serves as a tool to explore income improvement
+            Please note that optimisation is a guide, not a certainty: This
+            optimisation serves as a tool to explore income improvement
             strategies, but it does not provide a definitive solution. When
             making decisions, consider external factors and external influences
             that the model cannot capture.
