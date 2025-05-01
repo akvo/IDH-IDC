@@ -95,15 +95,15 @@ const dataSecurityProvisionText = [
           continually and to solve reported technical improvements needed.
         </p>
         <p>
-          <i>Anonymized and aggregated data: usage and sharing </i>
+          <i>Anonymised and aggregated data: usage and sharing </i>
           <br />
-          In addition to the above, IDH may utilize aggregated and anonymized
+          In addition to the above, IDH may utilize aggregated and anonymised
           (stripped of any personally identifiable information) data collected
           through the [IDC] to further its (potential commercial) endeavours and
           services aimed towards addressing its goals on improving incomes for
           small holder farmers [e.g. living income gaps]. In particular, IDH may
           sell, publish, and/or share with its clients, informative reports and
-          analyses based on aggregated and anonymized data in an effort to
+          analyses based on aggregated and anonymised data in an effort to
           inform the public, to raise awareness about living income and related
           socio-economic issues and to provide valuable insights into living
           income trends and patterns. By sharing such insights, IDH aims to

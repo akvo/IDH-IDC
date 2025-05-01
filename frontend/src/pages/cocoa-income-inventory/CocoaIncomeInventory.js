@@ -68,7 +68,7 @@ const CocoaIncomeInventory = () => {
             <p>
               The Cocoa Income Inventory (CII) provides publicly accessible,
               validated data on cocoa farming household incomes in an aggregated
-              and anonymized format. This comprehensive and harmonized dataset
+              and anonymised format. This comprehensive and harmonized dataset
               offers valuable insights into the impact of interventions,
               supporting informed decision-making and fostering learning across
               the cocoa sector.
