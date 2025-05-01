@@ -565,11 +565,20 @@ const OptimizeIncomeTarget = () => {
         if (key === "total_income") {
           optimizedValues.forEach((val) => {
             const achievedIncome = val?.value?.achieved_income || 0; // optimization income result
-            data["current"] = thousandFormatter(
-              currentDashboardData?.total_current_income || 0,
+            const currentIncome =
+              currentDashboardData?.total_current_income || 0;
+            data["current"] = thousandFormatter(currentIncome, 2);
+
+            // calculate total income increase
+            const achievedIncomeIncrease = currentIncome
+              ? ((achievedIncome - currentIncome) / currentIncome) * 100
+              : 0;
+            let totalIncreaseValue = thousandFormatter(achievedIncome, 2);
+            totalIncreaseValue = `${totalIncreaseValue} (${thousandFormatter(
+              achievedIncomeIncrease,
               2
-            );
-            data[`increase_${val.key}`] = thousandFormatter(achievedIncome, 2);
+            )}%)`;
+            data[`increase_${val.key}`] = totalIncreaseValue;
           });
         } else {
           optimizedValues.forEach((val) => {
