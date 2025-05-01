@@ -82,7 +82,7 @@ const faqContents = [
     label:
       "What kind of analysis does the IDC provide on Farmer household income?",
     children:
-      "The IDC tool enables companies to make data-driven strategic decisions to close the (living) income gap for farmer households in their supply chain. It provides a structured approach by first measuring the living income gap for each farmer segment based on current household income data. It then identifies the most influential income drivers and value ranges that can help bridge the gap using sensitivity analysis. The tool also analyzes the impact of diversified income sources on household income and allows users to model different intervention scenarios to assess their effectiveness in closing the income gap.",
+      "The IDC tool enables companies to make data-driven strategic decisions to close the (living) income gap for farmer households in their supply chain. It provides a structured approach by first measuring the living income gap for each farmer segment based on current household income data. It then identifies the most influential income drivers and value ranges that can help bridge the gap using sensitivity analysis. The tool also analyse the impact of diversified income sources on household income and allows users to model different intervention scenarios to assess their effectiveness in closing the income gap.",
   },
   {
     label: "What kind of input data is needed to use the IDC tool? ",

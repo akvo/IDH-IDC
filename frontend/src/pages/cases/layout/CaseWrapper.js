@@ -77,7 +77,7 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
       {
         title: "Assess impact of mitigation strategies",
         description:
-          "Analyze which drivers impact income increase the most, and how to close the gap.",
+          "Analyse which drivers impact income increase the most, and how to close the gap.",
       },
       {
         title: "Closing the gap",
