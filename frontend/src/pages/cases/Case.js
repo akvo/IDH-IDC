@@ -175,7 +175,7 @@ const Case = () => {
             ...s,
             general: {
               ...s.general,
-              activeSegmentId: data.segments?.[0]?.id || null,
+              activeSegmentId: orderBy(data.segments, ["id"])?.[0]?.id || null,
             },
           }));
         })

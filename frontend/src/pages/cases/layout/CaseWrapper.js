@@ -152,6 +152,10 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  const showCaseSettings = [stepPath.step1.label, stepPath.step2.label].some(
+    (path) => window.location.pathname.includes(path)
+  );
+
   const layoutSize = useMemo(() => {
     if (!siderCollapsed) {
       return { left: 4, right: 20 };
@@ -335,13 +339,17 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                         : ""}
                     </div>
                     <Space>
-                      <Button
-                        className="button-green-transparent"
-                        icon={<SettingOutlined />}
-                        onClick={() => setCaseSettingModalVisible(true)}
-                      >
-                        Case settings
-                      </Button>
+                      {showCaseSettings ? (
+                        <Button
+                          className="button-green-transparent"
+                          icon={<SettingOutlined />}
+                          onClick={() => setCaseSettingModalVisible(true)}
+                        >
+                          Case settings
+                        </Button>
+                      ) : (
+                        ""
+                      )}
                       {isCaseOwner || isAdmin ? (
                         <Button
                           className="button-green-transparent"

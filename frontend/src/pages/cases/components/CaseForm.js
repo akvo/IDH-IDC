@@ -159,7 +159,11 @@ const SecondaryForm = ({
   );
 };
 
-const CaseForm = ({ updateCurrentCase = () => {} }) => {
+const CaseForm = ({
+  deletedSegmentIds = [],
+  updateCurrentCase = () => {},
+  setDeletedSegmentIds = () => {},
+}) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
@@ -448,7 +452,10 @@ const CaseForm = ({ updateCurrentCase = () => {} }) => {
           className="case-setting-child-card-wrapper"
           size="small"
         >
-          <SegmentForm />
+          <SegmentForm
+            deletedSegmentIds={deletedSegmentIds}
+            setDeletedSegmentIds={setDeletedSegmentIds}
+          />
         </Card>
       </Col>
     </Row>

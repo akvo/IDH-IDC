@@ -14,7 +14,7 @@ import {
   PrevCaseState,
   stepPath,
 } from "../store";
-import { isEqual, isEmpty } from "lodash";
+import { isEqual, isEmpty, orderBy } from "lodash";
 import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
@@ -34,6 +34,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const { internal_user: userInternal } = UserState.useState((s) => s);
+
+  const [deletedSegmentIds, setDeletedSegmentIds] = useState([]);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
@@ -107,11 +109,14 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         reporting_period: currentCase.reporting_period,
         company: currentCase.company,
         segments: currentCase?.segments?.length
-          ? currentCase.segments.map((s) => ({
-              id: s.id,
-              name: s.name,
-              number_of_farmers: s.number_of_farmers,
-            }))
+          ? orderBy(
+              currentCase.segments.map((s) => ({
+                id: s.id,
+                name: s.name,
+                number_of_farmers: s.number_of_farmers,
+              })),
+              ["id"]
+            )
           : [""],
       };
       // secondary
@@ -197,10 +202,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     }
   };
 
-  const onFinish = (values) => {
-    setIsSaving(true);
-    setFormData(values);
-
+  const saveCaseSettings = (values, deleteSegment = false) => {
     const other_commodities = [];
 
     if (secondary.enable) {
@@ -305,8 +307,12 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         setPrevCaseSettingValue(filteredCurrentValue);
         const { data } = res;
 
-        const newActiveSegmentId =
-          activeSegmentId || data?.segments?.[0]?.id || null;
+        const lowestSegmentId = orderBy(data?.segments, ["id"])?.[0]?.id;
+        const newActiveSegmentId = deleteSegment
+          ? lowestSegmentId
+          : activeSegmentId
+          ? activeSegmentId
+          : lowestSegmentId;
 
         const activeSegment = data?.segments?.find(
           (s) => s.id === newActiveSegmentId
@@ -329,7 +335,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
                 child: findCurrentSegment?.child || null,
                 adult: findCurrentSegment?.adult || null,
                 region: findCurrentSegment?.region || null,
-                target: 0,
+                target: findCurrentSegment?.target || 0,
               };
             }
             return segment;
@@ -430,9 +436,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         setTimeout(() => {
           form.resetFields();
           handleCancel();
-          if (window.location.pathname === "/cases") {
-            navigate(`/case/${data.id}/${stepPath.step1.label}`);
-          }
+          // always navigate to step 1 after save
+          navigate(`/case/${data.id}/${stepPath.step1.label}`);
         }, 100);
       })
       .catch((e) => {
@@ -452,6 +457,31 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       });
   };
 
+  const onFinish = (values) => {
+    setIsSaving(true);
+    setFormData(values);
+
+    // handle if any segments deleted
+    if (deletedSegmentIds?.length) {
+      Promise.all(deletedSegmentIds.map((sId) => api.delete(`segment/${sId}`)))
+        .then(() => {
+          setDeletedSegmentIds([]);
+          setTimeout(() => {
+            saveCaseSettings(values, true);
+          }, 100);
+        })
+        .catch((e) => {
+          console.error(e);
+          messageApi.open({
+            type: "error",
+            content: "Failed to delete segments.",
+          });
+        });
+    } else {
+      saveCaseSettings(values);
+    }
+  };
+
   return (
     <Modal
       title="Create new case"
@@ -462,7 +492,13 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         disabled: !enableEditCase,
       }}
       okText="Save case"
-      onCancel={handleCancel}
+      onCancel={() => {
+        // reset deleted segment on cancel
+        if (deletedSegmentIds?.length) {
+          form.setFieldValue("segments", formData.segments);
+        }
+        handleCancel();
+      }}
       width="65%"
       className="case-settings-modal-container"
       maskClosable={false}
@@ -481,6 +517,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           form={form}
           enableEditCase={enableEditCase}
           updateCurrentCase={updateCurrentCase}
+          deletedSegmentIds={deletedSegmentIds}
+          setDeletedSegmentIds={setDeletedSegmentIds}
         />
       </Form>
     </Modal>

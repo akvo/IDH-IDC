@@ -1,12 +1,39 @@
 import React from "react";
-import { Form, Card, Button, Row, Col, Input, InputNumber } from "antd";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import { CaseUIState } from "../store";
+import {
+  Form,
+  Card,
+  Button,
+  Row,
+  Col,
+  Input,
+  InputNumber,
+  Popconfirm,
+} from "antd";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { CaseUIState, CurrentCaseState } from "../store";
 
 const MAX_SEGMENT = 5;
 
-const SegmentForm = () => {
+const SegmentForm = ({
+  deletedSegmentIds = [],
+  setDeletedSegmentIds = () => {},
+}) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const currentCase = CurrentCaseState.useState((s) => s);
+
+  const onDelete = ({ field = {}, remove = () => {} }) => {
+    // add delete segment into deletedSegmentIds state
+    const deletedIdsLength = deletedSegmentIds.length;
+    const segmentIndex = field.name;
+    const findCurrentSegment =
+      currentCase?.segments?.[segmentIndex + deletedIdsLength]; // adding length of deleted ids to get the correct segments
+    if (findCurrentSegment?.id) {
+      setDeletedSegmentIds((prev) => [
+        ...new Set([...prev, findCurrentSegment.id]),
+      ]);
+    }
+    remove(segmentIndex);
+  };
 
   return (
     <Form.List name="segments">
@@ -19,12 +46,31 @@ const SegmentForm = () => {
               title={`Segment ${index + 1}`}
               extra={
                 fields.length > 1 ? (
-                  <Button
-                    type="icon"
-                    icon={<CloseOutlined />}
-                    onClick={() => remove(name)}
-                    disabled={!enableEditCase}
-                  />
+                  <Popconfirm
+                    title="Delete Segment"
+                    description={
+                      <div style={{ width: 350 }}>
+                        Are you sure you want to delete this segment?
+                        <br />
+                        This will permanently remove the selected segment and
+                        all its contents. <br />
+                        This action <b>can&apos;t be undone</b>.
+                      </div>
+                    }
+                    onConfirm={() =>
+                      onDelete({ field: { key, name, ...restField }, remove })
+                    }
+                    okText="Delete"
+                    cancelText="Cancel"
+                    placement="leftBottom"
+                  >
+                    <Button
+                      type="icon"
+                      icon={<DeleteOutlined style={{ color: "red" }} />}
+                      // onClick={() => remove(name)}
+                      disabled={!enableEditCase}
+                    />
+                  </Popconfirm>
                 ) : null
               }
               className="segment-card-container"
