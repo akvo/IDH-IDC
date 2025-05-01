@@ -214,6 +214,10 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
         const { currentSegmentValue, updatedSegmentScenarioValue, name } = d;
 
         let value = 0;
+        if (tmp.key === "target") {
+          value = currentSegmentValue?.target || 0;
+        }
+
         if (tmp.key === "total_current_income") {
           value = currentSegmentValue?.total_current_income || 0;
         }
