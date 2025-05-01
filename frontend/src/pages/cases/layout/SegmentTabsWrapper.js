@@ -60,7 +60,9 @@ const SegmentTabsWrapper = ({
           type="card"
           items={segmentTabItems}
           tabBarGutter={5}
-          activeKey={activeSegmentId || currentCase?.segments?.[0]?.id || null}
+          activeKey={
+            activeSegmentId ? activeSegmentId : currentCase?.segments?.[0]?.id
+          }
           onChange={(val) => {
             CaseUIState.update((s) => ({
               ...s,

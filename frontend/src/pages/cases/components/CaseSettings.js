@@ -202,7 +202,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     }
   };
 
-  const saveCaseSettings = (values) => {
+  const saveCaseSettings = (values, deleteSegment = false) => {
     const other_commodities = [];
 
     if (secondary.enable) {
@@ -307,8 +307,12 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         setPrevCaseSettingValue(filteredCurrentValue);
         const { data } = res;
 
-        const newActiveSegmentId =
-          activeSegmentId || orderBy(data?.segments, ["id"])?.[0]?.id || null;
+        const lowestSegmentId = orderBy(data?.segments, ["id"])?.[0]?.id;
+        const newActiveSegmentId = deleteSegment
+          ? lowestSegmentId
+          : activeSegmentId
+          ? activeSegmentId
+          : lowestSegmentId;
 
         const activeSegment = data?.segments?.find(
           (s) => s.id === newActiveSegmentId
@@ -457,22 +461,13 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     setIsSaving(true);
     setFormData(values);
 
-    // TODO ::  check after delete success and save segment, the segment tabs become empty
     // handle if any segments deleted
     if (deletedSegmentIds?.length) {
       Promise.all(deletedSegmentIds.map((sId) => api.delete(`segment/${sId}`)))
         .then(() => {
-          CaseUIState.update((s) => ({
-            ...s,
-            general: {
-              ...s.general,
-              activeSegmentId:
-                orderBy(values.segments, ["id"])?.[0]?.id || null,
-            },
-          }));
           setDeletedSegmentIds([]);
           setTimeout(() => {
-            saveCaseSettings(values);
+            saveCaseSettings(values, true);
           }, 100);
         })
         .catch((e) => {
