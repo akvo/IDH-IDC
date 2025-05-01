@@ -68,7 +68,7 @@ const CocoaIncomeInventory = () => {
             <p>
               The Cocoa Income Inventory (CII) provides publicly accessible,
               validated data on cocoa farming household incomes in an aggregated
-              and anonymised format. This comprehensive and harmonized dataset
+              and anonymised format. This comprehensive and harmonised dataset
               offers valuable insights into the impact of interventions,
               supporting informed decision-making and fostering learning across
               the cocoa sector.
@@ -91,7 +91,7 @@ const CocoaIncomeInventory = () => {
       </Col>
       {/* EOL Indicators section */}
 
-      {/* Public, consequences, harmonized, section */}
+      {/* Public, consequences, harmonised, section */}
       <Col span={24} className="pch-wrapper">
         {CIIContent.pchContent.map((item, i) => (
           <div key={`pch-item-${i}`} className="pch-item">
@@ -101,7 +101,7 @@ const CocoaIncomeInventory = () => {
           </div>
         ))}
       </Col>
-      {/* EOL Public, consequences, harmonized section */}
+      {/* EOL Public, consequences, harmonised section */}
 
       {/* Contributing to a new sector section */}
       <Col span={24} className="contributing-wrapper">
