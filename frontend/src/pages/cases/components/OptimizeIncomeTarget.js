@@ -641,6 +641,16 @@ const OptimizeIncomeTarget = () => {
     setRefreshChart(true);
   };
 
+  const disableAdjusmentField = useMemo(() => {
+    return (
+      currentDashboardData?.total_feasible_income <
+      currentDashboardData?.total_current_income
+    );
+  }, [
+    currentDashboardData?.total_current_income,
+    currentDashboardData?.total_feasible_income,
+  ]);
+
   return (
     <Row gutter={[24, 24]}>
       <Col span={24}>
@@ -737,6 +747,7 @@ const OptimizeIncomeTarget = () => {
                   <label>Adjustment 1 (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
+                    disabled={disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 1,
@@ -761,6 +772,7 @@ const OptimizeIncomeTarget = () => {
                   <label>Adjustment 2 (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
+                    disabled={disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 2,
@@ -785,6 +797,7 @@ const OptimizeIncomeTarget = () => {
                   <label>Adjustment 3 (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
+                    disabled={disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 3,
@@ -807,6 +820,16 @@ const OptimizeIncomeTarget = () => {
                 </div>
               </div>
             </Col>
+            {disableAdjusmentField ? (
+              <Alert
+                description="Modelling cannot proceed because the model is designed to assess how income drivers should change to increase income. It is not applicable when the feasible income is lower than the current income."
+                type="warning"
+                showIcon
+                className="disable-adjusment-warning-text"
+              />
+            ) : (
+              ""
+            )}
             <Col span={24} className="optimize-button-wrapper">
               <Button
                 className="button-clear-optimize-result"

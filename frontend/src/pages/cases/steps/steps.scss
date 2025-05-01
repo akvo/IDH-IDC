@@ -662,13 +662,26 @@
           font-size: 16px;
           font-family: "RocGrotesk";
           font-weight: bold;
-          max-width: 250px;
+          width: 225px;
         }
 
         .ant-input-number-group-addon {
           background-color: #eff2f5;
           font-weight: 500;
         }
+      }
+    }
+
+    .disable-adjusment-warning-text {
+      padding: 12px;
+      font-weight: normal;
+      font-family: "TabletGothic";
+      width: 450px;
+      margin-top: -10px;
+
+      span > svg {
+        height: 18px;
+        width: 18px;
       }
     }
 
