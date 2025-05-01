@@ -529,7 +529,7 @@ const OptimizeIncomeTarget = () => {
         );
         labels[key] = driverName;
       });
-      // add total labels
+      // add total income label and income gap label
       if (!isEmpty(labels)) {
         const totalIncomeLabel = (
           <Space align="middle">
@@ -554,6 +554,15 @@ const OptimizeIncomeTarget = () => {
           </Space>
         );
         labels["total_income"] = totalIncomeLabel;
+
+        const incomeGapLabel = (
+          <Space align="middle">
+            <div>
+              <b>Income gap ({currentCaseState.currency})</b>
+            </div>
+          </Space>
+        );
+        labels["income_gap"] = incomeGapLabel;
       }
 
       const dataSource = [];
@@ -579,6 +588,23 @@ const OptimizeIncomeTarget = () => {
               2
             )}%)`;
             data[`increase_${val.key}`] = totalIncreaseValue;
+          });
+        } else if (key === "income_gap") {
+          optimizedValues.forEach((val) => {
+            const target = currentDashboardData?.target || 0;
+            const achievedIncome = val?.value?.achieved_income || 0; // optimization income result
+            const currentIncome =
+              currentDashboardData?.total_current_income || 0;
+
+            const currentIncomeGap = target ? target - currentIncome : 0;
+            data["current"] = thousandFormatter(currentIncomeGap, 2);
+
+            // calculate total income increase
+            const achievedIncomeGap = target ? target - achievedIncome : 0;
+            data[`increase_${val.key}`] = thousandFormatter(
+              achievedIncomeGap,
+              2
+            );
           });
         } else {
           optimizedValues.forEach((val) => {
@@ -620,6 +646,7 @@ const OptimizeIncomeTarget = () => {
     refreshChart,
     currentCaseState,
     currentDashboardData?.total_current_income,
+    currentDashboardData?.target,
   ]);
 
   const handleClearResult = () => {
@@ -935,17 +962,20 @@ const OptimizeIncomeTarget = () => {
 
               {SHOW_OPTIMIZE_RESULT_AS === "TABLE" ? (
                 <div>
+                  {/* DRIVER VALUE */}
                   <div className="optimize-table-wrapper">
                     <Table
                       pagination={false}
                       columns={tableData.columns}
                       loading={tableData.dataSource?.length}
                       dataSource={tableData.dataSource?.filter(
-                        (d) => d.key !== "total_income"
+                        (d) =>
+                          d.key !== "total_income" && d.key !== "income_gap"
                       )} // exclude total_income from main table
                       bordered
                     />
                   </div>
+                  {/* TOTAL INCOME */}
                   <div className="total-income-table-wrapper">
                     <Table
                       pagination={false}
@@ -953,6 +983,19 @@ const OptimizeIncomeTarget = () => {
                       loading={tableData.dataSource?.length}
                       dataSource={tableData.dataSource?.filter(
                         (d) => d.key === "total_income"
+                      )} // show only total_income
+                      showHeader={false}
+                      style={{ border: "none" }}
+                    />
+                  </div>
+                  {/* INCOME GAP */}
+                  <div className="total-income-table-wrapper">
+                    <Table
+                      pagination={false}
+                      columns={tableData.columns}
+                      loading={tableData.dataSource?.length}
+                      dataSource={tableData.dataSource?.filter(
+                        (d) => d.key === "income_gap"
                       )} // show only total_income
                       showHeader={false}
                       style={{ border: "none" }}
