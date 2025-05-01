@@ -123,7 +123,7 @@ export const PROCUREMENT_KEY_FEATURES = [
     title: "Filters for Easy Browsing",
     icon: <GearIcon />,
     description:
-      "For users who prefer to explore the entire library, the filters help narrow down the options according to various criteria. This enables users to find the best practices that fit their particular situation or organizational context.",
+      "For users who prefer to explore the entire library, the filters help narrow down the options according to various criteria. This enables users to find the best practices that fit their particular situation or organisational context.",
   },
   {
     id: 4,

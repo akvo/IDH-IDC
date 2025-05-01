@@ -125,7 +125,7 @@ const CocoaIncomeInventory = () => {
 
       {/* Value for organisation sharing data section */}
       <Col span={24} className="value-org-wrapper">
-        <h2>Value for Organizations Sharing Data</h2>
+        <h2>Value for Organisations Sharing Data</h2>
         <div className="value-org-content-wrapper">
           <div className="value-org-item-wrapper">
             {CIIContent.valueOrgContent.map((item, i) => (
