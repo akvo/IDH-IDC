@@ -20,7 +20,7 @@ export const valueOrgContent = [
     icon: DiveIcon,
     title: "Dive deeper into understanding the income gap",
     description:
-      "You will be able to delve deeper into the income gap and understand what drivers you can leverage to close the income gap for different farmer segements",
+      "You will be able to delve deeper into the income gap and understand what drivers you can leverage to close the income gap for different farmer segments",
   },
   {
     icon: StreamlinedIcom,

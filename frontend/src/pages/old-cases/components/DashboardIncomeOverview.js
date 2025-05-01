@@ -371,7 +371,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               <br />
               <br />
               Insights: This graph will help you compare the net-income from the
-              different commodities you included in the different segements
+              different commodities you included in the different segments
             </p>
           </Col>
           <Col span={16} ref={elIncomeLevelPerCommodities}>
