@@ -305,9 +305,15 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         // EOL track event
 
         setPrevCaseSettingValue(filteredCurrentValue);
-        const { data } = res;
+        let data = res?.data || {};
+        data = {
+          ...data,
+          segments: data?.segments?.length
+            ? orderBy(data.segments, ["id"])
+            : [],
+        };
 
-        const lowestSegmentId = orderBy(data?.segments, ["id"])?.[0]?.id;
+        const lowestSegmentId = data?.segments?.[0]?.id;
         const newActiveSegmentId = deleteSegment
           ? lowestSegmentId
           : activeSegmentId
