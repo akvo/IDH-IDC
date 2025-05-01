@@ -41,6 +41,13 @@ const colors = [
   "#ffcea4", // pink
 ];
 
+const adjustmentInputNumberProps = {
+  controls: false,
+  addonAfter: "%",
+  min: 0,
+  max: 100,
+};
+
 const unitName = ({ currentCase, question, group }) => {
   if (!question?.unit) {
     return "";
@@ -729,8 +736,7 @@ const OptimizeIncomeTarget = () => {
                 <div>
                   <label>Adjustment 1 (%)</label>
                   <InputNumber
-                    controls={false}
-                    addonAfter="%"
+                    {...adjustmentInputNumberProps}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 1,
@@ -754,8 +760,7 @@ const OptimizeIncomeTarget = () => {
                 <div>
                   <label>Adjustment 2 (%)</label>
                   <InputNumber
-                    controls={false}
-                    addonAfter="%"
+                    {...adjustmentInputNumberProps}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 2,
@@ -779,8 +784,7 @@ const OptimizeIncomeTarget = () => {
                 <div>
                   <label>Adjustment 3 (%)</label>
                   <InputNumber
-                    controls={false}
-                    addonAfter="%"
+                    {...adjustmentInputNumberProps}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 3,
