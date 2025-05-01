@@ -283,12 +283,7 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
         origin: scenarioValues,
         yAxis: { name: `Income (${currentCase.currency})` },
         showLabel: showLabel,
-        grid: { top: 65, right: 5, left: 30, bottom: 10 },
-        legend: {
-          orient: "horizontal",
-          left: "top",
-          top: 0,
-        },
+        grid: { top: 0, right: 225, left: 25, bottom: 10 },
       }),
     };
   }, [
@@ -302,7 +297,7 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   return (
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="top">
-        <Col span={16}>
+        <Col span={18}>
           <VisualCardWrapper
             title="Income gap across scenario"
             bordered
@@ -319,7 +314,7 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
             />
           </VisualCardWrapper>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Space direction="vertical">
             <div className="section-title">
               What are the results for the different segments across scenarios?
