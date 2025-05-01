@@ -401,7 +401,7 @@ const LivingIncomeBenchmarkExplorer = () => {
           <div className="title">Living income benchmark explorer</div>
           <div className="description">
             Discover available living income benchmarks by selecting a country
-            to see which regions are covered. Customize benchmarks based on
+            to see which regions are covered. Customise benchmarks based on
             household composition or adjust for inflation as needed.
           </div>
         </Col>
