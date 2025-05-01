@@ -41,6 +41,13 @@ const colors = [
   "#ffcea4", // pink
 ];
 
+const adjustmentInputNumberProps = {
+  controls: false,
+  addonAfter: "%",
+  min: 0,
+  max: 100,
+};
+
 const unitName = ({ currentCase, question, group }) => {
   if (!question?.unit) {
     return "";
@@ -522,7 +529,7 @@ const OptimizeIncomeTarget = () => {
         );
         labels[key] = driverName;
       });
-      // add total labels
+      // add total income label and income gap label
       if (!isEmpty(labels)) {
         const totalIncomeLabel = (
           <Space align="middle">
@@ -547,6 +554,15 @@ const OptimizeIncomeTarget = () => {
           </Space>
         );
         labels["total_income"] = totalIncomeLabel;
+
+        const incomeGapLabel = (
+          <Space align="middle">
+            <div>
+              <b>Income gap ({currentCaseState.currency})</b>
+            </div>
+          </Space>
+        );
+        labels["income_gap"] = incomeGapLabel;
       }
 
       const dataSource = [];
@@ -558,11 +574,37 @@ const OptimizeIncomeTarget = () => {
         if (key === "total_income") {
           optimizedValues.forEach((val) => {
             const achievedIncome = val?.value?.achieved_income || 0; // optimization income result
-            data["current"] = thousandFormatter(
-              currentDashboardData?.total_current_income || 0,
+            const currentIncome =
+              currentDashboardData?.total_current_income || 0;
+            data["current"] = thousandFormatter(currentIncome, 2);
+
+            // calculate total income increase
+            const achievedIncomeIncrease = currentIncome
+              ? ((achievedIncome - currentIncome) / currentIncome) * 100
+              : 0;
+            let totalIncreaseValue = thousandFormatter(achievedIncome, 2);
+            totalIncreaseValue = `${totalIncreaseValue} (${thousandFormatter(
+              achievedIncomeIncrease,
+              2
+            )}%)`;
+            data[`increase_${val.key}`] = totalIncreaseValue;
+          });
+        } else if (key === "income_gap") {
+          optimizedValues.forEach((val) => {
+            const target = currentDashboardData?.target || 0;
+            const achievedIncome = val?.value?.achieved_income || 0; // optimization income result
+            const currentIncome =
+              currentDashboardData?.total_current_income || 0;
+
+            const currentIncomeGap = target ? target - currentIncome : 0;
+            data["current"] = thousandFormatter(currentIncomeGap, 2);
+
+            // calculate total income increase
+            const achievedIncomeGap = target ? target - achievedIncome : 0;
+            data[`increase_${val.key}`] = thousandFormatter(
+              achievedIncomeGap,
               2
             );
-            data[`increase_${val.key}`] = thousandFormatter(achievedIncome, 2);
           });
         } else {
           optimizedValues.forEach((val) => {
@@ -604,6 +646,7 @@ const OptimizeIncomeTarget = () => {
     refreshChart,
     currentCaseState,
     currentDashboardData?.total_current_income,
+    currentDashboardData?.target,
   ]);
 
   const handleClearResult = () => {
@@ -633,6 +676,16 @@ const OptimizeIncomeTarget = () => {
     });
     setRefreshChart(true);
   };
+
+  const disableAdjusmentField = useMemo(() => {
+    return (
+      currentDashboardData?.total_feasible_income <
+      currentDashboardData?.total_current_income
+    );
+  }, [
+    currentDashboardData?.total_current_income,
+    currentDashboardData?.total_feasible_income,
+  ]);
 
   return (
     <Row gutter={[24, 24]}>
@@ -708,33 +761,29 @@ const OptimizeIncomeTarget = () => {
               <div className="income-inputs-wrapper">
                 <div>
                   <label>Current income</label>
-                  <InputNumber
-                    controls={false}
-                    value={thousandFormatter(
+                  <div className="income-number-wrapper">
+                    {thousandFormatter(
                       currentDashboardData?.total_current_income || 0,
                       2
-                    )}
-                    addonAfter={currency}
-                    readOnly={true}
-                  />
+                    )}{" "}
+                    {currency}
+                  </div>
                 </div>
                 <div>
                   <label>Feasible income</label>
-                  <InputNumber
-                    controls={false}
-                    value={thousandFormatter(
+                  <div className="income-number-wrapper">
+                    {thousandFormatter(
                       currentDashboardData?.total_feasible_income || 0,
                       2
-                    )}
-                    addonAfter={currency}
-                    readOnly={true}
-                  />
+                    )}{" "}
+                    {currency}
+                  </div>
                 </div>
                 <div>
                   <label>Adjustment 1 (%)</label>
                   <InputNumber
-                    controls={false}
-                    addonAfter="%"
+                    {...adjustmentInputNumberProps}
+                    disabled={disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 1,
@@ -758,8 +807,8 @@ const OptimizeIncomeTarget = () => {
                 <div>
                   <label>Adjustment 2 (%)</label>
                   <InputNumber
-                    controls={false}
-                    addonAfter="%"
+                    {...adjustmentInputNumberProps}
+                    disabled={disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 2,
@@ -783,8 +832,8 @@ const OptimizeIncomeTarget = () => {
                 <div>
                   <label>Adjustment 3 (%)</label>
                   <InputNumber
-                    controls={false}
-                    addonAfter="%"
+                    {...adjustmentInputNumberProps}
+                    disabled={disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 3,
@@ -807,6 +856,16 @@ const OptimizeIncomeTarget = () => {
                 </div>
               </div>
             </Col>
+            {disableAdjusmentField ? (
+              <Alert
+                description="Modelling cannot proceed because the model is designed to assess how income drivers should change to increase income. It is not applicable when the feasible income is lower than the current income."
+                type="warning"
+                showIcon
+                className="disable-adjusment-warning-text"
+              />
+            ) : (
+              ""
+            )}
             <Col span={24} className="optimize-button-wrapper">
               <Button
                 className="button-clear-optimize-result"
@@ -903,17 +962,20 @@ const OptimizeIncomeTarget = () => {
 
               {SHOW_OPTIMIZE_RESULT_AS === "TABLE" ? (
                 <div>
+                  {/* DRIVER VALUE */}
                   <div className="optimize-table-wrapper">
                     <Table
                       pagination={false}
                       columns={tableData.columns}
                       loading={tableData.dataSource?.length}
                       dataSource={tableData.dataSource?.filter(
-                        (d) => d.key !== "total_income"
+                        (d) =>
+                          d.key !== "total_income" && d.key !== "income_gap"
                       )} // exclude total_income from main table
                       bordered
                     />
                   </div>
+                  {/* TOTAL INCOME */}
                   <div className="total-income-table-wrapper">
                     <Table
                       pagination={false}
@@ -921,6 +983,19 @@ const OptimizeIncomeTarget = () => {
                       loading={tableData.dataSource?.length}
                       dataSource={tableData.dataSource?.filter(
                         (d) => d.key === "total_income"
+                      )} // show only total_income
+                      showHeader={false}
+                      style={{ border: "none" }}
+                    />
+                  </div>
+                  {/* INCOME GAP */}
+                  <div className="total-income-table-wrapper">
+                    <Table
+                      pagination={false}
+                      columns={tableData.columns}
+                      loading={tableData.dataSource?.length}
+                      dataSource={tableData.dataSource?.filter(
+                        (d) => d.key === "income_gap"
                       )} // show only total_income
                       showHeader={false}
                       style={{ border: "none" }}
