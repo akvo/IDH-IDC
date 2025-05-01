@@ -13,7 +13,7 @@ export const otherToolsAndResourcesContent = [
     image: Image1,
     title: "Income Measurement Guidance Tool",
     description:
-      "This tool streamlines household income assessments, allowing you to measure total income while optimizing primary and secondary data use.",
+      "This tool streamlines household income assessments, allowing you to measure total income while optimising primary and secondary data use.",
     order: 1,
     button: {
       href: "https://idh-prp.files.prepr.io/1wk73l1s25z4-income-measurement-guidance-tool-img-idh.zip",

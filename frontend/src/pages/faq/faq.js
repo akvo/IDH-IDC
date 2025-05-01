@@ -6,10 +6,10 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 const faqContents = [
   {
-    label: "How can I access the Income Driver Calculator (IDC)?",
+    label: "How can I access the Income Driver Calculator?",
     children: (
       <>
-        The IDC can be accessed through{" "}
+        The Income Driver Calculator (IDC) can be accessed through the weblink:{" "}
         <a
           href="https://incomedrivercalculator.idhtrade.org/"
           target="_blank"
@@ -17,7 +17,7 @@ const faqContents = [
         >
           idc.idhtrade.org
         </a>{" "}
-        or via the Toolkit section of the{" "}
+        or from the Toolkit section of the{" "}
         <a
           href="https://www.idhsustainabletrade.com/roadmap-on-living-income/"
           target="_blank"
@@ -25,9 +25,12 @@ const faqContents = [
         >
           Roadmap on Living Income page
         </a>
-        , on the IDH website. On the landing page, click “Sign In”. If you are a
-        new user, registration is required. You can register by reaching out to
-        your IDH point of contact or by emailing the Living Income team at{" "}
+        , on the IDH website. On the landing page of the tool, click on “Sign
+        In”.
+        <br />
+        If you are a new user, you need to Register to access the tool by
+        “Reaching out to your point of Contact at IDH or by dropping an enquiry
+        to the Living Income team via email on{" "}
         <a
           href="mailto:livingincome@idhtrade.org"
           target="_blank"
@@ -35,21 +38,21 @@ const faqContents = [
         >
           livingincome@idhtrade.org
         </a>
-        . After submitting an inquiry, the team will schedule a call to
-        understand your company’s needs and provide a demo. Following the demo,
-        access to the tool will be activated, and a user manual will be shared
-        for future reference. The team remains available via email and call for
-        ongoing support.
+        The team will reach out to you to schedule a call to understand the
+        Company’s requirements and provide a demo of the tool. After the demo,
+        your access to the tool will be activated and a user manual will be
+        shared for future reference. The team will be available on email and
+        call to support with further queries.
       </>
     ),
   },
   {
-    label: "How can the IDC support your company?",
+    label: "How can IDH’s Income driver calculator (IDC) support your company?",
     children: (
       <>
-        IDH collaborates with companies to drive a positive impact on living
-        income, addressing sustainability challenges such as child labor and
-        environmental degradation. Our{" "}
+        IDH collaborates with companies to enhance their positive impact on
+        living income, which is a contributor to key sustainability challenges
+        like child labour and environmental degradation. Our{" "}
         <a
           href="https://www.idhsustainabletrade.com/roadmap-on-living-income/"
           target="_blank"
@@ -58,15 +61,13 @@ const faqContents = [
           Living Income Roadmap
         </a>{" "}
         outlines a range of steps, guiding questions and data-driven tools like
-        the IDC to support companies to take action on living income.
-        <br />
-        <br />
-        The Business Action Committee (BAC), a group of industry leaders from
-        global food and agribusiness companies, helps steer the strategic
-        direction of the roadmap. The BAC consists of a committed group of
-        people from global food and agribusiness companies, as well as thought
-        leaders, who are pioneering on closing living income gaps in supply
-        chains. The team can be reached at{" "}
+        the Income driver calculator, to support companies to take action on
+        living income. We convene a Business Action Committee (BAC) that
+        proactively guides the strategic direction of the roadmap to increase
+        company action. The BAC consists of a committed group of people from
+        global food and agribusiness companies, as well as thought leaders, who
+        are pioneering on closing living income gaps in supply chains. The team
+        can be reached at{" "}
         <a
           href="mailto:livingincome@idhtrade.org"
           target="_blank"
@@ -81,21 +82,48 @@ const faqContents = [
   {
     label:
       "What kind of analysis does the IDC provide on Farmer household income?",
-    children:
-      "The IDC tool enables companies to make data-driven strategic decisions to close the (living) income gap for farmer households in their supply chain. It provides a structured approach by first measuring the living income gap for each farmer segment based on current household income data. It then identifies the most influential income drivers and value ranges that can help bridge the gap using sensitivity analysis. The tool also analyzes the impact of diversified income sources on household income and allows users to model different intervention scenarios to assess their effectiveness in closing the income gap.",
-  },
-  {
-    label: "What kind of input data is needed to use the IDC tool? ",
     children: (
       <>
-        Users need information about the primary commodity and country of
-        interest, along with farmer segments. The tool requires aggregate data
-        per farmer segment for five key income drivers: land size, volume
-        produced, price, cost of production, and diversified income sources from
-        both on-farm and off-farm activities.
-        <br />
-        <br />
-        Companies needing support with data collection can refer to the{" "}
+        The IDC tool allows companies to make data driven strategic decisions to
+        close the income gap for the farmer households in their supply chain,
+        through the following steps and analyses:
+        <ul>
+          <li>
+            Measure the (Living)income gap for each farmer segment, based on the
+            current household (HH) income data.
+          </li>
+          <li>
+            Identify the most impactful income drivers (and value ranges) that
+            can contribute to bridge the income gap, through Sensitivity
+            analysis.
+          </li>
+          <li>
+            Analyse the impact of other diversified income sources on HH income.
+          </li>
+          <li>
+            Model different scenarios of interventions to close the income gap.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    label: "What kind of input data is needed to use the IDC tool?",
+    children: (
+      <>
+        A user needs the following input data, to use the tool:
+        <ul>
+          <li>Primary commodity and country of interest.</li>
+          <li>Farmer segments.</li>
+          <li>
+            • Aggregate data per farmer segment for the five income drivers:
+            Land size, Volume, Price, Cost of production (all, for the primary
+            commodity) and other on-farm and off-farm Diversified income values
+            (for the farmer household).
+          </li>
+        </ul>
+        Companies that need guidance on collecting the required input data, can
+        also refer to the{" "}
         <a
           href="https://idh.org/resources/income-measurement-guidance"
           target="_blank"
@@ -103,25 +131,27 @@ const faqContents = [
         >
           Income measurement guidance tool
         </a>{" "}
-        (IMG), which helps streamline household income data collection. This
-        tool builds custom surveys based on the primary commodity, availability
-        of secondary data, and resource capacity for data collection. The output
-        from the IMG tool can be directly used in the IDC. It is currently
-        available for coffee, cocoa, cotton, tea, spices, and palm.
+        (IMG). The tool enables companies to streamline the household income
+        data collection process, by building custom surveys, based on primary
+        commodity, availability of secondary data and availability of resources
+        for a lean / detailed data collection. The income data output from the
+        IMG tool can directly be applied into the IDC tool for analyses. The
+        tool is now available for 6 key commodities namely, Coffee, Cocoa,
+        Cotton, Tea, Spices and Palm.
       </>
     ),
   },
   {
     label:
-      "Can companies use the IDC to analyse performance against their own farmer income targets?",
+      "Can companies use the Income driver calculator tool to analyse performance on their own farmer income target?",
     children:
-      "Yes, companies can define their own income targets or use the Living Income Benchmark provided in the IDC to evaluate their programs.",
+      "Yes. Companies can either “Set their own income target” or use the available “Living income benchmark” as target for the programs they will analyse on the IDC tool.",
   },
   {
     label:
-      "How does user management work in the IDC? Can multiple teams from different regions or business units collaborate?",
+      "How does user management work for my company, on the IDC tool? Can multiple teams (from different regions / business functions) and organisations collaborate on the tool?",
     children:
-      "The IDC allows users to grant “View” or “Edit” access to projects (or cases) within or outside their organization. Similar to a shareable Google document, projects on the tool can be shared across teams, business units, and organizations.",
+      "Yes, the tool allows users to provide “View” or “Edit” access to their projects (or Cases) to multiple users within or outside of an organisation. Similar to a shareable Google document, the projects on the tool can be shared with teams across multiple countries, business units or organisations.",
   },
 ];
 

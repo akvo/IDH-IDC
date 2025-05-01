@@ -294,7 +294,7 @@ const Welcome = () => {
                   <h3>Case Overview</h3>
                 </div>
                 <div className="description">
-                  Create a case for your program, to go through the income
+                  Create a case for your programme, to go through the income
                   driver assessment and model strategies to bridge the income
                   gap.
                 </div>

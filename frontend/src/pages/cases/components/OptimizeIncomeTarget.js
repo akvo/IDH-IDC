@@ -932,24 +932,50 @@ const OptimizeIncomeTarget = () => {
               )}
             </Col>
             <Col span={6}>
-              <Space direction="vertical">
-                <div className="section-title">
-                  What is the optimal and feasible change in selected drivers to
-                  reach your adjusted income target?
-                </div>
-                <div className="section-description">
-                  This table shows how your current income driver values would
-                  need to change to meet your adjusted income target. It
-                  reflects the smallest possible changes across the selected
-                  drivers, while staying within feasible limits. Use it to
-                  understand which adjustments are possible and which drivers
-                  contribute most toward reaching your goal.
-                  <br />
-                  <br />
-                  For more details about this optimisation model,{" "}
-                  <a onClick={() => setShowModelDetail(true)}>click here</a>.
-                </div>
-              </Space>
+              {SHOW_OPTIMIZE_RESULT_AS === "CHART" ? (
+                <Space direction="vertical">
+                  <div className="section-title">
+                    What is the optimal and feasible change in selected drivers
+                    to reach your adjusted income target?
+                  </div>
+                  <div className="section-description">
+                    This graph compares your current income driver values with
+                    optimised scenarios, showing how different adjustments
+                    influence income. It helps identify which changes lead to
+                    the most efficient income increase while staying within
+                    feasible ranges.
+                    <br />
+                    <br />
+                    For more details about this optimisation model,{" "}
+                    <a onClick={() => setShowModelDetail(true)}>click here</a>.
+                  </div>
+                </Space>
+              ) : (
+                ""
+              )}
+
+              {SHOW_OPTIMIZE_RESULT_AS === "TABLE" ? (
+                <Space direction="vertical">
+                  <div className="section-title">
+                    What is the optimal and feasible change in selected drivers
+                    to reach your adjusted income target?
+                  </div>
+                  <div className="section-description">
+                    This table shows how your current income driver values would
+                    need to change to meet your adjusted income target. It
+                    reflects the smallest possible changes across the selected
+                    drivers, while staying within feasible limits. Use it to
+                    understand which adjustments are possible and which drivers
+                    contribute most toward reaching your goal.
+                    <br />
+                    <br />
+                    For more details about this optimisation model,{" "}
+                    <a onClick={() => setShowModelDetail(true)}>click here</a>.
+                  </div>
+                </Space>
+              ) : (
+                ""
+              )}
             </Col>
           </Row>
         </Card>
@@ -973,9 +999,9 @@ const OptimizeIncomeTarget = () => {
       >
         <>
           <p>
-            This analysis compares current and optimized values of key income
-            drivers using an optimization model. The model applies a
-            mathematical approach to maximize income by adjusting selected
+            This analysis compares current and optimised values of key income
+            drivers using an optimisation model. The model applies a
+            mathematical approach to maximise income by adjusting selected
             driver values while ensuring changes stay within feasible ranges.
           </p>
           <p>
@@ -985,12 +1011,12 @@ const OptimizeIncomeTarget = () => {
             <li>
               Constraints: Each driver has defined boundaries (current and
               feasible levels inserted on the input page). The model ensures
-              that the income using the optimized income drivers equals the
+              that the income using the optimised income drivers equals the
               desired income level.
             </li>
             <li>
               Editable Drivers: Only selected income drivers are changed during
-              optimization. The remaining income drivers remain at their current
+              optimisation. The remaining income drivers remain at their current
               levels.
             </li>
             <li>
@@ -1000,8 +1026,8 @@ const OptimizeIncomeTarget = () => {
             </li>
           </ul>
           <p>
-            Please note that optimization is a guide, not a certainty: This
-            optimization serves as a tool to explore income improvement
+            Please note that optimisation is a guide, not a certainty: This
+            optimisation serves as a tool to explore income improvement
             strategies, but it does not provide a definitive solution. When
             making decisions, consider external factors and external influences
             that the model cannot capture.
