@@ -89,7 +89,7 @@ const ExploreStudies = () => {
         </h2>
         <p data-testid="explore-studies-subtitle" style={{ width: "85%" }}>
           To deliver results at farm level with multiple income drivers, IDH
-          believes that stakeholders need to change their own behavior (e.g.
+          believes that stakeholders need to change their own behaviour (e.g.
           business practices), at various levels i.e. at national, landscape,
           and sector levels. This means strategies that can improve income
           drivers go far beyond addressing changes in the farm system and
