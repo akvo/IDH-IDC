@@ -708,27 +708,23 @@ const OptimizeIncomeTarget = () => {
               <div className="income-inputs-wrapper">
                 <div>
                   <label>Current income</label>
-                  <InputNumber
-                    controls={false}
-                    value={thousandFormatter(
+                  <div className="income-number-wrapper">
+                    {thousandFormatter(
                       currentDashboardData?.total_current_income || 0,
                       2
-                    )}
-                    addonAfter={currency}
-                    readOnly={true}
-                  />
+                    )}{" "}
+                    {currency}
+                  </div>
                 </div>
                 <div>
                   <label>Feasible income</label>
-                  <InputNumber
-                    controls={false}
-                    value={thousandFormatter(
+                  <div className="income-number-wrapper">
+                    {thousandFormatter(
                       currentDashboardData?.total_feasible_income || 0,
                       2
-                    )}
-                    addonAfter={currency}
-                    readOnly={true}
-                  />
+                    )}{" "}
+                    {currency}
+                  </div>
                 </div>
                 <div>
                   <label>Adjustment 1 (%)</label>
