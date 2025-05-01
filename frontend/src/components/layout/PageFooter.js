@@ -15,7 +15,7 @@ const PageFooter = ({ wrapper = true, fixed = false }) => {
           <Image src={LogoWhite} preview={false} width={115} />
           <div className="copyright-text">
             <div>Copyright 2023 © IDH.</div>
-            <div>All right reserved. The IDC is developed by Akvo.</div>
+            <div>All rights reserved. The IDC is developed by Akvo.</div>
           </div>
         </Space>
       </Col>
