@@ -138,7 +138,11 @@ const FooterDisclaimer = ({
       {showPageFooter && (
         <Col span={24} className="footer-wrapper">
           <Divider style={{ borderColor: "#fff", opacity: 0.25 }} />
-          <PageFooter wrapper={false} fixed={false} />
+          <PageFooter
+            wrapper={false}
+            fixed={false}
+            disclaimerText={disclaimerText}
+          />
         </Col>
       )}
 
