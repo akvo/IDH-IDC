@@ -201,7 +201,7 @@ const CocoaIncomeInventory = () => {
       </Col>
       {/* EOL Contribute to inventory section */}
 
-      <FooterDisclaimer disclaimerText="cii" showPageFooter={false} />
+      <FooterDisclaimer disclaimerText="cii" showPageFooter={true} />
     </Row>
   );
 };
