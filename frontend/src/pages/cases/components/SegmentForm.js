@@ -53,8 +53,9 @@ const SegmentForm = ({
                         Are you sure you want to delete this segment?
                         <br />
                         This will permanently remove the selected segment and
-                        all its contents. <br />
-                        This action <b>can&apos;t be undone</b>.
+                        all its contents.
+                        <br />
+                        This action is <b>irreversible</b>.
                       </div>
                     }
                     onConfirm={() =>
