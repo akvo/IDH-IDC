@@ -31,8 +31,8 @@ const InformationCard = () => (
         </div>
         <h3>Estimate farmer income</h3>
         <p>
-          Calculates actual household income and feasible changes in income by
-          using input data on the 5 key drivers of household income.
+          Calculate actual household income and estimate feasible changes
+          through available data on the five key income drivers.
         </p>
       </Card>
     </Col>
@@ -43,7 +43,7 @@ const InformationCard = () => (
         </div>
         <h3>Assess the income gap</h3>
         <p>
-          Compares household income to a Living Income benchmark and/or a custom
+          Compare household income to a Living Income benchmark and/or a custom
           target to assess income gap.
         </p>
       </Card>
@@ -55,8 +55,8 @@ const InformationCard = () => (
         </div>
         <h3>Bridge the income gap</h3>
         <p>
-          Modelling scenarios to understand the effectiveness of different
-          income drivers in closing gaps.
+          Model scenarios and visualize the effectiveness of different
+          interventions in closing the income gaps.
         </p>
       </Card>
     </Col>

@@ -276,10 +276,11 @@ const Welcome = () => {
               Welcome to the income driver calculator
             </div>
             <div className="welcome-subtitle">
-              IDH is working to secure better income for smallholder farmers in
-              several sectors and landscapes. Start analysing data, uncover
-              trends in household income and explore pathways to bridge the
-              living income gap.
+              The tool enables you to assess the size of the living income gap
+              and take data driven decisions on the most effective strategies
+              with the use aggregate data. Users can create scenarios and
+              visualize the contribution of different income drivers needed to
+              close the living income gap.
             </div>
           </Card>
           <Row
@@ -365,6 +366,10 @@ const Welcome = () => {
                 Explore cases on the map and gain quick insights
               </div>
               <div className="description">
+                A case on the IDC tool is defined as the use case of a focus
+                crop and year for which you would like to do the income gap
+                analysis.
+                <br />
                 Click on a country to view completed cases. Below the map,
                 you&apos;ll find a case overview for the selected country with
                 quick insights.
