@@ -112,11 +112,15 @@ const ChartIncomeGap = () => {
               What is the current income of the farmers and their income gap?
             </div>
             <div className="section-description">
-              The visual on the left allows you to select and compare specific
-              combinations of scenarios and segments. You can explore how
-              household income composition and income gaps vary across segments
-              in the scenarios you create. Up to five combinations can be shown
-              at once.
+              This graph shows the gap between the household income levels and
+              the income target for different segments, in their current and
+              feasible levels. This shows that the income gaps can vary across
+              different segments and hence each segment may need it&apos;s own
+              custom strategy.
+              <br />
+              <br />
+              <b>TIP!</b> By clicking on an item in the legend you can enable
+              and disable that variable on the graph.
             </div>
           </Space>
         </Col>

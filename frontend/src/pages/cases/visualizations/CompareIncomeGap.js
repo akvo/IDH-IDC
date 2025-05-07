@@ -19,18 +19,21 @@ const CompareIncomeGap = () => {
         title: "Number of farmers",
         dataIndex: "number_of_farmers",
         key: "number_of_farmers",
-        width: "20%",
+        width: "15%",
+        align: "center",
       },
       {
         title: "Income gap at current level",
         dataIndex: "current_income_gap",
         key: "current_income_gap",
+        align: "center",
         render: (value) => `${value} ${currentCase.currency}`,
       },
       {
         title: "Income gap at feasible level",
         dataIndex: "feasible_income_gap",
         key: "feasible_income_gap",
+        align: "center",
         render: (value) => `${value} ${currentCase.currency}`,
       },
     ];
@@ -67,9 +70,9 @@ const CompareIncomeGap = () => {
               segment represents.
             </div>
             <div className="section-description">
-              This table gives an overview of the number of farmers in each
-              segment, and the income gap at current and feasible levels. Use it
-              to determine focus segments.
+              This table estimates the size of the income gap in monetary terms,
+              for each segment based on the number of farmers it represents.
+              This can be used to identify your priority segments for action.
             </div>
           </Space>
         </Col>
