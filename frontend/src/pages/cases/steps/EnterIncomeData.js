@@ -248,7 +248,7 @@ const EnterIncomeData = ({
   }, [sectionTotalValues]);
 
   return (
-    <div id="enter-income-data">
+    <div>
       {/* Header */}
       <Row
         align="middle"

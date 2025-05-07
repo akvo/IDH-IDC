@@ -325,7 +325,9 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
       {contextHolder}
       <Col span={24} className="header-wrapper">
         <Space direction="vertical">
-          <div className="title">Explanatory text</div>
+          <div className="title">
+            Modelling different intervention scenarios
+          </div>
           <div className="description">
             This page enables you to explore various scenarios by adjusting your
             income drivers in different ways across your segments. This allows
