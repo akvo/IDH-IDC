@@ -558,7 +558,7 @@ const OptimizeIncomeTarget = () => {
         const incomeGapLabel = (
           <Space align="middle">
             <div>
-              <b>Income gap ({currentCaseState.currency})</b>
+              <b>Income gap compared to target ({currentCaseState.currency})</b>
             </div>
           </Space>
         );
@@ -1051,6 +1051,10 @@ const OptimizeIncomeTarget = () => {
                     contribute most toward reaching your goal.
                     <br />
                     <br />
+                    Use the recommendations of this optimisation model to test
+                    intervention scenarios on the next page.
+                    <br />
+                    <br />
                     For more details about this optimisation model,{" "}
                     <a onClick={() => setShowModelDetail(true)}>click here</a>.
                   </div>
@@ -1081,32 +1085,68 @@ const OptimizeIncomeTarget = () => {
       >
         <>
           <p>
-            This analysis compares current and optimised values of key income
-            drivers using an optimisation model. The model applies a
-            mathematical approach to maximise income by adjusting selected
-            driver values while ensuring changes stay within feasible ranges.
+            This analysis uses an optimisation model to help you strategically
+            adjust key income drivers to increase your income. The model applies
+            a mathematical process to identify the most effective values for
+            selected income drivers, within their feasible ranges, to meet your
+            goals.
           </p>
-          <p>
-            <b>Key considerations</b>
-          </p>
-          <ul>
-            <li>
-              Constraints: Each driver has defined boundaries (current and
-              feasible levels inserted on the input page). The model ensures
-              that the income using the optimised income drivers equals the
-              desired income level.
-            </li>
-            <li>
-              Editable Drivers: Only selected income drivers are changed during
-              optimisation. The remaining income drivers remain at their current
-              levels.
-            </li>
-            <li>
-              Penalty Factor: The model includes a penalty system to avoid
-              extreme deviations from the current values, ensuring the changes
-              are realistic and practical.
-            </li>
-          </ul>
+          <div>
+            <p>
+              <b>How it works</b>
+            </p>
+            <p>
+              The model begins by using your input data and the income driver
+              formula to establish your current income and the feasible income.
+              The feasible income reflects the income level you could achieve if
+              all controllable income drivers were at their feasible levels.
+            </p>
+            <p>
+              You can then explore different scenarios by defining how much of
+              the gap between current and feasible income you aim to close and
+              through which drivers. This process includes:
+            </p>
+            <ul>
+              <li>
+                Identifying the specific income drivers you can influence.
+              </li>
+              <li>
+                Calculating the necessary adjustments to the values of these
+                (sub)drivers to reach your target income.{" "}
+              </li>
+              <li>
+                Ensuring that these adjustments remain within the defined
+                feasible ranges for each sub(driver).
+              </li>
+              <li>
+                Applying a mechanism to discourage drastic changes from your
+                current values, ensuring realistic and incremental changes.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p>
+              <b>Key considerations</b>
+            </p>
+            <ul>
+              <li>
+                Constraints: Each driver has defined boundaries (current and
+                feasible levels inserted on the input page). The model ensures
+                that the income using the optimised income drivers equals the
+                desired income level.
+              </li>
+              <li>
+                Editable drivers: Only selected income drivers are changed
+                during optimisation. The remaining income drivers remain at
+                their current levels.
+              </li>
+              <li>
+                Penalty factor: The model includes a penalty system to avoid
+                extreme deviations from the current values, ensuring the changes
+                are realistic and practical.
+              </li>
+            </ul>
+          </div>
           <p>
             Please note that optimisation is a guide, not a certainty: This
             optimisation serves as a tool to explore income improvement
