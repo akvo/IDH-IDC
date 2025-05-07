@@ -390,10 +390,11 @@ const AssessImpactMitigationStrategies = ({
             Assess the impact of mitigation strategies
           </div>
           <div className="description">
-            This page enables you to explore various scenarios by adjusting your
-            income drivers in different ways across your segments. This allows
-            you to understand the potential paths towards improving farmer
-            household income
+            This page allows you to understand and arrive at potential paths to
+            close the income gap for farmers in your supply chain. Users can
+            identify the most impactful income drivers, adjust each driver's
+            range individually and in combinations, to understand their ability
+            to close the income gap.
           </div>
         </Space>
       </Col>
