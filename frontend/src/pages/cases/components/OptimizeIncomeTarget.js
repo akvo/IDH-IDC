@@ -700,9 +700,13 @@ const OptimizeIncomeTarget = () => {
             </Col>
             <Col span={24}>
               <div className="description">
-                Below we provide an optimisation model that helps you determine
-                the most effective way to increase income by adjusting key
-                income drivers while keeping changes within feasible limits.
+                The capacity of a business to impact specific income drivers
+                depends on several factors like your position in the supply
+                chain, level of influence on other value chain actors etc. Below
+                we provide an optimization model, where you can select the
+                income drivers in your sphere of influence. The model derives
+                the minimum necessary change needed in these drivers, to meet
+                the income target, within their feasible limits
               </div>
             </Col>
             <Col span={24} className="optimize-income-target-step-wrapper">
@@ -717,7 +721,9 @@ const OptimizeIncomeTarget = () => {
                   </Tooltip>
                 </div>
               </Space>
-              <div className="description">You can select up to 5 drivers</div>
+              <div className="description">
+                You can select up to 5 drivers or sub-drivers.
+              </div>
               <div>
                 <AllDriverTreeSelector
                   multiple={true}
@@ -734,7 +740,7 @@ const OptimizeIncomeTarget = () => {
               <Space className="step-wrapper" align="center">
                 <div className="number">2.</div>
                 <div className="label">
-                  Specify income adjustments to explore different outcomes{" "}
+                  Specify income gap adjustments to explore different outcomes{" "}
                   <Tooltip
                     title={
                       <>
@@ -755,8 +761,9 @@ const OptimizeIncomeTarget = () => {
                 </div>
               </Space>
               <div className="description">
-                Enter percentages to change your current income based on the gap
-                with your feasible income.
+                Enter the step-wise percentages by which you would like to close
+                the gap between current and feasible income levels, for this
+                segment.
               </div>
               <div className="income-inputs-wrapper">
                 <div>
