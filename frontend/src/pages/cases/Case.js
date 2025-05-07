@@ -61,7 +61,7 @@ const renderPage = (key, navigate) => {
         <Row id="set-income-target" gutter={[24, 24]}>
           <Col span={24} className="header-wrapper">
             <Space direction="vertical">
-              <div className="title">Set Income Target</div>
+              <div className="title">Set an income target</div>
             </Space>
           </Col>
           <Col span={24}>
@@ -76,7 +76,7 @@ const renderPage = (key, navigate) => {
         <Row id="enter-income-data" gutter={[24, 24]}>
           <Col span={24} className="header-wrapper">
             <Space direction="vertical">
-              <div className="title">Enter Income Data</div>
+              <div className="title">Enter your income data</div>
             </Space>
           </Col>
           <Col span={24}>
