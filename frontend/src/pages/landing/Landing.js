@@ -89,7 +89,11 @@ const OtherToolsAndResources = () => {
   return (
     <div className="other-tools-recources-container">
       <h2>Other tools & resources</h2>
-      <OtherToolResourceList size={3} showMoreButton={true} />
+      <OtherToolResourceList
+        size={3}
+        showMoreButton={true}
+        isLandingPage={true}
+      />
     </div>
   );
 };
