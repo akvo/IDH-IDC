@@ -392,9 +392,9 @@ const AssessImpactMitigationStrategies = ({
           <div className="description">
             This page allows you to understand and arrive at potential paths to
             close the income gap for farmers in your supply chain. Users can
-            identify the most impactful income drivers, adjust each driver's
-            range individually and in combinations, to understand their ability
-            to close the income gap.
+            identify the most impactful income drivers, adjust each
+            driver&apos;s range individually and in combinations, to understand
+            their ability to close the income gap.
           </div>
         </Space>
       </Col>
@@ -447,6 +447,11 @@ const AssessImpactMitigationStrategies = ({
           <Row gutter={[20, 20]}>
             {/* Binning Form */}
             <Col span={24}>
+              {/* Description */}
+              <p>
+                Select the segment and upto three impactful income drivers for
+                which you want to run the sensitivity analysis.
+              </p>
               <SegmentSelector
                 selectedSegment={selectedSegment}
                 setSelectedSegment={setSelectedSegment}
