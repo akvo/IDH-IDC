@@ -448,7 +448,7 @@ const CaseForm = ({
       {/* SEGMENTATION */}
       <Col span={24}>
         <Card
-          title="Segmentation"
+          title="Create up to 5 segments"
           className="case-setting-child-card-wrapper"
           size="small"
         >
