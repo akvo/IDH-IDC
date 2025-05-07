@@ -29,7 +29,7 @@ const GetStarted = () => {
     {
       title: "Closing the gap",
       description:
-        "Save different scenarios to close the gap, and explore procurement practices.",
+        "Create scenarios and visualize their effectiveness to close the gap.",
     },
   ];
 
