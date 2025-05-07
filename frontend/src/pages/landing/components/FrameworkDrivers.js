@@ -72,7 +72,7 @@ const FrameworkDrivers = () => {
     >
       <Col span={24} className="text-wrapper">
         <h2 data-testid="framework-drivers-title">
-          The framework consists of five drivers
+          The framework five income drivers
         </h2>
         {showDriverInfo && (
           <Collapse accordion items={items} bordered={false} ghost />
