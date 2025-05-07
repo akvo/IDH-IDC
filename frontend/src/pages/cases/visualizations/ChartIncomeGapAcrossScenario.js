@@ -324,7 +324,7 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
               What are the results for the different segments across scenarios?
             </div>
             <div className="section-description">
-              The visual on the right allows you to select and compare specific
+              The visual on the left allows you to select and compare specific
               combinations of scenarios and segments. You can explore how
               household income composition and income gaps vary across segments
               in the scenarios you create.

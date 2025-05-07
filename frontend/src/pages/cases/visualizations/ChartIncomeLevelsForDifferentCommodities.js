@@ -198,8 +198,8 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
       };
     });
     res.push({
-      name: "Diversified Income",
-      title: "Diversified Income",
+      name: "Other diversified income",
+      title: "Other diversified income",
       order: res.length,
       data: diversifiedData,
     });

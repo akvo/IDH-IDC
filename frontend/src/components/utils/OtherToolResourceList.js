@@ -8,12 +8,17 @@ import { Link } from "react-router-dom";
 const OtherToolResourceList = ({
   size = otherToolsAndResourcesContent.length,
   showMoreButton = false,
+  isLandingPage = false,
 }) => {
   const navigate = useNavigate();
 
   return (
     <div className="other-tool-resource-list-container">
-      <div className="other-tool-resource-list">
+      <div
+        className={`other-tool-resource-list ${
+          isLandingPage ? "force-3-in-a-row" : ""
+        }`}
+      >
         {otherToolsAndResourcesContent
           .filter((item) => item.order <= size)
           .map((item, ti) => {

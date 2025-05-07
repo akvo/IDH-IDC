@@ -14,10 +14,11 @@ import {
   renderPercentageTag,
   removeUndefinedObjectValue,
 } from "../../../lib";
-import { Row, Col, Space, message } from "antd";
+import { Row, Col, Space, message, Tooltip } from "antd";
 import { EnterIncomeDataForm } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 const rowColSpanSize = {
   gutter: [8, 8],
@@ -248,7 +249,7 @@ const EnterIncomeData = ({
   }, [sectionTotalValues]);
 
   return (
-    <div id="enter-income-data">
+    <div>
       {/* Header */}
       <Row
         align="middle"
@@ -271,7 +272,14 @@ const EnterIncomeData = ({
         </Col>
         <Col span={rowColSpanSize.value} className="total-income-value-wrapper">
           <Space direction="vertical">
-            <div className="level-text">Feasible</div>
+            <div className="level-text">
+              Feasible{" "}
+              <Tooltip title="Feasible value can be defined as the realistically achievable improvement in each income driver, based on on-ground conditions. These estimate values can be arrived through a combination of sources like local experts, farmer interviews and published research studies.">
+                <span>
+                  <InfoCircleOutlined style={{ fontSize: 11 }} />
+                </span>
+              </Tooltip>
+            </div>
             <div className="value-text">
               {thousandFormatter(
                 totalIncome.feasible,

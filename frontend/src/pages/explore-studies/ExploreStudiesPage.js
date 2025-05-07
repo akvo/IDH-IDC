@@ -185,17 +185,29 @@ const ExploreStudiesPage = () => {
     let url = "reference_data/count_by_country";
     const params = [];
 
-    if (country?.length) {
+    if (Array.isArray(country) && country?.length) {
       country.forEach((cid) => params.push(`country=${cid}`));
     }
-    if (commodity?.length) {
+    if (!Array.isArray(country) && country) {
+      params.push(`country=${country}`);
+    }
+    if (Array.isArray(commodity) && commodity?.length) {
       commodity.forEach((comid) => params.push(`commodity=${comid}`));
     }
-    if (driver?.length) {
+    if (!Array.isArray(commodity) && commodity) {
+      params.push(`commodity=${commodity}`);
+    }
+    if (Array.isArray(driver) && driver?.length) {
       driver.forEach((drv) => params.push(`driver=${drv}`));
     }
-    if (source?.length) {
+    if (!Array.isArray(driver) && driver) {
+      params.push(`driver=${driver}`);
+    }
+    if (Array.isArray(source) && source?.length) {
       source.forEach((src) => params.push(`source=${src}`));
+    }
+    if (!Array.isArray(source) && source) {
+      params.push(`source=${source}`);
     }
 
     if (params.length > 0) {
@@ -231,17 +243,29 @@ const ExploreStudiesPage = () => {
       let url = `reference_data?page=${currentPage}&limit=${perPage}`;
       const params = [];
 
-      if (country?.length) {
+      if (Array.isArray(country) && country?.length) {
         country.forEach((cid) => params.push(`country=${cid}`));
       }
-      if (commodity?.length) {
+      if (!Array.isArray(country) && country) {
+        params.push(`country=${country}`);
+      }
+      if (Array.isArray(commodity) && commodity?.length) {
         commodity.forEach((comid) => params.push(`commodity=${comid}`));
       }
-      if (driver?.length) {
+      if (!Array.isArray(commodity) && commodity) {
+        params.push(`commodity=${commodity}`);
+      }
+      if (Array.isArray(driver) && driver?.length) {
         driver.forEach((drv) => params.push(`driver=${drv}`));
       }
-      if (source?.length) {
+      if (!Array.isArray(driver) && driver) {
+        params.push(`driver=${driver}`);
+      }
+      if (Array.isArray(source) && source?.length) {
         source.forEach((src) => params.push(`source=${src}`));
+      }
+      if (!Array.isArray(source) && source) {
+        params.push(`source=${source}`);
       }
 
       if (params.length > 0) {

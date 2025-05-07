@@ -459,6 +459,10 @@
       ); /* Responsive grid */
       gap: 20px; /* Adjust spacing between items */
 
+      &.force-3-in-a-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
       .otr-item-wrapper {
         display: flex;
         flex-direction: column;

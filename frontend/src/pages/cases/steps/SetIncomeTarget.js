@@ -977,7 +977,7 @@ const SetIncomeTarget = ({
   };
 
   return (
-    <div id="set-income-target">
+    <div>
       {contextHolder}
       <Form
         form={form}

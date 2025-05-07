@@ -130,7 +130,7 @@ const ScenarioModelingForm = ({
             <Col span={12}>
               <Form.Item
                 name="description"
-                label="Describe here what the scenario entails"
+                label="Provide a short description of this scenario for future reference"
               >
                 <Input.TextArea disabled={!enableEditCase} rows={1} />
               </Form.Item>

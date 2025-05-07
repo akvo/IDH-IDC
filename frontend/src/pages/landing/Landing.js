@@ -31,8 +31,8 @@ const InformationCard = () => (
         </div>
         <h3>Estimate farmer income</h3>
         <p>
-          Calculates actual household income and feasible changes in income by
-          using input data on the 5 key drivers of household income.
+          Calculate actual household income and estimate feasible changes
+          through available data on the five key income drivers.
         </p>
       </Card>
     </Col>
@@ -43,7 +43,7 @@ const InformationCard = () => (
         </div>
         <h3>Assess the income gap</h3>
         <p>
-          Compares household income to a Living Income benchmark and/or a custom
+          Compare household income to a Living Income benchmark and/or a custom
           target to assess income gap.
         </p>
       </Card>
@@ -55,8 +55,8 @@ const InformationCard = () => (
         </div>
         <h3>Bridge the income gap</h3>
         <p>
-          Modelling scenarios to understand the effectiveness of different
-          income drivers in closing gaps.
+          Model scenarios and visualize the effectiveness of different
+          interventions in closing the income gaps.
         </p>
       </Card>
     </Col>
@@ -72,12 +72,11 @@ const IncomeDriverFramework = () => (
     <Col span={24} className="income-driver-framework-text-wrapper">
       <h2>Living Income Roadmap to Guide Action</h2>
       <p>
-        IDH is the convener of the Living Income Roadmap. It helps companies,
-        along with other stakeholders, take ambitious, aligned actions in their
-        journeys to close living income gaps for small-holder farming
-        communities. The roadmap provides a logical framework with useful
-        resources to help guide a company’s journey to close living income gaps
-        in their supply chain.
+        IDH’s Living income roadmap helps companies and its supply chain
+        stakeholders, take ambitions, aligned actions in their journeys to close
+        living income gaps for small-holder farming communities. The roadmap
+        provides a logical framework with useful resources to help guide a
+        company’s journey to close living income gaps in their supply chain.
       </p>
     </Col>
     <Col span={24} align="center">
@@ -90,7 +89,11 @@ const OtherToolsAndResources = () => {
   return (
     <div className="other-tools-recources-container">
       <h2>Other tools & resources</h2>
-      <OtherToolResourceList size={3} showMoreButton={true} />
+      <OtherToolResourceList
+        size={3}
+        showMoreButton={true}
+        isLandingPage={true}
+      />
     </div>
   );
 };

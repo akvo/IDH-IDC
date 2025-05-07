@@ -289,6 +289,8 @@
   }
 }
 
+#set-income-target,
+#enter-income-data,
 #understand-income-gap,
 #assess-impact-mitigation-strategies,
 #closing-gap {
@@ -312,6 +314,12 @@
       line-height: 24px;
     }
   }
+}
+
+#understand-income-gap,
+#assess-impact-mitigation-strategies,
+#closing-gap {
+  margin-bottom: 100px;
 
   .card-section-wrapper {
     border-radius: 20px;
@@ -991,3 +999,9 @@
   }
 }
 // EOL Global Tree Select on case steps
+
+.about-model-modal-container {
+  .ant-modal-body {
+    padding: 0;
+  }
+}

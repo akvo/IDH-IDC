@@ -310,6 +310,10 @@ const ChartBinningDriversSensitivityAnalysis = ({
         drivers. If you do not see an orange band on one of the axes, it means
         that driver’s values fall outside the current and feasible range.
         <br />
+        <br />
+        Use the different heat map visuals below, to understand the dynamics of
+        changing income drivers, in their absolute values.
+        <br />
         <Image src={SensitivityAnalisysImg} preview={false} width={80} />
       </>
     );

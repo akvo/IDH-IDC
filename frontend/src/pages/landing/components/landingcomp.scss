@@ -49,7 +49,7 @@
       font-weight: 400;
       font-size: 18px;
       line-height: 157.15%; /* 25.144px */
-      width: 567px;
+      width: 800px;
       margin-block-end: 40px;
     }
   }
@@ -84,7 +84,6 @@
       font-size: 24px;
       font-style: normal;
       font-weight: 700;
-      line-height: 30px;
     }
   }
 
@@ -136,10 +135,13 @@
 #get-started {
   padding: 3rem $default-padding-size;
   background: #fff;
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  align-items: center;
+
+  .image-steps-container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   h2 {
     color: $primary-color;
@@ -147,7 +149,6 @@
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 30px;
     letter-spacing: -0.8px;
   }
 
@@ -293,7 +294,6 @@
     font-size: 24px;
     font-style: normal;
     font-weight: 700;
-    line-height: 30px;
   }
 
   p {
@@ -416,7 +416,6 @@
     font-size: 30px;
     font-style: normal;
     font-weight: 700;
-    // line-height: 52px;
   }
 
   p {
