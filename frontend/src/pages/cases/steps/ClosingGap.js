@@ -329,10 +329,10 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
             Modelling different intervention scenarios
           </div>
           <div className="description">
-            This page enables you to explore various scenarios by adjusting your
-            income drivers in different ways across your segments. This allows
-            you to understand the potential paths towards improving farmer
-            household income
+            This section enables you to create scenarios and test different
+            strategies to close the income gap. By adjusting each income driver
+            based on the tailored strategy, it allows you to visualise its
+            impact on the income gap for each segment.
           </div>
         </Space>
       </Col>
@@ -425,8 +425,9 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
               You’ve reached the final step of the Income Driver Calculator
             </div>
             <div className="description">
-              Would you like to mark this case as complete? Doing so allows
-              others to review your analysis and access the results.
+              Would you like to mark this case as complete? Doing so makes it
+              easier for others to review and analyse the results at a later
+              stage.
             </div>
           </div>
           <div className="button-wrapper">

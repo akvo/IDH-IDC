@@ -6,7 +6,7 @@ import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 const faqContents = [
   {
-    label: "How can I access the Income Driver Calculator?",
+    label: "How can I access the Income Driver Calculator (IDC) ?",
     children: (
       <>
         The Income Driver Calculator (IDC) can be accessed through the weblink:{" "}
@@ -47,7 +47,7 @@ const faqContents = [
     ),
   },
   {
-    label: "How can IDH’s Income driver calculator (IDC) support your company?",
+    label: "How can IDH’s IDC support your company ?",
     children: (
       <>
         IDH collaborates with companies to enhance their positive impact on
@@ -61,13 +61,13 @@ const faqContents = [
           Living Income Roadmap
         </a>{" "}
         outlines a range of steps, guiding questions and data-driven tools like
-        the Income driver calculator, to support companies to take action on
-        living income. We convene a Business Action Committee (BAC) that
-        proactively guides the strategic direction of the roadmap to increase
-        company action. The BAC consists of a committed group of people from
-        global food and agribusiness companies, as well as thought leaders, who
-        are pioneering on closing living income gaps in supply chains. The team
-        can be reached at{" "}
+        the IDC, to support companies to take action on living income. We
+        convene a Business Action Committee (BAC) that proactively guides the
+        strategic direction of the roadmap to increase company action. The BAC
+        consists of a committed group of people from global food and
+        agribusiness companies, as well as thought leaders, who are pioneering
+        on closing living income gaps in supply chains. The team can be reached
+        at{" "}
         <a
           href="mailto:livingincome@idhtrade.org"
           target="_blank"
@@ -81,7 +81,7 @@ const faqContents = [
   },
   {
     label:
-      "What kind of analysis does the IDC provide on Farmer household income?",
+      "What kind of analysis does the IDC provide on Farmer household income ?",
     children: (
       <>
         The IDC tool allows companies to make data driven strategic decisions to
@@ -108,7 +108,7 @@ const faqContents = [
     ),
   },
   {
-    label: "What kind of input data is needed to use the IDC tool?",
+    label: "What kind of input data is needed to use the IDC tool ?",
     children: (
       <>
         A user needs the following input data, to use the tool:
@@ -143,13 +143,13 @@ const faqContents = [
   },
   {
     label:
-      "Can companies use the Income driver calculator tool to analyse performance on their own farmer income target?",
+      "Can companies use the IDC to analyse performance on their custom income target ?",
     children:
       "Yes. Companies can either “Set their own income target” or use the available “Living income benchmark” as target for the programs they will analyse on the IDC tool.",
   },
   {
     label:
-      "How does user management work for my company, on the IDC tool? Can multiple teams (from different regions / business functions) and organisations collaborate on the tool?",
+      "How does user management work for my company, on the IDC tool? Can multiple teams (from different regions / business functions) and organisations collaborate on the tool ?",
     children:
       "Yes, the tool allows users to provide “View” or “Edit” access to their projects (or Cases) to multiple users within or outside of an organisation. Similar to a shareable Google document, the projects on the tool can be shared with teams across multiple countries, business units or organisations.",
   },
