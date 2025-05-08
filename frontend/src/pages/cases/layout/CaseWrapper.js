@@ -29,7 +29,11 @@ import {
 import { CaseSettings, DebounceSelect } from "../components";
 import { stepPath, CaseUIState, CurrentCaseState } from "../store";
 import { UserState } from "../../../store";
-import { adminRole, casePermission } from "../../../store/static";
+import {
+  adminRole,
+  casePermission,
+  caseStepItems,
+} from "../../../store/static";
 import { api } from "../../../lib";
 import { usePiwikTrackPageTime } from "../../../hooks";
 
@@ -58,33 +62,7 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
         { title: "" },
       ];
     }
-    return [
-      {
-        title: "Set an income target",
-        description:
-          "Use a living income benchmark or define the target yourself.",
-      },
-      {
-        title: "Enter your income data",
-        description:
-          "Enter current and feasible data for the five income drivers and its subcomponents for each segment",
-      },
-      {
-        title: "Understand the income gap",
-        description:
-          "Explore the current income situation and the gap to reach your income target.",
-      },
-      {
-        title: "Assess impact of mitigation strategies",
-        description:
-          "Analyse which drivers impact income increase the most, and how to close the gap.",
-      },
-      {
-        title: "Closing the gap",
-        description:
-          "Create scenarios and visualize their effectiveness to close the gap.",
-      },
-    ];
+    return caseStepItems;
   }, [siderCollapsed]);
 
   const findStepPathValue = Object.values(stepPath).find(
