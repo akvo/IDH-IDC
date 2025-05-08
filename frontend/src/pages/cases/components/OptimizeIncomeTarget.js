@@ -693,12 +693,6 @@ const OptimizeIncomeTarget = () => {
         <Card className="card-section-wrapper optimize-income-target-wrapper">
           <Row gutter={[20, 10]}>
             <Col span={24}>
-              <SegmentSelector
-                selectedSegment={selectedSegment}
-                setSelectedSegment={setSelectedSegment}
-              />
-            </Col>
-            <Col span={24}>
               <div className="description">
                 The capacity of a business to impact specific income drivers
                 depends on several factors like your position in the supply
@@ -708,6 +702,15 @@ const OptimizeIncomeTarget = () => {
                 the minimum necessary change needed in these drivers, to meet
                 the income target, within their feasible limits
               </div>
+            </Col>
+            <Col span={24} style={{ marginTop: 10 }}>
+              <div className="description">
+                Select the segment for which you want to run the model.
+              </div>
+              <SegmentSelector
+                selectedSegment={selectedSegment}
+                setSelectedSegment={setSelectedSegment}
+              />
             </Col>
             <Col span={24} className="optimize-income-target-step-wrapper">
               <Space className="step-wrapper" align="center">

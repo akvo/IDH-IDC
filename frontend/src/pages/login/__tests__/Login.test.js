@@ -18,7 +18,7 @@ describe("Login page", () => {
     expect(getByText("Income Driver")).toBeInTheDocument();
     expect(getByText("Calculator")).toBeInTheDocument();
     expect(
-      getByText("Welcome to the income driver calculator version 2.0")
+      getByText("Welcome to the income driver calculator version 2.1")
     ).toBeInTheDocument();
   });
 

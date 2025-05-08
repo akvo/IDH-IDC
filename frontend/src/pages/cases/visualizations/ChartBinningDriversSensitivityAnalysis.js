@@ -311,10 +311,12 @@ const ChartBinningDriversSensitivityAnalysis = ({
         that driver’s values fall outside the current and feasible range.
         <br />
         <br />
+        <Image src={SensitivityAnalisysImg} preview={false} width={80} />
+        <br />
+        <br />
         Use the different heat map visuals below, to understand the dynamics of
         changing income drivers, in their absolute values.
         <br />
-        <Image src={SensitivityAnalisysImg} preview={false} width={80} />
       </>
     );
     setLabel(label);

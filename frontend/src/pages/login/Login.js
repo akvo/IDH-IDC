@@ -122,7 +122,7 @@ const Login = () => {
               </Typography.Title>
               {!isResetPassword && (
                 <Typography.Title level={3}>
-                  Welcome to the income driver calculator version 2.0
+                  Welcome to the income driver calculator version 2.1
                 </Typography.Title>
               )}
             </div>
