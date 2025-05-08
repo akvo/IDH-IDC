@@ -403,6 +403,7 @@ const OptimizeIncomeTarget = () => {
       const data = Object.entries(labels).map(([key, label]) => {
         const currentValues = [];
         const increasedValues = optimizedValues.map((val) => {
+          const percentage = val?.percentage ? val.percentage * 100 : 0;
           const valueTmp = val?.value?.optimization?.[key] || [];
           const currentValue =
             valueTmp.find((v) => v.name === "current")?.value || 0;
@@ -423,7 +424,7 @@ const OptimizeIncomeTarget = () => {
 
           return {
             key,
-            name: `Increase ${val.key}`,
+            name: `Close gap by ${percentage}%`,
             absolute: thousandFormatter(optimizedValue, 2),
             value: thousandFormatter(optimizedPercentage, 2),
             color: colors[val.key],
