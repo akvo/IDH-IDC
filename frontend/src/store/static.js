@@ -165,3 +165,30 @@ export const CaseStatusEnum = {
   COMPLETED: 1,
   INCOMPLETED: 0,
 };
+
+export const caseStepItems = [
+  {
+    title: "Set an income target",
+    description: "Use a living income benchmark or define the target yourself.",
+  },
+  {
+    title: "Enter your income data",
+    description:
+      "Enter current and feasible data for the five income drivers and its subcomponents for each segment",
+  },
+  {
+    title: "Understand the income gap",
+    description:
+      "Explore the current income situation and the gap to reach your income target.",
+  },
+  {
+    title: "Assess impact of mitigation strategies",
+    description:
+      "Analyse which drivers impact income increase the most, and how to close the gap.",
+  },
+  {
+    title: "Closing the gap",
+    description:
+      "Create scenarios and visualize their effectiveness to close the gap.",
+  },
+];
