@@ -144,6 +144,7 @@ const ExploreStudiesPage = () => {
   const [reduceFilterDropdown, setReduceFilterDropdown] = useState(
     defReduceFilterDropdown
   );
+  const [filterCountryByMapData, setFilterCountryByMapData] = useState(true);
 
   const countryOptions = window.master.countries;
   const commodityOptions = window?.master?.commodity_categories?.flatMap((ct) =>
@@ -233,9 +234,12 @@ const ExploreStudiesPage = () => {
   }, []);
 
   const filteredCountryOptions = useMemo(() => {
+    if (!filterCountryByMapData) {
+      return countryOptions;
+    }
     const mapCountryIds = mapData.map((d) => d.country_id);
     return countryOptions.filter((c) => mapCountryIds.includes(c.value));
-  }, [countryOptions, mapData]);
+  }, [countryOptions, mapData, filterCountryByMapData]);
 
   const fetchReferenceData = useCallback(
     (country, commodity, driver, source) => {
@@ -292,10 +296,13 @@ const ExploreStudiesPage = () => {
 
   useMemo(() => {
     if (countryId) {
+      setFilterCountryByMapData(false);
       setFilterInitialValues((prev) => ({
         ...prev,
         country: countryId === "null" ? null : parseInt(countryId),
       }));
+    } else {
+      setFilterCountryByMapData(true);
     }
     if (commodityId) {
       setFilterInitialValues((prev) => ({
