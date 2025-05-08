@@ -790,7 +790,7 @@ const OptimizeIncomeTarget = () => {
                   </div>
                 </div>
                 <div>
-                  <label>Adjustment 1 (%)</label>
+                  <label>1. Close gap by (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
                     disabled={disableAdjusmentField}
@@ -815,7 +815,7 @@ const OptimizeIncomeTarget = () => {
                   )}
                 </div>
                 <div>
-                  <label>Adjustment 2 (%)</label>
+                  <label>2. Close gap by (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
                     disabled={disableAdjusmentField}
@@ -840,7 +840,7 @@ const OptimizeIncomeTarget = () => {
                   )}
                 </div>
                 <div>
-                  <label>Adjustment 3 (%)</label>
+                  <label>3. Close gap by (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
                     disabled={disableAdjusmentField}
