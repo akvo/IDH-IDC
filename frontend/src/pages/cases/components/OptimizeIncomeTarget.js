@@ -459,19 +459,22 @@ const OptimizeIncomeTarget = () => {
       );
 
       // generate columns
-      const increaseColumns = optimizedValues.map((opt) => ({
-        title: `Adjustment ${opt.key}`,
-        dataIndex: `increase_${opt.key}`,
-        name: `increase_${opt.key}`,
-        align: "left",
-        width: "20%",
-        render: (text, row) => {
-          if (row.key === "total_income") {
-            return <b>{text}</b>;
-          }
-          return text;
-        },
-      }));
+      const increaseColumns = optimizedValues.map((opt) => {
+        const percentage = opt?.percentage ? opt.percentage * 100 : 0;
+        return {
+          title: `Close gap by ${percentage}%`,
+          dataIndex: `increase_${opt.key}`,
+          name: `increase_${opt.key}`,
+          align: "left",
+          width: "20%",
+          render: (text, row) => {
+            if (row.key === "total_income") {
+              return <b>{text}</b>;
+            }
+            return text;
+          },
+        };
+      });
       const columns = [
         {
           title: "Income driver",
