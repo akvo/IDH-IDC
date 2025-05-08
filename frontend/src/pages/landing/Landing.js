@@ -72,11 +72,9 @@ const IncomeDriverFramework = () => (
     <Col span={24} className="income-driver-framework-text-wrapper">
       <h2>Living Income Roadmap to Guide Action</h2>
       <p>
-        IDH’s Living income roadmap helps companies and its supply chain
-        stakeholders, take ambitions, aligned actions in their journeys to close
-        living income gaps for small-holder farming communities. The roadmap
-        provides a logical framework with useful resources to help guide a
-        company’s journey to close living income gaps in their supply chain.
+        IDH’s Living Income Roadmap helps companies and their supply chain
+        stakeholders take ambitions and aligned actions in their journeys to
+        close living income gaps for smallholder farming communities.
       </p>
     </Col>
     <Col span={24} align="center">
