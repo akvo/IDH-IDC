@@ -29,7 +29,15 @@ const PageFooter = ({
             <div>
               All rights reserved. The{" "}
               {page?.[disclaimerText] ? page[disclaimerText] : page.default} is
-              developed by Akvo.
+              developed by{" "}
+              <a
+                href="https://akvo.org/"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Akvo
+              </a>
+              .
             </div>
           </div>
         </Space>
