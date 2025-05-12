@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import "./welcome.scss";
-import { Row, Col, Card, Button, Table, Select } from "antd";
+import { Row, Col, Card, Button, Table, Select, message, Space } from "antd";
 import { UserState, UIState } from "../../store";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import { ArrowRightOutlined, CloseOutlined } from "@ant-design/icons";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
 import { Link } from "react-router-dom";
@@ -42,6 +42,42 @@ const Welcome = () => {
   const [selectedCaseToDisplay, setSelectedCaseToDisplay] = useState(null);
 
   const tableElement = document.getElementById("table-container");
+
+  const newFeatureKey = "new-feature-toast";
+  const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(() => {
+    messageApi.open({
+      key: newFeatureKey,
+      type: "",
+      content: (
+        <span>
+          <Space align="center">
+            <p style={{ margin: 0 }}>
+              We have added some <b>NEW FEATURES</b> for you !! Discover more
+              information about them{" "}
+              <a
+                href="/files/Income-driver-calcualtor_Updates_2025.pdf"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                here
+              </a>
+              .
+            </p>
+            <Button
+              icon={<CloseOutlined />}
+              onClick={() => messageApi.destroy(newFeatureKey)}
+              size="small"
+              type="ghost"
+            />
+          </Space>
+        </span>
+      ),
+      className: "new-feature-toast-wrapper",
+      duration: 0,
+    });
+  }, [messageApi]);
 
   // old company options way
   // const filteredCompanyOptions = useMemo(() => {
@@ -263,6 +299,7 @@ const Welcome = () => {
 
   return (
     <Row id="welcome" align="middle">
+      {contextHolder}
       <div className="welcome-with-padding">
         {/* Header */}
         <Col span={24} className="username-wrapper">

@@ -227,3 +227,17 @@
     cursor: default;
   }
 }
+
+.new-feature-toast-wrapper {
+  margin-top: 72px;
+
+  .ant-message-notice-content {
+    background: #ffb082 !important;
+    font-family: "TabletGothic";
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+}
