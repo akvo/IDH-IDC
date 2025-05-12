@@ -5,7 +5,7 @@ import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined, CloseOutlined } from "@ant-design/icons";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
 import { ViewSummaryModal } from "../../components/utils";
@@ -44,6 +44,7 @@ const Welcome = () => {
   const tableElement = document.getElementById("table-container");
 
   const location = useLocation();
+  const navigate = useNavigate();
   const newFeatureKey = "new-feature-toast";
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -69,7 +70,10 @@ const Welcome = () => {
               </p>
               <Button
                 icon={<CloseOutlined />}
-                onClick={() => messageApi.destroy(newFeatureKey)}
+                onClick={() => {
+                  messageApi.destroy(newFeatureKey);
+                  navigate(location.pathname, { replace: true });
+                }}
                 size="small"
                 type="ghost"
               />
@@ -80,7 +84,7 @@ const Welcome = () => {
         duration: 0,
       });
     }
-  }, [messageApi, location]);
+  }, [messageApi, location, navigate]);
 
   // old company options way
   // const filteredCompanyOptions = useMemo(() => {
