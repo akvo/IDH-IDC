@@ -59,7 +59,7 @@ const Login = () => {
         setCookie("AUTH_TOKEN", data?.access_token);
         api.setToken(cookies?.AUTH_TOKEN);
         setTimeout(() => {
-          navigate("/welcome");
+          navigate("/welcome", { state: { fromLogin: true } });
         }, 100);
       })
       .catch((e) => {

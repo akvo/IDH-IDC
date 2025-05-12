@@ -5,7 +5,7 @@ import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined, CloseOutlined } from "@ant-design/icons";
 import { api, selectProps } from "../../lib";
 import { commodityOptions } from "../../store/static";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
 import { ViewSummaryModal } from "../../components/utils";
@@ -43,41 +43,44 @@ const Welcome = () => {
 
   const tableElement = document.getElementById("table-container");
 
+  const location = useLocation();
   const newFeatureKey = "new-feature-toast";
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
-    messageApi.open({
-      key: newFeatureKey,
-      type: "",
-      content: (
-        <span>
-          <Space align="center">
-            <p style={{ margin: 0 }}>
-              We have added some <b>NEW FEATURES</b> for you !! Discover more
-              information about them{" "}
-              <a
-                href="/files/Income-driver-calcualtor_Updates_2025.pdf"
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                here
-              </a>
-              .
-            </p>
-            <Button
-              icon={<CloseOutlined />}
-              onClick={() => messageApi.destroy(newFeatureKey)}
-              size="small"
-              type="ghost"
-            />
-          </Space>
-        </span>
-      ),
-      className: "new-feature-toast-wrapper",
-      duration: 0,
-    });
-  }, [messageApi]);
+    if (location?.state?.fromLogin) {
+      messageApi.open({
+        key: newFeatureKey,
+        type: "",
+        content: (
+          <span>
+            <Space align="center">
+              <p style={{ margin: 0 }}>
+                We have added some <b>NEW FEATURES</b> for you !! Discover more
+                information about them{" "}
+                <a
+                  href="/files/Income-driver-calcualtor_Updates_2025.pdf"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  here
+                </a>
+                .
+              </p>
+              <Button
+                icon={<CloseOutlined />}
+                onClick={() => messageApi.destroy(newFeatureKey)}
+                size="small"
+                type="ghost"
+              />
+            </Space>
+          </span>
+        ),
+        className: "new-feature-toast-wrapper",
+        duration: 0,
+      });
+    }
+  }, [messageApi, location]);
 
   // old company options way
   // const filteredCompanyOptions = useMemo(() => {
