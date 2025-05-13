@@ -192,3 +192,11 @@ export const caseStepItems = [
       "Create scenarios and visualize their effectiveness to close the gap.",
   },
 ];
+
+// update value "incomedrivercalculator.idhtrade.org" or "localhost"
+export const PROD_HOST = "incomedrivercalculator.idhtrade.org";
+
+// TODO:: update to new-case step link (/cases)
+// handled by hostname to enable new case step in dev mode
+// update value "/old-cases" or "/cases"
+export const LINK_TO_CASE_PROD = "/cases";

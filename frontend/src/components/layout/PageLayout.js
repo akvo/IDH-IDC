@@ -5,7 +5,12 @@ import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LoadingOutlined, DownOutlined } from "@ant-design/icons";
 import Logo from "../../assets/images/logo.png";
-import { adminRole, allUserRole } from "../../store/static";
+import {
+  adminRole,
+  allUserRole,
+  LINK_TO_CASE_PROD,
+  PROD_HOST,
+} from "../../store/static";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const pagesWithNoHeader = ["/login", "/register"];
@@ -23,12 +28,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       {
         testid: "nav-menu-cases",
         label: "Cases Overview",
-        // TODO:: update to new-case step link (/cases)
-        // currently handled by hostname to enable new case step in dev mode
-        key:
-          host === "incomedrivercalculator.idhtrade.org"
-            ? "/old-cases"
-            : "/cases",
+        key: host === PROD_HOST ? LINK_TO_CASE_PROD : "/cases",
         role: allUserRole,
         isPublic: false,
       },

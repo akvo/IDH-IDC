@@ -4,14 +4,15 @@ import { Row, Col, Card, Button, Table, Select, message, Space } from "antd";
 import { UserState, UIState } from "../../store";
 import { ArrowRightOutlined, CloseOutlined } from "@ant-design/icons";
 import { api, selectProps } from "../../lib";
-import { commodityOptions } from "../../store/static";
+import {
+  commodityOptions,
+  LINK_TO_CASE_PROD,
+  PROD_HOST,
+} from "../../store/static";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
 import { ViewSummaryModal } from "../../components/utils";
-
-// TODO :: Map data => case which have segment (current query)
-// TODO :: Map table data => all cases that saved on case table (current query)
 
 const perPage = 10;
 const defData = {
@@ -344,14 +345,7 @@ const Welcome = () => {
                   gap.
                 </div>
                 <div className="button-wrapper">
-                  {/* TODO :: Update route to new case step */}
-                  <Link
-                    to={
-                      host === "incomedrivercalculator.idhtrade.org"
-                        ? "/old-cases"
-                        : "/cases"
-                    }
-                  >
+                  <Link to={host === PROD_HOST ? LINK_TO_CASE_PROD : "/cases"}>
                     <Button className="button-explore">
                       View cases <ArrowRightOutlined />
                     </Button>

@@ -14,8 +14,9 @@ import {
   List,
   message,
 } from "antd";
-import { selectProps } from "../../old-cases/components";
+import { selectProps } from "../../../lib";
 import "./user.scss";
+import { LINK_TO_CASE_PROD } from "../../../store/static";
 
 const perPage = 10;
 const defData = {
@@ -131,7 +132,7 @@ const Users = () => {
             ),
             okText: "Go to cases",
             onOk: () => {
-              const URL = `/old-cases?owner=${user.email}`; // TODO:: update to new case steps page (/cases)
+              const URL = `${LINK_TO_CASE_PROD}?owner=${user.email}`;
               window.open(URL, "_blank");
             },
             cancelText: "Cancel",

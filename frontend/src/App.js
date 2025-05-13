@@ -23,7 +23,7 @@ import {
 } from "./pages/admin";
 import { UserState, UIState } from "./store";
 import { api } from "./lib";
-import { adminRole } from "./store/static";
+import { adminRole, PROD_HOST } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
 import {
@@ -168,23 +168,28 @@ const App = () => {
               <Route exact path="/welcome" element={<Welcome />} />
               <Route exact path="/home" element={<Home />} />
 
-              {/* TODO:: Manage new cases step route to show in development */}
-              {host !== "incomedrivercalculator.idhtrade.org" && (
-                <>
-                  <Route exact path="/cases" element={<Cases />} />
-                  <Route exact path="/case/:caseId/:step" element={<Case />} />
-                </>
-              )}
+              {/* Case */}
+              {/* Manage new cases step routes */}
+              <Route exact path="/cases" element={<Cases />} />
+              <Route exact path="/case/:caseId/:step" element={<Case />} />
 
               {/* TODO:: Delete later Old  Page */}
-              <Route
-                exact
-                path="/old-welcome"
-                element={<OldWelcome signOut={signOut} />}
-              />
-              <Route exact path="/old-cases" element={<OldCases />} />
-              <Route exact path="/old-cases/new" element={<OldCase />} />
-              <Route exact path="/old-cases/:caseId" element={<OldCase />} />
+              {host !== PROD_HOST && (
+                <>
+                  <Route
+                    exact
+                    path="/old-welcome"
+                    element={<OldWelcome signOut={signOut} />}
+                  />
+                  <Route exact path="/old-cases" element={<OldCases />} />
+                  <Route exact path="/old-cases/new" element={<OldCase />} />
+                  <Route
+                    exact
+                    path="/old-cases/:caseId"
+                    element={<OldCase />}
+                  />
+                </>
+              )}
               {/* EOL Case */}
 
               {/* for all logged in user route */}
