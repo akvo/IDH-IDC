@@ -68,7 +68,7 @@ class EmailBody(enum.Enum):
     INVITATION = {
         "title": "Invitation",
         "subject": "Invitation",
-        "body": "You have invited to to IDC portal.",
+        "body": "You have been invited to the Income Driver Calculator.",
         "message": """
             Please click
             <a href="#url#" target="_blank" rel="noreferrer">

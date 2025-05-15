@@ -222,7 +222,9 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
           value = currentSegmentValue?.total_current_income || 0;
         }
         if (tmp.key === "current_income_gap") {
-          const { target, total_current_income } = currentSegmentValue;
+          const target = currentSegmentValue?.target || 0;
+          const total_current_income =
+            currentSegmentValue?.total_current_income || 0;
           const currentIncomeGap =
             target - total_current_income < 0
               ? 0
@@ -233,7 +235,9 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
           value = updatedSegmentScenarioValue?.total_current_income || 0;
         }
         if (tmp.key === "scenario_income_gap") {
-          const { target, total_current_income } = updatedSegmentScenarioValue;
+          const target = updatedSegmentScenarioValue?.target || 0;
+          const total_current_income =
+            updatedSegmentScenarioValue?.total_current_income || 0;
           const scenarioIncomeGap =
             target - total_current_income < 0
               ? 0
