@@ -22,7 +22,6 @@ import "./steps/steps.scss";
 import { isEmpty, orderBy } from "lodash";
 import { customFormula } from "../../lib/formula";
 import { adminRole } from "../../store/static";
-import { Space, Row, Col } from "antd";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const masterCommodityCategories = window.master?.commodity_categories || [];
@@ -58,34 +57,22 @@ const renderPage = (key, navigate) => {
   switch (key) {
     case stepPath.step1.label:
       return (
-        <Row id="set-income-target" gutter={[24, 24]}>
-          <Col span={24} className="header-wrapper">
-            <Space direction="vertical">
-              <div className="title">Set an income target</div>
-            </Space>
-          </Col>
-          <Col span={24}>
-            <SegmentTabsWrapper>
-              <SetIncomeTarget />
-            </SegmentTabsWrapper>
-          </Col>
-        </Row>
+        <SegmentTabsWrapper
+          titleId="set-income-target"
+          pageTitle="Set an income target"
+        >
+          <SetIncomeTarget />
+        </SegmentTabsWrapper>
       );
     case stepPath.step2.label:
       return (
-        <Row id="enter-income-data" gutter={[24, 24]}>
-          <Col span={24} className="header-wrapper">
-            <Space direction="vertical">
-              <div className="title">Enter your income data</div>
-            </Space>
-          </Col>
-          <Col span={24}>
-            <SegmentTabsWrapper>
-              <EnterIncomeData key="left" />
-              <EnterIncomeDataVisual key="right" />
-            </SegmentTabsWrapper>
-          </Col>
-        </Row>
+        <SegmentTabsWrapper
+          titleId="enter-income-data"
+          pageTitle="Enter your income data"
+        >
+          <EnterIncomeData key="left" />
+          <EnterIncomeDataVisual key="right" />
+        </SegmentTabsWrapper>
       );
     case stepPath.step3.label:
       return <UnderstandIncomeGap />;
