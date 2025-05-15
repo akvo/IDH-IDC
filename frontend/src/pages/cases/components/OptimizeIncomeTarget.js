@@ -185,6 +185,7 @@ const OptimizeIncomeTarget = () => {
     if (
       refresh &&
       !isEmpty(increaseValues) &&
+      !isEmpty(optimizationResult) &&
       currentDashboardData?.total_current_income !==
         optimizationResult?.[optimizationResultPreffix]?.current_income
     ) {
@@ -904,7 +905,6 @@ const OptimizeIncomeTarget = () => {
                 >
                   <Button
                     className="button-run-the-model"
-                    onClick={handleRunModel}
                     disabled={
                       !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
                       disableRunModelByIfSelectedIncreaseValuesNA
