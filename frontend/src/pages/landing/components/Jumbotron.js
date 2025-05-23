@@ -6,6 +6,7 @@ import { UserState } from "../../../store";
 import { useNavigate } from "react-router-dom";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { LandingIDHLogo } from "../../../lib/icon";
+import { routePath } from "../../../components/route";
 
 const Jumbotron = ({ signOut = null }) => {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ const Jumbotron = ({ signOut = null }) => {
             </Link>
           ) : (
             <Link
-              to="/login"
+              to={routePath.idc.login}
               data-testid="button-learn-more"
               className="button button-yellow"
             >

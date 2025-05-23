@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
 import { ViewSummaryModal } from "../../components/utils";
+import { routePath } from "../../components/route";
 
 const perPage = 10;
 const defData = {
@@ -345,7 +346,13 @@ const Welcome = () => {
                   gap.
                 </div>
                 <div className="button-wrapper">
-                  <Link to={host === PROD_HOST ? LINK_TO_CASE_PROD : "/cases"}>
+                  <Link
+                    to={
+                      host === PROD_HOST
+                        ? LINK_TO_CASE_PROD
+                        : routePath.idc.cases
+                    }
+                  >
                     <Button className="button-explore">
                       View cases <ArrowRightOutlined />
                     </Button>

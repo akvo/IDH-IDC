@@ -23,11 +23,10 @@ const UnderstandIncomeGap = ({
 
   const backFunction = useCallback(() => {
     navigate(-1);
-    // navigate(`/case/${currentCase.id}/${stepPath.step2.label}`);
   }, [navigate]);
 
   const nextFunction = useCallback(() => {
-    navigate(`/case/${currentCase.id}/${stepPath.step4.label}`);
+    navigate(`${routePath.idc.case}/${currentCase.id}/${stepPath.step4.label}`);
   }, [navigate, currentCase.id]);
 
   useEffect(() => {

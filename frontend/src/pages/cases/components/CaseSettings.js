@@ -443,7 +443,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           form.resetFields();
           handleCancel();
           // always navigate to step 1 after save
-          navigate(`/case/${data.id}/${stepPath.step1.label}`);
+          navigate(`${routePath.idc.case}/${data.id}/${stepPath.step1.label}`);
         }, 100);
       })
       .catch((e) => {

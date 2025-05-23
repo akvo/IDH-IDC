@@ -32,6 +32,7 @@ import { resetCurrentCaseState } from "./store/current_case";
 import { resetCaseVisualState } from "./store/case_visual";
 import { resetCaseUIState } from "./store/case_ui";
 import { ViewSummaryModal } from "../../components/utils";
+import { routePath } from "../../components/route";
 
 const { Search } = Input;
 
@@ -159,7 +160,7 @@ const Cases = () => {
         const step = record?.has_segment_with_answers
           ? stepPath.step3.label
           : stepPath.step1.label;
-        const caseDetailURL = `/case/${record.id}/${step}`;
+        const caseDetailURL = `${routePath.idc.case}/${record.id}/${step}`;
         const linkText = (
           <Link
             style={{ fontWeight: "bold", color: "#000" }}
@@ -485,7 +486,7 @@ const Cases = () => {
     <ContentLayout
       breadcrumbItems={[
         { title: "Home", href: "/welcome" },
-        { title: "Cases", href: "/cases" },
+        { title: "Cases", href: routePath.idc.cases },
       ]}
       title="Cases"
       wrapperId="case"
