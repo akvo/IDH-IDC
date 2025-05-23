@@ -152,7 +152,9 @@ const EnterIncomeData = ({
             });
             if (allowNavigate) {
               setTimeout(() => {
-                navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
+                navigate(
+                  `${routePath.idc.case}/${currentCase.id}/${stepPath.step3.label}`
+                );
               }, 100);
             }
           })
@@ -185,7 +187,6 @@ const EnterIncomeData = ({
 
   const backFunction = useCallback(() => {
     navigate(-1);
-    // navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
   }, [navigate]);
 
   const nextFunction = useCallback(() => {

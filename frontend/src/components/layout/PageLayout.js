@@ -11,6 +11,7 @@ import {
   LINK_TO_CASE_PROD,
   PROD_HOST,
 } from "../../store/static";
+import { routePath } from "../route";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const pagesWithNoHeader = ["/login", "/register"];
@@ -28,7 +29,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       {
         testid: "nav-menu-cases",
         label: "Cases Overview",
-        key: host === PROD_HOST ? LINK_TO_CASE_PROD : "/cases",
+        key: host === PROD_HOST ? LINK_TO_CASE_PROD : routePath.idc.cases,
         role: allUserRole,
         isPublic: false,
       },
@@ -98,7 +99,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       {
         testid: "nav-menu-login",
         label: <Link className="nav-sign-in"> Sign in to IDC</Link>,
-        key: "/login",
+        key: routePath.idc.login,
         isPublic: true,
         role: [],
       },
@@ -166,7 +167,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
         <Col span={3} align="start" style={{ width: "100%" }}>
-          <Link to={isLoggedIn ? "/welcome" : "/"}>
+          <Link to={isLoggedIn ? routePath.idc.login : "/"}>
             <Image
               src={Logo}
               height={65}
@@ -217,10 +218,14 @@ const PageLayout = ({ children, signOut }) => {
   const isResetPasswordPage =
     pathname.includes("invitation") || pathname.includes("reset-password");
 
-  if (pagesWithNoSider.includes(pathname) || isResetPasswordPage) {
+  if (
+    pagesWithNoSider.some((path) => pathname.endsWith(path)) ||
+    isResetPasswordPage
+  ) {
     return (
       <Layout>
-        {!pagesWithNoHeader.includes(pathname) && !isResetPasswordPage ? (
+        {!pagesWithNoHeader.some((path) => pathname.endsWith(path)) &&
+        !isResetPasswordPage ? (
           <PageHeader isLoggedIn={isLoggedIn} signOut={signOut} />
         ) : (
           ""

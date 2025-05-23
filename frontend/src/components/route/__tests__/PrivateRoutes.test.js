@@ -3,6 +3,7 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { Cookies } from "react-cookie";
 import { UserState } from "../../../store";
 import PrivateRoutes from "../PrivateRoutes";
+import { routePath } from "..";
 
 describe("PrivateRoutes Component", () => {
   it("redirects to landing page when authToken is not available", () => {
@@ -36,7 +37,10 @@ describe("PrivateRoutes Component", () => {
           <Route element={<PrivateRoutes />}>
             <Route path="/private" element={<div>Mock Private Route</div>} />
           </Route>
-          <Route path="/login" element={<div>Mock Login Page</div>} />
+          <Route
+            path={routePath.idc.login}
+            element={<div>Mock Login Page</div>}
+          />
         </Routes>
       </MemoryRouter>
     );

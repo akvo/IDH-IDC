@@ -3,7 +3,7 @@ import "./App.scss";
 import { Spin } from "antd";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { PrivateRoutes } from "./components/route";
+import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/landing";
@@ -165,13 +165,23 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
           {userRole !== null ? (
             <Route element={<PrivateRoutes />}>
-              <Route exact path="/welcome" element={<Welcome />} />
               <Route exact path="/home" element={<Home />} />
+
+              {/* IDC Dashboard after login */}
+              <Route
+                exact
+                path={routePath.idc.dashboard}
+                element={<Welcome />}
+              />
 
               {/* Case */}
               {/* Manage new cases step routes */}
-              <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/case/:caseId/:step" element={<Case />} />
+              <Route exact path={routePath.idc.cases} element={<Cases />} />
+              <Route
+                exact
+                path={`${routePath.idc.case}/:caseId/:step`}
+                element={<Case />}
+              />
 
               {/* TODO:: Delete later Old  Page */}
               {host !== PROD_HOST && (
@@ -257,7 +267,7 @@ const App = () => {
             ""
           )}
           <Route exact path="/" element={<Landing signOut={signOut} />} />
-          <Route exact path="/login" element={<Login />} />
+          <Route exact path={routePath.idc.login} element={<Login />} />
           <Route
             exact
             path="/tools-and-resources"
