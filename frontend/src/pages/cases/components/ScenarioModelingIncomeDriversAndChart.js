@@ -70,7 +70,7 @@ const Question = ({
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialValues]);
 
   const currentSelectedDriversValue = useMemo(() => {
     const findScenario = currentScenarioData?.scenarioValues?.find(
