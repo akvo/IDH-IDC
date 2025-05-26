@@ -314,9 +314,7 @@ class Case(Base):
                 if not len(segment.segment_answers):
                     continue
                 segment_with_answers.append(segment.id)
-            has_segment_with_answers = (
-                len(segment_with_answers) > 0
-            )
+            has_segment_with_answers = len(segment_with_answers) > 0
         return {
             "id": self.id,
             "name": self.name,
@@ -331,7 +329,7 @@ class Case(Base):
             "tags": [ct.tag for ct in self.case_tags],
             "has_scenario_data": has_scenario_data,
             "scenario_outcome_data_source": scenario_outcome_data_source,
-            "has_segment_with_answers": has_segment_with_answers
+            "has_segment_with_answers": has_segment_with_answers,
         }
 
     @property
