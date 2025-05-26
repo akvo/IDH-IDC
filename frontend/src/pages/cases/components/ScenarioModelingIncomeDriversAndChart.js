@@ -179,6 +179,9 @@ const ScenarioModelingIncomeDriversAndChart = ({
   const backwardScenarioData = useMemo(() => {
     const backwardScenarioValues = currentScenarioData?.scenarioValues?.map(
       (sv) => {
+        if (isEmpty(sv.allNewValues)) {
+          return sv;
+        }
         // check if it is old value
         const allNewValuesKeys = Object.keys(sv?.allNewValues || {})?.map(
           (key) => key.split("-")[0]
@@ -200,9 +203,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
             Object.entries(sv.allNewValues).forEach(([key, value]) => {
               const [field, case_commodity, id] = key.split("-");
               if (id === qid) {
+                const qidTmp = qid === "diversified" ? 35 : id;
                 findValue = {
                   ...findValue,
-                  driver: `${case_commodity}-${id}`,
+                  driver: `${case_commodity}-${qidTmp}`,
                   [field]: value,
                 };
               }
@@ -264,8 +268,9 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
   const onScenarioModelingIncomeDriverFormValuesChange = (
     changedValue,
-    allNewValues
+    allValues
   ) => {
+    const allNewValues = { ...allValues };
     // recalculate drivers value by new value from scenario modeling form
     const recalculate = ({ key, updatedSegment }) => {
       const [fieldName, caseCommodityId, questionId] = key.split("-");
@@ -672,6 +677,28 @@ const ScenarioModelingIncomeDriversAndChart = ({
     }));
     // EOL Update scenario modeling global state
   };
+
+  useEffect(() => {
+    // run recalculate
+    backwardScenarioData?.scenarioValues?.forEach((sv) => {
+      Object.entries(sv?.allNewValues || {})
+        .filter(([key]) => {
+          if (backwardScenarioData.percentage) {
+            return key?.includes("percentage");
+          }
+          return key?.includes("absolute");
+        })
+        .forEach(([key, value]) => {
+          if (key && value) {
+            onScenarioModelingIncomeDriverFormValuesChange(
+              { [key]: value },
+              sv.allNewValues
+            );
+          }
+        });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const initialScenarioModelingIncomeDriverValues = useMemo(() => {
     if (backwardScenarioData?.scenarioValues?.length) {
