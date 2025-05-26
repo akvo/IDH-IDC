@@ -42,31 +42,11 @@ const Question = ({
       return;
     }
     const driverSelectField = `driver-${fieldName}`;
-    let fieldTmp = "";
-    let helperIndex = 0;
     Object.entries(initialValues).forEach(([key, value]) => {
       if (key === driverSelectField) {
         setSelectedDriver(value);
       } else {
-        const expectedKeyLength = driverSelectField.split("-").length;
-        const keyLength = key.split("-").length;
-        // current update field key
-        let inputFieldKey = key;
-        if (expectedKeyLength !== keyLength) {
-          // support backward compatibility with old-cases value
-          const [field, , qid] = key.split("-");
-          if (fieldTmp !== field) {
-            helperIndex = 0;
-          }
-          fieldTmp = field;
-          if (qid === "diversified") {
-            inputFieldKey = `${field}-${currentScenarioData.key}-${segment.id}-4`;
-          } else if (parseInt(qid) !== 1) {
-            inputFieldKey = `${field}-${currentScenarioData.key}-${segment.id}-${helperIndex}`;
-            helperIndex++;
-          }
-        }
-        scenarioModelingForm.setFieldValue(inputFieldKey, value);
+        scenarioModelingForm.setFieldValue(key, value);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -179,6 +159,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
   const fieldNameTmp = `${currentScenarioData.key}-${segment.id}`;
 
+  const currentDashboardData = useMemo(() => {
+    return dashboardData.find((d) => d.id === segment.id);
+  }, [segment, dashboardData]);
+
   const backwardScenarioData = useMemo(() => {
     const backwardScenarioValues = currentScenarioData?.scenarioValues?.map(
       (sv) => {
@@ -224,6 +208,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
           return {
             ...sv,
             allNewValues: backwardValues,
+            currentSegmentValue: segment,
           };
         }
         return sv;
@@ -233,11 +218,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ...currentScenarioData,
       scenarioValues: backwardScenarioValues,
     };
-  }, [currentScenarioData, fieldNameTmp]);
-
-  const currentDashboardData = useMemo(() => {
-    return dashboardData.find((d) => d.id === segment.id);
-  }, [segment, dashboardData]);
+  }, [currentScenarioData, fieldNameTmp, segment]);
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -269,65 +250,66 @@ const ScenarioModelingIncomeDriversAndChart = ({
     return uniqBy(allChildrensValues, "id");
   };
 
+  // generate questions
+  const flattenedQuestionGroups = questionGroups.flatMap((group) => {
+    const questions = group ? flatten(group.questions) : [];
+    return questions.map((q) => ({
+      ...q,
+      commodity_id: group.commodity_id,
+    }));
+  });
+  const totalCommodityQuestions = flattenedQuestionGroups.filter(
+    (q) => q.question_type === "aggregator"
+  );
+  const costQuestions = flattenedQuestionGroups.filter((q) =>
+    q.text.toLowerCase().includes("cost")
+  );
+  // eol generate questions
+
+  // recalculate drivers value by new value from scenario modeling form
+  const recalculate = ({ key, updatedSegment }) => {
+    const [fieldName, caseCommodityId, questionId] = key.split("-");
+    const fieldKey = `${fieldName}-${caseCommodityId}`;
+
+    const question = flattenIncomeDataDriversQuestions.find(
+      (q) => q.id === parseInt(questionId)
+    );
+    const parentQuestion = flattenIncomeDataDriversQuestions.find(
+      (q) => q.id === question?.parent
+    );
+
+    const allChildrensValues = calculateChildrenValues(
+      question,
+      fieldKey,
+      updatedSegment.answers
+    );
+    const sumAllChildrensValues = parentQuestion?.default_value
+      ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
+      : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+
+    const parentQuestionField = `${fieldKey}-${question?.parent}`;
+    if (parentQuestion) {
+      // use parentValue if child is 0
+      const parentValue = !sumAllChildrensValues
+        ? updatedSegment.answers?.[parentQuestionField] || 0
+        : sumAllChildrensValues;
+
+      updatedSegment["answers"] = {
+        ...updatedSegment["answers"],
+        [parentQuestionField]: parentValue,
+      };
+    }
+
+    if (parentQuestion?.parent) {
+      recalculate({ key: parentQuestionField, updatedSegment });
+    }
+  };
+
   const onScenarioModelingIncomeDriverFormValuesChange = (
     changedValue,
     allValues
   ) => {
     const allNewValues = { ...allValues };
-    // recalculate drivers value by new value from scenario modeling form
-    const recalculate = ({ key, updatedSegment }) => {
-      const [fieldName, caseCommodityId, questionId] = key.split("-");
-      const fieldKey = `${fieldName}-${caseCommodityId}`;
-
-      const question = flattenIncomeDataDriversQuestions.find(
-        (q) => q.id === parseInt(questionId)
-      );
-      const parentQuestion = flattenIncomeDataDriversQuestions.find(
-        (q) => q.id === question?.parent
-      );
-
-      const allChildrensValues = calculateChildrenValues(
-        question,
-        fieldKey,
-        updatedSegment.answers
-      );
-      const sumAllChildrensValues = parentQuestion?.default_value
-        ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
-        : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-
-      const parentQuestionField = `${fieldKey}-${question?.parent}`;
-      if (parentQuestion) {
-        // use parentValue if child is 0
-        const parentValue = !sumAllChildrensValues
-          ? updatedSegment.answers?.[parentQuestionField] || 0
-          : sumAllChildrensValues;
-
-        updatedSegment["answers"] = {
-          ...updatedSegment["answers"],
-          [parentQuestionField]: parentValue,
-        };
-      }
-
-      if (parentQuestion?.parent) {
-        recalculate({ key: parentQuestionField, updatedSegment });
-      }
-    };
-
-    // generate questions
-    const flattenedQuestionGroups = questionGroups.flatMap((group) => {
-      const questions = group ? flatten(group.questions) : [];
-      return questions.map((q) => ({
-        ...q,
-        commodity_id: group.commodity_id,
-      }));
-    });
-    const totalCommodityQuestions = flattenedQuestionGroups.filter(
-      (q) => q.question_type === "aggregator"
-    );
-    const costQuestions = flattenedQuestionGroups.filter((q) =>
-      q.text.toLowerCase().includes("cost")
-    );
-    // eol generate questions
 
     const valueKey = Object.keys(changedValue)[0];
     const [valueField, scenarioKey, segmentId, index] = valueKey.split("-");
@@ -795,7 +777,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
       </Col>
       <Col span={12}>
         <ChartSegmentsIncomeGapScenarioModeling
-          currentScenarioData={currentScenarioData}
+          currentScenarioData={backwardScenarioData}
         />
       </Col>
     </Row>
