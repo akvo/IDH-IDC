@@ -38,6 +38,9 @@ const Question = ({
 
   useEffect(() => {
     // load initial value manually
+    if (isEmpty(initialValues)) {
+      return;
+    }
     const driverSelectField = `driver-${fieldName}`;
     let fieldTmp = "";
     let helperIndex = 0;
