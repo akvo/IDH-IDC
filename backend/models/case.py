@@ -59,6 +59,7 @@ class CaseListDict(TypedDict):
     has_scenario_data: bool
     has_segment_with_answers: bool
     scenario_outcome_data_source: Optional[List[dict]] = []
+    scenario_data: Optional[List[dict]] = []
     company: Optional[int] = None
     tags: Optional[List[int]] = []
 
@@ -299,12 +300,19 @@ class Case(Base):
         )
         # get scenario outcome data source
         scenario_outcome_data_source = []
+        cleaned_scenario_data = []
         if has_scenario_data:
-            scenario_outcome_data_source = scenario_modeling_visualizations[0]
-            scenario_outcome_data_source = (
-                scenario_outcome_data_source.config.get(
-                    "scenarioOutcomeDataSource"
-                )
+            scenario_modeling_viz = scenario_modeling_visualizations[0]
+            scenario_data = scenario_modeling_viz.config.get(
+                "scenarioData", []
+            )
+            # Remove scenarioValues from each scenario data entry
+            cleaned_scenario_data = [
+                {k: v for k, v in item.items() if k != "scenarioValues"}
+                for item in scenario_data
+            ]
+            scenario_outcome_data_source = scenario_modeling_viz.config.get(
+                "scenarioOutcomeDataSource"
             )
         # get case with segment having answer to decide go to step 3
         has_segment_with_answers = False
@@ -329,6 +337,7 @@ class Case(Base):
             "tags": [ct.tag for ct in self.case_tags],
             "has_scenario_data": has_scenario_data,
             "scenario_outcome_data_source": scenario_outcome_data_source,
+            "scenario_data": cleaned_scenario_data,
             "has_segment_with_answers": has_segment_with_answers,
         }
 
