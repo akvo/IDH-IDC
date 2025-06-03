@@ -51,6 +51,7 @@ const incomeTargetIcon = {
 const TableScenarioOutcomes = ({
   // this params used when showing scenario outcomes from View Summary Button
   isSummary = false,
+  summaryScenarioData = [],
   summaryScenarioOutcomeDataSource = [],
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -70,11 +71,20 @@ const TableScenarioOutcomes = ({
   }, [currentCase.segments]);
 
   const scenarioOutcomeColumns = useMemo(() => {
-    const scenarioCol = scenarioData.map((x) => ({
-      title: x.name,
-      dataIndex: `scenario-${x.key}`,
-      key: `scenario-${x.key}`,
-    }));
+    let scenarioCol = [];
+    if (isSummary) {
+      scenarioCol = summaryScenarioData.map((x) => ({
+        title: x.name,
+        dataIndex: `scenario-${x.key}`,
+        key: `scenario-${x.key}`,
+      }));
+    } else {
+      scenarioCol = scenarioData.map((x) => ({
+        title: x.name,
+        dataIndex: `scenario-${x.key}`,
+        key: `scenario-${x.key}`,
+      }));
+    }
     return [
       {
         title: null,
@@ -89,7 +99,7 @@ const TableScenarioOutcomes = ({
       },
       ...scenarioCol,
     ];
-  }, [scenarioData]);
+  }, [scenarioData, summaryScenarioData, isSummary]);
 
   // Generate for all scenario segments once
   // then save the scenarioOutcomeDataSource into DB

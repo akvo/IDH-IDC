@@ -258,18 +258,26 @@ const ViewSummaryModal = ({
               summaryScenarioOutcomeDataSource={
                 summaryScenarioOutcomeDataSource
               }
+              summaryScenarioData={selectedCaseData?.scenario_data || []}
               isSummary={true}
             />
           ) : (
             <Row gutter={[20, 20]}>
               {summaryScenarioOutcomeDataSource.map((item, index) => (
-                <Col span={24} key={`${item.segmentId}-col-summary`}>
+                <Col
+                  span={24}
+                  key={`${item.segmentId}-col-summary`}
+                  id={`col-scenario-item-${index}`}
+                >
                   <Card
                     title={item.segmentName}
                     className="summary-table-wrapper"
                   >
                     <TableScenarioOutcomes
                       summaryScenarioOutcomeDataSource={item.scenarioOutcome}
+                      summaryScenarioData={
+                        selectedCaseData?.scenario_data || []
+                      }
                       isSummary={true}
                     />
                   </Card>
@@ -278,6 +286,17 @@ const ViewSummaryModal = ({
                       icon={<ArrowDownOutlined />}
                       className="button-icon-arrow-down"
                       size="small"
+                      onClick={() => {
+                        const col = document.getElementById(
+                          `col-scenario-item-${index + 1}`
+                        );
+                        if (col) {
+                          col.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                        }
+                      }}
                     />
                   ) : (
                     ""
