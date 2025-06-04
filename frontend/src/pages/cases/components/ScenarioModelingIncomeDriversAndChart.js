@@ -33,6 +33,7 @@ const Question = ({
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [newValue, setNewValue] = useState(null);
   const scenarioModelingForm = Form.useFormInstance();
+  const { globalSectionTotalValues } = CaseVisualState.useState((s) => s);
 
   const fieldName = `${currentScenarioData.key}-${segment.id}-${index}`;
 
@@ -67,6 +68,12 @@ const Question = ({
 
   const currentValue = useMemo(() => {
     if (selectedDriver) {
+      if (selectedDriver.includes("diversified")) {
+        return (
+          globalSectionTotalValues.find((g) => g.segmentId === segment.id)
+            ?.sectionTotalValues?.diversified?.current || 0
+        );
+      }
       return segment?.answers?.[`current-${selectedDriver}`] || 0;
     }
     return 0;
@@ -85,6 +92,7 @@ const Question = ({
       const value = currentValue * (newFormValue / 100);
       return newFormValue ? currentValue + value : 0;
     }
+    console.log(newFormValue, "newFormValue", fieldName, currentValue);
     const percent = newFormValue
       ? ((newFormValue - currentValue) / currentValue) * 100
       : 0;
@@ -154,21 +162,25 @@ const ScenarioModelingIncomeDriversAndChart = ({
     questionGroups,
     totalIncomeQuestions,
     dashboardData,
+    globalSectionTotalValues,
   } = CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
-
-  const fieldNameTmp = `${currentScenarioData.key}-${segment.id}`;
 
   const currentDashboardData = useMemo(() => {
     return dashboardData.find((d) => d.id === segment.id);
   }, [segment, dashboardData]);
 
   const backwardScenarioData = useMemo(() => {
+    if (!globalSectionTotalValues?.length) {
+      return currentScenarioData;
+    }
+    const isPercentage = currentScenarioData?.percentage || false;
     const backwardScenarioValues = currentScenarioData?.scenarioValues?.map(
       (sv) => {
         if (isEmpty(sv.allNewValues)) {
           return sv;
         }
+        const fieldNameTmp = `${currentScenarioData.key}-${sv.segmentId}`;
         // check if it is old value
         const allNewValuesKeys = Object.keys(sv?.allNewValues || {})?.map(
           (key) => key.split("-")[0]
@@ -190,10 +202,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
             Object.entries(sv.allNewValues).forEach(([key, value]) => {
               const [field, case_commodity, id] = key.split("-");
               if (id === qid) {
-                const qidTmp = qid === "diversified" ? 35 : id;
+                // hanlde diversified value as "diversified"
                 findValue = {
                   ...findValue,
-                  driver: `${case_commodity}-${qidTmp}`,
+                  driver: `${case_commodity}-${qid}`,
                   [field]: value,
                 };
               }
@@ -218,7 +230,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ...currentScenarioData,
       scenarioValues: backwardScenarioValues,
     };
-  }, [currentScenarioData, fieldNameTmp, segment]);
+  }, [currentScenarioData, segment, globalSectionTotalValues]);
+  console.log(backwardScenarioData, "backwardScenarioData");
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -665,6 +678,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
   useEffect(() => {
     // run recalculate
+    return;
     backwardScenarioData?.scenarioValues?.forEach((sv) => {
       Object.entries(sv?.allNewValues || {})
         .filter(([key]) => {
