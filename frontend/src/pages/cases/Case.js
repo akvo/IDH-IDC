@@ -22,6 +22,8 @@ import "./steps/steps.scss";
 import { isEmpty, orderBy } from "lodash";
 import { customFormula } from "../../lib/formula";
 import { adminRole } from "../../store/static";
+import { handleQuestionType } from "./utils";
+import { globalConfig } from "antd/es/config-provider";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const masterCommodityCategories = window.master?.commodity_categories || [];
@@ -92,9 +94,9 @@ const Case = () => {
   const [loading, setLoading] = useState(true);
   const currentCase = CurrentCaseState.useState((s) => s);
   const prevCase = PrevCaseState.useState((s) => s);
-  const { questionGroups, totalIncomeQuestions } = CaseVisualState.useState(
-    (s) => s
-  );
+  const { questionGroups, totalIncomeQuestions, incomeDataDrivers } =
+    CaseVisualState.useState((s) => s);
+
   const userState = UserState.useState((s) => s);
 
   const updateStepIncomeTargetState = (key, value) => {
@@ -298,6 +300,91 @@ const Case = () => {
         });
     }
   }, [currentCase?.country, prevCase?.country]);
+
+  // generate global section total values
+  useEffect(() => {
+    if (currentCase?.segments?.length && incomeDataDrivers?.length) {
+      currentCase.segments.forEach((segment) => {
+        // update global section total values
+        const updateSectionTotalValues = (commodity_type, fieldName, value) => {
+          CaseVisualState.update((s) => {
+            const result = s.globalSectionTotalValues.filter(
+              (g) => g.segmentId && g.segmentId !== segment.id
+            );
+            const isExist = s.globalSectionTotalValues.find(
+              (g) => g.segmentId === segment.id
+            );
+            if (!isExist) {
+              result.push({
+                segmentId: segment.id,
+                sectionTotalValues: {
+                  [commodity_type]: { [fieldName]: value },
+                },
+              });
+            } else {
+              result.push({
+                ...isExist,
+                sectionTotalValues: {
+                  ...isExist.sectionTotalValues,
+                  [commodity_type]: {
+                    ...isExist.sectionTotalValues[commodity_type],
+                    [fieldName]: value,
+                  },
+                },
+              });
+            }
+            return { ...s, globalSectionTotalValues: result };
+          });
+        };
+        // handle recalculate the section total values
+        incomeDataDrivers.forEach((driver) => {
+          driver.questionGroups.forEach((group) => {
+            const flattenQuestionList = flatten(group.questions);
+            if (!isEmpty(segment.answers)) {
+              const onLoad = ({ key }) => {
+                const [fieldName, caseCommodityId, questionId] = key.split("-");
+                const fieldKey = `${fieldName}-${caseCommodityId}`;
+
+                const commodity = currentCase.case_commodities.find(
+                  (cc) => cc.id === parseInt(caseCommodityId)
+                );
+
+                const question = flattenQuestionList.find(
+                  (q) => q.id === parseInt(questionId)
+                );
+                const parentQuestion = flattenQuestionList.find(
+                  (q) => q.id === question?.parent
+                );
+
+                handleQuestionType(
+                  question,
+                  commodity,
+                  fieldName,
+                  segment.answers,
+                  fieldKey,
+                  flattenQuestionList,
+                  updateSectionTotalValues
+                );
+
+                const parentQuestionField = `${fieldKey}-${question?.parent}`;
+
+                if (parentQuestion?.parent) {
+                  onLoad({ key: parentQuestionField });
+                }
+              };
+
+              setTimeout(() => {
+                Object.keys(segment.answers).forEach((key) => {
+                  onLoad({ key });
+                });
+              }, 500);
+            }
+          });
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCase?.segments, incomeDataDrivers]);
 
   // generate dashboard data
   useEffect(() => {

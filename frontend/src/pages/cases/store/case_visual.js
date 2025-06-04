@@ -8,10 +8,16 @@ const defaultScenarioData = {
   scenarioValues: [],
 };
 
+// const defaultGlobalSectionTotalValues = {
+//   segmentId: null,
+//   sectionTotalValues: {},
+// };
+
 const defaultCaseVisualState = {
   questionGroups: [],
   totalIncomeQuestions: [],
   incomeDataDrivers: [],
+  globalSectionTotalValues: [],
   dashboardData: [],
   sensitivityAnalysis: {
     case: null,

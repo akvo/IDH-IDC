@@ -163,8 +163,13 @@ const AllDriverTreeSelector = ({
     const diversifiedDrivers = diversifiedGroup
       ? [diversifiedGroup]
           ?.map((driver) => {
+            const caseCommodityId = driver?.questionGroups?.length
+              ? driver.questionGroups[0]?.id
+              : null;
             return {
-              value: driver?.groupName,
+              value: caseCommodityId
+                ? `${caseCommodityId}-diversified`
+                : "diversified",
               title: driver?.groupName,
               selectable: false,
               children: driver?.questionGroups
