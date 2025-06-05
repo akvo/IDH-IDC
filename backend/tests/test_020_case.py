@@ -244,6 +244,7 @@ class TestCaseRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "scenario_data": [],
                     "has_segment_with_answers": False,
                 }
             ],
@@ -274,6 +275,7 @@ class TestCaseRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "scenario_data": [],
                     "has_segment_with_answers": False,
                 },
                 {
@@ -290,6 +292,7 @@ class TestCaseRoute:
                     "status": 0,
                     "has_scenario_data": False,
                     "scenario_outcome_data_source": [],
+                    "scenario_data": [],
                     "has_segment_with_answers": False,
                 },
             ],

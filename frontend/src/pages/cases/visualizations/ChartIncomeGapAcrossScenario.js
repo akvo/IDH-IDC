@@ -291,7 +291,7 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
         origin: scenarioValues,
         yAxis: { name: `Income (${currentCase.currency})` },
         showLabel: showLabel,
-        grid: { top: 0, right: 225, left: 25, bottom: 10 },
+        grid: { top: 0, right: 225, left: 45, bottom: 10 },
       }),
     };
   }, [

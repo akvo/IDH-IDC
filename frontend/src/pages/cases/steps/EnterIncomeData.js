@@ -76,6 +76,35 @@ const EnterIncomeData = ({
 
   const [messageApi, contextHolder] = message.useMessage();
 
+  // handle section total values event change
+  useEffect(() => {
+    CaseVisualState.update((s) => {
+      const result = s.globalSectionTotalValues.filter(
+        (g) => g.segmentId && g.segmentId !== segment.id
+      );
+      const isExist = s.globalSectionTotalValues.find(
+        (g) => g.segmentId === segment.id
+      );
+      if (!isExist) {
+        result.push({
+          segmentId: segment.id,
+          sectionTotalValues: {
+            ...sectionTotalValues,
+          },
+        });
+      } else {
+        result.push({
+          ...isExist,
+          sectionTotalValues: {
+            ...isExist.sectionTotalValues,
+            ...sectionTotalValues,
+          },
+        });
+      }
+      return { ...s, globalSectionTotalValues: result };
+    });
+  }, [sectionTotalValues, segment.id]);
+
   const upateCaseButtonState = (value) => {
     CaseUIState.update((s) => ({
       ...s,

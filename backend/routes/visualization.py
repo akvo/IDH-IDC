@@ -30,22 +30,31 @@ async def create_visualization(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    # Read raw compressed body
-    compressed_data = await req.body()
+    # Read raw body
+    raw_data = await req.body()
 
-    # Decompress if it's gzip
-    try:
-        decompressed_data = gzip.decompress(compressed_data).decode("utf-8")
-        payload = json.loads(decompressed_data)
-    except OSError:
-        return {"error": "Invalid gzip format"}
+    # Check for gzip magic number: 0x1f 0x8b
+    is_gzip = raw_data[:2] == b"\x1f\x8b"
 
+    if is_gzip:
+        try:
+            decompressed_data = gzip.decompress(raw_data).decode("utf-8")
+            payload = json.loads(decompressed_data)
+        except Exception as e:
+            return {"error": f"Failed to decompress gzip: {str(e)}"}
+    else:
+        try:
+            payload = json.loads(raw_data.decode("utf-8"))
+        except Exception as e:
+            return {"error": f"Invalid JSON: {str(e)}"}
+
+    # Get case_id from first payload item
     case_id = payload[0].get("case")
     user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
 
-    # Process CRUD operations
+    # Process create or update
     data = crud_visualization.create_or_update_visualization(
         session=session, payloads=payload
     )
