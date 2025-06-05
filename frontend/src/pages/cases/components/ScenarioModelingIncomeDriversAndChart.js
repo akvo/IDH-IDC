@@ -964,14 +964,14 @@ const ScenarioModelingIncomeDriversAndChart = ({
       return;
     }
     const currentFormValues = scenarioDriversForm.getFieldsValue();
-    // Get the last key
-    const lastKey = Object.keys(currentFormValues).pop();
-    // Get the last value
-    const lastValue = currentFormValues[lastKey];
-    onScenarioModelingIncomeDriverFormValuesChange(
-      { [lastKey]: lastValue },
-      currentFormValues
-    );
+    Object.entries(currentFormValues).forEach(([key, value]) => {
+      if (key && value) {
+        onScenarioModelingIncomeDriverFormValuesChange(
+          { [key]: value },
+          currentFormValues
+        );
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshBackward]);
 
