@@ -164,7 +164,9 @@ const AllDriverTreeSelector = ({
       ? [diversifiedGroup]
           ?.map((driver) => {
             const caseCommodityId = driver?.questionGroups?.length
-              ? driver.questionGroups[0]?.id
+              ? driver.questionGroups?.find(
+                  (qg) => qg?.commodity_type === "diversified"
+                )?.id
               : null;
             return {
               value: caseCommodityId
@@ -260,6 +262,7 @@ const AllDriverTreeSelector = ({
 
     return [...primaryDrivers, ...diversifiedDrivers];
   }, [incomeDataDrivers, segment?.answers]);
+  console.info(incomeDriverOptions, "incomeDriverOptions");
 
   // TODO :: REMOVE
   // const treeMap = useMemo(
