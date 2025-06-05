@@ -164,6 +164,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
     globalSectionTotalValues,
   } = CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
+  const [refreshBackward, setRefreshBackward] = useState(true);
 
   // generate questions
   const flattenedQuestionGroups = questionGroups.flatMap((group) => {
@@ -187,7 +188,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
   // handle backward compatibility with old value
   const backwardScenarioData = useMemo(() => {
-    if (!globalSectionTotalValues?.length) {
+    if (!globalSectionTotalValues?.length || !refreshBackward) {
       return currentScenarioData;
     }
     const backwardScenarioValues = currentScenarioData?.scenarioValues?.map(
@@ -424,7 +425,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
             return {
               ...segment,
-              total_current_income: totalCurrentIncomeAnswer,
+              total_current_income: Math.round(totalCurrentIncomeAnswer),
               total_feasible_income: totalFeasibleIncomeAnswer,
               total_feasible_cost: -totalCostFeasible,
               total_current_cost: -totalCostCurrent,
@@ -447,7 +448,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
           return {
             ...sv,
             allNewValues: backwardValues,
-            currentSegmentValue: segment,
+            currentSegmentValue: currentDashboardData,
             updatedSegment,
             updatedSegmentScenarioValue,
           };
@@ -455,10 +456,36 @@ const ScenarioModelingIncomeDriversAndChart = ({
         return { ...sv, updatedSegment, updatedSegmentScenarioValue };
       }
     );
-    return {
+    const bacwardRes = {
       ...currentScenarioData,
-      scenarioValues: backwardScenarioValues,
+      scenarioValues: orderBy(backwardScenarioValues, "segmentId"),
     };
+
+    // update state value
+    CaseVisualState.update((s) => ({
+      ...s,
+      scenarioModeling: {
+        ...s.scenarioModeling,
+        config: {
+          ...s.scenarioModeling.config,
+          scenarioData: s.scenarioModeling.config.scenarioData.map(
+            (scenario) => {
+              if (scenario.key === bacwardRes.key) {
+                return {
+                  ...scenario,
+                  scenarioValues: orderBy(backwardScenarioValues, "segmentId"),
+                };
+              }
+              return scenario;
+            }
+          ),
+        },
+      },
+    }));
+    // EOL Update scenario modeling global state
+
+    setRefreshBackward(false);
+    return bacwardRes;
   }, [
     currentScenarioData,
     segment,
@@ -468,6 +495,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
     flattenedQuestionGroups,
     totalCommodityQuestions,
     totalIncomeQuestions,
+    currentDashboardData,
+    refreshBackward,
   ]);
 
   // Update child question feasible answer to 0 if the parent question is updated
