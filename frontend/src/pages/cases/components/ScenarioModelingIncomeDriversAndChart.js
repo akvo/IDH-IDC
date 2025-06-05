@@ -888,30 +888,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
     // EOL Update scenario modeling global state
   };
 
-  // TODO :: Delete this
-  // useEffect(() => {
-  //   // run recalculate
-  //   return;
-  //   backwardScenarioData?.scenarioValues?.forEach((sv) => {
-  //     Object.entries(sv?.allNewValues || {})
-  //       .filter(([key]) => {
-  //         if (backwardScenarioData.percentage) {
-  //           return key?.includes("percentage");
-  //         }
-  //         return key?.includes("absolute");
-  //       })
-  //       .forEach(([key, value]) => {
-  //         if (key && value) {
-  //           onScenarioModelingIncomeDriverFormValuesChange(
-  //             { [key]: value },
-  //             sv.allNewValues
-  //           );
-  //         }
-  //       });
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   const initialScenarioModelingIncomeDriverValues = useMemo(() => {
     if (backwardScenarioData?.scenarioValues?.length) {
       const values = backwardScenarioData.scenarioValues.find(
