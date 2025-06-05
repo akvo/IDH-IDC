@@ -968,6 +968,27 @@ const ScenarioModelingIncomeDriversAndChart = ({
     return {};
   }, [segment.id, backwardScenarioData.scenarioValues]);
 
+  const scenarioTotalIncome = useMemo(() => {
+    const findScenario =
+      backwardScenarioData?.scenarioValues?.find(
+        (s) => s.segmentId === segment.id
+      ) || {};
+    const currentTotalIncome = currentDashboardData?.total_current_income || 0;
+    const newTotalIncome =
+      findScenario?.updatedSegmentScenarioValue?.total_current_income || 0;
+    if (
+      findScenario?.value &&
+      Math.round(currentTotalIncome) === Math.round(newTotalIncome)
+    ) {
+      return findScenario?.value || 0;
+    }
+    return newTotalIncome;
+  }, [
+    segment?.id,
+    backwardScenarioData?.scenarioValues,
+    currentDashboardData?.total_current_income,
+  ]);
+
   return (
     <Row
       align="middle"
@@ -1035,12 +1056,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
                   )}
                 </Col>
                 <Col span={4} align="end">
-                  {thousandFormatter(
-                    backwardScenarioData?.scenarioValues?.find(
-                      (s) => s.segmentId === segment.id
-                    )?.updatedSegmentScenarioValue?.total_current_income || 0,
-                    2
-                  )}
+                  {thousandFormatter(scenarioTotalIncome, 2)}
                 </Col>
               </Row>
             </div>
