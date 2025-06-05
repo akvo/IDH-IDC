@@ -92,7 +92,6 @@ const Question = ({
       const value = currentValue * (newFormValue / 100);
       return newFormValue ? currentValue + value : 0;
     }
-    console.log(newFormValue, "newFormValue", fieldName, currentValue);
     const percent = newFormValue
       ? ((newFormValue - currentValue) / currentValue) * 100
       : 0;
@@ -166,15 +165,31 @@ const ScenarioModelingIncomeDriversAndChart = ({
   } = CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
 
+  // generate questions
+  const flattenedQuestionGroups = questionGroups.flatMap((group) => {
+    const questions = group ? flatten(group.questions) : [];
+    return questions.map((q) => ({
+      ...q,
+      commodity_id: group.commodity_id,
+    }));
+  });
+  const totalCommodityQuestions = flattenedQuestionGroups.filter(
+    (q) => q.question_type === "aggregator"
+  );
+  const costQuestions = flattenedQuestionGroups.filter((q) =>
+    q.text.toLowerCase().includes("cost")
+  );
+  // eol generate questions
+
   const currentDashboardData = useMemo(() => {
     return dashboardData.find((d) => d.id === segment.id);
   }, [segment, dashboardData]);
 
+  // handle backward compatibility with old value
   const backwardScenarioData = useMemo(() => {
     if (!globalSectionTotalValues?.length) {
       return currentScenarioData;
     }
-    const isPercentage = currentScenarioData?.percentage || false;
     const backwardScenarioValues = currentScenarioData?.scenarioValues?.map(
       (sv) => {
         if (isEmpty(sv.allNewValues)) {
@@ -188,11 +203,19 @@ const ScenarioModelingIncomeDriversAndChart = ({
         const isBackward = allNewValuesKeys?.length
           ? !allNewValuesKeys.includes("driver")
           : false;
+
+        let updatedSegment = sv?.updatedSegment || {};
+        let updatedSegmentScenarioValue = sv?.updatedSegmentScenarioValue || {};
+
         if (isBackward) {
+          // backward for old value
           const qids = uniq(
             Object.keys(sv.allNewValues).map((key) => key.split("-")[2])
           ).filter((qid) => qid !== "1");
+
           let backwardValues = {};
+          let updatedCurrentValues = {};
+
           qids.forEach((qid, index) => {
             const driverKey = `driver-${fieldNameTmp}-${index}`;
             const absoluteKey = `absolute-${fieldNameTmp}-${index}`;
@@ -201,7 +224,21 @@ const ScenarioModelingIncomeDriversAndChart = ({
             let findValue = {};
             Object.entries(sv.allNewValues).forEach(([key, value]) => {
               const [field, case_commodity, id] = key.split("-");
+              const updatedCurrentKey = `current-${case_commodity}-${id}`;
+              if (id === "1" && field === "absolute") {
+                // update new focus total income value
+                updatedCurrentValues = {
+                  ...updatedCurrentValues,
+                  [updatedCurrentKey]: parseFloat(value),
+                };
+              }
               if (id === qid) {
+                if (field === "absolute") {
+                  updatedCurrentValues = {
+                    ...updatedCurrentValues,
+                    [updatedCurrentKey]: parseFloat(value),
+                  };
+                }
                 // hanlde diversified value as "diversified"
                 findValue = {
                   ...findValue,
@@ -217,13 +254,205 @@ const ScenarioModelingIncomeDriversAndChart = ({
               [percentageKey]: findValue?.percentage || null,
             };
           });
+
+          // handle backward for focus commodity
+          // const focusCommodityPrimaryQuestionIds = [
+          //   2, 3, 4, 40, 41, 42, 5, 26, 43, 7,
+          // ];
+
+          const updatedSegmentAnswers = isEmpty(segment?.answers)
+            ? {}
+            : {
+                ...segment.answers,
+                ...updatedCurrentValues,
+              };
+          updatedSegment = {
+            ...segment,
+            answers: { ...updatedSegmentAnswers },
+          };
+
+          updatedSegmentScenarioValue = [updatedSegment].map((segment) => {
+            const answers = isEmpty(segment?.answers) ? {} : segment.answers;
+
+            let diversifiedCaseCommodityId = "";
+            const remappedAnswers = Object.keys(answers).map((key) => {
+              const [fieldKey, caseCommodityId, questionId] = key.split("-");
+
+              const commodity = currentCase.case_commodities.find(
+                (cc) => cc.id === parseInt(caseCommodityId)
+              );
+
+              if (
+                questionId === "diversified" &&
+                commodity?.commodity_type === "diversified"
+              ) {
+                diversifiedCaseCommodityId = caseCommodityId;
+              }
+
+              const commodityFocus = commodity?.commodity_type === "focus";
+              const totalCommodityValue = totalCommodityQuestions.find(
+                (q) => q.id === parseInt(questionId)
+              );
+              const cost = costQuestions.find(
+                (q) =>
+                  q.id === parseInt(questionId) &&
+                  q.parent === 1 &&
+                  q.commodityId === commodity.commodity
+              );
+              const question = flattenedQuestionGroups.find(
+                (q) =>
+                  q.id === parseInt(questionId) &&
+                  q.commodity_id === commodity.commodity
+              );
+              const totalOtherDiversifiedIncome =
+                question?.question_type === "diversified" && !question.parent;
+              return {
+                name: fieldKey,
+                question: question,
+                commodityFocus: commodityFocus,
+                commodityType: commodity?.commodity_type,
+                caseCommodityId: parseInt(caseCommodityId),
+                commodityId: commodity?.commodity,
+                commodityName: commodityNames?.[commodity?.commodity],
+                questionId: isNaN(parseInt(questionId))
+                  ? "diversified"
+                  : parseInt(questionId), // handle custom conditon for backward diversified
+                value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
+                isTotalFeasibleFocusIncome:
+                  totalCommodityValue &&
+                  commodityFocus &&
+                  fieldKey === "feasible"
+                    ? true
+                    : false,
+                isTotalFeasibleDiversifiedIncome:
+                  totalCommodityValue &&
+                  !commodityFocus &&
+                  fieldKey === "feasible"
+                    ? true
+                    : totalOtherDiversifiedIncome && fieldKey === "feasible"
+                    ? true
+                    : false,
+                isTotalCurrentFocusIncome:
+                  totalCommodityValue &&
+                  commodityFocus &&
+                  fieldKey === "current"
+                    ? true
+                    : false,
+                isTotalCurrentDiversifiedIncome:
+                  totalCommodityValue &&
+                  !commodityFocus &&
+                  fieldKey === "current"
+                    ? true
+                    : totalOtherDiversifiedIncome && fieldKey === "current"
+                    ? true
+                    : false,
+                feasibleCost:
+                  cost && answers[key] && fieldKey === "feasible"
+                    ? true
+                    : false,
+                currentCost:
+                  cost && answers[key] && fieldKey === "current" ? true : false,
+                costName: cost ? cost.text : "",
+              };
+            });
+
+            // handle custom backward for diversified
+            const backwardTotalIncomeQuestions = [
+              ...totalIncomeQuestions.filter((qs) => qs.includes("-1")),
+              `${diversifiedCaseCommodityId}-diversified`,
+            ];
+
+            const totalCurrentIncomeAnswer = backwardTotalIncomeQuestions
+              .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
+              .filter((a) => a)
+              .reduce((acc, a) => acc + a, 0);
+            const totalFeasibleIncomeAnswer = totalIncomeQuestions
+              .map((qs) => segment?.answers?.[`feasible-${qs}`] || 0)
+              .filter((a) => a)
+              .reduce((acc, a) => acc + a, 0);
+
+            const totalCostFeasible = remappedAnswers
+              .filter((a) => a.feasibleCost)
+              .reduce((acc, curr) => acc + curr.value, 0);
+            const totalCostCurrent = remappedAnswers
+              .filter((a) => a.currentCost)
+              .reduce((acc, curr) => acc + curr.value, 0);
+            const totalFeasibleFocusIncome = remappedAnswers
+              .filter((a) => a.isTotalFeasibleFocusIncome)
+              .reduce((acc, curr) => acc + curr.value, 0);
+            const totalFeasibleDiversifiedIncome = remappedAnswers
+              .filter((a) => a.isTotalFeasibleDiversifiedIncome)
+              .reduce((acc, curr) => acc + curr.value, 0);
+            const totalCurrentFocusIncome = remappedAnswers
+              .filter((a) => a.isTotalCurrentFocusIncome)
+              .reduce((acc, curr) => acc + curr.value, 0);
+            const totalCurrentDiversifiedIncome = remappedAnswers
+              .filter((a) => a.isTotalCurrentDiversifiedIncome)
+              .reduce((acc, curr) => acc + curr.value, 0);
+
+            const focusCommodityAnswers = remappedAnswers
+              .filter((a) => a.commodityType === "focus")
+              .map((a) => ({
+                id: `${a.name}-${a.questionId}`,
+                value: a.value,
+              }));
+
+            const currentRevenueFocusCommodity = getFunctionDefaultValue(
+              { default_value: customFormula.revenue_focus_commodity },
+              "current",
+              focusCommodityAnswers
+            );
+            const feasibleRevenueFocusCommodity = getFunctionDefaultValue(
+              { default_value: customFormula.revenue_focus_commodity },
+              "feasible",
+              focusCommodityAnswers
+            );
+            const currentFocusCommodityCoP = getFunctionDefaultValue(
+              {
+                default_value: customFormula.focus_commodity_cost_of_production,
+              },
+              "current",
+              focusCommodityAnswers
+            );
+            const feasibleFocusCommodityCoP = getFunctionDefaultValue(
+              {
+                default_value: customFormula.focus_commodity_cost_of_production,
+              },
+              "feasible",
+              focusCommodityAnswers
+            );
+
+            return {
+              ...segment,
+              total_current_income: totalCurrentIncomeAnswer,
+              total_feasible_income: totalFeasibleIncomeAnswer,
+              total_feasible_cost: -totalCostFeasible,
+              total_current_cost: -totalCostCurrent,
+              total_feasible_focus_income: totalFeasibleFocusIncome,
+              total_feasible_diversified_income: totalFeasibleDiversifiedIncome,
+              total_current_focus_income: totalCurrentFocusIncome,
+              total_current_diversified_income: totalCurrentDiversifiedIncome,
+              total_current_revenue_focus_commodity:
+                currentRevenueFocusCommodity,
+              total_feasible_revenue_focus_commodity:
+                feasibleRevenueFocusCommodity,
+              total_current_focus_commodity_cost_of_production:
+                currentFocusCommodityCoP,
+              total_feasible_focus_commodity_cost_of_production:
+                feasibleFocusCommodityCoP,
+              answers: remappedAnswers,
+            };
+          })[0];
+
           return {
             ...sv,
             allNewValues: backwardValues,
             currentSegmentValue: segment,
+            updatedSegment,
+            updatedSegmentScenarioValue,
           };
         }
-        return sv;
+        return { ...sv, updatedSegment, updatedSegmentScenarioValue };
       }
     );
     return {
@@ -231,7 +460,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
       scenarioValues: backwardScenarioValues,
     };
   }, [currentScenarioData, segment, globalSectionTotalValues]);
-  console.log(backwardScenarioData, "backwardScenarioData");
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {
@@ -262,22 +490,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
     }, []);
     return uniqBy(allChildrensValues, "id");
   };
-
-  // generate questions
-  const flattenedQuestionGroups = questionGroups.flatMap((group) => {
-    const questions = group ? flatten(group.questions) : [];
-    return questions.map((q) => ({
-      ...q,
-      commodity_id: group.commodity_id,
-    }));
-  });
-  const totalCommodityQuestions = flattenedQuestionGroups.filter(
-    (q) => q.question_type === "aggregator"
-  );
-  const costQuestions = flattenedQuestionGroups.filter((q) =>
-    q.text.toLowerCase().includes("cost")
-  );
-  // eol generate questions
 
   // recalculate drivers value by new value from scenario modeling form
   const recalculate = ({ key, updatedSegment }) => {
@@ -676,28 +888,29 @@ const ScenarioModelingIncomeDriversAndChart = ({
     // EOL Update scenario modeling global state
   };
 
-  useEffect(() => {
-    // run recalculate
-    return;
-    backwardScenarioData?.scenarioValues?.forEach((sv) => {
-      Object.entries(sv?.allNewValues || {})
-        .filter(([key]) => {
-          if (backwardScenarioData.percentage) {
-            return key?.includes("percentage");
-          }
-          return key?.includes("absolute");
-        })
-        .forEach(([key, value]) => {
-          if (key && value) {
-            onScenarioModelingIncomeDriverFormValuesChange(
-              { [key]: value },
-              sv.allNewValues
-            );
-          }
-        });
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // TODO :: Delete this
+  // useEffect(() => {
+  //   // run recalculate
+  //   return;
+  //   backwardScenarioData?.scenarioValues?.forEach((sv) => {
+  //     Object.entries(sv?.allNewValues || {})
+  //       .filter(([key]) => {
+  //         if (backwardScenarioData.percentage) {
+  //           return key?.includes("percentage");
+  //         }
+  //         return key?.includes("absolute");
+  //       })
+  //       .forEach(([key, value]) => {
+  //         if (key && value) {
+  //           onScenarioModelingIncomeDriverFormValuesChange(
+  //             { [key]: value },
+  //             sv.allNewValues
+  //           );
+  //         }
+  //       });
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   const initialScenarioModelingIncomeDriverValues = useMemo(() => {
     if (backwardScenarioData?.scenarioValues?.length) {
