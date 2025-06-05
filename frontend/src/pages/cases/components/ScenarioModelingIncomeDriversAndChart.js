@@ -532,39 +532,47 @@ const ScenarioModelingIncomeDriversAndChart = ({
   // recalculate drivers value by new value from scenario modeling form
   const recalculate = ({ key, updatedSegment }) => {
     const [fieldName, caseCommodityId, questionId] = key.split("-");
-    const fieldKey = `${fieldName}-${caseCommodityId}`;
 
-    const question = flattenIncomeDataDriversQuestions.find(
-      (q) => q.id === parseInt(questionId)
-    );
-    const parentQuestion = flattenIncomeDataDriversQuestions.find(
-      (q) => q.id === question?.parent
-    );
-
-    const allChildrensValues = calculateChildrenValues(
-      question,
-      fieldKey,
-      updatedSegment.answers
-    );
-    const sumAllChildrensValues = parentQuestion?.default_value
-      ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
-      : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-
-    const parentQuestionField = `${fieldKey}-${question?.parent}`;
-    if (parentQuestion) {
-      // use parentValue if child is 0
-      const parentValue = !sumAllChildrensValues
-        ? updatedSegment.answers?.[parentQuestionField] || 0
-        : sumAllChildrensValues;
-
+    // handle diversified aggregator
+    if (questionId === "diversified") {
       updatedSegment["answers"] = {
         ...updatedSegment["answers"],
-        [parentQuestionField]: parentValue,
       };
-    }
+    } else {
+      const fieldKey = `${fieldName}-${caseCommodityId}`;
 
-    if (parentQuestion?.parent) {
-      recalculate({ key: parentQuestionField, updatedSegment });
+      const question = flattenIncomeDataDriversQuestions.find(
+        (q) => q.id === parseInt(questionId)
+      );
+      const parentQuestion = flattenIncomeDataDriversQuestions.find(
+        (q) => q.id === question?.parent
+      );
+
+      const allChildrensValues = calculateChildrenValues(
+        question,
+        fieldKey,
+        updatedSegment.answers
+      );
+      const sumAllChildrensValues = parentQuestion?.default_value
+        ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)
+        : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+
+      const parentQuestionField = `${fieldKey}-${question?.parent}`;
+      if (parentQuestion) {
+        // use parentValue if child is 0
+        const parentValue = !sumAllChildrensValues
+          ? updatedSegment.answers?.[parentQuestionField] || 0
+          : sumAllChildrensValues;
+
+        updatedSegment["answers"] = {
+          ...updatedSegment["answers"],
+          [parentQuestionField]: parentValue,
+        };
+      }
+
+      if (parentQuestion?.parent) {
+        recalculate({ key: parentQuestionField, updatedSegment });
+      }
     }
   };
 
@@ -618,8 +626,32 @@ const ScenarioModelingIncomeDriversAndChart = ({
       }, {});
     // EOL find childrens answer and reset to 0
 
+    // detect if driver contain diversified aggregator
+    const diversifiedDriversValue = Object.entries(allNewValues || {}).find(
+      ([key, value]) =>
+        key?.includes("driver") && value?.includes("diversified")
+    );
+    const isDiversifiedAggregator =
+      diversifiedDriversValue?.length > 0 || false;
+    // handle custom backward for diversified
+    let backwardTotalIncomeQuestions = totalIncomeQuestions;
+    if (isDiversifiedAggregator) {
+      backwardTotalIncomeQuestions = [
+        ...totalIncomeQuestions.filter((qs) => qs.includes("-1")),
+        diversifiedDriversValue?.[1] || "",
+      ];
+    }
+
     const segmentAnswerField = `current-${driverDropdownValue}`;
-    const currentSegmentAnswer = segment.answers?.[segmentAnswerField];
+    let currentSegmentAnswer = segment.answers?.[segmentAnswerField];
+    if (segmentAnswerField.includes("diversified")) {
+      // handle diversified question key change
+      const findSectionValue =
+        globalSectionTotalValues.find((gs) => gs.segmentId === segment.id) ||
+        {};
+      currentSegmentAnswer =
+        findSectionValue?.sectionTotalValues?.diversified?.current;
+    }
 
     const currentScenarioValue = backwardScenarioData.scenarioValues.find(
       (scenario) => scenario.segmentId === segment.id
@@ -772,7 +804,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
         };
       });
 
-      const totalCurrentIncomeAnswer = totalIncomeQuestions
+      const totalCurrentIncomeAnswer = backwardTotalIncomeQuestions
         .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
         .filter((a) => a)
         .reduce((acc, a) => acc + a, 0);
