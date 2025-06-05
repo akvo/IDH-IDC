@@ -22,6 +22,7 @@ import {
   checkPasswordCriteria,
 } from "../../components/utils";
 import { DataSecurityProvisionModal } from "../../components/utils";
+import { routePath } from "../../components/route";
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
@@ -84,7 +85,7 @@ const ResetPassword = () => {
             "Password already set. Now you can login with your new password.",
         });
         setTimeout(() => {
-          navigate("/login");
+          navigate(routePath.idc.login);
         }, 300);
       })
       .catch(() => {

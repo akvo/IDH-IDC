@@ -22,6 +22,7 @@ import {
   checkPasswordCriteria,
 } from "../../components/utils";
 import { DataSecurityProvisionModal } from "../../components/utils";
+import { routePath } from "../../components/route";
 
 const Register = () => {
   const [form] = Form.useForm();
@@ -300,7 +301,8 @@ const Register = () => {
               </Form.Item>
               <Form.Item noStyle>
                 <p>
-                  Already have an account? <Link to="/login">Login here.</Link>
+                  Already have an account?{" "}
+                  <Link to={routePath.idc.login}>Login here.</Link>
                 </p>
               </Form.Item>
             </Form>

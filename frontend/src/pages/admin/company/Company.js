@@ -5,6 +5,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { api } from "../../../lib";
 import "./company.scss";
 import { Space, Popconfirm, message } from "antd";
+import { routePath } from "../../../components/route";
 
 const perPage = 10;
 const defData = {
@@ -113,7 +114,7 @@ const Company = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Companies", href: "/admin/companies" },
       ]}
       title="Company Management"
