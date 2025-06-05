@@ -425,7 +425,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
             return {
               ...segment,
-              total_current_income: Math.round(totalCurrentIncomeAnswer),
+              total_current_income: totalCurrentIncomeAnswer,
               total_feasible_income: totalFeasibleIncomeAnswer,
               total_feasible_cost: -totalCostFeasible,
               total_current_cost: -totalCostCurrent,
@@ -958,6 +958,23 @@ const ScenarioModelingIncomeDriversAndChart = ({
     // EOL Update scenario modeling global state
   };
 
+  // recaltulate on load
+  useEffect(() => {
+    if (refreshBackward) {
+      return;
+    }
+    const currentFormValues = scenarioDriversForm.getFieldsValue();
+    // Get the last key
+    const lastKey = Object.keys(currentFormValues).pop();
+    // Get the last value
+    const lastValue = currentFormValues[lastKey];
+    onScenarioModelingIncomeDriverFormValuesChange(
+      { [lastKey]: lastValue },
+      currentFormValues
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshBackward]);
+
   const initialScenarioModelingIncomeDriverValues = useMemo(() => {
     if (backwardScenarioData?.scenarioValues?.length) {
       const values = backwardScenarioData.scenarioValues.find(
@@ -973,21 +990,19 @@ const ScenarioModelingIncomeDriversAndChart = ({
       backwardScenarioData?.scenarioValues?.find(
         (s) => s.segmentId === segment.id
       ) || {};
-    const currentTotalIncome = currentDashboardData?.total_current_income || 0;
     const newTotalIncome =
       findScenario?.updatedSegmentScenarioValue?.total_current_income || 0;
-    if (
-      findScenario?.value &&
-      Math.round(currentTotalIncome) === Math.round(newTotalIncome)
-    ) {
-      return findScenario?.value || 0;
-    }
-    return newTotalIncome;
-  }, [
-    segment?.id,
-    backwardScenarioData?.scenarioValues,
-    currentDashboardData?.total_current_income,
-  ]);
+    // TODO :: delete this
+    // const currentTotalIncome = currentDashboardData?.total_current_income || 0;
+    // if (
+    //   findScenario?.value &&
+    //   Math.round(currentTotalIncome) === Math.round(newTotalIncome)
+    // ) {
+    //   return findScenario?.value || 0;
+    // }
+    // EOLTODO :: delete this
+    return Math.round(newTotalIncome);
+  }, [segment?.id, backwardScenarioData?.scenarioValues]);
 
   return (
     <Row
