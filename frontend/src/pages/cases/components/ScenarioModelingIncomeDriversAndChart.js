@@ -77,7 +77,7 @@ const Question = ({
       return segment?.answers?.[`current-${selectedDriver}`] || 0;
     }
     return 0;
-  }, [segment.answers, selectedDriver]);
+  }, [segment.answers, selectedDriver, globalSectionTotalValues, segment.id]);
 
   const currentIncrease = useMemo(() => {
     let newFormValue = newValue || 0;
@@ -459,7 +459,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ...currentScenarioData,
       scenarioValues: backwardScenarioValues,
     };
-  }, [currentScenarioData, segment, globalSectionTotalValues]);
+  }, [
+    currentScenarioData,
+    segment,
+    globalSectionTotalValues,
+    costQuestions,
+    currentCase.case_commodities,
+    flattenedQuestionGroups,
+    totalCommodityQuestions,
+    totalIncomeQuestions,
+  ]);
 
   // Update child question feasible answer to 0 if the parent question is updated
   const flattenIncomeDataDriversQuestions = useMemo(() => {

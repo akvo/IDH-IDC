@@ -23,7 +23,6 @@ import { isEmpty, orderBy } from "lodash";
 import { customFormula } from "../../lib/formula";
 import { adminRole } from "../../store/static";
 import { handleQuestionType } from "./utils";
-import { globalConfig } from "antd/es/config-provider";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const masterCommodityCategories = window.master?.commodity_categories || [];

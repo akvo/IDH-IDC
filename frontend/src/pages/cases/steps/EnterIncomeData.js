@@ -103,7 +103,7 @@ const EnterIncomeData = ({
       }
       return { ...s, globalSectionTotalValues: result };
     });
-  }, [sectionTotalValues]);
+  }, [sectionTotalValues, segment.id]);
 
   const upateCaseButtonState = (value) => {
     CaseUIState.update((s) => ({
