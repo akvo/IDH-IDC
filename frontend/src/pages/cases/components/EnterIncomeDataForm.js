@@ -28,6 +28,7 @@ import {
 import { commodities } from "../../../store/static";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { handleQuestionType } from "../utils";
 
 const indentSize = 32;
 const commoditiesBreakdown = ["secondary", "tertiary"];
@@ -261,37 +262,6 @@ const EnterIncomeDataDriver = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleQuestionType = (
-    question,
-    commodity,
-    fieldName,
-    values,
-    fieldKey
-  ) => {
-    if (!question?.parent) {
-      if (question?.question_type === "aggregator") {
-        const value = values?.[`${fieldKey}-${question.id}`] || 0;
-        updateSectionTotalValues(commodity.commodity_type, fieldName, value);
-      } else if (question?.question_type === "diversified") {
-        const diversifiedQuestions = flattenQuestionList.filter(
-          (q) => q.question_type === "diversified"
-        );
-        const diversifiedQids = diversifiedQuestions.map(
-          (q) => `${fieldKey}-${q.id}`
-        );
-        const sumAllDiversifiedValues = diversifiedQids.reduce((acc, id) => {
-          const value = values?.[id];
-          return value ? acc + value : acc;
-        }, 0);
-        updateSectionTotalValues(
-          commodity.commodity_type,
-          fieldName,
-          sumAllDiversifiedValues
-        );
-      }
-    }
-  };
-
   const calculateChildrenValues = (question, fieldKey, values) => {
     const childrenQuestions = flattenQuestionList.filter(
       (q) => q.parent === question?.parent
@@ -322,7 +292,15 @@ const EnterIncomeDataDriver = ({
       (q) => q.id === question?.parent
     );
 
-    handleQuestionType(question, commodity, fieldName, allValues, fieldKey);
+    handleQuestionType(
+      question,
+      commodity,
+      fieldName,
+      allValues,
+      fieldKey,
+      flattenQuestionList,
+      updateSectionTotalValues
+    );
 
     const allChildrensValues = calculateChildrenValues(
       question,
@@ -380,7 +358,9 @@ const EnterIncomeDataDriver = ({
           commodity,
           fieldName,
           initialDriverValues,
-          fieldKey
+          fieldKey,
+          flattenQuestionList,
+          updateSectionTotalValues
         );
 
         const parentQuestionField = `${fieldKey}-${question?.parent}`;
