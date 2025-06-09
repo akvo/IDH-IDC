@@ -966,10 +966,12 @@ const ScenarioModelingIncomeDriversAndChart = ({
     const currentFormValues = scenarioDriversForm.getFieldsValue();
     Object.entries(currentFormValues).forEach(([key, value]) => {
       if (key && value) {
-        onScenarioModelingIncomeDriverFormValuesChange(
-          { [key]: value },
-          currentFormValues
-        );
+        setTimeout(() => {
+          onScenarioModelingIncomeDriverFormValuesChange(
+            { [key]: value },
+            currentFormValues
+          );
+        }, 100);
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -992,15 +994,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ) || {};
     const newTotalIncome =
       findScenario?.updatedSegmentScenarioValue?.total_current_income || 0;
-    // TODO :: delete this
-    // const currentTotalIncome = currentDashboardData?.total_current_income || 0;
-    // if (
-    //   findScenario?.value &&
-    //   Math.round(currentTotalIncome) === Math.round(newTotalIncome)
-    // ) {
-    //   return findScenario?.value || 0;
-    // }
-    // EOLTODO :: delete this
     return Math.round(newTotalIncome);
   }, [segment?.id, backwardScenarioData?.scenarioValues]);
 
