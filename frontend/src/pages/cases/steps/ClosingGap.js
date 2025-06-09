@@ -270,49 +270,51 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
 
   const scenarioTabItems = useMemo(() => {
     const showDeleteButton = scenarioModeling?.config?.scenarioData?.length > 1;
-    return scenarioModeling?.config?.scenarioData?.map((item) => ({
-      label: (
-        <Space>
-          {item.name}
-          {deleteButtonPosition === "tab-item" && showDeleteButton ? (
-            <Popconfirm
-              title="Delete"
-              description="Are you sure want to delete current scenario?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() =>
-                onDeleteScenario({
-                  currentScenarioData: item,
-                  scenarioDataState: scenarioModeling?.config?.scenarioData,
-                })
-              }
-              okButtonProps={{
-                loading: deleting,
-                disabled: deleting,
-              }}
-            >
-              <Button
-                icon={<DeleteOutlined style={{ marginLeft: 12 }} />}
-                size="small"
-                className="button-delete-scenario"
-                style={{ border: "none" }}
-              />
-            </Popconfirm>
-          ) : (
-            ""
-          )}
-        </Space>
-      ),
-      key: item.key,
-      children: (
-        <ScenarioModelingForm
-          showDeleteButton={showDeleteButton}
-          currentScenarioData={item}
-          setActiveScenario={setActiveScenario}
-          deleteButtonPosition={deleteButtonPosition}
-        />
-      ),
-    }));
+    return orderBy(scenarioModeling?.config?.scenarioData, "key")?.map(
+      (item) => ({
+        label: (
+          <Space>
+            {item.name}
+            {deleteButtonPosition === "tab-item" && showDeleteButton ? (
+              <Popconfirm
+                title="Delete"
+                description="Are you sure want to delete current scenario?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() =>
+                  onDeleteScenario({
+                    currentScenarioData: item,
+                    scenarioDataState: scenarioModeling?.config?.scenarioData,
+                  })
+                }
+                okButtonProps={{
+                  loading: deleting,
+                  disabled: deleting,
+                }}
+              >
+                <Button
+                  icon={<DeleteOutlined style={{ marginLeft: 12 }} />}
+                  size="small"
+                  className="button-delete-scenario"
+                  style={{ border: "none" }}
+                />
+              </Popconfirm>
+            ) : (
+              ""
+            )}
+          </Space>
+        ),
+        key: item.key,
+        children: (
+          <ScenarioModelingForm
+            showDeleteButton={showDeleteButton}
+            currentScenarioData={item}
+            setActiveScenario={setActiveScenario}
+            deleteButtonPosition={deleteButtonPosition}
+          />
+        ),
+      })
+    );
   }, [
     scenarioModeling?.config?.scenarioData,
     setActiveScenario,
