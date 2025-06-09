@@ -966,12 +966,13 @@ const ScenarioModelingIncomeDriversAndChart = ({
     const currentFormValues = scenarioDriversForm.getFieldsValue();
     Object.entries(currentFormValues).forEach(([key, value]) => {
       if (key && value) {
-        setTimeout(() => {
-          onScenarioModelingIncomeDriverFormValuesChange(
-            { [key]: value },
-            currentFormValues
-          );
-        }, 100);
+        // 1. Update form field
+        scenarioDriversForm.setFieldsValue({ [key]: value });
+        // 2. Fire onValuesChange manually
+        onScenarioModelingIncomeDriverFormValuesChange(
+          { [key]: value }, // changedValues
+          { ...currentFormValues, [key]: value } // allValues
+        );
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
