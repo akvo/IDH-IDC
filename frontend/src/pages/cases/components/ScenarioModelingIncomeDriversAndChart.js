@@ -352,7 +352,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
           // ];
 
           let updatedCurrentValues = {};
-          let lastCurrentKey = null;
           Object.keys(sv.allNewValues)
             .filter((key) => key.includes("driver"))
             .forEach((key) => {
@@ -368,7 +367,6 @@ const ScenarioModelingIncomeDriversAndChart = ({
                   ...updatedCurrentValues,
                   [currentKey]: parseFloat(absoluteValue),
                 };
-                lastCurrentKey = currentKey;
               }
             });
 
@@ -385,9 +383,10 @@ const ScenarioModelingIncomeDriversAndChart = ({
             ...updatedSegment,
             answers: updatedSegmentAnswers,
           };
-          if (lastCurrentKey) {
-            recalculate({ key: lastCurrentKey, updatedSegment });
-          }
+
+          Object.keys(updatedCurrentValues).forEach((key) => {
+            recalculate({ key, updatedSegment });
+          });
         }
 
         updatedSegmentScenarioValue = [updatedSegment].map((segment) => {
