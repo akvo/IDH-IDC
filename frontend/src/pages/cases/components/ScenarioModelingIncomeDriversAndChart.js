@@ -382,8 +382,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
             }
           });
 
-          isContainDiversifiedDriver = driverValues.some((d) =>
-            d.includes("diversified")
+          isContainDiversifiedDriver = driverValues?.some((d) =>
+            d?.includes("diversified")
           );
 
           const isAllPercentageNull = !percentageValues.filter((x) => x)
