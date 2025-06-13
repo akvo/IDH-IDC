@@ -26,7 +26,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [activeScenario, setActiveScenario] = useState(
-    scenarioModeling?.config?.scenarioData?.[0]?.key || null
+    orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key || null
   );
   const [deleting, setDeleting] = useState(false);
 
@@ -159,8 +159,8 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
         case: currentCase.id,
         config: {
           ...s.scenarioModeling.config,
-          scenarioData: s.scenarioModeling.config.scenarioData.map(
-            (scenario) => {
+          scenarioData: orderBy(
+            s.scenarioModeling.config.scenarioData.map((scenario) => {
               if (isEmpty(scenario?.scenarioValues)) {
                 return {
                   ...scenario,
@@ -190,7 +190,8 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
                   };
                 }),
               };
-            }
+            }),
+            "key"
           ),
         },
       },
@@ -372,7 +373,8 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
           tabBarGutter={5}
           items={scenarioTabItems}
           activeKey={
-            activeScenario || scenarioModeling?.config?.scenarioData?.[0]?.key
+            activeScenario ||
+            orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key
           }
           onChange={(val) => {
             setActiveScenario(val);

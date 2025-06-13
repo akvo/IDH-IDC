@@ -275,9 +275,12 @@ const ScenarioModelingIncomeDriversAndChart = ({
         }
         const fieldNameTmp = `${currentScenarioData.key}-${sv.segmentId}`;
         // check if it is old value
-        const allNewValuesKeys = Object.keys(sv?.allNewValues || {})?.map(
-          (key) => key.split("-")[0]
-        );
+        const allNewValuesKeys = Object.keys(sv?.allNewValues || {})
+          ?.map((key) => {
+            const fieldKey = key.split("-");
+            return fieldKey?.length === 3 ? fieldKey[0] : false;
+          })
+          .filter((x) => x);
         const isBackward = allNewValuesKeys?.length
           ? !allNewValuesKeys.includes("driver")
           : false;
@@ -285,11 +288,22 @@ const ScenarioModelingIncomeDriversAndChart = ({
         let updatedSegment = sv?.updatedSegment || {};
         let updatedSegmentScenarioValue = sv?.updatedSegmentScenarioValue || {};
         let backwardValues = sv?.allNewValues || {};
+        let isContainDiversifiedDriver = isBackward;
 
         if (isBackward) {
+          let prevAllNewValues = {};
+          Object.entries(sv?.allNewValues || {}).forEach(([key, value]) => {
+            if (key.split("-")?.length === 3) {
+              prevAllNewValues = {
+                ...prevAllNewValues,
+                [key]: value,
+              };
+            }
+          });
+
           // backward for old value
           const qids = uniq(
-            Object.keys(sv.allNewValues).map((key) => key.split("-")[2])
+            Object.keys(prevAllNewValues).map((key) => key.split("-")[2])
           ).filter((qid) => qid !== "1");
 
           let updatedCurrentValues = {};
@@ -299,7 +313,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
             const percentageKey = `percentage-${fieldNameTmp}-${index}`;
 
             let findValue = {};
-            Object.entries(sv.allNewValues).forEach(([key, value]) => {
+            Object.entries(prevAllNewValues).forEach(([key, value]) => {
               const [field, case_commodity, id] = key.split("-");
               const updatedCurrentKey = `current-${case_commodity}-${id}`;
               if (id === "1" && field === "absolute") {
@@ -345,30 +359,61 @@ const ScenarioModelingIncomeDriversAndChart = ({
           // EOL BACKWARD
         } else {
           // NOT BACKWARD
+          // check if all percentage or absolute value is null
+          const percentageValues = [];
+          const absoluteValues = [];
+          const driverValues = [];
+          const currentAllNewValues = sv?.allNewValues || {};
 
           // handle backward for focus commodity
           // const focusCommodityPrimaryQuestionIds = [
           //   2, 3, 4, 40, 41, 42, 5, 26, 43, 7,
           // ];
 
+          Object.entries(currentAllNewValues).forEach(([key, value]) => {
+            if (key.includes("percentage")) {
+              percentageValues.push(value);
+            }
+            if (key.includes("absolute")) {
+              absoluteValues.push(value);
+            }
+            if (key.includes("driver")) {
+              driverValues.push(value);
+            }
+          });
+
+          isContainDiversifiedDriver = driverValues.some((d) =>
+            d.includes("diversified")
+          );
+
+          const isAllPercentageNull = !percentageValues.filter((x) => x)
+            ?.length;
+          const isAllAbsoluteNull = !absoluteValues.filter((x) => x)?.length;
+
           let updatedCurrentValues = {};
-          Object.keys(sv.allNewValues)
-            .filter((key) => key.includes("driver"))
-            .forEach((key) => {
-              const [, scenarioKey, segmentId, driverIndex] = key.split("-");
-              const absoluteKey = `absolute-${scenarioKey}-${segmentId}-${driverIndex}`;
-              const absoluteValue = sv?.allNewValues?.[absoluteKey] || null;
 
-              const driverValue = sv?.allNewValues?.[key] || null;
-              const currentKey = `current-${driverValue}`;
+          if (isAllAbsoluteNull || isAllPercentageNull) {
+            backwardValues = {};
+            updatedCurrentValues = {};
+          } else {
+            Object.keys(currentAllNewValues)
+              .filter((key) => key.includes("driver"))
+              .forEach((key) => {
+                const [, scenarioKey, segmentId, driverIndex] = key.split("-");
+                const absoluteKey = `absolute-${scenarioKey}-${segmentId}-${driverIndex}`;
+                const absoluteValue = sv?.allNewValues?.[absoluteKey] || null;
 
-              if (driverValue && typeof absoluteValue === "number") {
-                updatedCurrentValues = {
-                  ...updatedCurrentValues,
-                  [currentKey]: parseFloat(absoluteValue),
-                };
-              }
-            });
+                const driverValue = sv?.allNewValues?.[key] || null;
+                const currentKey = `current-${driverValue}`;
+
+                if (driverValue && typeof absoluteValue === "number") {
+                  updatedCurrentValues = {
+                    ...updatedCurrentValues,
+                    [currentKey]: parseFloat(absoluteValue),
+                  };
+                }
+              });
+          }
 
           const updatedSegmentAnswers = isEmpty(segment?.answers)
             ? {}
@@ -467,10 +512,13 @@ const ScenarioModelingIncomeDriversAndChart = ({
           });
 
           // handle custom backward for diversified
-          const backwardTotalIncomeQuestions = [
-            ...totalIncomeQuestions.filter((qs) => qs.includes("-1")),
-            `${diversifiedCaseCommodityId}-diversified`,
-          ];
+          const backwardTotalIncomeQuestions =
+            isBackward || isContainDiversifiedDriver
+              ? [
+                  ...totalIncomeQuestions.filter((qs) => qs.includes("-1")),
+                  `${diversifiedCaseCommodityId}-diversified`,
+                ]
+              : totalIncomeQuestions;
 
           const totalCurrentIncomeAnswer = backwardTotalIncomeQuestions
             .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
@@ -574,8 +622,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
         ...s.scenarioModeling,
         config: {
           ...s.scenarioModeling.config,
-          scenarioData: s.scenarioModeling.config.scenarioData.map(
-            (scenario) => {
+          scenarioData: orderBy(
+            s.scenarioModeling.config.scenarioData.map((scenario) => {
               if (scenario.key === bacwardRes.key) {
                 return {
                   ...scenario,
@@ -583,7 +631,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 };
               }
               return scenario;
-            }
+            }),
+            "key"
           ),
         },
       },
@@ -961,8 +1010,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
         ...s.scenarioModeling,
         config: {
           ...s.scenarioModeling.config,
-          scenarioData: s.scenarioModeling.config.scenarioData.map(
-            (scenario) => {
+          scenarioData: orderBy(
+            s.scenarioModeling.config.scenarioData.map((scenario) => {
               if (scenario.key === backwardScenarioData.key) {
                 return {
                   ...scenario,
@@ -980,7 +1029,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 };
               }
               return scenario;
-            }
+            }, "key")
           ),
         },
       },
