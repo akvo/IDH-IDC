@@ -55,6 +55,17 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSegment, percentageSensitivity, adjustedValues]);
 
+  const adjustedIncomeTarget = useMemo(() => {
+    let res =
+      sensitivityAnalysis?.config?.[`${selectedSegment}_adjusted-target`];
+    if (!res) {
+      res =
+        currentCase?.segments?.find((sg) => sg.id === selectedSegment)
+          ?.target || 0;
+    }
+    return thousandFormatter(res, 2);
+  }, [selectedSegment, sensitivityAnalysis?.config, currentCase?.segments]);
+
   const currentSegmentDetail = useMemo(() => {
     if (selectedSegment && currentCase?.segments?.length) {
       const res = currentCase.segments.find((s) => s.id === selectedSegment);
@@ -133,6 +144,7 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
             <Button
               className="button-ghost-white"
               onClick={() => setShowAdjustIncomeModal(true)}
+              style={{ float: "right" }}
             >
               Adjust your income target
             </Button>
@@ -147,6 +159,12 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
               target. If you do not adjust the target, we will use the current
               target value for the calculations.
             </div>
+          </Col>
+          <Col span={24}>
+            <span className="adjusted-income-target-value-wrapper">
+              Adjusted income target: {adjustedIncomeTarget}{" "}
+              {currentCase?.currency || ""}
+            </span>
           </Col>
         </Row>
       </Card>
