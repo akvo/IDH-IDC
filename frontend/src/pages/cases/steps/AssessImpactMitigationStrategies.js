@@ -31,6 +31,7 @@ import { api } from "../../../lib";
 import { removeUndefinedObjectValue } from "../../../lib";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
+import { routePath } from "../../../components/route";
 
 /**
  * STEP 4

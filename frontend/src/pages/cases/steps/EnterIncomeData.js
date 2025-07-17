@@ -19,6 +19,7 @@ import { EnterIncomeDataForm } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
 import { InfoCircleOutlined } from "@ant-design/icons";
+import { routePath } from "../../../components/route";
 
 const rowColSpanSize = {
   gutter: [8, 8],

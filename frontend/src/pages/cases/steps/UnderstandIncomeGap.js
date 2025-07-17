@@ -9,6 +9,7 @@ import {
   ChartExploreIncomeDriverBreakdown,
   ChartIncomeLevelsForDifferentCommodities,
 } from "../visualizations";
+import { routePath } from "../../../components/route";
 
 /**
  * STEP 3
