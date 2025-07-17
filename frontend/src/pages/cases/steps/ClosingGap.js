@@ -26,7 +26,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [activeScenario, setActiveScenario] = useState(
-    scenarioModeling?.config?.scenarioData?.[0]?.key || null
+    orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key || null
   );
   const [deleting, setDeleting] = useState(false);
 
@@ -158,8 +158,8 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
         case: currentCase.id,
         config: {
           ...s.scenarioModeling.config,
-          scenarioData: s.scenarioModeling.config.scenarioData.map(
-            (scenario) => {
+          scenarioData: orderBy(
+            s.scenarioModeling.config.scenarioData.map((scenario) => {
               if (isEmpty(scenario?.scenarioValues)) {
                 return {
                   ...scenario,
@@ -189,7 +189,8 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
                   };
                 }),
               };
-            }
+            }),
+            "key"
           ),
         },
       },
@@ -269,49 +270,51 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
 
   const scenarioTabItems = useMemo(() => {
     const showDeleteButton = scenarioModeling?.config?.scenarioData?.length > 1;
-    return scenarioModeling?.config?.scenarioData?.map((item) => ({
-      label: (
-        <Space>
-          {item.name}
-          {deleteButtonPosition === "tab-item" && showDeleteButton ? (
-            <Popconfirm
-              title="Delete"
-              description="Are you sure want to delete current scenario?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() =>
-                onDeleteScenario({
-                  currentScenarioData: item,
-                  scenarioDataState: scenarioModeling?.config?.scenarioData,
-                })
-              }
-              okButtonProps={{
-                loading: deleting,
-                disabled: deleting,
-              }}
-            >
-              <Button
-                icon={<DeleteOutlined style={{ marginLeft: 12 }} />}
-                size="small"
-                className="button-delete-scenario"
-                style={{ border: "none" }}
-              />
-            </Popconfirm>
-          ) : (
-            ""
-          )}
-        </Space>
-      ),
-      key: item.key,
-      children: (
-        <ScenarioModelingForm
-          showDeleteButton={showDeleteButton}
-          currentScenarioData={item}
-          setActiveScenario={setActiveScenario}
-          deleteButtonPosition={deleteButtonPosition}
-        />
-      ),
-    }));
+    return orderBy(scenarioModeling?.config?.scenarioData, "key")?.map(
+      (item) => ({
+        label: (
+          <Space>
+            {item.name}
+            {deleteButtonPosition === "tab-item" && showDeleteButton ? (
+              <Popconfirm
+                title="Delete"
+                description="Are you sure want to delete current scenario?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() =>
+                  onDeleteScenario({
+                    currentScenarioData: item,
+                    scenarioDataState: scenarioModeling?.config?.scenarioData,
+                  })
+                }
+                okButtonProps={{
+                  loading: deleting,
+                  disabled: deleting,
+                }}
+              >
+                <Button
+                  icon={<DeleteOutlined style={{ marginLeft: 12 }} />}
+                  size="small"
+                  className="button-delete-scenario"
+                  style={{ border: "none" }}
+                />
+              </Popconfirm>
+            ) : (
+              ""
+            )}
+          </Space>
+        ),
+        key: item.key,
+        children: (
+          <ScenarioModelingForm
+            showDeleteButton={showDeleteButton}
+            currentScenarioData={item}
+            setActiveScenario={setActiveScenario}
+            deleteButtonPosition={deleteButtonPosition}
+          />
+        ),
+      })
+    );
   }, [
     scenarioModeling?.config?.scenarioData,
     setActiveScenario,
@@ -369,7 +372,8 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
           tabBarGutter={5}
           items={scenarioTabItems}
           activeKey={
-            activeScenario || scenarioModeling?.config?.scenarioData?.[0]?.key
+            activeScenario ||
+            orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key
           }
           onChange={(val) => {
             setActiveScenario(val);

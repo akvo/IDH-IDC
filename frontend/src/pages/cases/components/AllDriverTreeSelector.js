@@ -262,7 +262,6 @@ const AllDriverTreeSelector = ({
 
     return [...primaryDrivers, ...diversifiedDrivers];
   }, [incomeDataDrivers, segment?.answers]);
-  console.info(incomeDriverOptions, "incomeDriverOptions");
 
   // TODO :: REMOVE
   // const treeMap = useMemo(
