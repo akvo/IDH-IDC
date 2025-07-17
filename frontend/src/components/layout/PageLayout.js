@@ -166,19 +166,26 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       id="page-layout-header"
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
-        <Col span={3} align="start" style={{ width: "100%" }}>
+        <Col span={6} align="start" style={{ width: "100%" }}>
           {/* <Link to={isLoggedIn ? routePath.idc.dashboard : "/"}> */}
           <Link to="/">
-            <Image
-              src={Logo}
-              height={65}
-              preview={false}
-              data-testid="logo-image"
-            />
+            <Row justify="center" align="middle" gutter={[5, 5]}>
+              <Col span={9}>
+                <Image
+                  src={Logo}
+                  height={50}
+                  preview={false}
+                  data-testid="logo-image"
+                />
+              </Col>
+              <Col span={15}>
+                <div className="logo-text">Living Income Roadmap Toolkit</div>
+              </Col>
+            </Row>
           </Link>
         </Col>
         <Col
-          span={21}
+          span={18}
           align="end"
           testid="nav-container"
           style={{

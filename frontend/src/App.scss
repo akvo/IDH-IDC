@@ -141,6 +141,15 @@
       }
     }
 
+    .logo-text {
+      color: $primary-color;
+      font-family: "RocGrotesk";
+      font-size: 16px;
+      font-style: normal;
+      font-weight: bold;
+      line-height: normal;
+    }
+
     .navigation-container {
       margin-left: $default-padding-size;
       display: flex;
