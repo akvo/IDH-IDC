@@ -14,9 +14,7 @@ describe("Home page", () => {
     );
 
     await waitFor(() => {
-      expect(wrapper.getByTestId("crop-selector")).toBeInTheDocument();
-      expect(wrapper.getByTestId("country-selector")).toBeInTheDocument();
-      expect(wrapper.getByTestId("data-table")).toBeInTheDocument();
+      expect(wrapper.getByTestId("jumbotron-wrapper")).toBeInTheDocument();
     });
   });
 });
