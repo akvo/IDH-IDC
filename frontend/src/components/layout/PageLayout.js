@@ -167,7 +167,8 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
     >
       <Row justify="center" align="middle" style={{ width: "100%" }}>
         <Col span={3} align="start" style={{ width: "100%" }}>
-          <Link to={isLoggedIn ? routePath.idc.login : "/"}>
+          {/* <Link to={isLoggedIn ? routePath.idc.dashboard : "/"}> */}
+          <Link to="/">
             <Image
               src={Logo}
               height={65}

@@ -6,7 +6,7 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
-import { Landing } from "./pages/landing";
+import { Landing } from "./pages/income-driver-calculator";
 import { Login, ResetPassword } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
@@ -165,8 +165,6 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
           {userRole !== null ? (
             <Route element={<PrivateRoutes />}>
-              <Route exact path="/home" element={<Home />} />
-
               {/* IDC Dashboard after login */}
               <Route
                 exact
@@ -266,8 +264,19 @@ const App = () => {
           ) : (
             ""
           )}
-          <Route exact path="/" element={<Landing signOut={signOut} />} />
+
+          {/* ITK Homepage */}
+          <Route exact path="/" element={<Home />} />
+          {/* EOL ITK Homepage */}
+
+          {/* IDC PAGE */}
+          <Route
+            exact
+            path={routePath.idc.landing}
+            element={<Landing signOut={signOut} />}
+          />
           <Route exact path={routePath.idc.login} element={<Login />} />
+          {/* EOL IDC PAGE */}
           <Route
             exact
             path="/tools-and-resources"

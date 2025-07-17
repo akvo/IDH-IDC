@@ -5,11 +5,13 @@ const routePrefix = {
 };
 
 // Helper to prefix paths
-const withPrefix = (prefix, path) => `${routePrefix[prefix]}${path}`;
+const withPrefix = (prefix, path) =>
+  path ? `${routePrefix[prefix]}${path}` : `${routePrefix[prefix]}`;
 
 // Route definitions
 const routePath = {
   idc: {
+    landing: withPrefix("idc"),
     login: withPrefix("idc", "/login"),
     dashboard: withPrefix("idc", "/welcome"),
     cases: withPrefix("idc", "/cases"),

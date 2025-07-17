@@ -10,7 +10,7 @@ import VoiceLogo from "../../assets/images/cii/voice.png";
 import ValueOrgImg from "../../assets/images/cii/value-for-org-sharing-data.jpeg";
 import IndicatorCarousel from "./IndicatorCarousel";
 import { CheckIcon } from "../../lib/icon";
-import { FooterDisclaimer } from "../landing/components";
+import { FooterDisclaimer } from "../income-driver-calculator/components";
 import { CIIContent } from "./static";
 import ContactCardEmailIcon from "../../assets/icons/contact-card-email.png";
 

@@ -8,7 +8,7 @@ import {
   CompareIncomeTarget,
   ExploreStudies,
   FooterDisclaimer,
-} from "../landing/components";
+} from "../income-driver-calculator/components";
 
 const FAQ = () => {
   const showItems = false;
