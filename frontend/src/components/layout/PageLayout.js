@@ -27,6 +27,13 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
   const menuItems = useMemo(() => {
     const menuList = [
       {
+        testid: "nav-menu-idc",
+        label: "Income Driver Calculator",
+        key: routePath.idc.landing,
+        role: [],
+        isPublic: true,
+      },
+      {
         testid: "nav-menu-cases",
         label: "Cases Overview",
         key: host === PROD_HOST ? LINK_TO_CASE_PROD : routePath.idc.cases,
@@ -95,6 +102,7 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         key: "/faq",
         isPublic: true,
         role: allUserRole,
+        hide: true, // TODO:: hide for NOW
       },
       {
         testid: "nav-menu-login",
@@ -102,9 +110,11 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
         key: routePath.idc.login,
         isPublic: true,
         role: [],
+        hide: true,
       },
       {
         testid: "nav-menu-logout",
+        hide: true,
         label: (
           <Link
             className="nav-sign-in"
@@ -144,13 +154,15 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
       }
       return false;
     };
-    const items = menuList.filter((item) => {
-      const children = item?.children?.filter((child) => {
-        return filterByUser(child);
+    const items = menuList
+      .filter((item) => !item?.hide)
+      .filter((item) => {
+        const children = item?.children?.filter((child) => {
+          return filterByUser(child);
+        });
+        item["children"] = children;
+        return filterByUser(item);
       });
-      item["children"] = children;
-      return filterByUser(item);
-    });
     return items;
   }, [userRole, isInternalUser, isLoggedIn, loading, signOut, navigate, host]);
 
