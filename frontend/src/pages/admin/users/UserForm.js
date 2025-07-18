@@ -18,6 +18,7 @@ import upperFirst from "lodash/upperFirst";
 import { UserState, UIState } from "../../../store";
 import { api } from "../../../lib";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
+import { routePath } from "../../../components/route";
 
 const transformToSelectOptions = (values) => {
   return values.map((x) => ({
@@ -210,7 +211,7 @@ const UserForm = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Users", href: "/admin/users" },
         {
           title: `${userId ? "Edit" : "Add"} User`,

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { EditOutlined } from "@ant-design/icons";
 import { api } from "../../../lib";
 import "./tag.scss";
+import { routePath } from "../../../components/route";
 
 const perPage = 10;
 const defData = {
@@ -74,7 +75,7 @@ const Tags = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Tags", href: "/admin/tags" },
       ]}
       title="Tag Management"

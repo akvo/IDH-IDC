@@ -6,6 +6,7 @@ import { Form, Input, Card, Button, Spin, message } from "antd";
 import { api } from "../../../lib";
 import { UIState } from "../../../store";
 import orderBy from "lodash/orderBy";
+import { routePath } from "../../../components/route";
 
 const CompanyForm = () => {
   const navigate = useNavigate();
@@ -80,7 +81,7 @@ const CompanyForm = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Companies", href: "/admin/companies" },
         {
           title: `${companyId ? "Edit" : "Add"} Company`,

@@ -6,6 +6,7 @@ import { Form, Input, Card, Button, Spin, message } from "antd";
 import { api } from "../../../lib";
 import { UIState } from "../../../store";
 import orderBy from "lodash/orderBy";
+import { routePath } from "../../../components/route";
 
 const TagForm = () => {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ const TagForm = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Tags", href: "/admin/tags" },
         {
           title: `${tagId ? "Edit" : "Add"} Tag`,
