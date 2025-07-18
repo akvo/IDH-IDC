@@ -1,3 +1,4 @@
+import "./pizza.scss";
 import { Popconfirm } from "antd";
 import SmartMix from "../../assets/images/smart-mix-of-strategies.png";
 

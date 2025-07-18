@@ -211,6 +211,36 @@ const Home = () => {
       </div>
       {/* EOL Smart-mix */}
 
+      {/* Connect */}
+      <Row className="connect-wrapper" align="middle">
+        <Col span={24} className="connect-col" align="center">
+          <Card>
+            <h2>Do you want to connect?</h2>
+            <p>
+              Have a question or want to know more? Reach out to our Better
+              Income team.
+            </p>
+            <br />
+            <Link to="#" className="button button-green">
+              Get in touch
+            </Link>
+
+            <LandingIDHLogo
+              style={{
+                position: "absolute",
+                bottom: -115,
+                right: -115,
+                transform: "rotate(260deg)",
+                opacity: 0.25,
+              }}
+              width={300}
+              height={300}
+            />
+          </Card>
+        </Col>
+      </Row>
+      {/* EOL Connect */}
+
       <FooterDisclaimer />
     </div>
   );
