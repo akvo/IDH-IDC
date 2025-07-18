@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from "react";
 import "./landingcomp.scss";
-import { Row, Col, Divider } from "antd";
+import { Row, Col, Divider, Space, Image } from "antd";
 import { Link } from "react-router-dom";
 import { DataSecurityProvisionModal } from "../../../components/utils";
 import { PageFooter } from "../../../components/layout";
+import LinkedinIcon from "../../../assets/icons/linkedin.svg";
+import YoutubeIcon from "../../../assets/icons/youtube.svg";
 
 const defaultDisclaimerText = (handleSecurityClick) => (
   <>
@@ -122,8 +124,31 @@ const FooterDisclaimer = ({
       id="footer-disclaimer"
       data-testid="disclaimer-section-wrapper"
       justify="center"
+      gutter={[20, 20]}
     >
-      <Col span={24}>
+      <Col span={5}>
+        <Row gutter={[32, 32]}>
+          <Col span={24}>
+            <Space direction="vertical" style={{ marginTop: 48 }} size="large">
+              <Link to="/">Home</Link>
+              <Link to="/income-driver-calculator">
+                Income Driver Calculator
+              </Link>
+              <Link to="/procurement-library">Procurement Library</Link>
+              <Link to="/cocoa-income-inventory">Cocoa Income Inventory</Link>
+              <Link to="/tools-and-resources">Tools & Resources</Link>
+              <Link to="/faq">FAQ</Link>
+            </Space>
+          </Col>
+          <Col span={24}>
+            <Space>
+              <Image src={LinkedinIcon} preview={false} />
+              <Image src={YoutubeIcon} preview={false} />
+            </Space>
+          </Col>
+        </Row>
+      </Col>
+      <Col span={19}>
         <h2
           data-testid="disclaimer-section-title"
           style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}
