@@ -3,10 +3,10 @@ import "./App.scss";
 import { Spin } from "antd";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { PrivateRoutes } from "./components/route";
+import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
-import { Landing } from "./pages/landing";
+import { Landing } from "./pages/income-driver-calculator";
 import { Login, ResetPassword } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
@@ -165,13 +165,21 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
           {userRole !== null ? (
             <Route element={<PrivateRoutes />}>
-              <Route exact path="/welcome" element={<Welcome />} />
-              <Route exact path="/home" element={<Home />} />
+              {/* IDC Dashboard after login */}
+              <Route
+                exact
+                path={routePath.idc.dashboard}
+                element={<Welcome />}
+              />
 
               {/* Case */}
               {/* Manage new cases step routes */}
-              <Route exact path="/cases" element={<Cases />} />
-              <Route exact path="/case/:caseId/:step" element={<Case />} />
+              <Route exact path={routePath.idc.cases} element={<Cases />} />
+              <Route
+                exact
+                path={`${routePath.idc.case}/:caseId/:step`}
+                element={<Case />}
+              />
 
               {/* TODO:: Delete later Old  Page */}
               {host !== PROD_HOST && (
@@ -256,8 +264,19 @@ const App = () => {
           ) : (
             ""
           )}
-          <Route exact path="/" element={<Landing signOut={signOut} />} />
-          <Route exact path="/login" element={<Login />} />
+
+          {/* ITK Homepage */}
+          <Route exact path="/" element={<Home />} />
+          {/* EOL ITK Homepage */}
+
+          {/* IDC PAGE */}
+          <Route
+            exact
+            path={routePath.idc.landing}
+            element={<Landing signOut={signOut} />}
+          />
+          <Route exact path={routePath.idc.login} element={<Login />} />
+          {/* EOL IDC PAGE */}
           <Route
             exact
             path="/tools-and-resources"

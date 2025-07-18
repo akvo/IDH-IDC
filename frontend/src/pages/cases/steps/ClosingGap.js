@@ -119,7 +119,6 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
 
   const backFunction = useCallback(() => {
     navigate(-1);
-    // navigate(`/case/${currentCase.id}/${stepPath.step4.label}`);
   }, [navigate]);
 
   const nextFunction = useCallback(() => {

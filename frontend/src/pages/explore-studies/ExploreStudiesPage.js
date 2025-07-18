@@ -25,6 +25,7 @@ import { thousandFormatter } from "../../components/chart/options/common";
 import { sourceOptions, driverOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import Chart from "../../components/chart";
+import { routePath } from "../../components/route";
 
 const selectProps = {
   showSearch: true,
@@ -660,7 +661,7 @@ const ExploreStudiesPage = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Explore Studies" },
       ]}
       wrapperId="explore-studies-page"

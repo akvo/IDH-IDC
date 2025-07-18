@@ -3,7 +3,7 @@ import "./cii-dashboard.scss";
 import { useNavigate } from "react-router-dom";
 import { Button, Space } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { FooterDisclaimer } from "../landing/components";
+import { FooterDisclaimer } from "../income-driver-calculator/components";
 import { FileDownloadIcon } from "../../lib/icon";
 
 const CocoaIncomeInventoryDashboard = () => {

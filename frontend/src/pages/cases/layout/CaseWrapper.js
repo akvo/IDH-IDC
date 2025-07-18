@@ -36,6 +36,7 @@ import {
 } from "../../../store/static";
 import { api } from "../../../lib";
 import { usePiwikTrackPageTime } from "../../../hooks";
+import { routePath } from "../../../components/route";
 
 const { Sider, Content } = Layout;
 const buttonPrevNextPosition = "bottom";
@@ -85,7 +86,9 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
     if (onSave) {
       onSave();
     }
-    navigate(`/case/${caseId}/${stepPath[`step${val + 1}`].label}`);
+    navigate(
+      `${routePath.idc.case}/${caseId}/${stepPath[`step${val + 1}`].label}`
+    );
   };
 
   return (
@@ -299,8 +302,8 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                 // siderCollapsed={siderCollapsed}
                 // EOL enable sider collapsed
                 breadcrumbItems={[
-                  { title: "Home", href: "/welcome" },
-                  { title: "Cases", href: "/cases" },
+                  { title: "Home", href: routePath.idc.dashboard },
+                  { title: "Cases", href: routePath.idc.cases },
                   { title: currentCase?.name, href: "" },
                 ]}
                 breadcrumbRightContent={

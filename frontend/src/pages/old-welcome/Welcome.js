@@ -8,7 +8,7 @@ import {
   CompareIncomeTarget,
   ExploreStudies,
   FooterDisclaimer,
-} from "../landing/components";
+} from "../income-driver-calculator/components";
 
 const FAQ = () => {
   const showItems = false;
@@ -64,7 +64,7 @@ const Welcome = ({ signOut }) => {
       <CompareIncomeTarget />
       <ExploreStudies signedIn={true} />
       <FAQ />
-      <FooterDisclaimer />
+      <FooterDisclaimer disclaimerText="idc" />
     </div>
   );
 };

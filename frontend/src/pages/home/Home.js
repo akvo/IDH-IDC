@@ -1,70 +1,248 @@
-import React from "react";
 import "./home.scss";
-import { Card, Row, Col, Space, Select, Table } from "antd";
-import { FullscreenOutlined } from "@ant-design/icons";
-import { ContentLayout } from "../../components/layout";
+import { Card, Row, Col, Image, Space } from "antd";
+import { Link } from "react-router-dom";
+import {
+  LandingInfoDriversIcon,
+  HomeExploreToolkitIcon,
+  LandingIDHLogo,
+} from "../../lib/icon";
+import CheckIcon from "../../assets/icons/check-icon.svg";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
-const columns = [
-  {
-    title: "Country",
-    dataIndex: "country",
-  },
-  {
-    title: "Crop",
-    dataIndex: "crop",
-  },
-  {
-    title: "Source",
-    dataIndex: "source",
-  },
-  {
-    title: "Year",
-    dataIndex: "year",
-  },
-  {
-    title: <FullscreenOutlined />,
-    width: "3%",
-    render: () => <FullscreenOutlined />,
-  },
-];
-
-const data = [];
-for (let i = 0; i < 46; i++) {
-  data.push({
-    key: i,
-    country: "Kenya",
-    crop: "Coffee",
-    source: "SDM",
-    year: "2021-02-05 08:28:36",
-  });
-}
+import { toolResourceItems } from "./tools-resources-content";
+import { orderBy } from "lodash";
+import { FooterDisclaimer } from "../income-driver-calculator/components";
+import PizzaDiagram from "./PizzaDiagram";
+import LivingIncomeSteps from "./LivingIncomeSteps";
 
 const Home = () => {
   return (
-    <ContentLayout
-      breadcrumbItems={[{ title: "Home" }, { title: "Explore Cases" }]}
-      title="Explore Cases"
-    >
-      <Card className="home-card-container">
-        <Row gutter={[12, 12]}>
-          <Col span={12}>
-            <Space>
-              <div>Crop</div>
-              <Select data-testid="crop-selector" options={[]} />
-            </Space>
-          </Col>
-          <Col span={12}>
-            <Space>
-              <div>Country</div>
-              <Select data-testid="country-selector" options={[]} />
-            </Space>
-          </Col>
-        </Row>
-      </Card>
-      <Card className="home-card-container">
-        <Table data-testid="data-table" columns={columns} dataSource={data} />
-      </Card>
-    </ContentLayout>
+    <div className="home-container" id="home">
+      {/* Jumbotron */}
+      <Row id="jumbotron" justify="center" data-testid="jumbotron-wrapper">
+        <Col span={24} className="jumbotron-gradient-wrapper">
+          <div className="jumbotron-gradient-overlay"></div>
+          <div className="jumbotron-text-wrapper">
+            <h1 data-testid="jumbotron-title">
+              Welcome to the
+              <br />
+              Living Income Roadmap Toolkit
+            </h1>
+            <h3 data-testid="jumbotron-subtitle" className="jumbotron-subtitle">
+              A growing set of practical, data-driven tools to help companies
+              take smarter, more targeted action to help raise famer incomes in
+              their supply chains towards a living income.
+            </h3>
+            <Link
+              to="#"
+              data-testid="button-learn-more"
+              className="button button-yellow"
+            >
+              Watch the video
+            </Link>
+          </div>
+        </Col>
+      </Row>
+      {/* EOL Jumbotron */}
+
+      {/* Info card */}
+      <Row
+        data-testid="info-card-wrapper"
+        justify="space-evenly"
+        align="center"
+        className="info-card-row"
+        gutter={24}
+      >
+        <Col sm={24} md={12} align="top">
+          <Card className="info-card-wrapper info-first">
+            <div className="info-card-icon">
+              <LandingInfoDriversIcon />
+            </div>
+            <h3>Living Income Roadmap</h3>
+            <p>
+              Range of steps, guiding questions and data-driven tools designed
+              for companies to drive aligned action towards closing living
+              income gaps for farming households.
+            </p>
+            <Link to="#">Explore</Link>
+          </Card>
+        </Col>
+        <Col sm={24} md={12} align="top">
+          <Card className="info-card-wrapper info-second">
+            <div className="info-card-icon">
+              <HomeExploreToolkitIcon />
+            </div>
+            <h3>Explore the toolkit</h3>
+            <p>
+              Data-driven tools to help companies take evidence driven action
+              towards assessing and closing the living income gap in their
+              supply chains
+            </p>
+            <Link to="#">Explore</Link>
+          </Card>
+        </Col>
+      </Row>
+      {/* EOL Info card */}
+
+      {/* Roadmap */}
+      <Row
+        data-testid="income-driver-framework-wrapper"
+        justify="center"
+        className="income-driver-framework-wrapper"
+      >
+        <Col span={24} className="income-driver-framework-text-wrapper">
+          <h2>Living Income Roadmap to Guide Action</h2>
+          <p>
+            IDH works to improve incomes for smallholder farmers across sectors
+            and landscapes. Achieving this requires stakeholders to shift
+            practices at multiple levels. As the initiator of the Living Income
+            Roadmap, IDH drives collaborative action through a shared framework.
+            The Roadmap outlines key steps, guiding questions and data-driven
+            tools that are dynamic and meant to be used in parallel. It
+            emphasises the importance of using comparable data, fostering
+            multi-stakeholder partnerships and taking immediate coordinated
+            action.
+          </p>
+        </Col>
+        <Col span={24} align="center">
+          <LivingIncomeSteps />
+        </Col>
+      </Row>
+      {/* EOL Roadmap */}
+
+      {/* Toolkit towards better income */}
+      <Row className="toolkit-wrapper">
+        <Col span={24} className="toolkit-header-wrapper">
+          <Row align="top" justify="space-between">
+            <Col span={18}>
+              <h2>Toolkit towards better income</h2>
+              <p>
+                Explore a set of tools and resources made available by IDH and
+                our partners below.
+              </p>
+            </Col>
+            <Col span={6} align="right">
+              <Link to="#" className="button button-green-fill">
+                Explore all Resources{" "}
+                <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
+              </Link>
+            </Col>
+          </Row>
+        </Col>
+
+        {/* the contents */}
+        {orderBy(toolResourceItems, ["order"]).map((it, idx) => {
+          const even = (idx + 1) % 2 === 0;
+          const leftPositition = even ? 2 : 1;
+          const rightPosition = even ? 1 : 2;
+          return (
+            <Col
+              span={24}
+              className="tool-resource-items-wrapper"
+              key={`tri-${idx}`}
+            >
+              <Row gutter={[24, 24]} align="middle" justify="space-between">
+                <Col
+                  span={14}
+                  order={leftPositition}
+                  className="tool-resource-item-content"
+                >
+                  <Space style={{ width: "100%" }}>
+                    <Image src={it.icon} width={32} preview={false} />
+                    <h3>{it.title}</h3>
+                  </Space>
+                  <p>{it.description}</p>
+                  <div className="tool-resource-list">
+                    {it.list.map((lit, lidx) => (
+                      <Space key={`tri-list-${lidx}`} style={{ width: "100%" }}>
+                        <Image src={CheckIcon} preview={false} width={24} />
+                        <p>{lit}</p>
+                      </Space>
+                    ))}
+                  </div>
+                  <Link
+                    to={it.link}
+                    className="button button-green-fill"
+                    style={{ marginTop: 14 }}
+                  >
+                    Explore
+                  </Link>
+                </Col>
+                <Col span={10} order={rightPosition}>
+                  <Image src={it.image} preview={false} />
+                </Col>
+              </Row>
+              {idx === toolResourceItems.length - 1 && (
+                <LandingIDHLogo
+                  style={{
+                    position: "absolute",
+                    bottom: -165,
+                    left: -265,
+                    transform: "rotate(90deg)",
+                  }}
+                  width={400}
+                  height={400}
+                  color="#d5ebfd66"
+                />
+              )}
+            </Col>
+          );
+        })}
+      </Row>
+      {/* EOL Toolkit towards better income */}
+
+      {/* Smart-mix */}
+      <div id="smart-mix">
+        <div className="text-wrapper">
+          <h2>Smart-mix of strategies</h2>
+          <p style={{ width: "85%" }}>
+            Strategies to improve income extend well beyond changes in the farm
+            systems and household behaviour. They include service delivery for
+            improved production and processing, brand and consumer engagement,
+            and enhancing the enabling environment. The smart-mix of strategies
+            covers six strategic areas companies can address within
+            multi-stakeholder intervention. Each strategy aims to improve one or
+            more income drivers or the conditions that that support them.
+          </p>
+        </div>
+        <div className="pizza-wrapper">
+          <PizzaDiagram />
+        </div>
+      </div>
+      {/* EOL Smart-mix */}
+
+      {/* Connect */}
+      <Row className="connect-wrapper" align="middle">
+        <Col span={24} className="connect-col" align="center">
+          <Card>
+            <h2>Do you want to connect?</h2>
+            <p>
+              Have a question or want to know more? Reach out to our Better
+              Income team.
+            </p>
+            <br />
+            <Link to="#" className="button button-green">
+              Get in touch
+            </Link>
+
+            <LandingIDHLogo
+              style={{
+                position: "absolute",
+                bottom: -115,
+                right: -115,
+                transform: "rotate(260deg)",
+                opacity: 0.25,
+              }}
+              width={300}
+              height={300}
+            />
+          </Card>
+        </Col>
+      </Row>
+      {/* EOL Connect */}
+
+      <FooterDisclaimer />
+    </div>
   );
 };
 

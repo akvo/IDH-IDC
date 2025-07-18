@@ -31,6 +31,7 @@ import { api } from "../../../lib";
 import { removeUndefinedObjectValue } from "../../../lib";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
+import { routePath } from "../../../components/route";
 
 /**
  * STEP 4
@@ -98,7 +99,9 @@ const AssessImpactMitigationStrategies = ({
             });
             if (allowNavigate) {
               setTimeout(() => {
-                navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
+                navigate(
+                  `${routePath.idc.case}/${currentCase.id}/${stepPath.step5.label}`
+                );
               }, 100);
             }
           })
@@ -122,7 +125,9 @@ const AssessImpactMitigationStrategies = ({
         upateCaseButtonState({ loading: false });
         if (allowNavigate) {
           setTimeout(() => {
-            navigate(`/case/${currentCase.id}/${stepPath.step5.label}`);
+            navigate(
+              `${routePath.idc.case}/${currentCase.id}/${stepPath.step5.label}`
+            );
           }, 100);
         }
       }
@@ -139,7 +144,6 @@ const AssessImpactMitigationStrategies = ({
 
   const backFunction = useCallback(() => {
     navigate(-1);
-    // navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
   }, [navigate]);
 
   const nextFunction = useCallback(() => {

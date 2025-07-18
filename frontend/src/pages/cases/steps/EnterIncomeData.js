@@ -19,6 +19,7 @@ import { EnterIncomeDataForm } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { isEmpty, isEqual } from "lodash";
 import { InfoCircleOutlined } from "@ant-design/icons";
+import { routePath } from "../../../components/route";
 
 const rowColSpanSize = {
   gutter: [8, 8],
@@ -181,7 +182,9 @@ const EnterIncomeData = ({
             });
             if (allowNavigate) {
               setTimeout(() => {
-                navigate(`/case/${currentCase.id}/${stepPath.step3.label}`);
+                navigate(
+                  `${routePath.idc.case}/${currentCase.id}/${stepPath.step3.label}`
+                );
               }, 100);
             }
           })
@@ -214,7 +217,6 @@ const EnterIncomeData = ({
 
   const backFunction = useCallback(() => {
     navigate(-1);
-    // navigate(`/case/${currentCase.id}/${stepPath.step1.label}`);
   }, [navigate]);
 
   const nextFunction = useCallback(() => {

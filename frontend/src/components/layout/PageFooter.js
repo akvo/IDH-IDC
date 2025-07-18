@@ -4,7 +4,8 @@ import AkvoLogoWhite from "../../assets/images/akvo-logo-white.png";
 import { Row, Col, Space, Image } from "antd";
 
 const page = {
-  default: "Income Driver Calculator",
+  default: "Living Income Roadmap Toolkit",
+  idc: "Income Driver Calculator",
   cii: "Cocoa Income Inventory",
   procurement: "Procurement Library ",
 };

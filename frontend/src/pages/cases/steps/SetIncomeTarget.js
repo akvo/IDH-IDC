@@ -38,6 +38,7 @@ import {
   FileTextOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import { routePath } from "../../../components/route";
 
 const formStyle = { width: "100%" };
 const showInformationAboutLIBCard = false;
@@ -669,7 +670,9 @@ const SetIncomeTarget = ({
             });
             if (allowNavigate) {
               setTimeout(() => {
-                navigate(`/case/${currentCase.id}/${stepPath.step2.label}`);
+                navigate(
+                  `${routePath.idc.case}/${currentCase.id}/${stepPath.step2.label}`
+                );
               }, 100);
             }
           })
@@ -702,7 +705,6 @@ const SetIncomeTarget = ({
 
   const backFunction = useCallback(() => {
     navigate(-1);
-    // navigate("/cases");
   }, [navigate]);
 
   const nextFunction = useCallback(() => {

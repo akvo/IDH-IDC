@@ -21,6 +21,7 @@ import { api, roundToDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
 import { NewCpiForm } from "../../components/utils";
 import { QuestionCircleOutline } from "../../lib/icon";
+import { routePath } from "../../components/route";
 
 const currentYear = new Date().getFullYear();
 const yearOptions = Array.from(
@@ -434,7 +435,7 @@ const LivingIncomeBenchmarkExplorer = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Living income benchmark explorer" },
       ]}
       wrapperId="lib-explorer"

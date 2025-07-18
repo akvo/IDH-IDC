@@ -18,6 +18,7 @@ import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
+import { routePath } from "../../components/route";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
@@ -59,7 +60,7 @@ const Login = () => {
         setCookie("AUTH_TOKEN", data?.access_token);
         api.setToken(cookies?.AUTH_TOKEN);
         setTimeout(() => {
-          navigate("/welcome", { state: { fromLogin: true } });
+          navigate(routePath.idc.dashboard, { state: { fromLogin: true } });
         }, 100);
       })
       .catch((e) => {

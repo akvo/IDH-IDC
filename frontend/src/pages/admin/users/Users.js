@@ -17,6 +17,7 @@ import {
 import { selectProps } from "../../../lib";
 import "./user.scss";
 import { LINK_TO_CASE_PROD } from "../../../store/static";
+import { routePath } from "../../../components/route";
 
 const perPage = 10;
 const defData = {
@@ -219,7 +220,7 @@ const Users = () => {
   return (
     <ContentLayout
       breadcrumbItems={[
-        { title: "Home", href: "/welcome" },
+        { title: "Home", href: routePath.idc.dashboard },
         { title: "Users", href: "/admin/users" },
       ]}
       title="User Management"

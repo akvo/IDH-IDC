@@ -9,7 +9,7 @@ import {
   OvalIcon,
 } from "../../lib/icon";
 import { Link } from "react-router-dom";
-import FooterDisclaimer from "../landing/components/FooterDisclaimer";
+import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
 import { PROCUREMENT_KEY_FEATURES } from "./config";
 // import CaseStudies from "./components/CaseStudies";
 
