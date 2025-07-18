@@ -155,7 +155,7 @@ const FooterDisclaimer = ({
         >
           Disclaimer
         </h2>
-        {disclaimerText === "default" &&
+        {(disclaimerText === "default" || disclaimerText === "idc") &&
           defaultDisclaimerText(handleSecurityClick)}
         {disclaimerText === "cii" && ciiDisclaimerText(handleSecurityClick)}
         {disclaimerText === "procurement" && procurementDisclaimerText()}

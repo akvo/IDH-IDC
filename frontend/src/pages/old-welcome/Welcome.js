@@ -64,7 +64,7 @@ const Welcome = ({ signOut }) => {
       <CompareIncomeTarget />
       <ExploreStudies signedIn={true} />
       <FAQ />
-      <FooterDisclaimer />
+      <FooterDisclaimer disclaimerText="idc" />
     </div>
   );
 };

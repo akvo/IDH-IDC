@@ -23,9 +23,18 @@ const PageHeader = ({ isLoggedIn, signOut }) => {
   const [loading, setLoading] = useState(false);
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
+  const location = useLocation();
 
   const menuItems = useMemo(() => {
     const menuList = [
+      {
+        testid: "nav-menu-home",
+        label: "Home",
+        key: "/",
+        role: [],
+        isPublic: true,
+        hide: location?.pathname === "/",
+      },
       {
         testid: "nav-menu-idc",
         label: "Income Driver Calculator",

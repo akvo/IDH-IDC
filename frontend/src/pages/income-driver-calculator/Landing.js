@@ -106,7 +106,7 @@ const Landing = ({ signOut }) => {
       <GetStarted />
       <ExploreStudies />
       <OtherToolsAndResources />
-      <FooterDisclaimer />
+      <FooterDisclaimer disclaimerText="idc" />
     </div>
   );
 };
