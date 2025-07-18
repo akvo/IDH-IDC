@@ -23,6 +23,7 @@ export const toolResourceItems = [
       "Facilitates data comparability across and within regions",
     ],
     image: IncomeMeasurementImg,
+    link: "#",
   },
   {
     icon: IDCIcon,
@@ -36,6 +37,7 @@ export const toolResourceItems = [
       "Use data visualisation to enhance partner engagement",
     ],
     image: IDCImg,
+    link: "/income-driver-calculator",
   },
   {
     icon: PLIcon,
@@ -49,6 +51,7 @@ export const toolResourceItems = [
       "Intuitive filters for easy navigation and exploration",
     ],
     image: PLImg,
+    link: "/procurement-library",
   },
   {
     icon: CIIIcon,
@@ -62,6 +65,7 @@ export const toolResourceItems = [
       "Access to validated data reduces research duplication and boosts efficiency",
     ],
     image: CIIImg,
+    link: "/cocoa-income-inventory",
   },
   {
     icon: IDHBnIcon,
@@ -75,5 +79,6 @@ export const toolResourceItems = [
       "Boosts impact, commercial viability and investabillity of smallholder-inclusive businesses",
     ],
     image: IDHBnImg,
+    link: "#",
   },
 ];

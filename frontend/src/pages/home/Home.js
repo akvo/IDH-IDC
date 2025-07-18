@@ -6,7 +6,6 @@ import {
   HomeExploreToolkitIcon,
   LandingIDHLogo,
 } from "../../lib/icon";
-import LivingIncomeRoadmap from "../../assets/images/living-income-roadmap.png";
 import CheckIcon from "../../assets/icons/check-icon.svg";
 import { ArrowRightOutlined } from "@ant-design/icons";
 
@@ -14,6 +13,7 @@ import { toolResourceItems } from "./tools-resources-content";
 import { orderBy } from "lodash";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import PizzaDiagram from "./PizzaDiagram";
+import LivingIncomeSteps from "./LivingIncomeSteps";
 
 const Home = () => {
   return (
@@ -105,7 +105,7 @@ const Home = () => {
           </p>
         </Col>
         <Col span={24} align="center">
-          <Image src={LivingIncomeRoadmap} preview={false} width={800} />
+          <LivingIncomeSteps />
         </Col>
       </Row>
       {/* EOL Roadmap */}
@@ -142,18 +142,31 @@ const Home = () => {
               key={`tri-${idx}`}
             >
               <Row gutter={[24, 24]} align="middle" justify="space-between">
-                <Col span={14} order={leftPositition}>
+                <Col
+                  span={14}
+                  order={leftPositition}
+                  className="tool-resource-item-content"
+                >
                   <Space style={{ width: "100%" }}>
                     <Image src={it.icon} width={32} preview={false} />
                     <h3>{it.title}</h3>
                   </Space>
                   <p>{it.description}</p>
-                  {it.list.map((lit, lidx) => (
-                    <Space key={`tri-list-${lidx}`} style={{ width: "100%" }}>
-                      <Image src={CheckIcon} preview={false} width={24} />
-                      <p>{lit}</p>
-                    </Space>
-                  ))}
+                  <div className="tool-resource-list">
+                    {it.list.map((lit, lidx) => (
+                      <Space key={`tri-list-${lidx}`} style={{ width: "100%" }}>
+                        <Image src={CheckIcon} preview={false} width={24} />
+                        <p>{lit}</p>
+                      </Space>
+                    ))}
+                  </div>
+                  <Link
+                    to={it.link}
+                    className="button button-green-fill"
+                    style={{ marginTop: 14 }}
+                  >
+                    Explore
+                  </Link>
                 </Col>
                 <Col span={10} order={rightPosition}>
                   <Image src={it.image} preview={false} />
