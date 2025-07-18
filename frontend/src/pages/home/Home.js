@@ -1,5 +1,5 @@
 import "./home.scss";
-import { Card, Row, Col, Image, Space, Popconfirm } from "antd";
+import { Card, Row, Col, Image, Space } from "antd";
 import { Link } from "react-router-dom";
 import {
   LandingInfoDriversIcon,
@@ -8,88 +8,12 @@ import {
 } from "../../lib/icon";
 import LivingIncomeRoadmap from "../../assets/images/living-income-roadmap.png";
 import CheckIcon from "../../assets/icons/check-icon.svg";
-import SmartMix from "../../assets/images/smart-mix-of-strategies.png";
 import { ArrowRightOutlined } from "@ant-design/icons";
 
 import { toolResourceItems } from "./tools-resources-content";
 import { orderBy } from "lodash";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
-
-const PizzaDiagram = () => {
-  const slices = [
-    {
-      key: 1,
-      placement: "top",
-      title: "Enabling environment",
-      description:
-        "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
-    },
-    {
-      key: 2,
-      placement: "top",
-      title: "Production and processing",
-      description:
-        "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
-    },
-    {
-      key: 3,
-      placement: "right",
-      title: "Procurement practices",
-      description:
-        "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
-    },
-    {
-      key: 4,
-      placement: "bottom",
-      title: "Consumer engagement & product innovation",
-      description:
-        "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
-    },
-    {
-      key: 5,
-      placement: "bottom",
-      title: "Tranceability & transparancy",
-      description:
-        "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
-    },
-    {
-      key: 6,
-      placement: "left",
-      title: "Sector and landscape management",
-      description:
-        "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
-    },
-  ];
-  return (
-    <div className="pie-container">
-      {/* Background Image */}
-      <img src={SmartMix} alt="smart-mix-img" className="pie-image" />
-
-      {/* Invisible Slices */}
-      {slices.map(({ key, title, description, placement }) => (
-        <Popconfirm
-          key={key}
-          placement={placement}
-          color="#fff"
-          title={() => <div className="pizza-tooltip-title">{title}</div>}
-          description={() => (
-            <div className="pizza-tooltip-description">{description}</div>
-          )}
-          trigger="hover"
-          showCancel={false}
-          okButtonProps={{
-            style: {
-              display: "none",
-            },
-          }}
-          icon={null}
-        >
-          <div className={`slice slice-${key}`} />
-        </Popconfirm>
-      ))}
-    </div>
-  );
-};
+import PizzaDiagram from "./PizzaDiagram";
 
 const Home = () => {
   return (

@@ -266,40 +266,40 @@
       transition: opacity 0.2s;
       width: 0;
       height: 0;
-      border-left: 90px solid transparent; /* Left side */
-      border-right: 90px solid transparent; /* Right side */
-      border-bottom: 200px solid rgba(0, 0, 0, 0); /* Bottom (color of triangle) */
+      border-left: 95px solid transparent; /* Left side */
+      border-right: 95px solid transparent; /* Right side */
+      border-bottom: 190px solid rgba(0, 0, 0, 0); /* Bottom (color of triangle) */
       cursor: pointer;
     }
 
     .slice-1 {
       top: 5%;
-      left: 16%;
+      left: 15%;
       transform: rotate(148deg);
     }
     .slice-2 {
       top: 5%;
-      right: 16%;
+      right: 15%;
       transform: rotate(208deg);
     }
     .slice-3 {
-      top: 28%;
-      right: 3%;
+      top: 26%;
+      right: 0;
       transform: rotate(268deg);
     }
     .slice-4 {
-      bottom: 5%;
+      bottom: 6%;
       right: 16%;
       transform: rotate(328deg);
     }
     .slice-5 {
       bottom: 5%;
-      left: 16%;
+      left: 15%;
       transform: rotate(388deg);
     }
     .slice-6 {
       top: 28%;
-      left: 3%;
+      left: 0;
       transform: rotate(448deg);
     }
 
