@@ -13,3 +13,4 @@ export { default as ScenarioModelingForm } from "./ScenarioModelingForm";
 export { default as AllDriverTreeSelector } from "./AllDriverTreeSelector";
 export { default as AdjustIncomeTarget } from "./AdjustIncomeTarget";
 export { default as OptimizeIncomeTarget } from "./OptimizeIncomeTarget";
+export { default as IDCSubMenu } from "./IDCSubMenu";

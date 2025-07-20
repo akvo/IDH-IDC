@@ -68,7 +68,7 @@ const ContentLayout = ({
 
   return (
     <div>
-      <Affix offsetTop={80} id="content-layout">
+      <Affix offsetTop={140} id="content-layout">
         <Card className="content-card-container" bordered={false}>
           <div className="content-card-wrapper">
             {siderCollapsedButton && setSiderCollapsed && (
