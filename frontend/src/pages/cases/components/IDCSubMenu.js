@@ -100,8 +100,8 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
         <Link
           className="nav-sign-in"
           onClick={() => {
-            signOut();
             setLoading(true);
+            signOut();
             setTimeout(() => {
               setLoading(false);
               navigate("/");

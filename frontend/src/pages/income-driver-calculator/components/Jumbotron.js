@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import "./landingcomp.scss";
-import { Row, Col } from "antd";
+import { Row, Col, Space } from "antd";
 import { Link } from "react-router-dom";
 import { UserState } from "../../../store";
 import { useNavigate } from "react-router-dom";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { LandingIDHLogo } from "../../../lib/icon";
 import { routePath } from "../../../components/route";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const Jumbotron = ({ signOut = null }) => {
   const navigate = useNavigate();
   const loggedIn = UserState.useState((s) => s.id);
+  const [loading, setLoading] = useState(false);
 
   return (
     <Row id="jumbotron" data-testid="jumbotron-wrapper" justify="center">
@@ -43,12 +45,23 @@ const Jumbotron = ({ signOut = null }) => {
           {loggedIn ? (
             <Link
               onClick={() => {
+                setLoading(true);
                 signOut();
-                navigate("/");
+                setTimeout(() => {
+                  setLoading(false);
+                  navigate("/");
+                }, 300);
               }}
               className="button button-yellow"
             >
-              Sign out
+              {loading ? (
+                <Space>
+                  <LoadingOutlined />
+                  Sign out
+                </Space>
+              ) : (
+                "Sign out"
+              )}
             </Link>
           ) : (
             <Link
