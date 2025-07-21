@@ -10,6 +10,7 @@
   display: block;
   width: 100%;
   height: auto;
+  text-align: center;
 }
 
 .roadmap-overlay {
@@ -66,5 +67,28 @@
   .ant-card-body {
     padding: 12px 16px;
     min-width: 295px;
+  }
+}
+
+.mobile-screen {
+  &.roadmap-container {
+    width: 100% !important;
+  }
+
+  .roadmap-step {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tooltip-title {
+    font-size: 14px;
+  }
+
+  .tooltip-description {
+    font-size: 14px;
+
+    h4 {
+      font-size: 14px;
+    }
   }
 }

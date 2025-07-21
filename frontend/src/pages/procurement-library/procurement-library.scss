@@ -1,22 +1,6 @@
 @import "../../variables.scss";
 @import url("https://fonts.googleapis.com/css2?family=Actor&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
-#root {
-  h1 {
-    font-size: 48px !important;
-    margin-block-start: 0;
-    margin-block-end: 0;
-  }
-  h2 {
-    font-size: 38px !important;
-  }
-  @media screen and (max-width: 1024px) {
-    h2 {
-      font-size: 36px !important;
-    }
-  }
-}
-
 .procurement-library-container {
   width: 100%;
   min-height: calc(100vh - 80px);
@@ -64,7 +48,6 @@
         h1 {
           font-style: normal;
           font-weight: 700;
-          line-height: 72px; /* 112.5% */
         }
         .caption {
           width: 90%;

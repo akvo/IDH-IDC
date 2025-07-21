@@ -3,6 +3,7 @@ import LivingIncomeRoadmap from "../../assets/images/living-income-roadmap.png";
 import "./living_income_steps.scss";
 import { toolResourceItems } from "./tools-resources-content";
 import { Link } from "react-router-dom";
+import { useWindowDimensions } from "../../hooks";
 
 const [IncomeMeasurement, IDC, PL, CII, IDHBn] = toolResourceItems;
 
@@ -38,12 +39,14 @@ const roadmapSteps = [
 ];
 
 const LivingIncomeSteps = () => {
+  const { isMobile, windowInnerWidth } = useWindowDimensions();
+
   return (
-    <div className="roadmap-container">
+    <div className={`roadmap-container ${isMobile ? "mobile-screen" : ""}`}>
       <Image
         src={LivingIncomeRoadmap}
         preview={false}
-        width={800}
+        width={isMobile ? windowInnerWidth - 48 : 800}
         className="roadmap-image"
       />
       <div className="roadmap-overlay">

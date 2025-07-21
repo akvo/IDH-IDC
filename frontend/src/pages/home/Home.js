@@ -14,10 +14,16 @@ import { orderBy } from "lodash";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import PizzaDiagram from "./PizzaDiagram";
 import LivingIncomeSteps from "./LivingIncomeSteps";
+import { useWindowDimensions } from "../../hooks";
 
 const Home = () => {
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <div className="home-container" id="home">
+    <div
+      className={`home-container ${isMobile ? "mobile-screen" : ""}`}
+      id="home"
+    >
       {/* Jumbotron */}
       <Row id="jumbotron" justify="center" data-testid="jumbotron-wrapper">
         <Col span={24} className="jumbotron-gradient-wrapper">
@@ -51,7 +57,7 @@ const Home = () => {
         justify="space-evenly"
         align="center"
         className="info-card-row"
-        gutter={24}
+        gutter={isMobile ? [0, 20] : [20, 20]}
       >
         <Col sm={24} md={12} align="top">
           <Card className="info-card-wrapper info-first">
@@ -205,9 +211,7 @@ const Home = () => {
             more income drivers or the conditions that that support them.
           </p>
         </div>
-        <div className="pizza-wrapper">
-          <PizzaDiagram />
-        </div>
+        <div className="pizza-wrapper">{isMobile ? "" : <PizzaDiagram />}</div>
       </div>
       {/* EOL Smart-mix */}
 
