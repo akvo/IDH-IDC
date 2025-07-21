@@ -16,6 +16,12 @@ const routePath = {
     dashboard: withPrefix("idc", "/welcome"),
     cases: withPrefix("idc", "/cases"),
     case: withPrefix("idc", "/case"),
+    faq: withPrefix("idc", "/faq"),
+    livingIncomeBenchmarkExplorer: withPrefix(
+      "idc",
+      "/living-income-benchmark-explorer"
+    ),
+    exploreStudies: withPrefix("idc", "/explore-studies"),
   },
 };
 

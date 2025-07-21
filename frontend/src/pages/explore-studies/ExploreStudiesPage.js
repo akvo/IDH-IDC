@@ -578,7 +578,7 @@ const ExploreStudiesPage = () => {
       source: source,
     });
     if (countryId && commodityId && driverId) {
-      navigate("/explore-studies", { replace: true });
+      navigate(routePath.idc.exploreStudies, { replace: true });
     }
   };
 
@@ -587,7 +587,7 @@ const ExploreStudiesPage = () => {
     form.setFieldsValue({});
     setFilterInitialValues({});
     if (countryId && commodityId && driverId) {
-      navigate("/explore-studies", { replace: true });
+      navigate(routePath.idc.exploreStudies, { replace: true });
     } else {
       fetchReferenceData();
       fetchMapData();
@@ -653,7 +653,7 @@ const ExploreStudiesPage = () => {
       [name]: null,
     }));
     if (countryId && commodityId && driverId) {
-      navigate("/explore-studies", { replace: true });
+      navigate(routePath.idc.exploreStudies, { replace: true });
       return;
     }
   };

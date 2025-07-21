@@ -6,6 +6,7 @@ import { thousandFormatter } from "../../../components/chart/options/common";
 import { api } from "../../../lib";
 import { CurrentCaseState } from "../store";
 import { isEmpty, upperFirst } from "lodash";
+import { routePath } from "../../../components/route";
 
 const ExploreDataFromOtherStudiesTable = () => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -23,7 +24,7 @@ const ExploreDataFromOtherStudiesTable = () => {
     if (!isEmpty(currentCase) && selectedDriver) {
       setLoadingRefData(true);
       setExploreButtonLink(
-        `/explore-studies/${country}/${commodity}/${selectedDriver}`
+        `${routePath.idc.exploreStudies}/${country}/${commodity}/${selectedDriver}`
       );
       api
         .get(

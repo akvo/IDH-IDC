@@ -370,7 +370,7 @@ const Welcome = () => {
                   interactive dashboard.
                 </div>
                 <div className="button-wrapper">
-                  <Link to="/living-income-benchmark-explorer">
+                  <Link to={routePath.idc.livingIncomeBenchmarkExplorer}>
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
                     </Button>
