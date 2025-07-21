@@ -127,8 +127,8 @@ const FooterDisclaimer = ({
       id="footer-disclaimer"
       data-testid="disclaimer-section-wrapper"
       justify="center"
-      gutter={[20, 20]}
       className={isMobile ? "mobile-screen" : ""}
+      gutter={isMobile ? [0, 20] : []}
     >
       <Col span={isMobile ? 24 : 5}>
         <Row gutter={[32, 32]}>
