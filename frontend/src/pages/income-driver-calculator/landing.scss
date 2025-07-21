@@ -115,4 +115,62 @@
       text-align: center;
     }
   }
+
+  .faq-section-wrapper {
+    padding: 3rem $default-padding-size 0;
+    background: #fff;
+
+    .faq-section-title-wrapper {
+      text-align: center;
+
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 30px;
+      }
+
+      p {
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 24px;
+      }
+    }
+
+    .faq-section-card-wrapper {
+      padding: 0 $default-padding-size;
+
+      .ant-card-body {
+        text-align: center;
+        padding: 24px 20px 38px;
+        width: 75%;
+        border-radius: 16px;
+        background: #eaf2f2;
+        position: relative;
+        overflow: hidden;
+      }
+
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 30px !important;
+        font-style: normal;
+        font-weight: 700;
+        padding: 0;
+        margin: 0;
+      }
+
+      p {
+        font-family: "TabletGothic";
+        font-size: 16px;
+        font-style: normal;
+      }
+
+      a {
+        margin-top: 20px;
+      }
+    }
+  }
 }

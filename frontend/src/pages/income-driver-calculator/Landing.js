@@ -1,6 +1,6 @@
 import React from "react";
 import "./landing.scss";
-import { Row, Col, Card, Image } from "antd";
+import { Row, Col, Card, Image, Divider } from "antd";
 import {
   LandingInfoHelpIcon,
   LandingInfoEstimateIcon,
@@ -17,6 +17,8 @@ import Benefit1 from "../../assets/icons/idc/benefit-1.svg";
 import Benefit2 from "../../assets/icons/idc/benefit-2.svg";
 import Benefit3 from "../../assets/icons/idc/benefit-3.svg";
 import Benefit4 from "../../assets/icons/idc/benefit-4.svg";
+import { FAQ } from "../faq";
+import { LandingIDHLogo } from "../../lib/icon";
 
 const InformationCard = () => (
   <Row
@@ -104,6 +106,51 @@ const IDCBenefits = () => {
   );
 };
 
+const FAQSection = () => {
+  return (
+    <div className="faq-section-wrapper">
+      <Row gutter={[20, 20]}>
+        <Col span="24" className="faq-section-title-wrapper">
+          <h2>Frequently Asked Questions (FAQ)</h2>
+          <p>Everything you need to know about the IDC </p>
+        </Col>
+        <Col span="24">
+          <FAQ showPageTitle={false} showPageFooter={false} />
+        </Col>
+        <Col span={24} className="faq-section-card-wrapper" align="center">
+          <Card>
+            <h2>Still have questions?</h2>
+            <p>
+              Can’t find the answers you are looking for? Please reach out to
+              our Better Income team.
+            </p>
+            <br />
+            <a
+              href="mailto:livingincome@idhtrade.org"
+              className="button button-green"
+            >
+              Get in touch
+            </a>
+
+            <LandingIDHLogo
+              style={{
+                position: "absolute",
+                bottom: -115,
+                right: -115,
+                transform: "rotate(260deg)",
+                opacity: 0.25,
+              }}
+              width={300}
+              height={300}
+            />
+          </Card>
+        </Col>
+        <Divider />
+      </Row>
+    </div>
+  );
+};
+
 const OtherToolsAndResources = () => {
   return (
     <div className="other-tools-recources-container">
@@ -125,6 +172,7 @@ const Landing = ({ signOut }) => {
       <IDCBenefits />
       <GetStarted />
       <FrameworkDrivers />
+      <FAQSection />
       <OtherToolsAndResources />
       <FooterDisclaimer disclaimerText="idc" />
     </div>

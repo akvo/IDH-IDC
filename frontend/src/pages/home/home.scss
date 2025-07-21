@@ -273,32 +273,32 @@
       .ant-card-body {
         text-align: center;
         padding: 24px 20px 38px;
-        width: 675px;
+        width: 75%;
         border-radius: 16px;
         background: #eaf2f2;
         position: relative;
         overflow: hidden;
       }
-    }
 
-    h2 {
-      color: $primary-color;
-      font-family: "RocGrotesk";
-      font-size: 30px !important;
-      font-style: normal;
-      font-weight: 700;
-      padding: 0;
-      margin: 0;
-    }
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 30px !important;
+        font-style: normal;
+        font-weight: 700;
+        padding: 0;
+        margin: 0;
+      }
 
-    p {
-      font-family: "TabletGothic";
-      font-size: 16px;
-      font-style: normal;
-    }
+      p {
+        font-family: "TabletGothic";
+        font-size: 16px;
+        font-style: normal;
+      }
 
-    a {
-      margin-top: 20px;
+      a {
+        margin-top: 20px;
+      }
     }
   }
 }

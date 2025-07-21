@@ -155,10 +155,10 @@ const faqContents = [
   },
 ];
 
-const FAQ = () => {
+const FAQ = ({ showPageTitle = true, showPageFooter = true }) => {
   return (
     <div id="faq-page">
-      <PageTitle title="Frequently Asked Questions" />
+      {showPageTitle ? <PageTitle title="Frequently Asked Questions" /> : ""}
 
       <div className="content-wrapper">
         {faqContents.map((item, ti) => (
@@ -183,7 +183,7 @@ const FAQ = () => {
         ))}
       </div>
 
-      <PageFooter />
+      {showPageFooter ? <PageFooter /> : ""}
     </div>
   );
 };
