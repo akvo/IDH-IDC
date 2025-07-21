@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import "./idc-sub-menu.scss";
-import { Layout, Row, Col, Space, Image, Menu, Affix } from "antd";
-import { useCookies } from "react-cookie";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Space, Menu, Affix } from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import { LoadingOutlined, LogoutOutlined } from "@ant-design/icons";
 import { UserState } from "../../../store";
 import {
@@ -60,37 +59,6 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
         isPublic: false,
         role: adminRole,
       },
-      {
-        testid: "nav-menu-logout",
-        hide: false,
-        label: (
-          <Link
-            className="nav-sign-in"
-            onClick={() => {
-              signOut();
-              setTimeout(() => {
-                setLoading(false);
-                navigate("/");
-              }, 300);
-            }}
-          >
-            {loading ? (
-              <Space>
-                <LoadingOutlined />
-                Sign out
-              </Space>
-            ) : (
-              <Space>
-                Logout
-                <LogoutOutlined />
-              </Space>
-            )}
-          </Link>
-        ),
-        key: "nav-menut-logout",
-        isPublic: false,
-        role: allUserRole,
-      },
     ];
     const filterByUser = (item) => {
       if (!userRole && !isLoggedIn) {
@@ -114,7 +82,11 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
         return filterByUser(item);
       });
     return items;
-  }, [userRole, isInternalUser, isLoggedIn, loading, signOut, navigate, host]);
+  }, [userRole, isInternalUser, isLoggedIn, host]);
+
+  if (!isLoggedIn) {
+    return "";
+  }
 
   return (
     <Affix offsetTop={80} style={{ width: "100%" }}>
@@ -123,7 +95,31 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
           mode="horizontal"
           items={subMenuItems}
           className="idc-sub-menu-navigation-container"
+          onClick={({ key }) => navigate(key)}
         />
+        <Link
+          className="nav-sign-in"
+          onClick={() => {
+            signOut();
+            setLoading(true);
+            setTimeout(() => {
+              setLoading(false);
+              navigate("/");
+            }, 300);
+          }}
+        >
+          {loading ? (
+            <Space>
+              <LoadingOutlined />
+              Sign out
+            </Space>
+          ) : (
+            <Space>
+              Logout
+              <LogoutOutlined />
+            </Space>
+          )}
+        </Link>
       </div>
     </Affix>
   );

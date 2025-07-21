@@ -9,6 +9,7 @@ import {
 import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
 import { useNavigate, Link } from "react-router-dom";
+import { showIDCSubMenu } from "../route";
 
 const tabItems = [
   {
@@ -68,7 +69,7 @@ const ContentLayout = ({
 
   return (
     <div>
-      <Affix offsetTop={140} id="content-layout">
+      <Affix offsetTop={showIDCSubMenu() ? 140 : 80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
           <div className="content-card-wrapper">
             {siderCollapsedButton && setSiderCollapsed && (

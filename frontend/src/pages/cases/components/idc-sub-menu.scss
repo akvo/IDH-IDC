@@ -6,11 +6,22 @@
   padding: 12px $default-padding-size;
   width: 100%;
   z-index: 9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  a {
+    font-family: "RocGrotesk";
+    font-size: 14px;
+    color: #000;
+    font-weight: 700;
+  }
 
   border-bottom: 1px solid #f2f2f2;
 
   .idc-sub-menu-navigation-container {
     background: #f2f2f2;
+
     &.ant-menu-horizontal {
       border: none;
       line-height: 36px;
