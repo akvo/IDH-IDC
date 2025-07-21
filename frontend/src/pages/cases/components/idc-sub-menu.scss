@@ -41,7 +41,8 @@
             border: none;
           }
 
-          &.ant-menu-item-active {
+          &.ant-menu-item-active,
+          &.ant-menu-item-selected {
             border-radius: 8px;
             background: #e5e5e5;
           }

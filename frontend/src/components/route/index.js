@@ -27,9 +27,10 @@ const routePath = {
 
 const showIDCSubMenu = () => {
   const pathname = window.location.pathname;
-  const casePagePath = pathname ? pathname?.split("/")?.[2] : null;
-
-  if (casePagePath === "case") {
+  if (
+    pathname.includes("/income-driver-calculator") ||
+    pathname.includes("/admin")
+  ) {
     return true;
   }
   return false;

@@ -3,6 +3,8 @@ import { PageTitle, PageFooter } from "../../components/layout";
 import "./faq.scss";
 import { Collapse } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { IDCSubMenu } from "../cases/components";
+import { showIDCSubMenu } from "../../components/route";
 
 const faqContents = [
   {
@@ -158,6 +160,8 @@ const faqContents = [
 const FAQ = ({ showPageTitle = true, showPageFooter = true }) => {
   return (
     <div id="faq-page">
+      {showPageTitle && showIDCSubMenu() ? <IDCSubMenu /> : ""}
+
       {showPageTitle ? <PageTitle title="Frequently Asked Questions" /> : ""}
 
       <div className="content-wrapper">

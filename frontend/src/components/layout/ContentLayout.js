@@ -10,6 +10,7 @@ import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
 import { useNavigate, Link } from "react-router-dom";
 import { showIDCSubMenu } from "../route";
+import { IDCSubMenu } from "../../pages/cases/components";
 
 const tabItems = [
   {
@@ -69,6 +70,10 @@ const ContentLayout = ({
 
   return (
     <div>
+      {/* IDC Sub menu */}
+      <IDCSubMenu />
+      {/* EOL IDC Sub menu */}
+
       <Affix offsetTop={showIDCSubMenu() ? 140 : 80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
           <div className="content-card-wrapper">
