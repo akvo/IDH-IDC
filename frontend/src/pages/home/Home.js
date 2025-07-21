@@ -221,9 +221,12 @@ const Home = () => {
               Income team.
             </p>
             <br />
-            <Link to="#" className="button button-green">
+            <a
+              href="mailto:livingincome@idhtrade.org"
+              className="button button-green"
+            >
               Get in touch
-            </Link>
+            </a>
 
             <LandingIDHLogo
               style={{
