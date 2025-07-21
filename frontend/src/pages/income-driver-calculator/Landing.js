@@ -19,6 +19,8 @@ import Benefit3 from "../../assets/icons/idc/benefit-3.svg";
 import Benefit4 from "../../assets/icons/idc/benefit-4.svg";
 import { FAQ } from "../faq";
 import { LandingIDHLogo } from "../../lib/icon";
+import { Link } from "react-router-dom";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
 const InformationCard = () => (
   <Row
@@ -95,7 +97,7 @@ const IDCBenefits = () => {
       <Col span={24} align="center" className="benefit-content-wrapper">
         <Row gutter={[20, 20]} align="top" justify="space-evenly">
           {benefitItems.map((item, bidx) => (
-            <Col key={`benefit-${bidx}`} span={6}>
+            <Col key={`benefit-${bidx}`} span={6} align="center">
               <Image src={item.icon} preview={false} />
               <h4>{item.label}</h4>
             </Col>
@@ -154,10 +156,21 @@ const FAQSection = () => {
 const OtherToolsAndResources = () => {
   return (
     <div className="other-tools-recources-container">
-      <h2>Other tools & resources</h2>
+      <div className="other-tools-title-wrapper">
+        <div>
+          <h2>Toolkit for Better Incomes</h2>
+          <p>Find other tools and resources of IDH and its partners below</p>
+        </div>
+        <div>
+          <Link to="/tools-and-resources" className="button button-green-fill">
+            Explore all Resources{" "}
+            <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
+          </Link>
+        </div>
+      </div>
       <OtherToolResourceList
         size={3}
-        showMoreButton={true}
+        showMoreButton={false}
         isLandingPage={true}
       />
     </div>
