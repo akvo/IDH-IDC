@@ -203,17 +203,17 @@ const App = () => {
               {/* for all logged in user route */}
               <Route
                 exact
-                path="/explore-studies"
+                path={routePath.idc.exploreStudies}
                 element={<ExploreStudiesPage />}
               />
               <Route
                 exact
-                path="/explore-studies/:countryId/:commodityId/:driverId"
+                path={`${routePath.idc.exploreStudies}/:countryId/:commodityId/:driverId`}
                 element={<ExploreStudiesPage />}
               />
               <Route
                 exact
-                path="/living-income-benchmark-explorer"
+                path={routePath.idc.livingIncomeBenchmarkExplorer}
                 element={<LivingIncomeBenchmarkExplorer />}
               />
             </Route>
@@ -224,17 +224,17 @@ const App = () => {
             <Route element={<PrivateRoutes />}>
               <Route
                 exact
-                path="/explore-studies"
+                path={routePath.idc.exploreStudies}
                 element={<ExploreStudiesPage />}
               />
               <Route
                 exact
-                path="/explore-studies/:countryId/:commodityId/:driverId"
+                path={`${routePath.idc.exploreStudies}/:countryId/:commodityId/:driverId`}
                 element={<ExploreStudiesPage />}
               />
               <Route
                 exact
-                path="/living-income-benchmark-explorer"
+                path={routePath.idc.livingIncomeBenchmarkExplorer}
                 element={<LivingIncomeBenchmarkExplorer />}
               />
             </Route>
@@ -276,13 +276,14 @@ const App = () => {
             element={<Landing signOut={signOut} />}
           />
           <Route exact path={routePath.idc.login} element={<Login />} />
+          <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}
+
           <Route
             exact
             path="/tools-and-resources"
             element={<OtherResources />}
           />
-          <Route exact path="/faq" element={<FAQ />} />
           <Route
             exact
             path="/cocoa-income-inventory"

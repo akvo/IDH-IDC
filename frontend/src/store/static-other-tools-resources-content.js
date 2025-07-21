@@ -5,7 +5,6 @@ import Image4 from "../assets/images/other-tool-resource/reporting-standards.png
 import Image5 from "../assets/images/other-tool-resource/procurement-practices-paper-by-DISCO.jpg";
 import Image6 from "../assets/images/other-tool-resource/aligned-Inclusive-living-income-narrative-and-indicators.jpg";
 import Image7 from "../assets/images/other-tool-resource/inclusive-business-analytics.jpg";
-// import { ArrowRightOutlined } from "@ant-design/icons";
 
 export const otherToolsAndResourcesContent = [
   {

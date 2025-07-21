@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import "./idc-sub-menu.scss";
 import { Space, Menu, Affix } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { LoadingOutlined, LogoutOutlined } from "@ant-design/icons";
 import { UserState } from "../../../store";
 import {
@@ -21,6 +21,14 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
     id: isLoggedIn,
   } = UserState.useState();
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+
+  const activePathname = useMemo(() => {
+    const paths = location.pathname.split("/");
+    const idcPath = paths?.[1] || "";
+    const pagePath = paths?.[2] || "";
+    return `/${idcPath}/${pagePath}`;
+  }, [location]);
 
   const subMenuItems = useMemo(() => {
     const menuList = [
@@ -34,21 +42,21 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
       {
         testid: "nav-menu-lib-explorer",
         label: "Living income benchmark explorer",
-        key: "/living-income-benchmark-explorer",
+        key: routePath.idc.livingIncomeBenchmarkExplorer,
         isInternalUser: false,
         role: allUserRole,
       },
       {
         testid: "nav-menu-explore-studies",
         label: "Explore other studies",
-        key: "/explore-studies",
+        key: routePath.idc.exploreStudies,
         isInternalUser: false,
         role: allUserRole,
       },
       {
         testid: "nav-menu-faq",
         label: "FAQ",
-        key: "/faq",
+        key: routePath.idc.faq,
         isPublic: true,
         role: allUserRole,
       },
@@ -101,6 +109,7 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
             items={subMenuItems}
             className="idc-sub-menu-navigation-container"
             onClick={({ key }) => navigate(key)}
+            selectedKeys={[activePathname]}
           />
           <Link
             className="nav-sign-in"

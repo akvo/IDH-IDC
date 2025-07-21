@@ -2,12 +2,14 @@
 
 #landing,
 .landing-container {
-  .income-driver-framework-wrapper {
-    background-color: #fff;
+  .benefit-wrapper {
+    background: #fcf9f4;
     width: 100%;
     padding: 0 $default-padding-size 3rem $default-padding-size;
 
-    .income-driver-framework-text-wrapper {
+    .benefit-text-wrapper {
+      text-align: center;
+
       h2 {
         color: $primary-color;
         font-family: "RocGrotesk";
@@ -16,27 +18,32 @@
         font-weight: 700;
         line-height: 30px;
       }
+    }
 
-      p {
-        color: #000;
-        font-family: "TabletGothic";
-        font-size: 14px;
+    .benefit-content-wrapper {
+      text-align: center;
+      padding: 2rem 0 0;
+
+      h4 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 18px;
         font-style: normal;
-        font-weight: 400;
-        line-height: 24px;
+        font-weight: 700;
+        line-height: 28px;
       }
     }
   }
 
   .info-card-row {
-    background: #ffffff;
+    background: #fcf9f4;
     padding: 0 3rem 3rem 3rem;
     margin-top: -7rem;
     margin-left: 0 !important;
     margin-right: 0 !important;
 
     .info-card-wrapper {
-      min-height: 200px;
+      min-height: 210px;
       border-radius: 22px;
 
       .ant-card-body {
@@ -98,14 +105,89 @@
     padding: 3rem $default-padding-size;
     background: #fff;
 
-    h2 {
-      color: $primary-color;
-      font-family: "RocGrotesk";
-      font-size: 24px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 30px;
+    .other-tools-title-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 30px;
+        margin-top: 0;
+        padding-top: 0;
+      }
+
+      p {
+        font-family: "TabletGothic";
+        font-size: 14px;
+        font-style: normal;
+      }
+
+      a {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .faq-section-wrapper {
+    padding: 3rem $default-padding-size 0;
+    background: #fff;
+
+    .faq-section-title-wrapper {
       text-align: center;
+
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 30px;
+      }
+
+      p {
+        font-size: 14px !important;
+        font-weight: 400;
+        line-height: 24px;
+      }
+    }
+
+    .faq-section-card-wrapper {
+      padding: 0 $default-padding-size;
+
+      .ant-card-body {
+        text-align: center;
+        padding: 24px 20px 38px;
+        width: 75%;
+        border-radius: 16px;
+        background: #eaf2f2;
+        position: relative;
+        overflow: hidden;
+      }
+
+      h2 {
+        color: $primary-color;
+        font-family: "RocGrotesk";
+        font-size: 30px !important;
+        font-style: normal;
+        font-weight: 700;
+        padding: 0;
+        margin: 0;
+      }
+
+      p {
+        font-family: "TabletGothic";
+        font-size: 16px;
+        font-style: normal;
+      }
+
+      a {
+        margin-top: 20px;
+      }
     }
   }
 }

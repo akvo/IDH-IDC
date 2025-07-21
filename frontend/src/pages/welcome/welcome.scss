@@ -1,10 +1,10 @@
 @import "../../variables.scss";
 
 #welcome {
-  padding: 24px 0;
+  padding: 0;
 
   .welcome-with-padding {
-    padding: 0 $default-padding-size;
+    padding: 24px $default-padding-size;
   }
 
   .username-wrapper {

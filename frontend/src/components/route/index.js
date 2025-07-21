@@ -16,14 +16,21 @@ const routePath = {
     dashboard: withPrefix("idc", "/welcome"),
     cases: withPrefix("idc", "/cases"),
     case: withPrefix("idc", "/case"),
+    faq: withPrefix("idc", "/faq"),
+    livingIncomeBenchmarkExplorer: withPrefix(
+      "idc",
+      "/living-income-benchmark-explorer"
+    ),
+    exploreStudies: withPrefix("idc", "/explore-studies"),
   },
 };
 
 const showIDCSubMenu = () => {
   const pathname = window.location.pathname;
-  const casePagePath = pathname ? pathname?.split("/")?.[2] : null;
-
-  if (casePagePath === "case") {
+  if (
+    pathname.includes("/income-driver-calculator") ||
+    pathname.includes("/admin")
+  ) {
     return true;
   }
   return false;

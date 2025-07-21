@@ -14,6 +14,7 @@ import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
 import { ViewSummaryModal } from "../../components/utils";
 import { routePath } from "../../components/route";
+import { IDCSubMenu } from "../cases/components";
 
 const perPage = 10;
 const defData = {
@@ -25,8 +26,11 @@ const defData = {
 
 const Welcome = () => {
   const host = window.location.hostname;
-  const { fullname: username, internal_user: isInternalUser } =
-    UserState.useState((s) => s);
+  const {
+    id: isLoggedIn,
+    fullname: username,
+    internal_user: isInternalUser,
+  } = UserState.useState((s) => s);
   const { companyHavingCaseOptions, companyOptions } = UIState.useState(
     (s) => s
   );
@@ -309,6 +313,11 @@ const Welcome = () => {
   return (
     <Row id="welcome" align="middle">
       {contextHolder}
+
+      {/* IDC Submenu */}
+      {isLoggedIn ? <IDCSubMenu /> : ""}
+      {/* EOL IDC Submenu */}
+
       <div className="welcome-with-padding">
         {/* Header */}
         <Col span={24} className="username-wrapper">
@@ -370,7 +379,7 @@ const Welcome = () => {
                   interactive dashboard.
                 </div>
                 <div className="button-wrapper">
-                  <Link to="/living-income-benchmark-explorer">
+                  <Link to={routePath.idc.livingIncomeBenchmarkExplorer}>
                     <Button className="button-explore">
                       Explore <ArrowRightOutlined />
                     </Button>

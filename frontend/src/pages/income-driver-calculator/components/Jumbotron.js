@@ -36,11 +36,10 @@ const Jumbotron = ({ signOut = null }) => {
             Income Driver Calculator
           </h1>
           <h3 data-testid="jumbotron-subtitle" className="jumbotron-subtitle">
-            The Income driver calculator is part of IDH’s Living income roadmap
-            toolkit, a growing collection of practical, data-driven tools
-            designed to help companies take more effective and targeted action
-            towards closing the living income gap in their agricultural supply
-            chains.
+            The Income Driver Calculator is an online tool that supports
+            companies to assess the size of the (living) income gap for their
+            farming partners and take data driven decisions on the most
+            effective strategies, using aggregated data.
           </h3>
           {loggedIn ? (
             <Link
