@@ -6,7 +6,6 @@ import {
   LandingInfoEstimateIcon,
   LandingInfoDriversIcon,
 } from "../../lib/icon";
-import LivingIncomeRoadmap from "../../assets/images/living-income-roadmap.png";
 import {
   Jumbotron,
   GetStarted,
@@ -15,6 +14,10 @@ import {
   FrameworkDrivers,
 } from "./components";
 import { OtherToolResourceList } from "../../components/utils";
+import Benefit1 from "../../assets/icons/idc/benefit-1.svg";
+import Benefit2 from "../../assets/icons/idc/benefit-2.svg";
+import Benefit3 from "../../assets/icons/idc/benefit-3.svg";
+import Benefit4 from "../../assets/icons/idc/benefit-4.svg";
 
 const InformationCard = () => (
   <Row
@@ -31,8 +34,8 @@ const InformationCard = () => (
         </div>
         <h3>Estimate farmer income</h3>
         <p>
-          Calculate actual household income and estimate feasible changes
-          through available data on the five key income drivers.
+          Calculate actual household income and estimate potential changes using
+          available data on the five key income drivers.
         </p>
       </Card>
     </Col>
@@ -41,7 +44,7 @@ const InformationCard = () => (
         <div className="info-card-icon">
           <LandingInfoEstimateIcon />
         </div>
-        <h3>Assess the income gap</h3>
+        <h3>Assess income gap</h3>
         <p>
           Compare household income to a Living Income benchmark and/or a custom
           target to assess income gap.
@@ -55,7 +58,7 @@ const InformationCard = () => (
         </div>
         <h3>Bridge the income gap</h3>
         <p>
-          Model scenarios and visualize the effectiveness of different
+          Model scenarios and visualise the effectiveness of different
           interventions in closing the income gaps.
         </p>
       </Card>
@@ -63,25 +66,44 @@ const InformationCard = () => (
   </Row>
 );
 
-const IncomeDriverFramework = () => (
-  <Row
-    data-testid="income-driver-framework-wrapper"
-    justify="center"
-    className="income-driver-framework-wrapper"
-  >
-    <Col span={24} className="income-driver-framework-text-wrapper">
-      <h2>Living Income Roadmap to Guide Action</h2>
-      <p>
-        IDH’s Living Income Roadmap helps companies and their supply chain
-        stakeholders take ambitions and aligned actions in their journeys to
-        close living income gaps for smallholder farming communities.
-      </p>
-    </Col>
-    <Col span={24} align="center">
-      <Image src={LivingIncomeRoadmap} preview={false} width={800} />
-    </Col>
-  </Row>
-);
+const IDCBenefits = () => {
+  const benefitItems = [
+    {
+      icon: Benefit1,
+      label: "Simple and intuitive user steps",
+    },
+    {
+      icon: Benefit2,
+      label: "Customisable by farmer segment, crop and context",
+    },
+    {
+      icon: Benefit3,
+      label: "Model and compare interventions and their impact",
+    },
+    {
+      icon: Benefit4,
+      label: "Data visualisation to enhance communication and reporting",
+    },
+  ];
+
+  return (
+    <Row justify="center" className="benefit-wrapper">
+      <Col span={24} className="benefit-text-wrapper">
+        <h2>Benefits of using the Income Driver Calculator</h2>
+      </Col>
+      <Col span={24} align="center" className="benefit-content-wrapper">
+        <Row gutter={[20, 20]} align="top" justify="space-evenly">
+          {benefitItems.map((item, bidx) => (
+            <Col key={`benefit-${bidx}`} span={6}>
+              <Image src={item.icon} preview={false} />
+              <h4>{item.label}</h4>
+            </Col>
+          ))}
+        </Row>
+      </Col>
+    </Row>
+  );
+};
 
 const OtherToolsAndResources = () => {
   return (
@@ -101,7 +123,7 @@ const Landing = ({ signOut }) => {
     <div className="landing-container" id="landing">
       <Jumbotron signOut={signOut} />
       <InformationCard />
-      <IncomeDriverFramework />
+      <IDCBenefits />
       <FrameworkDrivers />
       <GetStarted />
       <ExploreStudies />
