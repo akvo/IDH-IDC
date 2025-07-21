@@ -425,6 +425,10 @@
   .footer-wrapper {
     padding: 1rem 0;
   }
+
+  .footer-menu-wrapper {
+    margin-top: 32px;
+  }
 }
 
 #compare-income-target {
@@ -503,5 +507,15 @@
     max-width: 200px;
     font-weight: 500;
     line-height: 22px;
+  }
+}
+
+.mobile-screen {
+  &#footer-disclaimer {
+    padding: $default-mobile-padding-size !important;
+
+    .footer-menu-wrapper {
+      margin-top: 4px;
+    }
   }
 }

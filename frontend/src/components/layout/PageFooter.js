@@ -2,6 +2,7 @@ import React from "react";
 import LogoWhite from "../../assets/images/logo-white.png";
 import AkvoLogoWhite from "../../assets/images/akvo-logo-white.png";
 import { Row, Col, Space, Image } from "antd";
+import { useWindowDimensions } from "../../hooks";
 
 const page = {
   default: "Living Income Roadmap Toolkit",
@@ -15,15 +16,22 @@ const PageFooter = ({
   fixed = false,
   disclaimerText = "default",
 }) => {
+  const { isMobile } = useWindowDimensions();
+
   return (
     <Row
       align="middle"
       className={`page-footer-container ${wrapper ? "with-padding-bg" : ""} ${
         fixed ? "with-fixed-position" : ""
       }`}
+      gutter={[32, 32]}
     >
-      <Col span={18}>
-        <Space align="center" size="large">
+      <Col span={isMobile ? 24 : 18}>
+        <Space
+          align={isMobile ? "left" : "center"}
+          size="large"
+          direction={isMobile ? "vertical" : "horizontal"}
+        >
           <Image src={LogoWhite} preview={false} width={115} />
           <div className="copyright-text">
             <div>Copyright 2025 © IDH.</div>
@@ -43,7 +51,7 @@ const PageFooter = ({
           </div>
         </Space>
       </Col>
-      <Col span={6} style={{ textAlign: "right" }} align="end">
+      <Col span={isMobile ? 24 : 6} align={isMobile ? "left" : "right"}>
         <Image src={AkvoLogoWhite} preview={false} width={100} />
       </Col>
     </Row>
