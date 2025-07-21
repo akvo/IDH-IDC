@@ -37,6 +37,7 @@ import {
 import { api } from "../../../lib";
 import { usePiwikTrackPageTime } from "../../../hooks";
 import { routePath } from "../../../components/route";
+import { IDCSubMenu } from "../components";
 
 const { Sider, Content } = Layout;
 const buttonPrevNextPosition = "bottom";
@@ -105,7 +106,14 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
   );
 };
 
-const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
+const CaseWrapper = ({
+  children,
+  step,
+  caseId,
+  currentCase,
+  loading,
+  signOut,
+}) => {
   // track time
   usePiwikTrackPageTime();
 
@@ -261,10 +269,15 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   return (
     <Row id="case-detail" className="case-container">
       {contextHolder}
+
+      {/* SUB MENU */}
+      <IDCSubMenu signOut={signOut} />
+      {/* EOL SUB MENU */}
+
       <Col span={24}>
         <Row gutter={[0, 0]}>
           <Col span={layoutSize.left}>
-            <Affix offsetTop={80}>
+            <Affix offsetTop={140}>
               <Sider
                 className="case-sidebar-container"
                 width="100%"

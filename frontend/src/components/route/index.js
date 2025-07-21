@@ -19,5 +19,15 @@ const routePath = {
   },
 };
 
+const showIDCSubMenu = () => {
+  const pathname = window.location.pathname;
+  const casePagePath = pathname ? pathname?.split("/")?.[2] : null;
+
+  if (casePagePath === "case") {
+    return true;
+  }
+  return false;
+};
+
 export { default as PrivateRoutes } from "./PrivateRoutes";
-export { routePath };
+export { routePath, showIDCSubMenu };

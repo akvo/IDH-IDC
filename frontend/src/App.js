@@ -178,7 +178,7 @@ const App = () => {
               <Route
                 exact
                 path={`${routePath.idc.case}/:caseId/:step`}
-                element={<Case />}
+                element={<Case signOut={signOut} />}
               />
 
               {/* TODO:: Delete later Old  Page */}
@@ -280,43 +280,43 @@ const App = () => {
           <Route
             exact
             path="/tools-and-resources"
-            element={<OtherResources signOut={signOut} />}
+            element={<OtherResources />}
           />
-          <Route exact path="/faq" element={<FAQ signOut={signOut} />} />
+          <Route exact path="/faq" element={<FAQ />} />
           <Route
             exact
             path="/cocoa-income-inventory"
-            element={<CocoaIncomeInventory signOut={signOut} />}
+            element={<CocoaIncomeInventory />}
           />
           <Route
             exact
             path="/cocoa-income-inventory/dashboard"
-            element={<CocoaIncomeInventoryDashboard signOut={signOut} />}
+            element={<CocoaIncomeInventoryDashboard />}
           />
           <Route
             exact
             path="/procurement-library"
-            element={<ProcurementLibrary signOut={signOut} />}
+            element={<ProcurementLibrary />}
           />
           <Route
             exact
             path="/procurement-library/assessment"
-            element={<ProcurementPage.Assessment signOut={signOut} />}
+            element={<ProcurementPage.Assessment />}
           />
           <Route
             exact
             path="/procurement-library/intervention-library"
-            element={<ProcurementPage.InterventionLibrary signOut={signOut} />}
+            element={<ProcurementPage.InterventionLibrary />}
           />
           <Route
             exact
             path="/procurement-library/methodology"
-            element={<ProcurementPage.Methodology signOut={signOut} />}
+            element={<ProcurementPage.Methodology />}
           />
           <Route
             exact
             path="/procurement-library/intervention-library/:practiceId"
-            element={<ProcurementPage.Practice signOut={signOut} />}
+            element={<ProcurementPage.Practice />}
           />
           {/* <Route exact path="/register" element={<Register />} /> */}
           <Route

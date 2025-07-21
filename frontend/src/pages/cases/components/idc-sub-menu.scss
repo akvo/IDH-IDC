@@ -1,0 +1,57 @@
+@import "../../../variables.scss";
+
+#idc-sub-menu {
+  width: 100%;
+
+  .idc-sub-menu-wrapper {
+    background: #f2f2f2;
+    padding: 12px $default-padding-size;
+    width: 100%;
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-shadow: inset 0 -2px 4px -2px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: inset 0 -2px 4px -2px rgba(0, 0, 0, 0.1);
+
+    a {
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      color: #000;
+      font-weight: 700;
+    }
+
+    border-bottom: 1px solid #f2f2f2;
+
+    .idc-sub-menu-navigation-container {
+      background: #f2f2f2;
+
+      &.ant-menu-horizontal {
+        border: none;
+        line-height: 36px;
+
+        li {
+          font-family: "RocGrotesk";
+          font-size: 14px;
+          color: #000;
+          font-weight: 700;
+
+          &::after {
+            border: none;
+          }
+
+          &.ant-menu-item-active {
+            border-radius: 8px;
+            background: #e5e5e5;
+          }
+
+          &:last-child {
+            background: red !important;
+            color: red !important;
+          }
+        }
+      }
+    }
+  }
+}

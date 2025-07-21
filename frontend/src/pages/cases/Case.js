@@ -86,7 +86,7 @@ const renderPage = (key, navigate) => {
   }
 };
 
-const Case = () => {
+const Case = ({ signOut = () => {} }) => {
   const navigate = useNavigate();
   const { caseId, step } = useParams();
 
@@ -625,6 +625,7 @@ const Case = () => {
       step={step}
       currentCase={currentCase}
       loading={loading}
+      signOut={signOut}
     >
       {renderPage(step, navigate)}
     </CaseWrapper>
