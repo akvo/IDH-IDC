@@ -1,3 +1,5 @@
+// TODO :: Unused file (delete)
+
 import React from "react";
 import { Popconfirm } from "antd";
 import "./landingcomp.scss";

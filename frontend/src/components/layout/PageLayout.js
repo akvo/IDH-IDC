@@ -11,7 +11,7 @@ const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const pagesWithNoHeader = ["/login", "/register"];
 const { Header, Content } = Layout;
 
-const PageHeader = () => {
+const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
 
   const menuItems = useMemo(() => {
@@ -19,7 +19,7 @@ const PageHeader = () => {
       {
         testid: "nav-menu-idc",
         label: "Income Driver Calculator",
-        key: routePath.idc.landing,
+        key: isLoggedIn ? routePath.idc.dashboard : routePath.idc.landing,
         role: [],
         isPublic: true,
       },
@@ -66,7 +66,7 @@ const PageHeader = () => {
     //   return filterByUser(item);
     // });
     return items;
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <Header

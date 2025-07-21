@@ -9,7 +9,6 @@ import {
 import {
   Jumbotron,
   GetStarted,
-  ExploreStudies,
   FooterDisclaimer,
   FrameworkDrivers,
 } from "./components";
@@ -124,9 +123,8 @@ const Landing = ({ signOut }) => {
       <Jumbotron signOut={signOut} />
       <InformationCard />
       <IDCBenefits />
-      <FrameworkDrivers />
       <GetStarted />
-      <ExploreStudies />
+      <FrameworkDrivers />
       <OtherToolsAndResources />
       <FooterDisclaimer disclaimerText="idc" />
     </div>
