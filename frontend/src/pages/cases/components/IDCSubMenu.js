@@ -89,39 +89,45 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
   }
 
   return (
-    <Affix offsetTop={80} style={{ width: "100%" }}>
-      <div id="idc-sub-menu" className="idc-sub-menu-wrapper">
-        <Menu
-          mode="horizontal"
-          items={subMenuItems}
-          className="idc-sub-menu-navigation-container"
-          onClick={({ key }) => navigate(key)}
-        />
-        <Link
-          className="nav-sign-in"
-          onClick={() => {
-            setLoading(true);
-            signOut();
-            setTimeout(() => {
-              setLoading(false);
-              navigate("/");
-            }, 300);
-          }}
-        >
-          {loading ? (
-            <Space>
-              <LoadingOutlined />
-              Sign out
-            </Space>
-          ) : (
-            <Space>
-              Logout
-              <LogoutOutlined />
-            </Space>
-          )}
-        </Link>
-      </div>
-    </Affix>
+    <div id="idc-sub-menu">
+      <Affix
+        offsetTop={80}
+        style={{ width: "100%" }}
+        className="idc-sub-menu-affix"
+      >
+        <div className="idc-sub-menu-wrapper">
+          <Menu
+            mode="horizontal"
+            items={subMenuItems}
+            className="idc-sub-menu-navigation-container"
+            onClick={({ key }) => navigate(key)}
+          />
+          <Link
+            className="nav-sign-in"
+            onClick={() => {
+              setLoading(true);
+              signOut();
+              setTimeout(() => {
+                setLoading(false);
+                navigate("/");
+              }, 300);
+            }}
+          >
+            {loading ? (
+              <Space>
+                <LoadingOutlined />
+                Sign out
+              </Space>
+            ) : (
+              <Space>
+                Logout
+                <LogoutOutlined />
+              </Space>
+            )}
+          </Link>
+        </div>
+      </Affix>
+    </div>
   );
 };
 
