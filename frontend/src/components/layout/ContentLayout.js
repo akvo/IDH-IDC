@@ -44,6 +44,7 @@ const ContentLayout = ({
   siderCollapsedButton = false,
   siderCollapsed,
   setSiderCollapsed,
+  hideIDCSubMenu = false,
 }) => {
   const navigate = useNavigate();
   const hasBreadcrumb = breadcrumbItems.length;
@@ -71,7 +72,7 @@ const ContentLayout = ({
   return (
     <div>
       {/* IDC Sub menu */}
-      <IDCSubMenu />
+      {!hideIDCSubMenu ? <IDCSubMenu /> : ""}
       {/* EOL IDC Sub menu */}
 
       <Affix offsetTop={showIDCSubMenu() ? 140 : 80} id="content-layout">

@@ -9,6 +9,7 @@ import CostProductionIcon from "../../../assets/icons/cost-of-production.png";
 import DiversifiedIncomeIcon from "../../../assets/icons/diversified-income.png";
 import HouseholdIncomeIcon from "../../../assets/icons/hh-income.png";
 import TheFrameworkDrivers from "../../../assets/images/the-framework-drivers.png";
+import { useWindowDimensions } from "../../../hooks";
 
 const showDriverInfo = false;
 const showOldCalculation = false;
@@ -64,11 +65,14 @@ const items = [
 ];
 
 const FrameworkDrivers = () => {
+  const { isMobile } = useWindowDimensions();
+
   return (
     <Row
       id="framework-drivers"
       data-testid="framework-drivers-wrapper"
       justify="center"
+      className={isMobile ? "mobile-screen" : ""}
     >
       <Col span={24} className="text-wrapper">
         <h2 data-testid="framework-drivers-title">
@@ -88,7 +92,7 @@ const FrameworkDrivers = () => {
         <Image
           src={TheFrameworkDrivers}
           preview={false}
-          style={{ width: 950 }}
+          style={{ width: isMobile ? "100%" : 950 }}
         />
         {showOldCalculation && (
           <div>

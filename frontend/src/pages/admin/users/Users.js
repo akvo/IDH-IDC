@@ -18,6 +18,7 @@ import { selectProps } from "../../../lib";
 import "./user.scss";
 import { LINK_TO_CASE_PROD } from "../../../store/static";
 import { routePath } from "../../../components/route";
+import { useWindowDimensions } from "../../../hooks";
 
 const perPage = 10;
 const defData = {
@@ -27,10 +28,10 @@ const defData = {
   total_page: 1,
 };
 
-const filterProps = {
+const filterProps = (windowInnerHeight = window.innerHeight) => ({
   ...selectProps,
-  style: { width: window.innerHeight * 0.175 },
-};
+  style: { width: windowInnerHeight * 0.175 },
+});
 
 const userRoleOptions = [
   {
@@ -61,6 +62,8 @@ const Users = () => {
   const [deleting, setDeleting] = useState([]);
   const [modal, contextHolder] = Modal.useModal();
   const [messageApi, messageContextHolder] = message.useMessage();
+
+  const { windowInnerHeight } = useWindowDimensions();
 
   const fetchUser = useCallback(
     ({ currentPage, search, showApprovedUser, role }) => {
@@ -259,7 +262,7 @@ const Users = () => {
         }}
         otherFilters={
           <Select
-            {...filterProps}
+            {...filterProps(windowInnerHeight)}
             options={userRoleOptions}
             placeholder="User Role"
             value={role}

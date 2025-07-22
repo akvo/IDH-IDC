@@ -7,8 +7,8 @@
 }
 
 .pie-image {
-  width: 100%;
-  height: 100%;
+  width: 425px;
+  height: 425px;
 }
 
 .slice {
@@ -55,4 +55,17 @@
 
 .slice:hover {
   opacity: 0.3;
+}
+
+.mobile-screen {
+  &.pie-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .pie-image {
+    width: 100%;
+    height: 100%;
+  }
 }

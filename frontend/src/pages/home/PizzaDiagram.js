@@ -1,6 +1,7 @@
 import "./pizza.scss";
 import { Popconfirm } from "antd";
 import SmartMix from "../../assets/images/smart-mix-of-strategies.png";
+import { useWindowDimensions } from "../../hooks";
 
 const slices = [
   {
@@ -48,8 +49,10 @@ const slices = [
 ];
 
 const PizzaDiagram = () => {
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <div className="pie-container">
+    <div className={`pie-container ${isMobile ? "mobile-screen" : ""}`}>
       {/* Background Image */}
       <img src={SmartMix} alt="smart-mix-img" className="pie-image" />
 

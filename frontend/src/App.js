@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useCallback } from "react";
+import React, { useEffect, useMemo } from "react";
 import "./App.scss";
 import { Spin } from "antd";
 import { useCookies } from "react-cookie";
@@ -37,6 +37,7 @@ import {
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
+import { useSignOut } from "./hooks";
 
 const optionRoutes = [
   "organisation/options",
@@ -58,9 +59,10 @@ const ScrollToTop = () => {
 const App = () => {
   const host = window.location.hostname;
   const navigate = useNavigate();
-  const [cookies, , removeCookie] = useCookies(["AUTH_TOKEN"]);
+  const [cookies, ,] = useCookies(["AUTH_TOKEN"]);
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
+  const signOut = useSignOut();
 
   const isExternalUser = useMemo(() => {
     return userRole === "user" && !isInternalUser;
@@ -95,33 +97,6 @@ const App = () => {
     return res;
   }, [cookies?.AUTH_TOKEN]);
 
-  const signOut = useCallback(() => {
-    removeCookie("AUTH_TOKEN");
-    UserState.update((s) => {
-      s.id = 0;
-      s.fullname = null;
-      s.email = null;
-      s.role = null;
-      s.active = false;
-      s.organisation_detail = {
-        id: 0,
-        name: null,
-      };
-      s.business_unit_detail = [
-        {
-          id: 0,
-          name: null,
-          role: null,
-        },
-      ];
-      s.tags_count = 0;
-      s.cases_count = 0;
-      s.case_access = [];
-      s.internal_user = false;
-      s.company = null;
-    });
-  }, [removeCookie]);
-
   useEffect(() => {
     if (authTokenAvailable && userRole === null) {
       api
@@ -154,7 +129,7 @@ const App = () => {
   }, [authTokenAvailable, userRole]);
 
   return (
-    <PageLayout testid="page-layout" signOut={signOut}>
+    <PageLayout testid="page-layout">
       <ScrollToTop />
       {authTokenAvailable && userRole === null ? (
         <div className="loading-container">
@@ -178,7 +153,7 @@ const App = () => {
               <Route
                 exact
                 path={`${routePath.idc.case}/:caseId/:step`}
-                element={<Case signOut={signOut} />}
+                element={<Case />}
               />
 
               {/* TODO:: Delete later Old  Page */}
@@ -270,11 +245,7 @@ const App = () => {
           {/* EOL ITK Homepage */}
 
           {/* IDC PAGE */}
-          <Route
-            exact
-            path={routePath.idc.landing}
-            element={<Landing signOut={signOut} />}
-          />
+          <Route exact path={routePath.idc.landing} element={<Landing />} />
           <Route exact path={routePath.idc.login} element={<Login />} />
           <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}

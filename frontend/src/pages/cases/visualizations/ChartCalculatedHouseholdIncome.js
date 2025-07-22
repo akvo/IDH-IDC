@@ -2,6 +2,7 @@ import React, { useMemo, useState, useRef } from "react";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
+import { useWindowDimensions } from "../../../hooks";
 
 const ChartCalculatedHouseholdIncome = () => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -10,6 +11,8 @@ const ChartCalculatedHouseholdIncome = () => {
   );
   const [showLabel, setShowLabel] = useState(false);
   const elChartHHIncome = useRef(null);
+
+  const { windowInnerHeight } = useWindowDimensions();
 
   const chartData = useMemo(() => {
     if (!currentCase.segments.length) {
@@ -57,7 +60,7 @@ const ChartCalculatedHouseholdIncome = () => {
         type="COLUMN-BAR"
         data={chartData}
         loading={!chartData.length}
-        height={window.innerHeight * 0.4}
+        height={windowInnerHeight * 0.4}
         extra={{
           axisTitle: { y: `Income (${currentCase.currency})` },
           xAxisLabel: {

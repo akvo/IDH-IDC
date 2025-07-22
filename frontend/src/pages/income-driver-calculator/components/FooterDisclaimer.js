@@ -6,6 +6,7 @@ import { DataSecurityProvisionModal } from "../../../components/utils";
 import { PageFooter } from "../../../components/layout";
 import LinkedinIcon from "../../../assets/icons/linkedin.svg";
 import YoutubeIcon from "../../../assets/icons/youtube.svg";
+import { useWindowDimensions } from "../../../hooks";
 
 const defaultDisclaimerText = (handleSecurityClick) => (
   <>
@@ -114,6 +115,8 @@ const FooterDisclaimer = ({
   const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
     useState(false);
 
+  const { isMobile } = useWindowDimensions();
+
   // Prevent inline function warning in JSX
   const handleSecurityClick = useCallback(() => {
     setDataSecurityProvisionVisible(true);
@@ -124,12 +127,13 @@ const FooterDisclaimer = ({
       id="footer-disclaimer"
       data-testid="disclaimer-section-wrapper"
       justify="center"
-      gutter={[20, 20]}
+      className={isMobile ? "mobile-screen" : ""}
+      gutter={isMobile ? [0, 20] : []}
     >
-      <Col span={5}>
+      <Col span={isMobile ? 24 : 5}>
         <Row gutter={[32, 32]}>
-          <Col span={24}>
-            <Space direction="vertical" style={{ marginTop: 48 }} size="large">
+          <Col span={24} className="footer-menu-wrapper">
+            <Space direction="vertical" size="large">
               <Link to="/">Home</Link>
               <Link to="/income-driver-calculator">
                 Income Driver Calculator
@@ -148,7 +152,7 @@ const FooterDisclaimer = ({
           </Col>
         </Row>
       </Col>
-      <Col span={19}>
+      <Col span={isMobile ? 24 : 19}>
         <h2
           data-testid="disclaimer-section-title"
           style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}

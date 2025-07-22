@@ -11,8 +11,10 @@ import {
   PROD_HOST,
 } from "../../../store/static";
 import { routePath } from "../../../components/route";
+import { showIDCSubMenu } from "../../../components/route";
+import { useSignOut } from "../../../hooks";
 
-const IDCSubMenu = ({ signOut = () => {} }) => {
+const IDCSubMenu = () => {
   const host = window.location.hostname;
   const navigate = useNavigate();
   const {
@@ -22,6 +24,7 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
   } = UserState.useState();
   const [loading, setLoading] = useState(false);
   const location = useLocation();
+  const signOut = useSignOut();
 
   const activePathname = useMemo(() => {
     const paths = location.pathname.split("/");
@@ -67,6 +70,13 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
         isPublic: false,
         role: adminRole,
       },
+      {
+        testid: "nav-menu-about",
+        label: "About",
+        key: routePath.idc.landing,
+        isPublic: false,
+        role: adminRole,
+      },
     ];
     const filterByUser = (item) => {
       if (!userRole && !isLoggedIn) {
@@ -92,7 +102,7 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
     return items;
   }, [userRole, isInternalUser, isLoggedIn, host]);
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn || !showIDCSubMenu()) {
     return "";
   }
 
@@ -118,8 +128,8 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
               signOut();
               setTimeout(() => {
                 setLoading(false);
-                navigate("/");
-              }, 300);
+                navigate(routePath.idc.landing);
+              }, 500);
             }}
           >
             {loading ? (

@@ -14,10 +14,16 @@ import { orderBy } from "lodash";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import PizzaDiagram from "./PizzaDiagram";
 import LivingIncomeSteps from "./LivingIncomeSteps";
+import { useWindowDimensions } from "../../hooks";
 
 const Home = () => {
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <div className="home-container" id="home">
+    <div
+      className={`home-container ${isMobile ? "mobile-screen" : ""}`}
+      id="home"
+    >
       {/* Jumbotron */}
       <Row id="jumbotron" justify="center" data-testid="jumbotron-wrapper">
         <Col span={24} className="jumbotron-gradient-wrapper">
@@ -51,7 +57,7 @@ const Home = () => {
         justify="space-evenly"
         align="center"
         className="info-card-row"
-        gutter={24}
+        gutter={isMobile ? [0, 20] : [20, 20]}
       >
         <Col sm={24} md={12} align="top">
           <Card className="info-card-wrapper info-first">
@@ -113,15 +119,15 @@ const Home = () => {
       {/* Toolkit towards better income */}
       <Row className="toolkit-wrapper">
         <Col span={24} className="toolkit-header-wrapper">
-          <Row align="top" justify="space-between">
-            <Col span={18}>
+          <Row align="top" justify="space-between" gutter={[20, 20]}>
+            <Col span={isMobile ? 24 : 18}>
               <h2>Toolkit towards better income</h2>
               <p>
                 Explore a set of tools and resources made available by IDH and
                 our partners below.
               </p>
             </Col>
-            <Col span={6} align="right">
+            <Col span={isMobile ? 24 : 6} align={isMobile ? "left" : "right"}>
               <Link to="#" className="button button-green-fill">
                 Explore all Resources{" "}
                 <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
@@ -133,8 +139,8 @@ const Home = () => {
         {/* the contents */}
         {orderBy(toolResourceItems, ["order"]).map((it, idx) => {
           const even = (idx + 1) % 2 === 0;
-          const leftPositition = even ? 2 : 1;
-          const rightPosition = even ? 1 : 2;
+          const leftPositition = isMobile ? 2 : even ? 2 : 1;
+          const rightPosition = isMobile ? 1 : even ? 1 : 2;
           return (
             <Col
               span={24}
@@ -143,32 +149,32 @@ const Home = () => {
             >
               <Row gutter={[24, 24]} align="middle" justify="space-between">
                 <Col
-                  span={14}
+                  span={isMobile ? 24 : 14}
                   order={leftPositition}
                   className="tool-resource-item-content"
                 >
-                  <Space style={{ width: "100%" }}>
-                    <Image src={it.icon} width={32} preview={false} />
+                  <Space style={{ width: "100%" }} align="center">
+                    <Image src={it.icon} width={36} preview={false} />
                     <h3>{it.title}</h3>
                   </Space>
                   <p>{it.description}</p>
                   <div className="tool-resource-list">
                     {it.list.map((lit, lidx) => (
-                      <Space key={`tri-list-${lidx}`} style={{ width: "100%" }}>
+                      <Space
+                        key={`tri-list-${lidx}`}
+                        style={{ width: "100%" }}
+                        align="center"
+                      >
                         <Image src={CheckIcon} preview={false} width={24} />
                         <p>{lit}</p>
                       </Space>
                     ))}
                   </div>
-                  <Link
-                    to={it.link}
-                    className="button button-green-fill"
-                    style={{ marginTop: 14 }}
-                  >
+                  <Link to={it.link} className="button button-green-fill">
                     Explore
                   </Link>
                 </Col>
-                <Col span={10} order={rightPosition}>
+                <Col span={isMobile ? 24 : 10} order={rightPosition}>
                   <Image src={it.image} preview={false} />
                 </Col>
               </Row>
@@ -215,18 +221,20 @@ const Home = () => {
       <Row className="connect-wrapper" align="middle">
         <Col span={24} className="connect-col" align="center">
           <Card>
-            <h2>Do you want to connect?</h2>
-            <p>
-              Have a question or want to know more? Reach out to our Better
-              Income team.
-            </p>
-            <br />
-            <a
-              href="mailto:livingincome@idhtrade.org"
-              className="button button-green"
-            >
-              Get in touch
-            </a>
+            <div className="connect-content-wrapper">
+              <h2>Do you want to connect?</h2>
+              <p>
+                Have a question or want to know more? Reach out to our Better
+                Income team.
+              </p>
+              <br />
+              <a
+                href="mailto:livingincome@idhtrade.org"
+                className="button button-green"
+              >
+                Get in touch
+              </a>
+            </div>
 
             <LandingIDHLogo
               style={{
@@ -234,10 +242,10 @@ const Home = () => {
                 bottom: -115,
                 right: -115,
                 transform: "rotate(260deg)",
-                opacity: 0.25,
               }}
               width={300}
               height={300}
+              color="#FFFAEB"
             />
           </Card>
         </Col>

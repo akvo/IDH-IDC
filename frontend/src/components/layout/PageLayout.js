@@ -1,11 +1,13 @@
-import React, { useMemo } from "react";
-import { Layout, Row, Col, Image, Menu } from "antd";
+import React, { useMemo, useState } from "react";
+import { Layout, Row, Col, Image, Menu, Button, Drawer } from "antd";
 import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import { allUserRole } from "../../store/static";
 import { routePath } from "../route";
+import { MenuOutlined } from "@ant-design/icons";
+import { useWindowDimensions } from "../../hooks";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const pagesWithNoHeader = ["/login", "/register"];
@@ -13,6 +15,8 @@ const { Header, Content } = Layout;
 
 const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
+  const { isMobile } = useWindowDimensions();
+  const [drawerVisible, setDrawerVisible] = useState(false);
 
   const menuItems = useMemo(() => {
     const menuList = [
@@ -68,6 +72,13 @@ const PageHeader = ({ isLoggedIn }) => {
     return items;
   }, [isLoggedIn]);
 
+  const toggleDrawer = () => setDrawerVisible(!drawerVisible);
+
+  const handleMenuClick = ({ key }) => {
+    navigate(key);
+    setDrawerVisible(false); // close drawer on navigation
+  };
+
   return (
     <Header
       testid="layout-header"
@@ -78,13 +89,17 @@ const PageHeader = ({ isLoggedIn }) => {
         width: "100%",
       }}
       id="page-layout-header"
+      className={isMobile ? "mobile-screen" : ""}
     >
-      <Row justify="center" align="middle" style={{ width: "100%" }}>
-        <Col span={6} align="start" style={{ width: "100%" }}>
-          {/* <Link to={isLoggedIn ? routePath.idc.dashboard : "/"}> */}
+      <Row
+        justify={isMobile ? "space-between" : "center"}
+        align="middle"
+        style={{ width: "100%" }}
+      >
+        <Col span={isMobile ? 14 : 6} align="start">
           <Link to="/">
-            <Row justify="center" align="middle" gutter={[5, 5]}>
-              <Col span={9}>
+            <Row justify="start" align="middle" gutter={[5, 5]}>
+              <Col span={isMobile ? 12 : 9}>
                 <Image
                   src={Logo}
                   height={50}
@@ -92,35 +107,68 @@ const PageHeader = ({ isLoggedIn }) => {
                   data-testid="logo-image"
                 />
               </Col>
-              <Col span={15}>
-                <div className="logo-text">Living Income Roadmap Toolkit</div>
-              </Col>
+              {!isMobile && (
+                <Col span={15}>
+                  <div className="logo-text">Living Income Roadmap Toolkit</div>
+                </Col>
+              )}
             </Row>
           </Link>
         </Col>
+
+        {/* Menu toggle (Mobile) or horizontal menu (Desktop) */}
         <Col
-          span={18}
+          span={isMobile ? 10 : 18}
           align="end"
           testid="nav-container"
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
+          style={
+            isMobile
+              ? {}
+              : {
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }
+          }
         >
-          <Menu
-            onClick={({ key }) => navigate(key)}
-            mode="horizontal"
-            items={menuItems}
-            className="navigation-container"
-          />
+          {isMobile ? (
+            <>
+              <Button
+                icon={<MenuOutlined />}
+                onClick={toggleDrawer}
+                type="text"
+                style={{ float: "right" }}
+              />
+              <Drawer
+                placement="right"
+                closable
+                onClose={toggleDrawer}
+                open={drawerVisible}
+                className="drawer-menu-wrapper"
+              >
+                <Menu
+                  mode="inline"
+                  items={menuItems}
+                  onClick={handleMenuClick}
+                />
+              </Drawer>
+            </>
+          ) : (
+            <Menu
+              mode="horizontal"
+              onClick={handleMenuClick}
+              items={menuItems}
+              style={{ borderBottom: "none" }}
+              className="navigation-container"
+            />
+          )}
         </Col>
       </Row>
     </Header>
   );
 };
 
-const PageLayout = ({ children, signOut }) => {
+const PageLayout = ({ children }) => {
   const location = useLocation();
   const pathname = location?.pathname;
   const [cookies] = useCookies(["AUTH_TOKEN"]);
@@ -148,7 +196,7 @@ const PageLayout = ({ children, signOut }) => {
       <Layout>
         {!pagesWithNoHeader.some((path) => pathname.endsWith(path)) &&
         !isResetPasswordPage ? (
-          <PageHeader isLoggedIn={isLoggedIn} signOut={signOut} />
+          <PageHeader isLoggedIn={isLoggedIn} />
         ) : (
           ""
         )}
@@ -161,7 +209,7 @@ const PageLayout = ({ children, signOut }) => {
 
   return (
     <Layout>
-      <PageHeader isLoggedIn={isLoggedIn} signOut={signOut} />
+      <PageHeader isLoggedIn={isLoggedIn} />
       <Layout>
         <Layout>
           <Content testid="layout-content" className="content-container">
