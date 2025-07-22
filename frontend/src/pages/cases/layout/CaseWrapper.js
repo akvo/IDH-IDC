@@ -359,6 +359,7 @@ const CaseWrapper = ({
                     </Space>
                   </Space>
                 }
+                hideIDCSubMenu={true}
               >
                 {loading ? (
                   <div className="loading-container">

@@ -11,6 +11,7 @@ import {
   PROD_HOST,
 } from "../../../store/static";
 import { routePath } from "../../../components/route";
+import { showIDCSubMenu } from "../../../components/route";
 
 const IDCSubMenu = ({ signOut = () => {} }) => {
   const host = window.location.hostname;
@@ -92,7 +93,7 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
     return items;
   }, [userRole, isInternalUser, isLoggedIn, host]);
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn || !showIDCSubMenu()) {
     return "";
   }
 
