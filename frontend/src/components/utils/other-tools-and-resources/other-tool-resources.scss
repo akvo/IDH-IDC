@@ -1,7 +1,7 @@
 @import "../../../variables.scss";
 
 .other-tools-recources-container {
-  padding: 3rem $default-padding-size;
+  padding: 1.5rem $default-padding-size 3rem;
   background: #fff;
 
   &.mobile-screen {
@@ -10,6 +10,7 @@
   }
 
   .other-tools-title-wrapper {
+    padding-top: 2rem;
     display: flex;
     justify-content: space-between;
     align-items: start;

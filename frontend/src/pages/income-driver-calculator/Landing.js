@@ -1,6 +1,6 @@
 import React from "react";
 import "./landing.scss";
-import { Row, Col, Card, Image, Divider } from "antd";
+import { Row, Col, Card, Image } from "antd";
 import {
   LandingInfoHelpIcon,
   LandingInfoEstimateIcon,
@@ -162,7 +162,6 @@ const FAQSection = () => {
             />
           </Card>
         </Col>
-        <Divider />
       </Row>
     </div>
   );

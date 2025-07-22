@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
 import { PROCUREMENT_KEY_FEATURES } from "./config";
 import { useWindowDimensions } from "../../hooks";
+import { OtherToolsAndResources } from "../../components/utils";
 
 const cards = [
   {
@@ -139,6 +140,9 @@ const ProcurementLibrary = () => {
           </div>
         </div>
       </div>
+
+      <OtherToolsAndResources />
+
       <FooterDisclaimer disclaimerText="procurement" />
     </div>
   );

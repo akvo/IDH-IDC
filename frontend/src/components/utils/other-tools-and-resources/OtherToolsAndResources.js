@@ -1,6 +1,7 @@
 import "./other-tool-resources.scss";
 
 import { Link } from "react-router-dom";
+import { Divider } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { OtherToolResourceList } from "..";
 import { useWindowDimensions } from "../../../hooks";
@@ -14,6 +15,7 @@ const OtherToolsAndResources = () => {
         isMobile ? "mobile-screen" : ""
       }`}
     >
+      <Divider />
       <div className="other-tools-title-wrapper">
         <div>
           <h2>Toolkit for Better Incomes</h2>
