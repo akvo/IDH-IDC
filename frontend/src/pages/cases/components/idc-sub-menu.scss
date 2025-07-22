@@ -26,6 +26,8 @@
 
     .idc-sub-menu-navigation-container {
       background: #f2f2f2;
+      flex: 1;
+      overflow: hidden;
 
       &.ant-menu-horizontal {
         border: none;
@@ -46,13 +48,14 @@
             border-radius: 8px;
             background: #e5e5e5;
           }
-
-          &:last-child {
-            background: red !important;
-            color: red !important;
-          }
         }
       }
+    }
+
+    .nav-sign-in {
+      margin-left: 16px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
   }
 }

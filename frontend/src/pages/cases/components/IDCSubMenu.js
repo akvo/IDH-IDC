@@ -68,6 +68,13 @@ const IDCSubMenu = ({ signOut = () => {} }) => {
         isPublic: false,
         role: adminRole,
       },
+      {
+        testid: "nav-menu-about",
+        label: "About",
+        key: routePath.idc.landing,
+        isPublic: false,
+        role: adminRole,
+      },
     ];
     const filterByUser = (item) => {
       if (!userRole && !isLoggedIn) {
