@@ -743,3 +743,16 @@
     }
   }
 }
+
+.drawer-menu-wrapper {
+  .ant-drawer-body {
+    padding: 12px 0;
+
+    li {
+      font-family: "RocGrotesk";
+      font-size: 14px;
+      color: $primary-color;
+      font-weight: 700;
+    }
+  }
+}

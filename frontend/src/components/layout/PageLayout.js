@@ -140,11 +140,11 @@ const PageHeader = ({ isLoggedIn }) => {
                 style={{ float: "right" }}
               />
               <Drawer
-                title="Menu"
                 placement="right"
                 closable
                 onClose={toggleDrawer}
                 open={drawerVisible}
+                className="drawer-menu-wrapper"
               >
                 <Menu
                   mode="inline"
