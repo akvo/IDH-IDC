@@ -8,14 +8,21 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import { LandingIDHLogo } from "../../../lib/icon";
 import { routePath } from "../../../components/route";
 import { LoadingOutlined } from "@ant-design/icons";
+import { useWindowDimensions } from "../../../hooks";
 
 const Jumbotron = ({ signOut = null }) => {
   const navigate = useNavigate();
   const loggedIn = UserState.useState((s) => s.id);
   const [loading, setLoading] = useState(false);
+  const { isMobile } = useWindowDimensions();
 
   return (
-    <Row id="jumbotron" data-testid="jumbotron-wrapper" justify="center">
+    <Row
+      id="jumbotron"
+      data-testid="jumbotron-wrapper"
+      justify="center"
+      className={isMobile ? "mobile-screen" : ""}
+    >
       <LandingIDHLogo
         style={{
           position: "absolute",

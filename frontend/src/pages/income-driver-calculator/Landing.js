@@ -21,55 +21,62 @@ import { FAQ } from "../faq";
 import { LandingIDHLogo } from "../../lib/icon";
 import { Link } from "react-router-dom";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import { useWindowDimensions } from "../../hooks";
 
-const InformationCard = () => (
-  <Row
-    data-testid="info-card-wrapper"
-    justify="space-evenly"
-    align="center"
-    className="info-card-row"
-    gutter={24}
-  >
-    <Col sm={24} md={8} align="top">
-      <Card className="info-card-wrapper info-first">
-        <div className="info-card-icon">
-          <LandingInfoHelpIcon />
-        </div>
-        <h3>Estimate farmer income</h3>
-        <p>
-          Calculate actual household income and estimate potential changes using
-          available data on the five key income drivers.
-        </p>
-      </Card>
-    </Col>
-    <Col sm={24} md={8} align="top">
-      <Card className="info-card-wrapper info-second">
-        <div className="info-card-icon">
-          <LandingInfoEstimateIcon />
-        </div>
-        <h3>Assess income gap</h3>
-        <p>
-          Compare household income to a Living Income benchmark and/or a custom
-          target to assess income gap.
-        </p>
-      </Card>
-    </Col>
-    <Col sm={24} md={8} align="top">
-      <Card className="info-card-wrapper info-third">
-        <div className="info-card-icon">
-          <LandingInfoDriversIcon />
-        </div>
-        <h3>Bridge the income gap</h3>
-        <p>
-          Model scenarios and visualise the effectiveness of different
-          interventions in closing the income gaps.
-        </p>
-      </Card>
-    </Col>
-  </Row>
-);
+const InformationCard = () => {
+  const { isMobile } = useWindowDimensions();
+
+  return (
+    <Row
+      data-testid="info-card-wrapper"
+      justify="space-evenly"
+      align="center"
+      className="info-card-row"
+      gutter={isMobile ? [0, 20] : [24, 24]}
+    >
+      <Col sm={24} md={8} align="top">
+        <Card className="info-card-wrapper info-first">
+          <div className="info-card-icon">
+            <LandingInfoHelpIcon />
+          </div>
+          <h3>Estimate farmer income</h3>
+          <p>
+            Calculate actual household income and estimate potential changes
+            using available data on the five key income drivers.
+          </p>
+        </Card>
+      </Col>
+      <Col sm={24} md={8} align="top">
+        <Card className="info-card-wrapper info-second">
+          <div className="info-card-icon">
+            <LandingInfoEstimateIcon />
+          </div>
+          <h3>Assess income gap</h3>
+          <p>
+            Compare household income to a Living Income benchmark and/or a
+            custom target to assess income gap.
+          </p>
+        </Card>
+      </Col>
+      <Col sm={24} md={8} align="top">
+        <Card className="info-card-wrapper info-third">
+          <div className="info-card-icon">
+            <LandingInfoDriversIcon />
+          </div>
+          <h3>Bridge the income gap</h3>
+          <p>
+            Model scenarios and visualise the effectiveness of different
+            interventions in closing the income gaps.
+          </p>
+        </Card>
+      </Col>
+    </Row>
+  );
+};
 
 const IDCBenefits = () => {
+  const { isMobile } = useWindowDimensions();
+
   const benefitItems = [
     {
       icon: Benefit1,
@@ -95,9 +102,17 @@ const IDCBenefits = () => {
         <h2>Benefits of using the Income Driver Calculator</h2>
       </Col>
       <Col span={24} align="center" className="benefit-content-wrapper">
-        <Row gutter={[20, 20]} align="top" justify="space-evenly">
+        <Row
+          gutter={isMobile ? [0, 20] : [20, 20]}
+          align="top"
+          justify="space-evenly"
+        >
           {benefitItems.map((item, bidx) => (
-            <Col key={`benefit-${bidx}`} span={6} align="center">
+            <Col
+              key={`benefit-${bidx}`}
+              span={isMobile ? 24 : 6}
+              align="center"
+            >
               <Image src={item.icon} preview={false} />
               <h4>{item.label}</h4>
             </Col>
@@ -178,8 +193,13 @@ const OtherToolsAndResources = () => {
 };
 
 const Landing = ({ signOut }) => {
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <div className="landing-container" id="landing">
+    <div
+      className={`landing-container ${isMobile ? "mobile-screen" : ""}`}
+      id="landing"
+    >
       <Jumbotron signOut={signOut} />
       <InformationCard />
       <IDCBenefits />
