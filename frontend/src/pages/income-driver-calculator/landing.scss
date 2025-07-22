@@ -98,35 +98,6 @@
     }
   }
 
-  .other-tools-recources-container {
-    padding: 3rem $default-padding-size;
-    background: #fff;
-
-    .other-tools-title-wrapper {
-      display: flex;
-      justify-content: space-between;
-      align-items: start;
-
-      h2 {
-        color: $primary-color;
-        font-family: "RocGrotesk";
-        font-style: normal;
-        margin-top: 0;
-        padding-top: 0;
-      }
-
-      p {
-        font-family: "TabletGothic";
-        font-size: 14px;
-        font-style: normal;
-      }
-
-      a {
-        margin-top: 10px;
-      }
-    }
-  }
-
   .faq-section-wrapper {
     padding: 3rem $default-padding-size 0;
     background: #fff;
@@ -191,14 +162,13 @@
 
   &.mobile-screen {
     .info-card-row,
-    .faq-section-wrapper,
-    .other-tools-recources-container {
+    .faq-section-wrapper {
       padding-left: $default-mobile-padding-size !important;
       padding-right: $default-mobile-padding-size !important;
     }
 
     .info-card-row {
-      margin-top: -2rem !important;
+      margin-top: -1.25rem !important;
     }
 
     .faq-section-wrapper {
@@ -215,14 +185,6 @@
         .ant-card-body {
           width: 100%;
         }
-      }
-    }
-
-    .other-tools-recources-container {
-      .other-tools-title-wrapper {
-        flex-direction: column;
-        gap: 20px;
-        margin-bottom: 40px;
       }
     }
   }

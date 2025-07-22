@@ -12,16 +12,14 @@ import {
   FooterDisclaimer,
   FrameworkDrivers,
 } from "./components";
-import { OtherToolResourceList } from "../../components/utils";
 import Benefit1 from "../../assets/icons/idc/benefit-1.svg";
 import Benefit2 from "../../assets/icons/idc/benefit-2.svg";
 import Benefit3 from "../../assets/icons/idc/benefit-3.svg";
 import Benefit4 from "../../assets/icons/idc/benefit-4.svg";
 import { FAQ } from "../faq";
 import { LandingIDHLogo } from "../../lib/icon";
-import { Link } from "react-router-dom";
-import { ArrowRightOutlined } from "@ant-design/icons";
 import { useWindowDimensions } from "../../hooks";
+import { OtherToolsAndResources } from "../../components/utils";
 
 const InformationCard = () => {
   const { isMobile } = useWindowDimensions();
@@ -166,30 +164,6 @@ const FAQSection = () => {
         </Col>
         <Divider />
       </Row>
-    </div>
-  );
-};
-
-const OtherToolsAndResources = () => {
-  return (
-    <div className="other-tools-recources-container">
-      <div className="other-tools-title-wrapper">
-        <div>
-          <h2>Toolkit for Better Incomes</h2>
-          <p>Find other tools and resources of IDH and its partners below</p>
-        </div>
-        <div>
-          <Link to="/tools-and-resources" className="button button-green-fill">
-            Explore all Resources{" "}
-            <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
-          </Link>
-        </div>
-      </div>
-      <OtherToolResourceList
-        size={3}
-        showMoreButton={false}
-        isLandingPage={true}
-      />
     </div>
   );
 };

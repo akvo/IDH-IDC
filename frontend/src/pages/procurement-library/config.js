@@ -109,7 +109,7 @@ export const PROCUREMENT_KEY_FEATURES = [
     icon: <SearchBoldIcon />,
     title: "Self Assessment Tool",
     description:
-      "The quick self-assessment allows users to evaluate their specific needs and identify the most relevant sustainable practices for their procurement processes. This feature makes it easier for stakeholders to get tailored recommendations without feeling overwhelmed by the full list.",
+      "The quick self-assessment allows users to evaluate their specific needs and identify the most relevant sustainable practices for their procurement processes. This feature makes it easier for stakeholders to receive tailored recommendations.",
   },
   {
     id: 2,

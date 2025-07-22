@@ -1,0 +1,43 @@
+@import "../../../variables.scss";
+
+.other-tools-recources-container {
+  padding: 3rem $default-padding-size;
+  background: #fff;
+
+  &.mobile-screen {
+    padding-left: $default-mobile-padding-size !important;
+    padding-right: $default-mobile-padding-size !important;
+  }
+
+  .other-tools-title-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+
+    h2 {
+      color: $primary-color;
+      font-family: "RocGrotesk";
+      font-style: normal;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    p {
+      font-family: "TabletGothic";
+      font-size: 14px;
+      font-style: normal;
+    }
+
+    a {
+      margin-top: 10px;
+    }
+  }
+
+  &.mobile-screen {
+    .other-tools-title-wrapper {
+      flex-direction: column !important;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+  }
+}
