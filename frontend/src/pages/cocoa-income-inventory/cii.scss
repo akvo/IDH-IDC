@@ -5,19 +5,11 @@
   h2 {
     color: $primary-color;
     font-family: "RocGrotesk";
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 42px;
   }
 
   h3 {
     color: $primary-color;
     font-family: "RocGrotesk";
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 28px;
     margin: 10px 0;
   }
 
@@ -25,8 +17,6 @@
     margin: 0;
     font-family: "TabletGothic";
     font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
     line-height: 24px;
   }
 
@@ -66,14 +56,12 @@
           font-family: "RocGrotesk" !important;
           color: #ffffff;
           font-weight: 900;
-          font-size: 48px !important;
           margin: 0;
         }
 
         h3 {
           color: #ffffff;
           font-weight: 400;
-          font-size: 18px;
           line-height: 157.15%; /* 25.144px */
           width: 747px;
           margin-bottom: 24px;
@@ -93,7 +81,7 @@
       align-items: center;
       gap: 20px;
       border-bottom: 2px solid #f2f2f2;
-      padding-bottom: 20px;
+      padding-bottom: 24px;
 
       div {
         flex: 1 1 33%;
@@ -107,6 +95,9 @@
     }
 
     .about-text-wrapper {
+      padding-top: 24px;
+      padding-bottom: 24px;
+
       .about-description-wrapper {
         display: grid;
         grid-template-columns: repeat(2, 1fr); // Two equal columns
@@ -124,7 +115,7 @@
   }
 
   .indicators-wrapper {
-    padding: 2rem 0 4rem $default-padding-size;
+    padding: 2.5rem 0 5rem $default-padding-size;
     background-color: #eaf2f2;
 
     h2 {
@@ -203,7 +194,7 @@
   }
 
   .pch-wrapper {
-    padding: 2rem $default-padding-size 2rem $default-padding-size;
+    padding: 3rem $default-padding-size;
     background-color: #fcf9f4;
     display: flex;
     justify-content: space-evenly;
@@ -236,7 +227,7 @@
   }
 
   .contributing-wrapper {
-    padding: 2rem $default-padding-size 3rem $default-padding-size;
+    padding: 3rem $default-padding-size 4rem;
 
     .contributing-content-wrapper {
       padding-top: 10px;
@@ -257,7 +248,7 @@
   }
 
   .value-org-wrapper {
-    padding: 2rem $default-padding-size 3rem $default-padding-size;
+    padding: 3rem $default-padding-size 4rem;
     background-color: #fcf9f4;
 
     .value-org-content-wrapper {
@@ -304,7 +295,7 @@
   }
 
   .contribute-to-wrapper {
-    padding: 2rem $default-padding-size 3rem $default-padding-size;
+    padding: 3rem $default-padding-size 4rem;
     background-color: #fff;
 
     h2,
@@ -380,6 +371,87 @@
         a {
           color: #000;
           text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  &.mobile-screen {
+    .jumbotron-text-wrapper,
+    .about-wrapper,
+    .pch-wrapper,
+    .contributing-wrapper,
+    .value-org-wrapper,
+    .contribute-to-wrapper {
+      padding-right: $default-mobile-padding-size;
+      padding-left: $default-mobile-padding-size;
+    }
+
+    .jumbotron-wrapper {
+      background-size: auto;
+    }
+
+    .jumbotron-text-wrapper {
+      h1,
+      h3 {
+        max-width: 100% !important;
+        width: 100% !important;
+        overflow-wrap: break-word;
+        white-space: normal;
+        margin: 0;
+      }
+    }
+
+    .about-wrapper {
+      .logos-wrapper {
+        flex-direction: column;
+        gap: 24px;
+
+        div {
+          flex: 1;
+          text-align: center;
+
+          &:nth-child(2) {
+            border-left: none;
+            border-right: none;
+            border-top: 2px solid #f2f2f2;
+            border-bottom: 2px solid #f2f2f2;
+            padding: 24px 0;
+          }
+        }
+      }
+    }
+
+    .indicators-wrapper {
+      padding-left: $default-mobile-padding-size !important;
+
+      .indicator-carousel-wrapper {
+        margin-left: 35px;
+      }
+    }
+
+    .pch-wrapper {
+      flex-direction: column;
+      gap: 40px;
+
+      .pch-item {
+        flex: 1;
+      }
+    }
+
+    .contributing-wrapper {
+      .contributing-content-wrapper {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 24px;
+      }
+    }
+
+    .contribute-to-wrapper {
+      .contact-card-wrapper {
+        flex-direction: column;
+
+        .contact-card-item {
+          width: 600px;
         }
       }
     }

@@ -13,10 +13,16 @@ import { CheckIcon } from "../../lib/icon";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import { CIIContent } from "./static";
 import ContactCardEmailIcon from "../../assets/icons/contact-card-email.png";
+import { useWindowDimensions } from "../../hooks";
 
 const CocoaIncomeInventory = () => {
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <Row id="cii-page" className="cii-page-container">
+    <Row
+      id="cii-page"
+      className={`cii-page-container ${isMobile ? "mobile-screen" : ""}`}
+    >
       {/* Jumbotron */}
       <Col span={24} className="jumbotron-wrapper">
         <LandingIDHLogo
@@ -25,6 +31,7 @@ const CocoaIncomeInventory = () => {
             bottom: -180,
             right: -165,
             transform: "rotate(260deg)",
+            opacity: 0.5,
           }}
           width={400}
           height={400}

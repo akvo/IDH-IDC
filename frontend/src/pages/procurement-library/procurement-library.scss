@@ -52,7 +52,7 @@
         .caption {
           width: 90%;
           font-family: "RocGrotesk";
-          font-size: 18px;
+          font-size: 20px;
           font-style: normal;
           font-weight: 400;
           line-height: 157.15%; /* 25.144px */
@@ -281,6 +281,10 @@
             overflow-wrap: break-word !important;
             white-space: normal !important;
             margin: 0;
+          }
+
+          .caption {
+            font-size: 18px;
           }
         }
       }
