@@ -11,31 +11,38 @@ import {
 import { Link } from "react-router-dom";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
 import { PROCUREMENT_KEY_FEATURES } from "./config";
-// import CaseStudies from "./components/CaseStudies";
+import { useWindowDimensions } from "../../hooks";
+
+const cards = [
+  {
+    title: "Find good Procurement Practices",
+    url: "/procurement-library/assessment",
+    cta: "Do the assessment",
+    icon: <HandshakeIcon />,
+  },
+  {
+    title: "Explore the Intervention Library",
+    url: "/procurement-library/intervention-library",
+    cta: "Explore",
+    icon: <BookSearchIcon />,
+  },
+  {
+    title: "Learn more about the context and methodology",
+    url: "/procurement-library/methodology",
+    cta: "Explore",
+    icon: <BookInfoIcon />,
+  },
+];
 
 const ProcurementLibrary = () => {
-  const cards = [
-    {
-      title: "Find good Procurement Practices",
-      url: "/procurement-library/assessment",
-      cta: "Do the assessment",
-      icon: <HandshakeIcon />,
-    },
-    {
-      title: "Explore the Intervention Library",
-      url: "/procurement-library/intervention-library",
-      cta: "Explore",
-      icon: <BookSearchIcon />,
-    },
-    {
-      title: "Learn more about the context and methodology",
-      url: "/procurement-library/methodology",
-      cta: "Explore",
-      icon: <BookInfoIcon />,
-    },
-  ];
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <div className="procurement-library-container">
+    <div
+      className={`procurement-library-container ${
+        isMobile ? "mobile-screen" : ""
+      }`}
+    >
       <div className="jumbotron">
         <div className="jumbotron-content">
           <div className="jumbotron-text">

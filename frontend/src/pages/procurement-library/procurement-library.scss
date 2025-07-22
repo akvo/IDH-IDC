@@ -24,7 +24,7 @@
       color: white;
       text-align: left;
       z-index: 10;
-      padding: 3rem 4rem;
+      padding: 3rem $default-padding-size;
       display: flex;
       flex-direction: column;
       gap: 62px;
@@ -195,9 +195,6 @@
       h2 {
         margin-block-end: 32px;
         color: $primary-color;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 50px; /* 131.579% */
       }
       .key-features {
         width: 100%;
@@ -217,8 +214,8 @@
           }
           .key-feature-description {
             color: #000;
-            font-family: "Actor", sans-serif;
-            font-size: 18px;
+            font-family: "TabletGothic";
+            font-size: 16px;
             font-style: normal;
             font-weight: 400;
             line-height: 157.15%; /* 28.287px */
@@ -261,5 +258,47 @@
 
   #footer-disclaimer h2 {
     margin-block-end: 16px;
+  }
+
+  &.mobile-screen {
+    .jumbotron-content,
+    .key-features-content {
+      padding-left: $default-mobile-padding-size;
+      padding-right: $default-mobile-padding-size;
+    }
+
+    .jumbotron {
+      .jumbotron-content {
+        min-height: 600px !important;
+
+        .jumbotron-text {
+          width: 100% !important;
+
+          h1,
+          .caption {
+            max-width: 100% !important;
+            width: 100% !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            margin: 0;
+          }
+        }
+      }
+
+      .jumbotron-cards {
+        padding: 0 $default-mobile-padding-size;
+        bottom: -610px;
+      }
+    }
+
+    .key-features-container {
+      padding-top: 32rem;
+
+      .key-features-content {
+        .key-features {
+          grid-template-columns: repeat(1, 1fr);
+        }
+      }
+    }
   }
 }
