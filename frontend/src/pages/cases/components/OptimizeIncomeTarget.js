@@ -29,6 +29,7 @@ import { isEmpty, orderBy, uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
 import SegmentSelector from "./SegmentSelector";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
+import { useWindowDimensions } from "../../../hooks";
 
 // TODO :: Optimize value not saved into DB if we doesn't fill sensitivity analysis line chart form
 // should we add new visualization config type?
@@ -110,6 +111,8 @@ const OptimizeIncomeTarget = () => {
   const optimizationResultPreffix = `${selectedSegment}${optimizedPreffix}`;
 
   const currency = currentCaseState?.currency || "";
+
+  const { windowInnerHeight } = useWindowDimensions();
 
   const updateOptimizationModelState = (updatedValue) => {
     CaseVisualState.update((s) => ({
@@ -957,7 +960,7 @@ const OptimizeIncomeTarget = () => {
                     type="COLUMN-BAR"
                     data={chartData}
                     loading={!chartData?.length}
-                    height={window.innerHeight * 0.4}
+                    height={windowInnerHeight * 0.4}
                     extra={{
                       axisTitle: { y: "Percentage Value" },
                       xAxisLabel: {
