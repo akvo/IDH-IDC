@@ -131,6 +131,13 @@
     padding: 3rem $default-padding-size 0;
     background: #fff;
 
+    #faq-page {
+      min-height: fit-content;
+      .content-wrapper {
+        margin-top: 24px;
+      }
+    }
+
     .faq-section-title-wrapper {
       text-align: center;
 
@@ -148,46 +155,75 @@
     }
 
     .faq-section-card-wrapper {
-      padding: 0 $default-padding-size;
-
       .ant-card-body {
         text-align: center;
         padding: 24px 20px 38px;
-        width: 75%;
+        width: 90%;
         border-radius: 16px;
         background: #eaf2f2;
         position: relative;
         overflow: hidden;
       }
 
-      h2 {
-        color: $primary-color;
-        font-family: "RocGrotesk";
-        font-size: 30px;
-        padding: 0;
-        margin: 0;
-      }
+      .faq-card-content-wrapper {
+        position: relative;
+        z-index: 9;
+        h2 {
+          color: $primary-color;
+          font-family: "RocGrotesk";
+          font-size: 30px;
+          padding: 0;
+          margin: 0;
+        }
 
-      p {
-        font-family: "TabletGothic";
-        font-size: 16px;
-        font-style: normal;
-      }
+        p {
+          font-family: "TabletGothic";
+          font-size: 16px;
+          font-style: normal;
+        }
 
-      a {
-        margin-top: 20px;
+        a {
+          margin-top: 20px;
+        }
       }
     }
   }
 
   &.mobile-screen {
-    .info-card-row {
+    .info-card-row,
+    .faq-section-wrapper,
+    .other-tools-recources-container {
       padding-left: $default-mobile-padding-size !important;
       padding-right: $default-mobile-padding-size !important;
     }
 
     .info-card-row {
       margin-top: -2rem !important;
+    }
+
+    .faq-section-wrapper {
+      #faq-page {
+        min-height: fit-content;
+        .content-wrapper {
+          margin-top: 0;
+          margin-bottom: 0;
+          padding: 0 0 3rem 0;
+        }
+      }
+
+      .faq-section-card-wrapper {
+        .ant-card-body {
+          width: 100%;
+        }
+      }
+    }
+
+    .other-tools-recources-container {
+      .other-tools-title-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 40px;
+      }
     }
   }
 }

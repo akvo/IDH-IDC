@@ -724,3 +724,18 @@
     }
   }
 }
+
+.mobile-screen {
+  &.other-tool-resource-list-container {
+    .other-tool-resource-list {
+      gap: 30px !important;
+
+      .otr-item-wrapper {
+        p {
+          min-height: fit-content !important;
+          margin-bottom: 14px !important;
+        }
+      }
+    }
+  }
+}

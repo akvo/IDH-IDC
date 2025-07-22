@@ -131,7 +131,7 @@
 }
 
 #get-started {
-  padding: 5rem $default-padding-size;
+  padding: 4rem $default-padding-size;
   background: #fff;
 
   .image-steps-container {
@@ -511,7 +511,9 @@
 }
 
 .mobile-screen {
-  .jumbotron-text-wrapper {
+  .jumbotron-text-wrapper,
+  &#get-started,
+  &#framework-drivers {
     padding-left: $default-mobile-padding-size !important;
     padding-right: $default-mobile-padding-size !important;
   }
@@ -524,6 +526,21 @@
       overflow-wrap: break-word;
       white-space: normal;
       margin: 0;
+    }
+  }
+
+  &#get-started {
+    .image-steps-container {
+      margin-top: 20px;
+      flex-direction: column;
+      gap: 32px;
+    }
+  }
+
+  &#framework-drivers {
+    .framework-drivers-calculation-wrapper {
+      min-height: fit-content;
+      margin-bottom: 30px;
     }
   }
 

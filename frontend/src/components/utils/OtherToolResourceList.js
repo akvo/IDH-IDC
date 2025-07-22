@@ -4,6 +4,7 @@ import { Button, Image, Space, Tag } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useWindowDimensions } from "../../hooks";
 
 const OtherToolResourceList = ({
   size = otherToolsAndResourcesContent.length,
@@ -11,12 +12,17 @@ const OtherToolResourceList = ({
   isLandingPage = false,
 }) => {
   const navigate = useNavigate();
+  const { isMobile } = useWindowDimensions();
 
   return (
-    <div className="other-tool-resource-list-container">
+    <div
+      className={`other-tool-resource-list-container ${
+        isMobile ? "mobile-screen" : ""
+      }`}
+    >
       <div
         className={`other-tool-resource-list ${
-          isLandingPage ? "force-3-in-a-row" : ""
+          isLandingPage && !isMobile ? "force-3-in-a-row" : ""
         }`}
       >
         {otherToolsAndResourcesContent

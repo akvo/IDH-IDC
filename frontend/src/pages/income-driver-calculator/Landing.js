@@ -136,18 +136,20 @@ const FAQSection = () => {
         </Col>
         <Col span={24} className="faq-section-card-wrapper" align="center">
           <Card>
-            <h2>Still have questions?</h2>
-            <p>
-              Can’t find the answers you are looking for? Please reach out to
-              our Better Income team.
-            </p>
-            <br />
-            <a
-              href="mailto:livingincome@idhtrade.org"
-              className="button button-green"
-            >
-              Get in touch
-            </a>
+            <div className="faq-card-content-wrapper">
+              <h2>Still have questions?</h2>
+              <p>
+                Can’t find the answers you are looking for? Please reach out to
+                our Better Income team.
+              </p>
+              <br />
+              <a
+                href="mailto:livingincome@idhtrade.org"
+                className="button button-green"
+              >
+                Get in touch
+              </a>
+            </div>
 
             <LandingIDHLogo
               style={{
@@ -155,10 +157,10 @@ const FAQSection = () => {
                 bottom: -115,
                 right: -115,
                 transform: "rotate(260deg)",
-                opacity: 0.25,
               }}
               width={300}
               height={300}
+              color="#FFFAEB"
             />
           </Card>
         </Col>

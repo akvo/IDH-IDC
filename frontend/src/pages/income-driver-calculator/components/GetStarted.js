@@ -6,12 +6,19 @@ import { caseStepItems } from "../../../store/static";
 import { Link } from "react-router-dom";
 import { routePath } from "../../../components/route";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import { useWindowDimensions } from "../../../hooks";
 
 const GetStarted = () => {
+  const { isMobile } = useWindowDimensions();
+
   return (
-    <div id="get-started">
-      <Row gutter={[20, 20]} align="top" justify="space-between">
-        <Col span={16}>
+    <div id="get-started" className={isMobile ? "mobile-screen" : ""}>
+      <Row
+        gutter={isMobile ? [0, 20] : [20, 20]}
+        align="top"
+        justify="space-between"
+      >
+        <Col span={isMobile ? 24 : 16}>
           <h2>
             What is the current income of the farming households?
             <br />
@@ -26,7 +33,11 @@ const GetStarted = () => {
             effectiveness in closing the income gap.
           </p>
         </Col>
-        <Col span={8} align="end" className="get-started-button-wrapper">
+        <Col
+          span={isMobile ? 24 : 8}
+          align={isMobile ? "left" : "right"}
+          className="get-started-button-wrapper"
+        >
           <Row align="middle" gutter={[10, 10]}>
             <Col align="end">
               <Link to="#" className="button button-green">
