@@ -55,10 +55,10 @@ const FAQ = () => {
   );
 };
 
-const Welcome = ({ signOut }) => {
+const Welcome = () => {
   return (
     <div>
-      <Jumbotron signOut={signOut} />
+      <Jumbotron />
       <GetStarted />
       <FrameworkDrivers />
       <CompareIncomeTarget />

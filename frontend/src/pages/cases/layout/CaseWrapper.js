@@ -106,14 +106,7 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
   );
 };
 
-const CaseWrapper = ({
-  children,
-  step,
-  caseId,
-  currentCase,
-  loading,
-  signOut,
-}) => {
+const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   // track time
   usePiwikTrackPageTime();
 
@@ -271,7 +264,7 @@ const CaseWrapper = ({
       {contextHolder}
 
       {/* SUB MENU */}
-      <IDCSubMenu signOut={signOut} />
+      <IDCSubMenu />
       {/* EOL SUB MENU */}
 
       <Col span={24}>

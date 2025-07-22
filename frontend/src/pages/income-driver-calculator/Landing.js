@@ -194,7 +194,7 @@ const OtherToolsAndResources = () => {
   );
 };
 
-const Landing = ({ signOut }) => {
+const Landing = () => {
   const { isMobile } = useWindowDimensions();
 
   return (
@@ -202,7 +202,7 @@ const Landing = ({ signOut }) => {
       className={`landing-container ${isMobile ? "mobile-screen" : ""}`}
       id="landing"
     >
-      <Jumbotron signOut={signOut} />
+      <Jumbotron />
       <InformationCard />
       <IDCBenefits />
       <GetStarted />

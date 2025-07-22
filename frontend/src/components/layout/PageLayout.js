@@ -168,7 +168,7 @@ const PageHeader = ({ isLoggedIn }) => {
   );
 };
 
-const PageLayout = ({ children, signOut }) => {
+const PageLayout = ({ children }) => {
   const location = useLocation();
   const pathname = location?.pathname;
   const [cookies] = useCookies(["AUTH_TOKEN"]);
@@ -196,7 +196,7 @@ const PageLayout = ({ children, signOut }) => {
       <Layout>
         {!pagesWithNoHeader.some((path) => pathname.endsWith(path)) &&
         !isResetPasswordPage ? (
-          <PageHeader isLoggedIn={isLoggedIn} signOut={signOut} />
+          <PageHeader isLoggedIn={isLoggedIn} />
         ) : (
           ""
         )}
@@ -209,7 +209,7 @@ const PageLayout = ({ children, signOut }) => {
 
   return (
     <Layout>
-      <PageHeader isLoggedIn={isLoggedIn} signOut={signOut} />
+      <PageHeader isLoggedIn={isLoggedIn} />
       <Layout>
         <Layout>
           <Content testid="layout-content" className="content-container">

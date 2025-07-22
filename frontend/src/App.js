@@ -129,7 +129,7 @@ const App = () => {
   }, [authTokenAvailable, userRole]);
 
   return (
-    <PageLayout testid="page-layout" signOut={signOut}>
+    <PageLayout testid="page-layout">
       <ScrollToTop />
       {authTokenAvailable && userRole === null ? (
         <div className="loading-container">
@@ -153,7 +153,7 @@ const App = () => {
               <Route
                 exact
                 path={`${routePath.idc.case}/:caseId/:step`}
-                element={<Case signOut={signOut} />}
+                element={<Case />}
               />
 
               {/* TODO:: Delete later Old  Page */}
@@ -245,11 +245,7 @@ const App = () => {
           {/* EOL ITK Homepage */}
 
           {/* IDC PAGE */}
-          <Route
-            exact
-            path={routePath.idc.landing}
-            element={<Landing signOut={signOut} />}
-          />
+          <Route exact path={routePath.idc.landing} element={<Landing />} />
           <Route exact path={routePath.idc.login} element={<Login />} />
           <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}
