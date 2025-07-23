@@ -14,6 +14,7 @@ import { FooterDisclaimer } from "../income-driver-calculator/components";
 import { CIIContent } from "./static";
 import ContactCardEmailIcon from "../../assets/icons/contact-card-email.png";
 import { useWindowDimensions } from "../../hooks";
+import { OtherToolsAndResources } from "../../components/utils";
 
 const CocoaIncomeInventory = () => {
   const { isMobile } = useWindowDimensions();
@@ -207,6 +208,10 @@ const CocoaIncomeInventory = () => {
         </div>
       </Col>
       {/* EOL Contribute to inventory section */}
+
+      <Col span={24}>
+        <OtherToolsAndResources />
+      </Col>
 
       <FooterDisclaimer disclaimerText="cii" showPageFooter={true} />
     </Row>

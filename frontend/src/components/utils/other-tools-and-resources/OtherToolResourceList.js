@@ -1,10 +1,10 @@
 import React from "react";
-import { otherToolsAndResourcesContent } from "../../store/static-other-tools-resources-content";
+import { otherToolsAndResourcesContent } from "../../../store/static-other-tools-resources-content";
 import { Button, Image, Space, Tag } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { useWindowDimensions } from "../../hooks";
+import { useWindowDimensions } from "../../../hooks";
 
 const OtherToolResourceList = ({
   size = otherToolsAndResourcesContent.length,
