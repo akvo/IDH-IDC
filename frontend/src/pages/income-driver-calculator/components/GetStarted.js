@@ -38,7 +38,11 @@ const GetStarted = () => {
           align={isMobile ? "left" : "right"}
           className="get-started-button-wrapper"
         >
-          <Row align="middle" gutter={[10, 10]}>
+          <Row
+            align="middle"
+            gutter={isMobile ? [10, 32] : [10, 10]}
+            style={{ float: isMobile ? "left" : "right" }}
+          >
             <Col align="end">
               <Link to="#" className="button button-green">
                 See the demo

@@ -746,7 +746,7 @@
 
 .drawer-menu-wrapper {
   .ant-drawer-body {
-    padding: 12px 0;
+    padding: 12px 24px 12px 0;
 
     li {
       font-family: "RocGrotesk";
@@ -755,4 +755,12 @@
       font-weight: 700;
     }
   }
+}
+
+.ant-drawer .ant-drawer-content-wrapper {
+  max-width: fit-content;
+}
+
+.ant-menu-light.ant-menu-root.ant-menu-inline {
+  border-inline-end: none !important;
 }

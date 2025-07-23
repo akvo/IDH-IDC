@@ -30,6 +30,7 @@ const Jumbotron = () => {
           bottom: -180,
           right: -165,
           transform: "rotate(260deg)",
+          opacity: 0.5,
         }}
         width={400}
         height={400}

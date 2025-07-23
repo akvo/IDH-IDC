@@ -29,11 +29,7 @@ const Home = () => {
         <Col span={24} className="jumbotron-gradient-wrapper">
           <div className="jumbotron-gradient-overlay"></div>
           <div className="jumbotron-text-wrapper">
-            <h1 data-testid="jumbotron-title">
-              Welcome to the
-              <br />
-              Living Income Roadmap Toolkit
-            </h1>
+            <h1 data-testid="jumbotron-title">Welcome to the Toolkit</h1>
             <h3 data-testid="jumbotron-subtitle" className="jumbotron-subtitle">
               A growing set of practical, data-driven tools to help companies
               take smarter, more targeted action to help raise famer incomes in

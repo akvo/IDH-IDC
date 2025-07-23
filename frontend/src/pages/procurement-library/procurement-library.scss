@@ -269,7 +269,7 @@
 
     .jumbotron {
       .jumbotron-content {
-        min-height: 600px !important;
+        min-height: 100% !important;
 
         .jumbotron-text {
           width: 100% !important;
@@ -291,7 +291,15 @@
 
       .jumbotron-cards {
         padding: 0 $default-mobile-padding-size;
-        bottom: -610px;
+        bottom: -630px;
+
+        @media (max-width: 305px) {
+          bottom: -660px;
+        }
+
+        @media (max-width: 300px) {
+          bottom: -98%;
+        }
       }
     }
 
