@@ -10,7 +10,6 @@ import { MenuOutlined } from "@ant-design/icons";
 import { useWindowDimensions } from "../../hooks";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
-const pagesWithNoHeader = ["/login", "/register"];
 const { Header, Content } = Layout;
 
 const PageHeader = ({ isLoggedIn }) => {
@@ -174,6 +173,14 @@ const PageLayout = ({ children }) => {
   const [cookies] = useCookies(["AUTH_TOKEN"]);
   const userId = UserState.useState((s) => s.id);
   const userActive = UserState.useState((s) => s.active);
+  const { isMobile } = useWindowDimensions();
+
+  const pagesWithNoHeader = useMemo(() => {
+    if (isMobile) {
+      return ["/register"];
+    }
+    return ["/login", "/register"];
+  }, [isMobile]);
 
   const authTokenAvailable = useMemo(() => {
     const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
