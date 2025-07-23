@@ -143,15 +143,22 @@ const Home = () => {
               className="tool-resource-items-wrapper"
               key={`tri-${idx}`}
             >
-              <Row gutter={[24, 24]} align="middle" justify="space-between">
+              <Row
+                gutter={isMobile ? [0, 20] : [48, 24]}
+                align="middle"
+                justify="space-between"
+              >
                 <Col
                   span={isMobile ? 24 : 14}
                   order={leftPositition}
                   className="tool-resource-item-content"
                 >
-                  <Space style={{ width: "100%" }} align="center">
-                    <Image src={it.icon} width={36} preview={false} />
-                    <h3>{it.title}</h3>
+                  <Space style={{ width: "100%" }} align="center" size="large">
+                    <Image src={it.icon} width={48} preview={false} />
+                    <div>
+                      <h3>{it.title}</h3>
+                      <p className="link-to-step-text">{it.linkToStepText}</p>
+                    </div>
                   </Space>
                   <p>{it.description}</p>
                   <div className="tool-resource-list">
@@ -171,7 +178,13 @@ const Home = () => {
                   </Link>
                 </Col>
                 <Col span={isMobile ? 24 : 10} order={rightPosition}>
-                  <Image src={it.image} preview={false} />
+                  <div
+                    className="tool-resource-image"
+                    style={{
+                      backgroundImage: `url(${it.image})`,
+                    }}
+                  ></div>
+                  {/* <Image src={it.image} preview={false} /> */}
                 </Col>
               </Row>
               {idx === toolResourceItems.length - 1 && (

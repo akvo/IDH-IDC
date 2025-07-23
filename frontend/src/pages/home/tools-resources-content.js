@@ -23,6 +23,7 @@ export const toolResourceItems = [
       "Facilitates data comparability across and within regions",
     ],
     image: IncomeMeasurementImg,
+    linkToStepText: "Links to step 2 of the LI Roadmap.",
     link: "#",
   },
   {
@@ -37,6 +38,7 @@ export const toolResourceItems = [
       "Use data visualisation to enhance partner engagement",
     ],
     image: IDCImg,
+    linkToStepText: "Links to step 3 & 4 of the LI Roadmap.",
     link: "/income-driver-calculator",
   },
   {
@@ -51,6 +53,7 @@ export const toolResourceItems = [
       "Intuitive filters for easy navigation and exploration",
     ],
     image: PLImg,
+    linkToStepText: "Links to step 4 of the LI Roadmap.",
     link: "/procurement-library",
   },
   {
@@ -65,6 +68,7 @@ export const toolResourceItems = [
       "Access to validated data reduces research duplication and boosts efficiency",
     ],
     image: CIIImg,
+    linkToStepText: "Links to step 4 and 5 of the LI Roadmap.",
     link: "/cocoa-income-inventory",
   },
   {
@@ -79,6 +83,7 @@ export const toolResourceItems = [
       "Boosts impact, commercial viability and investabillity of smallholder-inclusive businesses",
     ],
     image: IDHBnImg,
+    linkToStepText: "Links to step 2,3 & 4 of the LI Roadmap.",
     link: "#",
   },
 ];
