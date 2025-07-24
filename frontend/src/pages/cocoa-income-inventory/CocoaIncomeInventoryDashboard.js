@@ -5,9 +5,17 @@ import { Button, Space } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import { FileDownloadIcon } from "../../lib/icon";
+import { Blocker } from "../../components/utils";
+import { useWindowDimensions } from "../../hooks";
 
 const CocoaIncomeInventoryDashboard = () => {
   const navigate = useNavigate();
+  const { isMobile } = useWindowDimensions();
+
+  if (isMobile) {
+    return <Blocker />;
+  }
+
   return (
     <div id="cii-dashboard-page">
       {/* Page title section */}

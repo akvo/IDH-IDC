@@ -1,8 +1,8 @@
 import "./blocker.scss";
 import { Card, Image } from "antd";
 import { Link } from "react-router-dom";
-import WarningIcon from "../../assets/icons/warning.svg";
-import { routePath } from "../../components/route";
+import WarningIcon from "../../../assets/icons/warning.svg";
+import { routePath } from "../../route";
 
 const Blocker = () => {
   return (

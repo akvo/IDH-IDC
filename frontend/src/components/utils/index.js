@@ -23,3 +23,4 @@ export { default as ViewSummaryModal } from "./ViewSummaryModal";
 export { default as OtherToolResourceList } from "./other-tools-and-resources/OtherToolResourceList";
 export { default as NewCpiForm } from "./NewCpiForm";
 export { default as OtherToolsAndResources } from "./other-tools-and-resources/OtherToolsAndResources";
+export { default as Blocker } from "./blocker/Blocker";

@@ -20,7 +20,7 @@ import LogoWhite from "../../assets/images/logo-white.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../components/route";
 import { useWindowDimensions } from "../../hooks";
-import Blocker from "./Blocker";
+import { Blocker } from "../../components/utils";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
