@@ -1,7 +1,15 @@
 import React from "react";
 import "./methodology.scss";
+import { Blocker } from "../../../components/utils";
+import { useWindowDimensions } from "../../../hooks";
 
 const Methodology = () => {
+  const { isMobile } = useWindowDimensions();
+
+  if (isMobile) {
+    return <Blocker backRoute="/procurement-library" />;
+  }
+
   return (
     <div className="methodology-container">
       <div className="methodology-header">

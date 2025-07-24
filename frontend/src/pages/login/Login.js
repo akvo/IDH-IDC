@@ -108,7 +108,7 @@ const Login = () => {
   };
 
   if (isMobile) {
-    return <Blocker />;
+    return <Blocker backRoute={routePath.idc.landing} />;
   }
 
   return (

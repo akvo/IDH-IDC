@@ -13,7 +13,7 @@ const CocoaIncomeInventoryDashboard = () => {
   const { isMobile } = useWindowDimensions();
 
   if (isMobile) {
-    return <Blocker />;
+    return <Blocker backRoute="/cocoa-income-inventory" />;
   }
 
   return (

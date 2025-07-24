@@ -19,6 +19,8 @@ import { ImpactAreaIcons, ProcurementBadge } from "../components";
 import "./intervention-library.scss";
 import { IMPACT_AREA_OPTIONS } from "../config";
 import { PLState } from "../../../store";
+import { Blocker } from "../../../components/utils";
+import { useWindowDimensions } from "../../../hooks";
 
 const PAGE_SIZE = 12;
 const { useForm } = Form;
@@ -33,6 +35,7 @@ const InterventionLibrary = () => {
 
   const [form] = useForm();
   const navigate = useNavigate();
+  const { isMobile } = useWindowDimensions();
 
   const fetchProcurementProcesses = useCallback(async () => {
     try {
@@ -99,6 +102,10 @@ const InterventionLibrary = () => {
   useEffect(() => {
     fetchProcurementProcesses();
   }, [fetchProcurementProcesses]);
+
+  if (isMobile) {
+    return <Blocker backRoute="/procurement-library" />;
+  }
 
   return (
     <div className="intervention-library-container">
