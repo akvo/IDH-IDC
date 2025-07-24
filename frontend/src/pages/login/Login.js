@@ -19,6 +19,8 @@ import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../components/route";
+import { useWindowDimensions } from "../../hooks";
+import Blocker from "./Blocker";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
@@ -30,6 +32,7 @@ const Login = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isResetPassword, setIsResetPassword] = useState(false);
+  const { isMobile } = useWindowDimensions();
 
   const trackEventOnClickLivingIncomeEmail = () => {
     CustomEvent.trackEvent(
@@ -103,6 +106,10 @@ const Login = () => {
         setLoading(false);
       });
   };
+
+  if (isMobile) {
+    return <Blocker />;
+  }
 
   return (
     <ContentLayout wrapperId="login">

@@ -1,0 +1,36 @@
+@import "../../variables.scss";
+
+.blocker-wrapper {
+  padding: 5rem $default-mobile-padding-size !important;
+  height: calc(100vh - 80px);
+  background: rgba(1, 98, 95, 0.1);
+
+  .ant-card {
+    box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.08),
+      0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+  }
+
+  .ant-card-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    gap: 24px;
+    text-align: center;
+    padding: 18px 24px;
+
+    .title {
+      font-size: 24px;
+      font-family: "RocGrotesk";
+      color: $primary-color;
+      font-weight: 900;
+    }
+    .subtitle {
+      font-size: 18px;
+      font-family: "TabletGothic";
+      margin-bottom: 24px;
+    }
+  }
+}
