@@ -182,6 +182,7 @@ const Home = () => {
                     className="tool-resource-image"
                     style={{
                       backgroundImage: `url(${it.image})`,
+                      backgroundSize: it?.backgroundSize || "cover",
                     }}
                   ></div>
                   {/* <Image src={it.image} preview={false} /> */}
