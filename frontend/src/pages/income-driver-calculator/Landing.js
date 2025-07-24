@@ -20,6 +20,7 @@ import { FAQ } from "../faq";
 import { LandingIDHLogo } from "../../lib/icon";
 import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
+import { IDCSubMenu } from "../cases/components";
 
 const InformationCard = () => {
   const { isMobile } = useWindowDimensions();
@@ -175,6 +176,8 @@ const Landing = () => {
       className={`landing-container ${isMobile ? "mobile-screen" : ""}`}
       id="landing"
     >
+      <IDCSubMenu />
+
       <Jumbotron />
       <InformationCard />
       <IDCBenefits />
