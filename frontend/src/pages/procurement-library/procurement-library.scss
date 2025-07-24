@@ -95,7 +95,6 @@
 
         .ant-list {
           .ant-card {
-            min-height: 200px;
             border-radius: 20px;
             border: 1px solid #ddd;
             .ant-card-body {
@@ -137,10 +136,6 @@
                 .card-title {
                   h3 {
                     color: $primary-color;
-                    font-size: 22px !important;
-                    font-style: normal;
-                    font-weight: 700;
-                    line-height: 32px !important; /* 133.333% */
                     letter-spacing: -0.48px !important;
                     margin-block-start: 8px;
                     margin-block-end: 4px;

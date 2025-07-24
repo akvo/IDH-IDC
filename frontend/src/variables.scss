@@ -48,6 +48,21 @@ $breakpoints: (
   }
 }
 
+// Mixin: respond-between
+@mixin respond-between($breakpoint-min, $breakpoint-max) {
+  @if map-has-key($breakpoints, $breakpoint-min) and
+    map-has-key($breakpoints, $breakpoint-max)
+  {
+    $min: map-get($breakpoints, $breakpoint-min);
+    $max: map-get($breakpoints, $breakpoint-max);
+    @media (min-width: $min) and (max-width: $max) {
+      @content;
+    }
+  } @else {
+    @warn "⚠️ One or both breakpoints `#{$breakpoint-min}`, `#{$breakpoint-max}` not found in `$breakpoints` map.";
+  }
+}
+
 /* === CSS Variables with Responsive Breakpoints === */
 :root {
   --default-padding: 4rem;
