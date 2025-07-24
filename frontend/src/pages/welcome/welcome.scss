@@ -4,7 +4,7 @@
   padding: 0;
 
   .welcome-with-padding {
-    padding: 24px $default-padding-size;
+    padding: 24px var(--default-padding);
   }
 
   .username-wrapper {
@@ -148,8 +148,8 @@
 
   .map-container {
     margin-top: 32px;
-    margin-bottom: -$default-padding-size;
-    padding: 32px $default-padding-size;
+    margin-bottom: calc(-1 * var(--default-padding));
+    padding: 32px var(--default-padding);
     background: #dedede;
     width: 100%;
 

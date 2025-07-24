@@ -4,7 +4,7 @@
   min-height: calc(100vh - 10px);
 
   .cii-dashboard-page-title-wrapper {
-    padding: 24px $default-padding-size 34px $default-padding-size;
+    padding: 24px var(--default-padding) 34px var(--default-padding);
     background-color: #fffaeb;
 
     h1 {
@@ -30,7 +30,7 @@
   }
 
   .cii-dashboard-power-bi-iframe-wrapper {
-    padding: 24px $default-padding-size;
+    padding: 24px var(--default-padding);
     background-color: #f7f7f5;
     min-height: 99vh;
     position: relative;

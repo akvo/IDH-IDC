@@ -97,21 +97,23 @@ const PageHeader = ({ isLoggedIn }) => {
       >
         <Col span={isMobile ? 14 : 6} align="start">
           <Link to="/">
-            <Row justify="start" align="middle" gutter={[5, 5]}>
-              <Col span={isMobile ? 12 : 9}>
+            <div className="header-logo-wrapper">
+              <div className="logo-image">
                 <Image
                   src={Logo}
                   height={50}
                   preview={false}
                   data-testid="logo-image"
                 />
-              </Col>
+              </div>
               {!isMobile && (
-                <Col span={15}>
-                  <div className="logo-text">Living Income Roadmap Toolkit</div>
-                </Col>
+                <div className="logo-text">
+                  Living Income
+                  <br />
+                  Roadmap Toolkit
+                </div>
               )}
-            </Row>
+            </div>
           </Link>
         </Col>
 

@@ -35,7 +35,7 @@
     }
 
     .jumbotron-text-wrapper {
-      padding: 3rem $default-padding-size;
+      padding: 3rem var(--default-padding);
       z-index: 1;
       h1 {
         color: #ffffff;
@@ -132,7 +132,7 @@
   .income-driver-framework-wrapper {
     background: #f9fafb;
     width: 100%;
-    padding: 0 $default-padding-size 3rem $default-padding-size;
+    padding: 0 var(--default-padding) 3rem var(--default-padding);
 
     .income-driver-framework-text-wrapper {
       h2 {
@@ -155,7 +155,7 @@
   .toolkit-wrapper {
     background: #fff;
     width: 100%;
-    padding: 3rem $default-padding-size 3rem $default-padding-size;
+    padding: 3rem var(--default-padding) 3rem var(--default-padding);
 
     h2 {
       color: $primary-color;
@@ -241,7 +241,7 @@
     z-index: 9;
     background: #f9fafb;
     width: 100%;
-    padding: 3rem $default-padding-size 3.5rem $default-padding-size;
+    padding: 3rem var(--default-padding) 3.5rem var(--default-padding);
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -275,7 +275,7 @@
     background: #fff;
 
     .connect-col {
-      padding: 4rem $default-padding-size;
+      padding: 4rem var(--default-padding);
 
       .ant-card-body {
         text-align: center;
@@ -367,3 +367,25 @@
     }
   }
 }
+
+// Media query
+@include respond-to(xl) {
+  .info-card-row {
+    .info-card-wrapper {
+      p {
+        min-height: 75px;
+      }
+    }
+  }
+}
+
+@include respond-to(lg) {
+  .info-card-row {
+    .info-card-wrapper {
+      p {
+        min-height: 100px;
+      }
+    }
+  }
+}
+// EOL Media query

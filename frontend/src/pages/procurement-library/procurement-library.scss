@@ -24,7 +24,7 @@
       color: white;
       text-align: left;
       z-index: 10;
-      padding: 3rem $default-padding-size;
+      padding: 3rem var(--default-padding);
       display: flex;
       flex-direction: column;
       gap: 62px;

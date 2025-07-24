@@ -68,7 +68,7 @@ const LivingIncomeSteps = () => {
                             src={tool.icon}
                             preview={false}
                             width={32}
-                            style={{ marginLeft: "10px" }}
+                            style={{ marginLeft: isMobile ? 0 : "10px" }}
                           />
                         </Col>
                       </Row>

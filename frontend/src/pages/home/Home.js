@@ -116,14 +116,17 @@ const Home = () => {
       <Row className="toolkit-wrapper">
         <Col span={24} className="toolkit-header-wrapper">
           <Row align="top" justify="space-between" gutter={[20, 20]}>
-            <Col span={isMobile ? 24 : 18}>
+            <Col span={{ xs: 24, sm: 24, md: 24, lg: 18 }}>
               <h2>Toolkit towards better income</h2>
               <p>
                 Explore a set of tools and resources made available by IDH and
                 our partners below.
               </p>
             </Col>
-            <Col span={isMobile ? 24 : 6} align={isMobile ? "left" : "right"}>
+            <Col
+              span={{ xs: 24, sm: 24, md: 24, lg: 6 }}
+              align={isMobile ? "left" : "right"}
+            >
               <Link to="#" className="button button-green-fill">
                 Explore all Resources{" "}
                 <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />

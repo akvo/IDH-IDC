@@ -132,11 +132,11 @@ const FooterDisclaimer = ({
     <Row
       id="footer-disclaimer"
       data-testid="disclaimer-section-wrapper"
-      justify="center"
+      justify="space-between"
       className={isMobile ? "mobile-screen" : ""}
-      gutter={isMobile ? [0, 20] : []}
+      gutter={isMobile ? [0, 24] : []}
     >
-      <Col span={isMobile ? 24 : 5}>
+      <Col span={isMobile ? 24 : 6}>
         <Row gutter={[32, 32]}>
           <Col span={24} className="footer-menu-wrapper">
             <Space direction="vertical" size="large">
@@ -158,7 +158,7 @@ const FooterDisclaimer = ({
           </Col>
         </Row>
       </Col>
-      <Col span={isMobile ? 24 : 19}>
+      <Col span={isMobile ? 24 : 18} style={{ paddingLeft: 20 }}>
         <h2
           data-testid="disclaimer-section-title"
           style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}

@@ -18,7 +18,7 @@
     }
 
     .welcome-content-wrapper {
-      padding: 1.5rem $default-padding-size;
+      padding: 1.5rem var(--default-padding);
 
       .card-menu-wrapper {
         .card-container {
@@ -65,7 +65,7 @@
 }
 
 #faq {
-  padding: 1rem $default-padding-size 3rem $default-padding-size;
+  padding: 1rem var(--default-padding) 3rem var(--default-padding);
   background: #fff;
 
   h2 {

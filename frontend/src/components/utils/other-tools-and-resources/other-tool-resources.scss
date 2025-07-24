@@ -1,7 +1,7 @@
 @import "../../../variables.scss";
 
 .other-tools-recources-container {
-  padding: 1.5rem $default-padding-size 3rem;
+  padding: 1.5rem var(--default-padding) 3rem;
   background: #fff;
 
   &.mobile-screen {

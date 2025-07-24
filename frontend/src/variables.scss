@@ -1,7 +1,7 @@
+/* === SCSS Variables (for build-time use) === */
 $primary-color: #01625f;
 $secondary-color: #bcd9d8;
 $muted-color: #b3b3b3;
-// $bg-color-grey: #f0f2f5;
 $bg-color-grey: #eff2f5;
 $bg-color-white: #ffffff;
 $yellow-color: #ffc505;
@@ -9,13 +9,92 @@ $light-green: #47d985;
 
 $default-space-size: 1.5rem;
 $default-ant-card-body-padding: 0.9rem 1.5rem;
-$default-padding-size: 4rem;
 $default-breadcrumb-padding-size: 2.2rem;
-
 $default-mobile-padding-size: 1.5rem;
-
 $card-head-min-height: 42px;
 
+// Legacy fallback
+$default-padding-size: 4rem;
+
+/* === Sass Breakpoints Map === */
+$breakpoints: (
+  xs: 480px,
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+  xxl: 1440px,
+);
+
+/* === Mixin: respond-to (max-width) === */
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (max-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "⚠️ Breakpoint `#{$breakpoint}` not found in `$breakpoints` map.";
+  }
+}
+
+/* === Mixin: respond-from (min-width) === */
+@mixin respond-from($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "⚠️ Breakpoint `#{$breakpoint}` not found in `$breakpoints` map.";
+  }
+}
+
+/* === CSS Variables with Responsive Breakpoints === */
+:root {
+  --default-padding: 4rem;
+  --container-max-width: 1200px;
+}
+
+/* Large Desktop (≥ 1440px) */
+@media (min-width: 1440px) {
+  :root {
+    --default-padding: 5rem;
+    --container-max-width: 1320px;
+  }
+}
+
+/* Desktop (1025px - 1439px) */
+@media (max-width: 1439px) and (min-width: 1025px) {
+  :root {
+    --default-padding: 4rem;
+    --container-max-width: 1200px;
+  }
+}
+
+/* Tablet Landscape (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 768px) {
+  :root {
+    --default-padding: 3rem;
+    --container-max-width: 960px;
+  }
+}
+
+/* Tablet Portrait (640px - 767px) */
+@media (max-width: 767px) and (min-width: 640px) {
+  :root {
+    --default-padding: 2rem;
+    --container-max-width: 90%;
+  }
+}
+
+/* Mobile (≤ 639px) */
+@media (max-width: 639px) {
+  :root {
+    --default-padding: 1.5rem;
+    --container-max-width: 100%;
+  }
+}
+
+/* === Fonts === */
 @font-face {
   font-family: "TabletGothic";
   src: url("/assets/fonts/TabletGothic.otf") format("opentype");

@@ -32,7 +32,7 @@
   }
 
   .jumbotron-text-wrapper {
-    padding: 3rem $default-padding-size;
+    padding: 3rem var(--default-padding);
     z-index: 1;
     h1 {
       color: #ffffff;
@@ -61,7 +61,7 @@
 #framework-drivers {
   background-color: #f9fafb;
   width: 100%;
-  padding: 2rem $default-padding-size;
+  padding: 2rem var(--default-padding);
 
   .ant-collapse > .ant-collapse-item > .ant-collapse-header {
     padding: 24px 0 16px 0;
@@ -131,7 +131,7 @@
 }
 
 #get-started {
-  padding: 4rem $default-padding-size;
+  padding: 4rem var(--default-padding);
   background: #fff;
 
   .image-steps-container {
@@ -292,7 +292,7 @@
 #explore-studies {
   background: #f9fafb;
   width: 100%;
-  padding: 3rem $default-padding-size 3.5rem $default-padding-size;
+  padding: 3rem var(--default-padding) 3.5rem var(--default-padding);
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -402,7 +402,7 @@
   background-color: #00625f;
   color: #ffffff !important;
   width: 100%;
-  padding: 1.5rem $default-padding-size;
+  padding: 1.5rem var(--default-padding);
 
   .disclaimer-text-wrapper {
     display: flex;
