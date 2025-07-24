@@ -30,6 +30,9 @@ const IDCSubMenu = () => {
     const paths = location.pathname.split("/");
     const idcPath = paths?.[1] || "";
     const pagePath = paths?.[2] || "";
+    if (pagePath === "") {
+      return `/${idcPath}`;
+    }
     return `/${idcPath}/${pagePath}`;
   }, [location]);
 
