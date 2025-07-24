@@ -40,7 +40,7 @@
     margin-right: 0 !important;
 
     .info-card-wrapper {
-      min-height: 210px;
+      height: 100%;
       border-radius: 22px;
 
       .ant-card-body {
@@ -189,46 +189,3 @@
     }
   }
 }
-
-// Media query
-@include respond-to(xl) {
-  .info-card-row {
-    .info-card-wrapper {
-      h3 {
-        min-height: 50px;
-      }
-      p {
-        min-height: 100px;
-      }
-    }
-  }
-}
-
-@include respond-to(lg) {
-  .info-card-row {
-    .info-card-wrapper {
-      min-height: 335px !important;
-      h3 {
-        min-height: 50px;
-      }
-      p {
-        min-height: 125px;
-      }
-    }
-  }
-}
-
-@include respond-to(md) {
-  .info-card-row {
-    .info-card-wrapper {
-      min-height: fit-content !important;
-      h3 {
-        min-height: fit-content;
-      }
-      p {
-        min-height: fit-content;
-      }
-    }
-  }
-}
-// EOL Media query

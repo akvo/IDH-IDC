@@ -67,8 +67,8 @@
     margin-right: 0 !important;
 
     .info-card-wrapper {
-      min-height: 200px;
       border-radius: 22px;
+      height: 100%;
 
       .ant-card-body {
         display: flex;
@@ -367,25 +367,3 @@
     }
   }
 }
-
-// Media query
-@include respond-to(xl) {
-  .info-card-row {
-    .info-card-wrapper {
-      p {
-        min-height: 75px;
-      }
-    }
-  }
-}
-
-@include respond-to(lg) {
-  .info-card-row {
-    .info-card-wrapper {
-      p {
-        min-height: 100px;
-      }
-    }
-  }
-}
-// EOL Media query

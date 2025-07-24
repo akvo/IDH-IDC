@@ -19,6 +19,17 @@ import { useWindowDimensions } from "../../hooks";
 const Home = () => {
   const { isMobile } = useWindowDimensions();
 
+  const scrollToSection = (id = null, offset = 80) => {
+    if (!id) {
+      return;
+    }
+    const el = document.getElementById(id);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
   return (
     <div
       className={`home-container ${isMobile ? "mobile-screen" : ""}`}
@@ -51,7 +62,7 @@ const Home = () => {
       <Row
         data-testid="info-card-wrapper"
         justify="space-evenly"
-        align="center"
+        align="stretch"
         className="info-card-row"
         gutter={isMobile ? [0, 20] : [20, 20]}
       >
@@ -66,7 +77,12 @@ const Home = () => {
               for companies to drive aligned action towards closing living
               income gaps for farming households.
             </p>
-            <Link to="#">Explore</Link>
+            <Link
+              to="#"
+              onClick={() => scrollToSection("living-income-roadmap-section")}
+            >
+              Explore
+            </Link>
           </Card>
         </Col>
         <Col sm={24} md={12} align="top">
@@ -80,7 +96,7 @@ const Home = () => {
               towards assessing and closing the living income gap in their
               supply chains
             </p>
-            <Link to="#">Explore</Link>
+            <Link to="/tools-and-resources">Explore</Link>
           </Card>
         </Col>
       </Row>
@@ -88,6 +104,7 @@ const Home = () => {
 
       {/* Roadmap */}
       <Row
+        id="living-income-roadmap-section"
         data-testid="income-driver-framework-wrapper"
         justify="center"
         className="income-driver-framework-wrapper"

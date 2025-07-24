@@ -29,7 +29,7 @@ const InformationCard = () => {
     <Row
       data-testid="info-card-wrapper"
       justify="space-evenly"
-      align="center"
+      align="stretch"
       className="info-card-row"
       gutter={isMobile ? [0, 20] : [24, 24]}
     >
