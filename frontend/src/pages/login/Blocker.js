@@ -11,7 +11,8 @@ const Blocker = () => {
         <Image src={WarningIcon} preview={false} width={90} />
         <div className="title">Screen is too small</div>
         <div className="subtitle">
-          It&apos;s recommended to use this platform on a desktop version.
+          It&apos;s recommended that you use this platform on a desktop or
+          laptop.
         </div>
         <div>
           <Link to={routePath.idc.landing} className="button button-green">
