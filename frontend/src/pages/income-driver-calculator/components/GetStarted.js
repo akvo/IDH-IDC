@@ -40,7 +40,7 @@ const GetStarted = () => {
         >
           <Row
             align="middle"
-            gutter={isMobile ? [10, 32] : [10, 10]}
+            gutter={isMobile ? [10, 32] : [10, 32]}
             style={{ float: isMobile ? "left" : "right" }}
           >
             <Col align="end">

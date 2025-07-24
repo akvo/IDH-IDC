@@ -92,7 +92,7 @@ const FrameworkDrivers = () => {
         <Image
           src={TheFrameworkDrivers}
           preview={false}
-          style={{ width: isMobile ? "100%" : 950 }}
+          className="framework-drivers-image"
         />
         {showOldCalculation && (
           <div>
