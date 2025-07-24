@@ -173,9 +173,22 @@ const Home = () => {
                       </Space>
                     ))}
                   </div>
-                  <Link to={it.link} className="button button-green-fill">
-                    Explore
-                  </Link>
+                  {it.button.type === "download" ? (
+                    <a
+                      href={it.button.href}
+                      download
+                      className="button button-green-fill"
+                    >
+                      {it.button.text}
+                    </a>
+                  ) : (
+                    <Link
+                      to={it.button.href}
+                      className="button button-green-fill"
+                    >
+                      {it.button.text}
+                    </Link>
+                  )}
                 </Col>
                 <Col span={isMobile ? 24 : 10} order={rightPosition}>
                   <div

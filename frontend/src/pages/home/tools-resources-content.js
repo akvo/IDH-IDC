@@ -25,7 +25,11 @@ export const toolResourceItems = [
     image: IncomeMeasurementImg,
     backgroundSize: "cover",
     linkToStepText: "Links to step 2 of the LI Roadmap.",
-    link: "#",
+    button: {
+      href: "https://idh-prp.files.prepr.io/1wk73l1s25z4-income-measurement-guidance-tool-img-idh.zip",
+      type: "download",
+      text: "Download",
+    },
   },
   {
     icon: IDCIcon,
@@ -41,7 +45,11 @@ export const toolResourceItems = [
     image: IDCImg,
     backgroundSize: "cover",
     linkToStepText: "Links to step 3 & 4 of the LI Roadmap.",
-    link: "/income-driver-calculator",
+    button: {
+      href: "/income-driver-calculator",
+      type: "link",
+      text: "Explore",
+    },
   },
   {
     icon: PLIcon,
@@ -57,7 +65,11 @@ export const toolResourceItems = [
     image: PLImg,
     backgroundSize: "cover",
     linkToStepText: "Links to step 4 of the LI Roadmap.",
-    link: "/procurement-library",
+    button: {
+      href: "/procurement-library",
+      type: "link",
+      text: "Explore",
+    },
   },
   {
     icon: CIIIcon,
@@ -73,7 +85,11 @@ export const toolResourceItems = [
     image: CIIImg,
     backgroundSize: "cover",
     linkToStepText: "Links to step 4 and 5 of the LI Roadmap.",
-    link: "/cocoa-income-inventory",
+    button: {
+      href: "/cocoa-income-inventory",
+      type: "link",
+      text: "Explore",
+    },
   },
   {
     icon: IDHBnIcon,
@@ -89,6 +105,10 @@ export const toolResourceItems = [
     image: IDHBnImg,
     backgroundSize: "auto",
     linkToStepText: "Links to step 2,3 & 4 of the LI Roadmap.",
-    link: "#",
+    button: {
+      href: "#",
+      type: "link",
+      text: "Explore",
+    },
   },
 ];
