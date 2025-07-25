@@ -34,7 +34,7 @@
 
   .info-card-row {
     background: #fcf9f4;
-    padding: 0 3rem 3rem 3rem;
+    padding: 0 var(--default-padding) 3rem var(--default-padding);
     margin-top: -7rem;
     margin-left: 0 !important;
     margin-right: 0 !important;

@@ -1,4 +1,9 @@
 import { routePath } from "../components/route";
+import Step1Img from "../assets/images/idc/step1.png";
+import Step2Img from "../assets/images/idc/step2.png";
+import Step3Img from "../assets/images/idc/step3.png";
+import Step4Img from "../assets/images/idc/step4.png";
+import Step5Img from "../assets/images/idc/step5.png";
 
 export const adminRole = ["super_admin", "admin"];
 // export const nonAdminRole = ["editor", "viewer", "user"];
@@ -172,26 +177,31 @@ export const caseStepItems = [
   {
     title: "Set an income target",
     description: "Use a living income benchmark or set a custom target.",
+    image: Step1Img,
   },
   {
     title: "Enter your income data",
     description:
       "Enter current and feasible data for the five income drivers and its subcomponents for each segment.",
+    image: Step2Img,
   },
   {
     title: "Understand the income gap",
     description:
       "Explore the current income situation and the gap to reach your income target.",
+    image: Step3Img,
   },
   {
     title: "Assess impact of mitigation strategies",
     description:
       "Analyse which drivers have the greatest impact on income, and how to close the gap.",
+    image: Step4Img,
   },
   {
     title: "Closing the gap",
     description:
       "Create scenarios and visualise their effectiveness in closing the gap.",
+    image: Step5Img,
   },
 ];
 

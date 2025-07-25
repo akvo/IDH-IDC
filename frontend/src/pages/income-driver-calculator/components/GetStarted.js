@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, Row, Col, Steps } from "antd";
 import "./landingcomp.scss";
-import GetStartedImg from "../../../assets/images/get-started.png";
 import { caseStepItems } from "../../../store/static";
 import { Link } from "react-router-dom";
 import { routePath } from "../../../components/route";
@@ -10,6 +9,13 @@ import { useWindowDimensions } from "../../../hooks";
 
 const GetStarted = () => {
   const { isMobile } = useWindowDimensions();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [currentImage, setCurrentImage] = useState(caseStepItems[0].image);
+
+  const handleOnChangeStep = (val) => {
+    setCurrentStep(val);
+    setCurrentImage(caseStepItems?.[val]?.image);
+  };
 
   return (
     <div id="get-started" className={isMobile ? "mobile-screen" : ""}>
@@ -63,7 +69,7 @@ const GetStarted = () => {
 
       <div className="image-steps-container">
         <div className="image-wrapper">
-          <Image src={GetStartedImg} preview={false} style={{ width: "95%" }} />
+          <Image src={currentImage} preview={false} style={{ width: "95%" }} />
         </div>
         <div>
           <Steps
@@ -71,6 +77,8 @@ const GetStarted = () => {
             items={caseStepItems}
             className="case-step-wrapper"
             size="small"
+            onChange={handleOnChangeStep}
+            current={currentStep}
           />
         </div>
       </div>
