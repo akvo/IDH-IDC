@@ -9,6 +9,8 @@ import api from "../../../lib/api";
 import { LIMIT_RESULT } from "../config";
 import { PLState } from "../../../store";
 import "./assessment.scss";
+import { Blocker } from "../../../components/utils";
+import { useWindowDimensions } from "../../../hooks";
 
 const Assessment = () => {
   const [form] = Form.useForm();
@@ -16,6 +18,7 @@ const Assessment = () => {
   const practices = PLState.useState((s) => s.practices);
   const questions = PLState.useState((s) => s.questions);
   const navigate = useNavigate();
+  const { isMobile } = useWindowDimensions();
 
   const handleOnClear = () => {
     const ql = form
@@ -79,6 +82,10 @@ const Assessment = () => {
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
+
+  if (isMobile) {
+    return <Blocker backRoute="/procurement-library" />;
+  }
 
   return (
     <div className="assessment-container">

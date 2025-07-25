@@ -573,6 +573,8 @@
       overflow: hidden;
 
       .title-wrapper {
+        position: relative;
+        z-index: 9;
         padding: 2rem var(--default-padding);
 
         h1 {

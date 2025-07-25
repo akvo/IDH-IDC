@@ -1,10 +1,9 @@
 import "./blocker.scss";
 import { Card, Image } from "antd";
 import { Link } from "react-router-dom";
-import WarningIcon from "../../assets/icons/warning.svg";
-import { routePath } from "../../components/route";
+import WarningIcon from "../../../assets/icons/warning.svg";
 
-const Blocker = () => {
+const Blocker = ({ backRoute = null }) => {
   return (
     <div className="blocker-wrapper">
       <Card>
@@ -15,7 +14,10 @@ const Blocker = () => {
           laptop.
         </div>
         <div>
-          <Link to={routePath.idc.landing} className="button button-green">
+          <Link
+            to={backRoute ? backRoute : "#"}
+            className="button button-green"
+          >
             Back to the main page
           </Link>
         </div>
