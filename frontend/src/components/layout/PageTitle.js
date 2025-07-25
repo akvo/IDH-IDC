@@ -11,6 +11,7 @@ const PageTitle = ({ title = "", subTitle = "" }) => {
             bottom: -190,
             right: -130,
             transform: "rotate(260deg)",
+            opacity: 0.5,
           }}
           width={300}
           height={300}
