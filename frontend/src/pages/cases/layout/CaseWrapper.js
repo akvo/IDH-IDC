@@ -53,23 +53,40 @@ const step1CheckWarningText =
 const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
   const navigate = useNavigate();
   const currentCaseSegments = CurrentCaseState.useState((s) => s.segments);
+  const { id: userId, internal_user: isInternalUser } = UserState.useState(
+    (s) => s
+  );
 
   const sidebarItems = useMemo(() => {
+    let res = [];
     if (siderCollapsed) {
-      return [
+      res = [
         { title: "" },
         { title: "" },
         { title: "" },
         { title: "" },
         { title: "" },
       ];
+    } else {
+      res = caseStepItems;
     }
-    return caseStepItems;
-  }, [siderCollapsed]);
+    if (userId && !isInternalUser) {
+      // remove step 2 from sidebar for external user
+      return res.filter((_, i) => i !== 1);
+    }
+    return res;
+  }, [siderCollapsed, userId, isInternalUser]);
 
-  const findStepPathValue = Object.values(stepPath).find(
-    (path) => path.label === step
-  )?.value;
+  const findStepPathValue = useMemo(() => {
+    let current = Object.values(stepPath).find(
+      (path) => path.label === step
+    )?.value;
+    if (userId && !isInternalUser && current > 1) {
+      // remove step 2 from sidebar for external user
+      current -= 1;
+    }
+    return current;
+  }, [step, userId, isInternalUser]);
 
   const handleOnChangeSteps = (val) => {
     // check segment target before move to step 2 forward
@@ -87,8 +104,15 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
     if (onSave) {
       onSave();
     }
+    let stepPathNumber = val + 1;
+    if (userId && !isInternalUser && val > 0) {
+      // remove step 2 from sidebar for external user
+      stepPathNumber += 1;
+    }
     navigate(
-      `${routePath.idc.case}/${caseId}/${stepPath[`step${val + 1}`].label}`
+      `${routePath.idc.case}/${caseId}/${
+        stepPath[`step${stepPathNumber}`].label
+      }`
     );
   };
 
