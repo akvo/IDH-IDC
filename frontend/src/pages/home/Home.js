@@ -96,7 +96,12 @@ const Home = () => {
               towards assessing and closing the living income gap in their
               supply chains
             </p>
-            <Link to="/tools-and-resources">Explore</Link>
+            <Link
+              to="#"
+              onClick={() => scrollToSection("toward-better-income-section")}
+            >
+              Explore
+            </Link>
           </Card>
         </Col>
       </Row>
@@ -130,7 +135,7 @@ const Home = () => {
       {/* EOL Roadmap */}
 
       {/* Toolkit towards better income */}
-      <Row className="toolkit-wrapper">
+      <Row id="toward-better-income-section" className="toolkit-wrapper">
         <Col span={24} className="toolkit-header-wrapper">
           <Row align="top" justify="space-between" gutter={[20, 20]}>
             <Col span={{ xs: 24, sm: 24, md: 24, lg: 18 }}>
