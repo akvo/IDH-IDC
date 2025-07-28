@@ -14,7 +14,7 @@ export const otherToolsAndResourcesContent = [
     image: Image1,
     title: "Income Measurement Guidance Tool",
     description:
-      "This tool streamlines household income assessments, allowing you to measure total income while optimising primary and secondary data use.",
+      "The tool helps companies streamline their approach to measure actual household income, across multiple commodities and regions, while considering their resource availability and source of data (primary and secondary).",
     order: 1,
     button: {
       href: "https://idh-prp.files.prepr.io/1wk73l1s25z4-income-measurement-guidance-tool-img-idh.zip",
@@ -28,7 +28,7 @@ export const otherToolsAndResourcesContent = [
     image: Image2,
     title: "Cocoa Income Inventory",
     description:
-      "The tool allows you to explore data on cocoa production, income from cocoa, and other key indicators from different origins. Play around with the data using an interactive dashboard.",
+      "The tool allows you to explore data on cocoa production, income from cocoa, and other key indicators from different origins on an interactive dashboard.",
     order: 2,
     button: {
       href: "/cocoa-income-inventory",
