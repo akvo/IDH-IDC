@@ -7,6 +7,7 @@ import { PageFooter } from "../../../components/layout";
 import LinkedinIcon from "../../../assets/icons/linkedin.svg";
 import YoutubeIcon from "../../../assets/icons/youtube.svg";
 import { useWindowDimensions } from "../../../hooks";
+import { routePath } from "../../../components/route";
 
 const defaultDisclaimerText = (handleSecurityClick) => (
   <div className="disclaimer-text-wrapper">
@@ -117,6 +118,7 @@ const procurementDisclaimerText = () => (
 const FooterDisclaimer = ({
   disclaimerText = "default",
   showPageFooter = true,
+  showFAQNav = false,
 }) => {
   const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
     useState(false);
@@ -147,7 +149,7 @@ const FooterDisclaimer = ({
               <Link to="/procurement-library">Procurement Library</Link>
               <Link to="/cocoa-income-inventory">Cocoa Income Inventory</Link>
               <Link to="/tools-and-resources">Tools & Resources</Link>
-              <Link to="/faq">FAQ</Link>
+              {showFAQNav ? <Link to={routePath.idc.faq}>FAQ</Link> : ""}
             </Space>
           </Col>
           <Col span={24}>

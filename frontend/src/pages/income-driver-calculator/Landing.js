@@ -185,7 +185,7 @@ const Landing = () => {
       <FrameworkDrivers />
       <FAQSection />
       <OtherToolsAndResources />
-      <FooterDisclaimer disclaimerText="idc" />
+      <FooterDisclaimer disclaimerText="idc" showFAQNav={true} />
     </div>
   );
 };
