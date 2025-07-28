@@ -6,7 +6,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import { OtherToolResourceList } from "..";
 import { useWindowDimensions } from "../../../hooks";
 
-const OtherToolsAndResources = () => {
+const OtherToolsAndResources = ({ toolsOrderForLandingPage = [] }) => {
   const { isMobile } = useWindowDimensions();
 
   return (
@@ -32,6 +32,7 @@ const OtherToolsAndResources = () => {
         size={3}
         showMoreButton={false}
         isLandingPage={true}
+        toolsOrderForLandingPage={toolsOrderForLandingPage}
       />
     </div>
   );

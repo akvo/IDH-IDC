@@ -141,7 +141,9 @@ const ProcurementLibrary = () => {
         </div>
       </div>
 
-      <OtherToolsAndResources />
+      <OtherToolsAndResources
+        toolsOrderForLandingPage={["IDC", "IMG", "CII"]}
+      />
 
       <FooterDisclaimer disclaimerText="procurement" />
     </div>

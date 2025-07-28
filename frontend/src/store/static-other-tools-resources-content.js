@@ -5,9 +5,11 @@ import Image4 from "../assets/images/other-tool-resource/reporting-standards.png
 import Image5 from "../assets/images/other-tool-resource/procurement-practices-paper-by-DISCO.jpg";
 import Image6 from "../assets/images/other-tool-resource/aligned-Inclusive-living-income-narrative-and-indicators.jpg";
 import Image7 from "../assets/images/other-tool-resource/inclusive-business-analytics.jpg";
+import IDCImg from "../assets/images/other-tool-resource/idc.jpg";
 
 export const otherToolsAndResourcesContent = [
   {
+    key: "IMG",
     tag: "Tool",
     image: Image1,
     title: "Income Measurement Guidance Tool",
@@ -21,6 +23,7 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
+    key: "CII",
     tag: "Tool",
     image: Image2,
     title: "Cocoa Income Inventory",
@@ -34,6 +37,7 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
+    key: "PL",
     tag: "Tool",
     image: Image3,
     title: "Procurement Library",
@@ -47,6 +51,7 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
+    key: "NDDRS",
     tag: "Paper",
     image: Image4,
     title: "Navigating Due Diligence and Reporting Standards",
@@ -60,6 +65,7 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
+    key: "PPP",
     tag: "Paper",
     image: Image5,
     title: "Procurement Practices Principles",
@@ -73,6 +79,7 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
+    key: "AILINI",
     tag: "Paper",
     image: Image6,
     title: "Aligned Inclusive Living Income Narrative and Indicators",
@@ -86,6 +93,7 @@ export const otherToolsAndResourcesContent = [
     },
   },
   {
+    key: "IDH-IBA",
     tag: "Tool",
     image: Image7,
     title: "IDH Inclusive Business Analysis",
@@ -95,6 +103,20 @@ export const otherToolsAndResourcesContent = [
     button: {
       href: "https://www.idhsustainabletrade.com/business-analytics/",
       type: "new-window",
+      text: "Explore the tool",
+    },
+  },
+  {
+    key: "IDC",
+    tag: "Tool",
+    image: IDCImg,
+    title: "Income Driver Calculator",
+    description:
+      "An online tool that supports companies to assess the size of the living income gap. in their supply chain and take data driven decisions on the most effective strategies with the use aggregate data.",
+    order: 8,
+    button: {
+      href: "/income-driver-calculator",
+      type: "link",
       text: "Explore the tool",
     },
   },
