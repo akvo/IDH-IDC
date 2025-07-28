@@ -57,13 +57,14 @@ const IDCSubMenu = () => {
         label: "Explore other studies",
         key: routePath.idc.exploreStudies,
         isInternalUser: false,
+        hideForExternalUser: true,
         role: allUserRole,
       },
       {
         testid: "nav-menu-faq",
         label: "FAQ",
         key: routePath.idc.faq,
-        isPublic: true,
+        isPublic: false,
         role: allUserRole,
       },
       {
@@ -78,7 +79,7 @@ const IDCSubMenu = () => {
         label: "About",
         key: routePath.idc.landing,
         isPublic: false,
-        role: adminRole,
+        role: allUserRole,
       },
     ];
     const filterByUser = (item) => {
@@ -89,12 +90,16 @@ const IDCSubMenu = () => {
         if (item?.isInternalUser) {
           return item?.role?.includes(userRole) || isInternalUser;
         }
+        if (item?.hideForExternalUser && !isInternalUser) {
+          return item?.role?.includes(userRole) && !item?.hideForExternalUser;
+        }
         return item?.role?.includes(userRole);
       }
       return false;
     };
     const items = menuList
       .filter((item) => !item?.hide)
+      .filter((item) => filterByUser(item))
       .filter((item) => {
         const children = item?.children?.filter((child) => {
           return filterByUser(child);
