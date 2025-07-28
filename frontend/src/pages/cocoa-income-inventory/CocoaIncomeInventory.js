@@ -210,7 +210,9 @@ const CocoaIncomeInventory = () => {
       {/* EOL Contribute to inventory section */}
 
       <Col span={24}>
-        <OtherToolsAndResources />
+        <OtherToolsAndResources
+          toolsOrderForLandingPage={["IDC", "IMG", "PL"]}
+        />
       </Col>
 
       <FooterDisclaimer disclaimerText="cii" showPageFooter={true} />
