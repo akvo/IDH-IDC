@@ -352,11 +352,11 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                     <Space>
                       {showCaseSettings ? (
                         <Button
-                          className="button-green-transparent"
+                          className="button-green-fill"
                           icon={<SettingOutlined />}
                           onClick={() => setCaseSettingModalVisible(true)}
                         >
-                          Case settings
+                          Update Case Profile
                         </Button>
                       ) : (
                         ""
