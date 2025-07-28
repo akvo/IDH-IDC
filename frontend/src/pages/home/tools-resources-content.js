@@ -106,8 +106,8 @@ export const toolResourceItems = [
     backgroundSize: "auto",
     linkToStepText: "Links to step 2,3 & 4 of the LI Roadmap.",
     button: {
-      href: "#",
-      type: "link",
+      href: "https://www.idhsustainabletrade.com/business-analytics/",
+      type: "new-window",
       text: "Explore",
     },
   },

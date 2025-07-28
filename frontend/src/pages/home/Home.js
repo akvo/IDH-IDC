@@ -206,6 +206,15 @@ const Home = () => {
                     >
                       {it.button.text}
                     </a>
+                  ) : it?.button?.type === "new-window" ? (
+                    <a
+                      href={it.button.href}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="button button-green-fill"
+                    >
+                      {it.button.text}
+                    </a>
                   ) : (
                     <Link
                       to={it.button.href}
