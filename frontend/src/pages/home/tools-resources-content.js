@@ -47,7 +47,7 @@ export const toolResourceItems = [
     linkToStepText: "Links to step 3 & 4 of the LI Roadmap.",
     button: {
       href: "/income-driver-calculator",
-      type: "link",
+      type: "new-window",
       text: "Explore",
     },
   },
@@ -67,7 +67,7 @@ export const toolResourceItems = [
     linkToStepText: "Links to step 4 of the LI Roadmap.",
     button: {
       href: "/procurement-library",
-      type: "link",
+      type: "new-window",
       text: "Explore",
     },
   },
@@ -87,7 +87,7 @@ export const toolResourceItems = [
     linkToStepText: "Links to step 4 and 5 of the LI Roadmap.",
     button: {
       href: "/cocoa-income-inventory",
-      type: "link",
+      type: "new-window",
       text: "Explore",
     },
   },
