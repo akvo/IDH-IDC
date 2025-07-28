@@ -108,9 +108,9 @@ const PageHeader = ({ isLoggedIn }) => {
               </div>
               {!isMobile && (
                 <div className="logo-text">
-                  Living Income
+                  Toolkit Towards
                   <br />
-                  Roadmap Toolkit
+                  Better Incomes
                 </div>
               )}
             </div>

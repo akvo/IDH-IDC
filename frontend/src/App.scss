@@ -163,12 +163,14 @@
       }
 
       .logo-text {
-        color: $primary-color;
+        color: #767676;
         font-family: "RocGrotesk";
         font-size: 16px;
         font-style: normal;
         font-weight: bold;
         line-height: normal;
+        border-left: 1px solid rgba(118, 118, 118, 0.2);
+        padding-left: 10px;
       }
     }
 
