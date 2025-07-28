@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Card, Row, Col, Space, Tag } from "antd";
 import { CaseUIState, CurrentCaseState } from "../store";
+import { UserState } from "../../../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import ChartCalculatedHouseholdIncome from "./ChartCalculatedHouseholdIncome";
 import ExploreDataFromOtherStudiesTable from "./ExploreDataFromOtherStudiesTable";
@@ -8,6 +9,16 @@ import ExploreDataFromOtherStudiesTable from "./ExploreDataFromOtherStudiesTable
 const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
+  const { id: userId, internal_user: isInternalUser } = UserState.useState(
+    (s) => s
+  );
+
+  const showExploreOtherStudiesTable = useMemo(() => {
+    if (userId && !isInternalUser) {
+      return false;
+    }
+    return true;
+  }, [userId, isInternalUser]);
 
   const currentSegment = useMemo(() => {
     const findCase = currentCase.segments.find(
@@ -41,7 +52,11 @@ const EnterIncomeDataVisual = () => {
         <ChartCalculatedHouseholdIncome />
       </Col>
       <Col span={24}>
-        <ExploreDataFromOtherStudiesTable />
+        {showExploreOtherStudiesTable ? (
+          <ExploreDataFromOtherStudiesTable />
+        ) : (
+          ""
+        )}
       </Col>
     </Row>
   );

@@ -50,6 +50,8 @@ const options = {
 const step1CheckWarningText =
   "Please complete Step 1 by setting the segment target before proceeding.";
 
+const hideStep2ForExternalUser = false;
+
 const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
   const navigate = useNavigate();
   const currentCaseSegments = CurrentCaseState.useState((s) => s.segments);
@@ -70,7 +72,7 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
     } else {
       res = caseStepItems;
     }
-    if (userId && !isInternalUser) {
+    if (hideStep2ForExternalUser && userId && !isInternalUser) {
       // remove step 2 from sidebar for external user
       return res.filter((_, i) => i !== 1);
     }
@@ -81,7 +83,7 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
     let current = Object.values(stepPath).find(
       (path) => path.label === step
     )?.value;
-    if (userId && !isInternalUser && current > 1) {
+    if (hideStep2ForExternalUser && userId && !isInternalUser && current > 1) {
       // remove step 2 from sidebar for external user
       current -= 1;
     }
@@ -105,7 +107,7 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
       onSave();
     }
     let stepPathNumber = val + 1;
-    if (userId && !isInternalUser && val > 0) {
+    if (hideStep2ForExternalUser && userId && !isInternalUser && val > 0) {
       // remove step 2 from sidebar for external user
       stepPathNumber += 1;
     }
