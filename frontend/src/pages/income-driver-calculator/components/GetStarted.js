@@ -7,6 +7,8 @@ import { routePath } from "../../../components/route";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useWindowDimensions } from "../../../hooks";
 
+const showSeeDemoButton = false;
+
 const GetStarted = () => {
   const { isMobile } = useWindowDimensions();
   const [currentStep, setCurrentStep] = useState(0);
@@ -49,11 +51,15 @@ const GetStarted = () => {
             gutter={isMobile ? [10, 32] : [10, 32]}
             style={{ float: isMobile ? "left" : "right" }}
           >
-            <Col align="end">
-              <Link to="#" className="button button-green">
-                See the demo
-              </Link>
-            </Col>
+            {showSeeDemoButton ? (
+              <Col align="end">
+                <Link to="#" className="button button-green">
+                  See the demo
+                </Link>
+              </Col>
+            ) : (
+              ""
+            )}
             <Col align="end">
               <Link
                 to={routePath.idc.login}
