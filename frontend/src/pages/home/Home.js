@@ -40,11 +40,16 @@ const Home = () => {
         <Col span={24} className="jumbotron-gradient-wrapper">
           <div className="jumbotron-gradient-overlay"></div>
           <div className="jumbotron-text-wrapper">
-            <h1 data-testid="jumbotron-title">Welcome to the Toolkit</h1>
+            <h1 data-testid="jumbotron-title">
+              Welcome to
+              <br />
+              Toolkit for Better Incomes
+            </h1>
             <h3 data-testid="jumbotron-subtitle" className="jumbotron-subtitle">
               A growing set of practical, data-driven tools to help companies
-              take smarter, more targeted action to help raise famer incomes in
-              their supply chains towards a living income.
+              take smarter, more targeted action to help raise farmer income
+              (towards a living income) in their supply chain. This toolkit is
+              developed as part of IDH’s Living Income roadmap.
             </h3>
             <Link
               to="#"
