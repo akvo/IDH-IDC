@@ -112,7 +112,12 @@ const IDCBenefits = () => {
               span={isMobile ? 24 : 6}
               align="center"
             >
-              <Image src={item.icon} preview={false} />
+              <Image
+                src={item.icon}
+                preview={false}
+                style={{ height: "100%" }}
+                width={72}
+              />
               <h4>{item.label}</h4>
             </Col>
           ))}
