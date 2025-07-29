@@ -8,7 +8,7 @@ import IncomeMeasurementImg from "../../assets/images/home/income-measurement-im
 import IDCImg from "../../assets/images/home/income-driver-calculator-img.png";
 import PLImg from "../../assets/images/home/procurement-lib-img.png";
 import CIIImg from "../../assets/images/home/cii-img.png";
-import IDHBnImg from "../../assets/images/home/idh-business-img.png";
+import IDHBnImg from "../../assets/images/other-tool-resource/inclusive-business-analytics.jpg";
 
 export const toolResourceItems = [
   {
