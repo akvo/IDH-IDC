@@ -358,7 +358,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                           icon={<SettingOutlined />}
                           onClick={() => setCaseSettingModalVisible(true)}
                         >
-                          Update Case Profile
+                          Update Case Details
                         </Button>
                       ) : (
                         ""
