@@ -191,11 +191,27 @@
       &.ant-menu-horizontal {
         border: none;
 
+        .ant-menu-item {
+          padding-inline: 6px;
+        }
+
         li {
           font-family: "RocGrotesk";
           font-size: 14px;
           color: $primary-color;
           font-weight: 700;
+
+          .ant-menu-title-content {
+            padding: 8px 12px;
+          }
+
+          &.ant-menu-item-active,
+          &.ant-menu-item-selected {
+            .ant-menu-title-content {
+              border-radius: 8px;
+              background: #f0fcf5;
+            }
+          }
         }
       }
 
@@ -772,6 +788,12 @@
       font-size: 14px;
       color: $primary-color;
       font-weight: 700;
+
+      &.ant-menu-item-active,
+      &.ant-menu-item-selected {
+        border-radius: 8px;
+        background: #f0fcf5;
+      }
     }
   }
 }

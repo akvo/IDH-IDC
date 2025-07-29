@@ -16,6 +16,7 @@ const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const location = useLocation();
 
   const menuItems = useMemo(() => {
     const menuList = [
@@ -151,6 +152,7 @@ const PageHeader = ({ isLoggedIn }) => {
                   mode="inline"
                   items={menuItems}
                   onClick={handleMenuClick}
+                  selectedKeys={[location.pathname]}
                 />
               </Drawer>
             </>
@@ -161,6 +163,7 @@ const PageHeader = ({ isLoggedIn }) => {
               items={menuItems}
               style={{ borderBottom: "none" }}
               className="navigation-container"
+              selectedKeys={[location.pathname]}
             />
           )}
         </Col>
