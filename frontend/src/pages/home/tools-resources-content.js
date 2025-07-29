@@ -19,7 +19,7 @@ export const toolResourceItems = [
     order: 1,
     list: [
       "Customisable, simple, and intuitive",
-      "Grounded in established, recognised methodologies",
+      "Grounded on recognised methodologies",
       "Facilitates data comparability across and within regions",
     ],
     image: IncomeMeasurementImg,
