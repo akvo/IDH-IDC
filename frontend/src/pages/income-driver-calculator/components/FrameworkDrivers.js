@@ -78,7 +78,7 @@ const FrameworkDrivers = () => {
         <h2 data-testid="framework-drivers-title">
           The framework
           <br />
-          consist of five income drivers
+          consist of five drivers
         </h2>
         {showDriverInfo && (
           <Collapse accordion items={items} bordered={false} ghost />
