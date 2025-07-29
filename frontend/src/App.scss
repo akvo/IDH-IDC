@@ -780,7 +780,7 @@
 }
 
 // Media query
-@include respond-to(xl) {
+@include respond-to(md) {
   .logo-text {
     font-size: 14px !important;
   }
