@@ -80,7 +80,7 @@ const OtherToolResourceList = ({
                   backgroundImage: `url(${item.image})`,
                   backgroundSize: "cover",
                   width: "100%",
-                  height: "211px",
+                  height: "250px",
                 }}
               />
               <Space className="otr-tag-button-wrapper">
