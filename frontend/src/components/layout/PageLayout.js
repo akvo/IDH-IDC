@@ -95,31 +95,31 @@ const PageHeader = ({ isLoggedIn }) => {
         align="middle"
         style={{ width: "100%" }}
       >
-        <Col span={isMobile ? 14 : 6} align="start">
+        <Col span={isMobile ? 18 : 6} align="start">
           <Link to="/">
             <div className="header-logo-wrapper">
               <div className="logo-image">
                 <Image
                   src={Logo}
-                  height={50}
+                  height={isMobile ? 40 : 50}
                   preview={false}
                   data-testid="logo-image"
                 />
               </div>
-              {!isMobile && (
-                <div className="logo-text">
-                  Toolkit Towards
-                  <br />
-                  Better Incomes
-                </div>
-              )}
+              {/* {!isMobile && ( */}
+              <div className="logo-text">
+                Toolkit Towards
+                <br />
+                Better Incomes
+              </div>
+              {/* )} */}
             </div>
           </Link>
         </Col>
 
         {/* Menu toggle (Mobile) or horizontal menu (Desktop) */}
         <Col
-          span={isMobile ? 10 : 18}
+          span={isMobile ? 6 : 18}
           align="end"
           testid="nav-container"
           style={
