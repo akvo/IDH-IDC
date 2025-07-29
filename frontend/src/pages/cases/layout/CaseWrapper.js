@@ -120,6 +120,11 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
 
   return (
     <div className="case-step-container">
+      <p>
+        <small style={{ fontSize: "13px" }}>
+          Click to preview different steps in the IDC analysis
+        </small>
+      </p>
       <Steps
         direction="vertical"
         items={sidebarItems}

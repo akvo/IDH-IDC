@@ -78,6 +78,11 @@ const GetStarted = () => {
           <Image src={currentImage} preview={false} style={{ width: "95%" }} />
         </div>
         <div>
+          <p>
+            <small style={{ fontSize: "13px" }}>
+              Click to preview different steps in the IDC analysis
+            </small>
+          </p>
           <Steps
             direction="vertical"
             items={caseStepItems}
