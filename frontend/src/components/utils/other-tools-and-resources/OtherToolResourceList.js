@@ -82,6 +82,7 @@ const OtherToolResourceList = ({
                   width: "100%",
                   height: "250px",
                 }}
+                className="otr-image"
               />
               <Space className="otr-tag-button-wrapper">
                 <Tag
