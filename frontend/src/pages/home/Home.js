@@ -16,6 +16,8 @@ import PizzaDiagram from "./PizzaDiagram";
 import LivingIncomeSteps from "./LivingIncomeSteps";
 import { useWindowDimensions } from "../../hooks";
 
+const showWatchVideoBtn = false;
+
 const Home = () => {
   const { isMobile } = useWindowDimensions();
 
@@ -51,13 +53,17 @@ const Home = () => {
               (towards a living income) in their supply chain. This toolkit is
               developed as part of IDH’s Living Income roadmap.
             </h3>
-            <Link
-              to="#"
-              data-testid="button-learn-more"
-              className="button button-yellow"
-            >
-              Watch the video
-            </Link>
+            {showWatchVideoBtn ? (
+              <Link
+                to="#"
+                data-testid="button-learn-more"
+                className="button button-yellow"
+              >
+                Watch the video
+              </Link>
+            ) : (
+              ""
+            )}
           </div>
         </Col>
       </Row>
