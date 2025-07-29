@@ -140,6 +140,11 @@ const Home = () => {
           </p>
         </Col>
         <Col span={24} align="center">
+          <p className="hint-text">
+            Hover over each step to see which tools are available
+          </p>
+        </Col>
+        <Col span={24} align="center">
           <LivingIncomeSteps />
         </Col>
       </Row>
@@ -280,6 +285,10 @@ const Home = () => {
           </p>
         </div>
         <div className="pizza-wrapper">
+          <div>
+            <p className="hint-text">Hover over strategies for details</p>
+          </div>
+
           <PizzaDiagram />
         </div>
       </div>

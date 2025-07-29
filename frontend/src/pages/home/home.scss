@@ -269,6 +269,7 @@
     .pizza-wrapper {
       display: flex;
       align-items: center;
+      flex-direction: column;
     }
   }
 
@@ -366,5 +367,11 @@
         width: 100%;
       }
     }
+  }
+
+  .hint-text {
+    font-style: italic !important;
+    font-size: 12px !important;
+    text-align: center !important;
   }
 }
