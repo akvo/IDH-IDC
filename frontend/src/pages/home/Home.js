@@ -244,14 +244,18 @@ const Home = () => {
                   )}
                 </Col>
                 <Col span={isMobile ? 24 : 10} order={rightPosition}>
-                  <div
+                  <img
+                    src={it.image}
+                    className="tool-resource-image"
+                    alt={it.title}
+                  />
+                  {/* <div
                     className="tool-resource-image"
                     style={{
                       backgroundImage: `url(${it.image})`,
                       backgroundSize: it?.backgroundSize || "cover",
                     }}
-                  ></div>
-                  {/* <Image src={it.image} preview={false} /> */}
+                  ></div> */}
                 </Col>
               </Row>
               {idx === toolResourceItems.length - 1 && (

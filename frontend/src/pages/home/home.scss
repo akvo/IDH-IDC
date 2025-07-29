@@ -225,13 +225,16 @@
       }
 
       .tool-resource-image {
-        width: 100%;
-        height: 350px;
+        width: 97%;
+        // height: 350px;
 
         background-repeat: no-repeat;
         background-position: center;
         border: 2px solid $primary-color;
         border-radius: 10px;
+
+        -webkit-box-shadow: 0px 0px 10px 6px rgba(226, 226, 226, 0.75);
+        box-shadow: 0px 0px 10px 6px rgba(226, 226, 226, 0.75);
       }
     }
   }
