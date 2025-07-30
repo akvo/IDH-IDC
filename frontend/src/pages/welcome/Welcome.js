@@ -464,6 +464,7 @@ const Welcome = () => {
                 type="hover-hint"
                 relevantPageMessage="total cases and farmers mapped to the it"
               />
+
               <Chart
                 wrapper={false}
                 type="CHOROPLETH"
