@@ -183,8 +183,10 @@
       left: 24px;
 
       .ant-table {
-        border: 1px solid $primary-color;
+        border: 2px solid $primary-color;
         border-radius: 10px;
+        font-size: 13px;
+        min-width: 200px;
       }
 
       .ant-table-cell {
