@@ -26,6 +26,7 @@ import { sourceOptions, driverOptions } from ".";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import Chart from "../../components/chart";
 import { routePath } from "../../components/route";
+import { MapViewHelpText } from "../../components/utils";
 
 const selectProps = {
   showSearch: true,
@@ -705,6 +706,11 @@ const ExploreStudiesPage = () => {
           >
             <Col span={16}>
               <Card className="map-card-wrapper">
+                <MapViewHelpText
+                  type="hover-hint"
+                  relevantPageMessage="total studies mapped to it"
+                />
+
                 <Chart
                   wrapper={false}
                   type="CHOROPLETH"
@@ -722,6 +728,8 @@ const ExploreStudiesPage = () => {
                   }}
                 />
               </Card>
+
+              <MapViewHelpText type="fine-print" />
             </Col>
             <Col span={8}>
               <Card className="filter-card-wrapper">
