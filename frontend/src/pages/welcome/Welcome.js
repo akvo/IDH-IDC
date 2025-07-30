@@ -12,7 +12,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
-import { ViewSummaryModal } from "../../components/utils";
+import { MapViewHelpText, ViewSummaryModal } from "../../components/utils";
 import { routePath } from "../../components/route";
 import { IDCSubMenu } from "../cases/components";
 
@@ -460,6 +460,10 @@ const Welcome = () => {
           </Col>
           <Col span={24}>
             <Card className="map-card-wrapper">
+              <MapViewHelpText
+                type="hover-hint"
+                relevantPageMessage="total cases and farmers mapped to the it"
+              />
               <Chart
                 wrapper={false}
                 type="CHOROPLETH"
@@ -500,7 +504,10 @@ const Welcome = () => {
               />
             </div>
             {/* EOL Table of total value in map data */}
+
+            <MapViewHelpText type="fine-print" />
           </Col>
+
           {/* Table */}
           <Col span={24} className="table-container">
             {selectedCountryId ? (
