@@ -176,6 +176,34 @@
         line-height: 157.15%;
       }
     }
+
+    .total-table-container {
+      position: absolute;
+      bottom: 60px;
+      left: 24px;
+
+      .ant-table {
+        border: 2px solid $primary-color;
+        border-radius: 10px;
+        font-size: 13px;
+        min-width: 200px;
+      }
+
+      .ant-table-cell {
+        border-color: $primary-color;
+        border-right: none;
+      }
+
+      /* Fix double right border */
+      .ant-table-row td:not(:last-child) {
+        border-right: 1px solid $primary-color;
+      }
+
+      /* Fix double bottom border */
+      .ant-table-row:last-child > td {
+        border-bottom: none;
+      }
+    }
   }
 
   .table-container {

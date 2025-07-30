@@ -12,7 +12,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { groupBy, map, sumBy, uniqBy, min, max } from "lodash";
 import Chart from "../../components/chart";
-import { ViewSummaryModal } from "../../components/utils";
+import { MapViewHelpText, ViewSummaryModal } from "../../components/utils";
 import { routePath } from "../../components/route";
 import { IDCSubMenu } from "../cases/components";
 
@@ -310,6 +310,21 @@ const Welcome = () => {
     ];
   }, [isInternalUser, companyOptions]);
 
+  const totalMapData = useMemo(() => {
+    const totals = mapData.reduce(
+      (acc, country) => {
+        acc.totalCases += country.case_count || 0;
+        acc.totalFarmers += country.total_farmers || 0;
+        return acc;
+      },
+      { totalCases: 0, totalFarmers: 0 }
+    );
+    return [
+      { key: "1", label: "Total Cases", value: totals.totalCases },
+      { key: "2", label: "Total Farmers", value: totals.totalFarmers },
+    ];
+  }, [mapData]);
+
   return (
     <Row id="welcome" align="middle">
       {contextHolder}
@@ -445,6 +460,11 @@ const Welcome = () => {
           </Col>
           <Col span={24}>
             <Card className="map-card-wrapper">
+              <MapViewHelpText
+                type="hover-hint"
+                relevantPageMessage="total cases and farmers mapped to the it"
+              />
+
               <Chart
                 wrapper={false}
                 type="CHOROPLETH"
@@ -462,7 +482,33 @@ const Welcome = () => {
                 }}
               />
             </Card>
+
+            {/* Table of total value in map data */}
+            <div className="total-table-container">
+              <Table
+                columns={[
+                  {
+                    dataIndex: "label",
+                    key: "label",
+                  },
+                  {
+                    dataIndex: "value",
+                    key: "value",
+                  },
+                ]}
+                dataSource={totalMapData}
+                pagination={false}
+                showHeader={false}
+                loading={mapLoading}
+                size="small"
+                bordered
+              />
+            </div>
+            {/* EOL Table of total value in map data */}
+
+            <MapViewHelpText type="fine-print" />
           </Col>
+
           {/* Table */}
           <Col span={24} className="table-container">
             {selectedCountryId ? (

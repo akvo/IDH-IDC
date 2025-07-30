@@ -15,6 +15,31 @@ export const checkPasswordCriteria = (value) => {
   return criteria;
 };
 
+export const MapViewHelpText = ({ type, relevantPageMessage }) => {
+  const styles = {
+    textAlign: "center",
+    fontStyle: "italic",
+    width: "100%",
+    fontSize: "13px",
+  };
+
+  switch (type) {
+    case "hover-hint":
+      return (
+        <p style={{ ...styles }}>
+          Hover over a country to view the {relevantPageMessage}.
+        </p>
+      );
+    default:
+      return (
+        <p style={{ ...styles }}>
+          The map is for illustrative purposes and do not imply the expression
+          of any opinion on the part of IDH.
+        </p>
+      );
+  }
+};
+
 export { default as SaveAsImageButton } from "./SaveAsImageButton";
 export { default as PasswordCriteria } from "./PasswordCriteria";
 export { default as ShowLabelButton } from "./ShowLabelButton";

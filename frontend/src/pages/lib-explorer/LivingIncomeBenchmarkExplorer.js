@@ -19,7 +19,7 @@ import Chart from "../../components/chart";
 import { min, max, isEmpty, orderBy } from "lodash";
 import { api, roundToDecimal, calculateHouseholdSize } from "../../lib";
 import { thousandFormatter } from "../../components/chart/options/common";
-import { NewCpiForm } from "../../components/utils";
+import { MapViewHelpText, NewCpiForm } from "../../components/utils";
 import { QuestionCircleOutline } from "../../lib/icon";
 import { routePath } from "../../components/route";
 
@@ -467,6 +467,11 @@ const LivingIncomeBenchmarkExplorer = () => {
           <Row gutter={[12, 12]} align="top" className="map-filter-container">
             <Col span={16}>
               <Card className="map-card-wrapper">
+                <MapViewHelpText
+                  type="hover-hint"
+                  relevantPageMessage="available total benchmark mapped to it"
+                />
+
                 <Chart
                   wrapper={false}
                   type="CHOROPLETH"
@@ -484,6 +489,8 @@ const LivingIncomeBenchmarkExplorer = () => {
                   }}
                 />
               </Card>
+
+              <MapViewHelpText type="fine-print" />
             </Col>
             <Col span={8} className="filter-benchmark-value-wrapper">
               <Card className="filter-card-wrapper">
