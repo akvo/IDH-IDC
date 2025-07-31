@@ -469,7 +469,7 @@ const LivingIncomeBenchmarkExplorer = () => {
               <Card className="map-card-wrapper">
                 <MapViewHelpText
                   type="hover-hint"
-                  relevantPageMessage="available total benchmark mapped to it"
+                  relevantPageMessage="number of living income benchmark available for it"
                 />
 
                 <Chart

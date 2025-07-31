@@ -708,7 +708,7 @@ const ExploreStudiesPage = () => {
               <Card className="map-card-wrapper">
                 <MapViewHelpText
                   type="hover-hint"
-                  relevantPageMessage="total studies mapped to it"
+                  relevantPageMessage="number of studies available for it"
                 />
 
                 <Chart
