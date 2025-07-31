@@ -4,7 +4,7 @@
   width: 100%;
 
   .idc-sub-menu-wrapper {
-    background: #f2f2f2;
+    background: #eaf2f2;
     padding: 12px var(--default-padding);
     width: 100%;
     z-index: 9;
@@ -25,7 +25,7 @@
     border-bottom: 1px solid #f2f2f2;
 
     .idc-sub-menu-navigation-container {
-      background: #f2f2f2;
+      background: #eaf2f2;
       flex: 1;
       overflow: hidden;
 
@@ -37,7 +37,7 @@
           font-family: "RocGrotesk";
           font-size: 14px;
           color: #000;
-          font-weight: 700;
+          font-weight: normal;
 
           &::after {
             border: none;
@@ -46,7 +46,12 @@
           &.ant-menu-item-active,
           &.ant-menu-item-selected {
             border-radius: 8px;
-            background: #e5e5e5;
+            background: #d0e2e2;
+          }
+
+          &.ant-menu-item-selected {
+            color: $primary-color;
+            font-weight: 600;
           }
         }
       }
