@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Tabs, Row, Col, Space } from "antd";
+import { Tabs, Row, Col, Space, Button } from "antd";
 import { CurrentCaseState, CaseUIState } from "../store";
 import "../steps/steps.scss";
 import { orderBy } from "lodash";
@@ -9,6 +9,7 @@ const SegmentTabsWrapper = ({
   setbackfunction,
   setnextfunction,
   setsavefunction,
+  onSave,
   titleId = null,
   pageTitle = null,
 }) => {
@@ -59,9 +60,16 @@ const SegmentTabsWrapper = ({
       <Row id={titleId || "steps-row"} gutter={[24, 24]}>
         {titleId && pageTitle ? (
           <Col span={24} className="header-wrapper">
-            <Space direction="vertical">
-              <div className="title">{pageTitle}</div>
-            </Space>
+            <div>
+              <Space direction="vertical">
+                <div className="title">{pageTitle}</div>
+              </Space>
+            </div>
+            <div>
+              <Button className="button-green-fill" onClick={onSave}>
+                Save
+              </Button>
+            </div>
           </Col>
         ) : null}
         <Col span={24}>

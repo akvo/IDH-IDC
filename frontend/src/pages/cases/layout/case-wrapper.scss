@@ -113,7 +113,7 @@
 
     // override content-layout css
     .content-card-container {
-      margin-left: 10px;
+      // margin-left: 10px;
 
       .content-card-wrapper {
         padding: 0 1.5rem;
@@ -133,7 +133,7 @@
   }
 }
 
-@media (max-height: 719px) {
+@media (max-height: 720px) {
   .case-sidebar-container {
     overflow: auto;
     height: 95vh;

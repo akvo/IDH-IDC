@@ -18,7 +18,12 @@ import { api, removeUndefinedObjectValue } from "../../../lib";
 const MAX_SCENARIO = 3;
 const deleteButtonPosition = "tab-item";
 
-const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
+const ClosingGap = ({
+  setbackfunction,
+  setnextfunction,
+  setsavefunction,
+  onSave,
+}) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const { scenarioModeling, dashboardData, prevScenarioModeling } =
@@ -326,17 +331,24 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
     <Row id="closing-gap" gutter={[24, 24]}>
       {contextHolder}
       <Col span={24} className="header-wrapper">
-        <Space direction="vertical">
-          <div className="title">
-            Modelling different intervention scenarios
-          </div>
-          <div className="description">
-            This section enables you to create scenarios and test different
-            strategies to close the income gap. By adjusting each income driver
-            based on the tailored strategy, it allows you to visualise its
-            impact on the income gap for each segment.
-          </div>
-        </Space>
+        <div>
+          <Space direction="vertical">
+            <div className="title">
+              Modelling different intervention scenarios
+            </div>
+            <div className="description">
+              This section enables you to create scenarios and test different
+              strategies to close the income gap. By adjusting each income
+              driver based on the tailored strategy, it allows you to visualise
+              its impact on the income gap for each segment.
+            </div>
+          </Space>
+        </div>
+        <div>
+          <Button className="button-green-fill" onClick={onSave}>
+            Save
+          </Button>
+        </div>
       </Col>
       {/* Section 1 */}
       <Col span={24}>
