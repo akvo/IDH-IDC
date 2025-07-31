@@ -9,6 +9,7 @@ const SegmentTabsWrapper = ({
   setbackfunction,
   setnextfunction,
   setsavefunction,
+  onSave,
   titleId = null,
   pageTitle = null,
 }) => {
@@ -65,10 +66,7 @@ const SegmentTabsWrapper = ({
               </Space>
             </div>
             <div>
-              <Button
-                className="button-green-fill"
-                // onClick={() => setCaseSettingModalVisible(true)}
-              >
+              <Button className="button-green-fill" onClick={onSave}>
                 Save
               </Button>
             </div>

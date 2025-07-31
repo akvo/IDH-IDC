@@ -40,6 +40,7 @@ const AssessImpactMitigationStrategies = ({
   setbackfunction,
   setnextfunction,
   setsavefunction,
+  onSave,
 }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -404,10 +405,7 @@ const AssessImpactMitigationStrategies = ({
           </Space>
         </div>
         <div>
-          <Button
-            className="button-green-fill"
-            // onClick={() => setCaseSettingModalVisible(true)}
-          >
+          <Button className="button-green-fill" onClick={onSave}>
             Save
           </Button>
         </div>

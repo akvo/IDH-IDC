@@ -18,7 +18,12 @@ import { api, removeUndefinedObjectValue } from "../../../lib";
 const MAX_SCENARIO = 3;
 const deleteButtonPosition = "tab-item";
 
-const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
+const ClosingGap = ({
+  setbackfunction,
+  setnextfunction,
+  setsavefunction,
+  onSave,
+}) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
   const { scenarioModeling, dashboardData, prevScenarioModeling } =
@@ -340,10 +345,7 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
           </Space>
         </div>
         <div>
-          <Button
-            className="button-green-fill"
-            // onClick={() => setCaseSettingModalVisible(true)}
-          >
+          <Button className="button-green-fill" onClick={onSave}>
             Save
           </Button>
         </div>

@@ -399,6 +399,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
                       setbackfunction: (fn) => (backFunctionRef.current = fn),
                       setnextfunction: (fn) => (nextFunctionRef.current = fn),
                       setsavefunction: (fn) => (saveFunctionRef.current = fn),
+                      onSave: handleSave,
                     })
                   ) : null
                 ) : (
