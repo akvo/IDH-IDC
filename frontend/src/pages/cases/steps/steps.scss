@@ -297,6 +297,10 @@
   margin-bottom: 100px;
 
   .header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding-right: 1.1rem !important;
+
     .title {
       color: #01625f;
       font-family: "RocGrotesk";

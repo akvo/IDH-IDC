@@ -326,17 +326,27 @@ const ClosingGap = ({ setbackfunction, setnextfunction, setsavefunction }) => {
     <Row id="closing-gap" gutter={[24, 24]}>
       {contextHolder}
       <Col span={24} className="header-wrapper">
-        <Space direction="vertical">
-          <div className="title">
-            Modelling different intervention scenarios
-          </div>
-          <div className="description">
-            This section enables you to create scenarios and test different
-            strategies to close the income gap. By adjusting each income driver
-            based on the tailored strategy, it allows you to visualise its
-            impact on the income gap for each segment.
-          </div>
-        </Space>
+        <div>
+          <Space direction="vertical">
+            <div className="title">
+              Modelling different intervention scenarios
+            </div>
+            <div className="description">
+              This section enables you to create scenarios and test different
+              strategies to close the income gap. By adjusting each income
+              driver based on the tailored strategy, it allows you to visualise
+              its impact on the income gap for each segment.
+            </div>
+          </Space>
+        </div>
+        <div>
+          <Button
+            className="button-green-fill"
+            // onClick={() => setCaseSettingModalVisible(true)}
+          >
+            Save
+          </Button>
+        </div>
       </Col>
       {/* Section 1 */}
       <Col span={24}>

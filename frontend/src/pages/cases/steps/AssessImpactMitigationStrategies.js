@@ -389,18 +389,28 @@ const AssessImpactMitigationStrategies = ({
     <Row id="assess-impact-mitigation-strategies" gutter={[24, 24]}>
       {contextHolder}
       <Col span={24} className="header-wrapper">
-        <Space direction="vertical">
-          <div className="title">
-            Assess the impact of mitigation strategies
-          </div>
-          <div className="description">
-            This page allows you to understand and arrive at potential paths to
-            close the income gap for farmers in your supply chain. Users can
-            identify the most impactful income drivers, adjust each
-            driver&apos;s range individually and in combinations, to understand
-            their ability to close the income gap.
-          </div>
-        </Space>
+        <div>
+          <Space direction="vertical">
+            <div className="title">
+              Assess the impact of mitigation strategies
+            </div>
+            <div className="description">
+              This page allows you to understand and arrive at potential paths
+              to close the income gap for farmers in your supply chain. Users
+              can identify the most impactful income drivers, adjust each
+              driver&apos;s range individually and in combinations, to
+              understand their ability to close the income gap.
+            </div>
+          </Space>
+        </div>
+        <div>
+          <Button
+            className="button-green-fill"
+            // onClick={() => setCaseSettingModalVisible(true)}
+          >
+            Save
+          </Button>
+        </div>
       </Col>
 
       {/* #1 Chart */}
