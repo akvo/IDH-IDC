@@ -701,7 +701,7 @@ const ExploreStudiesPage = () => {
         <Col span={24}>
           <Row
             gutter={[12, 12]}
-            align="middle"
+            align="stretch"
             className="map-filter-container"
           >
             <Col span={16}>
