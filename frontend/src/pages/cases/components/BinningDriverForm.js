@@ -75,109 +75,26 @@ const BinningDriverForm = ({
     };
   }, [drivers, selected]);
 
+  const driverName = useMemo(() => {
+    const x = selected.find((s) => s.name === "x-axis-driver");
+    const y = selected.find((s) => s.name === "y-axis-driver");
+    const binning = selected.find((s) => s.name === "binning-driver-name");
+    return {
+      x: x?.value || "",
+      y: y?.value || "",
+      binning: binning?.value || "",
+    };
+  }, [selected]);
+
   return (
     <Row gutter={[20, 20]} style={{ display: hidden ? "none" : "" }}>
       <Col span={24}>
-        {/* X AXIS DRIVER FORM ITEM */}
-        <Row gutter={[10, 10]} align="middle">
-          <Col span={8}>
-            <Form.Item
-              name={`${segment.id}_x-axis-driver`}
-              label="Select driver one (X-axis)"
-            >
-              <Select
-                className="binning-input"
-                {...selectProps}
-                options={options["x-axis-driver"]}
-                disabled={!enableEditCase}
-                placeholder="Select driver"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name={`${segment.id}_x-axis-min-value`}
-              label="Minimum value"
-            >
-              <InputNumber
-                className="binning-input"
-                {...InputNumberThousandFormatter}
-                disabled={!enableEditCase}
-                controls={false}
-                style={binningDriverFormStyles.inputNumber}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name={`${segment.id}_x-axis-max-value`}
-              label="Maximum value"
-            >
-              <InputNumber
-                className="binning-input"
-                {...InputNumberThousandFormatter}
-                disabled={!enableEditCase}
-                controls={false}
-                style={binningDriverFormStyles.inputNumber}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-        {/* EOL X AXIS DRIVER FORM ITEM */}
-
-        {/* Y AXIS DRIVER FORM ITEM */}
-        <Row gutter={[10, 10]} align="middle">
-          <Col span={8}>
-            <Form.Item
-              name={`${segment.id}_y-axis-driver`}
-              label="Select driver two (Y-axis)"
-            >
-              <Select
-                className="binning-input"
-                {...selectProps}
-                options={options["y-axis-driver"]}
-                disabled={!enableEditCase}
-                placeholder="Select driver"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name={`${segment.id}_y-axis-min-value`}
-              label="Minimum value"
-            >
-              <InputNumber
-                className="binning-input"
-                {...InputNumberThousandFormatter}
-                disabled={!enableEditCase}
-                controls={false}
-                style={binningDriverFormStyles.inputNumber}
-              />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item
-              name={`${segment.id}_y-axis-max-value`}
-              label="Maximum value"
-            >
-              <InputNumber
-                className="binning-input"
-                {...InputNumberThousandFormatter}
-                disabled={!enableEditCase}
-                controls={false}
-                style={binningDriverFormStyles.inputNumber}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-        {/* EOL Y AXIS DRIVER FORM ITEM */}
-
         {/* BINNING DRIVER FORM ITEM */}
         <Row gutter={[10, 10]} align="middle">
-          <Col span={8}>
+          <Col span={12}>
             <Form.Item
               name={`${segment.id}_binning-driver-name`}
-              label="Select driver you want to see at different levels"
+              label={`Select driver 1 that you want to see at different levels : ${driverName.binning}`}
             >
               <Select
                 className="binning-input"
@@ -188,7 +105,7 @@ const BinningDriverForm = ({
               />
             </Form.Item>
           </Col>
-          <Col span={16}>
+          <Col span={12}>
             <Row gutter={[10, 10]} align="middle">
               <Col span={8}>
                 <Form.Item
@@ -236,6 +153,100 @@ const BinningDriverForm = ({
           </Col>
         </Row>
         {/* EOL BINNING DRIVER FORM ITEM */}
+
+        {/* X AXIS DRIVER FORM ITEM */}
+        <Row gutter={[10, 10]} align="middle">
+          <Col span={12}>
+            <Form.Item
+              name={`${segment.id}_x-axis-driver`}
+              label={`Select input driver 2 (X-axis) : ${driverName.x}`}
+            >
+              <Select
+                className="binning-input"
+                {...selectProps}
+                options={options["x-axis-driver"]}
+                disabled={!enableEditCase}
+                placeholder="Select driver"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name={`${segment.id}_x-axis-min-value`}
+              label="Minimum value"
+            >
+              <InputNumber
+                className="binning-input"
+                {...InputNumberThousandFormatter}
+                disabled={!enableEditCase}
+                controls={false}
+                style={binningDriverFormStyles.inputNumber}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name={`${segment.id}_x-axis-max-value`}
+              label="Maximum value"
+            >
+              <InputNumber
+                className="binning-input"
+                {...InputNumberThousandFormatter}
+                disabled={!enableEditCase}
+                controls={false}
+                style={binningDriverFormStyles.inputNumber}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        {/* EOL X AXIS DRIVER FORM ITEM */}
+
+        {/* Y AXIS DRIVER FORM ITEM */}
+        <Row gutter={[10, 10]} align="middle">
+          <Col span={12}>
+            <Form.Item
+              name={`${segment.id}_y-axis-driver`}
+              label={`Select output driver (Y-axis) : ${driverName.y}`}
+            >
+              <Select
+                className="binning-input"
+                {...selectProps}
+                options={options["y-axis-driver"]}
+                disabled={!enableEditCase}
+                placeholder="Select driver"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name={`${segment.id}_y-axis-min-value`}
+              label="Minimum value"
+            >
+              <InputNumber
+                className="binning-input"
+                {...InputNumberThousandFormatter}
+                disabled={!enableEditCase}
+                controls={false}
+                style={binningDriverFormStyles.inputNumber}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name={`${segment.id}_y-axis-max-value`}
+              label="Maximum value"
+            >
+              <InputNumber
+                className="binning-input"
+                {...InputNumberThousandFormatter}
+                disabled={!enableEditCase}
+                controls={false}
+                style={binningDriverFormStyles.inputNumber}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+        {/* EOL Y AXIS DRIVER FORM ITEM */}
       </Col>
     </Row>
   );
