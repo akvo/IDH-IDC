@@ -46,11 +46,16 @@
   h6,
   p,
   a,
+  span {
+    font-family: "TabletGothic";
+  }
+
   .ant-table-cell,
   .ant-table-pagination {
     font-family: "TabletGothic" !important;
   }
 
+  span,
   a,
   p {
     font-size: 14px;

@@ -56,14 +56,26 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
   }, [selectedSegment, percentageSensitivity, adjustedValues]);
 
   const adjustedIncomeTarget = useMemo(() => {
-    let res =
+    const adjustedTarget =
       sensitivityAnalysis?.config?.[`${selectedSegment}_adjusted-target`];
+
+    let res = adjustedTarget;
     if (!res) {
-      res =
+      const currentTarget =
         currentCase?.segments?.find((sg) => sg.id === selectedSegment)
           ?.target || 0;
+      res = currentTarget;
     }
-    return thousandFormatter(res, 2);
+
+    const percentAdjustedTarget =
+      sensitivityAnalysis?.config?.[
+        `${selectedSegment}_percentage-increase_adjusted-target`
+      ];
+
+    return {
+      value: thousandFormatter(res, 2),
+      percent: percentAdjustedTarget ? percentAdjustedTarget : 0,
+    };
   }, [selectedSegment, sensitivityAnalysis?.config, currentCase?.segments]);
 
   const currentSegmentDetail = useMemo(() => {
@@ -162,8 +174,8 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
           </Col>
           <Col span={24}>
             <span className="adjusted-income-target-value-wrapper">
-              Adjusted income target: {adjustedIncomeTarget}{" "}
-              {currentCase?.currency || ""}
+              Adjusted income target: {adjustedIncomeTarget.value}{" "}
+              {currentCase?.currency || ""} ({adjustedIncomeTarget.percent}%)
             </span>
           </Col>
         </Row>
