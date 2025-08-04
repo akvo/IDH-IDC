@@ -744,6 +744,7 @@ const OptimizeIncomeTarget = () => {
                   onChange={handleChangeSelectedDrivers}
                   value={selectedDrivers?.[selectedDriversFieldPreffix] || []}
                   segment={currentSegment}
+                  disableDriversWithZeroChange={true}
                 />
               </div>
             </Col>

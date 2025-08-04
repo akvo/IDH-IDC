@@ -1022,3 +1022,15 @@
     padding: 0;
   }
 }
+
+// Custom TreeSelect style
+.ant-select-tree-treenode-disabled {
+  .ant-select-tree-node-content-wrapper {
+    background: none !important;
+
+    .ant-select-tree-title {
+      color: $muted-color !important;
+    }
+  }
+}
+// EOL Custom TreeSelect style
