@@ -327,6 +327,12 @@ const ChartBinningHeatmapSensitivityAnalysis = ({ segment, data, origin }) => {
 
   const rowTitle = binningData.binCharts?.length ? (
     <Space direction="vertical">
+      <div className="section-info">
+        Use these heat map visuals to identify the sweet spot (Green values,
+        where the income target is met within feasible values). Action: Adjust
+        and analyse impact of varying income driver combinations, values and
+        readjusted income targets, on the feasibility of closing the gap
+      </div>
       <div className="section-title">{label}</div>
       <Row gutter={[8, 16]} style={{ minHeight: 95 }}>
         <Col span={24}>
