@@ -291,24 +291,26 @@ const ChartBinningDriversSensitivityAnalysis = ({
 
     const description = (
       <>
-        This graph shows which combinations of {xAxisName} and {yAxisName} allow
-        farmers to reach the income target, depending on the level of {binValue}
-        .
-        <br />
-        <br />
         The graph calculates the required value of {yAxisName} (Y-axis) for each
         combination of {xAxisName} and {binValue}, based on your selected
         settings. The other two drivers ({constant1} and {constant2}) stay
-        constant. Each line represents where the income target is exactly met
-        for a given {binValue} level.
+        constant.
         <br />
         <br />
         The horizontal orange band shows the feasible range for {yAxisName}{" "}
         (Y-axis), and the vertical orange band does the same for {xAxisName}{" "}
-        (X-axis). Where these bands overlap, a dark orange zone appears. This
-        means the income target is reached using feasible values for both
-        drivers. If you do not see an orange band on one of the axes, it means
-        that driver’s values fall outside the current and feasible range.
+        (X-axis). Each line represents where the income target is exactly met
+        for a given {binValue} level.
+        <br />
+        <br />
+        When these bands and the line overlap (in the dark orange zone), it
+        means that the income target is reached within feasible values for both
+        drivers.
+        <br />
+        <br />
+        If you do not see an orange band on one of the axes, it means that the
+        driver&apos;s values used in this analysis are outside the current and
+        feasible range.
         <br />
         <br />
         <Image src={SensitivityAnalisysImg} preview={false} width={80} />

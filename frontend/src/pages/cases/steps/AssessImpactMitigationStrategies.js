@@ -461,8 +461,9 @@ const AssessImpactMitigationStrategies = ({
             <Col span={24}>
               {/* Description */}
               <p>
-                Select the segment and upto three impactful income drivers for
-                which you want to run the sensitivity analysis.
+                Select the segment and upto three impactful drivers for which
+                you want to run the sensibility analysis. The tools populates
+                the current and feasible values by default.
               </p>
               <SegmentSelector
                 selectedSegment={selectedSegment}

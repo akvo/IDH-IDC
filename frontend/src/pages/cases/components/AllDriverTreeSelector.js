@@ -44,6 +44,8 @@ const generateDriverOptions = ({
   qidWithFeasibleAnswer,
   level = 0,
   parentIndex = "",
+  answers = {},
+  disableDriversWithZeroChange = false,
 }) => {
   return questions
     .filter((q) => {
@@ -66,17 +68,29 @@ const generateDriverOptions = ({
         numbering = getRomanNumeral(index + 1); // i, ii, iii, iv, v, vi...
       }
 
+      const currentAnswer = answers?.[`current-${commodityQID}`] || 0;
+      const feasibleAnswer = answers?.[`feasible-${commodityQID}`] || 0;
+      const isAnswerChange = feasibleAnswer - currentAnswer !== 0;
+
       return {
         value: commodityQID,
         label: q.text,
-        selectable: q.question_type !== "aggregator",
+        // selectable: q.question_type !== "aggregator",
+        selectable: disableDriversWithZeroChange
+          ? isAnswerChange
+          : q.question_type !== "aggregator"
+          ? true
+          : false,
+        disabled: disableDriversWithZeroChange ? !isAnswerChange : false,
         children: hasChildren
           ? generateDriverOptions({
               group,
               questions: q.childrens,
               qidWithFeasibleAnswer,
               level: level + 1, // Increase level for child nodes
-              parentIndex: parentIndex + numbering, // Preserve hierarchy numbering
+              parentIndex: parentIndex + numbering, // Preserve hierarchy numbering,
+              disableDriversWithZeroChange,
+              answers,
             })
           : null, // Prevent unnecessary recursion
       };
@@ -106,6 +120,7 @@ const AllDriverTreeSelector = ({
   style = {},
   maxCount = null,
   disabledNodes = {},
+  disableDriversWithZeroChange = false,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
@@ -150,6 +165,8 @@ const AllDriverTreeSelector = ({
               questions: skipAggregator,
               qidWithFeasibleAnswer,
               level: 1,
+              disableDriversWithZeroChange,
+              answers: segment?.answers || {},
             }),
           };
         })
@@ -250,6 +267,8 @@ const AllDriverTreeSelector = ({
                       questions: skipAggregator,
                       qidWithFeasibleAnswer,
                       level: 1,
+                      disableDriversWithZeroChange,
+                      answers: segment?.answers || {},
                     }),
                   };
                 })
@@ -261,7 +280,7 @@ const AllDriverTreeSelector = ({
     // EOL GENERATE DIVERSIFIED DRIVERS
 
     return [...primaryDrivers, ...diversifiedDrivers];
-  }, [incomeDataDrivers, segment?.answers]);
+  }, [incomeDataDrivers, segment?.answers, disableDriversWithZeroChange]);
 
   // TODO :: REMOVE
   // const treeMap = useMemo(
@@ -319,7 +338,7 @@ const AllDriverTreeSelector = ({
         return {
           ...node,
           selectable: isInitiallySelectable && !disabledNodes[node.value],
-          disabled: disabledNodes[node.value],
+          disabled: node?.disabled ? node.disabled : disabledNodes[node.value],
           children: node.children ? applySelectableState(node.children) : null,
         };
       });
