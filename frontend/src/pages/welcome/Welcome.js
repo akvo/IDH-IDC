@@ -15,6 +15,7 @@ import Chart from "../../components/chart";
 import { MapViewHelpText, ViewSummaryModal } from "../../components/utils";
 import { routePath } from "../../components/route";
 import { IDCSubMenu } from "../cases/components";
+import { thousandFormatter } from "../../components/chart/options/common";
 
 const perPage = 10;
 const defData = {
@@ -320,8 +321,16 @@ const Welcome = () => {
       { totalCases: 0, totalFarmers: 0 }
     );
     return [
-      { key: "1", label: "Total Cases", value: totals.totalCases },
-      { key: "2", label: "Total Farmers", value: totals.totalFarmers },
+      {
+        key: "1",
+        label: "Total Cases",
+        value: thousandFormatter(totals.totalCases, 0),
+      },
+      {
+        key: "2",
+        label: "Total Farmers",
+        value: thousandFormatter(totals.totalFarmers, 0),
+      },
     ];
   }, [mapData]);
 
