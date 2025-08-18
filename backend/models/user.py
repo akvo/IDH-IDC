@@ -103,6 +103,7 @@ class UserPageDict(TypedDict):
     tags_count: int
     cases_count: int
     business_unit_count: int
+    company: Optional[int] = None
 
 
 class UserDict(TypedDict):
@@ -296,6 +297,7 @@ class User(Base):
             "tags_count": len(self.user_tags),
             "cases_count": len(self.user_case_access),
             "business_unit_count": len(self.user_business_units),
+            "company": self.company,
         }
 
     @property

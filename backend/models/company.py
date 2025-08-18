@@ -10,11 +10,14 @@ from pydantic import BaseModel
 class CompanyDict(TypedDict):
     id: int
     name: str
+    count_users: int
+    count_cases: int
 
 
 class CompanyOption(TypedDict):
     label: str
     value: int
+    count_users: int
 
 
 class CompanyHavingCaseOption(TypedDict):
@@ -45,13 +48,19 @@ class Company(Base):
 
     @property
     def serialize(self) -> CompanyDict:
-        return {"id": self.id, "name": self.name}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "count_users": len(self.user_company_detail) or 0,
+            "count_cases": len(self.company_cases) or 0,
+        }
 
     @property
     def to_option(self) -> CompanyOption:
         return {
             "label": self.name,
             "value": self.id,
+            "count_users": len(self.user_company_detail) or 0,
         }
 
 

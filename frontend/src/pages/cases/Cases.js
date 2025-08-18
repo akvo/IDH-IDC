@@ -54,6 +54,7 @@ const Cases = () => {
   const [data, setData] = useState(defData);
   const [filters, setFilters] = useState({
     country: null,
+    company: null,
     commodity: null,
     tags: [],
     email: caseOwner || null,
@@ -93,6 +94,7 @@ const Cases = () => {
   const resetFilters = () => {
     setFilters({
       country: null,
+      company: null,
       commodity: null,
       tags: [],
       email: caseOwner || null,
@@ -372,8 +374,16 @@ const Cases = () => {
 
   useEffect(() => {
     if (userID || refresh) {
-      const { country, commodity, tags, year, email, shared_with_me, status } =
-        filters;
+      const {
+        country,
+        commodity,
+        tags,
+        year,
+        email,
+        shared_with_me,
+        status,
+        company,
+      } = filters;
       setLoading(true);
       let url = `case?page=${currentPage}&limit=${perPage}`;
       if (search) {
@@ -381,6 +391,9 @@ const Cases = () => {
       }
       if (country) {
         url = `${url}&country=${country}`;
+      }
+      if (company) {
+        url = `${url}&company=${company}`;
       }
       if (commodity) {
         url = `${url}&focus_commodity=${commodity}`;
@@ -466,8 +479,15 @@ const Cases = () => {
       });
   };
 
-  const handleApplyFilters = ({ country, commodity, tags, year }) => {
-    setFilters((prev) => ({ ...prev, country, commodity, tags, year }));
+  const handleApplyFilters = ({ country, commodity, tags, year, company }) => {
+    setFilters((prev) => ({
+      ...prev,
+      country,
+      commodity,
+      tags,
+      year,
+      company,
+    }));
   };
 
   const handleOnClickViewSummary = (record) => {

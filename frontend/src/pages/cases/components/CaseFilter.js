@@ -10,13 +10,14 @@ const CaseFilter = ({
   handleApplyFilters = () => {},
   handleClose = () => {},
 }) => {
-  const tagOptions = UIState.useState((s) => s.tagOptions);
+  const { tagOptions, companyOptions } = UIState.useState((s) => s);
 
   const [country, setCountry] = useState(filters.country || null);
   const [commodity, setCommodity] = useState(filters.commodity || null);
   const [tags, setTags] = useState(filters.tags || []);
   const [year, setYear] = useState(filters.year || null);
   const [email, setEmail] = useState(filters.email || null);
+  const [company, setCompany] = useState(null);
 
   const filterProps = {
     ...selectProps,
@@ -25,6 +26,7 @@ const CaseFilter = ({
 
   const handleReset = () => {
     setCountry(null);
+    setCompany(null);
     setCommodity(null);
     setTags([]);
     setYear(null);
@@ -50,12 +52,13 @@ const CaseFilter = ({
             type="icon"
             icon={<CloseOutlined />}
             onClick={handleClose}
+            style={{ float: "right" }}
           />
         </Col>
       </Row>
       <Row gutter={[12, 12]} className="case-filter-body">
         <Col span={24}>
-          <label>Select country</label>
+          <label>Select Country</label>
           <Select
             {...filterProps}
             key="1"
@@ -66,7 +69,18 @@ const CaseFilter = ({
           />
         </Col>
         <Col span={24}>
-          <label>Select primary commodity</label>
+          <label>Select Company</label>
+          <Select
+            {...filterProps}
+            key="1"
+            options={companyOptions}
+            placeholder="Company"
+            value={company}
+            onChange={setCompany}
+          />
+        </Col>
+        <Col span={24}>
+          <label>Select Primary Commodity</label>
           <Select
             {...filterProps}
             key="2"
@@ -77,7 +91,7 @@ const CaseFilter = ({
           />
         </Col>
         <Col span={24}>
-          <label>Select tags</label>
+          <label>Select Tags</label>
           <Select
             {...filterProps}
             key="3"
@@ -125,6 +139,7 @@ const CaseFilter = ({
                 tags,
                 year,
                 email,
+                company,
               });
               handleClose();
             }}
