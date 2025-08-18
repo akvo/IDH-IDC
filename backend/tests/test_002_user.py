@@ -823,6 +823,19 @@ class TestUserEndpoint:
         }
 
     @pytest.mark.asyncio
+    async def test_get_all_user_filtered_by_company(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        account = Acc(email="admin@akvo.org", token=None)
+        # with admin credential
+        res = await client.get(
+            app.url_path_for("user:get_all"),
+            params={"company": 100},
+            headers={"Authorization": f"Bearer {account.token}"},
+        )
+        assert res.status_code == 404
+
+    @pytest.mark.asyncio
     async def test_user_forgot_password(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:

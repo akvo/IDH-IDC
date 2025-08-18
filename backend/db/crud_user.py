@@ -204,6 +204,7 @@ def filter_user(
     organisation: Optional[int] = None,
     business_unit_users: Optional[List[int]] = None,
     role: Optional[FilterUserRole] = None,
+    company: Optional[int] = None,
 ):
     is_active = 1 if approved else 0
     user = session.query(User).filter(User.is_active == is_active)
@@ -235,6 +236,8 @@ def filter_user(
         FilterUserRole.external,
     ]:
         user = user.filter(User.role == role.value)
+    if company:
+        user = user.filter(User.company == company)
     return user
 
 
@@ -245,6 +248,7 @@ def get_all_user(
     organisation: Optional[List[int]] = None,
     business_unit_users: Optional[List[int]] = None,
     role: Optional[FilterUserRole] = None,
+    company: Optional[int] = None,
     skip: int = 0,
     limit: int = 10,
 ) -> List[UserDict]:
@@ -255,6 +259,7 @@ def get_all_user(
         approved=approved,
         business_unit_users=business_unit_users,
         role=role,
+        company=company,
     )
     user = user.order_by(User.id.desc()).offset(skip).limit(limit).all()
     return user

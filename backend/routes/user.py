@@ -120,6 +120,7 @@ def get_all(
     approved: Optional[bool] = Query(True),
     organisation: Optional[int] = Query(None),
     role: Optional[FilterUserRole] = Query(None),
+    company: Optional[int] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -141,6 +142,7 @@ def get_all(
         limit=limit,
         business_unit_users=business_unit_users,
         role=role,
+        company=company,
     )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
