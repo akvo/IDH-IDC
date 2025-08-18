@@ -124,7 +124,7 @@ class TestCompanyRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == [{"label": "Company Test", "value": 1}]
+        assert res == [{"label": "Company Test", "value": 1, "count_users": 0}]
 
     @pytest.mark.asyncio
     async def test_get_company_having_case_options(

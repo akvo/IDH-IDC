@@ -15,6 +15,7 @@ class CompanyDict(TypedDict):
 class CompanyOption(TypedDict):
     label: str
     value: int
+    count_users: int
 
 
 class CompanyHavingCaseOption(TypedDict):
@@ -52,6 +53,7 @@ class Company(Base):
         return {
             "label": self.name,
             "value": self.id,
+            "count_users": len(self.user_company_detail) or 0,
         }
 
 
