@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { ContentLayout, TableContent } from "../../../components/layout";
 import { Link } from "react-router-dom";
 import { EditOutlined, DeleteTwoTone } from "@ant-design/icons";
@@ -19,6 +19,7 @@ import "./user.scss";
 import { LINK_TO_CASE_PROD } from "../../../store/static";
 import { routePath } from "../../../components/route";
 import { useWindowDimensions } from "../../../hooks";
+import { UIState } from "../../../store";
 
 const perPage = 10;
 const defData = {
@@ -59,11 +60,26 @@ const Users = () => {
   const [data, setData] = useState(defData);
   const [showApprovedUser, setShowApprovedUser] = useState(true);
   const [role, setRole] = useState(null);
+  const [company, setCompany] = useState(null);
   const [deleting, setDeleting] = useState([]);
   const [modal, contextHolder] = Modal.useModal();
   const [messageApi, messageContextHolder] = message.useMessage();
 
   const { windowInnerHeight } = useWindowDimensions();
+
+  const companyOptions = UIState.useState((s) => s.companyOptions);
+  const companyWithUserOptions = useMemo(
+    () =>
+      companyOptions
+        .filter((comp) => comp?.count_users && comp?.count_users > 0)
+        .map((comp) => ({
+          ...comp,
+          label: comp?.count_users
+            ? `${comp.label} (${comp.count_users})`
+            : comp.label,
+        })),
+    [companyOptions]
+  );
 
   const fetchUser = useCallback(
     ({ currentPage, search, showApprovedUser, role }) => {
@@ -261,13 +277,22 @@ const Users = () => {
           onChange: (page) => setCurrentPage(page),
         }}
         otherFilters={
-          <Select
-            {...filterProps(windowInnerHeight)}
-            options={userRoleOptions}
-            placeholder="User Role"
-            value={role}
-            onChange={setRole}
-          />
+          <>
+            <Select
+              {...filterProps(windowInnerHeight)}
+              options={userRoleOptions}
+              placeholder="User Role"
+              value={role}
+              onChange={setRole}
+            />
+            <Select
+              {...filterProps(windowInnerHeight)}
+              options={companyWithUserOptions}
+              placeholder="Company"
+              value={company}
+              onChange={setCompany}
+            />
+          </>
         }
       />
       {/* modal context holder */}
