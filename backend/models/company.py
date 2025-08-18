@@ -48,14 +48,11 @@ class Company(Base):
 
     @property
     def serialize(self) -> CompanyDict:
-        count_cases = 0
-        for user in self.user_company_detail:
-            count_cases += len(user.cases)
         return {
             "id": self.id,
             "name": self.name,
             "count_users": len(self.user_company_detail) or 0,
-            "count_cases": count_cases,
+            "count_cases": len(self.company_cases) or 0,
         }
 
     @property
