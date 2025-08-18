@@ -630,6 +630,7 @@ class TestUserEndpoint:
                     "tags_count": 0,
                     "cases_count": 0,
                     "business_unit_count": 0,
+                    "company": None,
                 },
                 {
                     "id": 4,
@@ -641,6 +642,7 @@ class TestUserEndpoint:
                     "tags_count": 0,
                     "cases_count": 0,
                     "business_unit_count": 0,
+                    "company": None,
                 },
                 {
                     "id": 3,
@@ -652,6 +654,7 @@ class TestUserEndpoint:
                     "tags_count": 0,
                     "cases_count": 0,
                     "business_unit_count": 1,
+                    "company": None,
                 },
                 {
                     "id": 2,
@@ -663,6 +666,7 @@ class TestUserEndpoint:
                     "tags_count": 0,
                     "cases_count": 0,
                     "business_unit_count": 0,
+                    "company": None,
                 },
                 {
                     "id": 1,
@@ -674,6 +678,7 @@ class TestUserEndpoint:
                     "tags_count": 0,
                     "cases_count": 0,
                     "business_unit_count": 0,
+                    "company": None,
                 },
             ],
             "total": 5,
@@ -816,6 +821,7 @@ class TestUserEndpoint:
                     "tags_count": 0,
                     "cases_count": 0,
                     "business_unit_count": 1,
+                    "company": None,
                 },
             ],
             "total": 1,

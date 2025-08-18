@@ -67,6 +67,7 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "tags_count": 1,
             "cases_count": 1,
             "business_unit_count": 1,
+            "company": None,
         }
 
     @pytest.mark.asyncio
