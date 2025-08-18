@@ -10,6 +10,8 @@ from pydantic import BaseModel
 class CompanyDict(TypedDict):
     id: int
     name: str
+    count_users: int
+    count_cases: int
 
 
 class CompanyOption(TypedDict):
@@ -46,7 +48,15 @@ class Company(Base):
 
     @property
     def serialize(self) -> CompanyDict:
-        return {"id": self.id, "name": self.name}
+        count_cases = 0
+        for user in self.user_company_detail:
+            count_cases += len(user.cases)
+        return {
+            "id": self.id,
+            "name": self.name,
+            "count_users": len(self.user_company_detail) or 0,
+            "count_cases": count_cases,
+        }
 
     @property
     def to_option(self) -> CompanyOption:

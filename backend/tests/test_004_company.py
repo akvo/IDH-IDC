@@ -81,7 +81,12 @@ class TestCompanyRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == {"id": 1, "name": "Company Test"}
+        assert res == {
+            "id": 1,
+            "name": "Company Test",
+            "count_cases": 0,
+            "count_users": 0,
+        }
 
     @pytest.mark.asyncio
     async def test_get_all_company(
@@ -96,7 +101,14 @@ class TestCompanyRoute:
         res = res.json()
         assert res == {
             "current": 1,
-            "data": [{"id": 1, "name": "Company Test"}],
+            "data": [
+                {
+                    "id": 1,
+                    "name": "Company Test",
+                    "count_cases": 0,
+                    "count_users": 0,
+                }
+            ],
             "total": 1,
             "total_page": 1,
         }
@@ -112,7 +124,12 @@ class TestCompanyRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == {"id": 1, "name": "Company Test"}
+        assert res == {
+            "id": 1,
+            "name": "Company Test",
+            "count_cases": 0,
+            "count_users": 0,
+        }
 
     @pytest.mark.asyncio
     async def test_get_company_options(
@@ -169,6 +186,8 @@ class TestCompanyRoute:
         assert res == {
             "id": 1,
             "name": "Company Updated",
+            "count_cases": 0,
+            "count_users": 0,
         }
 
     @pytest.mark.asyncio
@@ -186,4 +205,9 @@ class TestCompanyRoute:
         )
         assert res.status_code == 200
         res = res.json()
-        assert res == {"id": 2, "name": "Banyuatis Group"}
+        assert res == {
+            "id": 2,
+            "name": "Banyuatis Group",
+            "count_cases": 0,
+            "count_users": 0,
+        }
