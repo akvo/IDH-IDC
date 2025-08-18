@@ -82,7 +82,7 @@ const Users = () => {
   );
 
   const fetchUser = useCallback(
-    ({ currentPage, search, showApprovedUser, role }) => {
+    ({ currentPage, search, showApprovedUser, role, company }) => {
       setLoading(true);
       let url = `user?page=${currentPage}&limit=${perPage}&approved=${showApprovedUser}`;
       if (search) {
@@ -90,6 +90,9 @@ const Users = () => {
       }
       if (role) {
         url = `${url}&role=${role}`;
+      }
+      if (company) {
+        url = `${url}&company=${company}`;
       }
       api
         .get(url)
@@ -111,8 +114,8 @@ const Users = () => {
   );
 
   useEffect(() => {
-    fetchUser({ currentPage, search, showApprovedUser, role });
-  }, [currentPage, search, showApprovedUser, role, fetchUser]);
+    fetchUser({ currentPage, search, showApprovedUser, role, company });
+  }, [currentPage, search, showApprovedUser, role, fetchUser, company]);
 
   const handleDeleteUser = (user) => {
     setDeleting((prev) => [...prev, user.id]);
@@ -123,7 +126,7 @@ const Users = () => {
           type: "success",
           content: "User deleted successfully.",
         });
-        fetchUser({ currentPage, search, showApprovedUser, role });
+        fetchUser({ currentPage, search, showApprovedUser, role, company });
       })
       .catch((e) => {
         const { status, data } = e.response;
