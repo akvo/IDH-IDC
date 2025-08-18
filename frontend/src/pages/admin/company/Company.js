@@ -84,6 +84,18 @@ const Company = () => {
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
+      title: "# of Users",
+      dataIndex: "count_users",
+      key: "count_users",
+      sorter: (a, b) => a.count_users.localeCompare(b.count_users),
+    },
+    {
+      title: "# of Cases",
+      dataIndex: "count_cases",
+      key: "count_cases",
+      sorter: (a, b) => a.count_cases.localeCompare(b.count_cases),
+    },
+    {
       key: "action",
       width: "7%",
       align: "center",
