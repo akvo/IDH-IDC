@@ -97,7 +97,18 @@ const Users = () => {
       api
         .get(url)
         .then((res) => {
-          setData(res.data);
+          const result = res.data;
+          const mappedData = result.data.map((d) => {
+            const findCompany = companyOptions.find(
+              (c) => c.value === d.company
+            );
+            return {
+              ...d,
+              companyName: findCompany?.label || "-",
+            };
+          });
+          result["data"] = mappedData;
+          setData(result);
         })
         .catch((e) => {
           console.error(e.response);
@@ -110,7 +121,7 @@ const Users = () => {
           setLoading(false);
         });
     },
-    []
+    [companyOptions]
   );
 
   useEffect(() => {
@@ -206,6 +217,12 @@ const Users = () => {
         }
         return res;
       },
+    },
+    {
+      title: "Company",
+      dataIndex: "companyName",
+      key: "companyName",
+      sorter: (a, b) => a.companyName.localeCompare(b.companyName),
     },
     {
       key: "action",
