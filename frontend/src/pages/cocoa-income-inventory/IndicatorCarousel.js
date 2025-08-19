@@ -1,5 +1,5 @@
 import React from "react";
-import { Image, Carousel } from "antd";
+import { Carousel } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { CIIContent } from "./static";
 
@@ -54,7 +54,7 @@ const IndicatorCarousel = () => {
           className="indicator-item"
           data-value={i}
         >
-          <Image src={item.icon} preview={false} height={52} />
+          <img src={item.icon} style={{ height: "52px" }} />
           <p>{item.title}</p>
         </div>
       ))}

@@ -66,7 +66,7 @@ const CocoaIncomeInventory = () => {
         <div className="logos-wrapper">
           {[IDHLogo, WageningenLogo, VoiceLogo].map((img, i) => (
             <div key={`logo-img-${i}`}>
-              <Image src={img} preview={false} height={48} />
+              <img src={img} style={{ height: "48px" }} />
             </div>
           ))}
         </div>
@@ -103,7 +103,7 @@ const CocoaIncomeInventory = () => {
       <Col span={24} className="pch-wrapper">
         {CIIContent.pchContent.map((item, i) => (
           <div key={`pch-item-${i}`} className="pch-item">
-            <Image src={item.icon} preview={false} height={30} />
+            <img src={item.icon} style={{ height: "40px" }} />
             <h3>{item.title}</h3>
             <p>{item.description}</p>
           </div>
