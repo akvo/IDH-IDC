@@ -415,3 +415,8 @@ def delete_case(session: Session, case_id: int):
 def get_case_by_company(session: Session, company: int) -> CaseDict:
     case = session.query(Case).filter(Case.company == company).all()
     return case
+
+
+def get_case_countries(session: Session) -> List[int]:
+    cases = session.query(Case.country).all()
+    return set([x[0] for x in cases])
