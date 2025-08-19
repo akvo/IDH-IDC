@@ -439,7 +439,6 @@ const Cases = () => {
     );
     return selectedFilter?.length || 0;
   }, [filters]);
-  console.log(countFilters);
 
   const isCaseCreator = useMemo(() => {
     if (adminRole.includes(userRole)) {
