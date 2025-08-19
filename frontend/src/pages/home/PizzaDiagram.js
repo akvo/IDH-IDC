@@ -9,42 +9,40 @@ const slices = [
     placement: "top",
     title: "Enabling environment",
     description:
-      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
+      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production, sourcing, processing, service provision, marketing, rural development and social welfare.",
   },
   {
     key: 2,
     placement: "top",
     title: "Production and processing",
     description:
-      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
+      "Engagement between private sector or goverment and households/farmer groups at origin, focusing on production and processing.",
   },
   {
     key: 3,
     placement: "right",
     title: "Procurement practices",
-    description:
-      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
+    description: "Sourcing principles and actions.",
   },
   {
     key: 4,
     placement: "bottom",
     title: "Consumer engagement & product innovation",
-    description:
-      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
+    description: "Efforts around marketing, branding and product innovation.",
   },
   {
     key: 5,
     placement: "bottom",
-    title: "Tranceability & transparancy",
+    title: "Traceability & transparency",
     description:
-      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
+      "Efforts and technologies that enable information to be shared across the value chain and among stakeholders.",
   },
   {
     key: 6,
     placement: "left",
     title: "Sector and landscape management",
     description:
-      "The range of factors that together create the context in which different stakeholders operate, and which can facilitate production.",
+      "Strategies and actions requiring alignment, coordination and/or collaboration across the sector and/or landscape.",
   },
 ];
 
