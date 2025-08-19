@@ -67,7 +67,7 @@ const Welcome = () => {
                 We have added some new and exciting features for you. Refer the
                 user manual for more information{" "}
                 <a
-                  href="/files/Income-driver-calcualtor_Updates_2025.pdf"
+                  href="/files/IDC_User_Manual_July 2025.pdf"
                   target="_blank"
                   rel="noreferrer noopener"
                 >
