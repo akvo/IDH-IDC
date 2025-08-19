@@ -165,3 +165,18 @@ class TestCaseDropdownRoute:
             "tags": [1],
             "company": 1,
         }
+
+    @pytest.mark.asyncio
+    async def test_get_available_case_countries(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # without cred
+        res = await client.get(app.url_path_for("case:get_case_countries"))
+        assert res.status_code == 403
+        res = await client.get(
+            app.url_path_for("case:get_case_countries"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert res == [2]

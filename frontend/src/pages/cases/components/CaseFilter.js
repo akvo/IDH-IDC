@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, Row, Col, Button, Select, InputNumber, Input } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-import { selectProps } from "../../../lib";
+import { selectProps, api } from "../../../lib";
 import { commodityOptions, countryOptions } from "../../../store/static";
 import { UIState } from "../../../store";
 
@@ -18,6 +18,25 @@ const CaseFilter = ({
   const [year, setYear] = useState(filters.year || null);
   const [email, setEmail] = useState(filters.email || null);
   const [company, setCompany] = useState(null);
+  const [caseCountries, setCaseCountries] = useState([]);
+
+  useEffect(() => {
+    api
+      .get("case_countries")
+      .then((res) => {
+        setCaseCountries(res.data);
+      })
+      .catch((e) => {
+        console.error(e.response);
+      });
+  }, []);
+
+  const filteredCountryOptions = useMemo(() => {
+    const filterCountry = countryOptions.filter((country) =>
+      caseCountries.includes(country.value)
+    );
+    return filterCountry;
+  }, [caseCountries]);
 
   const filterProps = {
     ...selectProps,
@@ -62,7 +81,7 @@ const CaseFilter = ({
           <Select
             {...filterProps}
             key="1"
-            options={countryOptions}
+            options={filteredCountryOptions}
             placeholder="Country"
             value={country}
             onChange={setCountry}

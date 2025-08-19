@@ -387,3 +387,20 @@ def delete_case(
     verify_admin(session=session, authenticated=req.state.authenticated)
     crud_case.delete_case(session=session, case_id=case_id)
     return Response(status_code=HTTPStatus.NO_CONTENT.value)
+
+
+@case_route.get(
+    "/case_countries",
+    response_model=List[int],
+    summary="get a list of country_id for available cases",
+    name="case:get_case_countries",
+    tags=["Case"],
+)
+def get_case_countries(
+    req: Request,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_user(session=session, authenticated=req.state.authenticated)
+    country_ids = crud_case.get_case_countries(session=session)
+    return country_ids

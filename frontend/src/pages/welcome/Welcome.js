@@ -63,11 +63,11 @@ const Welcome = () => {
         content: (
           <span>
             <Space align="center">
-              <p style={{ margin: 0 }}>
-                We have added some <b>NEW FEATURES</b> for you !! Discover more
-                information about them{" "}
+              <p style={{ margin: 0, fontStyle: "italic" }}>
+                We have added some new and exciting features for you. Refer the
+                user manual for more information{" "}
                 <a
-                  href="/files/Income-driver-calcualtor_Updates_2025.pdf"
+                  href="/files/IDC_User_Manual_July 2025.pdf"
                   target="_blank"
                   rel="noreferrer noopener"
                 >

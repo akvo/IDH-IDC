@@ -17,9 +17,9 @@ export const otherToolsAndResourcesContent = [
       "The tool helps companies streamline their approach to measure actual household income, across multiple commodities and regions, while considering their resource availability and source of data (primary and secondary).",
     order: 1,
     button: {
-      href: "https://idh-prp.files.prepr.io/1wk73l1s25z4-income-measurement-guidance-tool-img-idh.zip",
-      type: "download",
-      text: "Download",
+      href: "https://idh.org/resources/income-measurement-guidance",
+      type: "new-window",
+      text: "Explore",
     },
   },
   {

@@ -26,9 +26,9 @@ export const toolResourceItems = [
     backgroundSize: "cover",
     linkToStepText: "Links to step 2 of the LI Roadmap.",
     button: {
-      href: "https://idh-prp.files.prepr.io/1wk73l1s25z4-income-measurement-guidance-tool-img-idh.zip",
-      type: "download",
-      text: "Download",
+      href: "https://idh.org/resources/income-measurement-guidance",
+      type: "new-window",
+      text: "Explore",
     },
   },
   {

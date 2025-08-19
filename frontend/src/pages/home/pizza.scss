@@ -16,40 +16,40 @@
   transition: opacity 0.2s;
   width: 0;
   height: 0;
-  border-left: 95px solid transparent; /* Left side */
-  border-right: 95px solid transparent; /* Right side */
-  border-bottom: 190px solid rgba(0, 0, 0, 0); /* Bottom (color of triangle) */
+  border-left: 65px solid transparent; /* Left side */
+  border-right: 65px solid transparent; /* Right side */
+  border-bottom: 110px solid rgba(0, 0, 0, 0); /* Bottom (color of triangle) */
   cursor: pointer;
 }
 
 .slice-1 {
-  top: 5%;
-  left: 15%;
+  top: 8%;
+  left: 19%;
   transform: rotate(148deg);
 }
 .slice-2 {
-  top: 5%;
-  right: 15%;
+  top: 8%;
+  right: 20%;
   transform: rotate(208deg);
 }
 .slice-3 {
-  top: 26%;
-  right: 0;
+  top: 37%;
+  right: -2%;
   transform: rotate(268deg);
 }
 .slice-4 {
-  bottom: 6%;
+  bottom: 9%;
   right: 16%;
   transform: rotate(328deg);
 }
 .slice-5 {
-  bottom: 5%;
-  left: 15%;
+  bottom: 10%;
+  left: 17%;
   transform: rotate(388deg);
 }
 .slice-6 {
-  top: 28%;
-  left: 0;
+  top: 38%;
+  left: -2%;
   transform: rotate(448deg);
 }
 
