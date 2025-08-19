@@ -433,6 +433,14 @@ const Cases = () => {
     }
   }, [currentPage, userID, refresh, search, filters]);
 
+  const countFilters = useMemo(() => {
+    const selectedFilter = Object.values(filters).filter((v) =>
+      Array.isArray(v) ? v.length : v
+    );
+    return selectedFilter?.length || 0;
+  }, [filters]);
+  console.log(countFilters);
+
   const isCaseCreator = useMemo(() => {
     if (adminRole.includes(userRole)) {
       return true;
@@ -526,11 +534,11 @@ const Cases = () => {
             open={dropdownOpen}
           >
             <Button
-              className="button-ghost"
+              className={countFilters ? "button-green-fill" : "button-ghost"}
               icon={<FilterOutlined />}
               onClick={() => setDropdownOpen(true)}
             >
-              Filter
+              Filter {countFilters ? `(${countFilters})` : ""}
             </Button>
           </Dropdown>
           {isCaseCreator && (
