@@ -136,7 +136,7 @@ const FooterDisclaimer = ({
       data-testid="disclaimer-section-wrapper"
       justify="space-between"
       className={isMobile ? "mobile-screen" : ""}
-      gutter={isMobile ? [0, 24] : []}
+      gutter={isMobile ? [0, 24] : [0, 0]}
     >
       <Col span={isMobile ? 24 : 6}>
         <Row gutter={[32, 32]}>
@@ -160,7 +160,7 @@ const FooterDisclaimer = ({
           </Col>
         </Row>
       </Col>
-      <Col span={isMobile ? 24 : 18} style={{ paddingLeft: 20 }}>
+      <Col span={isMobile ? 24 : 18} style={{ paddingLeft: isMobile ? 0 : 20 }}>
         <h2
           data-testid="disclaimer-section-title"
           style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}
