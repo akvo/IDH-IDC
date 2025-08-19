@@ -99,14 +99,13 @@ const PageHeader = ({ isLoggedIn }) => {
         <Col span={isMobile ? 18 : 6} align="start">
           <Link to="/">
             <div className="header-logo-wrapper">
-              <div className="logo-image">
-                <Image
-                  src={Logo}
-                  height={isMobile ? 40 : 50}
-                  preview={false}
-                  data-testid="logo-image"
-                />
-              </div>
+              <img
+                src={Logo}
+                style={{
+                  height: isMobile ? 40 : 50,
+                }}
+                data-testid="logo-image"
+              />
               {/* {!isMobile && ( */}
               <div className="logo-text">
                 Toolkit Towards
