@@ -28,7 +28,7 @@ export const toolResourceItems = [
     button: {
       href: "https://idh.org/resources/income-measurement-guidance",
       type: "new-window",
-      text: "Explore",
+      text: "Explore the tool",
     },
   },
   {
