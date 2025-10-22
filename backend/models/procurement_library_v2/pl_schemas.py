@@ -14,22 +14,10 @@ class BaseSchema(BaseModel):
 # ============================================================
 # CATEGORY
 # ============================================================
-class PLCategoryBase(BaseSchema):
+class PLCategoryRead(BaseSchema):
+    id: int
     name: str
     description: Optional[str] = None
-
-
-class PLCategoryCreate(PLCategoryBase):
-    pass
-
-
-class PLCategoryUpdate(BaseSchema):
-    name: Optional[str] = None
-    description: Optional[str] = None
-
-
-class PLCategoryRead(PLCategoryBase):
-    id: int
     created_at: datetime
     updated_at: datetime
 
@@ -37,142 +25,76 @@ class PLCategoryRead(PLCategoryBase):
 # ============================================================
 # ATTRIBUTE
 # ============================================================
-class PLAttributeBase(BaseSchema):
+class PLAttributeRead(BaseSchema):
+    id: int
     label: str
     description: Optional[str] = None
     category_id: Optional[int] = None
-
-
-class PLAttributeCreate(PLAttributeBase):
-    pass
-
-
-class PLAttributeUpdate(BaseSchema):
-    label: Optional[str] = None
-    description: Optional[str] = None
-    category_id: Optional[int] = None
-
-
-class PLAttributeRead(PLAttributeBase):
-    id: int
-    created_at: datetime
-    updated_at: datetime
     category: Optional[PLCategoryRead]
-
-
-# ============================================================
-# PRACTICE INTERVENTION
-# ============================================================
-class PLPracticeInterventionBase(BaseSchema):
-    label: str
-    intervention_definition: Optional[str] = None
-    enabling_conditions: Optional[str] = None
-    business_rationale: Optional[str] = None
-    farmer_rationale: Optional[str] = None
-    risks_n_trade_offs: Optional[str] = None
-    intervention_impact_income: Optional[str] = None
-    intervention_impact_env: Optional[str] = None
-    source_or_evidence: Optional[str] = None
-
-
-class PLPracticeInterventionCreate(PLPracticeInterventionBase):
-    attribute_ids: Optional[List[int]] = []  # For seeder or POST endpoint
-    indicator_scores: Optional[List["PLPracticeInterventionIndicatorScoreCreate"]] = []
-
-
-class PLPracticeInterventionUpdate(BaseSchema):
-    label: Optional[str] = None
-    intervention_definition: Optional[str] = None
-    enabling_conditions: Optional[str] = None
-    business_rationale: Optional[str] = None
-    farmer_rationale: Optional[str] = None
-    risks_n_trade_offs: Optional[str] = None
-    intervention_impact_income: Optional[str] = None
-    intervention_impact_env: Optional[str] = None
-    source_or_evidence: Optional[str] = None
-    attribute_ids: Optional[List[int]] = []
-    indicator_scores: Optional[List["PLPracticeInterventionIndicatorScoreUpdate"]] = []
-
-
-class PLPracticeInterventionRead(PLPracticeInterventionBase):
-    id: int
     created_at: datetime
     updated_at: datetime
 
 
 # ============================================================
-# INDICATOR
+# INDICATOR + SCORE
 # ============================================================
-class PLIndicatorBase(BaseSchema):
+class PLIndicatorRead(BaseSchema):
+    id: int
     name: str
     label: str
     description: Optional[str] = None
-
-
-class PLIndicatorCreate(PLIndicatorBase):
-    pass
-
-
-class PLIndicatorUpdate(BaseSchema):
-    name: Optional[str] = None
-    label: Optional[str] = None
-    description: Optional[str] = None
-
-
-class PLIndicatorRead(PLIndicatorBase):
-    id: int
     created_at: datetime
     updated_at: datetime
 
 
-# ============================================================
-# PRACTICE INTERVENTION INDICATOR SCORE
-# ============================================================
-class PLPracticeInterventionIndicatorScoreBase(BaseSchema):
+class PLPracticeInterventionIndicatorScoreRead(BaseSchema):
+    id: int
     practice_intervention_id: int
     indicator_id: int
     score: Optional[float] = None
-
-
-class PLPracticeInterventionIndicatorScoreCreate(PLPracticeInterventionIndicatorScoreBase):
-    pass
-
-
-class PLPracticeInterventionIndicatorScoreUpdate(BaseSchema):
-    score: Optional[float] = None
-
-
-class PLPracticeInterventionIndicatorScoreRead(PLPracticeInterventionIndicatorScoreBase):
-    id: int
+    indicator: Optional[PLIndicatorRead]
     created_at: datetime
     updated_at: datetime
-    indicator: Optional[PLIndicatorRead]
 
 
 # ============================================================
-# TAG RELATIONSHIP (Many-to-Many)
+# PRACTICE INTERVENTION (MAIN)
 # ============================================================
-class PLPracticeInterventionTagBase(BaseSchema):
+class PLPracticeInterventionRead(BaseSchema):
+    id: int
+    label: str
+    intervention_definition: Optional[str] = None
+    enabling_conditions: Optional[str] = None
+    business_rationale: Optional[str] = None
+    farmer_rationale: Optional[str] = None
+    risks_n_trade_offs: Optional[str] = None
+    intervention_impact_income: Optional[str] = None
+    intervention_impact_env: Optional[str] = None
+    source_or_evidence: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+
+# ============================================================
+# TAG RELATIONSHIP (ATTRIBUTE LINK)
+# ============================================================
+class PLPracticeInterventionTagRead(BaseSchema):
     practice_intervention_id: int
     attribute_id: int
-
-
-class PLPracticeInterventionTagCreate(PLPracticeInterventionTagBase):
-    pass
-
-
-class PLPracticeInterventionTagRead(PLPracticeInterventionTagBase):
+    attribute: Optional[PLAttributeRead]
     created_at: datetime
     updated_at: datetime
-    attribute: Optional[PLAttributeRead]
 
 
 # ============================================================
-# EXTENDED READ MODELS (NESTED)
+# EXTENDED READ (LIST / DETAIL)
 # ============================================================
-class PLPracticeInterventionDetailRead(PLPracticeInterventionRead):
-    attributes: Optional[List[PLAttributeRead]] = []
-    indicator_scores: Optional[List[PLPracticeInterventionIndicatorScoreRead]] = []
+class PLPracticeInterventionListItem(PLPracticeInterventionRead):
+    procurement_processes: Optional[List[PLAttributeRead]] = []
+    is_environmental: bool = False
+    is_income: bool = False
+    total_score: Optional[float] = None
+    scores: Optional[List[PLPracticeInterventionIndicatorScoreRead]] = []
 
 
 # ============================================================
@@ -185,4 +107,4 @@ class PaginatedResponse(BaseSchema):
 
 
 class PaginatedPracticeInterventionResponse(PaginatedResponse):
-    data: List[PLPracticeInterventionRead]
+    data: List[PLPracticeInterventionListItem]
