@@ -97,7 +97,6 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=50), nullable=False),
         sa.Column("label", sa.String(length=125), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("is_option", sa.Boolean(), server_default=sa.text("false"), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(), nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()),
     )
