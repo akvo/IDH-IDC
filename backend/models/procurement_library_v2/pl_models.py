@@ -89,8 +89,6 @@ class PLIndicator(Base):
             "name": self.name,
             "label": self.label,
             "description": self.description,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
         }
 
 
@@ -119,8 +117,6 @@ class PLPracticeInterventionIndicatorScore(Base):
             "indicator_id": self.indicator_id,
             "score": self.score,
             "indicator": self.indicator.serialize if self.indicator else None,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
         }
 
 
