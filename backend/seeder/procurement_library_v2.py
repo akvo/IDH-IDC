@@ -7,7 +7,7 @@ from db.connection import Base, engine, SessionLocal
 from utils.truncator import truncatedb
 
 # Import models
-from models.new_procurement_library.pl_models import (
+from models.procurement_library_v2.pl_models import (
     PLCategory,
     PLAttribute,
     PLPracticeIntervention,
