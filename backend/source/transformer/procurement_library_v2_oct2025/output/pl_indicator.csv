@@ -1,0 +1,5 @@
+id,name,label,description
+1,implementation_time,Implementation Time,
+2,implementation_cost_effort,Implementation Cost / Effort,
+3,income_impact,Income Impact,
+4,environmental_impact,Environmental Impact,
