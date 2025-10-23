@@ -5,7 +5,10 @@ import {
   SearchBoldIcon,
   UserSupportIcon,
 } from "../../lib/icon";
-import LupIcon from "../../assets/icons/procurement-library/lup.svg";
+import InternalAnalysisIcon from "../../assets/icons/procurement-library/internal-analysis.png";
+import ExternalAnalysisIcon from "../../assets/icons/procurement-library/external-analysis.png";
+import StrategicChoicesIcon from "../../assets/icons/procurement-library/strategic-choices.png";
+import ImplementationIcon from "../../assets/icons/procurement-library/implementation.png";
 import CheckIconSvg from "../../assets/icons/procurement-library/check.svg";
 
 export const LIMIT_RESULT = 15;
@@ -156,7 +159,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
     step: "Step 1",
     label: "Internal analysis",
     content: {
-      icon: LupIcon,
+      icon: InternalAnalysisIcon,
       title: "Internal Analysis",
       description:
         "Define the specific business requirements, demand predictions and insights, and any existing sustainability considerations or goals.",
@@ -237,7 +240,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
     step: "Step 2",
     label: "External analysis",
     content: {
-      icon: LupIcon,
+      icon: ExternalAnalysisIcon,
       title: "External Analysis",
       description:
         "Review and research external customer, market and industry trends - including risks and opportunities, supplier pool and any relevant competitor insights",
@@ -330,7 +333,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
     step: "Step 3",
     label: "Strategic choices",
     content: {
-      icon: LupIcon,
+      icon: StrategicChoicesIcon,
       title: "External Analysis",
       description:
         "Drawing on insights from internal and external analysis, generate strategic sourcing options, rigorously stress-test them against factors such as cost, risk and market dynamics, and select the most viable choices to take forward for execution.",
@@ -441,8 +444,8 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
     step: "Step 4",
     label: "Implementation",
     content: {
-      icon: LupIcon,
-      title: "External Analysis",
+      icon: ImplementationIcon,
+      title: "Implementation",
       description:
         "Turn the sourcing strategy into a practical roadmap to ensure it is delivered, tracked and improved over time",
       collapseItems: [
