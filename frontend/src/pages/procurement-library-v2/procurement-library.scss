@@ -318,6 +318,7 @@
       border-bottom: 4px solid #fff;
       &.active {
         border-bottom: 4px solid $primary-color;
+        color: $primary-color;
       }
       &:hover {
         border-bottom: 4px solid $light-green;
