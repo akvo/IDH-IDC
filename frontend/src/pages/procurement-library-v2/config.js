@@ -140,7 +140,7 @@ export const PROCUREMENT_KEY_FEATURES = [
 // EOL TODO
 
 const CheckIconItem = ({ text }) => (
-  <Space>
+  <Space align="center">
     <img src={CheckIconSvg} alt="check-icon" className="li-icon" />
     {text}
   </Space>
@@ -179,17 +179,50 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
         {
           key: 2,
           label: <b>Stakeholders</b>,
-          children: [],
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="R&D" />
+              </li>
+              <li>
+                <CheckIconItem text="Finance" />
+              </li>
+              <li>
+                <CheckIconItem text="Marketing/Brand" />
+              </li>
+              <li>
+                <CheckIconItem text="External Affairs" />
+              </li>
+            </ul>
+          ),
         },
         {
           key: 3,
           label: <b>Sustainability Integration</b>,
-          children: [],
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Review sustainability strategy, with a view to targets, commitments and policies relevant to current procurement strategy development. This may include deforestation policies, Scope 3 decarbonisation commitments, human rights due diligence processes, living wage or income commitments etc." />
+              </li>
+              <li>
+                <CheckIconItem text="Engage CSO / Sustainability team" />
+              </li>
+            </ul>
+          ),
         },
         {
           key: 4,
           label: <b>Practive Interventions</b>,
-          children: [],
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Incorporate Business Strategy Needs" />
+              </li>
+              <li>
+                <CheckIconItem text="Value Chain Visibility" />
+              </li>
+            </ul>
+          ),
         },
       ],
     },
@@ -198,18 +231,324 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
     key: 2,
     step: "Step 2",
     label: "External analysis",
-    content: null,
+    content: {
+      icon: LupIcon,
+      title: "External Analysis",
+      description:
+        "Review and research external customer, market and industry trends - including risks and opportunities, supplier pool and any relevant competitor insights",
+      collapseItems: [
+        {
+          key: 1,
+          label: <b>Activities</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Supply market research and trends" />
+              </li>
+              <li>
+                <CheckIconItem text="Identifying key suppliers" />
+              </li>
+              <li>
+                <CheckIconItem text="Identifying commercial market constraints e.g. duties, protectionism" />
+              </li>
+              <li>
+                <CheckIconItem text="Understanding the geopolitical landscape and potential impacts" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 2,
+          label: <b>Stakeholders</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="R&D" />
+              </li>
+              <li>
+                <CheckIconItem text="Finance" />
+              </li>
+              <li>
+                <CheckIconItem text="Marketing/Brand" />
+              </li>
+              <li>
+                <CheckIconItem text="External Affairs" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 3,
+          label: <b>Sustainability Integration</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Understanding sustainability impact risks along the value chain and at origin e.g. carbon emissions, deforestation, water scarcity, human rights etc" />
+              </li>
+              <li>
+                <CheckIconItem text="Understanding sustainability-linked regulatory requirements e.g. due diligence requirements, traceability and ethical requirements, supplier data gathering and disclosure requirements" />
+              </li>
+              <li>
+                <CheckIconItem text="Supplier sustainability capability assessment" />
+              </li>
+              <li>
+                <CheckIconItem text="Customer and/or consumer sustainability requirements and implications for sourcing decisions" />
+              </li>
+              <li>
+                <CheckIconItem text="Engaging CSO/Sustainability team" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 4,
+          label: <b>Practive Interventions</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Comprehensive Value Chain Risk Assessment" />
+              </li>
+              <li>
+                <CheckIconItem text="Supplier Sustainability Assessment" />
+              </li>
+              <li>
+                <CheckIconItem text="Supplier Segmentation" />
+              </li>
+            </ul>
+          ),
+        },
+      ],
+    },
   },
   {
     key: 3,
     step: "Step 3",
     label: "Strategic choices",
-    content: null,
+    content: {
+      icon: LupIcon,
+      title: "External Analysis",
+      description:
+        "Drawing on insights from internal and external analysis, generate strategic sourcing options, rigorously stress-test them against factors such as cost, risk and market dynamics, and select the most viable choices to take forward for execution.",
+      collapseItems: [
+        {
+          key: 1,
+          label: <b>Activities</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Decide supplier approach - single vs. multiple suppliers; long-term contracts vs. one-off / spot buying" />
+              </li>
+              <li>
+                <CheckIconItem text="Evaluate and select supplier(s)" />
+              </li>
+              <li>
+                <CheckIconItem text="Negotiate contracts based on costs, risk mitigation and partnership value" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 2,
+          label: <b>Stakeholders</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Finance" />
+              </li>
+              <li>
+                <CheckIconItem text="Legal" />
+              </li>
+              <li>
+                <CheckIconItem text="Social Compliance team" />
+              </li>
+              <li>
+                <CheckIconItem text="CPO" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 3,
+          label: <b>Sustainability Integration</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Understand how choices mitigate or increase identified sustainability risks" />
+              </li>
+              <li>
+                <CheckIconItem text="Use an end-to-end Total Cost of Ownership lens to inform choices" />
+              </li>
+              <li>
+                <CheckIconItem text="Engage with CSO / Sustainability teams" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 4,
+          label: <b>Practive Interventions</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Long-term Contracts" />
+              </li>
+              <li>
+                <CheckIconItem text="Procurement-Driven Sustainability Investments" />
+              </li>
+              <li>
+                <CheckIconItem text="Supplier Capacity Building" />
+              </li>
+              <li>
+                <CheckIconItem text="Reducing Upstream Supplier Tiers" />
+              </li>
+              <li>
+                <CheckIconItem text="Direct Farmer Contracting" />
+              </li>
+              <li>
+                <CheckIconItem text="Mutual Supplier-Based Incentives" />
+              </li>
+              <li>
+                <CheckIconItem text="Selecting a Sustainability Certification" />
+              </li>
+              <li>
+                <CheckIconItem text="Smallholder Crop Production" />
+              </li>
+              <li>
+                <CheckIconItem text="Regenerative Agriculture" />
+              </li>
+              <li>
+                <CheckIconItem text="Decarbonisation Levers" />
+              </li>
+              <li>
+                <CheckIconItem text="Precision Agriculture" />
+              </li>
+              <li>
+                <CheckIconItem text="Sustainable Water Management" />
+              </li>
+            </ul>
+          ),
+        },
+      ],
+    },
   },
   {
     key: 4,
     step: "Step 4",
     label: "Implementation",
-    content: null,
+    content: {
+      icon: LupIcon,
+      title: "External Analysis",
+      description:
+        "Turn the sourcing strategy into a practical roadmap to ensure it is delivered, tracked and improved over time",
+      collapseItems: [
+        {
+          key: 1,
+          label: <b>Activities</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Strategy sign-off by critical senior stakeholders" />
+              </li>
+              <li>
+                <CheckIconItem text="Establishing governance structure to support implementation" />
+              </li>
+              <li>
+                <CheckIconItem text="Development of KPIs to track progress and deployment of platform(s), tool(s) and documentation to record data against KPIs" />
+              </li>
+              <li>
+                <CheckIconItem text="Onboarding suppliers" />
+              </li>
+              <li>
+                <CheckIconItem text="Defining roles, responsibilities, timelines for implementing the sourcing strategy" />
+              </li>
+              <li>
+                <CheckIconItem text="Establishing Supplier Relationship Management (SRM) processes" />
+              </li>
+              <li>
+                <CheckIconItem text="Launching procurement activities" />
+              </li>
+              <li>
+                <CheckIconItem text="Monitoring, reviewing and assessing performance against KPIs, capturing insights and adjusting strategies as needed" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 2,
+          label: <b>Stakeholders</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Exec Team" />
+              </li>
+              <li>
+                <CheckIconItem text="Finance" />
+              </li>
+              <li>
+                <CheckIconItem text="Social Compliance team" />
+              </li>
+              <li>
+                <CheckIconItem text="CPO" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 3,
+          label: <b>Sustainability Integration</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Ensure governance, KPIs, and clear SRM structures are in place for sustainability-related goals - both social and environmental" />
+              </li>
+              <li>
+                <CheckIconItem text="Focus on excellent SRM as a cost-effective strategy to invest in sustainability e.g. prevents cost of regulatory non-compliance; creates value through maintenance of quality standards, etc." />
+              </li>
+              <li>
+                <CheckIconItem text="Engage CSO / Sustainability team" />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 4,
+          label: <b>Practive Interventions</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem text="Data Procurement: KPIs that go beyond spend" />
+              </li>
+              <li>
+                <CheckIconItem text="Fair Pricing and Flexible Payment Terms" />
+              </li>
+              <li>
+                <CheckIconItem text="Buyer Sustainability Targets" />
+              </li>
+              <li>
+                <CheckIconItem text="Direct and Indirect Pre-Finance" />
+              </li>
+              <li>
+                <CheckIconItem text="Group Certification Programmes" />
+              </li>
+              <li>
+                <CheckIconItem text="Integrated Pest Management" />
+              </li>
+              <li>
+                <CheckIconItem text="Soil Conservation" />
+              </li>
+              <li>
+                <CheckIconItem text="Fair Trade or Organic Certification" />
+              </li>
+              <li>
+                <CheckIconItem text="Crop Rotation and Diversification" />
+              </li>
+              <li>
+                <CheckIconItem text="Agroecological Practices" />
+              </li>
+            </ul>
+          ),
+        },
+      ],
+    },
   },
 ];

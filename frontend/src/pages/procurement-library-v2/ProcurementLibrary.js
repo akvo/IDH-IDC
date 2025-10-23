@@ -225,7 +225,7 @@ const ProcurementLibrary = () => {
           </div>
           <div className="sscc-title-button">
             <Link
-              to="/tools-and-resources"
+              to="/procurement-library/intervention-library"
               className="button button-green-fill"
             >
               Explore Intervention Library{" "}
@@ -275,6 +275,12 @@ const ProcurementLibrary = () => {
         </div>
       </div>
       {/* EOL Sourcing Strategy Cycle */}
+
+      {/* Sustainable Procurement Principles */}
+      <div className="pl-section-container sustainable-procurement-principles-content">
+        <h2>Sustainable Procurement Principles</h2>
+      </div>
+      {/* EOL Sustainable Procurement Principles */}
 
       {/* Other tools */}
       <OtherToolsAndResources
