@@ -140,8 +140,13 @@ export const PROCUREMENT_KEY_FEATURES = [
 // EOL TODO
 
 const CheckIconItem = ({ text }) => (
-  <Space align="center">
-    <img src={CheckIconSvg} alt="check-icon" className="li-icon" />
+  <Space align="top">
+    <img
+      src={CheckIconSvg}
+      alt="check-icon"
+      className="li-icon"
+      style={{ marginTop: -2 }}
+    />
     {text}
   </Space>
 );
@@ -550,5 +555,36 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
         },
       ],
     },
+  },
+];
+
+export const SOURCING_STRATEGY_CYCLE_TOOLTIPS = [
+  {
+    title: "Step 1 - Internal Analysis",
+    description:
+      "Complete analysis and understanding of the internal landscape and needs, along with current and future trends.",
+    className: "internal-analysis",
+    placement: "top",
+  },
+  {
+    title: "Step 2 - External Analysis",
+    description:
+      "Complete analysis and understanding of external landscape and current situation",
+    className: "external-analysis",
+    placement: "right",
+  },
+  {
+    title: "Step 3 - Strategic Choices",
+    description:
+      "Make strategic choices which will direct the development of the sourcing strategy",
+    className: "strategic-choices",
+    placement: "bottom",
+  },
+  {
+    title: "Step 4 - Implementation",
+    description:
+      "Develop detailed plans to execute, monitor and assess the strategy",
+    className: "implementation",
+    placement: "left",
   },
 ];

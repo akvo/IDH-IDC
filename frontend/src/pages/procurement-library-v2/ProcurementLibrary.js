@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { List, Card, Button, Space, Divider, Collapse } from "antd";
+import { List, Card, Button, Space, Divider, Collapse, Popconfirm } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import "./procurement-library.scss";
 import {
@@ -10,7 +10,10 @@ import {
   OvalIcon,
 } from "../../lib/icon";
 import { Link } from "react-router-dom";
-import { SOURCING_STRATEGY_CYCLE_TABS } from "./config";
+import {
+  SOURCING_STRATEGY_CYCLE_TABS,
+  SOURCING_STRATEGY_CYCLE_TOOLTIPS,
+} from "./config";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
 import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
@@ -59,6 +62,26 @@ const SourcingStrategyCycleTabs = ({
     </div>
   );
 };
+
+const CustomTooltip = ({ title, description, placement, children }) => (
+  <Popconfirm
+    title={<div className="sscc-popconfirm-title">{title}</div>}
+    description={
+      <div className="sscc-popconfirm-description">{description}</div>
+    }
+    trigger="hover"
+    showCancel={false}
+    okButtonProps={{
+      style: {
+        display: "none",
+      },
+    }}
+    icon={null}
+    placement={placement}
+  >
+    {children}
+  </Popconfirm>
+);
 
 const ProcurementLibrary = () => {
   const { isMobile } = useWindowDimensions();
@@ -271,6 +294,15 @@ const ProcurementLibrary = () => {
           </div>
           <div className="sscc-body-right">
             <img src={SourcingStrategyCycleImage} className="sscc-image" />
+            {/* image tooltip helper */}
+            {SOURCING_STRATEGY_CYCLE_TOOLTIPS.map((item) => (
+              <CustomTooltip key={item.className} {...item}>
+                <div className={`img-tooltip-helper ${item.className}`}>
+                  &nbsp;
+                </div>
+              </CustomTooltip>
+            ))}
+            {/* eol image tooltip helper */}
           </div>
         </div>
       </div>

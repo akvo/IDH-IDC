@@ -270,6 +270,31 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        position: relative;
+        .img-tooltip-helper {
+          width: 75px;
+          height: 75px;
+          background-color: rgba(16, 24, 40, 0);
+          position: absolute;
+          border-radius: 50%;
+          cursor: pointer;
+
+          &.internal-analysis {
+            top: 4%;
+          }
+          &.external-analysis {
+            top: 44%;
+            right: 14%;
+          }
+          &.strategic-choices {
+            bottom: 4%;
+          }
+          &.implementation {
+            top: 44%;
+            left: 14%;
+          }
+        }
       }
     }
   }
@@ -405,3 +430,24 @@
     }
   }
 }
+
+// SSCC POPCONFIRM
+.ant-popover-inner {
+  .sscc-popconfirm-title {
+    font-family: "RocGrotesk";
+    font-size: 14px;
+    font-weight: 700;
+    max-width: 235px;
+    line-height: 24px;
+  }
+
+  .sscc-popconfirm-description {
+    padding-top: 10px;
+    font-family: "TabletGothic";
+    font-size: 13px !important;
+    max-width: 235px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+}
+// EOL SSCC POPCONFIRM
