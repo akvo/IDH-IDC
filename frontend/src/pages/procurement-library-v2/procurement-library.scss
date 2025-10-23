@@ -1,0 +1,531 @@
+@import "../../variables.scss";
+@import url("https://fonts.googleapis.com/css2?family=Actor&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+#procurement-library,
+.procurement-library-container {
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  overflow: hidden;
+  background-color: #fff;
+
+  .jumbotron {
+    width: 100%;
+    height: auto;
+    background-image: linear-gradient(
+        135deg,
+        rgba(28, 62, 32, 0.64) 30.97%,
+        rgba(127, 127, 84, 0) 65%
+      ),
+      url("/assets/images/procurement-library/jumbotron.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    .jumbotron-content {
+      position: relative;
+      width: 100%;
+      min-height: 32rem;
+      color: white;
+      text-align: left;
+      z-index: 10;
+      padding: 3rem var(--default-padding);
+      display: flex;
+      flex-direction: column;
+      gap: 62px;
+      justify-content: space-between;
+
+      @media (max-width: 820px) {
+        min-height: 1024px;
+      }
+
+      .jumbotron-text {
+        width: 687px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+
+        h1,
+        .caption {
+          width: 735px;
+        }
+        h1 {
+          font-style: normal;
+          font-weight: 700;
+        }
+        .caption {
+          width: 90%;
+          font-family: "RocGrotesk";
+          font-size: 20px;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 157.15%; /* 25.144px */
+          margin-block-start: 0;
+          margin-block-end: 0;
+        }
+
+        @media screen and (max-width: 1024px) {
+          h1,
+          .caption {
+            width: 600px;
+          }
+        }
+      }
+
+      .ant-btn {
+        height: auto;
+        border-radius: 40px;
+        border: 1px solid $primary-color;
+        background: $primary-color;
+        box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+
+        .ant-space-item span {
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 20px; /* 142.857% */
+        }
+        .ant-space-item svg {
+          margin-top: 4px;
+        }
+      }
+
+      .jumbotron-cards {
+        position: absolute;
+        bottom: -124px;
+        left: 0;
+        width: 100%;
+        padding: 94px 62px 0;
+
+        .ant-list {
+          .ant-card {
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            .ant-card-body {
+              padding: 10px 20px 16px;
+              .card-content {
+                width: 100%;
+                min-height: 180px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                .card-icon {
+                  position: relative;
+                  width: 60px;
+                  height: 60px;
+                  .icon-back {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 0;
+                    background-size: cover;
+                    background-position: center;
+                  }
+                  .icon-front {
+                    color: $primary-color;
+                    position: absolute;
+                    top: 12px;
+                    left: 25%;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 1;
+                    &.front-0 {
+                      top: 18px;
+                      left: 14%;
+                    }
+                  }
+                }
+                .card-title {
+                  h3 {
+                    color: $primary-color;
+                    letter-spacing: -0.48px !important;
+                    margin-block-start: 8px;
+                    margin-block-end: 4px;
+                  }
+                  @media screen and (max-width: 1024px) {
+                    h3 {
+                      font-size: 20px !important;
+                      line-height: 30px !important;
+                    }
+                  }
+                }
+                .card-cta {
+                  text-align: right;
+                }
+              }
+            }
+          }
+          .ant-row {
+            div:nth-child(1) {
+              .ant-card {
+                background: #9cd7ff;
+              }
+            }
+            div:nth-child(2) {
+              .ant-card {
+                background: #7dd3ab;
+              }
+            }
+            div:nth-child(3) {
+              .ant-card {
+                background: #eed06e;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // GENERAL SECTION STYLE
+  .pl-section-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem var(--default-padding) 4rem;
+
+    &.pl-section-first-row {
+      padding-top: 10rem;
+      padding-bottom: 2rem;
+    }
+
+    h2,
+    h3 {
+      color: $primary-color;
+    }
+
+    p {
+      line-height: 24px;
+    }
+  }
+  // EOL GENERAL SECTION STYLE
+
+  .sustainable-procurement-content {
+    .sustainable-description-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+    }
+
+    .sustainable-description-left {
+      grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .sustainable-description-right {
+      grid-area: 1 / 2 / 2 / 3;
+    }
+
+    .sustainable-procurement-image {
+      text-align: center;
+      margin: 24px auto 48px auto;
+
+      img {
+        min-width: 65%;
+      }
+    }
+  }
+
+  .sourcing-strategy-cycle-content {
+    .sscc-header-wrapper {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .sscc-title-description {
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      .sscc-title-button {
+        grid-area: 1 / 2 / 2 / 3;
+        margin-top: 42px;
+        .button {
+          float: right;
+        }
+      }
+    }
+
+    .sscc-body-wrapper {
+      padding-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(2 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      h3 {
+        font-weight: 700;
+      }
+
+      .sscc-body-left {
+        grid-area: 1 / 1 / 2 / 2;
+        max-width: 900px;
+      }
+
+      .sscc-body-right {
+        grid-area: 1 / 2 / 2 / 3;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        position: relative;
+        .img-tooltip-helper {
+          width: 75px;
+          height: 75px;
+          background-color: rgba(16, 24, 40, 0);
+          position: absolute;
+          border-radius: 50%;
+          cursor: pointer;
+
+          &.internal-analysis {
+            top: 4%;
+          }
+          &.external-analysis {
+            top: 44%;
+            right: 14%;
+          }
+          &.strategic-choices {
+            bottom: 4%;
+          }
+          &.implementation {
+            top: 44%;
+            left: 14%;
+          }
+        }
+      }
+    }
+  }
+
+  .sscc-tabs-wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+
+    background: #eaf2f2;
+    border-radius: 12px;
+    max-width: 700px;
+    padding: 24px;
+
+    .sscc-tab {
+      cursor: pointer;
+      font-family: "TabletGothic" !important;
+      border-bottom: 4px solid #fff;
+      &.active {
+        border-bottom: 4px solid $primary-color;
+        color: $primary-color;
+      }
+      &:hover {
+        border-bottom: 4px solid $light-green;
+      }
+
+      div {
+        padding: 2px 0 2px 0;
+      }
+      div:last-child {
+        padding: 10px 0;
+      }
+    }
+
+    .sscc-tab-1 {
+      grid-area: 1 / 1 / 2 / 2;
+    }
+    .sscc-tab-2 {
+      grid-area: 1 / 2 / 2 / 3;
+    }
+    .sscc-tab-3 {
+      grid-area: 1 / 3 / 2 / 4;
+    }
+    .sscc-tab-4 {
+      grid-area: 1 / 4 / 2 / 5;
+    }
+  }
+
+  .sscc-tabs-content {
+    padding-top: 32px;
+    .icons {
+      height: 34px;
+      width: 34px;
+    }
+
+    .ant-collapse {
+      font-family: "TabletGothic" !important;
+      border-radius: 0;
+
+      .ant-collapse-item {
+        border-bottom: 2px solid #b6d2d1;
+        border-radius: 0;
+
+        .li-icon {
+          width: 22px;
+          height: 22px;
+        }
+
+        ul {
+          padding: 5px 0 12px;
+          margin: 0;
+
+          li {
+            list-style: none;
+          }
+        }
+      }
+    }
+  }
+
+  .sustainable-procurement-principles-content {
+    background-color: #f9fafb;
+
+    .spp-description-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .sppd-left {
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      .sppd-right {
+        grid-area: 1 / 2 / 2 / 3;
+      }
+    }
+
+    .spp-image-wrapper {
+      padding: 24px 0 0;
+      text-align: center;
+
+      img {
+        width: 700px;
+      }
+    }
+  }
+
+  .total-cost-ownership-content {
+    padding-bottom: 0;
+
+    .tco-description-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .tcod-left {
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      .tcod-right {
+        grid-area: 1 / 2 / 2 / 3;
+      }
+    }
+
+    .tco-charts-content-wrapper {
+      padding-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .tco-chart-left {
+        grid-area: 1 / 1 / 2 / 2;
+
+        .check-circle-icon {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .tco-chart-right {
+        grid-area: 1 / 2 / 2 / 3;
+
+        text-align: center;
+        img {
+          height: 90%;
+        }
+      }
+    }
+  }
+
+  #footer-disclaimer h2 {
+    margin-block-end: 16px;
+  }
+
+  &.mobile-screen {
+    .jumbotron-content,
+    .key-features-content {
+      padding-left: $default-mobile-padding-size;
+      padding-right: $default-mobile-padding-size;
+    }
+
+    .jumbotron {
+      .jumbotron-content {
+        min-height: 100% !important;
+
+        .jumbotron-text {
+          width: 100% !important;
+
+          h1,
+          .caption {
+            max-width: 100% !important;
+            width: 100% !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            margin: 0;
+          }
+
+          .caption {
+            font-size: 18px;
+          }
+        }
+      }
+
+      .jumbotron-cards {
+        padding: 0 $default-mobile-padding-size;
+        bottom: -630px;
+
+        @media (max-width: 305px) {
+          bottom: -660px;
+        }
+
+        @media (max-width: 300px) {
+          bottom: -98%;
+        }
+      }
+    }
+
+    .pl-section-container {
+      &.pl-section-first-row {
+        padding-top: 32rem;
+      }
+    }
+  }
+}
+
+// SSCC POPCONFIRM
+.ant-popover-inner {
+  .sscc-popconfirm-title {
+    font-family: "RocGrotesk";
+    font-size: 14px;
+    font-weight: 700;
+    max-width: 235px;
+    line-height: 24px;
+  }
+
+  .sscc-popconfirm-description {
+    padding-top: 10px;
+    font-family: "TabletGothic";
+    font-size: 13px !important;
+    max-width: 235px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+}
+// EOL SSCC POPCONFIRM
