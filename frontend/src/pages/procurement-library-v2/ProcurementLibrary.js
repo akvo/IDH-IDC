@@ -1,5 +1,6 @@
-import React from "react";
-import { List, Card, Button, Space, Divider } from "antd";
+import React, { useState, useMemo } from "react";
+import { List, Card, Button, Space, Divider, Collapse } from "antd";
+import { ArrowRightOutlined } from "@ant-design/icons";
 import "./procurement-library.scss";
 import {
   ArrowRight,
@@ -9,11 +10,12 @@ import {
   OvalIcon,
 } from "../../lib/icon";
 import { Link } from "react-router-dom";
+import { SOURCING_STRATEGY_CYCLE_TABS } from "./config";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
-import { PROCUREMENT_KEY_FEATURES } from "./config";
 import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
 import SustainableProcurementImage from "../../assets/images/procurement-library/sustainable-procurement.png";
+import SourcingStrategyCycleImage from "../../assets/images/procurement-library/sourcing-strategy-cycle.png";
 
 const cards = [
   {
@@ -36,11 +38,44 @@ const cards = [
   },
 ];
 
+const SourcingStrategyCycleTabs = ({
+  sourcingStrategyCycleTab,
+  setSourcingStrategyCycleTab,
+}) => {
+  return (
+    <div className="sscc-tabs-wrapper">
+      {SOURCING_STRATEGY_CYCLE_TABS.map((item) => (
+        <div
+          key={`sscc-tab-${item.key}`}
+          className={`sscc-tab sscc-tab-${item.key} ${
+            item.key === sourcingStrategyCycleTab ? "active" : ""
+          }`}
+          onClick={() => setSourcingStrategyCycleTab(item.key)}
+        >
+          <div>{item.step}</div>
+          <div>{item.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const ProcurementLibrary = () => {
   const { isMobile } = useWindowDimensions();
+  const [sourcingStrategyCycleTab, setSourcingStrategyCycleTab] = useState(
+    SOURCING_STRATEGY_CYCLE_TABS[0]?.key || 1
+  );
+
+  const selectedSourcingStrategyCycleTabContent = useMemo(() => {
+    const active = SOURCING_STRATEGY_CYCLE_TABS.find(
+      (item) => item.key === sourcingStrategyCycleTab
+    );
+    return active?.content || null;
+  }, [sourcingStrategyCycleTab]);
 
   return (
     <div
+      id="procurement-library"
       className={`procurement-library-container ${
         isMobile ? "mobile-screen" : ""
       }`}
@@ -110,103 +145,142 @@ const ProcurementLibrary = () => {
           </div>
         </div>
       </div>
+
       {/* Why Sustainable Procurement? */}
-      <div className="pl-section-container pl-section-first-row">
-        <div className="sustainable-procurement-content">
-          <h2>Why Sustainable Procurement?</h2>
-          <div className="sustainable-description-wrapper">
-            {/* LEFT */}
-            <div className="sustainable-description-left">
-              <p>
-                As businesses face rising costs, tighter regulation and supply
-                chain uncertainty - alongside customer demands for transparency
-                and lower prices - the need for smarter, more sustainable
-                purchasing decisions is stronger than ever.
-              </p>
-              <p>
-                Procurement teams are uniquely placed to take a full value chain
-                view of risk, and - working hand-in-hand with sustainability
-                colleagues - are fundamental to driving sustainable growth and
-                long-term value for people and planet.
-              </p>
-              <p>
-                At its core, procurement exists to align with business strategy,
-                manage costs, secure supply and navigate risks that are becoming
-                increasingly unpredictable and visible. But procurement
-                strategies are only as robust as the business strategies behind
-                them.
-              </p>
-            </div>
-            {/* RIGHT */}
-            <div className="sustainable-description-right">
-              <p>
-                If a company prioritises buying cheaply above all else -
-                ignoring human rights and environmental impacts - it inevitably
-                heightens value chain risk, from supply disruption and
-                reputational damage to customer delisting.
-              </p>
-              <p>
-                The good news is that procurement holds the key to mitigating
-                these risks. Through their commercial relationships and
-                influence with suppliers, teams can embed sustainable practices
-                - such as supplier capacity building - that ripple positively up
-                the value chain, creating shared value by shouldering risks
-                together.
-              </p>
-              <p>
-                Not every team is there yet. Embracing sustainability means
-                moving beyond a transactional approach towards deeper, more
-                strategic supplier partnerships. That mindset shift - towards
-                maturity, collaboration and long-term thinking - is what helps
-                unlock the real opportunities of sustainable procurement.
-              </p>
-            </div>
+      <div className="pl-section-container pl-section-first-row sustainable-procurement-content">
+        <h2>Why Sustainable Procurement?</h2>
+        <div className="sustainable-description-wrapper">
+          {/* LEFT */}
+          <div className="sustainable-description-left">
+            <p>
+              As businesses face rising costs, tighter regulation and supply
+              chain uncertainty - alongside customer demands for transparency
+              and lower prices - the need for smarter, more sustainable
+              purchasing decisions is stronger than ever.
+            </p>
+            <p>
+              Procurement teams are uniquely placed to take a full value chain
+              view of risk, and - working hand-in-hand with sustainability
+              colleagues - are fundamental to driving sustainable growth and
+              long-term value for people and planet.
+            </p>
+            <p>
+              At its core, procurement exists to align with business strategy,
+              manage costs, secure supply and navigate risks that are becoming
+              increasingly unpredictable and visible. But procurement strategies
+              are only as robust as the business strategies behind them.
+            </p>
           </div>
-          <div className="sustainable-procurement-image">
-            <img
-              src={SustainableProcurementImage}
-              alt="sustainable-procurement-images"
-            />
+          {/* RIGHT */}
+          <div className="sustainable-description-right">
+            <p>
+              If a company prioritises buying cheaply above all else - ignoring
+              human rights and environmental impacts - it inevitably heightens
+              value chain risk, from supply disruption and reputational damage
+              to customer delisting.
+            </p>
+            <p>
+              The good news is that procurement holds the key to mitigating
+              these risks. Through their commercial relationships and influence
+              with suppliers, teams can embed sustainable practices - such as
+              supplier capacity building - that ripple positively up the value
+              chain, creating shared value by shouldering risks together.
+            </p>
+            <p>
+              Not every team is there yet. Embracing sustainability means moving
+              beyond a transactional approach towards deeper, more strategic
+              supplier partnerships. That mindset shift - towards maturity,
+              collaboration and long-term thinking - is what helps unlock the
+              real opportunities of sustainable procurement.
+            </p>
           </div>
+        </div>
+        <div className="sustainable-procurement-image">
+          <img
+            src={SustainableProcurementImage}
+            alt="sustainable-procurement-images"
+          />
         </div>
         <Divider />
       </div>
       {/* EOL Why Sustainable Procurement? */}
-      <div className="key-features-container">
-        <div className="key-features-content">
-          <h2>Key features include:</h2>
-          <div className="key-features">
-            {PROCUREMENT_KEY_FEATURES.map((feature) => (
-              <div key={feature.id} className="key-feature">
-                <div className="key-icon">
-                  <span className="key-icon-front">{feature.icon}</span>
-                  <span className="key-icon-back">
-                    <svg
-                      width="48"
-                      height="48"
-                      viewBox="0 0 48 48"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7166 35.7756 46.5703 23.9215 47.7383"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </span>
-                </div>
-                <h3>{feature.title}</h3>
-                <span className="key-feature-description">
-                  {feature.description}
-                </span>
+
+      {/* Sourcing Strategy Cycle */}
+      <div className="pl-section-container sourcing-strategy-cycle-content">
+        {/* header */}
+        <div className="sscc-header-wrapper">
+          <div className="sscc-title-description">
+            <h2>Sourcing Strategy Cycle</h2>
+            <p>
+              At IDH, we support teams at every stage of their sustainable
+              procurement journey. We have developed an overview for procurement
+              teams on how to think about integrating sustainable practices into
+              each step of the four stages of a typical Sourcing Strategy Cycle
+              approach - whether a strategy is being created or updated.
+            </p>
+            <p>
+              Explore each stage of the Cycle and the outline opportunities for
+              integrating more sustainable practices.
+            </p>
+          </div>
+          <div className="sscc-title-button">
+            <Link
+              to="/tools-and-resources"
+              className="button button-green-fill"
+            >
+              Explore Intervention Library{" "}
+              <ArrowRightOutlined style={{ fontSize: 12, fontWeight: 900 }} />
+            </Link>
+          </div>
+        </div>
+        {/* body */}
+        <div className="sscc-body-wrapper">
+          <div className="sscc-body-left">
+            {/* tabs */}
+            <SourcingStrategyCycleTabs
+              sourcingStrategyCycleTab={sourcingStrategyCycleTab}
+              setSourcingStrategyCycleTab={setSourcingStrategyCycleTab}
+            />
+            {/* eol tabs */}
+
+            {/* tabs content */}
+            {selectedSourcingStrategyCycleTabContent ? (
+              <div className="sscc-tabs-content">
+                <Space>
+                  <img
+                    src={selectedSourcingStrategyCycleTabContent.icon}
+                    alt="lup-icon.svg"
+                    className="icons"
+                  />
+                  <h3>{selectedSourcingStrategyCycleTabContent.title}</h3>
+                </Space>
+                <p>{selectedSourcingStrategyCycleTabContent.description}</p>
+
+                <Collapse
+                  accordion
+                  ghost
+                  defaultActiveKey={[1]}
+                  expandIconPosition="end"
+                  items={selectedSourcingStrategyCycleTabContent.collapseItems}
+                />
               </div>
-            ))}
+            ) : (
+              ""
+            )}
+            {/* eol tabs content */}
+          </div>
+          <div className="sscc-body-right">
+            <img src={SourcingStrategyCycleImage} className="sscc-image" />
           </div>
         </div>
       </div>
+      {/* EOL Sourcing Strategy Cycle */}
+
+      {/* Other tools */}
       <OtherToolsAndResources
         toolsOrderForLandingPage={["IDC", "IMG", "CII"]}
       />
+      {/* EOL Other tools */}
       <FooterDisclaimer disclaimerText="procurement" />
     </div>
   );

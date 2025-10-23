@@ -1,9 +1,12 @@
+import { Space } from "antd";
 import {
   CheckClipBoardIcon,
   GearIcon,
   SearchBoldIcon,
   UserSupportIcon,
 } from "../../lib/icon";
+import LupIcon from "../../assets/icons/procurement-library/lup.svg";
+import CheckIconSvg from "../../assets/icons/procurement-library/check.svg";
 
 export const LIMIT_RESULT = 15;
 
@@ -103,6 +106,7 @@ export const IMPACT_AREA_OPTIONS = [
   },
 ];
 
+// TODO :: TO DELETE
 export const PROCUREMENT_KEY_FEATURES = [
   {
     id: 1,
@@ -131,5 +135,81 @@ export const PROCUREMENT_KEY_FEATURES = [
     icon: <UserSupportIcon />,
     description:
       "Whether you are a procurement officer, sustainability manager, or policy maker, the library offers guidance to help you make more sustainable choices, ultimately contributing to the achievement of broader sustainability goals.",
+  },
+];
+// EOL TODO
+
+const CheckIconItem = ({ text }) => (
+  <Space>
+    <img src={CheckIconSvg} alt="check-icon" className="li-icon" />
+    {text}
+  </Space>
+);
+export const SOURCING_STRATEGY_CYCLE_TABS = [
+  {
+    key: 1,
+    step: "Step 1",
+    label: "Internal analysis",
+    content: {
+      icon: LupIcon,
+      title: "Internal Analysis",
+      description:
+        "Define the specific business requirements, demand predictions and insights, and any existing sustainability considerations or goals.",
+      collapseItems: [
+        {
+          key: 1,
+          label: <b>Activities</b>,
+          children: (
+            <ul>
+              <li>
+                <CheckIconItem
+                  text="Review current business strategy, including any known or
+                potential upcoming changes"
+                />
+              </li>
+              <li>
+                <CheckIconItem
+                  text="Review existing category spend analysis and how business
+                strategy may impact this"
+                />
+              </li>
+            </ul>
+          ),
+        },
+        {
+          key: 2,
+          label: <b>Stakeholders</b>,
+          children: [],
+        },
+        {
+          key: 3,
+          label: <b>Sustainability Integration</b>,
+          children: [],
+        },
+        {
+          key: 4,
+          label: <b>Practive Interventions</b>,
+          children: [],
+        },
+      ],
+    },
+  },
+  {
+    key: 2,
+    step: "Step 2",
+    label: "External analysis",
+    content: null,
+  },
+  {
+    key: 3,
+    step: "Step 3",
+    label: "Strategic choices",
+    content: null,
+  },
+  {
+    key: 4,
+    step: "Step 4",
+    label: "Implementation",
+    content: null,
   },
 ];
