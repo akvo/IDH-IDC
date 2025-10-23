@@ -5,6 +5,8 @@
   width: 100%;
   min-height: calc(100vh - 80px);
   overflow: hidden;
+  background-color: #fff;
+
   .jumbotron {
     width: 100%;
     height: auto;
@@ -171,6 +173,53 @@
             }
           }
         }
+      }
+    }
+  }
+
+  // GENERAL SECTION STYLE
+  .pl-section-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 4rem 3rem;
+
+    &.pl-section-first-row {
+      padding-top: 10rem;
+    }
+
+    p {
+      line-height: 24px;
+    }
+  }
+  // EOL GENERAL SECTION STYLE
+
+  .sustainable-procurement-content {
+    h2 {
+      color: $primary-color;
+    }
+
+    .sustainable-description-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+    }
+
+    .sustainable-description-left {
+      grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .sustainable-description-right {
+      grid-area: 1 / 2 / 2 / 3;
+    }
+
+    .sustainable-procurement-image {
+      text-align: center;
+      margin: 24px auto 48px auto;
+
+      img {
+        min-width: 65%;
       }
     }
   }

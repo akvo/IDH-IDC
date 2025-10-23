@@ -1,5 +1,5 @@
 import React from "react";
-import { List, Card, Button, Space } from "antd";
+import { List, Card, Button, Space, Divider } from "antd";
 import "./procurement-library.scss";
 import {
   ArrowRight,
@@ -13,6 +13,7 @@ import FooterDisclaimer from "../income-driver-calculator/components/FooterDiscl
 import { PROCUREMENT_KEY_FEATURES } from "./config";
 import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
+import SustainableProcurementImage from "../../assets/images/procurement-library/sustainable-procurement.png";
 
 const cards = [
   {
@@ -50,14 +51,15 @@ const ProcurementLibrary = () => {
             <h1>
               Welcome to the
               <br />
-              Procurement Library V2
+              Procurement Library
             </h1>
             <span className="caption">
-              The procurement library guides stakeholders in integrating
-              sustainability into their procurement strategies. By offering a
-              comprehensive list of sustainable procurement practices, the
-              library supports users make informed decisions aligned with their
-              sustainability goals.
+              The procurement library is a valuable resource designed for
+              guiding stakeholders who are looking to incorporate sustainability
+              into procurement strategies. By providing a comprehensive list of
+              sustainable procurement practices, the library guides users to
+              make informed decisions that align with their sustainability
+              goals.
             </span>
           </div>
 
@@ -108,6 +110,68 @@ const ProcurementLibrary = () => {
           </div>
         </div>
       </div>
+      {/* Why Sustainable Procurement? */}
+      <div className="pl-section-container pl-section-first-row">
+        <div className="sustainable-procurement-content">
+          <h2>Why Sustainable Procurement?</h2>
+          <div className="sustainable-description-wrapper">
+            {/* LEFT */}
+            <div className="sustainable-description-left">
+              <p>
+                As businesses face rising costs, tighter regulation and supply
+                chain uncertainty - alongside customer demands for transparency
+                and lower prices - the need for smarter, more sustainable
+                purchasing decisions is stronger than ever.
+              </p>
+              <p>
+                Procurement teams are uniquely placed to take a full value chain
+                view of risk, and - working hand-in-hand with sustainability
+                colleagues - are fundamental to driving sustainable growth and
+                long-term value for people and planet.
+              </p>
+              <p>
+                At its core, procurement exists to align with business strategy,
+                manage costs, secure supply and navigate risks that are becoming
+                increasingly unpredictable and visible. But procurement
+                strategies are only as robust as the business strategies behind
+                them.
+              </p>
+            </div>
+            {/* RIGHT */}
+            <div className="sustainable-description-right">
+              <p>
+                If a company prioritises buying cheaply above all else -
+                ignoring human rights and environmental impacts - it inevitably
+                heightens value chain risk, from supply disruption and
+                reputational damage to customer delisting.
+              </p>
+              <p>
+                The good news is that procurement holds the key to mitigating
+                these risks. Through their commercial relationships and
+                influence with suppliers, teams can embed sustainable practices
+                - such as supplier capacity building - that ripple positively up
+                the value chain, creating shared value by shouldering risks
+                together.
+              </p>
+              <p>
+                Not every team is there yet. Embracing sustainability means
+                moving beyond a transactional approach towards deeper, more
+                strategic supplier partnerships. That mindset shift - towards
+                maturity, collaboration and long-term thinking - is what helps
+                unlock the real opportunities of sustainable procurement.
+              </p>
+            </div>
+          </div>
+          <div className="sustainable-procurement-image">
+            <img
+              src={SustainableProcurementImage}
+              alt="sustainable-procurement-images"
+            />
+          </div>
+        </div>
+        <Divider />
+      </div>
+      {/* EOL Why Sustainable Procurement? */}
       <div className="key-features-container">
         <div className="key-features-content">
           <h2>Key features include:</h2>
@@ -140,11 +204,9 @@ const ProcurementLibrary = () => {
           </div>
         </div>
       </div>
-
       <OtherToolsAndResources
         toolsOrderForLandingPage={["IDC", "IMG", "CII"]}
       />
-
       <FooterDisclaimer disclaimerText="procurement" />
     </div>
   );
