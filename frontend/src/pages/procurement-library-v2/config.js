@@ -591,3 +591,9 @@ export const SOURCING_STRATEGY_CYCLE_TOOLTIPS = [
     placement: "left",
   },
 ];
+
+export const TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT = [
+  "Blind spots on risks beyond price - e.g. human rights abuses, poverty among smallholder farmers or biodiversity and nature loss through deforestation - all of which can lead to supply shortages, legal penalties or reputational damage and pressure from customers.",
+  "Weaker supplier relationships - missing out on value creation opportunities and innovation as suppliers do not view the buyer as a strategic partner.",
+  "The visual provides a high-level example of how strategically integrating and investing in sustainability in sourcing can result in lower costs overall when considering the value chain holistically.",
+];

@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import {
   SOURCING_STRATEGY_CYCLE_TABS,
   SOURCING_STRATEGY_CYCLE_TOOLTIPS,
+  TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT,
 } from "./config";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
 import { useWindowDimensions } from "../../hooks";
@@ -20,6 +21,8 @@ import { OtherToolsAndResources } from "../../components/utils";
 import SustainableProcurementImage from "../../assets/images/procurement-library/sustainable-procurement.png";
 import SourcingStrategyCycleImage from "../../assets/images/procurement-library/sourcing-strategy-cycle.png";
 import VideoPlayerImage from "../../assets/images/procurement-library/video-player.png";
+import CheckCircleIcon from "../../assets/icons/procurement-library/check-circle.png";
+import TCOChartImage from "../../assets/images/procurement-library/total-cost-of-ownership-chart.png";
 
 const cards = [
   {
@@ -339,6 +342,61 @@ const ProcurementLibrary = () => {
         </div>
       </div>
       {/* EOL Sustainable Procurement Principles */}
+
+      {/* Total Cost of Ownership */}
+      <div className="pl-section-container total-cost-ownership-content">
+        <h2>Total Cost of Ownership</h2>
+        <div className="tco-description-wrapper">
+          <div className="tcod-left">
+            <p>
+              The IDH sustainable procurement approach factors in ESG and
+              sustainability risks by applying a Total Cost of Ownership (TCO)
+              lens across the strategic sourcing cycle. It enables procurement
+              and sustainability teams to see a full picture of costs -
+              including risks and losses incurred before, during and after
+              purchase, while also uncovering new opportunities for value
+              creation.
+            </p>
+          </div>
+          <div className="tcod-right">
+            <p>
+              TCO ensures smarter choices or trade-offs by moving beyond a sole
+              focus on short-term price. Without a TCO approach, purchasing
+              strategic materials as cheap commodities creates major risks for a
+              business:
+            </p>
+          </div>
+        </div>
+        {/* space */}
+        <div className="tco-charts-content-wrapper">
+          <div className="tco-chart-left">
+            <p>
+              TCO ensures smarter choices or trade-offs by moving beyond a sole
+              focus on short-term price. Without a TCO approach, purchasing
+              strategic materials as cheap commodities creates major risks for a
+              business:
+            </p>
+            <div>
+              {TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT.map((item, idx) => (
+                <p key={`tco-item-${idx}`}>
+                  <Space align="top">
+                    <img
+                      src={CheckCircleIcon}
+                      alt="check-circle-icon"
+                      className="check-circle-icon"
+                    />
+                    {item}
+                  </Space>
+                </p>
+              ))}
+            </div>
+          </div>
+          <div className="tco-chart-right">
+            <img src={TCOChartImage} alt="total-cost-of-ownership-chart" />
+          </div>
+        </div>
+      </div>
+      {/* EOL Total Cost of Ownership */}
 
       {/* Other tools */}
       <OtherToolsAndResources

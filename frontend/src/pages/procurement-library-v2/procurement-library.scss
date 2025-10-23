@@ -406,6 +406,53 @@
     }
   }
 
+  .total-cost-ownership-content {
+    padding-bottom: 0;
+
+    .tco-description-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .tcod-left {
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      .tcod-right {
+        grid-area: 1 / 2 / 2 / 3;
+      }
+    }
+
+    .tco-charts-content-wrapper {
+      padding-top: 32px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .tco-chart-left {
+        grid-area: 1 / 1 / 2 / 2;
+
+        .check-circle-icon {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .tco-chart-right {
+        grid-area: 1 / 2 / 2 / 3;
+
+        text-align: center;
+        img {
+          height: 90%;
+        }
+      }
+    }
+  }
+
   #footer-disclaimer h2 {
     margin-block-end: 16px;
   }
