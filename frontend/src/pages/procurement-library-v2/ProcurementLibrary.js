@@ -19,6 +19,7 @@ import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
 import SustainableProcurementImage from "../../assets/images/procurement-library/sustainable-procurement.png";
 import SourcingStrategyCycleImage from "../../assets/images/procurement-library/sourcing-strategy-cycle.png";
+import VideoPlayerImage from "../../assets/images/procurement-library/video-player.png";
 
 const cards = [
   {
@@ -311,6 +312,31 @@ const ProcurementLibrary = () => {
       {/* Sustainable Procurement Principles */}
       <div className="pl-section-container sustainable-procurement-principles-content">
         <h2>Sustainable Procurement Principles</h2>
+        <div className="spp-description-wrapper">
+          <div className="sppd-left">
+            <p>
+              Sustainable procurement practices help enable living wages for
+              workers and living incomes for farmers. By adopting sustainable
+              procurement, businesses can move away from saddling one actor with
+              all the risks to create a model of shared responsibility and
+              value.
+            </p>
+          </div>
+          <div className="sppd-right">
+            <p>
+              IDH&apos;s expert teams can help businesses to implement
+              sustainable procurement practices that balance commercial goals
+              with fairer purchasing agreements, working to improve both the
+              livelihoods and resilience of supply chain farmers and workers. We
+              recommend our five core principles are used as a cross check
+              before finalising Strategic Choices, in a sourcing strategy cycle.
+              Explore them in the video below.
+            </p>
+          </div>
+        </div>
+        <div className="spp-image-wrapper">
+          <img src={VideoPlayerImage} alt="video-player-thumbnail" />
+        </div>
       </div>
       {/* EOL Sustainable Procurement Principles */}
 

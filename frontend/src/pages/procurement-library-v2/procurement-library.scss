@@ -182,10 +182,11 @@
   .pl-section-container {
     width: 100%;
     margin: 0 auto;
-    padding: 2rem var(--default-padding);
+    padding: 2rem var(--default-padding) 4rem;
 
     &.pl-section-first-row {
       padding-top: 10rem;
+      padding-bottom: 2rem;
     }
 
     h2,
@@ -372,6 +373,35 @@
             list-style: none;
           }
         }
+      }
+    }
+  }
+
+  .sustainable-procurement-principles-content {
+    background-color: #f9fafb;
+
+    .spp-description-wrapper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 24px;
+      grid-row-gap: 24px;
+
+      .sppd-left {
+        grid-area: 1 / 1 / 2 / 2;
+      }
+
+      .sppd-right {
+        grid-area: 1 / 2 / 2 / 3;
+      }
+    }
+
+    .spp-image-wrapper {
+      padding: 24px 0 0;
+      text-align: center;
+
+      img {
+        width: 700px;
       }
     }
   }
