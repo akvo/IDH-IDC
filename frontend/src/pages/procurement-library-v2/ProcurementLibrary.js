@@ -223,6 +223,7 @@ const ProcurementLibrary = () => {
           </div>
         </div>
         <div className="sustainable-procurement-image">
+          <h4>Procurement maturity with suppliers</h4>
           <img
             src={SustainableProcurementImage}
             alt="sustainable-procurement-images"
@@ -357,19 +358,6 @@ const ProcurementLibrary = () => {
               purchase, while also uncovering new opportunities for value
               creation.
             </p>
-          </div>
-          <div className="tcod-right">
-            <p>
-              TCO ensures smarter choices or trade-offs by moving beyond a sole
-              focus on short-term price. Without a TCO approach, purchasing
-              strategic materials as cheap commodities creates major risks for a
-              business:
-            </p>
-          </div>
-        </div>
-        {/* space */}
-        <div className="tco-charts-content-wrapper">
-          <div className="tco-chart-left">
             <p>
               TCO ensures smarter choices or trade-offs by moving beyond a sole
               focus on short-term price. Without a TCO approach, purchasing
@@ -377,7 +365,9 @@ const ProcurementLibrary = () => {
               business:
             </p>
             <div>
-              {TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT.map((item, idx) => (
+              {TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT.filter(
+                (_, idx) => idx < 2
+              ).map((item, idx) => (
                 <p key={`tco-item-${idx}`}>
                   <Space align="top">
                     <img
@@ -391,8 +381,14 @@ const ProcurementLibrary = () => {
               ))}
             </div>
           </div>
-          <div className="tco-chart-right">
-            <img src={TCOChartImage} alt="total-cost-of-ownership-chart" />
+          <div className="tcod-right">
+            {/* Charts */}
+            <img
+              src={TCOChartImage}
+              alt="total-cost-of-ownership-chart"
+              className="tcod-chart"
+            />
+            <p>{TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT[2]}</p>
           </div>
         </div>
       </div>

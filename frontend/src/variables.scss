@@ -72,6 +72,9 @@ $breakpoints: (
 /* Large Desktop (≥ 1440px) */
 @media (min-width: 1440px) {
   :root {
+    // TODO :: to update max-width of the design, we can simply update this
+    // but ignore the header from max width
+    // --default-padding: max(20px, calc((100% - 1280px) / 2));
     --default-padding: 5rem;
     --container-max-width: 1320px;
   }
