@@ -174,7 +174,7 @@ def get_practices_by_attribute(
 
         data.append({
             "id": p.id,
-            "name": p.label,
+            "label": p.label,
             "is_environmental": is_environmental,
             "is_income": is_income,
             "tags": tags,

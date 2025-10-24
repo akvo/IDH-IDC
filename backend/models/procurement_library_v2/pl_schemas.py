@@ -150,7 +150,7 @@ class PaginatedPracticeInterventionResponse(PaginatedResponse):
 # ============================================================
 class PLPracticeByAttributeListItem(BaseSchema):
     id: int
-    name: str
+    label: str
     is_environmental: bool
     is_income: bool
     tags: List[str]
