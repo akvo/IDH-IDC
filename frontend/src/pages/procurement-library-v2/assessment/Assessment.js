@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "antd";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import "./assessment.scss";
 import { Blocker } from "../../../components/utils";
 import { useWindowDimensions } from "../../../hooks";
+import ComingSoonGearIcon from "../../../assets/icons/procurement-library/coming-soon-gear.png";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 const Assessment = () => {
   const navigate = useNavigate();
@@ -26,45 +27,43 @@ const Assessment = () => {
 
   return (
     <div className="assessment-container coming-soon-page">
-      <div className="background-blur">
-        <div className="blur-circle blur-1"></div>
-        <div className="blur-circle blur-2"></div>
-        <div className="blur-circle blur-3"></div>
-      </div>
-
       <div className="content-wrapper">
         <div className="coming-soon-card">
           <div className="icon-wrapper">
             <div className="icon-container">
-              <ClockCircleOutlined
-                className="main-icon"
-                style={{ fontSize: 72 }}
+              <img
+                className="coming-soon-icon"
+                src={ComingSoonGearIcon}
+                alt="coming soon icon"
               />
             </div>
-            <div className="sparkle">✨</div>
           </div>
 
-          <h1 className="title">Coming Soon{dots}</h1>
-
-          <p className="subtitle">Some works still in progress</p>
+          <h3>Coming soon</h3>
+          <h1 className="title">The future is loading{dots}</h1>
           <p className="description">
-            The Assessment feature is currently under development
-            <br />
-            and will be available soon.
+            We’re working hard behind the scenes to bring you a brand-new
+            experience. Stay tuned — the page will be launching soon.
           </p>
 
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => navigate("/procurement-library")}
-            className="back-button"
-          >
-            Back to Procurement Library
-          </Button>
-
-          <p className="footer-text">
-            Want updates? Check back soon or contact your administrator.
-          </p>
+          <Space className="button-wrapper" size="large">
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => navigate(-1)}
+              className="back-button"
+            >
+              <ArrowLeftOutlined /> Go back
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => navigate("/procurement-library")}
+              className="home-button"
+            >
+              Take me home
+            </Button>
+          </Space>
         </div>
       </div>
     </div>

@@ -11,103 +11,62 @@
     overflow: hidden;
   }
 
-  .background-blur {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    opacity: 0.3;
-    pointer-events: none;
-
-    .blur-circle {
-      position: absolute;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      filter: blur(60px);
-      animation: float 6s ease-in-out infinite;
-    }
-
-    .blur-1 {
-      top: 25%;
-      left: 25%;
-      width: 300px;
-      height: 300px;
-    }
-
-    .blur-2 {
-      top: 33%;
-      right: 25%;
-      width: 350px;
-      height: 350px;
-      animation-duration: 8s;
-      animation-delay: 1s;
-    }
-
-    .blur-3 {
-      bottom: 25%;
-      left: 33%;
-      width: 400px;
-      height: 400px;
-      animation-duration: 10s;
-      animation-delay: 2s;
-    }
-  }
-
   .content-wrapper {
     position: relative;
     z-index: 10;
-    max-width: 700px;
+    max-width: 1200px;
     width: 100%;
   }
 
   .coming-soon-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 30px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    padding: 60px 40px;
+    position: relative;
+    display: flex;
+    padding: 125px 90px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    flex: 1 0 0;
+    align-self: stretch;
+    border-radius: 20px;
+    border: 1px solid var(--light-20, #f2f2f2);
+    background: var(--light-10, #fff);
+
     text-align: center;
+
+    h3 {
+      color: $primary-color;
+      font-weight: normal;
+      margin: 0;
+    }
+
+    background-image: url("/assets/images/procurement-library/bg-card-procurement-green.png");
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: 300px;
   }
 
   .icon-wrapper {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     display: inline-block;
     position: relative;
 
     .icon-container {
-      width: 100px;
-      height: 100px;
-      background: linear-gradient(135deg, $light-green 0%, $primary-color 100%);
-      border-radius: 20px;
+      width: 70px;
+      height: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
       transform: rotate(3deg);
       transition: transform 0.3s ease;
-      box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+
+      img.coming-soon-icon {
+        width: 70px;
+      }
 
       &:hover {
         transform: rotate(6deg) scale(1.05);
       }
-
-      .main-icon {
-        font-size: 50px;
-        color: white;
-      }
-    }
-
-    .sparkle {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      width: 30px;
-      height: 30px;
-      background: $yellow-color;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: bounce 1s ease-in-out infinite;
-      font-size: 24px;
     }
   }
 
@@ -115,7 +74,7 @@
     font-size: 48px;
     font-weight: bold;
     margin-bottom: 20px;
-    background: linear-gradient(135deg, $light-green 0%, $primary-color 100%);
+    background: #000;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -123,65 +82,48 @@
     font-family: "RocGrotesk";
   }
 
-  .subtitle {
-    font-size: 24px;
-    color: #4b5563;
-    margin-bottom: 15px;
-    font-weight: 500;
-    font-family: "TabletGothic";
-  }
-
   .description {
-    font-size: 16px;
-    color: #6b7280;
-    margin: 0 auto 40px;
+    font-size: 18px;
+    color: #475467;
+    margin: 0 auto 32px;
     max-width: 500px;
     line-height: 1.6;
     font-family: "TabletGothic";
   }
 
-  .back-button {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-color 100%);
+  .button-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .back-button,
+  .home-button {
     border: none;
-    height: 50px;
-    padding: 0 40px;
+    padding: 12px 24px;
+    height: fit-content;
     font-size: 16px;
     font-weight: 600;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(118, 75, 162, 0.3);
-    transition: all 0.3s ease;
+    border-radius: 100px;
     font-family: "TabletGothic";
+    border: 1px solid $primary-color;
+    box-shadow: none;
 
     &:hover {
-      box-shadow: 0 15px 35px rgba(118, 75, 162, 0.4);
+      border: 2px solid $primary-color;
     }
   }
 
-  .footer-text {
-    margin-top: 38px;
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 0;
-  }
-}
+  .back-button {
+    background: #fff;
+    color: $primary-color;
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-20px) scale(1.05);
-  }
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
+    &:hover {
+      border: 2px solid $primary-color;
+      background: #fff !important;
+      color: $primary-color !important;
+    }
   }
 }
 
