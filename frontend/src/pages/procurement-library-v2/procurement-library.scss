@@ -275,9 +275,13 @@
 
         display: flex;
         justify-content: center;
-        align-items: center;
-
+        align-items: top;
         position: relative;
+
+        img.sscc-image {
+          height: 600px;
+        }
+
         .img-tooltip-helper {
           width: 75px;
           height: 75px;
@@ -287,18 +291,18 @@
           cursor: pointer;
 
           &.internal-analysis {
-            top: 12%;
+            top: 4rem;
           }
           &.external-analysis {
-            top: 44.5%;
-            right: 16%;
+            top: 16.5rem;
+            right: 2.5rem;
           }
           &.strategic-choices {
-            bottom: 12%;
+            bottom: 4rem;
           }
           &.implementation {
-            top: 44.5%;
-            left: 15%;
+            top: 16.5rem;
+            left: 2rem;
           }
         }
       }
