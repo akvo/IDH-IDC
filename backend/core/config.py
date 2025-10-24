@@ -142,8 +142,8 @@ app.include_router(optimization_route)
 app.include_router(assessment_question_route)
 app.include_router(practice_route)
 app.include_router(procurement_process_route)
-app.include_router(pl_practice_router_v2)
 app.include_router(pl_cat_router_v2)
+app.include_router(pl_practice_router_v2)
 
 
 @app.get("/", tags=["Dev"])
