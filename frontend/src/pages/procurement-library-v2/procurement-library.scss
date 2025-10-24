@@ -219,10 +219,15 @@
 
     .sustainable-procurement-image {
       text-align: center;
-      margin: 24px auto 48px auto;
+      margin: 32px auto 48px auto;
+
+      h4 {
+        color: $primary-color;
+        font-size: 16px;
+      }
 
       img {
-        min-width: 65%;
+        max-height: 350px;
       }
     }
   }
@@ -282,18 +287,18 @@
           cursor: pointer;
 
           &.internal-analysis {
-            top: 4%;
+            top: 12%;
           }
           &.external-analysis {
-            top: 44%;
-            right: 14%;
+            top: 44.5%;
+            right: 16%;
           }
           &.strategic-choices {
-            bottom: 4%;
+            bottom: 12%;
           }
           &.implementation {
-            top: 44%;
-            left: 14%;
+            top: 44.5%;
+            left: 15%;
           }
         }
       }
@@ -423,34 +428,26 @@
 
       .tcod-right {
         grid-area: 1 / 2 / 2 / 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        p {
+          color: #959390;
+          max-width: 500px;
+          margin-top: -4px;
+        }
       }
     }
 
-    .tco-charts-content-wrapper {
-      padding-top: 32px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: 1fr;
-      grid-column-gap: 24px;
-      grid-row-gap: 24px;
+    img.check-circle-icon {
+      width: 20px;
+      height: 20px;
+    }
 
-      .tco-chart-left {
-        grid-area: 1 / 1 / 2 / 2;
-
-        .check-circle-icon {
-          width: 24px;
-          height: 24px;
-        }
-      }
-
-      .tco-chart-right {
-        grid-area: 1 / 2 / 2 / 3;
-
-        text-align: center;
-        img {
-          height: 90%;
-        }
-      }
+    img.tcod-chart {
+      max-width: 500px;
     }
   }
 
