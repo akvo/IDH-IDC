@@ -35,6 +35,16 @@ class PLCategory(Base):
     def serialize(self):
         return {"id": self.id, "label": self.name}
 
+    @property
+    def category_with_attributes(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "attributes": [
+                attr.simplify for attr in (self.attributes or [])
+            ]
+        }
+
 
 # ============================================================
 # ATTRIBUTE
@@ -59,6 +69,13 @@ class PLAttribute(Base):
             "id": self.id,
             "label": self.label,
             "category": self.category.serialize if self.category else None,
+        }
+
+    @property
+    def simplify(self):
+        return {
+            "id": self.id,
+            "label": self.label,
         }
 
 

@@ -22,6 +22,11 @@ class PLCategoryRead(BaseSchema):
     updated_at: datetime
 
 
+class PLCategorySimpleRead(BaseSchema):
+    id: int
+    name: str
+
+
 # ============================================================
 # ATTRIBUTE
 # ============================================================
@@ -30,9 +35,22 @@ class PLAttributeRead(BaseSchema):
     label: str
     description: Optional[str] = None
     category_id: Optional[int] = None
-    category: Optional[PLCategoryRead]
-    created_at: datetime
-    updated_at: datetime
+    category: Optional[PLCategoryRead] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+# ✅ Simplified Attribute (for lightweight responses like `procurement_processes`)
+class PLAttributeSimpleRead(BaseSchema):
+    id: int
+    label: str
+
+
+# ============================================================
+# CATEGORY WITH ATTRIBUTES (for /category/attributes endpoint)
+# ============================================================
+class PLCategoryWithAttributesRead(PLCategorySimpleRead):
+    attributes: Optional[List[PLAttributeSimpleRead]] = []
 
 
 # ============================================================
@@ -43,8 +61,8 @@ class PLIndicatorRead(BaseSchema):
     name: str
     label: str
     description: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 
 class PLPracticeInterventionIndicatorScoreRead(BaseSchema):
@@ -53,12 +71,23 @@ class PLPracticeInterventionIndicatorScoreRead(BaseSchema):
     indicator_id: int
     score: Optional[float] = None
     indicator: Optional[PLIndicatorRead]
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+# ============================================================
+# TAG RELATIONSHIP (ATTRIBUTE LINK)
+# ============================================================
+class PLPracticeInterventionTagRead(BaseSchema):
+    practice_intervention_id: int
+    attribute_id: int
+    attribute: Optional[PLAttributeRead]
     created_at: datetime
     updated_at: datetime
 
 
 # ============================================================
-# PRACTICE INTERVENTION (MAIN)
+# PRACTICE INTERVENTION (BASE)
 # ============================================================
 class PLPracticeInterventionRead(BaseSchema):
     id: int
@@ -76,25 +105,31 @@ class PLPracticeInterventionRead(BaseSchema):
 
 
 # ============================================================
-# TAG RELATIONSHIP (ATTRIBUTE LINK)
+# LIST VIEW (LIGHTWEIGHT)
 # ============================================================
-class PLPracticeInterventionTagRead(BaseSchema):
-    practice_intervention_id: int
-    attribute_id: int
-    attribute: Optional[PLAttributeRead]
+class PLPracticeInterventionListItem(BaseSchema):
+    id: int
+    label: str
+    procurement_processes: List[PLAttributeRead]
+    is_environmental: bool
+    is_income: bool
+    scores: List[PLPracticeInterventionIndicatorScoreRead]
     created_at: datetime
     updated_at: datetime
 
 
 # ============================================================
-# EXTENDED READ (LIST / DETAIL)
+# DETAIL VIEW (MATCHES EXPECTED RESPONSE)
 # ============================================================
-class PLPracticeInterventionListItem(PLPracticeInterventionRead):
-    procurement_processes: Optional[List[PLAttributeRead]] = []
+class PLPracticeInterventionDetailRead(BaseSchema):
+    id: int
+    label: str
+    procurement_processes: List[PLAttributeSimpleRead] = []
     is_environmental: bool = False
     is_income: bool = False
-    total_score: Optional[float] = None
-    scores: Optional[List[PLPracticeInterventionIndicatorScoreRead]] = []
+    scores: List[PLPracticeInterventionIndicatorScoreRead] = []
+    created_at: datetime
+    updated_at: datetime
 
 
 # ============================================================
