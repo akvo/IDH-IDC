@@ -143,3 +143,18 @@ class PaginatedResponse(BaseSchema):
 
 class PaginatedPracticeInterventionResponse(PaginatedResponse):
     data: List[PLPracticeInterventionListItem]
+
+
+# ============================================================
+# PRACTICE BY ATTRIBUTE RESPONSE
+# ============================================================
+class PLPracticeByAttributeListItem(BaseSchema):
+    id: int
+    name: str
+    is_environmental: bool
+    is_income: bool
+    tags: List[str]
+
+
+class PaginatedPracticeByAttributeResponse(PaginatedResponse):
+    data: List[PLPracticeByAttributeListItem]

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select, func
 from typing import Optional
 
@@ -121,3 +121,68 @@ def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
     practice.indicator_scores = scores
 
     return practice.serialize
+
+
+# ============================================================
+# GET PRACTICES BY ATTRIBUTE ID (USED FOR SOURCING STRATEGY CYCLE)
+# ============================================================
+def get_practices_by_attribute(
+    db: Session,
+    attribute_id: int,
+    page: int = 1,
+    limit: int = 10,
+    search: Optional[str] = None,
+):
+    offset = (page - 1) * limit
+
+    # Base query
+    query = (
+        select(PLPracticeIntervention)
+        .join(PLPracticeInterventionTag)
+        .where(PLPracticeInterventionTag.attribute_id == attribute_id)
+        .options(
+            joinedload(PLPracticeIntervention.tags)
+            .joinedload(PLPracticeInterventionTag.attribute),
+            joinedload(PLPracticeIntervention.indicator_scores)
+            .joinedload(PLPracticeInterventionIndicatorScore.indicator),
+        )
+    )
+
+    if search:
+        query = query.filter(PLPracticeIntervention.label.ilike(f"%{search}%"))
+
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    results = db.scalars(query.offset(offset).limit(limit)).unique().all()
+
+    data = []
+    for p in results:
+        # Get tags (attribute labels)
+        tags = [
+            t.attribute.label for t in p.tags if t.attribute and t.attribute.label
+        ]
+
+        # Determine boolean flags
+        scores = p.indicator_scores or []
+        is_environmental = any(
+            s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
+            for s in scores
+        )
+        is_income = any(
+            s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
+            for s in scores
+        )
+
+        data.append({
+            "id": p.id,
+            "name": p.label,
+            "is_environmental": is_environmental,
+            "is_income": is_income,
+            "tags": tags,
+        })
+
+    return {
+        "current": page,
+        "total": total,
+        "total_page": (total + limit - 1) // limit if total else 0,
+        "data": data,
+    }
