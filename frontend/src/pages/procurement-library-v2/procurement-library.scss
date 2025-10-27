@@ -219,10 +219,15 @@
 
     .sustainable-procurement-image {
       text-align: center;
-      margin: 24px auto 48px auto;
+      margin: 32px auto 48px auto;
+
+      h4 {
+        color: $primary-color;
+        font-size: 16px;
+      }
 
       img {
-        min-width: 65%;
+        max-height: 350px;
       }
     }
   }
@@ -268,34 +273,57 @@
       .sscc-body-right {
         grid-area: 1 / 2 / 2 / 3;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        .sscc-img-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: top;
+          position: relative;
+        }
 
-        position: relative;
+        .hint-text {
+          font-style: italic !important;
+          font-size: 12px !important;
+          text-align: center !important;
+        }
+
+        img.sscc-image {
+          height: 600px;
+        }
+
+        // sourcing strategy cycle tooltip
         .img-tooltip-helper {
-          width: 75px;
-          height: 75px;
+          width: 73px;
+          height: 73px;
           background-color: rgba(16, 24, 40, 0);
           position: absolute;
           border-radius: 50%;
           cursor: pointer;
 
           &.internal-analysis {
-            top: 4%;
+            top: 11%;
+            left: 50%;
+            transform: translateX(-50%);
           }
+
           &.external-analysis {
-            top: 44%;
-            right: 14%;
+            top: 50%;
+            right: 18%;
+            transform: translateY(-50%);
           }
+
           &.strategic-choices {
-            bottom: 4%;
+            bottom: 11%;
+            left: 50%;
+            transform: translateX(-50%);
           }
+
           &.implementation {
-            top: 44%;
-            left: 14%;
+            top: 50%;
+            left: 17%;
+            transform: translateY(-50%);
           }
         }
+        // eol sourcing strategy cycle tooltip
       }
     }
   }
@@ -400,6 +428,7 @@
     .spp-image-wrapper {
       padding: 24px 0 0;
       text-align: center;
+      display: none;
 
       img {
         width: 700px;
@@ -423,34 +452,26 @@
 
       .tcod-right {
         grid-area: 1 / 2 / 2 / 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        p {
+          color: #959390;
+          max-width: 500px;
+          margin-top: -4px;
+        }
       }
     }
 
-    .tco-charts-content-wrapper {
-      padding-top: 32px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: 1fr;
-      grid-column-gap: 24px;
-      grid-row-gap: 24px;
+    img.check-circle-icon {
+      width: 20px;
+      height: 20px;
+    }
 
-      .tco-chart-left {
-        grid-area: 1 / 1 / 2 / 2;
-
-        .check-circle-icon {
-          width: 24px;
-          height: 24px;
-        }
-      }
-
-      .tco-chart-right {
-        grid-area: 1 / 2 / 2 / 3;
-
-        text-align: center;
-        img {
-          height: 90%;
-        }
-      }
+    img.tcod-chart {
+      max-width: 500px;
     }
   }
 

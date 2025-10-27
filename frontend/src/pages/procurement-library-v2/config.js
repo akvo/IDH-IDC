@@ -334,7 +334,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
     label: "Strategic choices",
     content: {
       icon: StrategicChoicesIcon,
-      title: "External Analysis",
+      title: "Strategic Choices",
       description:
         "Drawing on insights from internal and external analysis, generate strategic sourcing options, rigorously stress-test them against factors such as cost, risk and market dynamics, and select the most viable choices to take forward for execution.",
       collapseItems: [
