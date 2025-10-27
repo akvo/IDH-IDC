@@ -273,38 +273,57 @@
       .sscc-body-right {
         grid-area: 1 / 2 / 2 / 3;
 
-        display: flex;
-        justify-content: center;
-        align-items: top;
-        position: relative;
+        .sscc-img-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: top;
+          position: relative;
+        }
+
+        .hint-text {
+          font-style: italic !important;
+          font-size: 12px !important;
+          text-align: center !important;
+        }
 
         img.sscc-image {
           height: 600px;
         }
 
+        // sourcing strategy cycle tooltip
         .img-tooltip-helper {
-          width: 75px;
-          height: 75px;
+          width: 73px;
+          height: 73px;
           background-color: rgba(16, 24, 40, 0);
           position: absolute;
           border-radius: 50%;
           cursor: pointer;
 
           &.internal-analysis {
-            top: 4rem;
+            top: 11%;
+            left: 50%;
+            transform: translateX(-50%);
           }
+
           &.external-analysis {
-            top: 16.5rem;
-            right: 2.5rem;
+            top: 50%;
+            right: 18%;
+            transform: translateY(-50%);
           }
+
           &.strategic-choices {
-            bottom: 4rem;
+            bottom: 11%;
+            left: 50%;
+            transform: translateX(-50%);
           }
+
           &.implementation {
-            top: 16.5rem;
-            left: 2rem;
+            top: 50%;
+            left: 17%;
+            transform: translateY(-50%);
           }
         }
+        // eol sourcing strategy cycle tooltip
       }
     }
   }
@@ -409,6 +428,7 @@
     .spp-image-wrapper {
       padding: 24px 0 0;
       text-align: center;
+      display: none;
 
       img {
         width: 700px;

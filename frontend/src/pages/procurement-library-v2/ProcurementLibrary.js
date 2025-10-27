@@ -298,15 +298,20 @@ const ProcurementLibrary = () => {
             {/* eol tabs content */}
           </div>
           <div className="sscc-body-right">
-            <img src={SourcingStrategyCycleImage} className="sscc-image" />
-            {/* image tooltip helper */}
-            {SOURCING_STRATEGY_CYCLE_TOOLTIPS.map((item) => (
-              <CustomTooltip key={item.className} {...item}>
-                <div className={`img-tooltip-helper ${item.className}`}>
-                  &nbsp;
-                </div>
-              </CustomTooltip>
-            ))}
+            <div>
+              <p className="hint-text">Hover over strategies for details</p>
+            </div>
+            <div className="sscc-img-wrapper">
+              <img src={SourcingStrategyCycleImage} className="sscc-image" />
+              {/* image tooltip helper */}
+              {SOURCING_STRATEGY_CYCLE_TOOLTIPS.map((item) => (
+                <CustomTooltip key={item.className} {...item}>
+                  <div className={`img-tooltip-helper ${item.className}`}>
+                    &nbsp;
+                  </div>
+                </CustomTooltip>
+              ))}
+            </div>
             {/* eol image tooltip helper */}
           </div>
         </div>
