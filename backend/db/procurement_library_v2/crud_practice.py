@@ -132,6 +132,7 @@ def get_practices_by_attribute(
     page: int = 1,
     limit: int = 10,
     search: Optional[str] = None,
+    extra_attribute_ids: Optional[list[int]] = None,
 ):
     offset = (page - 1) * limit
 
@@ -148,12 +149,25 @@ def get_practices_by_attribute(
         )
     )
 
+    # Apply additional filters
+    # 1️⃣ Optional text search (practice label)
     if search:
         query = query.filter(PLPracticeIntervention.label.ilike(f"%{search}%"))
 
+    # 2️⃣ Optional filter by multiple attribute IDs
+    if extra_attribute_ids:
+        query = query.filter(
+            PLPracticeIntervention.id.in_(
+                select(PLPracticeInterventionTag.practice_intervention_id)
+                .where(PLPracticeInterventionTag.attribute_id.in_(extra_attribute_ids))
+            )
+        )
+
+    # Pagination and execution
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     results = db.scalars(query.offset(offset).limit(limit)).unique().all()
 
+    # Format response data
     data = []
     for p in results:
         # Get tags (attribute labels)

@@ -30,11 +30,9 @@ class TestProcurementLibraryV2PracticeRoutes:
         assert "data" in res_json
         assert isinstance(res_json["data"], list)
 
-        # Pagination checks
         assert res_json["current"] == 1
         assert len(res_json["data"]) <= 10
 
-        # Validate data fields
         practice = res_json["data"][0]
         expected_keys = {
             "id",
@@ -49,7 +47,7 @@ class TestProcurementLibraryV2PracticeRoutes:
         assert expected_keys.issubset(practice.keys()), "Response missing required fields"
 
     # ============================================================
-    # /plv2/practices?search=... — search filter
+    # /plv2/practices?search=...
     # ============================================================
     @pytest.mark.asyncio
     async def test_get_all_practices_with_search(
@@ -70,7 +68,7 @@ class TestProcurementLibraryV2PracticeRoutes:
         assert res_json["total"] == total_results
 
     # ============================================================
-    # /plv2/practice/{id} — GET detail
+    # /plv2/practice/{id}
     # ============================================================
     @pytest.mark.asyncio
     async def test_get_practice_by_id(
@@ -111,7 +109,6 @@ class TestProcurementLibraryV2PracticeRoutes:
     async def test_get_practices_by_attribute_id(
         self, app: FastAPI, session: Session, client: AsyncClient
     ):
-        # pick an existing attribute that is linked to practices
         attribute = (
             session.query(PLAttribute)
             .join(PLAttribute.tags)
@@ -159,3 +156,66 @@ class TestProcurementLibraryV2PracticeRoutes:
         res_json = res.json()
         assert "data" in res_json
         assert isinstance(res_json["data"], list)
+
+    # ============================================================
+    # /plv2/practices-by-attribute/{attribute_id}?attribute_ids=...
+    # ============================================================
+    @pytest.mark.asyncio
+    async def test_get_practices_by_attribute_with_extra_filters(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        res = await client.get(
+            app.url_path_for("plv2:get_practices_by_attribute_id", attribute_id=1),
+            params={"attribute_ids": [1]},
+        )
+        assert res.status_code == 200
+        res_json = res.json()
+        assert "data" in res_json
+        assert isinstance(res_json["data"], list)
+
+    @pytest.mark.asyncio
+    async def test_get_practices_by_attribute_with_multiple_extra_ids(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # collect multiple attribute IDs
+        attributes = (
+            session.query(PLAttribute)
+            .join(PLAttribute.tags)
+            .limit(3)
+            .all()
+        )
+        assert len(attributes) >= 2, "Need at least 2 attributes with linked practices"
+
+        base_attr = attributes[0]
+        extra_ids = [a.id for a in attributes]
+
+        res = await client.get(
+            app.url_path_for("plv2:get_practices_by_attribute_id", attribute_id=base_attr.id),
+            params={"attribute_ids": extra_ids},
+        )
+        assert res.status_code == 200
+        res_json = res.json()
+        assert "data" in res_json
+        assert isinstance(res_json["data"], list)
+
+    @pytest.mark.asyncio
+    async def test_get_practices_by_attribute_with_no_results(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # pick attribute_id that doesn't link to any practices
+        unused_attr = (
+            session.query(PLAttribute)
+            .outerjoin(PLAttribute.tags)
+            .filter(PLAttribute.tags is None)
+            .first()
+        )
+        if not unused_attr:
+            pytest.skip("No unused attribute found for empty result test")
+
+        res = await client.get(
+            app.url_path_for("plv2:get_practices_by_attribute_id", attribute_id=unused_attr.id)
+        )
+        assert res.status_code == 200
+        res_json = res.json()
+        assert res_json["total"] == 0
+        assert res_json["data"] == []

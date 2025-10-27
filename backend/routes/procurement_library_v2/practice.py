@@ -79,12 +79,12 @@ def get_practice_detail(practice_id: int, db: Session = Depends(get_session)):
 
 
 # ============================================================
-# GET PRACTICES BY ATTRIBUTE ID
+# GET PRACTICES BY ATTRIBUTE ID (WITH OPTIONAL FILTER BY ATTRIBUTE IDS)
 # ============================================================
 @pl_practice_router_v2.get(
     "/practices-by-attribute/{attribute_id}",
     name="plv2:get_practices_by_attribute_id",
-    summary="Get practices by attribute ID",
+    summary="Get practices by attribute ID (optionally filtered by other attribute IDs)",
     response_description="Paginated list of practices filtered by attribute",
     response_model=PaginatedPracticeByAttributeResponse,
     tags=["Procurement Library V2"],
@@ -94,23 +94,33 @@ def get_practices_by_attribute_id(
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(10, ge=1, le=100, description="Number of items per page"),
     search: Optional[str] = Query(None, description="Search by practice label"),
+    attribute_ids: Optional[list[int]] = Query(
+        None,
+        description="List of additional attribute IDs to filter practices (e.g., attribute_ids=1&attribute_ids=3)",
+    ),
     db: Session = Depends(get_session),
 ):
     """
     Returns a paginated list of practice interventions linked to a specific attribute.
 
     **Path parameter:**
-    - `attribute_id`: The ID of the attribute (e.g., from *Sourcing Strategy Cycle*).
+    - `attribute_id`: The ID of the main attribute (e.g., from *Sourcing Strategy Cycle*).
 
     **Query parameters:**
     - `page`: Page number (default = 1)
     - `limit`: Number of items per page (default = 10)
     - `search`: Optional filter by practice label
+    - `attribute_ids`: Optional list of additional attribute IDs (e.g., `attribute_ids=3&attribute_ids=5`)
 
     **Notes:**
     - `is_environmental` is True if any indicator named `"environmental_impact"` has score > 3.
     - `is_income` is True if any indicator named `"income_impact"` has score > 3.
     """
     return crud_practice.get_practices_by_attribute(
-        db, attribute_id=attribute_id, page=page, limit=limit, search=search
+        db,
+        attribute_id=attribute_id,
+        page=page,
+        limit=limit,
+        search=search,
+        extra_attribute_ids=attribute_ids,
     )
