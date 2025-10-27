@@ -10,6 +10,7 @@ import {
   Spin,
   Tag,
   Tooltip,
+  Breadcrumb,
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -21,8 +22,23 @@ import { IMPACT_AREA_OPTIONS } from "../config";
 import { PLState } from "../../../store";
 import { Blocker } from "../../../components/utils";
 import { useWindowDimensions } from "../../../hooks";
+import { HomeOutlined, RightOutlined } from "@ant-design/icons";
 
 const PAGE_SIZE = 12;
+const breadcrumbItems = [
+  {
+    key: "/home",
+    title: "Home",
+    active: false,
+  },
+  { key: "/procurement-library", title: "Procurement Library", active: false },
+  {
+    key: "/procurement-library/intervention-library",
+    title: "Intervention Library",
+    active: true,
+  },
+];
+
 const { useForm } = Form;
 
 const InterventionLibrary = () => {
@@ -110,25 +126,23 @@ const InterventionLibrary = () => {
   return (
     <div className="intervention-library-container">
       <div className="intervention-library-header">
-        <ul>
-          <li
-            role="button"
-            onClick={() => {
-              navigate("/procurement-library");
-            }}
-          >
-            Procurement Library
-          </li>
-          <li
-            className="active"
-            role="button"
-            onClick={() => {
-              navigate("/procurement-library/intervention-library");
-            }}
-          >
-            Library
-          </li>
-        </ul>
+        <div className="breadcrumb-wrapper">
+          <Breadcrumb
+            separator={<RightOutlined />}
+            items={breadcrumbItems.map((x, bi) => ({
+              key: bi,
+              title: (
+                <Link to={x.key} className={x.active ? "active" : ""}>
+                  {x?.title?.toLowerCase() === "home" ? (
+                    <HomeOutlined style={{ fontSize: "16px" }} />
+                  ) : (
+                    x.title
+                  )}
+                </Link>
+              ),
+            }))}
+          />
+        </div>
       </div>
       <div className="intervention-library-content">
         <div className="intervention-library-content-header">

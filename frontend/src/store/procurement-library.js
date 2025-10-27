@@ -8,6 +8,8 @@ const defaultPLState = {
     impact_area: null,
     procurement_process_ids: [],
   },
+  // v2
+  categoryWithAttributes: [],
 };
 
 const PLState = new Store(defaultPLState);
