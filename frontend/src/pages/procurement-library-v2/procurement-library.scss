@@ -427,11 +427,20 @@
 
     .spp-image-wrapper {
       padding: 24px 0 0;
-      text-align: center;
-      display: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      img {
-        width: 700px;
+      .spp-image-border {
+        width: fit-content;
+        border-radius: 8px;
+        background: var(--green-10, #eaf2f2);
+        border: 12px solid var(--green-10, #eaf2f2);
+
+        img {
+          max-height: 540px;
+          border-radius: 8px;
+        }
       }
     }
   }
