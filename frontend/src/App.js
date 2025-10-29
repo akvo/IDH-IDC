@@ -29,7 +29,7 @@ import orderBy from "lodash/orderBy";
 import {
   ProcurementLibrary,
   ProcurementPage,
-} from "./pages/procurement-library-v2";
+} from "./pages/procurement-library";
 import { OtherResources } from "./pages/other-resources";
 import { FAQ } from "./pages/faq";
 import {
