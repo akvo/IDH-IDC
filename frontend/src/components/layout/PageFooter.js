@@ -14,6 +14,7 @@ const page = {
 const PageFooter = ({
   wrapper = true,
   fixed = false,
+  isLandingPage = true,
   disclaimerText = "default",
 }) => {
   const { isMobile } = useWindowDimensions();
@@ -23,7 +24,7 @@ const PageFooter = ({
       align="middle"
       className={`page-footer-container ${wrapper ? "with-padding-bg" : ""} ${
         fixed ? "with-fixed-position" : ""
-      }`}
+      } ${isLandingPage ? "with-landing-padding" : ""}`}
       gutter={isMobile ? [0, 32] : [0, 32]}
     >
       <Col span={isMobile ? 24 : 18}>

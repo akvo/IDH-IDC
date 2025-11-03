@@ -620,8 +620,12 @@
     color: #fff;
 
     &.with-padding-bg {
-      padding: 1rem var(--default-landing-padding);
+      padding: 1rem var(--default-padding);
       background-color: #00625f;
+    }
+
+    &.with-landing-padding {
+      padding: 1rem var(--default-landing-padding);
     }
 
     &.with-fixed-position {
