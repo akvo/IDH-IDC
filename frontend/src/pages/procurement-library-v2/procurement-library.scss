@@ -573,7 +573,28 @@
   }
 }
 
-@include respond-to(lg) {
+@include respond-between(md, mlg) {
+  #procurement-library,
+  .procurement-library-container {
+    img.sp-image {
+      max-height: 225px !important;
+    }
+
+    img.sscc-image {
+      max-width: 400px !important;
+    }
+
+    img.spp-image {
+      max-height: 400px !important;
+    }
+
+    img.tcod-chart {
+      max-width: 400px !important;
+    }
+  }
+}
+
+@include respond-between(lg, xlg) {
   #procurement-library,
   .procurement-library-container {
     img.sp-image {
@@ -589,4 +610,5 @@
     }
   }
 }
+
 // EOL MEDIA CSS

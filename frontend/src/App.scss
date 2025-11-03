@@ -812,7 +812,7 @@
 }
 
 // Media query
-@include respond-between(md, lg) {
+@include respond-between(md, xlg) {
   .header-logo-wrapper {
     img {
       height: 42px !important;
