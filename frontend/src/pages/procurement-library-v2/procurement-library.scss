@@ -226,7 +226,7 @@
         font-size: 16px;
       }
 
-      img {
+      img.sp-image {
         max-height: 350px;
       }
     }
@@ -437,7 +437,7 @@
         background: var(--green-10, #eaf2f2);
         border: 12px solid var(--green-10, #eaf2f2);
 
-        img {
+        img.spp-image {
           max-height: 540px;
           border-radius: 8px;
         }
@@ -558,3 +558,35 @@
   }
 }
 // EOL SSCC POPCONFIRM
+
+// MEDIA CSS
+@include respond-to(xl) {
+  #procurement-library,
+  .procurement-library-container {
+    img.sp-image {
+      max-height: 325px !important;
+    }
+
+    img.sscc-image {
+      max-width: 500px !important;
+    }
+  }
+}
+
+@include respond-to(lg) {
+  #procurement-library,
+  .procurement-library-container {
+    img.sp-image {
+      max-height: 250px !important;
+    }
+
+    img.sscc-image {
+      max-width: 450px !important;
+    }
+
+    img.spp-image {
+      max-height: 500px !important;
+    }
+  }
+}
+// EOL MEDIA CSS

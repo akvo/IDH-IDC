@@ -812,9 +812,14 @@
 }
 
 // Media query
-@include respond-to(md) {
-  .logo-text {
-    font-size: 14px !important;
+@include respond-between(md, lg) {
+  .header-logo-wrapper {
+    img {
+      height: 42px !important;
+    }
+    .logo-text {
+      font-size: 14px !important;
+    }
   }
 }
 // EOL Media query

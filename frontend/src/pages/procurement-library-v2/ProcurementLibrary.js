@@ -226,7 +226,8 @@ const ProcurementLibrary = () => {
           <h4>Procurement maturity with suppliers</h4>
           <img
             src={SustainableProcurementImage}
-            alt="sustainable-procurement-images"
+            alt="sustainable-procurement-image"
+            className="sp-image"
           />
         </div>
         <Divider />
@@ -349,6 +350,7 @@ const ProcurementLibrary = () => {
             <img
               src={ProcurementPrinciplesCurves}
               alt="procurement-principles-curves-img"
+              className="spp-image"
             />
           </div>
         </div>
