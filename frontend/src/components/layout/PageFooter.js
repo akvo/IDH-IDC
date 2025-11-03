@@ -24,7 +24,7 @@ const PageFooter = ({
       className={`page-footer-container ${wrapper ? "with-padding-bg" : ""} ${
         fixed ? "with-fixed-position" : ""
       }`}
-      gutter={isMobile ? [0, 32] : [32, 32]}
+      gutter={isMobile ? [0, 32] : [0, 32]}
     >
       <Col span={isMobile ? 24 : 18}>
         <Space

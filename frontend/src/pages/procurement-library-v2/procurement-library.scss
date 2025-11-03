@@ -27,7 +27,7 @@
       color: white;
       text-align: left;
       z-index: 10;
-      padding: 3rem var(--default-padding);
+      padding: 3rem var(--default-landing-padding);
       display: flex;
       flex-direction: column;
       gap: 62px;
@@ -94,7 +94,7 @@
         bottom: -124px;
         left: 0;
         width: 100%;
-        padding: 94px 62px 0;
+        padding: 94px var(--default-landing-padding) 0;
 
         .ant-list {
           .ant-card {
@@ -182,7 +182,7 @@
   .pl-section-container {
     width: 100%;
     margin: 0 auto;
-    padding: 2rem var(--default-padding) 4rem;
+    padding: 2rem var(--default-landing-padding) 4rem;
 
     &.pl-section-first-row {
       padding-top: 10rem;
@@ -287,7 +287,7 @@
         }
 
         img.sscc-image {
-          height: 600px;
+          max-width: 550px;
         }
 
         // sourcing strategy cycle tooltip
@@ -300,26 +300,26 @@
           cursor: pointer;
 
           &.internal-analysis {
-            top: 11%;
-            left: 50%;
+            top: 11.5%;
+            left: 49.5%;
             transform: translateX(-50%);
           }
 
           &.external-analysis {
             top: 50%;
-            right: 18%;
+            right: 8%;
             transform: translateY(-50%);
           }
 
           &.strategic-choices {
-            bottom: 11%;
-            left: 50%;
+            bottom: 11.5%;
+            left: 49.5%;
             transform: translateX(-50%);
           }
 
           &.implementation {
             top: 50%;
-            left: 17%;
+            left: 7%;
             transform: translateY(-50%);
           }
         }

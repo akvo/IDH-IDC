@@ -74,8 +74,9 @@ $breakpoints: (
   :root {
     // TODO :: to update max-width of the design, we can simply update this
     // but ignore the header from max width
-    // --default-padding: max(20px, calc((100% - 1280px) / 2));
+    --default-header-padding: 3rem;
     --default-padding: 5rem;
+    --default-landing-padding: max(20px, calc((100% - 1280px) / 2));
     --container-max-width: 1320px;
   }
 }
@@ -83,7 +84,9 @@ $breakpoints: (
 /* Desktop (1025px - 1439px) */
 @media (max-width: 1439px) and (min-width: 1025px) {
   :root {
+    --default-header-padding: 3rem;
     --default-padding: 4rem;
+    --default-landing-padding: 4rem;
     --container-max-width: 1200px;
   }
 }
@@ -91,7 +94,9 @@ $breakpoints: (
 /* Tablet Landscape (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 768px) {
   :root {
+    --default-header-padding: 3rem;
     --default-padding: 3rem;
+    --default-landing-padding: 3rem;
     --container-max-width: 960px;
   }
 }
@@ -99,7 +104,9 @@ $breakpoints: (
 /* Tablet Portrait (640px - 767px) */
 @media (max-width: 767px) and (min-width: 640px) {
   :root {
+    --default-header-padding: 2rem;
     --default-padding: 2rem;
+    --default-landing-padding: 2rem;
     --container-max-width: 90%;
   }
 }
@@ -107,7 +114,9 @@ $breakpoints: (
 /* Mobile (≤ 639px) */
 @media (max-width: 639px) {
   :root {
+    --default-header-padding: 1.5rem;
     --default-padding: 1.5rem;
+    --default-landing-padding: 1.5rem;
     --container-max-width: 100%;
   }
 }
