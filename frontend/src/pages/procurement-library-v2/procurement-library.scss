@@ -344,6 +344,8 @@
       cursor: pointer;
       font-family: "TabletGothic" !important;
       border-bottom: 4px solid #fff;
+      word-wrap: break-word;
+
       &.active {
         border-bottom: 4px solid $primary-color;
         color: $primary-color;
@@ -594,6 +596,63 @@
             width: 95%;
           }
         }
+      }
+    }
+
+    .sscc-tabs-wrapper {
+      grid-column-gap: 14px;
+      grid-row-gap: 14px;
+      width: 100%;
+      padding: 18px;
+    }
+
+    .sustainable-procurement-principles-content {
+      .spp-description-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .sppd-left,
+        .sppd-right {
+          grid-area: auto;
+        }
+      }
+
+      .spp-image-wrapper {
+        padding: 16px 0 0;
+
+        .spp-image-border {
+          img.spp-image {
+            height: auto;
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .total-cost-ownership-content {
+      .tco-description-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .tcod-left,
+        .tcod-right {
+          grid-area: auto;
+        }
+
+        .tcod-right {
+          p {
+            width: 100%;
+          }
+        }
+      }
+
+      img.tcod-chart {
+        width: 100%;
+        height: auto;
       }
     }
   }
