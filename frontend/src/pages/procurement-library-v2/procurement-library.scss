@@ -487,6 +487,7 @@
     margin-block-end: 16px;
   }
 
+  // MOBILE SCREEN CSS
   &.mobile-screen {
     .jumbotron-content,
     .key-features-content {
@@ -518,7 +519,7 @@
 
       .jumbotron-cards {
         padding: 0 $default-mobile-padding-size;
-        bottom: -630px;
+        bottom: -640px;
 
         @media (max-width: 305px) {
           bottom: -660px;
@@ -532,10 +533,71 @@
 
     .pl-section-container {
       &.pl-section-first-row {
-        padding-top: 32rem;
+        padding-top: 40rem;
+        padding-bottom: 0rem;
+      }
+    }
+
+    .sustainable-procurement-content {
+      .sustainable-description-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+      }
+
+      .sustainable-description-left,
+      .sustainable-description-right {
+        grid-area: auto;
+      }
+
+      img.sp-image {
+        height: auto;
+        width: 100%;
+      }
+    }
+
+    .sourcing-strategy-cycle-content {
+      .sscc-header-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .sscc-title-description,
+        .sscc-title-button {
+          grid-area: auto;
+        }
+
+        .sscc-title-button {
+          margin-top: 0px;
+          .button {
+            float: left;
+          }
+        }
+      }
+
+      .sscc-body-wrapper {
+        padding-top: 32px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .sscc-body-left,
+        .sscc-body-right {
+          grid-area: auto;
+        }
+
+        .sscc-body-right {
+          img.sscc-image {
+            width: 95%;
+          }
+        }
       }
     }
   }
+  // EOL MOBILE SCREEN CSS
 }
 
 // SSCC POPCONFIRM
@@ -610,5 +672,4 @@
     }
   }
 }
-
 // EOL MEDIA CSS
