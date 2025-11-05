@@ -256,7 +256,7 @@
     .sscc-body-wrapper {
       padding-top: 32px;
       display: grid;
-      grid-template-columns: repeat(2 1fr);
+      grid-template-columns: repeat(2, 1fr);
       grid-template-rows: 1fr;
       grid-column-gap: 24px;
       grid-row-gap: 24px;
@@ -287,7 +287,7 @@
         }
 
         img.sscc-image {
-          max-width: 550px;
+          max-width: 600px;
         }
 
         // sourcing strategy cycle tooltip
@@ -568,7 +568,7 @@
     }
 
     img.sscc-image {
-      max-width: 500px !important;
+      max-width: 550px !important;
     }
   }
 }
