@@ -8,6 +8,14 @@
   overflow: hidden;
   background-color: #fff;
 
+  .ant-divider-horizontal {
+    margin: 0;
+  }
+
+  .other-tools-title-wrapper {
+    margin-top: 20px;
+  }
+
   .jumbotron {
     width: 100%;
     height: auto;
@@ -182,7 +190,7 @@
   .pl-section-container {
     width: 100%;
     margin: 0 auto;
-    padding: 2rem var(--default-landing-padding) 4rem;
+    padding: 2rem var(--default-landing-padding) 3rem;
 
     &.pl-section-first-row {
       padding-top: 10rem;
@@ -534,6 +542,8 @@
     }
 
     .pl-section-container {
+      padding-bottom: 2rem var(--default-landing-padding);
+
       &.pl-section-first-row {
         padding-top: 40rem;
         padding-bottom: 0rem;
