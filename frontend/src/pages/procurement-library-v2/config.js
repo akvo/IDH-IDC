@@ -220,7 +220,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
         },
         {
           key: 4,
-          label: <b>Practive Interventions</b>,
+          label: <b>Practice Interventions</b>,
           children: (
             <ul>
               <li>
@@ -310,7 +310,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
         },
         {
           key: 4,
-          label: <b>Practive Interventions</b>,
+          label: <b>Practice Interventions</b>,
           children: (
             <ul>
               <li>
@@ -394,7 +394,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
         },
         {
           key: 4,
-          label: <b>Practive Interventions</b>,
+          label: <b>Practice Interventions</b>,
           children: (
             <ul>
               <li>
@@ -520,7 +520,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
         },
         {
           key: 4,
-          label: <b>Practive Interventions</b>,
+          label: <b>Practice Interventions</b>,
           children: (
             <ul>
               <li>

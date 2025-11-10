@@ -51,7 +51,7 @@
 
       .jumbotron-text-wrapper {
         z-index: 1;
-        padding: 3rem var(--default-padding);
+        padding: 3rem var(--default-landing-padding);
         h1 {
           font-family: "RocGrotesk" !important;
           color: #ffffff;
@@ -73,7 +73,8 @@
 
   .about-wrapper {
     background-color: #fff;
-    padding: 2rem var(--default-padding) 3rem var(--default-padding);
+    padding: 2rem var(--default-landing-padding) 3rem
+      var(--default-landing-padding);
 
     .logos-wrapper {
       display: flex;
@@ -115,7 +116,7 @@
   }
 
   .indicators-wrapper {
-    padding: 2.5rem 0 5rem var(--default-padding);
+    padding: 2.5rem 0 5rem var(--default-landing-padding);
     background-color: #eaf2f2;
 
     h2 {
@@ -194,7 +195,7 @@
   }
 
   .pch-wrapper {
-    padding: 3rem var(--default-padding);
+    padding: 3rem var(--default-landing-padding);
     background-color: #fcf9f4;
     display: flex;
     justify-content: space-evenly;
@@ -227,7 +228,7 @@
   }
 
   .contributing-wrapper {
-    padding: 3rem var(--default-padding) 4rem;
+    padding: 3rem var(--default-landing-padding) 4rem;
 
     .contributing-content-wrapper {
       padding-top: 10px;
@@ -248,7 +249,7 @@
   }
 
   .value-org-wrapper {
-    padding: 3rem var(--default-padding) 4rem;
+    padding: 3rem var(--default-landing-padding) 4rem;
     background-color: #fcf9f4;
 
     .value-org-content-wrapper {
@@ -295,7 +296,7 @@
   }
 
   .contribute-to-wrapper {
-    padding: 3rem var(--default-padding) 2rem;
+    padding: 3rem var(--default-landing-padding) 2rem;
     background-color: #fff;
 
     h2,

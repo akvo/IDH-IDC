@@ -5,7 +5,8 @@
   .benefit-wrapper {
     background: #fcf9f4;
     width: 100%;
-    padding: 0 var(--default-padding) 3rem var(--default-padding);
+    padding: 0 var(--default-landing-padding) 3rem
+      var(--default-landing-padding);
 
     .benefit-text-wrapper {
       text-align: center;
@@ -34,7 +35,8 @@
 
   .info-card-row {
     background: #fcf9f4;
-    padding: 0 var(--default-padding) 3rem var(--default-padding);
+    padding: 0 var(--default-landing-padding) 3rem
+      var(--default-landing-padding);
     margin-top: -7rem;
     margin-left: 0 !important;
     margin-right: 0 !important;
@@ -99,7 +101,7 @@
   }
 
   .faq-section-wrapper {
-    padding: 3rem var(--default-padding) 0;
+    padding: 3rem var(--default-landing-padding) 0;
     background: #fff;
 
     #faq-page {
