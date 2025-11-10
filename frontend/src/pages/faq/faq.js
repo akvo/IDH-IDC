@@ -187,7 +187,7 @@ const FAQ = ({ showPageTitle = true, showPageFooter = true }) => {
         ))}
       </div>
 
-      {showPageFooter ? <PageFooter /> : ""}
+      {showPageFooter ? <PageFooter isLandingPage={false} /> : ""}
     </div>
   );
 };

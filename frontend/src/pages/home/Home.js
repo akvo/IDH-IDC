@@ -263,11 +263,11 @@ const Home = () => {
                   style={{
                     position: "absolute",
                     bottom: -165,
-                    left: -265,
+                    left: -400,
                     transform: "rotate(90deg)",
                   }}
-                  width={400}
-                  height={400}
+                  width={600}
+                  height={600}
                   color="#d5ebfd66"
                 />
               )}

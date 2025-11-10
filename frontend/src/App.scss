@@ -152,7 +152,7 @@
   header {
     height: 5rem;
     background: $bg-color-white;
-    padding: 0.5rem var(--default-padding);
+    padding: 0.5rem var(--default-header-padding);
     display: flex;
     align-items: center;
     box-shadow: 0px 0px 3px 2px rgba(0, 0, 0, 0.08);
@@ -624,6 +624,10 @@
       background-color: #00625f;
     }
 
+    &.with-landing-padding {
+      padding: 1rem var(--default-landing-padding);
+    }
+
     &.with-fixed-position {
       position: fixed;
       width: 100%;
@@ -808,9 +812,14 @@
 }
 
 // Media query
-@include respond-to(md) {
-  .logo-text {
-    font-size: 14px !important;
+@include respond-between(md, xlg) {
+  .header-logo-wrapper {
+    img {
+      height: 42px !important;
+    }
+    .logo-text {
+      font-size: 14px !important;
+    }
   }
 }
 // EOL Media query

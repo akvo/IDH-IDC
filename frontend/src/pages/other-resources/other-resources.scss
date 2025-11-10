@@ -6,6 +6,12 @@
   display: flex;
   flex-direction: column;
 
+  .page-title-layout-header-wrapper > .title-wrapper,
+  .content-wrapper {
+    padding-left: var(--default-landing-padding) !important;
+    padding-right: var(--default-landing-padding) !important;
+  }
+
   .content-wrapper {
     margin-bottom: 3rem;
     flex: 1;

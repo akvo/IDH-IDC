@@ -27,7 +27,7 @@
       color: white;
       text-align: left;
       z-index: 10;
-      padding: 3rem var(--default-padding);
+      padding: 3rem var(--default-landing-padding);
       display: flex;
       flex-direction: column;
       gap: 62px;
@@ -94,7 +94,7 @@
         bottom: -124px;
         left: 0;
         width: 100%;
-        padding: 94px 62px 0;
+        padding: 94px var(--default-landing-padding) 0;
 
         .ant-list {
           .ant-card {
@@ -182,7 +182,7 @@
   .pl-section-container {
     width: 100%;
     margin: 0 auto;
-    padding: 2rem var(--default-padding) 4rem;
+    padding: 2rem var(--default-landing-padding) 4rem;
 
     &.pl-section-first-row {
       padding-top: 10rem;
@@ -226,7 +226,7 @@
         font-size: 16px;
       }
 
-      img {
+      img.sp-image {
         max-height: 350px;
       }
     }
@@ -256,7 +256,7 @@
     .sscc-body-wrapper {
       padding-top: 32px;
       display: grid;
-      grid-template-columns: repeat(2 1fr);
+      grid-template-columns: repeat(2, 1fr);
       grid-template-rows: 1fr;
       grid-column-gap: 24px;
       grid-row-gap: 24px;
@@ -287,7 +287,7 @@
         }
 
         img.sscc-image {
-          height: 600px;
+          max-width: 600px;
         }
 
         // sourcing strategy cycle tooltip
@@ -300,26 +300,26 @@
           cursor: pointer;
 
           &.internal-analysis {
-            top: 11%;
-            left: 50%;
+            top: 11.5%;
+            left: 49.5%;
             transform: translateX(-50%);
           }
 
           &.external-analysis {
             top: 50%;
-            right: 18%;
+            right: 8%;
             transform: translateY(-50%);
           }
 
           &.strategic-choices {
-            bottom: 11%;
-            left: 50%;
+            bottom: 11.5%;
+            left: 49.5%;
             transform: translateX(-50%);
           }
 
           &.implementation {
             top: 50%;
-            left: 17%;
+            left: 7%;
             transform: translateY(-50%);
           }
         }
@@ -344,6 +344,8 @@
       cursor: pointer;
       font-family: "TabletGothic" !important;
       border-bottom: 4px solid #fff;
+      word-wrap: break-word;
+
       &.active {
         border-bottom: 4px solid $primary-color;
         color: $primary-color;
@@ -427,11 +429,20 @@
 
     .spp-image-wrapper {
       padding: 24px 0 0;
-      text-align: center;
-      display: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      img {
-        width: 700px;
+      .spp-image-border {
+        width: fit-content;
+        border-radius: 8px;
+        background: var(--green-10, #eaf2f2);
+        border: 12px solid var(--green-10, #eaf2f2);
+
+        img.spp-image {
+          max-height: 540px;
+          border-radius: 8px;
+        }
       }
     }
   }
@@ -460,7 +471,6 @@
         p {
           color: #959390;
           max-width: 500px;
-          margin-top: -4px;
         }
       }
     }
@@ -479,6 +489,7 @@
     margin-block-end: 16px;
   }
 
+  // MOBILE SCREEN CSS
   &.mobile-screen {
     .jumbotron-content,
     .key-features-content {
@@ -510,7 +521,7 @@
 
       .jumbotron-cards {
         padding: 0 $default-mobile-padding-size;
-        bottom: -630px;
+        bottom: -640px;
 
         @media (max-width: 305px) {
           bottom: -660px;
@@ -524,10 +535,128 @@
 
     .pl-section-container {
       &.pl-section-first-row {
-        padding-top: 32rem;
+        padding-top: 40rem;
+        padding-bottom: 0rem;
+      }
+    }
+
+    .sustainable-procurement-content {
+      .sustainable-description-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+      }
+
+      .sustainable-description-left,
+      .sustainable-description-right {
+        grid-area: auto;
+      }
+
+      img.sp-image {
+        height: auto;
+        width: 100%;
+      }
+    }
+
+    .sourcing-strategy-cycle-content {
+      .sscc-header-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .sscc-title-description,
+        .sscc-title-button {
+          grid-area: auto;
+        }
+
+        .sscc-title-button {
+          margin-top: 0px;
+          .button {
+            float: left;
+          }
+        }
+      }
+
+      .sscc-body-wrapper {
+        padding-top: 32px;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .sscc-body-left,
+        .sscc-body-right {
+          grid-area: auto;
+        }
+
+        .sscc-body-right {
+          img.sscc-image {
+            width: 95%;
+          }
+        }
+      }
+    }
+
+    .sscc-tabs-wrapper {
+      grid-column-gap: 14px;
+      grid-row-gap: 14px;
+      width: 100%;
+      padding: 18px;
+    }
+
+    .sustainable-procurement-principles-content {
+      .spp-description-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .sppd-left,
+        .sppd-right {
+          grid-area: auto;
+        }
+      }
+
+      .spp-image-wrapper {
+        padding: 16px 0 0;
+
+        .spp-image-border {
+          img.spp-image {
+            height: auto;
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .total-cost-ownership-content {
+      .tco-description-wrapper {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-column-gap: 12px;
+        grid-row-gap: 12px;
+
+        .tcod-left,
+        .tcod-right {
+          grid-area: auto;
+        }
+
+        .tcod-right {
+          p {
+            width: 100%;
+          }
+        }
+      }
+
+      img.tcod-chart {
+        width: 100%;
+        height: auto;
       }
     }
   }
+  // EOL MOBILE SCREEN CSS
 }
 
 // SSCC POPCONFIRM
@@ -550,3 +679,56 @@
   }
 }
 // EOL SSCC POPCONFIRM
+
+// MEDIA CSS
+@include respond-to(xl) {
+  #procurement-library,
+  .procurement-library-container {
+    img.sp-image {
+      max-height: 325px !important;
+    }
+
+    img.sscc-image {
+      max-width: 550px !important;
+    }
+  }
+}
+
+@include respond-between(md, mlg) {
+  #procurement-library,
+  .procurement-library-container {
+    img.sp-image {
+      max-height: 225px !important;
+    }
+
+    img.sscc-image {
+      max-width: 400px !important;
+    }
+
+    img.spp-image {
+      max-height: 400px !important;
+    }
+
+    img.tcod-chart {
+      max-width: 400px !important;
+    }
+  }
+}
+
+@include respond-between(lg, xlg) {
+  #procurement-library,
+  .procurement-library-container {
+    img.sp-image {
+      max-height: 250px !important;
+    }
+
+    img.sscc-image {
+      max-width: 450px !important;
+    }
+
+    img.spp-image {
+      max-height: 500px !important;
+    }
+  }
+}
+// EOL MEDIA CSS

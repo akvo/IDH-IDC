@@ -20,7 +20,7 @@ import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
 import SustainableProcurementImage from "../../assets/images/procurement-library/sustainable-procurement.png";
 import SourcingStrategyCycleImage from "../../assets/images/procurement-library/sourcing-strategy-cycle.png";
-import VideoPlayerImage from "../../assets/images/procurement-library/video-player.png";
+import ProcurementPrinciplesCurves from "../../assets/images/procurement-library/principles-for-procurement-curves.svg";
 import CheckCircleIcon from "../../assets/icons/procurement-library/check-circle.png";
 import TCOChartImage from "../../assets/images/procurement-library/total-cost-of-ownership-chart.png";
 
@@ -226,7 +226,8 @@ const ProcurementLibrary = () => {
           <h4>Procurement maturity with suppliers</h4>
           <img
             src={SustainableProcurementImage}
-            alt="sustainable-procurement-images"
+            alt="sustainable-procurement-image"
+            className="sp-image"
           />
         </div>
         <Divider />
@@ -246,10 +247,6 @@ const ProcurementLibrary = () => {
               each step of the four stages of a typical Sourcing Strategy Cycle
               approach - whether a strategy is being created or updated.
             </p>
-            <p>
-              Explore each stage of the Cycle and the outline opportunities for
-              integrating more sustainable practices.
-            </p>
           </div>
           <div className="sscc-title-button">
             <Link
@@ -264,6 +261,11 @@ const ProcurementLibrary = () => {
         {/* body */}
         <div className="sscc-body-wrapper">
           <div className="sscc-body-left">
+            <p>
+              Explore each stage of the Cycle and the outline opportunities for
+              integrating more sustainable practices.
+            </p>
+
             {/* tabs */}
             <SourcingStrategyCycleTabs
               sourcingStrategyCycleTab={sourcingStrategyCycleTab}
@@ -344,7 +346,13 @@ const ProcurementLibrary = () => {
           </div>
         </div>
         <div className="spp-image-wrapper">
-          <img src={VideoPlayerImage} alt="video-player-thumbnail" />
+          <div className="spp-image-border">
+            <img
+              src={ProcurementPrinciplesCurves}
+              alt="procurement-principles-curves-img"
+              className="spp-image"
+            />
+          </div>
         </div>
       </div>
       {/* EOL Sustainable Procurement Principles */}
