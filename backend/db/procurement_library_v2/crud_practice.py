@@ -161,7 +161,7 @@ def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
 
 
 # ============================================================
-# GET PRACTICES BY ATTRIBUTE ID (USED FOR SOURCING STRATEGY CYCLE)
+# GET PRACTICES BY ATTRIBUTE ID (WITH OPTIONAL FILTERS)
 # ============================================================
 def get_practices_by_attribute(
     db: Session,
@@ -169,11 +169,13 @@ def get_practices_by_attribute(
     page: int = 1,
     limit: int = 10,
     search: Optional[str] = None,
-    extra_attribute_ids: Optional[list[int]] = None,
+    impact_area: Optional[str] = None,
+    sourcing_strategy_cycle: Optional[int] = None,
+    procurement_principles: Optional[int] = None,
 ):
     offset = (page - 1) * limit
 
-    # Base query
+    # --- Base query ---
     query = (
         select(PLPracticeIntervention)
         .join(PLPracticeInterventionTag)
@@ -184,35 +186,66 @@ def get_practices_by_attribute(
             joinedload(PLPracticeIntervention.indicator_scores)
             .joinedload(PLPracticeInterventionIndicatorScore.indicator),
         )
+        .distinct()
     )
 
-    # Apply additional filters
-    # 1️⃣ Optional text search (practice label)
+    # --- Text search ---
     if search:
-        query = query.filter(PLPracticeIntervention.label.ilike(f"%{search}%"))
-
-    # 2️⃣ Optional filter by multiple attribute IDs
-    if extra_attribute_ids:
         query = query.filter(
-            PLPracticeIntervention.id.in_(
-                select(PLPracticeInterventionTag.practice_intervention_id)
-                .where(PLPracticeInterventionTag.attribute_id.in_(extra_attribute_ids))
+            PLPracticeIntervention.label.ilike(f"%{search}%")
+            | PLPracticeIntervention.business_rationale.ilike(f"%{search}%")
+            | PLPracticeIntervention.farmer_rationale.ilike(f"%{search}%")
+            | PLPracticeIntervention.intervention_definition.ilike(f"%{search}%")
+            | PLPracticeIntervention.risks_n_trade_offs.ilike(f"%{search}%")
+            | PLPracticeIntervention.enabling_conditions.ilike(f"%{search}%")
+        )
+
+    # --- Filter by impact area (indicator score > 3) ---
+    if impact_area:
+        query = (
+            query.join(PLPracticeInterventionIndicatorScore)
+            .join(PLIndicator)
+            .filter(
+                and_(
+                    PLIndicator.name == impact_area,
+                    PLPracticeInterventionIndicatorScore.score > 3,
+                )
             )
         )
 
-    # Pagination and execution
+    # --- Filter by sourcing_strategy_cycle ---
+    if sourcing_strategy_cycle:
+        tag_alias_1 = aliased(PLPracticeInterventionTag)
+        attr_alias_1 = aliased(PLAttribute)
+        query = (
+            query.join(tag_alias_1, PLPracticeIntervention.id == tag_alias_1.practice_intervention_id)
+            .join(attr_alias_1, tag_alias_1.attribute_id == attr_alias_1.id)
+            .filter(attr_alias_1.id == sourcing_strategy_cycle)
+        )
+
+    # --- Filter by procurement_principles ---
+    if procurement_principles:
+        tag_alias_2 = aliased(PLPracticeInterventionTag)
+        attr_alias_2 = aliased(PLAttribute)
+        query = (
+            query.join(tag_alias_2, PLPracticeIntervention.id == tag_alias_2.practice_intervention_id)
+            .join(attr_alias_2, tag_alias_2.attribute_id == attr_alias_2.id)
+            .filter(attr_alias_2.id == procurement_principles)
+        )
+
+    # --- Count & Pagination ---
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     results = db.scalars(query.offset(offset).limit(limit)).unique().all()
 
-    # Format response data
+    # --- Build response ---
     data = []
     for p in results:
-        # Get tags (attribute labels)
+        # Tags (attribute labels)
         tags = [
             t.attribute.label for t in p.tags if t.attribute and t.attribute.label
         ]
 
-        # Determine boolean flags
+        # Boolean flags
         scores = p.indicator_scores or []
         is_environmental = any(
             s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
