@@ -10,6 +10,12 @@ import ExternalAnalysisIcon from "../../assets/icons/procurement-library/externa
 import StrategicChoicesIcon from "../../assets/icons/procurement-library/strategic-choices.png";
 import ImplementationIcon from "../../assets/icons/procurement-library/implementation.png";
 import CheckIconSvg from "../../assets/icons/procurement-library/check.svg";
+import InternalAnalysisIconColor from "../../assets/icons/procurement-library/colorized-internal-analysis.png";
+import ExternalAnalysisIconColor from "../../assets/icons/procurement-library/colorized-external-analysis.png";
+import StrategicChoiceIconColor from "../../assets/icons/procurement-library/colorized-strategic-choices.png";
+import ImplementationIconColor from "../../assets/icons/procurement-library/colorize-implementation.png";
+import EnvironmentIcon from "../../assets/icons/procurement-library/environment.png";
+import IncomeIcon from "../../assets/icons/procurement-library/income.png";
 
 export const LIMIT_RESULT = 15;
 
@@ -89,6 +95,11 @@ export const PROCUREMENT_SCALE = [
     reversed: false,
   },
 ];
+
+export const PROCUREMENT_CATEGORIES_ID = {
+  sourcing_strategy_cycle: 1,
+  procurement_principles: 2,
+};
 
 export const PROCUREMENT_COLOR_SCALE = [
   "#FF010E",
@@ -596,4 +607,54 @@ export const TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT = [
   "Blind spots on risks beyond price - e.g. human rights abuses, poverty among smallholder farmers or biodiversity and nature loss through deforestation - all of which can lead to supply shortages, legal penalties or reputational damage and pressure from customers.",
   "Weaker supplier relationships - missing out on value creation opportunities and innovation as suppliers do not view the buyer as a strategic partner.",
   "The visual provides a high-level example of how strategically integrating and investing in sustainability in sourcing can result in lower costs overall when considering the value chain holistically.",
+];
+
+export const SEARCHBOX_ICONS = [
+  {
+    name: "Internal Analysis",
+    icon: InternalAnalysisIconColor,
+  },
+  {
+    name: "External Analysis",
+    icon: ExternalAnalysisIconColor,
+  },
+  {
+    name: "Strategic Choice",
+    icon: StrategicChoiceIconColor,
+  },
+  {
+    name: "Implementation",
+    icon: ImplementationIconColor,
+  },
+  {
+    name: "Environment",
+    icon: EnvironmentIcon,
+  },
+  {
+    name: "Income",
+    icon: IncomeIcon,
+  },
+];
+
+export const SOURCING_STRATEGY_CYCLE_COLORS = [
+  // internal
+  {
+    backgroundColor: "#EAF2F2",
+    shadowColor: "#01625F",
+  },
+  // external
+  {
+    backgroundColor: "#FFF2EA",
+    shadowColor: "#FF5D00",
+  },
+  // strategic
+  {
+    backgroundColor: "#F0FCF5",
+    shadowColor: "#48D985",
+  },
+  // implementation
+  {
+    backgroundColor: "#EAF7FF",
+    shadowColor: "#0098FF",
+  },
 ];

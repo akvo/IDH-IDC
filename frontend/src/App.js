@@ -21,7 +21,7 @@ import {
   Company,
   CompanyForm,
 } from "./pages/admin";
-import { UserState, UIState } from "./store";
+import { UserState, UIState, PLState } from "./store";
 import { api } from "./lib";
 import { adminRole, PROD_HOST } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
@@ -45,6 +45,8 @@ const optionRoutes = [
   "company/options",
   "company/having_case_options",
 ];
+
+const PLOptionRoutes = ["plv2/category/attributes"];
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -88,6 +90,24 @@ const App = () => {
         console.error(e);
       });
   }, []);
+
+  // PL Related State
+  useEffect(() => {
+    const PLOptionRoutesptionApiCalls = PLOptionRoutes.map((url) =>
+      api.get(url)
+    );
+    Promise.all(PLOptionRoutesptionApiCalls)
+      .then((res) => {
+        const [catAttrRes] = res;
+        PLState.update((s) => {
+          s.categoryWithAttributes = catAttrRes.data;
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, []);
+  // EOL PL Related State
 
   const authTokenAvailable = useMemo(() => {
     const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
