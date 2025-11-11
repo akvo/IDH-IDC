@@ -26,6 +26,8 @@ from routes.procurement_library.practice import practice_route
 from routes.procurement_library.procurement_process import (
     procurement_process_route,
 )
+from routes.procurement_library_v2.practice import pl_practice_router_v2
+from routes.procurement_library_v2.category import pl_cat_router_v2
 
 import os
 from jsmin import jsmin
@@ -140,6 +142,8 @@ app.include_router(optimization_route)
 app.include_router(assessment_question_route)
 app.include_router(practice_route)
 app.include_router(procurement_process_route)
+app.include_router(pl_cat_router_v2)
+app.include_router(pl_practice_router_v2)
 
 
 @app.get("/", tags=["Dev"])
