@@ -265,7 +265,7 @@ const InterventionLibrary = () => {
           {!isEmpty(practiceByAttributes) &&
             sourcingStragegyCycleOptions.map((it, idx) => {
               const cardColor = SOURCING_STRATEGY_CYCLE_COLORS[idx];
-              console.log(cardColor);
+              const cardIcon = SEARCHBOX_ICONS[idx];
               return (
                 <div
                   key={`ssc-item-${it.value}`}
@@ -306,22 +306,28 @@ const InterventionLibrary = () => {
                         sm: 2,
                         md: 3,
                         lg: 3,
-                        xl: 4,
-                        xxl: 4,
+                        xl: 3,
+                        xxl: 3,
                       }}
                       dataSource={practiceByAttributes[it.value].data}
                       loading={loading}
-                      renderItem={(practice) => (
-                        <List.Item key={practice.id}>
-                          <div
-                            className="intervention-card"
-                            style={{
-                              backgroundColor: cardColor.backgroundColor,
-                              borderLeft: `2px solid ${cardColor.shadowColor}`,
-                            }}
-                          >
-                            <div className="intervention-card-header">
-                              <div className="intervention-card-categories">
+                      renderItem={(practice) => {
+                        const sourcingPrinciplesLabels =
+                          procurementPrincipleOptions.map((p) => p.label);
+                        const sourcingPrinciplesTags = practice?.tags?.filter(
+                          (tag) => sourcingPrinciplesLabels.includes(tag)
+                        );
+                        return (
+                          <List.Item key={practice.id}>
+                            <div
+                              className="intervention-card"
+                              style={{
+                                backgroundColor: cardColor.backgroundColor,
+                                borderLeft: `2px solid ${cardColor.shadowColor}`,
+                              }}
+                            >
+                              <div className="intervention-card-header">
+                                {/* <div className="intervention-card-categories">
                                 {practice?.procurement_processes
                                   ?.slice(0, 1)
                                   ?.map((proc) => (
@@ -373,40 +379,62 @@ const InterventionLibrary = () => {
                                     </Tag>
                                   </Popover>
                                 )}
+                              </div> */}
+                                <img
+                                  className="ssc-step"
+                                  src={cardIcon.icon}
+                                  alt={cardIcon.name}
+                                />
+                                <ImpactAreaIcons
+                                  isIncome={practice?.is_income}
+                                  isEnv={practice?.is_environmental}
+                                />
                               </div>
-                              <ImpactAreaIcons
-                                isIncome={practice?.is_income}
-                                isEnv={practice?.is_environmental}
-                              />
-                            </div>
-                            <div
-                              className="intervention-card-description"
-                              role="button"
-                              onClick={() => {
-                                navigate(
-                                  `/procurement-library/intervention-library/${practice.id}`
-                                );
-                              }}
-                            >
-                              <strong className="font-tablet-gothic">
-                                {practice.label}
-                              </strong>
-                            </div>
-                            <div className="intervention-card-footer">
-                              <Link
-                                to={`/procurement-library/intervention-library/${practice.id}`}
+                              <div
+                                className="intervention-card-description"
+                                role="button"
+                                onClick={() => {
+                                  navigate(
+                                    `/procurement-library/intervention-library/${practice.id}`
+                                  );
+                                }}
                               >
-                                <Space size="small">
-                                  <span>View</span>
-                                  <span>
-                                    <ArrowRight />
-                                  </span>
-                                </Space>
-                              </Link>
+                                <strong className="font-tablet-gothic">
+                                  {practice.label}
+                                </strong>
+                              </div>
+                              {/* TAGS */}
+                              {sourcingPrinciplesTags?.length ? (
+                                <div className="intervention-cart-tags">
+                                  <div className="ict-title">
+                                    Sourcing principles
+                                  </div>
+                                  <div className="ict-tags-wrapper">
+                                    {sourcingPrinciplesTags?.map((tag) => (
+                                      <Tag key={tag}>{tag}</Tag>
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : (
+                                ""
+                              )}
+                              {/* EOL TAGS */}
+                              <div className="intervention-card-footer">
+                                <Link
+                                  to={`/procurement-library/intervention-library/${practice.id}`}
+                                >
+                                  <Space size="small">
+                                    <span>View</span>
+                                    <span>
+                                      <ArrowRight />
+                                    </span>
+                                  </Space>
+                                </Link>
+                              </div>
                             </div>
-                          </div>
-                        </List.Item>
-                      )}
+                          </List.Item>
+                        );
+                      }}
                     />
                   </InfiniteScroll>
                 </div>
