@@ -1,6 +1,12 @@
 from datetime import datetime
 from typing import List, Optional
 from pydantic import BaseModel
+from enum import Enum
+
+
+class ImpactArea(str, Enum):
+    income = "income_impact"
+    env = "environmental_impact"
 
 
 # ============================================================

@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select, func
+from sqlalchemy.orm import Session, joinedload, aliased
+from sqlalchemy import select, func, and_
 from typing import Optional
 
 from models.procurement_library_v2.pl_models import (
@@ -12,46 +12,83 @@ from models.procurement_library_v2.pl_models import (
 
 
 # ============================================================
-# GET LIST OF PRACTICES WITH PAGINATION
+# GET LIST OF PRACTICES WITH PAGINATION & FILTERS
 # ============================================================
 def get_practice_list(
     db: Session,
     page: int = 1,
     limit: int = 10,
     search: Optional[str] = None,
+    impact_area: Optional[str] = None,
+    sourcing_strategy_cycle: Optional[int] = None,
+    procurement_principles: Optional[int] = None,
 ) -> dict:
-    """Return paginated list of practices (DB query-based)."""
+    """Return paginated list of practices with optional filters by impact area and attributes."""
     offset = (page - 1) * limit
 
     # --- Base query ---
-    stmt = (
-        select(PLPracticeIntervention)
-        .order_by(PLPracticeIntervention.id)
-        .offset(offset)
-        .limit(limit)
-    )
+    stmt = select(PLPracticeIntervention).distinct()
 
-    # --- Apply search ---
+    # --- Search filter ---
     if search:
-        stmt = stmt.where(PLPracticeIntervention.label.ilike(f"%{search}%"))
-
-    # --- Count total ---
-    total = db.scalar(
-        select(func.count()).select_from(PLPracticeIntervention).where(
+        stmt = stmt.filter(
             PLPracticeIntervention.label.ilike(f"%{search}%")
-        ) if search else select(func.count()).select_from(PLPracticeIntervention)
-    )
+            | PLPracticeIntervention.business_rationale.ilike(f"%{search}%")
+            | PLPracticeIntervention.farmer_rationale.ilike(f"%{search}%")
+            | PLPracticeIntervention.intervention_definition.ilike(f"%{search}%")
+            | PLPracticeIntervention.risks_n_trade_offs.ilike(f"%{search}%")
+            | PLPracticeIntervention.enabling_conditions.ilike(f"%{search}%")
+        )
 
-    # --- Fetch results ---
-    practices = db.scalars(stmt).all()
+    # --- Impact area filter ---
+    if impact_area:
+        stmt = (
+            stmt.join(PLPracticeInterventionIndicatorScore)
+            .join(PLIndicator)
+            .filter(
+                and_(
+                    PLIndicator.name == impact_area,
+                    PLPracticeInterventionIndicatorScore.score > 3,
+                )
+            )
+        )
 
-    # --- Preload related data efficiently ---
-    # Get all related IDs
-    practice_ids = [p.id for p in practices]
-    if not practice_ids:
+    # --- Filter by sourcing_strategy_cycle attribute ---
+    if sourcing_strategy_cycle:
+        tag_alias_1 = aliased(PLPracticeInterventionTag)
+        attr_alias_1 = aliased(PLAttribute)
+        stmt = (
+            stmt.join(tag_alias_1, PLPracticeIntervention.id == tag_alias_1.practice_intervention_id)
+            .join(attr_alias_1, tag_alias_1.attribute_id == attr_alias_1.id)
+            .filter(attr_alias_1.id == sourcing_strategy_cycle)
+        )
+
+    # --- Filter by procurement principles attribute ---
+    if procurement_principles:
+        tag_alias_2 = aliased(PLPracticeInterventionTag)
+        attr_alias_2 = aliased(PLAttribute)
+        stmt = (
+            stmt.join(tag_alias_2, PLPracticeIntervention.id == tag_alias_2.practice_intervention_id)
+            .join(attr_alias_2, tag_alias_2.attribute_id == attr_alias_2.id)
+            .filter(attr_alias_2.id == procurement_principles)
+        )
+
+    # --- Pagination ---
+    stmt = stmt.order_by(PLPracticeIntervention.id).offset(offset).limit(limit)
+
+    # --- Count total (based on same filters) ---
+    total = db.scalar(select(func.count()).select_from(stmt.subquery()))
+
+    # --- Execute main query ---
+    practices = db.scalars(stmt).unique().all()
+
+    if not practices:
         return {"current": page, "total": 0, "total_page": 0, "data": []}
 
-    # Load all attributes (tags) for these practices
+    # --- Gather related data ---
+    practice_ids = [p.id for p in practices]
+
+    # Tags
     tags = (
         db.query(PLPracticeInterventionTag)
         .join(PLAttribute)
@@ -59,7 +96,7 @@ def get_practice_list(
         .all()
     )
 
-    # Load all indicator scores
+    # Scores
     scores = (
         db.query(PLPracticeInterventionIndicatorScore)
         .join(PLIndicator)
@@ -67,7 +104,7 @@ def get_practice_list(
         .all()
     )
 
-    # --- Group related data by practice ID ---
+    # --- Group related data ---
     tag_map = {}
     for t in tags:
         tag_map.setdefault(t.practice_intervention_id, []).append(t)
@@ -85,8 +122,8 @@ def get_practice_list(
 
     return {
         "current": page,
-        "total": total,
-        "total_page": (total + limit - 1) // limit if total else 0,
+        "total": total or len(data),
+        "total_page": (total + limit - 1) // limit if total else 1,
         "data": data,
     }
 
