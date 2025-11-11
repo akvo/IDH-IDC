@@ -284,5 +284,10 @@
         color: #475467;
       }
     }
+
+    // Hide default No Data from infinite scroll
+    .ant-empty {
+      display: none;
+    }
   }
 }
