@@ -308,16 +308,24 @@ const InterventionLibrary = () => {
 
   const NoData = () => (
     <div id="scrollableDiv" className="intervention-library-content-body">
-      <div className="no-data-wrapper">
-        <h2>No data</h2>
-        <p>No more results available.</p>
-        <Link
-          className="button button-green-fill"
-          onClick={handleRefreshSearch}
-        >
-          Refresh search
-        </Link>
-      </div>
+      {loading ? (
+        <div className="no-data-wrapper">
+          <Divider plain>
+            <Spin spinning />
+          </Divider>
+        </div>
+      ) : (
+        <div className="no-data-wrapper">
+          <h2>No data</h2>
+          <p>No more results available.</p>
+          <Link
+            className="button button-green-fill"
+            onClick={handleRefreshSearch}
+          >
+            Refresh search
+          </Link>
+        </div>
+      )}
     </div>
   );
 
