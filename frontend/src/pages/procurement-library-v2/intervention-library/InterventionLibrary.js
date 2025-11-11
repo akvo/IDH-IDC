@@ -61,6 +61,14 @@ const InterventionLibrary = () => {
 
   console.info(total);
 
+  const isAllPraticesByAttributeHasNoData = useMemo(() => {
+    const values = Object.values(practiceByAttributes);
+    const isNull = values.map((x) => {
+      return !x?.data?.length;
+    });
+    return isNull.filter((x) => x)?.length === values?.length;
+  }, [practiceByAttributes]);
+
   const sourcingStragegyCycleOptions = useMemo(
     () =>
       categoryWithAttributes
@@ -144,6 +152,22 @@ const InterventionLibrary = () => {
     fetchData(true);
   };
 
+  const handleRefreshSearch = () => {
+    const def = {
+      search: "",
+      impact_area: null,
+      sourcing_strategy_cycle: null,
+      procurement_principles: null,
+    };
+    form.setFieldsValue(def);
+    PLState.update((s) => {
+      s.filterV2 = def;
+    });
+    setPage(1);
+    setLoading(true);
+    fetchData(true);
+  };
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -151,6 +175,151 @@ const InterventionLibrary = () => {
   if (isMobile) {
     return <Blocker backRoute="/procurement-library" />;
   }
+
+  const PracticeList = () => (
+    <div id="scrollableDiv" className="intervention-library-content-body">
+      {!isEmpty(practiceByAttributes) &&
+        sourcingStragegyCycleOptions.map((it, idx) => {
+          const cardColor = SOURCING_STRATEGY_CYCLE_COLORS[idx];
+          const cardIcon = SEARCHBOX_ICONS[idx];
+          return (
+            <div
+              key={`ssc-item-${it.value}`}
+              className="il-practice-by-attribute-wrapper"
+            >
+              <div className="il-attribute-title">
+                <div className="left">{it.label}</div>
+                <Divider />
+              </div>
+              <InfiniteScroll
+                dataLength={practiceByAttributes[it.value].data.length}
+                // next={() => {
+                //   setLoading(true);
+                //   setPage(page + 1);
+                //   setTimeout(() => {
+                //     fetchData();
+                //   }, 1000);
+                // }}
+                // hasMore={practices.length < total}
+                hasMore={false}
+                loader={
+                  <Divider plain>
+                    <Spin spinning />
+                  </Divider>
+                }
+                // endMessage={
+                //   <Divider plain>
+                //     {!loading && <em>No more results available.</em>}
+                //   </Divider>
+                // }
+                scrollableTarget="scrollableDiv"
+                style={{ overflowX: "hidden" }}
+              >
+                <List
+                  grid={{
+                    gutter: 16,
+                    xs: 1,
+                    sm: 2,
+                    md: 3,
+                    lg: 3,
+                    xl: 3,
+                    xxl: 3,
+                  }}
+                  dataSource={practiceByAttributes[it.value].data}
+                  loading={loading}
+                  renderItem={(practice) => {
+                    const sourcingPrinciplesLabels =
+                      procurementPrincipleOptions.map((p) => p.label);
+                    const sourcingPrinciplesTags = practice?.tags?.filter(
+                      (tag) => sourcingPrinciplesLabels.includes(tag)
+                    );
+                    return (
+                      <List.Item key={practice.id}>
+                        <div
+                          className="intervention-card"
+                          style={{
+                            backgroundColor: cardColor.backgroundColor,
+                            borderLeft: `2px solid ${cardColor.shadowColor}`,
+                          }}
+                        >
+                          <div className="intervention-card-header">
+                            <img
+                              className="ssc-step"
+                              src={cardIcon.icon}
+                              alt={cardIcon.name}
+                            />
+                            <ImpactAreaIcons
+                              isIncome={practice?.is_income}
+                              isEnv={practice?.is_environmental}
+                            />
+                          </div>
+                          <div
+                            className="intervention-card-description"
+                            role="button"
+                            onClick={() => {
+                              navigate(
+                                `/procurement-library/intervention-library/${practice.id}`
+                              );
+                            }}
+                          >
+                            <strong className="font-tablet-gothic">
+                              {practice.label}
+                            </strong>
+                          </div>
+                          {/* TAGS */}
+                          {sourcingPrinciplesTags?.length ? (
+                            <div className="intervention-cart-tags">
+                              <div className="ict-title">
+                                Sourcing principles
+                              </div>
+                              <div className="ict-tags-wrapper">
+                                {sourcingPrinciplesTags?.map((tag) => (
+                                  <Tag key={tag}>{tag}</Tag>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            ""
+                          )}
+                          {/* EOL TAGS */}
+                          <div className="intervention-card-footer">
+                            <Link
+                              to={`/procurement-library/intervention-library/${practice.id}`}
+                            >
+                              <Space size="small">
+                                <span>View</span>
+                                <span>
+                                  <ArrowRight />
+                                </span>
+                              </Space>
+                            </Link>
+                          </div>
+                        </div>
+                      </List.Item>
+                    );
+                  }}
+                />
+              </InfiniteScroll>
+            </div>
+          );
+        })}
+    </div>
+  );
+
+  const NoData = () => (
+    <div id="scrollableDiv" className="intervention-library-content-body">
+      <div className="no-data-wrapper">
+        <h2>No data</h2>
+        <p>No more results available.</p>
+        <Link
+          className="button button-green-fill"
+          onClick={handleRefreshSearch}
+        >
+          Refresh search
+        </Link>
+      </div>
+    </div>
+  );
 
   return (
     <div className="intervention-library-container">
@@ -265,133 +434,8 @@ const InterventionLibrary = () => {
           </Form>
         </div>
 
-        <div id="scrollableDiv" className="intervention-library-content-body">
-          {!isEmpty(practiceByAttributes) &&
-            sourcingStragegyCycleOptions.map((it, idx) => {
-              const cardColor = SOURCING_STRATEGY_CYCLE_COLORS[idx];
-              const cardIcon = SEARCHBOX_ICONS[idx];
-              return (
-                <div
-                  key={`ssc-item-${it.value}`}
-                  className="il-practice-by-attribute-wrapper"
-                >
-                  <div className="il-attribute-title">
-                    <div className="left">{it.label}</div>
-                    <Divider />
-                  </div>
-                  <InfiniteScroll
-                    dataLength={practiceByAttributes[it.value].data.length}
-                    // next={() => {
-                    //   setLoading(true);
-                    //   setPage(page + 1);
-                    //   setTimeout(() => {
-                    //     fetchData();
-                    //   }, 1000);
-                    // }}
-                    // hasMore={practices.length < total}
-                    hasMore={false}
-                    loader={
-                      <Divider plain>
-                        <Spin spinning />
-                      </Divider>
-                    }
-                    // endMessage={
-                    //   <Divider plain>
-                    //     {!loading && <em>No more results available.</em>}
-                    //   </Divider>
-                    // }
-                    scrollableTarget="scrollableDiv"
-                    style={{ overflowX: "hidden" }}
-                  >
-                    <List
-                      grid={{
-                        gutter: 16,
-                        xs: 1,
-                        sm: 2,
-                        md: 3,
-                        lg: 3,
-                        xl: 3,
-                        xxl: 3,
-                      }}
-                      dataSource={practiceByAttributes[it.value].data}
-                      loading={loading}
-                      renderItem={(practice) => {
-                        const sourcingPrinciplesLabels =
-                          procurementPrincipleOptions.map((p) => p.label);
-                        const sourcingPrinciplesTags = practice?.tags?.filter(
-                          (tag) => sourcingPrinciplesLabels.includes(tag)
-                        );
-                        return (
-                          <List.Item key={practice.id}>
-                            <div
-                              className="intervention-card"
-                              style={{
-                                backgroundColor: cardColor.backgroundColor,
-                                borderLeft: `2px solid ${cardColor.shadowColor}`,
-                              }}
-                            >
-                              <div className="intervention-card-header">
-                                <img
-                                  className="ssc-step"
-                                  src={cardIcon.icon}
-                                  alt={cardIcon.name}
-                                />
-                                <ImpactAreaIcons
-                                  isIncome={practice?.is_income}
-                                  isEnv={practice?.is_environmental}
-                                />
-                              </div>
-                              <div
-                                className="intervention-card-description"
-                                role="button"
-                                onClick={() => {
-                                  navigate(
-                                    `/procurement-library/intervention-library/${practice.id}`
-                                  );
-                                }}
-                              >
-                                <strong className="font-tablet-gothic">
-                                  {practice.label}
-                                </strong>
-                              </div>
-                              {/* TAGS */}
-                              {sourcingPrinciplesTags?.length ? (
-                                <div className="intervention-cart-tags">
-                                  <div className="ict-title">
-                                    Sourcing principles
-                                  </div>
-                                  <div className="ict-tags-wrapper">
-                                    {sourcingPrinciplesTags?.map((tag) => (
-                                      <Tag key={tag}>{tag}</Tag>
-                                    ))}
-                                  </div>
-                                </div>
-                              ) : (
-                                ""
-                              )}
-                              {/* EOL TAGS */}
-                              <div className="intervention-card-footer">
-                                <Link
-                                  to={`/procurement-library/intervention-library/${practice.id}`}
-                                >
-                                  <Space size="small">
-                                    <span>View</span>
-                                    <span>
-                                      <ArrowRight />
-                                    </span>
-                                  </Space>
-                                </Link>
-                              </div>
-                            </div>
-                          </List.Item>
-                        );
-                      }}
-                    />
-                  </InfiniteScroll>
-                </div>
-              );
-            })}
-        </div>
+        {/* LOAD PRACTICES LIST */}
+        {isAllPraticesByAttributeHasNoData ? <NoData /> : <PracticeList />}
       </div>
     </div>
   );
