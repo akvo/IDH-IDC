@@ -4,7 +4,6 @@ import {
   Form,
   Input,
   List,
-  Popover,
   Select,
   Space,
   Spin,
@@ -15,7 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { ArrowRight, SearchIcon } from "../../../lib/icon";
 import { api } from "../../../lib";
-import { ImpactAreaIcons, ProcurementBadge } from "../components";
+import { ImpactAreaIcons } from "../components";
 import "./intervention-library.scss";
 import {
   IMPACT_AREA_OPTIONS,
@@ -49,7 +48,6 @@ const { useForm } = Form;
 const InterventionLibrary = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [practices, setPractices] = useState([]);
   const [practiceByAttributes, setPracticesByAttributes] = useState({});
   const [total, setTotal] = useState(0);
   const filter = PLState.useState((s) => s.filterV2);
@@ -61,20 +59,27 @@ const InterventionLibrary = () => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
 
-  const sourcingStragegyCycleOptions = useMemo(() =>
-    categoryWithAttributes
-      .find(
-        (attr) => attr.id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
-      )
-      ?.attributes?.map((it) => ({ label: it.label, value: it.id }))
+  console.info(total);
+
+  const sourcingStragegyCycleOptions = useMemo(
+    () =>
+      categoryWithAttributes
+        .find(
+          (attr) =>
+            attr.id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
+        )
+        ?.attributes?.map((it) => ({ label: it.label, value: it.id })),
+    [categoryWithAttributes]
   );
 
-  const procurementPrincipleOptions = useMemo(() =>
-    categoryWithAttributes
-      .find(
-        (attr) => attr.id === PROCUREMENT_CATEGORIES_ID.procurement_principles
-      )
-      ?.attributes?.map((it) => ({ label: it.label, value: it.id }))
+  const procurementPrincipleOptions = useMemo(
+    () =>
+      categoryWithAttributes
+        .find(
+          (attr) => attr.id === PROCUREMENT_CATEGORIES_ID.procurement_principles
+        )
+        ?.attributes?.map((it) => ({ label: it.label, value: it.id })),
+    [categoryWithAttributes]
   );
 
   const fetchData = useCallback(
@@ -84,7 +89,7 @@ const InterventionLibrary = () => {
           return;
         }
         const urls = orderBy(sourcingStragegyCycleOptions, "value").map(
-          ({ value: attributeId, _ }) => {
+          ({ value: attributeId }) => {
             let apiURL = `/plv2/practices-by-attribute/${attributeId}?limit=${PAGE_SIZE}`;
             if (filter?.search) {
               apiURL += `&search=${filter.search}`;
@@ -129,7 +134,6 @@ const InterventionLibrary = () => {
     },
     [loading, page, filter, sourcingStragegyCycleOptions]
   );
-  console.log(practiceByAttributes);
 
   const handleOnFinish = (payload) => {
     PLState.update((s) => {
@@ -327,59 +331,6 @@ const InterventionLibrary = () => {
                               }}
                             >
                               <div className="intervention-card-header">
-                                {/* <div className="intervention-card-categories">
-                                {practice?.procurement_processes
-                                  ?.slice(0, 1)
-                                  ?.map((proc) => (
-                                    <ProcurementBadge
-                                      key={proc?.id}
-                                      id={proc?.id}
-                                      text={proc?.label}
-                                    />
-                                  ))}
-                                {practice?.procurement_processes?.length >
-                                  1 && (
-                                  <Popover
-                                    placement="bottom"
-                                    content={
-                                      <ul
-                                        style={{
-                                          paddingInlineStart: 0,
-                                          paddingBlockStart: 0,
-                                          marginBlockStart: 0,
-                                          marginBlockEnd: 0,
-                                          listStyle: "none",
-                                        }}
-                                      >
-                                        {practice.procurement_processes
-                                          .slice(
-                                            1,
-                                            practice.procurement_processes
-                                              .length
-                                          )
-                                          .map((proc) => (
-                                            <li
-                                              key={proc?.id}
-                                              style={{ marginBottom: 6 }}
-                                            >
-                                              <ProcurementBadge
-                                                id={proc?.id}
-                                                text={proc?.label}
-                                              />
-                                            </li>
-                                          ))}
-                                      </ul>
-                                    }
-                                  >
-                                    <Tag>
-                                      {`+${
-                                        practice?.procurement_processes
-                                          ?.length - 1
-                                      }`}
-                                    </Tag>
-                                  </Popover>
-                                )}
-                              </div> */}
                                 <img
                                   className="ssc-step"
                                   src={cardIcon.icon}

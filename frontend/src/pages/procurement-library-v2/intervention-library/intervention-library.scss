@@ -177,11 +177,6 @@
         .intervention-card {
           width: 100%;
           min-height: 340px;
-          // display: flex;
-          // flex-direction: column;
-          // align-items: flex-start;
-          // justify-content: space-between;
-          // gap: 12px;
           padding: 12px;
           border-radius: 16px;
           border: 1px solid #e9e9e9;
@@ -199,24 +194,6 @@
               width: 24px;
               height: 24px;
             }
-            // .intervention-card-categories {
-            //   display: flex;
-            //   flex-direction: row;
-            //   flex-wrap: wrap;
-            //   gap: 4px;
-            //   .ant-tag {
-            //     padding-inline: 0;
-            //     padding: 1px 6px;
-            //     border-radius: 999px;
-            //     display: flex;
-            //     flex-direction: column;
-            //     justify-content: center;
-            //     align-items: center;
-            //     font-size: 12px;
-            //     font-style: normal;
-            //     font-weight: 700;
-            //   }
-            // }
           }
 
           .intervention-card-description {
