@@ -10,6 +10,12 @@ const defaultPLState = {
   },
   // v2
   categoryWithAttributes: [],
+  filterV2: {
+    search: "",
+    impact_area: null,
+    sourcing_strategy_cycle: null,
+    procurement_principles: null,
+  },
 };
 
 const PLState = new Store(defaultPLState);

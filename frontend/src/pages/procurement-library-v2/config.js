@@ -90,6 +90,11 @@ export const PROCUREMENT_SCALE = [
   },
 ];
 
+export const PROCUREMENT_CATEGORIES_ID = {
+  sourcing_strategy_cycle: 1,
+  procurement_principles: 2,
+};
+
 export const PROCUREMENT_COLOR_SCALE = [
   "#FF010E",
   "#FF8754",

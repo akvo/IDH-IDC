@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import {
   Divider,
   Form,
@@ -9,7 +9,6 @@ import {
   Space,
   Spin,
   Tag,
-  Tooltip,
   Breadcrumb,
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -18,11 +17,17 @@ import { ArrowRight, SearchIcon } from "../../../lib/icon";
 import { api } from "../../../lib";
 import { ImpactAreaIcons, ProcurementBadge } from "../components";
 import "./intervention-library.scss";
-import { IMPACT_AREA_OPTIONS } from "../config";
+import { IMPACT_AREA_OPTIONS, PROCUREMENT_CATEGORIES_ID } from "../config";
 import { PLState } from "../../../store";
 import { Blocker } from "../../../components/utils";
 import { useWindowDimensions } from "../../../hooks";
 import { HomeOutlined, RightOutlined } from "@ant-design/icons";
+import InternalAnalysisIconColor from "../../../assets/icons/procurement-library/colorized-internal-analysis.png";
+import ExternalAnalysisIconColor from "../../../assets/icons/procurement-library/colorized-external-analysis.png";
+import StrategicChoiceIconColor from "../../../assets/icons/procurement-library/colorized-strategic-choices.png";
+import ImplementationIconColor from "../../../assets/icons/procurement-library/colorize-implementation.png";
+import EnvironmentIcon from "../../../assets/icons/procurement-library/environment.png";
+import IncomeIcon from "../../../assets/icons/procurement-library/income.png";
 
 const PAGE_SIZE = 12;
 const breadcrumbItems = [
@@ -38,6 +43,32 @@ const breadcrumbItems = [
     active: true,
   },
 ];
+const searchboxIcons = [
+  {
+    name: "Internal Analysis",
+    icon: InternalAnalysisIconColor,
+  },
+  {
+    name: "External Analysis",
+    icon: ExternalAnalysisIconColor,
+  },
+  {
+    name: "Strategic Choice",
+    icon: StrategicChoiceIconColor,
+  },
+  {
+    name: "Implementation",
+    icon: ImplementationIconColor,
+  },
+  {
+    name: "Environment",
+    icon: EnvironmentIcon,
+  },
+  {
+    name: "Income",
+    icon: IncomeIcon,
+  },
+];
 
 const { useForm } = Form;
 
@@ -46,26 +77,30 @@ const InterventionLibrary = () => {
   const [page, setPage] = useState(1);
   const [practices, setPractices] = useState([]);
   const [total, setTotal] = useState(0);
-  const [procurementProcesses, setProcurementProcesses] = useState([]);
-  const filter = PLState.useState((s) => s.filter);
+  const filter = PLState.useState((s) => s.filterV2);
+  const categoryWithAttributes = PLState.useState(
+    (s) => s.categoryWithAttributes
+  );
 
   const [form] = useForm();
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
 
-  const fetchProcurementProcesses = useCallback(async () => {
-    try {
-      const { data } = await api.get("/pl/procurement-processes");
-      setProcurementProcesses(
-        data.map((proc) => ({
-          value: proc.id,
-          label: proc.label,
-        }))
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
+  const sourcingStragegyCycleOptions = useMemo(() =>
+    categoryWithAttributes
+      .find(
+        (attr) => attr.id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
+      )
+      ?.attributes?.map((it) => ({ label: it.label, value: it.id }))
+  );
+
+  const procurementPrincipleOptions = useMemo(() =>
+    categoryWithAttributes
+      .find(
+        (attr) => attr.id === PROCUREMENT_CATEGORIES_ID.procurement_principles
+      )
+      ?.attributes?.map((it) => ({ label: it.label, value: it.id }))
+  );
 
   const fetchData = useCallback(
     async (resetPage = false) => {
@@ -77,13 +112,14 @@ const InterventionLibrary = () => {
         if (filter?.search) {
           apiURL += `&search=${filter.search}`;
         }
-        if (filter?.procurement_process_ids) {
-          apiURL += `&procurement_process_ids=${filter.procurement_process_ids.join(
-            ","
-          )}`;
-        }
         if (filter?.impact_area) {
           apiURL += `&impact_area=${filter.impact_area}`;
+        }
+        if (filter?.sourcing_strategy_cycle) {
+          apiURL += `&sourcing_strategy_cycle=${filter.sourcing_strategy_cycle}`;
+        }
+        if (filter.procurement_principles) {
+          apiURL += `&procurement_principles=${filter.procurement_principles}`;
         }
 
         apiURL += resetPage ? "&page=1" : `&page=${page}`;
@@ -104,7 +140,7 @@ const InterventionLibrary = () => {
 
   const handleOnFinish = (payload) => {
     PLState.update((s) => {
-      s.filter = payload;
+      s.filterV2 = payload;
     });
     setPage(1);
     setLoading(true);
@@ -114,10 +150,6 @@ const InterventionLibrary = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  useEffect(() => {
-    fetchProcurementProcesses();
-  }, [fetchProcurementProcesses]);
 
   if (isMobile) {
     return <Blocker backRoute="/procurement-library" />;
@@ -146,49 +178,39 @@ const InterventionLibrary = () => {
       </div>
       <div className="intervention-library-content">
         <div className="intervention-library-content-header">
-          <h1>The Intervention Library</h1>
+          <div className="intervention-library-search-box-title-wrapper">
+            <h1>The Intervention Library</h1>
+            <div className="income-library-search-box-icon-wrapper">
+              {searchboxIcons.map((it) => (
+                <img
+                  key={it.name}
+                  src={it.icon}
+                  alt={it.name}
+                  className="il-search-box-icon"
+                />
+              ))}
+            </div>
+          </div>
           <Form
             form={form}
             onFinish={handleOnFinish}
             layout="vertical"
             initialValues={filter}
           >
-            <Form.Item
-              label="Procurement Process"
-              name="procurement_process_ids"
-            >
+            <Form.Item label="Search" name="search">
+              <Input
+                placeholder="Search"
+                prefix={<SearchIcon />}
+                style={{ minWidth: 280 }}
+                allowClear
+              />
+            </Form.Item>
+
+            <Form.Item label="Impact area" name="impact_area">
               <Select
-                placeholder="Choose procurement process"
-                mode="multiple"
-                options={procurementProcesses}
-                style={{ minWidth: 310 }}
-                size="large"
-                maxTagCount={1}
-                maxTagPlaceholder={(omittedValues) => (
-                  <Tooltip
-                    styles={{
-                      root: {
-                        pointerEvents: "none",
-                      },
-                    }}
-                    title={
-                      <ul
-                        style={{
-                          paddingInlineStart: 12,
-                          marginBlockStart: 0,
-                          marginBlockEnd: 0,
-                        }}
-                      >
-                        {omittedValues?.map(({ label }, ox) => (
-                          <li key={ox}>{label}</li>
-                        ))}
-                      </ul>
-                    }
-                    placement="bottom"
-                  >
-                    <span>{`+${omittedValues?.length}`}</span>
-                  </Tooltip>
-                )}
+                placeholder="Choose impact area"
+                options={IMPACT_AREA_OPTIONS}
+                style={{ minWidth: 125 }}
                 optionFilterProp="label"
                 filterOption={(input, option) =>
                   option.label.toLowerCase().includes(input.toLowerCase())
@@ -197,27 +219,41 @@ const InterventionLibrary = () => {
                 allowClear
               />
             </Form.Item>
+
             <Form.Item
-              label="Procurement practice title or keyword"
-              name="search"
+              label=" Sourcing Strategy Cycle"
+              name="sourcing_strategy_cycle"
             >
-              <Input
-                placeholder="Search"
-                prefix={<SearchIcon />}
-                size="large"
-                style={{ minWidth: 280 }}
-                allowClear
-              />
-            </Form.Item>
-            <Form.Item label="Impact area" name="impact_area">
               <Select
-                placeholder="Choose impact area"
-                options={IMPACT_AREA_OPTIONS}
+                placeholder="Choose strategy cycle"
+                options={sourcingStragegyCycleOptions}
                 style={{ minWidth: 125 }}
-                size="large"
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                showSearch
                 allowClear
               />
             </Form.Item>
+
+            <Form.Item
+              label="Procurement Principles"
+              name="procurement_principles"
+            >
+              <Select
+                placeholder="Choose procurement principles"
+                options={procurementPrincipleOptions}
+                style={{ minWidth: 125 }}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                showSearch
+                allowClear
+              />
+            </Form.Item>
+
             <button
               type="submit"
               className="intervention-library-search-button"
