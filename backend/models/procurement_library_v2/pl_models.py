@@ -234,7 +234,7 @@ class PLPracticeIntervention(Base):
             "scores": [
                 {
                     "id": s.id,
-                    "indicator_name": s.indicator.label if s.indicator else None,
+                    "indicator_name": s.indicator.name if s.indicator else None,
                     "score": s.score,
                 }
                 for s in self.indicator_scores

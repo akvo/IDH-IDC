@@ -53,6 +53,7 @@
               font-style: normal;
               font-weight: 700;
               line-height: 12px; /* 150% */
+              margin-bottom: 5px;
             }
             .scale-bar-label,
             .scale-bar-icon {
@@ -143,6 +144,7 @@
         .practice-card-categories {
           width: 50%;
           text-align: right;
+
           .practice-card-categories-label {
             display: flex;
             flex-wrap: wrap;
@@ -150,6 +152,11 @@
             justify-content: flex-end;
             gap: 8px;
             margin-bottom: 12px;
+          }
+
+          .ssc-tag {
+            width: 24px;
+            height: 24px;
           }
         }
       }

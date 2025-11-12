@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Button, message, Skeleton, Space, Tabs } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../../lib";
@@ -7,13 +7,15 @@ import {
   PROCUREMENT_IMPACT_AREAS,
   PROCUREMENT_SCALE,
   PROCUREMENT_TABS,
+  PROCUREMENT_CATEGORIES_ID,
+  SOURCING_STRATEGY_ICONS,
 } from "../config";
 import {
   ArrowRight,
   ChevronRightIcon,
   DownPointingIcon,
 } from "../../../lib/icon";
-import { ImpactAreaIcons, ProcurementBadge } from "../components";
+import { ImpactAreaIcons } from "../components";
 import "./practice.scss";
 
 const Practice = () => {
@@ -35,9 +37,18 @@ const Practice = () => {
       (s) => s?.indicator_name === PROCUREMENT_IMPACT_AREAS.income
     )?.score > 3;
 
+  const sourcingStrategyCycleTags = useMemo(
+    () =>
+      practice?.tags?.filter(
+        (tag) =>
+          tag.category_id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
+      ) || [],
+    [practice]
+  );
+
   const fetchPractice = useCallback(async () => {
     try {
-      const { data: _practice } = await api.get(`/pl/practice/${practiceId}`);
+      const { data: _practice } = await api.get(`/plv2/practice/${practiceId}`);
       setPractice(_practice);
       setLoading(false);
     } catch (err) {
@@ -56,6 +67,24 @@ const Practice = () => {
     fetchPractice();
   }, [fetchPractice]);
 
+  const RenderSourcingStrategryCycleTags = () =>
+    sourcingStrategyCycleTags.map((tag) => {
+      let icon = null;
+      const label = tag.label.toLowerCase();
+      if (label.includes("internal")) {
+        icon = SOURCING_STRATEGY_ICONS.internal;
+      } else if (label.includes("external")) {
+        icon = SOURCING_STRATEGY_ICONS.external;
+      } else if (label.includes("strategic")) {
+        icon = SOURCING_STRATEGY_ICONS.strategic;
+      } else if (label.includes("implementation")) {
+        icon = SOURCING_STRATEGY_ICONS.implementation;
+      } else {
+        icon = null;
+      }
+      return icon ? <img src={icon} alt="label" className="ssc-tag" /> : "";
+    });
+
   return (
     <div className="practice-container">
       <div className="practice-sidebar">
@@ -67,7 +96,6 @@ const Practice = () => {
             return (
               <li key={scale.key}>
                 <div className="scale-label">{scale.label}</div>
-
                 <ul className="scale-bar">
                   {PROCUREMENT_COLOR_SCALE.map((color, index) => (
                     <li key={index}>
@@ -123,16 +151,10 @@ const Practice = () => {
                 ></div>
               </div>
               <div className="practice-card-categories">
-                <div className="practice-card-categories-label">
-                  {practice?.procurement_processes?.map((proc) => (
-                    <ProcurementBadge
-                      key={proc?.id}
-                      id={proc?.id}
-                      text={proc?.label}
-                    />
-                  ))}
-                </div>
-                <ImpactAreaIcons {...{ isEnv, isIncome }} />
+                <Space>
+                  <RenderSourcingStrategryCycleTags />
+                  <ImpactAreaIcons {...{ isEnv, isIncome }} />
+                </Space>
               </div>
             </div>
 
