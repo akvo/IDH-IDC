@@ -1,71 +1,165 @@
-import React, { useEffect, useState } from "react";
-import { Button, Space } from "antd";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { Button, Space, Breadcrumb, Steps, Checkbox, Radio } from "antd";
+import { useNavigate, Link } from "react-router-dom";
 import "./assessment.scss";
 import { Blocker } from "../../../components/utils";
 import { useWindowDimensions } from "../../../hooks";
 import ComingSoonGearIcon from "../../../assets/icons/procurement-library/coming-soon-gear.png";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import ComingSoonCard from "./ComingSoonCard";
+import { HomeOutlined, RightOutlined } from "@ant-design/icons";
+import { PLState } from "../../../store";
+import {
+  PROCUREMENT_CATEGORIES_ID,
+  VALUE_CHAIN_ACTOR_ORDERS,
+  VALUE_CHAIN_ACTOR_ICONS,
+} from "../config";
+import { uniq } from "lodash";
+
+const isComingSoon = false;
+const breadcrumbItems = [
+  {
+    key: "/home",
+    title: "Home",
+    active: false,
+  },
+  { key: "/procurement-library", title: "Procurement Library", active: false },
+  {
+    key: "/procurement-library/assesment",
+    title: "Procurement Practices",
+    active: true,
+  },
+];
 
 const Assessment = () => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
-  const [countdown, setCountdown] = useState(0);
+  const categoryWithAttributes = PLState.useState(
+    (s) => s.categoryWithAttributes
+  );
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => (prev + 1) % 4);
-    }, 500);
-    return () => clearInterval(timer);
-  }, []);
+  const [currentStep, setCurrentStep] = useState([]);
+
+  const valueChainActorAttributes = useMemo(() => {
+    const res =
+      categoryWithAttributes.find(
+        (c) => c.id === PROCUREMENT_CATEGORIES_ID.value_chain_actor
+      )?.attributes || [];
+    return VALUE_CHAIN_ACTOR_ORDERS.map((od) => {
+      const find = res.find((r) => r.label.toLowerCase().includes(od));
+      return {
+        ...find,
+        icon: VALUE_CHAIN_ACTOR_ICONS?.[od] || "",
+      };
+    });
+  }, [categoryWithAttributes]);
+
+  console.log(currentStep);
+
+  const handleOnChangeStep = (idx) => {
+    if (currentStep?.includes(idx)) {
+      setCurrentStep((prev) => uniq(prev.filter((val) => val !== idx)));
+    } else {
+      setCurrentStep((prev) => uniq([...prev, idx]));
+    }
+  };
+
+  const customDot = (dot, { status, index }) => (
+    <Radio checked={currentStep?.includes(index)} />
+  );
+
+  if (isComingSoon) {
+    return <ComingSoonCard />;
+  }
 
   if (isMobile) {
     return <Blocker backRoute="/procurement-library" />;
   }
 
-  const dots = ".".repeat(countdown);
-
   return (
-    <div className="assessment-container coming-soon-page">
-      <div className="content-wrapper">
-        <div className="coming-soon-card">
-          <div className="icon-wrapper">
-            <div className="icon-container">
-              <img
-                className="coming-soon-icon"
-                src={ComingSoonGearIcon}
-                alt="coming soon icon"
-              />
-            </div>
+    <div className="assessment-container">
+      {/* Header */}
+      <div className="assesment-header">
+        <div className="breadcrumb-wrapper">
+          <Breadcrumb
+            separator={<RightOutlined />}
+            items={breadcrumbItems.map((x, bi) => ({
+              key: bi,
+              title: (
+                <Link to={x.key} className={x.active ? "active" : ""}>
+                  {x?.title?.toLowerCase() === "home" ? (
+                    <HomeOutlined style={{ fontSize: "16px" }} />
+                  ) : (
+                    x.title
+                  )}
+                </Link>
+              ),
+            }))}
+          />
+        </div>
+        <div className="assesment-title-card-wrapper">
+          <div className="assesment-title-text-wrapper">
+            <h1>
+              Serious about sustainable procurement and curious to learn more?
+            </h1>
+            <p>
+              Discover the procurement practices that fit your situation and
+              help you achieve your desired impact. Use the value chain below to
+              explore how to start thinking about and implementing sustainable
+              procurement for your business.
+            </p>
           </div>
-
-          <h3>Coming soon</h3>
-          <h1 className="title">The future is loading{dots}</h1>
-          <p className="description">
-            We’re working hard behind the scenes to bring you a brand-new
-            experience. Stay tuned — the page will be launching soon.
-          </p>
-
-          <Space className="button-wrapper" size="large">
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => navigate(-1)}
-              className="back-button"
-            >
-              <ArrowLeftOutlined /> Go back
-            </Button>
-            <Button
-              type="primary"
-              size="large"
-              onClick={() => navigate("/procurement-library")}
-              className="home-button"
-            >
-              Take me home
-            </Button>
-          </Space>
         </div>
       </div>
+      {/* EOL Header */}
+
+      {/* Content */}
+      <div className="assesment-content">
+        <div className="assesment-content-intro">
+          <p>
+            Select one actor* in this value chain that most represents your
+            business, or part of your business, to explore how to start
+            approaching sustainable procurement.
+          </p>
+          <p>
+            You can then choose to select a second actor to explore what
+            sustainable procurement could mean for the relationship between your
+            business and this other actor.
+          </p>
+        </div>
+        <div className="value-chain-actor-card">
+          <Steps
+            progressDot={customDot}
+            onChange={handleOnChangeStep}
+            current={currentStep}
+            items={valueChainActorAttributes.map((val, idx) => ({
+              title: (
+                <div className="value-chain-actor-item-card">
+                  <div className="vca-icon-wrapper">
+                    <img
+                      src={val?.icon}
+                      alt={val?.label}
+                      className="vca-item-icon"
+                    />
+                    <Checkbox checked={currentStep?.includes(idx)} />
+                  </div>
+                  <p>{val?.label}</p>
+                </div>
+              ),
+              disabled:
+                !currentStep?.includes(idx) && currentStep?.length === 2,
+              status: currentStep?.includes(idx) ? "process" : "wait",
+            }))}
+          />
+        </div>
+        <div className="assesment-hint-wrapper">
+          <p>
+            *If exploring the Farmer perspective first, a second actor cannot be
+            selected.
+          </p>
+        </div>
+      </div>
+      {/* EOL Content */}
     </div>
   );
 };

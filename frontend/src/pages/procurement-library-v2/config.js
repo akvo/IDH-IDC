@@ -16,6 +16,11 @@ import StrategicChoiceIconColor from "../../assets/icons/procurement-library/col
 import ImplementationIconColor from "../../assets/icons/procurement-library/colorize-implementation.png";
 import EnvironmentIcon from "../../assets/icons/procurement-library/environment.png";
 import IncomeIcon from "../../assets/icons/procurement-library/income.png";
+import VCAFarmer from "../../assets/icons/procurement-library/vca-farmer.png";
+import VCAPrimary from "../../assets/icons/procurement-library/vca-primary.png";
+import VCATrader from "../../assets/icons/procurement-library/vca-trader.png";
+import VCAManufacturer from "../../assets/icons/procurement-library/vca-manufacturer.png";
+import VCARetailer from "../../assets/icons/procurement-library/vca-retailer.png";
 
 export const LIMIT_RESULT = 15;
 
@@ -99,6 +104,7 @@ export const PROCUREMENT_SCALE = [
 export const PROCUREMENT_CATEGORIES_ID = {
   sourcing_strategy_cycle: 1,
   procurement_principles: 2,
+  value_chain_actor: 3,
 };
 
 export const PROCUREMENT_COLOR_SCALE = [
@@ -665,3 +671,19 @@ export const SOURCING_STRATEGY_CYCLE_COLORS = [
     shadowColor: "#0098FF",
   },
 ];
+
+export const VALUE_CHAIN_ACTOR_ORDERS = [
+  "farmer",
+  "primary",
+  "trader",
+  "manufacturer",
+  "retailer",
+];
+
+export const VALUE_CHAIN_ACTOR_ICONS = {
+  farmer: VCAFarmer,
+  primary: VCAPrimary,
+  trader: VCATrader,
+  manufacturer: VCAManufacturer,
+  retailer: VCARetailer,
+};

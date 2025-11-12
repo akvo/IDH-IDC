@@ -1,0 +1,134 @@
+@import "../../../variables.scss";
+
+.coming-soon-container {
+  &.coming-soon-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .content-wrapper {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    width: 100%;
+  }
+
+  .coming-soon-card {
+    position: relative;
+    display: flex;
+    padding: 125px 90px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    flex: 1 0 0;
+    align-self: stretch;
+    border-radius: 20px;
+    border: 1px solid var(--light-20, #f2f2f2);
+    background: var(--light-10, #fff);
+
+    text-align: center;
+
+    h3 {
+      color: $primary-color;
+      font-weight: normal;
+      margin: 0;
+    }
+
+    background-image: url("/assets/images/procurement-library/bg-card-procurement-green.png");
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: 300px;
+  }
+
+  .icon-wrapper {
+    margin-bottom: 20px;
+    display: inline-block;
+    position: relative;
+
+    .icon-container {
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(3deg);
+      transition: transform 0.3s ease;
+
+      img.coming-soon-icon {
+        width: 70px;
+      }
+
+      &:hover {
+        transform: rotate(6deg) scale(1.05);
+      }
+    }
+  }
+
+  .title {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: #000;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    min-height: 60px;
+    font-family: "RocGrotesk";
+  }
+
+  .description {
+    font-size: 18px;
+    color: #475467;
+    margin: 0 auto 32px;
+    max-width: 500px;
+    line-height: 1.6;
+    font-family: "TabletGothic";
+  }
+
+  .button-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .back-button,
+  .home-button {
+    border: none;
+    padding: 12px 24px;
+    height: fit-content;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 100px;
+    font-family: "TabletGothic";
+    border: 1px solid $primary-color;
+    box-shadow: none;
+
+    &:hover {
+      border: 2px solid $primary-color;
+    }
+  }
+
+  .back-button {
+    background: #fff;
+    color: $primary-color;
+
+    &:hover {
+      border: 2px solid $primary-color;
+      background: #fff !important;
+      color: $primary-color !important;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .coming-soon-container {
+    flex-direction: column;
+  }
+}
