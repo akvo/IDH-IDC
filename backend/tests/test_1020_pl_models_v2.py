@@ -79,23 +79,23 @@ class TestProcurementLibraryV2Models:
         assert isinstance(practice.is_environmental, bool)
         assert isinstance(practice.is_income, bool)
 
-    def test_procurement_processes_property(self, app: FastAPI, session: Session):
+    def test_practice_tags_loaded(self, app: FastAPI, session: Session):
         practice = session.query(PLPracticeIntervention).first()
-        processes = practice.procurement_processes
-        assert isinstance(processes, list), "procurement_processes must return a list"
+        tags = practice.tags
+        assert isinstance(tags, list), "practice tags must return a list"
 
     def test_serialize_structure(self, app: FastAPI, session: Session):
         practice = session.query(PLPracticeIntervention).first()
         data = practice.serialize
         expected_keys = {
-            "id",
-            "label",
-            "procurement_processes",
-            "is_environmental",
-            "is_income",
-            "scores",
-            "created_at",
-            "updated_at",
+            'id',
+            'tags',
+            'label',
+            'is_environmental',
+            'is_income',
+            'scores',
+            'created_at',
+            'updated_at'
         }
         assert expected_keys.issubset(set(data.keys())), "serialize() missing required fields"
 

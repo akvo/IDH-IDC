@@ -133,7 +133,6 @@ def get_practice_list(
 # ============================================================
 def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
     """Return single practice detail (DB query-based)."""
-    # --- Main record ---
     practice = db.get(PLPracticeIntervention, practice_id)
     if not practice:
         return None
@@ -157,7 +156,7 @@ def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
     practice.tags = tags
     practice.indicator_scores = scores
 
-    return practice.serialize
+    return practice.serialize_detail
 
 
 # ============================================================
