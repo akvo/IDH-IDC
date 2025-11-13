@@ -105,7 +105,7 @@
         min-height: 165px;
         display: flex;
         flex-direction: row;
-        align-items: self-start;
+        align-items: flex-start;
         align-self: stretch;
         justify-content: space-between;
         padding: 18px;
@@ -125,7 +125,7 @@
             font-size: 32px !important;
             font-style: normal;
             font-weight: 700;
-            line-height: 48px;
+            line-height: 48px !important;
             margin-block-start: 0;
             margin-block-end: 12px;
             margin-bottom: 18px !important;
@@ -140,10 +140,43 @@
             font-weight: 400;
             line-height: 157.15%; /* 25.144px */
           }
+
+          .practice-tags {
+            margin-top: 20px;
+            border-radius: 12px;
+            border: 1px dashed var(--light-40, #d8d8d8);
+            background: rgba(255, 255, 255, 0.75);
+            display: flex;
+            padding: 8px;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            align-self: stretch;
+
+            .pt-title,
+            .pt-tags-wrapper {
+              font-family: "TabletGothic";
+              font-size: 12px;
+            }
+
+            .pt-tags-wrapper {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 5px;
+
+              .ant-tag {
+                font-size: 12px !important;
+              }
+            }
+          }
         }
         .practice-card-categories {
-          width: 50%;
+          width: 40%;
           text-align: right;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 14px;
 
           .practice-card-categories-label {
             display: flex;
@@ -157,9 +190,11 @@
           .ssc-tag {
             width: 24px;
             height: 24px;
+            cursor: pointer;
           }
         }
       }
+
       .practice-details-card {
         width: 100%;
         min-height: 590px;

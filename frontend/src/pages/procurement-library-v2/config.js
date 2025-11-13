@@ -77,12 +77,12 @@ export const PROCUREMENT_SCALE = [
   {
     key: "implementation_time",
     label: "Implementation Time",
-    reversed: true,
+    reversed: false,
   },
   {
     key: "implementation_cost_effort",
     label: "Implementation Cost / Effort",
-    reversed: true,
+    reversed: false,
   },
   {
     key: "income_impact",
@@ -634,11 +634,11 @@ export const SEARCHBOX_ICONS = [
     icon: SOURCING_STRATEGY_ICONS.implementation,
   },
   {
-    name: "Environment",
+    name: "Environmental Impact",
     icon: EnvironmentIcon,
   },
   {
-    name: "Income",
+    name: "Farmer Income",
     icon: IncomeIcon,
   },
 ];
