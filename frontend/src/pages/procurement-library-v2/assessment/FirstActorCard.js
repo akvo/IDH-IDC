@@ -168,6 +168,8 @@ const FirstActorCard = ({ currentStep, valueChainActorAttributes }) => {
               <Link
                 className="button button-green-fill"
                 to="/procurement-library#sourcing-strategy-cycle-content"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Explore the guidance here
               </Link>
