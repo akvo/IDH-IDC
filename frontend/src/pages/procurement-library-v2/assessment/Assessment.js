@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Breadcrumb, Steps, Checkbox, Radio } from "antd";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./assessment.scss";
 import { Blocker } from "../../../components/utils";
 import { useWindowDimensions } from "../../../hooks";
@@ -33,12 +33,10 @@ const breadcrumbItems = [
 ];
 
 const Assessment = () => {
-  const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const categoryWithAttributes = PLState.useState(
     (s) => s.categoryWithAttributes
   );
-  console.info(navigate);
 
   const [currentStep, setCurrentStep] = useState([]);
   const [farmerActorSelected, setFarmerActorSelected] = useState(false);
@@ -175,7 +173,10 @@ const Assessment = () => {
         {/* Result */}
         <div className="assesment-results">
           {/* Result 1 */}
-          <FirstActorCard currentStep={currentStep} />
+          <FirstActorCard
+            currentStep={currentStep}
+            valueChainActorAttributes={valueChainActorAttributes}
+          />
           {/* EOL Result 1 */}
 
           {/* Result 2 */}

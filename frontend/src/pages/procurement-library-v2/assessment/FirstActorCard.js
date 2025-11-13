@@ -1,12 +1,22 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, Button, Space, Tag } from "antd";
 import "./assessment.scss";
 import ActorEmptyResult from "./ActorEmptyResult";
 import { FIRST_ACTOR } from "../first-actor-contents";
-import { VALUE_CHAIN_ACTOR_ORDERS } from "../config";
+import {
+  VALUE_CHAIN_ACTOR_ORDERS,
+  SOURCING_STRATEGY_CYCLE_COLORS,
+  SEARCHBOX_ICONS,
+  PROCUREMENT_CATEGORIES_ID,
+} from "../config";
 import CircleCheckIcon from "../../../assets/icons/procurement-library/check-circle.png";
 import SourcingStrategyCycleImage from "../../../assets/images/procurement-library/sourcing-strategy-cycle.png";
 import { Link } from "react-router-dom";
+import { api } from "../../../lib";
+import { PLState } from "../../../store";
+import { orderBy } from "lodash";
+import { ImpactAreaIcons } from "../components";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
 const cardGridFullWidthProps = {
   style: {
@@ -22,7 +32,15 @@ const cardGridHalfWidthProps = {
   hoverable: false,
 };
 
-const FirstActorCard = ({ currentStep }) => {
+const PRACTICE_LIMIT = 1;
+
+const FirstActorCard = ({ currentStep, valueChainActorAttributes }) => {
+  const [practices, setPractices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const categoryWithAttributes = PLState.useState(
+    (s) => s.categoryWithAttributes
+  );
+
   const activeFirstActor = useMemo(() => {
     if (!currentStep?.length) {
       return null;
@@ -35,7 +53,57 @@ const FirstActorCard = ({ currentStep }) => {
     };
   }, [currentStep]);
 
+  const sourcingStragegyCycleOptions = useMemo(
+    () =>
+      categoryWithAttributes
+        .find(
+          (attr) =>
+            attr.id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
+        )
+        ?.attributes?.map((it) => ({ label: it.label, value: it.id })),
+    [categoryWithAttributes]
+  );
+
   const content = activeFirstActor?.content || null;
+
+  useEffect(() => {
+    if (currentStep?.length === 1) {
+      const first = currentStep[0];
+      const actorId = valueChainActorAttributes?.[first]?.id || null;
+
+      if (actorId && !loading) {
+        setLoading(true);
+        const urls = orderBy(sourcingStragegyCycleOptions, "value").map(
+          ({ value: attributeId }) => {
+            const url = `/plv2/practices-by-attribute-ids?attribute_ids=${attributeId}&attribute_ids=${actorId}&limit=${PRACTICE_LIMIT}`;
+            return api.get(url);
+          }
+        );
+
+        Promise.all(urls)
+          .then((res) => {
+            const [step1, step2, step3, step4] = res;
+            setPractices([
+              ...step1.data,
+              ...step2.data,
+              ...step3.data,
+              ...step4.data,
+            ]);
+          })
+          .catch((e) => {
+            console.error("Error fetching practice for First Actor Card", e);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+    }
+  }, [
+    currentStep,
+    loading,
+    sourcingStragegyCycleOptions,
+    valueChainActorAttributes,
+  ]);
 
   return (
     <Card
@@ -108,13 +176,60 @@ const FirstActorCard = ({ currentStep }) => {
 
           <Card.Grid {...cardGridHalfWidthProps}>
             <div className="fa-result-section-d">
-              <div className="fa-result-section-d-title-wrapper">
-                <h3>{content.sectionD.title}</h3>
-                <Tag>3 results</Tag>
+              <div className="fa-result-section-d-content">
+                <div className="fa-result-section-d-title-wrapper">
+                  <h3>{content.sectionD.title}</h3>
+                  <Tag>{practices?.length || 0} results</Tag>
+                </div>
+                {content.sectionD.list.map((sdl, sdli) => (
+                  <p key={`sdl-${sdli}`}>{sdl}</p>
+                ))}
+                <div className="fa-result-section-d-practices-wrapper">
+                  {practices.map((practice, pidx) => {
+                    const cardColor = SOURCING_STRATEGY_CYCLE_COLORS[pidx];
+                    const cardIcon = SEARCHBOX_ICONS[pidx];
+                    return (
+                      <div
+                        key={`practice-${practice.id}-${pidx}`}
+                        className="fa-result-section-d-practice-card"
+                        style={{
+                          backgroundColor: cardColor.backgroundColor,
+                          borderLeft: `2px solid ${cardColor.shadowColor}`,
+                        }}
+                      >
+                        <div className="fa-result-section-d-practice-card-header">
+                          <img
+                            className="ssc-step"
+                            src={cardIcon.icon}
+                            alt={cardIcon.name}
+                          />
+                          <ImpactAreaIcons
+                            isIncome={practice?.is_income}
+                            isEnv={practice?.is_environmental}
+                          />
+                        </div>
+                        <h4>{practice.label}</h4>
+                        <Link
+                          className="view-link"
+                          to={`/procurement-library/intervention-library/${practice.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View <ArrowRightOutlined />
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              {content.sectionD.list.map((sdl, sdli) => (
-                <p key={`sdl-${sdli}`}>{sdl}</p>
-              ))}
+              <Link
+                className="view-all-link"
+                to="/procurement-library/intervention-library"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View all <ArrowRightOutlined />
+              </Link>
             </div>
           </Card.Grid>
         </Card>
