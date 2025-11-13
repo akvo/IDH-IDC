@@ -235,8 +235,11 @@
       // General Result Card
       .assesment-results-card {
         width: 100%;
+        border-radius: 20px;
+        border: 1px solid var(--light-20, #f2f2f2);
 
         .ant-card-head {
+          border-radius: 20px 20px 0 0;
           background: $primary-color;
           padding: 12px 14px;
 
@@ -258,6 +261,7 @@
         }
 
         .ant-card-body {
+          border-radius: 0 0 20px 20px;
           padding: 0;
 
           .ant-result {
@@ -283,6 +287,15 @@
             }
           }
         }
+
+        // reset card grid bg color
+        .card-grip-wrapper {
+          background: transparent;
+          .ant-card-grid {
+            background: transparent;
+          }
+        }
+        // eol reset card grid bg color
       }
       // EOL General Result Card
 
@@ -311,16 +324,47 @@
             align-items: flex-start;
             gap: 24px;
             align-self: stretch;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0%;
+
+            p,
+            img {
+              flex: 1;
+            }
 
             p {
               margin: 0;
-              line-height: 26px !important;
             }
 
             img.fa-section-b-check-icon {
               width: 20px;
               height: 20px;
             }
+          }
+        }
+
+        .fa-result-section-c {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 24px;
+          flex: 1 0 0;
+
+          .fa-result-section-c-image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-self: center;
+            width: 100%;
+
+            img.sscc-image {
+              max-height: 552px;
+            }
+          }
+
+          p {
+            margin: 0;
           }
         }
       }

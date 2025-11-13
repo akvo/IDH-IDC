@@ -5,6 +5,8 @@ import ActorEmptyResult from "./ActorEmptyResult";
 import { FIRST_ACTOR } from "../first-actor-contents";
 import { VALUE_CHAIN_ACTOR_ORDERS } from "../config";
 import CircleCheckIcon from "../../../assets/icons/procurement-library/check-circle.png";
+import SourcingStrategyCycleImage from "../../../assets/images/procurement-library/sourcing-strategy-cycle.png";
+import { Link } from "react-router-dom";
 
 const cardGridFullWidthProps = {
   style: {
@@ -50,7 +52,7 @@ const FirstActorCard = ({ currentStep }) => {
       }
     >
       {content ? (
-        <Card>
+        <Card className="card-grip-wrapper">
           <Card.Grid {...cardGridFullWidthProps}>
             <div className="fa-result-section-a">
               <Space>
@@ -86,7 +88,19 @@ const FirstActorCard = ({ currentStep }) => {
               })}
             </div>
           </Card.Grid>
-          <Card.Grid {...cardGridHalfWidthProps}>B</Card.Grid>
+          <Card.Grid {...cardGridHalfWidthProps}>
+            <div className="fa-result-section-c">
+              <div className="fa-result-section-c-image-wrapper">
+                <img src={SourcingStrategyCycleImage} className="sscc-image" />
+              </div>
+              {content.sectionC.list.map((scl, scli) => (
+                <p key={`section-c-list-${scli}`}>{scl}</p>
+              ))}
+              <Link className="button button-green-fill">
+                Explore the guidance here
+              </Link>
+            </div>
+          </Card.Grid>
           <Card.Grid {...cardGridHalfWidthProps}>C</Card.Grid>
         </Card>
       ) : (
