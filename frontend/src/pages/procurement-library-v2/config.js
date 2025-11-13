@@ -77,12 +77,12 @@ export const PROCUREMENT_SCALE = [
   {
     key: "implementation_time",
     label: "Implementation Time",
-    reversed: true,
+    reversed: false,
   },
   {
-    key: "implementation_cost_/_effort",
+    key: "implementation_cost_effort",
     label: "Implementation Cost / Effort",
-    reversed: true,
+    reversed: false,
   },
   {
     key: "income_impact",
@@ -609,29 +609,36 @@ export const TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT = [
   "The visual provides a high-level example of how strategically integrating and investing in sustainability in sourcing can result in lower costs overall when considering the value chain holistically.",
 ];
 
+export const SOURCING_STRATEGY_ICONS = {
+  internal: InternalAnalysisIconColor,
+  external: ExternalAnalysisIconColor,
+  strategic: StrategicChoiceIconColor,
+  implementation: ImplementationIconColor,
+};
+
 export const SEARCHBOX_ICONS = [
   {
     name: "Internal Analysis",
-    icon: InternalAnalysisIconColor,
+    icon: SOURCING_STRATEGY_ICONS.internal,
   },
   {
     name: "External Analysis",
-    icon: ExternalAnalysisIconColor,
+    icon: SOURCING_STRATEGY_ICONS.external,
   },
   {
     name: "Strategic Choice",
-    icon: StrategicChoiceIconColor,
+    icon: SOURCING_STRATEGY_ICONS.strategic,
   },
   {
     name: "Implementation",
-    icon: ImplementationIconColor,
+    icon: SOURCING_STRATEGY_ICONS.implementation,
   },
   {
-    name: "Environment",
+    name: "Environmental Impact",
     icon: EnvironmentIcon,
   },
   {
-    name: "Income",
+    name: "Farmer Income",
     icon: IncomeIcon,
   },
 ];

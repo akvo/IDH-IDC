@@ -78,6 +78,14 @@ class PLAttribute(Base):
             "label": self.label,
         }
 
+    @property
+    def serializeWithCategoryId(self):
+        return {
+            "id": self.id,
+            "label": self.label,
+            "category_id": self.category_id,
+        }
+
 
 # ============================================================
 # INDICATOR
@@ -183,19 +191,6 @@ class PLPracticeIntervention(Base):
     # Derived / Serialized Properties
     # ============================================================
     @property
-    def procurement_processes(self):
-        """Unique categories from related attributes."""
-        seen, processes = set(), []
-        for tag in self.tags or []:
-            attr = tag.attribute
-            if attr and attr.category:
-                key = attr.category.id
-                if key not in seen:
-                    seen.add(key)
-                    processes.append(attr.category.serialize)
-        return processes
-
-    @property
     def is_environmental(self) -> bool:
         return any(score.indicator.name == "environmental_impact" and score.score > 3 for score in self.indicator_scores)
 
@@ -205,13 +200,43 @@ class PLPracticeIntervention(Base):
 
     @property
     def serialize(self):
+        """Lightweight version for list view."""
         return {
             "id": self.id,
             "label": self.label,
-            "procurement_processes": self.procurement_processes,
+            "tags": [t.attribute.simplify for t in self.tags if t.attribute],
             "is_environmental": self.is_environmental,
             "is_income": self.is_income,
             "scores": [s.serialize for s in self.indicator_scores],
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+        }
+
+    @property
+    def serialize_detail(self):
+        """Full version for detail endpoint."""
+        return {
+            "id": self.id,
+            "label": self.label,
+            "intervention_definition": self.intervention_definition,
+            "enabling_conditions": self.enabling_conditions,
+            "business_rationale": self.business_rationale,
+            "farmer_rationale": self.farmer_rationale,
+            "risks_n_trade_offs": self.risks_n_trade_offs,
+            "intervention_impact_income": self.intervention_impact_income,
+            "intervention_impact_env": self.intervention_impact_env,
+            "source_or_evidence": self.source_or_evidence,
+            "created_at": self.created_at,
+            "tags": [
+                t.attribute.serializeWithCategoryId
+                for t in self.tags if t.attribute
+            ],
+            "scores": [
+                {
+                    "id": s.id,
+                    "indicator_name": s.indicator.name if s.indicator else None,
+                    "score": s.score,
+                }
+                for s in self.indicator_scores
+            ],
         }

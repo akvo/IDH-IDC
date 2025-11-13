@@ -46,9 +46,14 @@ class PLAttributeRead(BaseSchema):
     updated_at: Optional[datetime] = None
 
 
-# ✅ Simplified Attribute (for lightweight responses like `procurement_processes`)
 class PLAttributeSimpleRead(BaseSchema):
     id: int
+    label: str
+
+
+class PLAttribuReadteWithCategoryId(BaseSchema):
+    id: int
+    category_id: int
     label: str
 
 
@@ -116,7 +121,7 @@ class PLPracticeInterventionRead(BaseSchema):
 class PLPracticeInterventionListItem(BaseSchema):
     id: int
     label: str
-    procurement_processes: List[PLAttributeRead]
+    tags: List[PLAttributeSimpleRead]
     is_environmental: bool
     is_income: bool
     scores: List[PLPracticeInterventionIndicatorScoreRead]
@@ -127,15 +132,26 @@ class PLPracticeInterventionListItem(BaseSchema):
 # ============================================================
 # DETAIL VIEW (MATCHES EXPECTED RESPONSE)
 # ============================================================
+class PLPracticeInterventionScoreSimpleRead(BaseSchema):
+    id: int
+    indicator_name: Optional[str]
+    score: Optional[float]
+
+
 class PLPracticeInterventionDetailRead(BaseSchema):
     id: int
     label: str
-    procurement_processes: List[PLAttributeSimpleRead] = []
-    is_environmental: bool = False
-    is_income: bool = False
-    scores: List[PLPracticeInterventionIndicatorScoreRead] = []
+    intervention_definition: Optional[str]
+    enabling_conditions: Optional[str]
+    business_rationale: Optional[str]
+    farmer_rationale: Optional[str]
+    risks_n_trade_offs: Optional[str]
+    intervention_impact_income: Optional[str]
+    intervention_impact_env: Optional[str]
+    source_or_evidence: Optional[str]
     created_at: datetime
-    updated_at: datetime
+    tags: List[PLAttribuReadteWithCategoryId]
+    scores: List[PLPracticeInterventionScoreSimpleRead]
 
 
 # ============================================================

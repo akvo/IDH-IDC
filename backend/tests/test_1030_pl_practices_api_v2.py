@@ -36,7 +36,7 @@ class TestProcurementLibraryV2PracticeRoutes:
             expected_keys = {
                 "id",
                 "label",
-                "procurement_processes",
+                "tags",
                 "is_environmental",
                 "is_income",
                 "scores",
@@ -176,7 +176,7 @@ class TestProcurementLibraryV2PracticeRoutes:
         res_json = res.json()
 
         expected_keys = {
-            'id', 'label', 'procurement_processes', 'is_environmental', 'is_income', 'scores', 'created_at', 'updated_at'
+            'id', 'label', 'intervention_definition', 'enabling_conditions', 'business_rationale', 'farmer_rationale', 'risks_n_trade_offs', 'intervention_impact_income', 'intervention_impact_env', 'source_or_evidence', 'created_at', 'tags', 'scores'
         }
         assert expected_keys.issubset(res_json.keys()), "Detail response missing fields"
         assert res_json["id"] == practice.id

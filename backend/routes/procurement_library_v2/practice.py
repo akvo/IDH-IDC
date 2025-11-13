@@ -45,11 +45,11 @@ def list_practices(
     - **procurement_principles** - Optional filter by procurement principles
 
     ### Returns:
-    - `PaginatedPracticeInterventionResponse`: contains
-        - `current`: Current page number
-        - `total`: Total number of items
-        - `total_page`: Total number of pages
-        - `data`: List of practices (`PLPracticeInterventionListItem`)
+    - **PaginatedPracticeInterventionResponse**: contains
+        - **current**: Current page number
+        - **total**: Total number of items
+        - **total_page**: Total number of pages
+        - **data**: List of practices (**PLPracticeInterventionListItem**)
     """
     return crud_practice.get_practice_list(
         db,
@@ -80,10 +80,10 @@ def get_practice_detail(practice_id: int, db: Session = Depends(get_session)):
     - **practice_id** — The unique identifier of the practice intervention
 
     ### Returns:
-    - `PLPracticeInterventionDetailRead`: includes
+    - **PLPracticeInterventionDetailRead**: includes
         - Core practice fields
-        - Related `scores` and `indicators`
-        - Related `tags` and `attributes`
+        - Related **scores** and **indicators**
+        - Related **tags** and **attributes**
         - Environmental and income flags
         - Procurement process summary
     """
