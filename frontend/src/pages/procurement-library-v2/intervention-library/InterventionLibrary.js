@@ -9,6 +9,7 @@ import {
   Spin,
   Tag,
   Breadcrumb,
+  Tooltip,
 } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -242,11 +243,13 @@ const InterventionLibrary = () => {
                           }}
                         >
                           <div className="intervention-card-header">
-                            <img
-                              className="ssc-step"
-                              src={cardIcon.icon}
-                              alt={cardIcon.name}
-                            />
+                            <Tooltip title={cardIcon.name}>
+                              <img
+                                className="ssc-step"
+                                src={cardIcon.icon}
+                                alt={cardIcon.name}
+                              />
+                            </Tooltip>
                             <ImpactAreaIcons
                               isIncome={practice?.is_income}
                               isEnv={practice?.is_environmental}
@@ -355,12 +358,13 @@ const InterventionLibrary = () => {
             <h1>The Intervention Library</h1>
             <div className="income-library-search-box-icon-wrapper">
               {SEARCHBOX_ICONS.map((it) => (
-                <img
-                  key={it.name}
-                  src={it.icon}
-                  alt={it.name}
-                  className="il-search-box-icon"
-                />
+                <Tooltip key={it.name} title={it.name}>
+                  <img
+                    src={it.icon}
+                    alt={it.name}
+                    className="il-search-box-icon"
+                  />
+                </Tooltip>
               ))}
             </div>
           </div>
