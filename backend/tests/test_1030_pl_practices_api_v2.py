@@ -194,3 +194,53 @@ class TestProcurementLibraryV2PracticeRoutes:
         )
         assert res.status_code == 404
         assert res.json() == {"detail": "Practice not found"}
+
+        # ============================================================
+    # /plv2/practices-by-attribute-ids
+    # ============================================================
+    @pytest.mark.asyncio
+    async def test_get_practices_by_attribute_ids(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # Get at least one or more attributes from the DB
+        attributes = session.query(PLAttribute).limit(2).all()
+        if not attributes:
+            pytest.skip("No attributes found in DB")
+
+        attribute_ids = [attr.id for attr in attributes]
+
+        res = await client.get(
+            app.url_path_for("plv2:get_practices_by_attribute_ids"),
+            params={"attribute_ids": attribute_ids, "limit": 3},
+        )
+
+        assert res.status_code == 200, f"Unexpected status code: {res.status_code}"
+        res_json = res.json()
+
+        # Expect a list of practices
+        assert isinstance(res_json, list), "Response should be a list"
+        if res_json:
+            practice = res_json[0]
+            expected_keys = {"id", "label", "is_environmental", "is_income", "tags"}
+            assert expected_keys.issubset(practice.keys()), "Missing keys in practice response"
+            assert isinstance(practice["tags"], list), "Tags should be a list"
+
+    # ============================================================
+    # /plv2/practices-by-attribute-ids — empty result
+    # ============================================================
+    @pytest.mark.asyncio
+    async def test_get_practices_by_attribute_ids_no_result(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # Use random non-existing attribute IDs
+        fake_ids = [999999, 888888]
+
+        res = await client.get(
+            app.url_path_for("plv2:get_practices_by_attribute_ids"),
+            params={"attribute_ids": fake_ids, "limit": 3},
+        )
+
+        assert res.status_code == 200
+        res_json = res.json()
+        assert isinstance(res_json, list)
+        assert len(res_json) == 0, "Expected empty list when no practices match"

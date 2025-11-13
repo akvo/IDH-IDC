@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload, aliased
-from sqlalchemy import select, func, and_
-from typing import Optional
+from sqlalchemy import select, func, and_, distinct
+from typing import Optional, List
 
 from models.procurement_library_v2.pl_models import (
     PLPracticeIntervention,
@@ -269,3 +269,66 @@ def get_practices_by_attribute(
         "total_page": (total + limit - 1) // limit if total else 0,
         "data": data,
     }
+
+
+# ============================================================
+# GET PRACTICES THAT HAVE ALL GIVEN ATTRIBUTE IDs (AND logic)
+# ============================================================
+def get_practices_by_attribute_ids(
+    db: Session,
+    attribute_ids: List[int],
+    limit: int = 3,
+):
+    if not attribute_ids:
+        return []
+
+    # --- Subquery: practices that contain all attribute_ids ---
+    subquery = (
+        select(PLPracticeInterventionTag.practice_intervention_id)
+        .where(PLPracticeInterventionTag.attribute_id.in_(attribute_ids))
+        .group_by(PLPracticeInterventionTag.practice_intervention_id)
+        .having(func.count(distinct(PLPracticeInterventionTag.attribute_id)) == len(attribute_ids))
+    )
+
+    # --- Main query: fetch practices matching the subquery ---
+    query = (
+        select(PLPracticeIntervention)
+        .where(PLPracticeIntervention.id.in_(subquery))
+        .options(
+            joinedload(PLPracticeIntervention.tags)
+            .joinedload(PLPracticeInterventionTag.attribute),
+            joinedload(PLPracticeIntervention.indicator_scores)
+            .joinedload(PLPracticeInterventionIndicatorScore.indicator),
+        )
+        .distinct()
+        .limit(limit)
+    )
+
+    results = db.scalars(query).unique().all()
+
+    # --- Build response ---
+    data = []
+    for p in results:
+        tags = [
+            t.attribute.label for t in p.tags if t.attribute and t.attribute.label
+        ]
+
+        scores = p.indicator_scores or []
+        is_environmental = any(
+            s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
+            for s in scores
+        )
+        is_income = any(
+            s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
+            for s in scores
+        )
+
+        data.append({
+            "id": p.id,
+            "label": p.label,
+            "is_environmental": is_environmental,
+            "is_income": is_income,
+            "tags": tags,
+        })
+
+    return data
