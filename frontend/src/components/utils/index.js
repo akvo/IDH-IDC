@@ -49,3 +49,4 @@ export { default as OtherToolResourceList } from "./other-tools-and-resources/Ot
 export { default as NewCpiForm } from "./NewCpiForm";
 export { default as OtherToolsAndResources } from "./other-tools-and-resources/OtherToolsAndResources";
 export { default as Blocker } from "./blocker/Blocker";
+export { default as ScrollToHash } from "./ScrollToHash";

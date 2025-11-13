@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Card, Button, Space } from "antd";
+import { Card, Button, Space, Tag } from "antd";
 import "./assessment.scss";
 import ActorEmptyResult from "./ActorEmptyResult";
 import { FIRST_ACTOR } from "../first-actor-contents";
@@ -88,6 +88,7 @@ const FirstActorCard = ({ currentStep }) => {
               })}
             </div>
           </Card.Grid>
+
           <Card.Grid {...cardGridHalfWidthProps}>
             <div className="fa-result-section-c">
               <div className="fa-result-section-c-image-wrapper">
@@ -96,12 +97,26 @@ const FirstActorCard = ({ currentStep }) => {
               {content.sectionC.list.map((scl, scli) => (
                 <p key={`section-c-list-${scli}`}>{scl}</p>
               ))}
-              <Link className="button button-green-fill">
+              <Link
+                className="button button-green-fill"
+                to="/procurement-library#sourcing-strategy-cycle-content"
+              >
                 Explore the guidance here
               </Link>
             </div>
           </Card.Grid>
-          <Card.Grid {...cardGridHalfWidthProps}>C</Card.Grid>
+
+          <Card.Grid {...cardGridHalfWidthProps}>
+            <div className="fa-result-section-d">
+              <div className="fa-result-section-d-title-wrapper">
+                <h3>{content.sectionD.title}</h3>
+                <Tag>3 results</Tag>
+              </div>
+              {content.sectionD.list.map((sdl, sdli) => (
+                <p key={`sdl-${sdli}`}>{sdl}</p>
+              ))}
+            </div>
+          </Card.Grid>
         </Card>
       ) : (
         <ActorEmptyResult title="Please select one value chain actor to explore sustainable procurement" />

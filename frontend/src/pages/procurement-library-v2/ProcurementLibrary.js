@@ -235,7 +235,10 @@ const ProcurementLibrary = () => {
       {/* EOL Why Sustainable Procurement? */}
 
       {/* Sourcing Strategy Cycle */}
-      <div className="pl-section-container sourcing-strategy-cycle-content">
+      <section
+        id="sourcing-strategy-cycle-content"
+        className="pl-section-container sourcing-strategy-cycle-content"
+      >
         {/* header */}
         <div className="sscc-header-wrapper">
           <div className="sscc-title-description">
@@ -317,7 +320,7 @@ const ProcurementLibrary = () => {
             {/* eol image tooltip helper */}
           </div>
         </div>
-      </div>
+      </section>
       {/* EOL Sourcing Strategy Cycle */}
 
       {/* Sustainable Procurement Principles */}

@@ -38,6 +38,7 @@ import {
 } from "./pages/cocoa-income-inventory";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut } from "./hooks";
+import { ScrollToHash } from "./components/utils";
 
 const optionRoutes = [
   "organisation/options",
@@ -150,6 +151,7 @@ const App = () => {
 
   return (
     <PageLayout testid="page-layout">
+      <ScrollToHash />
       <ScrollToTop />
       {authTokenAvailable && userRole === null ? (
         <div className="loading-container">
