@@ -129,7 +129,7 @@
     .intervention-library-content-body {
       width: 100%;
       // height: calc(100vh - 360px);
-      overflow-y: scroll;
+      overflow-y: hidden;
       overflow-x: hidden;
       padding: 0 0 0 5px;
       margin: 24px auto;
