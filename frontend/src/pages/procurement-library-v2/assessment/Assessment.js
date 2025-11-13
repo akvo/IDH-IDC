@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Breadcrumb, Steps, Checkbox, Radio, Card, Button, Result } from "antd";
+import { Breadcrumb, Steps, Checkbox, Radio } from "antd";
 import { useNavigate, Link } from "react-router-dom";
 import "./assessment.scss";
 import { Blocker } from "../../../components/utils";
@@ -13,8 +13,9 @@ import {
   VALUE_CHAIN_ACTOR_ICONS,
 } from "../config";
 import { uniq } from "lodash";
-import VCANoResult from "../../../assets/icons/procurement-library/vca-no-result.png";
 import FooterDisclaimer from "../../income-driver-calculator/components/FooterDisclaimer";
+import FirstActorCard from "./FirstActorCard";
+import SecondActorCard from "./SecondActorCard";
 
 const isComingSoon = false;
 const breadcrumbItems = [
@@ -30,19 +31,6 @@ const breadcrumbItems = [
     active: true,
   },
 ];
-
-const EmptyResult = ({ title }) => (
-  <Result
-    icon={
-      <img
-        src={VCANoResult}
-        alt="empty result icon"
-        className="vca-no-result-icon"
-      />
-    }
-    title={title}
-  />
-);
 
 const Assessment = () => {
   const navigate = useNavigate();
@@ -187,39 +175,11 @@ const Assessment = () => {
         {/* Result */}
         <div className="assesment-results">
           {/* Result 1 */}
-          <Card
-            title="Individual Actor View"
-            className="assesment-results-card"
-            extra={
-              currentStep?.length >= 1 ? (
-                <Button type="ghost" className="clear-button">
-                  Clear
-                </Button>
-              ) : (
-                ""
-              )
-            }
-          >
-            <EmptyResult title="Please select one value chain actor to explore sustainable procurement" />
-          </Card>
+          <FirstActorCard currentStep={currentStep} />
           {/* EOL Result 1 */}
 
           {/* Result 2 */}
-          <Card
-            title="Value Chain Relationship View"
-            className="assesment-results-card"
-            extra={
-              currentStep?.length === 2 ? (
-                <Button type="ghost" className="clear-button">
-                  Clear
-                </Button>
-              ) : (
-                ""
-              )
-            }
-          >
-            <EmptyResult title="Please select two value chain actors to explore sustainable procurement in this relationship" />
-          </Card>
+          <SecondActorCard currentStep={currentStep} />
           {/* EOL Result 2 */}
         </div>
         {/* EOL Result */}
