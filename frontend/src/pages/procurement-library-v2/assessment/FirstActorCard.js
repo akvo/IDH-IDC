@@ -1,10 +1,40 @@
-import React from "react";
-import { Card, Button } from "antd";
+import React, { useMemo } from "react";
+import { Card, Button, Space } from "antd";
 import "./assessment.scss";
 import ActorEmptyResult from "./ActorEmptyResult";
 import { FIRST_ACTOR } from "../first-actor-contents";
+import { VALUE_CHAIN_ACTOR_ORDERS } from "../config";
+import CircleCheckIcon from "../../../assets/icons/procurement-library/check-circle.png";
+
+const cardGridFullWidthProps = {
+  style: {
+    width: "100%",
+  },
+  hoverable: false,
+};
+
+const cardGridHalfWidthProps = {
+  style: {
+    width: "50%",
+  },
+  hoverable: false,
+};
 
 const FirstActorCard = ({ currentStep }) => {
+  const activeFirstActor = useMemo(() => {
+    if (!currentStep?.length) {
+      return null;
+    }
+    const first = currentStep[0];
+    const actor = VALUE_CHAIN_ACTOR_ORDERS[first];
+    return {
+      actor,
+      content: FIRST_ACTOR?.[actor],
+    };
+  }, [currentStep]);
+
+  const content = activeFirstActor?.content || null;
+
   return (
     <Card
       title="Individual Actor View"
@@ -19,7 +49,49 @@ const FirstActorCard = ({ currentStep }) => {
         )
       }
     >
-      <ActorEmptyResult title="Please select one value chain actor to explore sustainable procurement" />
+      {content ? (
+        <Card>
+          <Card.Grid {...cardGridFullWidthProps}>
+            <div className="fa-result-section-a">
+              <Space>
+                <img
+                  src={content.sectionA.icon}
+                  className="fa-section-a-actor-icon"
+                />
+                <h2>{content.sectionA.title}</h2>
+              </Space>
+            </div>
+            <div className="fa-result-section-b">
+              {content.sectionB.list.map((sb, sbix) => {
+                if (sb?.list?.length) {
+                  return (
+                    <div
+                      key={`sectionB-${sbix}`}
+                      className="fa-result-section-b-list-wrapper"
+                    >
+                      {sb.list.map((sbl, sbli) => (
+                        <Space key={`sbl-${sbli}`} align="top">
+                          <img
+                            src={CircleCheckIcon}
+                            alt={`check-icon-${sbli}`}
+                            className="fa-section-b-check-icon"
+                          />
+                          <p>{sbl?.text || ""}</p>
+                        </Space>
+                      ))}
+                    </div>
+                  );
+                }
+                return <p key={`sectionB-${sbix}`}>{sb?.text || ""}</p>;
+              })}
+            </div>
+          </Card.Grid>
+          <Card.Grid {...cardGridHalfWidthProps}>B</Card.Grid>
+          <Card.Grid {...cardGridHalfWidthProps}>C</Card.Grid>
+        </Card>
+      ) : (
+        <ActorEmptyResult title="Please select one value chain actor to explore sustainable procurement" />
+      )}
     </Card>
   );
 };
