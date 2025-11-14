@@ -308,6 +308,7 @@
           h2 {
             margin: 0;
             font-size: 34px !important;
+            color: $primary-color;
           }
         }
 
@@ -484,6 +485,72 @@
         }
       }
       // EOL First Actor Card
+
+      // Second Actor Card
+      .assesment-results-card {
+        .sa-result-section-a,
+        .sa-result-section-b {
+          h2 {
+            margin: 0;
+            font-size: 34px !important;
+            color: $primary-color;
+          }
+        }
+
+        .sa-result-section-c {
+          padding: 24px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          align-self: stretch;
+          gap: 24px;
+
+          p {
+            margin: 0;
+          }
+
+          .sa-result-section-c-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            img.sa-section-c-check-icon {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+
+        .sa-result-section-d {
+          padding: 24px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          align-self: stretch;
+          gap: 24px;
+
+          p {
+            margin: 0;
+          }
+
+          .sa-result-section-d-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            h4 {
+              color: $primary-color;
+              margin: 0;
+              font-size: 16px;
+              padding: 6px 0;
+            }
+
+            img.sa-section-d-check-icon {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+      }
+      // EOL Second Actor Card
     }
   }
 }

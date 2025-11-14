@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Card, Button, Space, Tag } from "antd";
 import "./assessment.scss";
 import ActorEmptyResult from "./ActorEmptyResult";
-import { FIRST_ACTOR } from "../assessment-contents/first-actor-contents";
+import { FIRST_ACTOR_CONTENT } from "../assessment-contents/first-actor-contents";
 import {
   VALUE_CHAIN_ACTOR_ORDERS,
   SOURCING_STRATEGY_CYCLE_COLORS,
@@ -49,7 +49,7 @@ const FirstActorCard = ({ currentStep, valueChainActorAttributes }) => {
     const actor = VALUE_CHAIN_ACTOR_ORDERS[first];
     return {
       actor,
-      content: FIRST_ACTOR?.[actor],
+      content: FIRST_ACTOR_CONTENT?.[actor],
     };
   }, [currentStep]);
 

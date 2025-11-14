@@ -173,7 +173,7 @@ const manufacturer = {
 const retailer = {
   sectionA: {
     icon: VALUE_CHAIN_ACTOR_ICONS.manufacturer,
-    title: "Manufacturer/Processor",
+    title: "Retailer",
   },
   sectionB: {
     list: [
@@ -218,7 +218,7 @@ const retailer = {
   },
 };
 
-export const FIRST_ACTOR = {
+export const FIRST_ACTOR_CONTENT = {
   farmer,
   primary,
   trader,
