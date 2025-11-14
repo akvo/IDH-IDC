@@ -149,6 +149,8 @@ class PLPracticeInterventionDetailRead(BaseSchema):
     intervention_impact_income: Optional[str]
     intervention_impact_env: Optional[str]
     source_or_evidence: Optional[str]
+    is_environmental: bool
+    is_income: bool
     created_at: datetime
     tags: List[PLAttribuReadteWithCategoryId]
     scores: List[PLPracticeInterventionScoreSimpleRead]

@@ -243,17 +243,20 @@ def get_practices_by_attribute(
         tags = [
             t.attribute.label for t in p.tags if t.attribute and t.attribute.label
         ]
+        is_environmental = any(t.lower() == "environment" for t in tags)
+        is_income = any(t.lower() == "income" for t in tags)
 
-        # Boolean flags
-        scores = p.indicator_scores or []
-        is_environmental = any(
-            s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
-            for s in scores
-        )
-        is_income = any(
-            s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
-            for s in scores
-        )
+        # TODO :: Delete Boolean flags OLD
+        # scores = p.indicator_scores or []
+        # is_environmental = any(
+        #     s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
+        #     for s in scores
+        # )
+        # is_income = any(
+        #     s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
+        #     for s in scores
+        # )
+        # EOL TODO
 
         data.append({
             "id": p.id,
@@ -312,16 +315,20 @@ def get_practices_by_attribute_ids(
         tags = [
             t.attribute.label for t in p.tags if t.attribute and t.attribute.label
         ]
+        is_environmental = any(t.lower() == "environment" for t in tags)
+        is_income = any(t.lower() == "income" for t in tags)
 
-        scores = p.indicator_scores or []
-        is_environmental = any(
-            s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
-            for s in scores
-        )
-        is_income = any(
-            s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
-            for s in scores
-        )
+        # TODO :: Delete
+        # scores = p.indicator_scores or []
+        # is_environmental = any(
+        #     s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
+        #     for s in scores
+        # )
+        # is_income = any(
+        #     s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
+        #     for s in scores
+        # )
+        # EOL TODO
 
         data.append({
             "id": p.id,

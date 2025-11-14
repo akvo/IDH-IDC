@@ -192,11 +192,13 @@ class PLPracticeIntervention(Base):
     # ============================================================
     @property
     def is_environmental(self) -> bool:
-        return any(score.indicator.name == "environmental_impact" and score.score > 3 for score in self.indicator_scores)
+        # return any(score.indicator.name == "environmental_impact" and score.score > 3 for score in self.indicator_scores)
+        return any(tag.attribute.label == "Environment" for tag in self.tags)
 
     @property
     def is_income(self) -> bool:
-        return any(score.indicator.name == "income_impact" and score.score > 3 for score in self.indicator_scores)
+        # return any(score.indicator.name == "income_impact" and score.score > 3 for score in self.indicator_scores)
+        return any(tag.attribute.label == "Income" for tag in self.tags)
 
     @property
     def serialize(self):
@@ -226,6 +228,8 @@ class PLPracticeIntervention(Base):
             "intervention_impact_income": self.intervention_impact_income,
             "intervention_impact_env": self.intervention_impact_env,
             "source_or_evidence": self.source_or_evidence,
+            "is_environmental": self.is_environmental,
+            "is_income": self.is_income,
             "created_at": self.created_at,
             "tags": [
                 t.attribute.serializeWithCategoryId
