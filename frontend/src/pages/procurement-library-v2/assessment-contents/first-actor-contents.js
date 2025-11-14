@@ -1,6 +1,6 @@
 // * First Actor View or Individual Actor View
 
-import { VALUE_CHAIN_ACTOR_ICONS } from "./config";
+import { VALUE_CHAIN_ACTOR_ICONS } from "../config";
 
 const farmer = {
   sectionA: {
