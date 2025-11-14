@@ -24,7 +24,10 @@ import {
   SOURCING_STRATEGY_CYCLE_COLORS,
 } from "../config";
 import { PLState } from "../../../store";
-import { Blocker } from "../../../components/utils";
+import {
+  Blocker,
+  sortStringItemsWithOrderedNumber,
+} from "../../../components/utils";
 import { useWindowDimensions } from "../../../hooks";
 import { HomeOutlined, RightOutlined } from "@ant-design/icons";
 import { isEmpty, orderBy } from "lodash";
@@ -121,10 +124,10 @@ const InterventionLibrary = () => {
           .then((res) => {
             const [step1, step2, step3, step4] = res;
             setPracticesByAttributes({
-              1: step1.data,
-              2: step2.data,
-              3: step3.data,
-              4: step4.data,
+              3: step1.data,
+              4: step2.data,
+              5: step3.data,
+              6: step4.data,
             });
           })
           .catch((e) => {
@@ -275,7 +278,9 @@ const InterventionLibrary = () => {
                                 Sourcing principles
                               </div>
                               <div className="ict-tags-wrapper">
-                                {sourcingPrinciplesTags?.map((tag) => (
+                                {sortStringItemsWithOrderedNumber(
+                                  sourcingPrinciplesTags
+                                )?.map((tag) => (
                                   <Tag key={tag}>{tag}</Tag>
                                 ))}
                               </div>

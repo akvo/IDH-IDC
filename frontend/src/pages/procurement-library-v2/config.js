@@ -102,9 +102,9 @@ export const PROCUREMENT_SCALE = [
 ];
 
 export const PROCUREMENT_CATEGORIES_ID = {
-  sourcing_strategy_cycle: 1,
-  procurement_principles: 2,
-  value_chain_actor: 3,
+  sourcing_strategy_cycle: 2,
+  procurement_principles: 3,
+  value_chain_actor: 4,
 };
 
 export const PROCUREMENT_COLOR_SCALE = [
@@ -640,11 +640,11 @@ export const SEARCHBOX_ICONS = [
     icon: SOURCING_STRATEGY_ICONS.implementation,
   },
   {
-    name: "Environmental Impact",
+    name: "Environment",
     icon: EnvironmentIcon,
   },
   {
-    name: "Farmer Income",
+    name: "Income",
     icon: IncomeIcon,
   },
 ];

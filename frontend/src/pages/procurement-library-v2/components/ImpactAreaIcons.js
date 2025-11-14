@@ -9,14 +9,14 @@ const ImpactAreaIcons = ({ isEnv = false, isIncome = false }) => {
     <div className="container">
       <Space>
         {isEnv && (
-          <Tooltip title="Environmental Impact">
+          <Tooltip title="Environment">
             <span className="environment">
               <img src={EnvironmentIcon} alt="environmental impact" />
             </span>
           </Tooltip>
         )}
         {isIncome && (
-          <Tooltip title="Farmer Income">
+          <Tooltip title="Income">
             <span className="income">
               <img src={IncomeIcon} alt="farmer income" />
             </span>

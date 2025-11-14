@@ -4,7 +4,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../../lib";
 import {
   PROCUREMENT_COLOR_SCALE,
-  PROCUREMENT_IMPACT_AREAS,
   PROCUREMENT_SCALE,
   PROCUREMENT_TABS,
   PROCUREMENT_CATEGORIES_ID,
@@ -19,6 +18,7 @@ import {
 import { ImpactAreaIcons } from "../components";
 import "./practice.scss";
 import { PLState } from "../../../store";
+import { sortStringItemsWithOrderedNumber } from "../../../components/utils";
 
 const Practice = () => {
   const { practiceId } = useParams();
@@ -33,14 +33,20 @@ const Practice = () => {
     practice?.intervention_definition?.split(
       /<h3>(?:Additional Details:|Process:|Details of the process:|Additional details:|Additional Detail:|Additional Information:)<\/h3>/
     ) || [];
-  const isEnv =
-    practice?.scores?.find(
-      (s) => s?.indicator_name === PROCUREMENT_IMPACT_AREAS.env
-    )?.score > 3;
-  const isIncome =
-    practice?.scores?.find(
-      (s) => s?.indicator_name === PROCUREMENT_IMPACT_AREAS.income
-    )?.score > 3;
+
+  // TODO :: DELETE
+  // const isEnv =
+  //   practice?.scores?.find(
+  //     (s) => s?.indicator_name === PROCUREMENT_IMPACT_AREAS.env
+  //   )?.score > 3;
+  // const isIncome =
+  //   practice?.scores?.find(
+  //     (s) => s?.indicator_name === PROCUREMENT_IMPACT_AREAS.income
+  //   )?.score > 3;
+  // EOL TO DO
+
+  const isEnv = practice?.is_environmental;
+  const isIncome = practice?.is_income;
 
   const sourcingStrategyCycleTags = useMemo(
     () =>
@@ -68,9 +74,9 @@ const Practice = () => {
     const sourcingPrinciplesIds = procurementPrincipleOptions.map(
       (p) => p.value
     );
-    return practice?.tags?.filter((tag) =>
-      sourcingPrinciplesIds.includes(tag.id)
-    );
+    return practice?.tags
+      ?.filter((tag) => sourcingPrinciplesIds.includes(tag.id))
+      .map((t) => t.label);
   }, [procurementPrincipleOptions, practice?.tags]);
 
   const fetchPractice = useCallback(async () => {
@@ -199,8 +205,10 @@ const Practice = () => {
                   <div className="practice-tags">
                     <div className="pt-title">Sourcing principles</div>
                     <div className="pt-tags-wrapper">
-                      {sourcingPrinciplesTags?.map((tag) => (
-                        <Tag key={`pt-tag-${tag.id}`}>{tag.label}</Tag>
+                      {sortStringItemsWithOrderedNumber(
+                        sourcingPrinciplesTags
+                      )?.map((tag, tgi) => (
+                        <Tag key={`pt-tag-${tgi}`}>{tag}</Tag>
                       ))}
                     </div>
                   </div>
