@@ -120,13 +120,12 @@ const InterventionLibrary = () => {
         Promise.all(urls)
           .then((res) => {
             const [step1, step2, step3, step4] = res;
-            setPracticesByAttributes((prev) => ({
-              ...prev,
+            setPracticesByAttributes({
               1: step1.data,
               2: step2.data,
               3: step3.data,
               4: step4.data,
-            }));
+            });
           })
           .catch((e) => {
             console.error(e);

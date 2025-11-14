@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 
 from db.connection import get_session
 from db.procurement_library_v2 import crud_practice
@@ -8,7 +8,8 @@ from models.procurement_library_v2.pl_schemas import (
     PLPracticeInterventionDetailRead,
     PaginatedPracticeInterventionResponse,
     PaginatedPracticeByAttributeResponse,
-    ImpactArea
+    ImpactArea,
+    PLPracticeByAttributeListItem
 )
 
 pl_practice_router_v2 = APIRouter(prefix="/plv2", tags=["Procurement Library V2"])
@@ -94,7 +95,7 @@ def get_practice_detail(practice_id: int, db: Session = Depends(get_session)):
 
 
 # ============================================================
-# GET PRACTICES BY ATTRIBUTE ID (WITH OPTIONAL FILTER BY ATTRIBUTE IDS)
+# GET PRACTICES BY ATTRIBUTE ID
 # ============================================================
 @pl_practice_router_v2.get(
     "/practices-by-attribute/{attribute_id}",
@@ -141,4 +142,38 @@ def get_practices_by_attribute_id(
         impact_area=impact_area,
         sourcing_strategy_cycle=sourcing_strategy_cycle,
         procurement_principles=procurement_principles,
+    )
+
+
+# ============================================================
+# GET PRACTICES BY ATTRIBUTE IDs
+# ============================================================
+@pl_practice_router_v2.get(
+    "/practices-by-attribute-ids",
+    name="plv2:get_practices_by_attribute_ids",
+    summary="Get practices by attribute IDs (AND not CONTAIN)",
+    response_description="Limit list of practices filtered by attribute ids",
+    response_model=List[PLPracticeByAttributeListItem],
+    tags=["Procurement Library V2"],
+)
+def get_practices_by_attribute_ids(
+    attribute_ids: List[int] = Query(..., description="List of attribute ids"),
+    limit: int = Query(3, ge=1, le=100, description="Limit result by defined value"),
+    db: Session = Depends(get_session),
+):
+    """
+    Returns a limit list of practice interventions linked to a specific attribute..
+
+    **Query parameters:**
+    - **attribute_ids**: List of attribute ids (integer)
+    - **limit**: Number of items per page (default = 3)
+
+    **Notes:**
+    - **is_environmental** is True if any indicator named **"environmental_impact"** has score > 3.
+    - **is_income** is True if any indicator named **"income_impact"** has score > 3.
+    """
+    return crud_practice.get_practices_by_attribute_ids(
+        db=db,
+        attribute_ids=attribute_ids,
+        limit=limit,
     )
