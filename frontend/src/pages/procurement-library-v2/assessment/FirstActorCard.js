@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, Button, Space, Tag } from "antd";
+import { Card, Button, Space, Tag, Tooltip } from "antd";
 import "./assessment.scss";
 import ActorEmptyResult from "./ActorEmptyResult";
 import { FIRST_ACTOR_CONTENT } from "../assessment-contents/first-actor-contents";
@@ -208,11 +208,13 @@ const FirstActorCard = ({
                         }}
                       >
                         <div className="fa-result-section-d-practice-card-header">
-                          <img
-                            className="ssc-step"
-                            src={cardIcon.icon}
-                            alt={cardIcon.name}
-                          />
+                          <Tooltip title={cardIcon.name}>
+                            <img
+                              className="ssc-step"
+                              src={cardIcon.icon}
+                              alt={cardIcon.name}
+                            />
+                          </Tooltip>
                           <ImpactAreaIcons
                             isIncome={practice?.is_income}
                             isEnv={practice?.is_environmental}
