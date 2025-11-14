@@ -176,11 +176,15 @@ const Assessment = () => {
           <FirstActorCard
             currentStep={currentStep}
             valueChainActorAttributes={valueChainActorAttributes}
+            setCurrentStep={setCurrentStep}
           />
           {/* EOL Result 1 */}
 
           {/* Result 2 */}
-          <SecondActorCard currentStep={currentStep} />
+          <SecondActorCard
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+          />
           {/* EOL Result 2 */}
         </div>
         {/* EOL Result */}

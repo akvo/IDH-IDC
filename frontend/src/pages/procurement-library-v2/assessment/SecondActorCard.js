@@ -13,7 +13,7 @@ const cardGridHalfWidthProps = {
   hoverable: false,
 };
 
-const SecondActorCard = ({ currentStep }) => {
+const SecondActorCard = ({ currentStep, setCurrentStep }) => {
   const activeSecondActorPair = useMemo(() => {
     if (!currentStep?.length || currentStep?.length < 2) {
       return null;
@@ -28,13 +28,17 @@ const SecondActorCard = ({ currentStep }) => {
 
   const content = activeSecondActorPair?.content || null;
 
+  const handleClear = () => {
+    setCurrentStep((prev) => [prev[0]]);
+  };
+
   return (
     <Card
       title="Value Chain Relationship View"
       className="assesment-results-card"
       extra={
         currentStep?.length === 2 ? (
-          <Button type="ghost" className="clear-button">
+          <Button type="ghost" className="clear-button" onClick={handleClear}>
             Clear
           </Button>
         ) : (

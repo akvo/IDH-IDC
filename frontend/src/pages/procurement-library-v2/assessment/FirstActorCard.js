@@ -34,7 +34,11 @@ const cardGridHalfWidthProps = {
 
 const PRACTICE_LIMIT = 1;
 
-const FirstActorCard = ({ currentStep, valueChainActorAttributes }) => {
+const FirstActorCard = ({
+  currentStep,
+  setCurrentStep,
+  valueChainActorAttributes,
+}) => {
   const [practices, setPractices] = useState([]);
   const [loading, setLoading] = useState(false);
   const categoryWithAttributes = PLState.useState(
@@ -105,13 +109,17 @@ const FirstActorCard = ({ currentStep, valueChainActorAttributes }) => {
     valueChainActorAttributes,
   ]);
 
+  const handleClear = () => {
+    setCurrentStep([]);
+  };
+
   return (
     <Card
       title="Individual Actor View"
       className="assesment-results-card"
       extra={
         currentStep?.length >= 1 ? (
-          <Button type="ghost" className="clear-button">
+          <Button type="ghost" className="clear-button" onClick={handleClear}>
             Clear
           </Button>
         ) : (
