@@ -18,6 +18,8 @@ import FirstActorCard from "./FirstActorCard";
 import SecondActorCard from "./SecondActorCard";
 
 const isComingSoon = false;
+const FARMER_INDEX = 0;
+
 const breadcrumbItems = [
   {
     key: "/home",
@@ -37,9 +39,7 @@ const Assessment = () => {
   const categoryWithAttributes = PLState.useState(
     (s) => s.categoryWithAttributes
   );
-
   const [currentStep, setCurrentStep] = useState([]);
-  const [farmerActorSelected, setFarmerActorSelected] = useState(false);
 
   const valueChainActorAttributes = useMemo(() => {
     const res =
@@ -55,15 +55,19 @@ const Assessment = () => {
     });
   }, [categoryWithAttributes]);
 
-  const handleOnChangeStep = (idx) => {
-    // *If exploring the Farmer perspective first, a second actor cannot be selected.
-    if (!currentStep?.length && idx === 0) {
-      setFarmerActorSelected(true);
-    } else {
-      setFarmerActorSelected(false);
+  const farmerActorSelected = useMemo(() => {
+    // * If exploring the Farmer perspective first, a second actor cannot be selected.
+    // * Farmer is on idx 0
+    const isOnlyFarmerInCurrentStep =
+      currentStep?.length === 1 && currentStep?.[0] === FARMER_INDEX;
+    if (isOnlyFarmerInCurrentStep) {
+      return true;
     }
+    return false;
     // * eol
+  }, [currentStep]);
 
+  const handleOnChangeStep = (idx) => {
     if (currentStep?.includes(idx)) {
       setCurrentStep((prev) => uniq(prev.filter((val) => val !== idx)));
     } else {
