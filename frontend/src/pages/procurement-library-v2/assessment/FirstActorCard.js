@@ -7,14 +7,11 @@ import {
   VALUE_CHAIN_ACTOR_ORDERS,
   SOURCING_STRATEGY_CYCLE_COLORS,
   SEARCHBOX_ICONS,
-  PROCUREMENT_CATEGORIES_ID,
 } from "../config";
 import CircleCheckIcon from "../../../assets/icons/procurement-library/check-circle.png";
 import SourcingStrategyCycleImage from "../../../assets/images/procurement-library/sourcing-strategy-cycle.png";
 import { Link } from "react-router-dom";
 import { api } from "../../../lib";
-import { PLState } from "../../../store";
-import { orderBy } from "lodash";
 import { ImpactAreaIcons } from "../components";
 import { ArrowRightOutlined } from "@ant-design/icons";
 
@@ -32,7 +29,7 @@ const cardGridHalfWidthProps = {
   hoverable: false,
 };
 
-const PRACTICE_LIMIT = 1;
+const PRACTICE_LIMIT = 3;
 
 const FirstActorCard = ({
   currentStep,
@@ -41,9 +38,6 @@ const FirstActorCard = ({
 }) => {
   const [practices, setPractices] = useState([]);
   const [loading, setLoading] = useState(false);
-  const categoryWithAttributes = PLState.useState(
-    (s) => s.categoryWithAttributes
-  );
 
   const activeFirstActor = useMemo(() => {
     if (!currentStep?.length) {
@@ -57,42 +51,21 @@ const FirstActorCard = ({
     };
   }, [currentStep]);
 
-  const sourcingStragegyCycleOptions = useMemo(
-    () =>
-      categoryWithAttributes
-        .find(
-          (attr) =>
-            attr.id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
-        )
-        ?.attributes?.map((it) => ({ label: it.label, value: it.id })),
-    [categoryWithAttributes]
-  );
-
   const content = activeFirstActor?.content || null;
 
   useEffect(() => {
-    if (currentStep?.length === 1) {
+    if (currentStep?.length === 1 && !loading) {
+      setLoading(true);
       const first = currentStep[0];
       const actorId = valueChainActorAttributes?.[first]?.id || null;
 
-      if (actorId && !loading) {
-        setLoading(true);
-        const urls = orderBy(sourcingStragegyCycleOptions, "value").map(
-          ({ value: attributeId }) => {
-            const url = `/plv2/practices-by-attribute-ids?attribute_ids=${attributeId}&attribute_ids=${actorId}&limit=${PRACTICE_LIMIT}`;
-            return api.get(url);
-          }
-        );
-
-        Promise.all(urls)
+      if (actorId) {
+        // Call by actor only
+        const url = `/plv2/practices-by-attribute-ids?attribute_ids=${actorId}&limit=${PRACTICE_LIMIT}`;
+        api
+          .get(url)
           .then((res) => {
-            const [step1, step2, step3, step4] = res;
-            setPractices([
-              ...step1.data,
-              ...step2.data,
-              ...step3.data,
-              ...step4.data,
-            ]);
+            setPractices(res.data);
           })
           .catch((e) => {
             console.error("Error fetching practice for First Actor Card", e);
@@ -102,12 +75,8 @@ const FirstActorCard = ({
           });
       }
     }
-  }, [
-    currentStep,
-    loading,
-    sourcingStragegyCycleOptions,
-    valueChainActorAttributes,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep, valueChainActorAttributes]);
 
   const handleClear = () => {
     setCurrentStep([]);
