@@ -160,7 +160,7 @@ export const PROCUREMENT_KEY_FEATURES = [
 ];
 // EOL TODO
 
-const CheckIconItem = ({ text }) => (
+export const CheckIconItem = ({ text }) => (
   <Space align="top">
     <img
       src={CheckIconSvg}

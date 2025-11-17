@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { List, Card, Button, Space, Divider, Collapse, Popconfirm } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import "./procurement-library.scss";
@@ -14,7 +14,10 @@ import {
   SOURCING_STRATEGY_CYCLE_TABS,
   SOURCING_STRATEGY_CYCLE_TOOLTIPS,
   TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT,
+  PROCUREMENT_CATEGORIES_ID,
+  CheckIconItem,
 } from "./config";
+import { api } from "../../lib";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
 import { useWindowDimensions } from "../../hooks";
 import { OtherToolsAndResources } from "../../components/utils";
@@ -23,6 +26,7 @@ import SourcingStrategyCycleImage from "../../assets/images/procurement-library/
 import ProcurementPrinciplesCurves from "../../assets/images/procurement-library/principles-for-procurement-curves.svg";
 import CheckCircleIcon from "../../assets/icons/procurement-library/check-circle.png";
 import TCOChartImage from "../../assets/images/procurement-library/total-cost-of-ownership-chart.png";
+import { PLState } from "../../store";
 
 const cards = [
   {
@@ -48,16 +52,21 @@ const cards = [
 const SourcingStrategyCycleTabs = ({
   sourcingStrategyCycleTab,
   setSourcingStrategyCycleTab,
+  remappedSourcingStrategyCycleTabs,
 }) => {
   return (
     <div className="sscc-tabs-wrapper">
-      {SOURCING_STRATEGY_CYCLE_TABS.map((item) => (
+      {remappedSourcingStrategyCycleTabs.map((item) => (
         <div
           key={`sscc-tab-${item.key}`}
           className={`sscc-tab sscc-tab-${item.key} ${
-            item.key === sourcingStrategyCycleTab ? "active" : ""
+            item.sourcingStrategyCycleId === sourcingStrategyCycleTab
+              ? "active"
+              : ""
           }`}
-          onClick={() => setSourcingStrategyCycleTab(item.key)}
+          onClick={() =>
+            setSourcingStrategyCycleTab(item.sourcingStrategyCycleId)
+          }
         >
           <div>{item.step}</div>
           <div>{item.label}</div>
@@ -92,13 +101,110 @@ const ProcurementLibrary = () => {
   const [sourcingStrategyCycleTab, setSourcingStrategyCycleTab] = useState(
     SOURCING_STRATEGY_CYCLE_TABS[0]?.key || 1
   );
+  const categoryWithAttributes = PLState.useState(
+    (s) => s.categoryWithAttributes
+  );
+  const [practiceInterventions, setPracticeInterventions] = useState([]);
+
+  const sourcingStragegyCycleOptions = useMemo(
+    () =>
+      categoryWithAttributes
+        .find(
+          (attr) =>
+            attr.id === PROCUREMENT_CATEGORIES_ID.sourcing_strategy_cycle
+        )
+        ?.attributes?.map((it) => ({ label: it.label, value: it.id })),
+    [categoryWithAttributes]
+  );
+
+  const remappedSourcingStrategyCycleTabs = useMemo(() => {
+    if (!sourcingStragegyCycleOptions?.length) {
+      return [];
+    }
+    const res = sourcingStragegyCycleOptions?.map((it, itx) => {
+      const tabContent = SOURCING_STRATEGY_CYCLE_TABS[itx];
+      return {
+        ...tabContent,
+        sourcingStrategyCycleId: it.value,
+      };
+    });
+    setSourcingStrategyCycleTab(res?.[0]?.sourcingStrategyCycleId);
+    return res;
+  }, [sourcingStragegyCycleOptions]);
+
+  useEffect(() => {
+    if (!sourcingStrategyCycleTab) {
+      return;
+    }
+    const url = `/plv2/practices-by-attribute-ids?attribute_ids=${sourcingStrategyCycleTab}&limit=${100}`;
+    api
+      .get(url)
+      .then((res) => {
+        setPracticeInterventions(res.data);
+      })
+      .catch((e) => {
+        console.error("Error fetching practice in PL landing page", e);
+      });
+  }, [sourcingStrategyCycleTab]);
+
+  const handleClick = (id) => {
+    // e.preventDefault();
+
+    const link = document.createElement("a");
+    link.href = `/procurement-library/intervention-library/${id}`;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+
+    // Simulate Ctrl+Click (Cmd+Click on Mac)
+    const clickEvent = new MouseEvent("click", {
+      ctrlKey: true,
+      metaKey: true, // For Mac
+      bubbles: true,
+      cancelable: true,
+    });
+
+    document.body.appendChild(link);
+    link.dispatchEvent(clickEvent);
+    document.body.removeChild(link);
+  };
 
   const selectedSourcingStrategyCycleTabContent = useMemo(() => {
-    const active = SOURCING_STRATEGY_CYCLE_TABS.find(
-      (item) => item.key === sourcingStrategyCycleTab
+    if (!sourcingStrategyCycleTab && !practiceInterventions?.length) {
+      return null;
+    }
+    const active = remappedSourcingStrategyCycleTabs.find(
+      (item) => item.sourcingStrategyCycleId === sourcingStrategyCycleTab
     );
-    return active?.content || null;
-  }, [sourcingStrategyCycleTab]);
+    const remappedCollapsedItems = active?.content?.collapseItems?.map((it) => {
+      // remap practice interventions with ID
+      if (it.key === 4) {
+        const remapPIChilds = practiceInterventions?.map((pi) => (
+          <li
+            key={`pix-${pi.id}`}
+            style={{ cursor: "pointer" }}
+            onClick={() => handleClick(pi.id)}
+          >
+            <CheckIconItem text={pi.label} />
+          </li>
+        ));
+        return {
+          ...it,
+          children: <ul>{remapPIChilds}</ul>,
+        };
+      }
+      return {
+        ...it,
+      };
+    });
+    return {
+      ...active?.content,
+      collapseItems: remappedCollapsedItems,
+    };
+  }, [
+    sourcingStrategyCycleTab,
+    remappedSourcingStrategyCycleTabs,
+    practiceInterventions,
+  ]);
 
   return (
     <div
@@ -273,6 +379,9 @@ const ProcurementLibrary = () => {
             <SourcingStrategyCycleTabs
               sourcingStrategyCycleTab={sourcingStrategyCycleTab}
               setSourcingStrategyCycleTab={setSourcingStrategyCycleTab}
+              remappedSourcingStrategyCycleTabs={
+                remappedSourcingStrategyCycleTabs
+              }
             />
             {/* eol tabs */}
 
