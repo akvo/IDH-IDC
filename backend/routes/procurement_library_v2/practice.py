@@ -8,11 +8,13 @@ from models.procurement_library_v2.pl_schemas import (
     PLPracticeInterventionDetailRead,
     PaginatedPracticeInterventionResponse,
     PaginatedPracticeByAttributeResponse,
+    PLPracticeByAttributeListItem,
     ImpactArea,
-    PLPracticeByAttributeListItem
 )
 
-pl_practice_router_v2 = APIRouter(prefix="/plv2", tags=["Procurement Library V2"])
+pl_practice_router_v2 = APIRouter(
+    prefix="/plv2", tags=["Procurement Library V2"]
+)
 
 
 # ============================================================
@@ -28,11 +30,21 @@ pl_practice_router_v2 = APIRouter(prefix="/plv2", tags=["Procurement Library V2"
 def list_practices(
     db: Session = Depends(get_session),
     page: int = Query(1, ge=1, description="Page number, starting from 1"),
-    limit: int = Query(10, ge=1, le=100, description="Number of items per page"),
-    search: str | None = Query(None, description="Optional filter by practice label"),
-    impact_area: Optional[ImpactArea] = Query(None, description="Optional filter by impact area"),
-    sourcing_strategy_cycle: Optional[int] = Query(None, description="Optional filter by sourcing strategy cycle"),
-    procurement_principles: Optional[int] = Query(None, description="Optional filter by procurement principles"),
+    limit: int = Query(
+        10, ge=1, le=100, description="Number of items per page"
+    ),
+    search: str | None = Query(
+        None, description="Optional filter by practice label"
+    ),
+    impact_area: Optional[ImpactArea] = Query(
+        None, description="Optional filter by impact area"
+    ),
+    sourcing_strategy_cycle: Optional[int] = Query(
+        None, description="Optional filter by sourcing strategy cycle"
+    ),
+    procurement_principles: Optional[int] = Query(
+        None, description="Optional filter by procurement principles"
+    ),
 ):
     """
     Retrieve a paginated list of **Practice Interventions** from the Procurement Library.
@@ -59,7 +71,7 @@ def list_practices(
         search=search,
         impact_area=impact_area,
         sourcing_strategy_cycle=sourcing_strategy_cycle,
-        procurement_principles=procurement_principles
+        procurement_principles=procurement_principles,
     )
 
 
@@ -108,11 +120,21 @@ def get_practice_detail(practice_id: int, db: Session = Depends(get_session)):
 def get_practices_by_attribute_id(
     attribute_id: int,
     page: int = Query(1, ge=1, description="Page number"),
-    limit: int = Query(10, ge=1, le=100, description="Number of items per page"),
-    search: Optional[str] = Query(None, description="Search by practice label"),
-    impact_area: Optional[str] = Query(None, description="Optional filter by impact area"),
-    sourcing_strategy_cycle: Optional[int] = Query(None, description="Optional filter by sourcing strategy cycle"),
-    procurement_principles: Optional[int] = Query(None, description="Optional filter by procurement principles"),
+    limit: int = Query(
+        10, ge=1, le=100, description="Number of items per page"
+    ),
+    search: Optional[str] = Query(
+        None, description="Search by practice label"
+    ),
+    impact_area: Optional[int] = Query(
+        None, description="Optional filter by impact area"
+    ),
+    sourcing_strategy_cycle: Optional[int] = Query(
+        None, description="Optional filter by sourcing strategy cycle"
+    ),
+    procurement_principles: Optional[int] = Query(
+        None, description="Optional filter by procurement principles"
+    ),
     db: Session = Depends(get_session),
 ):
     """
@@ -158,7 +180,9 @@ def get_practices_by_attribute_id(
 )
 def get_practices_by_attribute_ids(
     attribute_ids: List[int] = Query(..., description="List of attribute ids"),
-    limit: int = Query(3, ge=1, le=100, description="Limit result by defined value"),
+    limit: int = Query(
+        3, ge=1, le=100, description="Limit result by defined value"
+    ),
     db: Session = Depends(get_session),
 ):
     """

@@ -102,6 +102,7 @@ export const PROCUREMENT_SCALE = [
 ];
 
 export const PROCUREMENT_CATEGORIES_ID = {
+  area: 1,
   sourcing_strategy_cycle: 2,
   procurement_principles: 3,
   value_chain_actor: 4,

@@ -18,7 +18,6 @@ import { api } from "../../../lib";
 import { ImpactAreaIcons } from "../components";
 import "./intervention-library.scss";
 import {
-  IMPACT_AREA_OPTIONS,
   PROCUREMENT_CATEGORIES_ID,
   SEARCHBOX_ICONS,
   SOURCING_STRATEGY_CYCLE_COLORS,
@@ -72,6 +71,14 @@ const InterventionLibrary = () => {
     });
     return isNull.filter((x) => x)?.length === values?.length;
   }, [practiceByAttributes]);
+
+  const impactAreaOptions = useMemo(
+    () =>
+      categoryWithAttributes
+        .find((attr) => attr.id === PROCUREMENT_CATEGORIES_ID.area)
+        ?.attributes?.map((it) => ({ label: it.label, value: it.id })),
+    [categoryWithAttributes]
+  );
 
   const sourcingStragegyCycleOptions = useMemo(
     () =>
@@ -391,7 +398,7 @@ const InterventionLibrary = () => {
             <Form.Item label="Impact area" name="impact_area">
               <Select
                 placeholder="Choose impact area"
-                options={IMPACT_AREA_OPTIONS}
+                options={orderBy(impactAreaOptions, ["value"], "desc")}
                 style={{ minWidth: 125 }}
                 optionFilterProp="label"
                 filterOption={(input, option) =>

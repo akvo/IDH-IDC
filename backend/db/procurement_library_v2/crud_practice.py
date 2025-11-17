@@ -23,7 +23,9 @@ def get_practice_list(
     sourcing_strategy_cycle: Optional[int] = None,
     procurement_principles: Optional[int] = None,
 ) -> dict:
-    """Return paginated list of practices with optional filters by impact area and attributes."""
+    """
+    Return paginated list of practices with optional filters by impact area and attributes.
+    """
     offset = (page - 1) * limit
 
     # --- Base query ---
@@ -35,7 +37,9 @@ def get_practice_list(
             PLPracticeIntervention.label.ilike(f"%{search}%")
             | PLPracticeIntervention.business_rationale.ilike(f"%{search}%")
             | PLPracticeIntervention.farmer_rationale.ilike(f"%{search}%")
-            | PLPracticeIntervention.intervention_definition.ilike(f"%{search}%")
+            | PLPracticeIntervention.intervention_definition.ilike(
+                f"%{search}%"
+            )
             | PLPracticeIntervention.risks_n_trade_offs.ilike(f"%{search}%")
             | PLPracticeIntervention.enabling_conditions.ilike(f"%{search}%")
         )
@@ -58,7 +62,11 @@ def get_practice_list(
         tag_alias_1 = aliased(PLPracticeInterventionTag)
         attr_alias_1 = aliased(PLAttribute)
         stmt = (
-            stmt.join(tag_alias_1, PLPracticeIntervention.id == tag_alias_1.practice_intervention_id)
+            stmt.join(
+                tag_alias_1,
+                PLPracticeIntervention.id
+                == tag_alias_1.practice_intervention_id,
+            )
             .join(attr_alias_1, tag_alias_1.attribute_id == attr_alias_1.id)
             .filter(attr_alias_1.id == sourcing_strategy_cycle)
         )
@@ -68,7 +76,11 @@ def get_practice_list(
         tag_alias_2 = aliased(PLPracticeInterventionTag)
         attr_alias_2 = aliased(PLAttribute)
         stmt = (
-            stmt.join(tag_alias_2, PLPracticeIntervention.id == tag_alias_2.practice_intervention_id)
+            stmt.join(
+                tag_alias_2,
+                PLPracticeIntervention.id
+                == tag_alias_2.practice_intervention_id,
+            )
             .join(attr_alias_2, tag_alias_2.attribute_id == attr_alias_2.id)
             .filter(attr_alias_2.id == procurement_principles)
         )
@@ -92,7 +104,11 @@ def get_practice_list(
     tags = (
         db.query(PLPracticeInterventionTag)
         .join(PLAttribute)
-        .filter(PLPracticeInterventionTag.practice_intervention_id.in_(practice_ids))
+        .filter(
+            PLPracticeInterventionTag.practice_intervention_id.in_(
+                practice_ids
+            )
+        )
         .all()
     )
 
@@ -100,7 +116,11 @@ def get_practice_list(
     scores = (
         db.query(PLPracticeInterventionIndicatorScore)
         .join(PLIndicator)
-        .filter(PLPracticeInterventionIndicatorScore.practice_intervention_id.in_(practice_ids))
+        .filter(
+            PLPracticeInterventionIndicatorScore.practice_intervention_id.in_(
+                practice_ids
+            )
+        )
         .all()
     )
 
@@ -141,7 +161,9 @@ def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
     tags = (
         db.query(PLPracticeInterventionTag)
         .join(PLAttribute)
-        .filter(PLPracticeInterventionTag.practice_intervention_id == practice_id)
+        .filter(
+            PLPracticeInterventionTag.practice_intervention_id == practice_id
+        )
         .all()
     )
 
@@ -149,7 +171,10 @@ def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
     scores = (
         db.query(PLPracticeInterventionIndicatorScore)
         .join(PLIndicator)
-        .filter(PLPracticeInterventionIndicatorScore.practice_intervention_id == practice_id)
+        .filter(
+            PLPracticeInterventionIndicatorScore.practice_intervention_id
+            == practice_id
+        )
         .all()
     )
 
@@ -160,7 +185,7 @@ def get_practice_by_id(db: Session, practice_id: int) -> Optional[dict]:
 
 
 # ============================================================
-# GET PRACTICES BY ATTRIBUTE ID (WITH OPTIONAL FILTERS)
+# GET PRACTICES BY ATTRIBUTE ID (WITH OPTIONAL ATTRIBUTE FILTERS)
 # ============================================================
 def get_practices_by_attribute(
     db: Session,
@@ -168,22 +193,24 @@ def get_practices_by_attribute(
     page: int = 1,
     limit: int = 10,
     search: Optional[str] = None,
-    impact_area: Optional[str] = None,
+    impact_area: Optional[int] = None,
     sourcing_strategy_cycle: Optional[int] = None,
     procurement_principles: Optional[int] = None,
 ):
     offset = (page - 1) * limit
 
-    # --- Base query ---
+    # --- Base: must contain the main attribute_id ---
     query = (
         select(PLPracticeIntervention)
         .join(PLPracticeInterventionTag)
         .where(PLPracticeInterventionTag.attribute_id == attribute_id)
         .options(
-            joinedload(PLPracticeIntervention.tags)
-            .joinedload(PLPracticeInterventionTag.attribute),
-            joinedload(PLPracticeIntervention.indicator_scores)
-            .joinedload(PLPracticeInterventionIndicatorScore.indicator),
+            joinedload(PLPracticeIntervention.tags).joinedload(
+                PLPracticeInterventionTag.attribute
+            ),
+            joinedload(PLPracticeIntervention.indicator_scores).joinedload(
+                PLPracticeInterventionIndicatorScore.indicator
+            ),
         )
         .distinct()
     )
@@ -194,43 +221,40 @@ def get_practices_by_attribute(
             PLPracticeIntervention.label.ilike(f"%{search}%")
             | PLPracticeIntervention.business_rationale.ilike(f"%{search}%")
             | PLPracticeIntervention.farmer_rationale.ilike(f"%{search}%")
-            | PLPracticeIntervention.intervention_definition.ilike(f"%{search}%")
+            | PLPracticeIntervention.intervention_definition.ilike(
+                f"%{search}%"
+            )
             | PLPracticeIntervention.risks_n_trade_offs.ilike(f"%{search}%")
             | PLPracticeIntervention.enabling_conditions.ilike(f"%{search}%")
         )
 
-    # --- Filter by impact area (indicator score > 3) ---
+    # ============================================================
+    # ATTRIBUTE-BASED FILTERS (NOT INDICATORS ANYMORE)
+    # ============================================================
+
+    # --- Filter by impact_area (attribute) ---
     if impact_area:
-        query = (
-            query.join(PLPracticeInterventionIndicatorScore)
-            .join(PLIndicator)
-            .filter(
-                and_(
-                    PLIndicator.name == impact_area,
-                    PLPracticeInterventionIndicatorScore.score > 3,
-                )
-            )
-        )
+        tag_ia = aliased(PLPracticeInterventionTag)
+        query = query.join(
+            tag_ia,
+            tag_ia.practice_intervention_id == PLPracticeIntervention.id,
+        ).filter(tag_ia.attribute_id == impact_area)
 
-    # --- Filter by sourcing_strategy_cycle ---
+    # --- Filter by sourcing_strategy_cycle (attribute) ---
     if sourcing_strategy_cycle:
-        tag_alias_1 = aliased(PLPracticeInterventionTag)
-        attr_alias_1 = aliased(PLAttribute)
-        query = (
-            query.join(tag_alias_1, PLPracticeIntervention.id == tag_alias_1.practice_intervention_id)
-            .join(attr_alias_1, tag_alias_1.attribute_id == attr_alias_1.id)
-            .filter(attr_alias_1.id == sourcing_strategy_cycle)
-        )
+        tag_ssc = aliased(PLPracticeInterventionTag)
+        query = query.join(
+            tag_ssc,
+            tag_ssc.practice_intervention_id == PLPracticeIntervention.id,
+        ).filter(tag_ssc.attribute_id == sourcing_strategy_cycle)
 
-    # --- Filter by procurement_principles ---
+    # --- Filter by procurement_principles (attribute) ---
     if procurement_principles:
-        tag_alias_2 = aliased(PLPracticeInterventionTag)
-        attr_alias_2 = aliased(PLAttribute)
-        query = (
-            query.join(tag_alias_2, PLPracticeIntervention.id == tag_alias_2.practice_intervention_id)
-            .join(attr_alias_2, tag_alias_2.attribute_id == attr_alias_2.id)
-            .filter(attr_alias_2.id == procurement_principles)
-        )
+        tag_pp = aliased(PLPracticeInterventionTag)
+        query = query.join(
+            tag_pp,
+            tag_pp.practice_intervention_id == PLPracticeIntervention.id,
+        ).filter(tag_pp.attribute_id == procurement_principles)
 
     # --- Count & Pagination ---
     total = db.scalar(select(func.count()).select_from(query.subquery()))
@@ -239,32 +263,28 @@ def get_practices_by_attribute(
     # --- Build response ---
     data = []
     for p in results:
-        # Tags (attribute labels)
+
+        # Tag labels
         tags = [
-            t.attribute.label for t in p.tags if t.attribute and t.attribute.label
+            t.attribute.label
+            for t in p.tags
+            if t.attribute and t.attribute.label
         ]
-        is_environmental = any(t.lower() == "environment" for t in tags)
-        is_income = any(t.lower() == "income" for t in tags)
 
-        # TODO :: Delete Boolean flags OLD
-        # scores = p.indicator_scores or []
-        # is_environmental = any(
-        #     s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
-        #     for s in scores
-        # )
-        # is_income = any(
-        #     s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
-        #     for s in scores
-        # )
-        # EOL TODO
+        # Impact flags based on tags only
+        normalized = [t.lower() for t in tags]
+        is_environmental = "environment" in normalized
+        is_income = "income" in normalized
 
-        data.append({
-            "id": p.id,
-            "label": p.label,
-            "is_environmental": is_environmental,
-            "is_income": is_income,
-            "tags": tags,
-        })
+        data.append(
+            {
+                "id": p.id,
+                "label": p.label,
+                "is_environmental": is_environmental,
+                "is_income": is_income,
+                "tags": tags,
+            }
+        )
 
     return {
         "current": page,
@@ -290,7 +310,10 @@ def get_practices_by_attribute_ids(
         select(PLPracticeInterventionTag.practice_intervention_id)
         .where(PLPracticeInterventionTag.attribute_id.in_(attribute_ids))
         .group_by(PLPracticeInterventionTag.practice_intervention_id)
-        .having(func.count(distinct(PLPracticeInterventionTag.attribute_id)) == len(attribute_ids))
+        .having(
+            func.count(distinct(PLPracticeInterventionTag.attribute_id))
+            == len(attribute_ids)
+        )
     )
 
     # --- Main query: fetch practices matching the subquery ---
@@ -298,10 +321,12 @@ def get_practices_by_attribute_ids(
         select(PLPracticeIntervention)
         .where(PLPracticeIntervention.id.in_(subquery))
         .options(
-            joinedload(PLPracticeIntervention.tags)
-            .joinedload(PLPracticeInterventionTag.attribute),
-            joinedload(PLPracticeIntervention.indicator_scores)
-            .joinedload(PLPracticeInterventionIndicatorScore.indicator),
+            joinedload(PLPracticeIntervention.tags).joinedload(
+                PLPracticeInterventionTag.attribute
+            ),
+            joinedload(PLPracticeIntervention.indicator_scores).joinedload(
+                PLPracticeInterventionIndicatorScore.indicator
+            ),
         )
         .distinct()
         .limit(limit)
@@ -313,29 +338,21 @@ def get_practices_by_attribute_ids(
     data = []
     for p in results:
         tags = [
-            t.attribute.label for t in p.tags if t.attribute and t.attribute.label
+            t.attribute.label
+            for t in p.tags
+            if t.attribute and t.attribute.label
         ]
         is_environmental = any(t.lower() == "environment" for t in tags)
         is_income = any(t.lower() == "income" for t in tags)
 
-        # TODO :: Delete
-        # scores = p.indicator_scores or []
-        # is_environmental = any(
-        #     s.indicator and s.indicator.name == "environmental_impact" and (s.score or 0) > 3
-        #     for s in scores
-        # )
-        # is_income = any(
-        #     s.indicator and s.indicator.name == "income_impact" and (s.score or 0) > 3
-        #     for s in scores
-        # )
-        # EOL TODO
-
-        data.append({
-            "id": p.id,
-            "label": p.label,
-            "is_environmental": is_environmental,
-            "is_income": is_income,
-            "tags": tags,
-        })
+        data.append(
+            {
+                "id": p.id,
+                "label": p.label,
+                "is_environmental": is_environmental,
+                "is_income": is_income,
+                "tags": tags,
+            }
+        )
 
     return data
