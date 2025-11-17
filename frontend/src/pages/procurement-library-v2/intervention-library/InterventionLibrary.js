@@ -33,11 +33,11 @@ import { isEmpty, orderBy } from "lodash";
 
 const PAGE_SIZE = 100;
 const breadcrumbItems = [
-  {
-    key: "/home",
-    title: "Home",
-    active: false,
-  },
+  // {
+  //   key: "/home",
+  //   title: "Home",
+  //   active: false,
+  // },
   { key: "/procurement-library", title: "Procurement Library", active: false },
   {
     key: "/procurement-library/intervention-library",

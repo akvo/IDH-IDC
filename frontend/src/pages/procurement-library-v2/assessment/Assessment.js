@@ -21,11 +21,11 @@ const isComingSoon = false;
 const FARMER_INDEX = 0;
 
 const breadcrumbItems = [
-  {
-    key: "/home",
-    title: "Home",
-    active: false,
-  },
+  // {
+  //   key: "/home",
+  //   title: "Home",
+  //   active: false,
+  // },
   { key: "/procurement-library", title: "Procurement Library", active: false },
   {
     key: "/procurement-library/assesment",
