@@ -16,6 +16,7 @@ import {
   TOTAL_COST_OF_OWNERSHIP_CHART_TEXT_CONTENT,
   PROCUREMENT_CATEGORIES_ID,
   CheckIconItem,
+  SOURCING_STRATEGY_CYCLE_COLORS,
 } from "./config";
 import { api } from "../../lib";
 import FooterDisclaimer from "../income-driver-calculator/components/FooterDisclaimer";
@@ -175,27 +176,40 @@ const ProcurementLibrary = () => {
     const active = remappedSourcingStrategyCycleTabs.find(
       (item) => item.sourcingStrategyCycleId === sourcingStrategyCycleTab
     );
-    const remappedCollapsedItems = active?.content?.collapseItems?.map((it) => {
-      // remap practice interventions with ID
-      if (it.key === 4) {
-        const remapPIChilds = practiceInterventions?.map((pi) => (
-          <li
-            key={`pix-${pi.id}`}
-            style={{ cursor: "pointer" }}
-            onClick={() => handleClick(pi.id)}
-          >
-            <CheckIconItem text={pi.label} />
-          </li>
-        ));
+
+    const activeStyles =
+      SOURCING_STRATEGY_CYCLE_COLORS?.[active?.key - 1] || {};
+    const remappedCollapsedItems = active?.content?.collapseItems?.map(
+      (it, idx, arr) => {
+        // remap practice interventions with ID
+        if (it.key === 4) {
+          const remapPIChilds = practiceInterventions?.map((pi) => (
+            <li
+              key={`pix-${pi.id}`}
+              style={{
+                ...activeStyles,
+                cursor: "pointer",
+              }}
+              onClick={() => handleClick(pi.id)}
+              className={`practice-interventions-list-item-${active?.key}`}
+            >
+              <CheckIconItem text={pi.label} />
+            </li>
+          ));
+          return {
+            ...it,
+            children: (
+              <ul className="practice-interventions-list">{remapPIChilds}</ul>
+            ),
+            className:
+              idx === arr.length - 1 ? "practice-interventions-item" : "",
+          };
+        }
         return {
           ...it,
-          children: <ul>{remapPIChilds}</ul>,
         };
       }
-      return {
-        ...it,
-      };
-    });
+    );
     return {
       ...active?.content,
       collapseItems: remappedCollapsedItems,
@@ -404,6 +418,7 @@ const ProcurementLibrary = () => {
                   defaultActiveKey={[1]}
                   expandIconPosition="end"
                   items={selectedSourcingStrategyCycleTabContent.collapseItems}
+                  className="sscc-collapse"
                 />
               </div>
             ) : (

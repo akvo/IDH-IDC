@@ -742,3 +742,73 @@
   }
 }
 // EOL MEDIA CSS
+
+.sscc-collapse {
+  .practice-interventions-item {
+    .practice-interventions-list {
+      padding: 0;
+      margin: 8px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      li {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px;
+        border-radius: 16px;
+        background: var(--green-10, #eaf2f2);
+        transition: all 0.2s ease;
+        border: 1px solid #e9e9e9;
+        border-left: 3px solid var(--green-100, $primary-color);
+
+        &:hover {
+          border-color: $primary-color;
+          background: var(--green-20, #d0e2e2);
+          transform: translateX(4px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .check-icon-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+
+          .li-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+          }
+
+          span {
+            color: var(--dark-100, #000);
+            font-family: "TabletGothic";
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+          }
+        }
+
+        &.practice-interventions-list-item-2 {
+          border-left: 3px solid #ff5d00;
+          &:hover {
+            border-color: #fff2ea;
+          }
+        }
+        &.practice-interventions-list-item-3 {
+          border-left: 3px solid var(--blue-100, #48d985);
+          &:hover {
+            border-color: #f0fcf5;
+          }
+        }
+        &.practice-interventions-list-item-4 {
+          border-left: 3px solid var(--blue-100, #0098ff);
+          &:hover {
+            border-color: #eaf7ff;
+          }
+        }
+      }
+    }
+  }
+}
