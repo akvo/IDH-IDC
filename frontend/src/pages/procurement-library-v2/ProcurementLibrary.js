@@ -193,7 +193,10 @@ const ProcurementLibrary = () => {
               onClick={() => handleClick(pi.id)}
               className={`practice-interventions-list-item-${active?.key}`}
             >
-              <CheckIconItem text={pi.label} />
+              <CheckIconItem
+                text={pi.label}
+                color={activeStyles?.shadowColor}
+              />
             </li>
           ));
           return {

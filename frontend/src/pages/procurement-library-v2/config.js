@@ -9,7 +9,6 @@ import InternalAnalysisIcon from "../../assets/icons/procurement-library/interna
 import ExternalAnalysisIcon from "../../assets/icons/procurement-library/external-analysis.png";
 import StrategicChoicesIcon from "../../assets/icons/procurement-library/strategic-choices.png";
 import ImplementationIcon from "../../assets/icons/procurement-library/implementation.png";
-import CheckIconSvg from "../../assets/icons/procurement-library/check.svg";
 import InternalAnalysisIconColor from "../../assets/icons/procurement-library/colorized-internal-analysis.png";
 import ExternalAnalysisIconColor from "../../assets/icons/procurement-library/colorized-external-analysis.png";
 import StrategicChoiceIconColor from "../../assets/icons/procurement-library/colorized-strategic-choices.png";
@@ -160,14 +159,25 @@ export const PROCUREMENT_KEY_FEATURES = [
 ];
 // EOL TODO
 
-export const CheckIconItem = ({ text }) => (
+export const CheckIconItem = ({ text, color = "#01625F" }) => (
   <Space align="top">
-    <img
-      src={CheckIconSvg}
-      alt="check-icon"
-      className="li-icon"
-      style={{ marginTop: -2 }}
-    />
+    <span className="li-icon" style={{ marginTop: -2 }}>
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 28 28"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="28" height="28" rx="14" fill="white" />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M19.9458 8.62171L11.5925 16.6834L9.3758 14.315C8.96747 13.93 8.3258 13.9067 7.85913 14.2334C7.40413 14.5717 7.2758 15.1667 7.5558 15.645L10.1808 19.915C10.4375 20.3117 10.8808 20.5567 11.3825 20.5567C11.8608 20.5567 12.3158 20.3117 12.5725 19.915C12.9925 19.3667 21.0075 9.81171 21.0075 9.81171C22.0575 8.73838 20.7858 7.79338 19.9458 8.61004V8.62171Z"
+          fill={color || "#01625F"}
+        />
+      </svg>
+    </span>
     {text}
   </Space>
 );
