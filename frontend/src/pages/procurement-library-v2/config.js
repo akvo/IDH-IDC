@@ -61,7 +61,12 @@ export const PROCUREMENT_TABS = [
   },
   {
     key: "business_rationale",
-    label: "Business Rationale",
+    label: "Business Implementation",
+    content: {
+      header: {
+        title: "Practical Application for Sustainable Procurement",
+      },
+    },
   },
   {
     key: "enabling_conditions",

@@ -4,7 +4,6 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import "./procurement-library.scss";
 import {
   ArrowRight,
-  BookInfoIcon,
   BookSearchIcon,
   HandshakeIcon,
   OvalIcon,
@@ -33,7 +32,7 @@ const cards = [
   {
     title: "Find good Procurement Practices",
     url: "/procurement-library/assessment",
-    cta: "Do the assessment",
+    cta: "Explore",
     icon: <HandshakeIcon />,
   },
   {
@@ -41,12 +40,6 @@ const cards = [
     url: "/procurement-library/intervention-library",
     cta: "Explore",
     icon: <BookSearchIcon />,
-  },
-  {
-    title: "Learn more about the context and methodology",
-    url: "/procurement-library/methodology",
-    cta: "Explore",
-    icon: <BookInfoIcon />,
   },
 ];
 
@@ -255,9 +248,9 @@ const ProcurementLibrary = () => {
                 xs: 1,
                 sm: 1,
                 md: 1,
-                lg: 3,
-                xl: 3,
-                xxl: 3,
+                lg: 2,
+                xl: 2,
+                xxl: 2,
               }}
               dataSource={cards}
               renderItem={(item, ix) => (
