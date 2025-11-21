@@ -31,9 +31,15 @@ import { PLState } from "../../store";
 
 const cards = [
   {
-    title: "Find good Procurement Practices",
+    title: "Introduction to integrating Sustainability into Procurement",
+    url: "#sourcing-strategy-cycle-content",
+    cta: "Explore",
+    icon: <BookInfoIcon />,
+  },
+  {
+    title: "Explore how Sustainable procurement practices fit your business",
     url: "/procurement-library/assessment",
-    cta: "Do the assessment",
+    cta: "Explore",
     icon: <HandshakeIcon />,
   },
   {
@@ -41,12 +47,6 @@ const cards = [
     url: "/procurement-library/intervention-library",
     cta: "Explore",
     icon: <BookSearchIcon />,
-  },
-  {
-    title: "Learn more about the context and methodology",
-    url: "/procurement-library/methodology",
-    cta: "Explore",
-    icon: <BookInfoIcon />,
   },
 ];
 
@@ -234,17 +234,16 @@ const ProcurementLibrary = () => {
         <div className="jumbotron-content">
           <div className="jumbotron-text">
             <h1>
-              Welcome to the
+              Integrating Sustainability
               <br />
-              Procurement Library
+              Into Procurement
             </h1>
             <span className="caption">
-              The procurement library is a valuable resource designed for
-              guiding stakeholders who are looking to incorporate sustainability
-              into procurement strategies. By providing a comprehensive list of
-              sustainable procurement practices, the library guides users to
-              make informed decisions that align with their sustainability
-              goals.
+              These pages provide guidance, prompts and a library of procurement
+              practices to help integrate sustainability into procurement
+              practices. These resources take you trough why sustainability
+              brings value, how to get started, and how to integrate
+              sustainability into your sourcing strategies.
             </span>
           </div>
 

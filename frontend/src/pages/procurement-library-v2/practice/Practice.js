@@ -236,7 +236,7 @@ const Practice = () => {
                 <Tabs
                   tabPosition="left"
                   indicator={0}
-                  items={PROCUREMENT_TABS.map(({ key, label }) => {
+                  items={PROCUREMENT_TABS.map(({ key, label, content }) => {
                     return {
                       key,
                       label: (
@@ -248,12 +248,19 @@ const Practice = () => {
                         </div>
                       ),
                       children: (
-                        <div
-                          className="practice-content-text font-tablet-gothic"
-                          dangerouslySetInnerHTML={{
-                            __html: practice?.[key],
-                          }}
-                        ></div>
+                        <>
+                          {content && content?.header?.title ? (
+                            <h3>{content.header.title}</h3>
+                          ) : (
+                            ""
+                          )}
+                          <div
+                            className="practice-content-text font-tablet-gothic"
+                            dangerouslySetInnerHTML={{
+                              __html: practice?.[key],
+                            }}
+                          ></div>
+                        </>
                       ),
                     };
                   })}

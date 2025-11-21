@@ -302,11 +302,16 @@ const App = () => {
             path="/procurement-library/intervention-library"
             element={<ProcurementPage.InterventionLibrary />}
           />
+
+          {/*
+          DISABLE PL methodology page
           <Route
             exact
             path="/procurement-library/methodology"
             element={<ProcurementPage.Methodology />}
           />
+          EOL DISABLE PL methodology page
+          */}
           <Route
             exact
             path="/procurement-library/intervention-library/:practiceId"
