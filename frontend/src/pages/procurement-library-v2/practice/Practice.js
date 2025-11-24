@@ -183,7 +183,7 @@ const Practice = () => {
               <span className="back-icon">
                 <ArrowRight />
               </span>
-              <span className="back-text">Procurement Library</span>
+              <span className="back-text">Intervention Library</span>
             </Space>
           </Button>
         </div>

@@ -430,7 +430,7 @@ const ProcurementLibrary = () => {
           </div>
           <div className="sscc-body-right">
             <div>
-              <p className="hint-text">Hover over strategies for details</p>
+              <p className="hint-text">Hover over steps/stages for details</p>
             </div>
             <div className="sscc-img-wrapper">
               <img src={SourcingStrategyCycleImage} className="sscc-image" />
