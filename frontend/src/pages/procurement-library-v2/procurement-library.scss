@@ -54,14 +54,13 @@
 
         h1,
         .caption {
-          width: 735px;
+          max-width: 775px;
         }
         h1 {
           font-style: normal;
           font-weight: 700;
         }
         .caption {
-          width: 90%;
           font-family: "RocGrotesk";
           font-size: 20px;
           font-style: normal;

@@ -238,13 +238,18 @@ const ProcurementLibrary = () => {
               <br />
               Into Procurement
             </h1>
-            <span className="caption">
-              These pages provide guidance, prompts and a library of procurement
-              practices to help integrate sustainability into procurement
-              practices. These resources take you trough why sustainability
-              brings value, how to get started, and how to integrate
-              sustainability into your sourcing strategies.
-            </span>
+            <Space className="caption" direction="vertical" size={20}>
+              <div>
+                These pages provide guidance, prompts and a library of
+                procurement practices to help integrate sustainability into your
+                sourcing strategies.
+              </div>
+              <div>
+                Begin with the introduction to understand core concepts, explore
+                practices that fit your business context, then dive into the
+                complete intervention library.
+              </div>
+            </Space>
           </div>
 
           <div className="jumbotron-cards">
