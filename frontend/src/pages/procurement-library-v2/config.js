@@ -64,8 +64,7 @@ export const PROCUREMENT_TABS = [
     label: "Business Implementation",
     content: {
       header: {
-        title:
-          "Practical application for implementation and business implementation",
+        title: "Practical application for business implementation",
       },
     },
   },

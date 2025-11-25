@@ -198,7 +198,9 @@ const InterventionLibrary = () => {
               className="il-practice-by-attribute-wrapper"
             >
               <div className="il-attribute-title">
-                <div className="left">{it.label}</div>
+                <div className="left" style={{ color: cardColor.shadowColor }}>
+                  {it.label}
+                </div>
                 <Divider />
               </div>
               <InfiniteScroll
@@ -367,7 +369,15 @@ const InterventionLibrary = () => {
       <div className="intervention-library-content">
         <div className="intervention-library-content-header">
           <div className="intervention-library-search-box-title-wrapper">
-            <h1>The Intervention Library</h1>
+            <div>
+              <h1>The Intervention Library</h1>
+              <p>
+                Discover the procurement practices that fit your situation and
+                help you achieve your desired impact. Use the value chain below
+                to explore how to start thinking about and implementing
+                sustainable procurement for your business.
+              </p>
+            </div>
             <div className="income-library-search-box-icon-wrapper">
               {SEARCHBOX_ICONS.map((it) => (
                 <Tooltip key={it.name} title={it.name}>
