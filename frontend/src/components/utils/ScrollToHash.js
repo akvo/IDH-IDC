@@ -5,20 +5,25 @@ const ScrollToHash = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Check if there's a hash in the URL (e.g., #sourcing-strategy-cycle-content)
     if (location.hash) {
-      // Use setTimeout to ensure the element is rendered before we try to scroll to it
-      // which is important for dynamically loaded content or new page loads.
       setTimeout(() => {
-        const element = document.getElementById(location.hash.substring(1)); // Remove the '#'
+        const element = document.getElementById(location.hash.substring(1));
         if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 0); // Run immediately after the browser finishes rendering the page update
-    }
-  }, [location]); // Rerun this effect every time the location changes
+          // Scroll with offset
+          const offset = 80; // Adjust this value as needed
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
 
-  return null; // This component renders nothing
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          });
+        }
+      }, 100); // Slightly longer timeout can help with dynamic content
+    }
+  }, [location]);
+
+  return null;
 };
 
 export default ScrollToHash;

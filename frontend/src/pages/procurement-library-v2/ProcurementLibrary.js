@@ -365,6 +365,7 @@ const ProcurementLibrary = () => {
       <section
         id="sourcing-strategy-cycle-content"
         className="pl-section-container sourcing-strategy-cycle-content"
+        style={{ scrollMarginTop: "80px" }}
       >
         {/* header */}
         <div className="sscc-header-wrapper">
