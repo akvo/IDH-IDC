@@ -173,7 +173,11 @@
           gap: 24px;
 
           div.left {
-            min-width: 18%;
+            min-width: 20%;
+          }
+
+          .ant-divider {
+            border-block-start: 1px solid rgba(5, 5, 5, 0.15);
           }
         }
       }

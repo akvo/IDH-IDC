@@ -46,7 +46,7 @@
       }
 
       .jumbotron-text {
-        width: 687px;
+        max-width: 750px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -54,8 +54,10 @@
 
         h1,
         .caption {
+          width: 100%;
           max-width: 775px;
         }
+
         h1 {
           font-style: normal;
           font-weight: 700;
@@ -98,7 +100,7 @@
 
       .jumbotron-cards {
         position: absolute;
-        bottom: -124px;
+        bottom: -175px;
         left: 0;
         width: 100%;
         padding: 94px var(--default-landing-padding) 0;
@@ -146,7 +148,6 @@
                 .card-title {
                   h3 {
                     color: $primary-color;
-                    letter-spacing: -0.48px !important;
                     margin-block-start: 8px;
                     margin-block-end: 4px;
                   }

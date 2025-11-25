@@ -372,10 +372,9 @@ const InterventionLibrary = () => {
             <div>
               <h1>The Intervention Library</h1>
               <p>
-                Discover the procurement practices that fit your situation and
-                help you achieve your desired impact. Use the value chain below
-                to explore how to start thinking about and implementing
-                sustainable procurement for your business.
+                Find procurement practices tailored to your situation and impact
+                goals. Filter by impact area, strategy cycle, or procurement
+                principles
               </p>
             </div>
             <div className="income-library-search-box-icon-wrapper">
