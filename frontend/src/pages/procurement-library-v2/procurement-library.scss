@@ -240,6 +240,8 @@
   }
 
   .sourcing-strategy-cycle-content {
+    scroll-margin-top: 80px;
+
     .sscc-header-wrapper {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -529,7 +531,7 @@
 
       .jumbotron-cards {
         padding: 0 $default-mobile-padding-size;
-        bottom: -640px;
+        bottom: -710px;
 
         @media (max-width: 305px) {
           bottom: -660px;
@@ -545,7 +547,7 @@
       padding-bottom: 2rem var(--default-landing-padding);
 
       &.pl-section-first-row {
-        padding-top: 40rem;
+        padding-top: 46rem;
         padding-bottom: 0rem;
       }
     }
@@ -570,7 +572,7 @@
     }
 
     .sourcing-strategy-cycle-content {
-      scroll-margin-top: 200px;
+      scroll-margin-top: 80px;
 
       .sscc-header-wrapper {
         grid-template-columns: 1fr;
