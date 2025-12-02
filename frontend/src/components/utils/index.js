@@ -40,6 +40,13 @@ export const MapViewHelpText = ({ type, relevantPageMessage }) => {
   }
 };
 
+export const sortStringItemsWithOrderedNumber = (items) =>
+  items.sort((a, b) => {
+    const numA = parseInt(a?.trim()?.split(".")?.[0], 10);
+    const numB = parseInt(b?.trim()?.split(".")?.[0], 10);
+    return numA - numB;
+  });
+
 export { default as SaveAsImageButton } from "./SaveAsImageButton";
 export { default as PasswordCriteria } from "./PasswordCriteria";
 export { default as ShowLabelButton } from "./ShowLabelButton";
@@ -49,3 +56,4 @@ export { default as OtherToolResourceList } from "./other-tools-and-resources/Ot
 export { default as NewCpiForm } from "./NewCpiForm";
 export { default as OtherToolsAndResources } from "./other-tools-and-resources/OtherToolsAndResources";
 export { default as Blocker } from "./blocker/Blocker";
+export { default as ScrollToHash } from "./ScrollToHash";

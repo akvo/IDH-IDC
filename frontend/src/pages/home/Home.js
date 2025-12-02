@@ -193,7 +193,7 @@ const Home = () => {
                 justify="space-between"
               >
                 <Col
-                  span={isMobile ? 24 : 14}
+                  span={isMobile ? 24 : 12}
                   order={leftPositition}
                   className="tool-resource-item-content"
                 >
@@ -243,7 +243,7 @@ const Home = () => {
                     </Link>
                   )}
                 </Col>
-                <Col span={isMobile ? 24 : 10} order={rightPosition}>
+                <Col span={isMobile ? 24 : 12} order={rightPosition}>
                   <img
                     src={it.image}
                     className="tool-resource-image"

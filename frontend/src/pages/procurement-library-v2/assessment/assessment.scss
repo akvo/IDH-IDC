@@ -1,134 +1,557 @@
 @import "../../../variables.scss";
 
-.assessment-container {
-  &.coming-soon-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .content-wrapper {
-    position: relative;
-    z-index: 10;
-    max-width: 1200px;
-    width: 100%;
-  }
-
-  .coming-soon-card {
-    position: relative;
-    display: flex;
-    padding: 125px 90px;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 18px;
-    flex: 1 0 0;
-    align-self: stretch;
-    border-radius: 20px;
-    border: 1px solid var(--light-20, #f2f2f2);
-    background: var(--light-10, #fff);
-
-    text-align: center;
-
-    h3 {
-      color: $primary-color;
-      font-weight: normal;
-      margin: 0;
-    }
-
-    background-image: url("/assets/images/procurement-library/bg-card-procurement-green.png");
-    background-position: right bottom;
-    background-repeat: no-repeat;
-    background-size: 300px;
-  }
-
-  .icon-wrapper {
-    margin-bottom: 20px;
-    display: inline-block;
-    position: relative;
-
-    .icon-container {
-      width: 70px;
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: rotate(3deg);
-      transition: transform 0.3s ease;
-
-      img.coming-soon-icon {
-        width: 70px;
-      }
-
-      &:hover {
-        transform: rotate(6deg) scale(1.05);
-      }
-    }
-  }
-
-  .title {
-    font-size: 48px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    background: #000;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    min-height: 60px;
-    font-family: "RocGrotesk";
-  }
-
-  .description {
-    font-size: 18px;
-    color: #475467;
-    margin: 0 auto 32px;
-    max-width: 500px;
-    line-height: 1.6;
-    font-family: "TabletGothic";
-  }
-
-  .button-wrapper {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .back-button,
-  .home-button {
-    border: none;
-    padding: 12px 24px;
-    height: fit-content;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 100px;
-    font-family: "TabletGothic";
-    border: 1px solid $primary-color;
-    box-shadow: none;
-
-    &:hover {
-      border: 2px solid $primary-color;
-    }
-  }
-
-  .back-button {
-    background: #fff;
-    color: $primary-color;
-
-    &:hover {
-      border: 2px solid $primary-color;
-      background: #fff !important;
-      color: $primary-color !important;
-    }
-  }
-}
-
-@media (max-width: 768px) {
+#assessment-page {
   .assessment-container {
-    flex-direction: column;
+    padding: 2rem var(--default-landing-padding) 3rem;
+
+    .ant-breadcrumb {
+      padding: 0 0 32px 0 !important;
+
+      a.active {
+        font-weight: 700;
+      }
+    }
+
+    .assesment-title-card-wrapper {
+      // background-image: url("/assets/images/procurement-library/bg-card-procurement-blue.png");
+      // background-position: right bottom;
+      // background-repeat: no-repeat;
+      // background-size: contain;
+      width: 100%;
+      display: flex;
+      padding: 24px;
+      align-items: flex-start;
+      gap: 12px;
+      align-self: stretch;
+      border-radius: 20px;
+      background-color: var(--blue-20, #d0ecff);
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url("/assets/images/procurement-library/bg-card-procurement-blue.png");
+        background-position: right bottom;
+        background-repeat: no-repeat;
+        background-size: contain;
+        opacity: 0.5; /* Adjust opacity (0.0 to 1.0) */
+        border-radius: 20px;
+        pointer-events: none; /* Allows clicks to pass through */
+        z-index: 0;
+      }
+
+      .assesment-title-text-wrapper {
+        max-width: 750px;
+        position: relative; /* Ensures text stays above background */
+        z-index: 1;
+
+        h1 {
+          color: $primary-color;
+          font-family: "RocGrotesk";
+          font-size: 32px !important;
+          font-style: normal;
+          font-weight: 700;
+          line-height: 42px !important;
+        }
+
+        p {
+          color: var(--dark-100, #000);
+          font-family: "TabletGothic";
+          font-style: normal;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .assesment-content {
+      display: flex;
+      width: 100%;
+      padding: 24px 0;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+
+      .assesment-content-intro {
+        display: flex;
+        gap: 32px;
+
+        p {
+          font-family: "TabletGothic";
+          font-style: normal;
+        }
+      }
+
+      .value-chain-actor-card {
+        width: 100%;
+        border-radius: 16px;
+        border: 2px dashed var(--green-100, $primary-color);
+        background: var(--green-10, #eaf2f2);
+
+        display: flex;
+        padding: 16px 14px 14px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        align-self: stretch;
+
+        // custom steps style
+        .ant-steps {
+          display: flex;
+          justify-content: space-evenly;
+          margin-left: 3rem;
+
+          .ant-steps-item {
+            flex: 1;
+
+            .ant-steps-item-container {
+              .ant-steps-item-tail {
+                position: relative;
+                width: 100%;
+                height: 2px;
+                background: $primary-color;
+
+                &::after {
+                  content: "";
+                  position: absolute;
+                  right: 0;
+                  top: 50%;
+                  width: 12px;
+                  height: 12px;
+                  border-top: 2px solid $primary-color;
+                  border-right: 2px solid $primary-color;
+                  transform: translateY(-50%) rotate(45deg);
+                  background-color: transparent;
+                  margin-right: 5px;
+                }
+              }
+
+              .ant-steps-item-icon {
+                .ant-steps-icon {
+                  top: -10px;
+                }
+              }
+            }
+          }
+        }
+        // EOL custom steps style
+
+        .value-chain-actor-item-card {
+          display: flex;
+          min-height: 167px;
+          min-width: 197px;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: flex-start;
+          flex: 1 0 0;
+          padding: 20px;
+          cursor: pointer;
+
+          border-radius: 8px;
+          border: 1px solid var(--green-30, #b6d2d1);
+          background: #fff;
+
+          &:hover {
+            border-color: $primary-color;
+          }
+
+          .vca-icon-wrapper {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+
+            img.vca-item-icon {
+              width: 32px;
+              height: 32px;
+            }
+          }
+
+          p {
+            text-align: left;
+            margin: 0;
+            color: #000;
+          }
+        }
+      }
+
+      // handle active/process
+      .ant-steps-item-process {
+        .value-chain-actor-item-card {
+          border: 1px solid var(--green-100, $primary-color);
+          background: var(--green-20, #d0e2e2);
+
+          p {
+            font-weight: 600;
+          }
+        }
+      }
+      // eol handle active/process
+
+      // handle disabled steps
+      .ant-steps-item-disabled {
+        .value-chain-actor-item-card {
+          color: #a4a4a4 !important;
+
+          .vca-icon-wrapper {
+            img.vca-item-icon {
+              filter: grayscale(1);
+              opacity: 0.5;
+            }
+          }
+
+          p {
+            color: #a4a4a4;
+          }
+        }
+      }
+      // EOL handle disabled steps
+
+      .assesment-hint-wrapper {
+        display: flex;
+        width: 100%;
+        p {
+          color: var(--dark-40, #666);
+          margin: 0;
+          text-align: left;
+        }
+      }
+    }
+
+    .assesment-results {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+
+      // General Result Card
+      .assesment-results-card {
+        width: 100%;
+        border-radius: 20px;
+        border: 1px solid var(--light-20, #f2f2f2);
+
+        .ant-card-head {
+          border-radius: 20px 20px 0 0;
+          background: $primary-color;
+          padding: 12px 14px;
+
+          .ant-card-head-title {
+            color: #fff;
+            font-family: "RocGrotesk";
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 157.15%; /* 31.43px */
+          }
+
+          .clear-button {
+            border-radius: 100px;
+            border: 1px solid #fff;
+            color: #fff;
+            font-weight: 600;
+          }
+        }
+
+        .ant-card-body {
+          border-radius: 0 0 20px 20px;
+          padding: 0;
+
+          .ant-result {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+
+            .ant-result-icon {
+              img.vca-no-result-icon {
+                width: 125px;
+              }
+            }
+            .ant-result-title {
+              color: var(--dark-100, #000);
+              text-align: center;
+              font-family: "RocGrotesk";
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 700;
+              line-height: 157.15%; /* 28.287px */
+              max-width: 374px;
+            }
+          }
+        }
+
+        // reset card grid bg color
+        .card-grip-wrapper {
+          background: transparent;
+          .ant-card-grid {
+            padding: 28px;
+            background: transparent;
+          }
+        }
+        // eol reset card grid bg color
+      }
+      // EOL General Result Card
+
+      // First Actor Card
+      .assesment-results-card {
+        .fa-result-section-a {
+          img.fa-section-a-actor-icon {
+            width: 36px;
+            height: 36px;
+          }
+
+          h2 {
+            margin: 0;
+            font-size: 34px !important;
+            color: $primary-color;
+          }
+        }
+
+        .fa-result-section-b {
+          padding: 24px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+
+          .fa-result-section-b-list-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            align-self: stretch;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0%;
+
+            p,
+            img {
+              flex: 1;
+            }
+
+            p {
+              margin: 0;
+            }
+
+            img.fa-section-b-check-icon {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+
+        .fa-result-section-c {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 24px;
+          flex: 1 0 0;
+
+          .fa-result-section-c-image-wrapper {
+            display: flex;
+            justify-content: center;
+            align-self: center;
+            width: 100%;
+
+            img.sscc-image {
+              max-height: 552px;
+            }
+          }
+
+          p {
+            margin: 0;
+          }
+        }
+
+        .fa-result-section-d {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-self: stretch;
+          height: 100%;
+
+          .fa-result-section-d-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1 0 0;
+            align-self: stretch;
+            gap: 24px;
+
+            .fa-result-section-d-title-wrapper {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+
+              h3 {
+                color: var(--green-100, $primary-color);
+                font-family: "RocGrotesk";
+                font-style: normal;
+                font-weight: 700;
+                margin: 0;
+              }
+
+              .ant-tag {
+                color: #414651;
+                text-align: center;
+                font-family: "TabletGothic";
+                font-size: 12px;
+                font-style: normal;
+                font-weight: 400;
+                border-radius: 8px;
+                background: #f5f5f5;
+              }
+            }
+
+            p {
+              margin: 0;
+            }
+
+            .fa-result-section-d-practices-wrapper {
+              display: flex;
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 8px;
+              align-self: stretch;
+
+              .fa-result-section-d-practice-card {
+                display: flex;
+                flex-direction: column;
+                align-self: stretch;
+                gap: 12px;
+                align-items: flex-start;
+
+                border-radius: 16px;
+                border-left: 2px solid var(--green-100, $primary-color);
+                padding: 16px;
+                border: 1px solid #e9e9e9;
+                background: var(--green-10, #eaf2f2);
+
+                .fa-result-section-d-practice-card-header {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  align-self: stretch;
+
+                  img.ssc-step {
+                    width: 24px;
+                    height: 24px;
+                    cursor: pointer;
+                  }
+                }
+
+                h4 {
+                  font-family: "RocGrotesk" !important;
+                  font-size: 14px !important;
+                  margin: 0;
+                }
+
+                .view-link {
+                  display: flex;
+                  justify-content: flex-end;
+                  align-items: center;
+                  align-self: stretch;
+                  gap: 5px;
+
+                  color: $primary-color;
+                  font-family: "TabletGothic";
+                  font-size: 13px;
+                  font-style: normal;
+                  font-weight: 400;
+                  line-height: 24px;
+                }
+              }
+            }
+          }
+
+          .view-all-link {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            align-self: flex-end;
+            gap: 5px;
+
+            color: $primary-color;
+            font-family: "TabletGothic";
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px;
+          }
+        }
+      }
+      // EOL First Actor Card
+
+      // Second Actor Card
+      .assesment-results-card {
+        .sa-result-section-a,
+        .sa-result-section-b {
+          h2 {
+            margin: 0;
+            font-size: 34px !important;
+            color: $primary-color;
+          }
+        }
+
+        .sa-result-section-c {
+          padding: 24px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          align-self: stretch;
+          gap: 24px;
+
+          p {
+            margin: 0;
+          }
+
+          .sa-result-section-c-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            img.sa-section-c-check-icon {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+
+        .sa-result-section-d {
+          padding: 24px 0 0 0;
+          display: flex;
+          flex-direction: column;
+          align-self: stretch;
+          gap: 24px;
+
+          p {
+            margin: 0;
+          }
+
+          .sa-result-section-d-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            h4 {
+              color: $primary-color;
+              margin: 0;
+              font-size: 16px;
+              padding: 6px 0;
+            }
+
+            img.sa-section-d-check-icon {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+      }
+      // EOL Second Actor Card
+    }
   }
 }

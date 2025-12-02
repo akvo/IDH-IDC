@@ -21,7 +21,7 @@ import {
   Company,
   CompanyForm,
 } from "./pages/admin";
-import { UserState, UIState } from "./store";
+import { UserState, UIState, PLState } from "./store";
 import { api } from "./lib";
 import { adminRole, PROD_HOST } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
@@ -38,6 +38,7 @@ import {
 } from "./pages/cocoa-income-inventory";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut } from "./hooks";
+import { ScrollToHash } from "./components/utils";
 
 const optionRoutes = [
   "organisation/options",
@@ -45,6 +46,8 @@ const optionRoutes = [
   "company/options",
   "company/having_case_options",
 ];
+
+const PLOptionRoutes = ["plv2/category/attributes"];
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -89,6 +92,24 @@ const App = () => {
       });
   }, []);
 
+  // PL Related State
+  useEffect(() => {
+    const PLOptionRoutesptionApiCalls = PLOptionRoutes.map((url) =>
+      api.get(url)
+    );
+    Promise.all(PLOptionRoutesptionApiCalls)
+      .then((res) => {
+        const [catAttrRes] = res;
+        PLState.update((s) => {
+          s.categoryWithAttributes = catAttrRes.data;
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }, []);
+  // EOL PL Related State
+
   const authTokenAvailable = useMemo(() => {
     const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
     if (res) {
@@ -130,6 +151,7 @@ const App = () => {
 
   return (
     <PageLayout testid="page-layout">
+      <ScrollToHash />
       <ScrollToTop />
       {authTokenAvailable && userRole === null ? (
         <div className="loading-container">
@@ -280,11 +302,16 @@ const App = () => {
             path="/procurement-library/intervention-library"
             element={<ProcurementPage.InterventionLibrary />}
           />
+
+          {/*
+          DISABLE PL methodology page
           <Route
             exact
             path="/procurement-library/methodology"
             element={<ProcurementPage.Methodology />}
           />
+          EOL DISABLE PL methodology page
+          */}
           <Route
             exact
             path="/procurement-library/intervention-library/:practiceId"

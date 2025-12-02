@@ -46,7 +46,7 @@
       }
 
       .jumbotron-text {
-        width: 687px;
+        max-width: 750px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -54,14 +54,15 @@
 
         h1,
         .caption {
-          width: 735px;
+          width: 100%;
+          max-width: 775px;
         }
+
         h1 {
           font-style: normal;
           font-weight: 700;
         }
         .caption {
-          width: 90%;
           font-family: "RocGrotesk";
           font-size: 20px;
           font-style: normal;
@@ -99,7 +100,7 @@
 
       .jumbotron-cards {
         position: absolute;
-        bottom: -124px;
+        bottom: -175px;
         left: 0;
         width: 100%;
         padding: 94px var(--default-landing-padding) 0;
@@ -112,7 +113,7 @@
               padding: 10px 20px 16px;
               .card-content {
                 width: 100%;
-                min-height: 180px;
+                min-height: 200px;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
@@ -138,7 +139,7 @@
                     width: 100%;
                     height: 100%;
                     z-index: 1;
-                    &.front-0 {
+                    &.front-1 {
                       top: 18px;
                       left: 14%;
                     }
@@ -147,7 +148,6 @@
                 .card-title {
                   h3 {
                     color: $primary-color;
-                    letter-spacing: -0.48px !important;
                     margin-block-start: 8px;
                     margin-block-end: 4px;
                   }
@@ -241,6 +241,8 @@
   }
 
   .sourcing-strategy-cycle-content {
+    scroll-margin-top: 80px;
+
     .sscc-header-wrapper {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -400,6 +402,7 @@
         border-radius: 0;
 
         .li-icon {
+          display: block;
           width: 22px;
           height: 22px;
         }
@@ -529,7 +532,7 @@
 
       .jumbotron-cards {
         padding: 0 $default-mobile-padding-size;
-        bottom: -640px;
+        bottom: -710px;
 
         @media (max-width: 305px) {
           bottom: -660px;
@@ -545,7 +548,7 @@
       padding-bottom: 2rem var(--default-landing-padding);
 
       &.pl-section-first-row {
-        padding-top: 40rem;
+        padding-top: 46rem;
         padding-bottom: 0rem;
       }
     }
@@ -570,6 +573,8 @@
     }
 
     .sourcing-strategy-cycle-content {
+      scroll-margin-top: 80px;
+
       .sscc-header-wrapper {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
@@ -742,3 +747,73 @@
   }
 }
 // EOL MEDIA CSS
+
+.sscc-collapse {
+  .practice-interventions-item {
+    .practice-interventions-list {
+      padding: 0;
+      margin: 8px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      li {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px;
+        border-radius: 16px;
+        background: var(--green-10, #eaf2f2);
+        transition: all 0.2s ease;
+        border: 1px solid #e9e9e9;
+        border-left: 3px solid var(--green-100, $primary-color);
+
+        &:hover {
+          border-color: $primary-color;
+          background: var(--green-20, #d0e2e2);
+          transform: translateX(4px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .check-icon-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+
+          .li-icon {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+          }
+
+          span {
+            color: var(--dark-100, #000);
+            font-family: "TabletGothic";
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+          }
+        }
+
+        &.practice-interventions-list-item-2 {
+          border-left: 3px solid #ff5d00;
+          &:hover {
+            border-color: #fff2ea;
+          }
+        }
+        &.practice-interventions-list-item-3 {
+          border-left: 3px solid var(--blue-100, #48d985);
+          &:hover {
+            border-color: #f0fcf5;
+          }
+        }
+        &.practice-interventions-list-item-4 {
+          border-left: 3px solid var(--blue-100, #0098ff);
+          &:hover {
+            border-color: #eaf7ff;
+          }
+        }
+      }
+    }
+  }
+}
