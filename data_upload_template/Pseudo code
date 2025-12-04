@@ -1,0 +1,37 @@
+# Data Template and Page Input
+data_file = #the uploaded template file 
+data = data_file(sheet = data)
+mapping = data_file(sheet = mapping)
+
+# Input from the user
+segment_variable = str #user written variable name 
+segment_number = integer
+segment_type = bool #cat or cont
+segment_way = bool #manual or automatic
+
+segment_split = list #boundaries of segments 
+
+
+# After Data Upload
+if segment_variable not in data = ERROR
+if segment_type not type(segment_variable) = ERROR
+
+data = rename variables based on mapping (keep original name if variable not in mappping) #variables not in mapping would be used for segmentation such as gender etc.
+output_variables = variable in mapping and not None
+
+if segment_type = cat:
+    grouping_colum = segment_variable
+
+if segment_type = cont: 
+    if segment_way = automatic:
+        grouping_colum = split data into equal sized groups based on segment_number
+    if segment_way = manual: 
+        grouping_colum = split data based on segment_split
+
+
+dict = for variable in output_variables: 
+    current = median(variable),
+    feasible = 90th_quantile(variable)
+
+
+
