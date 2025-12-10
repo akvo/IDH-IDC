@@ -19,6 +19,7 @@ import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
+import posthog from "posthog-js";
 
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
@@ -302,6 +303,25 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
                 : data.focus_commodity,
             }
           );
+
+          // posthog event
+          posthog.capture("create_case_country", {
+            category: "Case Overview",
+            action: "Create new case",
+            label: "External users Country wise",
+            count: 1,
+            country: reportedCountry ? reportedCountry.label : data.country,
+          });
+
+          posthog.capture("create_case_commodity", {
+            category: "Case Overview",
+            action: "Create new case",
+            label: "External users Commodity wise",
+            count: 1,
+            commodity: reportedCommodity
+              ? reportedCommodity.label
+              : data.focus_commodity,
+          });
         }
         // EOL track event
 

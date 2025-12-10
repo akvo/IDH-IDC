@@ -21,6 +21,7 @@ import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../components/route";
 import { useWindowDimensions } from "../../hooks";
 import { Blocker } from "../../components/utils";
+import posthog from "posthog-js";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
@@ -42,6 +43,15 @@ const Login = () => {
       1,
       { dimension1: "Clicked" }
     );
+
+    // posthog event
+    posthog.capture("registration_email_click", {
+      category: "Registration",
+      action: "Click",
+      label: "Clicking on Living income email for registration",
+      count: 1,
+      status: "Clicked", // formerly dimension1
+    });
   };
 
   const onFinish = (values) => {

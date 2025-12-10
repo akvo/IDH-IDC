@@ -27,6 +27,7 @@ import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import Chart from "../../components/chart";
 import { routePath } from "../../components/route";
 import { MapViewHelpText } from "../../components/utils";
+import posthog from "posthog-js";
 
 const selectProps = {
   showSearch: true,
@@ -493,6 +494,15 @@ const ExploreStudiesPage = () => {
           dimension5: searchedCountry ? searchedCountry.label : country,
         }
       );
+      // posthog event
+      posthog.capture("explore_studies_search_by_country", {
+        category: "Explore Studies Filter",
+        action: "on Search Explore Studies",
+        label: "Search by Country",
+        count: 1,
+        country: searchedCountry ? searchedCountry.label : country, // formerly dimension5
+      });
+
       console.info(
         "Explore Studies Filter",
         "on Search Explore Studies",
@@ -517,6 +527,15 @@ const ExploreStudiesPage = () => {
           dimension6: searchedCommodity ? searchedCommodity.label : commodity,
         }
       );
+      // posthog event
+      posthog.capture("explore_studies_search_by_commodity", {
+        category: "Explore Studies Filter",
+        action: "on Search Explore Studies",
+        label: "Search by Commodity",
+        count: 1,
+        commodity: searchedCommodity ? searchedCommodity.label : commodity, // formerly dimension6
+      });
+
       console.info(
         "Explore Studies Filter",
         "on Search Explore Studies",
@@ -538,6 +557,15 @@ const ExploreStudiesPage = () => {
           dimension7: source,
         }
       );
+      // posthog event
+      posthog.capture("explore_studies_search_by_source", {
+        category: "Explore Studies Filter",
+        action: "on Search Explore Studies",
+        label: "Search by Source",
+        count: 1,
+        source: source, // formerly dimension7
+      });
+
       console.info(
         "Explore Studies Filter",
         "on Search Explore Studies",
@@ -559,6 +587,15 @@ const ExploreStudiesPage = () => {
           dimension8: driver,
         }
       );
+      // posthog event
+      posthog.capture("explore_studies_search_by_driver", {
+        category: "Explore Studies Filter",
+        action: "on Search Explore Studies",
+        label: "Search by Driver",
+        count: 1,
+        driver: driver, // formerly dimension8
+      });
+
       console.info(
         "Explore Studies Filter",
         "on Search Explore Studies",

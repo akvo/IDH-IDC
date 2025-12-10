@@ -35,7 +35,11 @@ import {
   caseStepItems,
 } from "../../../store/static";
 import { api } from "../../../lib";
-import { usePiwikTrackPageTime } from "../../../hooks";
+import {
+  usePiwikTrackPageTime,
+  usePlausibleTrackPageTime,
+  usePostHogTrackPageTime,
+} from "../../../hooks";
 import { routePath } from "../../../components/route";
 import { IDCSubMenu } from "../components";
 
@@ -142,8 +146,10 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
 };
 
 const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
-  // track time
+  // analytic track time
   usePiwikTrackPageTime();
+  usePlausibleTrackPageTime();
+  usePostHogTrackPageTime();
 
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const {

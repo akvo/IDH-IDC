@@ -6,6 +6,19 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import PiwikPro from "@piwikpro/react-piwik-pro";
+import { init } from "@plausible-analytics/tracker";
+import { PostHogProvider } from "posthog-js/react";
+
+// PLAUSIBLE
+init({
+  domain: "synchronic-sondra-saccharic.ngrok-free.dev",
+});
+
+// POSTHOG
+const posthogOptions = {
+  api_host: process.env.REACT_APP_PUBLIC_POSTHOG_HOST,
+  defaults: "2025-11-30",
+};
 
 // PIWIK
 const origin = window?.location?.origin;
@@ -37,7 +50,12 @@ root.render(
         },
       }}
     >
-      <App />
+      <PostHogProvider
+        apiKey={process.env.REACT_APP_PUBLIC_POSTHOG_KEY}
+        options={posthogOptions}
+      >
+        <App />
+      </PostHogProvider>
     </ConfigProvider>
   </Router>
 );
