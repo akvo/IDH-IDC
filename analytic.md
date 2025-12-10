@@ -31,7 +31,7 @@ This document evaluates GDPR-compliant analytics tools that support custom event
 |----------|-----------------|----------------------------|----------------------|-------|
 | **Plausible** | Limited (built-in) | Yes | Not required | Custom events successfully tracked, but advanced reports like Matomo/Piwik are not possible |
 | **Fathom** | Limited | Basic custom events | Not required | Sign-up requires credit card; pricing depends on total page-views; not tested yet |
-| **Umami Cloud** | Moderate | Yes | Not required | Email verification for cloud registration not received, so testing incomplete |
+| **Umami Cloud** | Limited | Yes | Not required | One key limitation of Umami is that, although we can send arbitrary properties using `window.umami.track("eventName", { prop1: value1, prop2: value2 })`, the dashboard only displays the event name and a simple count. It does not allow direct filtering or grouping based on custom payload properties such as step or case_id |
 | **PostHog Cloud** | Extensive | Advanced charts, formulas, funnels, cohorts | Not required | Closest match to Matomo/Piwik; custom events and dashboards tested locally |
 | **Countly Cloud** | Extensive | Fully custom dashboards, segments, funnels | Not required | Enterprise-grade; excluded due to cost |
 
@@ -108,6 +108,6 @@ This document evaluates GDPR-compliant analytics tools that support custom event
 
 - **Plausible:** Successfully tracked custom events from local site; however, advanced custom reports like Matomo/Piwik cannot be generated.
 - **PostHog:** Local event tracking works as expected, including custom page-duration and user action events; dashboard supports flexible visualization.
-- **Umami:** Cloud registration blocked due to missing verification email, limiting testing.
+- **Umami:** One key limitation of Umami is that, although we can send arbitrary properties using `window.umami.track("eventName", { prop1: value1, prop2: value2 })`, the dashboard only displays the event name and a simple count. It does not allow direct filtering or grouping based on custom payload properties such as step or case_id.
 - **Fathom:** Cost depends on aggregated page-views; signed up with a credit card for testing.
 - **Countly:** Excluded due to cost.

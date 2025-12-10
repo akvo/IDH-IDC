@@ -39,6 +39,7 @@ import {
   usePiwikTrackPageTime,
   usePlausibleTrackPageTime,
   usePostHogTrackPageTime,
+  useUmamiTrackPageTime,
 } from "../../../hooks";
 import { routePath } from "../../../components/route";
 import { IDCSubMenu } from "../components";
@@ -150,6 +151,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   usePiwikTrackPageTime();
   usePlausibleTrackPageTime();
   usePostHogTrackPageTime();
+  useUmamiTrackPageTime();
 
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const {
