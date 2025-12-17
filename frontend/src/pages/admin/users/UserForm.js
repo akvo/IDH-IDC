@@ -160,6 +160,28 @@ const UserForm = () => {
         count: 1,
         user_type: "External", // replaces dimension2
       });
+
+      // Matomo Cloudron
+      if (window._paq) {
+        if (window._paq) {
+          window._paq.push([
+            "trackEvent",
+            "User Management", // Category / Feature
+            "Invite User - External", // Action (aggregatable)
+            "", // Label (unused)
+            1,
+          ]);
+        }
+
+        // future-proofing
+        window._paq.push([
+          "trackEvent",
+          "User Management",
+          "Invite User",
+          "user_type=external",
+          1,
+        ]);
+      }
     }
     payload.append("all_cases", allCasesValue);
 

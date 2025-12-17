@@ -6,10 +6,14 @@ const useMatomoPageView = () => {
   const previousPathRef = useRef(null);
 
   useEffect(() => {
-    if (!window._paq) return;
+    if (!window._paq) {
+      return;
+    }
 
     // Prevent duplicate tracking (React 18 StrictMode safe)
-    if (previousPathRef.current === location.pathname) return;
+    if (previousPathRef.current === location.pathname) {
+      return;
+    }
     previousPathRef.current = location.pathname;
 
     window._paq.push(["setCustomUrl", location.pathname]);

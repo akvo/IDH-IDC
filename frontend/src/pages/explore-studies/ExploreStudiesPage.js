@@ -484,128 +484,221 @@ const ExploreStudiesPage = () => {
     const { country, commodity, driver, source } = values;
     // track event: most searched on Explore Studies
     if (country) {
-      const searchedCountry = countryOptions.find((co) => co.value === country);
-      CustomEvent.trackEvent(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Country",
-        1,
-        {
-          dimension5: searchedCountry ? searchedCountry.label : country,
-        }
-      );
-      // posthog event
-      posthog.capture("explore_studies_search_by_country", {
-        category: "Explore Studies Filter",
-        action: "on Search Explore Studies",
-        label: "Search by Country",
-        count: 1,
-        country: searchedCountry ? searchedCountry.label : country, // formerly dimension5
-      });
+      countryOptions
+        .filter(
+          (co) => country.every((c) => c === co.value) || country === co.value
+        )
+        .forEach((co) => {
+          CustomEvent.trackEvent(
+            "Explore Studies Filter",
+            "on Search Explore Studies",
+            "Search by Country",
+            1,
+            {
+              dimension5: co.label,
+            }
+          );
 
-      console.info(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Country",
-        1,
-        {
-          dimension5: searchedCountry ? searchedCountry.label : country,
-        },
-        new Date()
-      );
+          // posthog event
+          posthog.capture("explore_studies_search_by_country", {
+            category: "Explore Studies Filter",
+            action: "on Search Explore Studies",
+            label: "Search by Country",
+            count: 1,
+            country: co.label, // formerly dimension5
+          });
+
+          // Matomo event
+          if (window._paq) {
+            window._paq.push([
+              "trackEvent",
+              "Explore Studies Filter",
+              `Search by Country - ${co.label}`,
+              "",
+              1,
+            ]);
+
+            window._paq.push([
+              "trackEvent",
+              "Explore Studies Filter",
+              "Search by Country",
+              `country=${co.label}`,
+              1,
+            ]);
+          }
+
+          console.info(
+            "Explore Studies Filter",
+            "on Search Explore Studies",
+            "Search by Country",
+            1,
+            {
+              dimension5: co.label,
+            },
+            new Date()
+          );
+        });
     }
     if (commodity) {
-      const searchedCommodity = commodityOptions.find(
-        (co) => co.value === commodity
-      );
-      CustomEvent.trackEvent(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Commodity",
-        1,
-        {
-          dimension6: searchedCommodity ? searchedCommodity.label : commodity,
-        }
-      );
-      // posthog event
-      posthog.capture("explore_studies_search_by_commodity", {
-        category: "Explore Studies Filter",
-        action: "on Search Explore Studies",
-        label: "Search by Commodity",
-        count: 1,
-        commodity: searchedCommodity ? searchedCommodity.label : commodity, // formerly dimension6
-      });
+      commodityOptions
+        .filter(
+          (co) =>
+            commodity.every((c) => c === co.value) || commodity === co.value
+        )
+        .forEach((co) => {
+          CustomEvent.trackEvent(
+            "Explore Studies Filter",
+            "on Search Explore Studies",
+            "Search by Commodity",
+            1,
+            {
+              dimension6: co.label,
+            }
+          );
 
-      console.info(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Commodity",
-        1,
-        {
-          dimension6: searchedCommodity ? searchedCommodity.label : commodity,
-        },
-        new Date()
-      );
+          // posthog event
+          posthog.capture("explore_studies_search_by_commodity", {
+            category: "Explore Studies Filter",
+            action: "on Search Explore Studies",
+            label: "Search by Commodity",
+            count: 1,
+            commodity: co.label, // formerly dimension6
+          });
+
+          // Matomo event
+          if (window._paq) {
+            window._paq.push([
+              "trackEvent",
+              "Explore Studies Filter",
+              `Search by Commodity - ${co.label}`,
+              "",
+              1,
+            ]);
+
+            window._paq.push([
+              "trackEvent",
+              "Explore Studies Filter",
+              "Search by Commodity",
+              `commodity=${co.label}`,
+              1,
+            ]);
+          }
+
+          console.info(
+            "Explore Studies Filter",
+            "on Search Explore Studies",
+            "Search by Commodity",
+            1,
+            {
+              dimension6: co.label,
+            },
+            new Date()
+          );
+        });
     }
     if (source) {
-      CustomEvent.trackEvent(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Source",
-        1,
-        {
-          dimension7: source,
-        }
-      );
-      // posthog event
-      posthog.capture("explore_studies_search_by_source", {
-        category: "Explore Studies Filter",
-        action: "on Search Explore Studies",
-        label: "Search by Source",
-        count: 1,
-        source: source, // formerly dimension7
-      });
+      source.forEach((sc) => {
+        CustomEvent.trackEvent(
+          "Explore Studies Filter",
+          "on Search Explore Studies",
+          "Search by Source",
+          1,
+          {
+            dimension7: sc,
+          }
+        );
 
-      console.info(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Source",
-        1,
-        {
-          dimension7: source,
-        },
-        new Date()
-      );
+        // posthog event
+        posthog.capture("explore_studies_search_by_source", {
+          category: "Explore Studies Filter",
+          action: "on Search Explore Studies",
+          label: "Search by Source",
+          count: 1,
+          source: sc, // formerly dimension7
+        });
+
+        // Matomo event
+        if (window._paq) {
+          window._paq.push([
+            "trackEvent",
+            "Explore Studies Filter",
+            `Search by Source - ${sc}`,
+            "",
+            1,
+          ]);
+
+          window._paq.push([
+            "trackEvent",
+            "Explore Studies Filter",
+            "Search by Source",
+            `source=${sc}`,
+            1,
+          ]);
+        }
+
+        console.info(
+          "Explore Studies Filter",
+          "on Search Explore Studies",
+          "Search by Source",
+          1,
+          {
+            dimension7: sc,
+          },
+          new Date()
+        );
+      });
     }
     if (driver) {
-      CustomEvent.trackEvent(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Driver",
-        1,
-        {
-          dimension8: driver,
-        }
-      );
-      // posthog event
-      posthog.capture("explore_studies_search_by_driver", {
-        category: "Explore Studies Filter",
-        action: "on Search Explore Studies",
-        label: "Search by Driver",
-        count: 1,
-        driver: driver, // formerly dimension8
-      });
+      driver.forEach((dv) => {
+        CustomEvent.trackEvent(
+          "Explore Studies Filter",
+          "on Search Explore Studies",
+          "Search by Driver",
+          1,
+          {
+            dimension8: dv,
+          }
+        );
 
-      console.info(
-        "Explore Studies Filter",
-        "on Search Explore Studies",
-        "Search by Driver",
-        1,
-        {
-          dimension8: driver,
-        },
-        new Date()
-      );
+        // posthog event
+        posthog.capture("explore_studies_search_by_driver", {
+          category: "Explore Studies Filter",
+          action: "on Search Explore Studies",
+          label: "Search by Driver",
+          count: 1,
+          driver: dv, // formerly dimension8
+        });
+
+        // Matomo event
+        if (window._paq) {
+          window._paq.push([
+            "trackEvent",
+            "Explore Studies Filter",
+            `Search by Driver - ${dv}`,
+            "",
+            1,
+          ]);
+
+          window._paq.push([
+            "trackEvent",
+            "Explore Studies Filter",
+            "Search by Driver",
+            `driver=${dv}`,
+            1,
+          ]);
+        }
+
+        console.info(
+          "Explore Studies Filter",
+          "on Search Explore Studies",
+          "Search by Driver",
+          1,
+          {
+            dimension8: dv,
+          },
+          new Date()
+        );
+      });
     }
     // EOL track event: most searched on Explore Studies
 

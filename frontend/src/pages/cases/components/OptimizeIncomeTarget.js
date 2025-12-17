@@ -296,6 +296,27 @@ const OptimizeIncomeTarget = () => {
         driver_pair: driverPair, // formerly dimension11
       });
 
+      // Matomo event
+      if (window._paq) {
+        // 1️⃣ Driver-pair aggregation (FREE Matomo usable)
+        window._paq.push([
+          "trackEvent",
+          "Optimization Model",
+          `Run optimization - Driver pair: ${driverPair}`, // Action
+          "", // Label (unused in free Matomo)
+          1,
+        ]);
+
+        // 2️⃣ Optional clean event for future paid reports
+        window._paq.push([
+          "trackEvent",
+          "Optimization Model",
+          "Run optimization",
+          `driver_pair=${driverPair}`,
+          1,
+        ]);
+      }
+
       console.info(
         "track event",
         "Optimization model - Select the drivers you can influence",

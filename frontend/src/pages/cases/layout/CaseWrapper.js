@@ -40,7 +40,7 @@ import {
   usePlausibleTrackPageTime,
   usePostHogTrackPageTime,
   useUmamiTrackPageTime,
-  useMatomoTrackPageTime,
+  useMatomoCaseStepAnalytics,
 } from "../../../hooks";
 import { routePath } from "../../../components/route";
 import { IDCSubMenu } from "../components";
@@ -153,7 +153,7 @@ const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   usePlausibleTrackPageTime();
   usePostHogTrackPageTime();
   useUmamiTrackPageTime();
-  useMatomoTrackPageTime();
+  useMatomoCaseStepAnalytics();
 
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);
   const {

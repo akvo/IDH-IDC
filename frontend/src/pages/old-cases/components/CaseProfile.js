@@ -638,15 +638,20 @@ const CaseProfile = ({
           const reportedCommodity = focusCommodityOptions.find(
             (fc) => fc.value === data.focus_commodity
           );
+          const countryValue = reportedCountry
+            ? reportedCountry.label
+            : data.country;
+          const commodityValue = reportedCommodity
+            ? reportedCommodity.label
+            : data.focus_commodity;
+
           CustomEvent.trackEvent(
             "Case Overview",
             "Create new case",
             "External users Country wise",
             1,
             {
-              dimension3: reportedCountry
-                ? reportedCountry.label
-                : data.country,
+              dimension3: countryValue,
             }
           );
           CustomEvent.trackEvent(
@@ -655,9 +660,7 @@ const CaseProfile = ({
             "External users Commodity wise",
             1,
             {
-              dimension4: reportedCommodity
-                ? reportedCommodity.label
-                : data.focus_commodity,
+              dimension4: commodityValue,
             }
           );
 
@@ -667,17 +670,49 @@ const CaseProfile = ({
             action: "Create new case",
             label: "External users Country wise",
             count: 1,
-            country: reportedCountry ? reportedCountry.label : data.country, // dimension3
+            country: countryValue, // dimension3
           });
           posthog.capture("create_case_commodity", {
             category: "Case Overview",
             action: "Create new case",
             label: "External users Commodity wise",
             count: 1,
-            commodity: reportedCommodity
-              ? reportedCommodity.label
-              : data.focus_commodity, // dimension4
+            commodity: commodityValue, // dimension4
           });
+
+          // Matomo event
+          if (window._paq) {
+            /**
+             * 1️⃣ Free Matomo – readable, countable actions
+             * These show up cleanly in the Events UI
+             */
+            window._paq.push([
+              "trackEvent",
+              "Case Overview",
+              `Create Case – External – Country: ${countryValue}`,
+              "",
+              1,
+            ]);
+
+            window._paq.push([
+              "trackEvent",
+              "Case Overview",
+              `Create Case – External – Commodity: ${commodityValue}`,
+              "",
+              1,
+            ]);
+
+            /**
+             * 2️⃣ Upgrade-safe canonical event (future segmentation)
+             */
+            window._paq.push([
+              "trackEvent",
+              "Case Overview",
+              "Create Case – External",
+              `user_type=external|country=${countryValue}|commodity=${commodityValue}`,
+              1,
+            ]);
+          }
         }
         // EOL track event
         messageApi.open({
