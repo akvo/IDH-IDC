@@ -485,9 +485,7 @@ const ExploreStudiesPage = () => {
     // track event: most searched on Explore Studies
     if (country) {
       countryOptions
-        .filter(
-          (co) => country.every((c) => c === co.value) || country === co.value
-        )
+        .filter((co) => country.includes(co.value) || country === co.value)
         .forEach((co) => {
           CustomEvent.trackEvent(
             "Explore Studies Filter",
@@ -541,10 +539,7 @@ const ExploreStudiesPage = () => {
     }
     if (commodity) {
       commodityOptions
-        .filter(
-          (co) =>
-            commodity.every((c) => c === co.value) || commodity === co.value
-        )
+        .filter((co) => commodity.includes(co.value) || commodity === co.value)
         .forEach((co) => {
           CustomEvent.trackEvent(
             "Explore Studies Filter",
