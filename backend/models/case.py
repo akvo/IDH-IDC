@@ -118,6 +118,11 @@ class CaseDetailDict(TypedDict):
     company: Optional[int] = None
 
 
+class CaseSpreadSheetColumns(TypedDict):
+    categorical: List[str]
+    numerical: List[str]
+
+
 class Case(Base):
     __tablename__ = "case"
 

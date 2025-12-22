@@ -2,9 +2,19 @@ import db.crud_case as crud_case
 import db.crud_user_business_unit as crud_bu
 import db.crud_living_income_benchmark as crud_lib
 import db.crud_user_case_access as crud_uca
+import pandas as pd
 
 from math import ceil
-from fastapi import APIRouter, Request, Depends, HTTPException, Query, Response
+from fastapi import (
+    APIRouter,
+    Request,
+    Depends,
+    HTTPException,
+    Query,
+    Response,
+    UploadFile,
+    File,
+)
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import Optional, List
@@ -18,6 +28,7 @@ from models.case import (
     CaseDetailDict,
     CaseDropdown,
     CaseStatusEnum,
+    CaseSpreadSheetColumns,
 )
 from models.user import UserRole
 from models.user_case_access import UserCaseAccessPayload, UserCaseAccessDict
@@ -29,9 +40,50 @@ from middleware import (
     verify_case_editor,
     verify_case_viewer,
 )
+from io import BytesIO
 
 security = HTTPBearer()
 case_route = APIRouter()
+
+
+REQUIRED_SHEETS = {"data", "mapping"}
+
+
+def validate_workbook(xls: pd.ExcelFile):
+    missing = REQUIRED_SHEETS - set(xls.sheet_names)
+    if missing:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Missing required sheet(s): {', '.join(missing)}",
+        )
+
+
+def extract_column_types(df: pd.DataFrame):
+    categorical = []
+    numerical = []
+
+    for col in df.columns:
+        series = df[col]
+
+        # Skip empty columns
+        if series.dropna().empty:
+            continue
+
+        if pd.api.types.is_numeric_dtype(series):
+            numerical.append(col)
+        elif pd.api.types.is_bool_dtype(series):
+            categorical.append(col)
+        elif pd.api.types.is_datetime64_any_dtype(series):
+            # Ignore for now (explicitly)
+            continue
+        else:
+            # object, string, mixed → categorical
+            categorical.append(col)
+
+    return {
+        "categorical": categorical,
+        "numerical": numerical,
+    }
 
 
 def get_segment_benchmark(session: Session, case):
@@ -404,3 +456,58 @@ def get_case_countries(
     verify_user(session=session, authenticated=req.state.authenticated)
     country_ids = crud_case.get_case_countries(session=session)
     return country_ids
+
+
+@case_route.post(
+    "/case/import",
+    response_model=CaseSpreadSheetColumns,
+    summary="Upload and parse case import file",
+    tags=["Case"],
+)
+def case_import(
+    req: Request,
+    file: UploadFile = File(...),
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    # Auth check (reuse existing logic)
+    verify_case_creator(session=session, authenticated=req.state.authenticated)
+
+    if not file.filename.lower().endswith(".xlsx"):
+        raise HTTPException(
+            status_code=400,
+            detail="Only .xlsx files are supported",
+        )
+
+    try:
+        content = file.file.read()
+        xls = pd.ExcelFile(BytesIO(content))
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid Excel file",
+        )
+
+    # Validate sheets
+    validate_workbook(xls)
+
+    # Load sheets
+    mapping_df = pd.read_excel(xls, sheet_name="mapping")
+    data_df = pd.read_excel(xls, sheet_name="data")
+
+    if data_df.empty or mapping_df.empty:
+        mapping_preffix = "Mapping" if mapping_df.empty else ""
+        data_preffix = "Data" if mapping_df.empty else ""
+        and_text = " and " if mapping_preffix & data_preffix else ""
+        msg_preffix = f"{mapping_preffix}{and_text}{data_preffix}"
+        raise HTTPException(
+            status_code=400,
+            detail=f"{msg_preffix} sheet is empty",
+        )
+
+    column_types = extract_column_types(data_df)
+
+    return {
+        "categorical": column_types["categorical"],
+        "numerical": column_types["numerical"],
+    }
