@@ -18,7 +18,13 @@ from middleware import (
 )
 from io import BytesIO
 from db.crud_case_import import create_case_import, get_case_import
-from utils.case_import_dataframe import load_data_dataframe_from_bytes
+from utils.case_import_processing import (
+    load_data_dataframe_from_bytes,
+    validate_workbook,
+    extract_column_types,
+    generate_categorical_segments,
+    generate_numerical_segments,
+)
 from utils.case_import_storage import save_import_file, load_import_file
 from models.case_import import (
     CaseSpreadSheetColumns,
@@ -31,109 +37,6 @@ case_import_route = APIRouter()
 
 
 ROUTE_TAG_NAME = ["Case Spreadsheet Upload"]
-REQUIRED_SHEETS = {"data", "mapping"}
-
-
-def validate_workbook(xls: pd.ExcelFile):
-    missing = REQUIRED_SHEETS - set(xls.sheet_names)
-    if missing:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Missing required sheet(s): {', '.join(missing)}",
-        )
-
-
-def extract_column_types(df: pd.DataFrame):
-    categorical = []
-    numerical = []
-
-    for col in df.columns:
-        series = df[col]
-
-        # Skip empty columns
-        if series.dropna().empty:
-            continue
-
-        if pd.api.types.is_numeric_dtype(series):
-            numerical.append(col)
-        elif pd.api.types.is_bool_dtype(series):
-            categorical.append(col)
-        elif pd.api.types.is_datetime64_any_dtype(series):
-            # Ignore for now (explicitly)
-            continue
-        else:
-            # object, string, mixed → categorical
-            categorical.append(col)
-
-    return {
-        "categorical": categorical,
-        "numerical": numerical,
-    }
-
-
-def generate_categorical_segments(df: pd.DataFrame, column: str):
-    counts = df[column].fillna("Unknown").value_counts()
-
-    segments = []
-    for idx, value in enumerate(counts.index, start=1):
-        segments.append(
-            {
-                "segment_index": idx,
-                "label": str(value),
-                "condition": {
-                    "operator": "is",
-                    "value": value,
-                },
-            }
-        )
-
-    return segments
-
-
-def generate_numerical_segments(
-    df: pd.DataFrame, column: str, n_segments: int
-):
-    series = df[column].dropna()
-
-    if series.empty:
-        raise HTTPException(
-            status_code=400,
-            detail="Selected variable has no valid numerical values",
-        )
-
-    quantiles = [series.quantile(i / n_segments) for i in range(1, n_segments)]
-
-    segments = []
-    prev = None
-
-    for idx, q in enumerate(quantiles + [None], start=1):
-        if prev is None:
-            condition = {
-                "operator": "<=",
-                "value": round(q, 4),
-            }
-        elif q is None:
-            condition = {
-                "operator": ">",
-                "value": round(prev, 4),
-            }
-        else:
-            condition = {
-                "operator": "between",
-                "value": [round(prev, 4), round(q, 4)],
-            }
-
-        segments.append(
-            {
-                "segment_index": idx,
-                "label": f"Segment {idx}",
-                "condition": condition,
-            }
-        )
-
-        prev = q
-
-    return segments
 
 
 @case_import_route.post(
