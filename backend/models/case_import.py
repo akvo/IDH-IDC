@@ -14,6 +14,11 @@ class CaseSpreadSheetColumns(TypedDict):
     numerical: List[str]
 
 
+class CaseImportResponse(TypedDict):
+    import_id: str
+    columns: CaseSpreadSheetColumns
+
+
 class SegmentationPreviewRequest(BaseModel):
     import_id: str
     segmentation_variable: str

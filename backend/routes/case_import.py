@@ -27,7 +27,7 @@ from utils.case_import_processing import (
 )
 from utils.case_import_storage import save_import_file, load_import_file
 from models.case_import import (
-    CaseSpreadSheetColumns,
+    CaseImportResponse,
     SegmentationPreviewRequest,
     SegmentationPreviewResponse,
 )
@@ -41,7 +41,7 @@ ROUTE_TAG_NAME = ["Case Spreadsheet Upload"]
 
 @case_import_route.post(
     "/case-import",
-    response_model=CaseSpreadSheetColumns,
+    response_model=CaseImportResponse,
     summary="Upload case spreadsheet file",
     tags=ROUTE_TAG_NAME,
 )
@@ -85,11 +85,11 @@ def case_import(
         )
 
     # Save file
-    import_id = str(uuid.uuid4())
-    file_path = save_import_file(import_id, content)
+    file_import_id = str(uuid.uuid4())
+    file_path = save_import_file(file_import_id, content)
 
     # Persist import session
-    create_case_import(
+    case_import = create_case_import(
         session=session,
         case_id=case_id,
         user_id=user.id,
@@ -99,7 +99,7 @@ def case_import(
     column_types = extract_column_types(data_df)
 
     return {
-        "import_id": import_id,
+        "import_id": str(case_import.id),
         "columns": {
             "categorical": column_types["categorical"],
             "numerical": column_types["numerical"],
