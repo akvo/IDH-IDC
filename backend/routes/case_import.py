@@ -26,10 +26,14 @@ from utils.case_import_processing import (
     generate_numerical_segments,
 )
 from utils.case_import_storage import save_import_file, load_import_file
+from utils.case_import_process_confirmed_segmentation import (
+    process_confirmed_segmentation,
+)
 from models.case_import import (
     CaseImportResponse,
     SegmentationPreviewRequest,
     SegmentationPreviewResponse,
+    GenerateSegmentValuesRequest,
 )
 
 security = HTTPBearer()
@@ -165,3 +169,29 @@ def segmentation_preview(
         "type": var_type,
         "segments": segments,
     }
+
+
+@case_import_route.post(
+    "/case-import/generate-segment-values",
+    summary="Generate segment values for case commodities",
+    tags=ROUTE_TAG_NAME,
+)
+def generate_segment_values(
+    req: Request,
+    payload: GenerateSegmentValuesRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    # Authorization
+    verify_case_creator(
+        session=session,
+        authenticated=req.state.authenticated,
+    )
+
+    # Process confirmed segmentation
+    result = process_confirmed_segmentation(
+        request=payload,
+        session=session,
+    )
+
+    return result
