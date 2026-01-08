@@ -155,6 +155,7 @@ const SegmentConfigurationForm = ({
           <SegmentForm
             deletedSegmentIds={deletedSegmentIds}
             setDeletedSegmentIds={setDeletedSegmentIds}
+            isDataUpload={true}
           />
         </Col>
       )}
