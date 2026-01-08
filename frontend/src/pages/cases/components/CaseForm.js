@@ -204,7 +204,7 @@ const CaseForm = ({
   }, [form, currentCase]);
 
   return (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} className="case-form-body-wrapper">
       {/* GENERAL INFORMATION */}
       <Col span={24}>
         <Card

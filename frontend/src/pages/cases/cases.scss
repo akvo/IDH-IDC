@@ -62,6 +62,48 @@
       background: transparent;
     }
   }
+
+  .ant-drawer-wrapper-body {
+    .ant-drawer-header {
+      .ant-btn {
+        border: none;
+      }
+    }
+
+    .ant-drawer-body {
+      padding: 0;
+
+      .case-form-body-wrapper {
+        padding: 24px;
+      }
+
+      .case-form-button-wrapper {
+        margin-top: 24px;
+        border-top: 1px solid #e2e4e9;
+        padding: 24px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+
+        .button-cancel {
+          background: transparent;
+          border-radius: 40px;
+          border-color: $primary-color;
+          font-weight: 700;
+          color: $primary-color;
+        }
+
+        .button-save {
+          background: $primary-color;
+          border-radius: 40px;
+          color: #ffffff;
+          font-weight: 700;
+          border-color: $primary-color;
+        }
+      }
+    }
+  }
 }
 
 #case {
