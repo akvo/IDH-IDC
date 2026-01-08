@@ -414,6 +414,7 @@ class CaseBase(BaseModel):
     company: Optional[int] = None
     status: Optional[int] = None
     segments: Optional[List[CaseSettingSegmentPayload]] = None
+    import_id: Optional[str] = None
 
 
 class PaginatedCaseResponse(BaseModel):

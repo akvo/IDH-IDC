@@ -56,6 +56,7 @@ const livestockPrompt = (
   </>
 );
 
+// TODO:: Update case_import case_id column after saving the case, by adding import_id to payload
 const { Dragger } = Upload;
 
 const SecondaryForm = ({
@@ -203,6 +204,9 @@ const CaseForm = ({
 
         const result = response.data;
         setUploadResult(result);
+        if (result.import_id) {
+          form.setFieldValue("import_id", result.import_id);
+        }
         onSuccess(result, file);
         messageApi.success(`${file.name} uploaded successfully`);
       } catch (error) {
@@ -553,6 +557,9 @@ const CaseForm = ({
                       {uploading ? "Uploading..." : "Browse files"}
                     </Button>
                   </Dragger>
+                  <Form.Item name="import_id" hidden>
+                    <input type="hidden" />
+                  </Form.Item>
 
                   {uploadResult && (
                     <div style={{ marginTop: 16 }}>

@@ -37,3 +37,19 @@ def get_case_import(
         )
 
     return obj
+
+
+def update_case_import_case_id(
+    session: Session,
+    *,
+    import_id: str,
+    case_id: int,
+) -> CaseImport:
+    obj = session.query(CaseImport).filter(CaseImport.id == import_id).first()
+    if not obj:
+        return obj
+    obj.case_id = case_id
+    session.add(obj)
+    session.commit()
+    session.refresh(obj)
+    return obj
