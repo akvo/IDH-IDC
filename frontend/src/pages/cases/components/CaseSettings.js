@@ -21,6 +21,8 @@ import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
 
+const dataUploadFieldPreffix = "data_upload_";
+
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -517,6 +519,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           updateCurrentCase={updateCurrentCase}
           deletedSegmentIds={deletedSegmentIds}
           setDeletedSegmentIds={setDeletedSegmentIds}
+          dataUploadFieldPreffix={dataUploadFieldPreffix}
         />
         <div className="case-form-button-wrapper">
           <Button

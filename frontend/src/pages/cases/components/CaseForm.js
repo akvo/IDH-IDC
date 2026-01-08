@@ -26,7 +26,7 @@ import {
   currencyOptions,
 } from "../../../store/static";
 import { selectProps, getFieldDisableStatusForCommodity } from "../../../lib";
-import { AreaUnitFields, SegmentForm } from ".";
+import { AreaUnitFields, SegmentForm, SegmentConfigurationForm } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
@@ -172,6 +172,7 @@ const CaseForm = ({
   deletedSegmentIds = [],
   updateCurrentCase = () => {},
   setDeletedSegmentIds = () => {},
+  dataUploadFieldPreffix = "",
 }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
@@ -563,6 +564,10 @@ const CaseForm = ({
 
                   {uploadResult && (
                     <div style={{ marginTop: 16 }}>
+                      <SegmentConfigurationForm
+                        dataUploadFieldPreffix={dataUploadFieldPreffix}
+                        uploadResult={uploadResult}
+                      />
                       <h3>Upload Result:</h3>
                       <pre>{JSON.stringify(uploadResult, null, 2)}</pre>
                     </div>
