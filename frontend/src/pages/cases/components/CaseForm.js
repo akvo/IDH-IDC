@@ -13,6 +13,8 @@ import {
   Alert,
   Radio,
   Switch,
+  Tabs,
+  Button,
 } from "antd";
 import {
   countryOptions,
@@ -28,6 +30,7 @@ import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
+import { DownloadOutlined } from "@ant-design/icons";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -445,18 +448,41 @@ const CaseForm = ({
           </Row>
         </Card>
       </Col>
-      {/* SEGMENTATION */}
+      {/* MANUAL / DATA UPLOAD */}
       <Col span={24}>
-        <Card
-          title="Create up to 5 segments"
-          className="case-setting-child-card-wrapper"
-          size="small"
-        >
-          <SegmentForm
-            deletedSegmentIds={deletedSegmentIds}
-            setDeletedSegmentIds={setDeletedSegmentIds}
-          />
-        </Card>
+        <Tabs
+          items={[
+            {
+              key: "manual",
+              label: "Manual data input",
+              children: (
+                <Col span={24}>
+                  {/* SEGMENTATION */}
+                  <Card
+                    title="Create up to 5 segments"
+                    className="case-setting-child-card-wrapper"
+                    size="small"
+                  >
+                    <SegmentForm
+                      deletedSegmentIds={deletedSegmentIds}
+                      setDeletedSegmentIds={setDeletedSegmentIds}
+                    />
+                  </Card>
+                </Col>
+              ),
+            },
+            {
+              key: "upload",
+              label: "Data upload",
+              children: <Col span={24}></Col>,
+            },
+          ]}
+          tabBarExtraContent={
+            <Button className="button-ghost">
+              <DownloadOutlined /> Download template
+            </Button>
+          }
+        />
       </Col>
     </Row>
   );

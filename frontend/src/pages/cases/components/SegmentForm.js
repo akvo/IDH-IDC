@@ -9,7 +9,7 @@ import {
   InputNumber,
   Popconfirm,
 } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
 
 const MAX_SEGMENT = 5;
@@ -116,11 +116,12 @@ const SegmentForm = ({
           {fields.length < MAX_SEGMENT ? (
             <Form.Item>
               <Button
-                type="dashed"
+                type="ghost"
                 onClick={() => add()}
                 block
-                icon={<PlusOutlined />}
+                icon={<PlusCircleFilled />}
                 disabled={!enableEditCase}
+                className="button-ghost button-no-border"
               >
                 Add another segment
               </Button>
