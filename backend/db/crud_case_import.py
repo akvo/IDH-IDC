@@ -1,14 +1,16 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from typing import Optional
+
 from models.case_import import CaseImport
 
 
 def create_case_import(
     session: Session,
     *,
-    case_id: int,
     user_id: int,
     file_path: str,
+    case_id: Optional[int] = None,
 ) -> CaseImport:
     obj = CaseImport(
         case_id=case_id,

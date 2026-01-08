@@ -58,4 +58,4 @@ def downgrade() -> None:
         type_="unique",
     )
     op.drop_table("conversion_rate")
-    op.execute("DROP TYPE currency_enum")
+    op.execute("DROP TYPE IF EXISTS currency_enum")

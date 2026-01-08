@@ -33,7 +33,7 @@ def upgrade():
             "case_id",
             sa.Integer(),
             sa.ForeignKey("case.id", ondelete="CASCADE"),
-            nullable=False,
+            nullable=True,
         ),
         sa.Column(
             "user_id",

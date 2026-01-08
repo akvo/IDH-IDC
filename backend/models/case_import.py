@@ -73,7 +73,7 @@ class CaseImport(Base):
     case_id = Column(
         Integer,
         ForeignKey("case.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
     )
     user_id = Column(
         Integer,
