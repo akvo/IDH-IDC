@@ -539,39 +539,45 @@ const CaseForm = ({
               children: (
                 <Col span={24}>
                   {contextHolder}
-                  <h3>Upload your data</h3>
-                  <Dragger {...uploadProps}>
-                    <p className="ant-upload-drag-icon">
-                      <FileExcelOutlined />
-                    </p>
-                    <p className="ant-upload-text">
-                      {uploading
-                        ? "Uploading..."
-                        : "Select a xlsx file to import"}
-                    </p>
-                    <p className="ant-upload-hint">
-                      {uploading
-                        ? "Please wait while the file is being uploaded"
-                        : "Drag and drop file here or click to upload"}
-                    </p>
-                    <Button className="button-browse-file" disabled={uploading}>
-                      {uploading ? "Uploading..." : "Browse files"}
-                    </Button>
-                  </Dragger>
-                  <Form.Item name="import_id" hidden>
-                    <input type="hidden" />
-                  </Form.Item>
-
-                  {uploadResult && (
-                    <div style={{ marginTop: 16 }}>
-                      <SegmentConfigurationForm
-                        dataUploadFieldPreffix={dataUploadFieldPreffix}
-                        uploadResult={uploadResult}
-                      />
-                      <h3>Upload Result:</h3>
-                      <pre>{JSON.stringify(uploadResult, null, 2)}</pre>
-                    </div>
-                  )}
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <h3>Upload your data</h3>
+                      <Dragger {...uploadProps}>
+                        <p className="ant-upload-drag-icon">
+                          <FileExcelOutlined />
+                        </p>
+                        <p className="ant-upload-text">
+                          {uploading
+                            ? "Uploading..."
+                            : "Select a xlsx file to import"}
+                        </p>
+                        <p className="ant-upload-hint">
+                          {uploading
+                            ? "Please wait while the file is being uploaded"
+                            : "Drag and drop file here or click to upload"}
+                        </p>
+                        <Button
+                          className="button-browse-file"
+                          disabled={uploading}
+                        >
+                          {uploading ? "Uploading..." : "Browse files"}
+                        </Button>
+                      </Dragger>
+                      <Form.Item name="import_id" hidden>
+                        <input type="hidden" />
+                      </Form.Item>
+                    </Col>
+                    {uploadResult && (
+                      <Col span={24} style={{ marginTop: "72px" }}>
+                        <SegmentConfigurationForm
+                          dataUploadFieldPreffix={dataUploadFieldPreffix}
+                          uploadResult={uploadResult}
+                          deletedSegmentIds={deletedSegmentIds}
+                          setDeletedSegmentIds={setDeletedSegmentIds}
+                        />
+                      </Col>
+                    )}
+                  </Row>
                 </Col>
               ),
             },
