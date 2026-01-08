@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, Form, message, Drawer, Button } from "antd";
+import { Form, message, Drawer, Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import { CaseForm } from ".";
 import {
@@ -500,26 +500,6 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       className="case-settings-modal-container"
       maskClosable={false}
       extra={<Button icon={<CloseOutlined />} onClick={handleCancel} />}
-
-      // TODO:: DELETE
-      // modal related props
-      // open={open}
-      // onOk={() => form.submit()}
-      // okButtonProps={{
-      //   loading: isSaving,
-      //   disabled: !enableEditCase,
-      // }}
-      // okText="Save case"
-      // onCancel={() => {
-      //   // reset deleted segment on cancel
-      //   if (deletedSegmentIds?.length) {
-      //     form.setFieldValue("segments", formData.segments);
-      //   }
-      //   handleCancel();
-      // }}
-      // width="70%"
-      // maskClosable={false}
-      // eol modal related props
     >
       {contextHolder}
       <Form
