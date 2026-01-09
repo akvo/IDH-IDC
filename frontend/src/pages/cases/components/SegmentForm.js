@@ -85,6 +85,7 @@ const SegmentForm = ({
                   <Form.Item
                     {...restField}
                     name={[name, "name"]}
+                    label={isDataUpload ? "Segment name" : null}
                     rules={[
                       {
                         required: true,
@@ -102,49 +103,33 @@ const SegmentForm = ({
                   </Form.Item>
                 </Col>
                 <Col span={10}>
-                  <Form.Item
-                    {...restField}
-                    name={[name, "number_of_farmers"]}
-                    hidden={isDataUpload}
-                  >
-                    <InputNumber
-                      placeholder="Number of farmers"
-                      controls={false}
-                      style={{ width: "100%" }}
-                      disabled={!enableEditCase}
-                    />
-                  </Form.Item>
-                  {isDataUpload && (
-                    <Row gutter={[12, 12]}>
-                      <Col span={12}>
-                        <Form.Item
-                          {...restField}
-                          name={[name, "operator"]}
-                          hidden={!isDataUpload}
-                        >
-                          <InputNumber
-                            placeholder="Operator"
-                            controls={false}
-                            style={{ width: "100%" }}
-                            disabled={!enableEditCase}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          {...restField}
-                          name={[name, "value"]}
-                          hidden={!isDataUpload}
-                        >
-                          <InputNumber
-                            placeholder="Value"
-                            controls={false}
-                            style={{ width: "100%" }}
-                            disabled={!enableEditCase}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                  {isDataUpload ? (
+                    <Form.Item
+                      {...restField}
+                      name={[name, "value"]}
+                      label={isDataUpload ? "Value" : null}
+                      hidden={!isDataUpload}
+                    >
+                      <InputNumber
+                        placeholder="Value"
+                        controls={false}
+                        style={{ width: "100%" }}
+                        disabled={!enableEditCase}
+                      />
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      {...restField}
+                      name={[name, "number_of_farmers"]}
+                      hidden={isDataUpload}
+                    >
+                      <InputNumber
+                        placeholder="Number of farmers"
+                        controls={false}
+                        style={{ width: "100%" }}
+                        disabled={!enableEditCase}
+                      />
+                    </Form.Item>
                   )}
                 </Col>
               </Row>
