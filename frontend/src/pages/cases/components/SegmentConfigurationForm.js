@@ -97,23 +97,15 @@ const SegmentConfigurationForm = ({
   return (
     <Row gutter={[16, 16]}>
       {/* SEGMENT CONFIGURATION */}
-      <Col span={8}>
-        <Form.Item
-          name={`${dataUploadFieldPreffix}variable_type`}
-          label="Variable Type"
-          required
-        >
-          <Radio.Group onChange={handleChangeVariableType}>
-            <Radio value="categorical">Categorical</Radio>
-            <Radio value="numerical">Numerical</Radio>
-          </Radio.Group>
-        </Form.Item>
-      </Col>
-      <Col span={10}>
+      <Col span={12}>
+        <p>
+          <b>Variable type</b>
+        </p>
         <Form.Item
           name={`${dataUploadFieldPreffix}segmentation_variable`}
-          label="Segmentation Variable"
+          label="Segmentation variable"
           required
+          style={{ marginBottom: 16 }}
         >
           <Select
             {...selectProps}
@@ -121,12 +113,25 @@ const SegmentConfigurationForm = ({
             options={segmentationVariableDropdownValue}
           />
         </Form.Item>
+        <Form.Item
+          name={`${dataUploadFieldPreffix}variable_type`}
+          required
+          noStyle
+        >
+          <Radio.Group onChange={handleChangeVariableType}>
+            <Radio value="categorical">Categorical</Radio>
+            <Radio value="numerical">Numerical</Radio>
+          </Radio.Group>
+        </Form.Item>
       </Col>
-      <Col span={6}>
+      <Col span={12}>
+        <p>
+          <b>Segmentation</b>
+        </p>
         <Form.Item
           name={`${dataUploadFieldPreffix}number_of_segments`}
           label="Number of Segments"
-          style={{ marginBottom: 0 }}
+          style={{ marginBottom: 8 }}
           required={variableType === "numerical"}
         >
           <InputNumber
@@ -137,7 +142,7 @@ const SegmentConfigurationForm = ({
             disabled={variableType !== "numerical"}
           />
         </Form.Item>
-        <small>Max 5 segments allowed.</small>
+        <small>You can select up to 5 segments</small>
       </Col>
       {/* EOL SEGMENT CONFIGURATION */}
 
@@ -151,7 +156,8 @@ const SegmentConfigurationForm = ({
         </Col>
       )}
       {segmentationPreviews?.segments?.length > 0 && !loadingPreview && (
-        <Col span={24}>
+        <Col span={24} style={{ marginTop: 16 }}>
+          <h3>Please input the thresholds for separating segments below:</h3>
           <SegmentForm
             deletedSegmentIds={deletedSegmentIds}
             setDeletedSegmentIds={setDeletedSegmentIds}
