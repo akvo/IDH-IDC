@@ -255,6 +255,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       company: values.company || null,
       other_commodities: other_commodities,
       segments: values.segments,
+      import_id: values?.import_id || null,
     };
 
     // detect is payload updated
