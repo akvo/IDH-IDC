@@ -1,6 +1,6 @@
-import os
+# import os
 import pandas as pd
-from typing import Dict, Any, List
+from typing import Dict, Any
 from fastapi import HTTPException
 from io import BytesIO
 
@@ -9,18 +9,17 @@ from utils.case_import_storage import load_import_file
 from db.crud_case_import import get_case_import
 
 
+# --------------------------------------------------
+# Question resolver
+# --------------------------------------------------
 def resolve_question(
     *,
     session,
-    question_id: int,
-    public_key: str | None = None,
+    question_id: int | None,
+    public_key: str | None,
 ) -> Question:
-    """
-    Returns full Question object.
-    """
-
-    if question_id is not None:
-        q = session.get(Question, question_id)
+    if question_id:
+        q = session.get(Question, int(question_id))
         if q:
             return q
         raise HTTPException(
@@ -47,6 +46,9 @@ def resolve_question(
     )
 
 
+# --------------------------------------------------
+# Main processor
+# --------------------------------------------------
 def process_confirmed_segmentation(
     *,
     payload,
@@ -57,11 +59,11 @@ def process_confirmed_segmentation(
     # 1. Inputs
     # --------------------------------------------------
     case_id = payload.case_id
-    segmentation_variable = payload.segmentation_variable.lower()
+    segmentation_variable = payload.segmentation_variable.strip().lower()
     segments = sorted(payload.segments, key=lambda s: s.index)
 
     # --------------------------------------------------
-    # 2. Load import file
+    # 2. Load import file (bytes)
     # --------------------------------------------------
     case_import = get_case_import(session=session, import_id=payload.import_id)
     content = load_import_file(case_import.file_path)
@@ -71,7 +73,7 @@ def process_confirmed_segmentation(
         data_df = pd.read_excel(xls, sheet_name="data")
         mapping_df = pd.read_excel(xls, sheet_name="mapping")
 
-        # Normalize column names
+        # normalize column names
         data_df.columns = data_df.columns.str.strip().str.lower()
         mapping_df.columns = mapping_df.columns.str.strip().str.lower()
     except Exception:
@@ -83,7 +85,7 @@ def process_confirmed_segmentation(
     if segmentation_variable not in data_df.columns:
         raise HTTPException(
             status_code=400,
-            detail=f"Segmentation variable '{segmentation_variable}' not found",
+            detail=f"Segmentation variable {segmentation_variable} not found",
         )
 
     # --------------------------------------------------
@@ -98,59 +100,55 @@ def process_confirmed_segmentation(
     if not {"id", "public_key"} & set(mapping_df.columns):
         raise HTTPException(
             status_code=400,
-            detail="Mapping sheet must contain 'id' or 'public_key'",
+            detail="Mapping sheet must contain at least 'id' or 'public_key'",
         )
 
-    # Output variables = variables explicitly mapped
+    # Only variables explicitly mapped are output drivers
     output_variables = (
-        mapping_df["variable_name"]
-        .dropna()
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .unique()
-        .tolist()
+        mapping_df["variable_name"].dropna().str.lower().tolist()
     )
 
     # --------------------------------------------------
-    # 4. Assign segment labels (UI authoritative)
+    # 4. Segment assignment (UI AUTHORITATIVE)
     # --------------------------------------------------
     series = data_df[segmentation_variable]
     is_numeric = pd.api.types.is_numeric_dtype(series)
+
+    if not is_numeric:
+        series = series.astype(str).str.strip().str.lower()
+        category_map = {
+            str(seg.value).strip().lower(): seg.name for seg in segments
+        }
 
     def assign_segment(value):
         if pd.isna(value):
             return None
 
+        # ---------- NUMERIC ----------
         if is_numeric:
             prev = None
             for seg in segments:
-                bound = seg.value
+                bound = float(seg.value)
                 if prev is None and value <= bound:
                     return seg.name
                 if prev is not None and prev < value <= bound:
                     return seg.name
                 prev = bound
-            return None
+            return segments[-1].name  # last open segment
 
-        # categorical
-        for seg in segments:
-            if value == seg.value:
-                return seg.name
-
-        return None
+        # ---------- CATEGORICAL ----------
+        return category_map.get(str(value).strip().lower())
 
     data_df["_segment"] = series.apply(assign_segment)
 
     # --------------------------------------------------
-    # 5. Aggregate statistics per output variable
+    # 5. Aggregate statistics per segment
     # --------------------------------------------------
     aggregated: Dict[str, Dict[str, Dict[str, float]]] = {}
 
     for var in output_variables:
         if var not in data_df.columns:
             continue
-
         if not pd.api.types.is_numeric_dtype(data_df[var]):
             continue
 
@@ -167,20 +165,24 @@ def process_confirmed_segmentation(
         aggregated[var] = stats
 
     # --------------------------------------------------
-    # 6. Build Segment payload
+    # 6. Build Segment + SegmentAnswer payload
     # --------------------------------------------------
     segments_payload = []
 
     for seg in segments:
+        seg_name = seg.name
+
+        seg_df = data_df[data_df["_segment"] == seg_name]
+        number_of_farmers = int(len(seg_df))
+
         answers = []
 
         for _, row in mapping_df.iterrows():
-            var = row["variable_name"]
+            var = str(row["variable_name"]).lower()
 
             if var not in aggregated:
                 continue
-
-            if seg.name not in aggregated[var]:
+            if seg_name not in aggregated[var]:
                 continue
 
             questionID = row.get("id")
@@ -195,7 +197,7 @@ def process_confirmed_segmentation(
                 public_key=row.get("public_key"),
             )
 
-            stats = aggregated[var][seg.name]
+            stats = aggregated[var][seg_name]
 
             answers.append(
                 {
@@ -208,8 +210,9 @@ def process_confirmed_segmentation(
 
         segments_payload.append(
             {
-                "name": seg.name,
+                "name": seg_name,
                 "case": case_id,
+                "number_of_farmers": number_of_farmers,
                 "answers": answers,
             }
         )
@@ -230,5 +233,5 @@ def process_confirmed_segmentation(
         "case_id": case_id,
         "segments": segments_payload,
         "total_segments": len(segments_payload),
-        "output_variables": len(output_variables),
+        "drivers_processed": len(aggregated),
     }
