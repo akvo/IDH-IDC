@@ -1,12 +1,15 @@
-# import os
+import os
 import pandas as pd
 from typing import Dict, Any
 from fastapi import HTTPException
 from io import BytesIO
 
 from models.question import Question
+from models.case_commodity import CaseCommodity
+from models.segment_answer import SegmentAnswerBase
 from utils.case_import_storage import load_import_file
 from db.crud_case_import import get_case_import
+from db.crud_segment import update_segment
 
 
 # --------------------------------------------------
@@ -169,13 +172,31 @@ def process_confirmed_segmentation(
     # --------------------------------------------------
     segments_payload = []
 
+    # Generate case commodity value
+    case_commodities = (
+        session.query(CaseCommodity)
+        .filter(CaseCommodity.case == case_id)
+        .all()
+    )
+    case_commodities = [
+        cm.simplify_with_case_commodity_level for cm in case_commodities
+    ]
+    case_commodity_levels = {}
+    case_commodity_breakdowns = {}
+    for cc in case_commodities:
+        key = f"{cc['commodity_type']}"
+        case_commodity_levels[key] = cc["id"]
+        case_commodity_breakdowns[key] = cc["breakdown"]
+    # eol case commodity
+
     for seg in segments:
         seg_name = seg.name
+        seg_id = seg.id
 
         seg_df = data_df[data_df["_segment"] == seg_name]
         number_of_farmers = int(len(seg_df))
 
-        answers = []
+        seg_answers = []
 
         for _, row in mapping_df.iterrows():
             var = str(row["variable_name"]).lower()
@@ -199,31 +220,51 @@ def process_confirmed_segmentation(
 
             stats = aggregated[var][seg_name]
 
-            answers.append(
-                {
-                    "question_id": question.id,
-                    "question_level": qLevel,  # primary / secondary / tertiary
-                    "current_value": float(stats["current"]),
-                    "feasible_value": float(stats["feasible"]),
-                }
+            # primary / secondary / tertiary
+            case_commodity_id = case_commodity_levels.get(qLevel)
+            # build SegmentAnswer
+            payload = SegmentAnswerBase(
+                case_commodity=case_commodity_id,
+                segment=seg_id,
+                question=question.id,
+                current_value=float(stats["current"]),
+                feasible_value=float(stats["feasible"]),
             )
+            seg_answers.append(payload)
 
         segments_payload.append(
             {
+                "id": seg_id,
                 "name": seg_name,
                 "case": case_id,
                 "number_of_farmers": number_of_farmers,
-                "answers": answers,
+                "answers": seg_answers,
             }
         )
+
+    # Save segment answers and update segment number_of_farmers
+    update_segment(
+        session=session,
+        payloads=[
+            {
+                "id": seg_id,
+                "name": seg_name,
+                "case": case_id,
+                "number_of_farmers": number_of_farmers,
+                "answers": [],
+            }
+        ],
+    )
 
     # --------------------------------------------------
     # 7. Cleanup
     # --------------------------------------------------
-    # try:
-    #     os.remove(case_import.file_path)
-    # except Exception:
-    #     pass
+    try:
+        REMOVE = False
+        if REMOVE:
+            os.remove(case_import.file_path)
+    except Exception:
+        pass
 
     # --------------------------------------------------
     # 8. Response
