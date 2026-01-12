@@ -30,17 +30,18 @@ class SegmentationPreviewRequest(BaseModel):
     )
 
 
-class ConfirmedSegment(BaseModel):
-    segment_name: str
-    number_of_farmers: Optional[int] = None
+class SegmentDefinition(BaseModel):
+    id: int
+    index: int
+    name: str
+    value: Union[int, float, str]
 
 
 class GenerateSegmentValuesRequest(BaseModel):
     case_id: int
     import_id: str
     segmentation_variable: str
-    variable_type: Literal["categorical", "numerical"]
-    confirmed_segments: List[ConfirmedSegment]
+    segments: List[SegmentDefinition]
 
 
 # class CategoricalCondition(BaseModel):

@@ -24,6 +24,7 @@ from utils.case_import_processing import (
     extract_column_types,
     generate_categorical_segments,
     generate_numerical_segments,
+    validate_ready_for_upload,
 )
 from utils.case_import_storage import save_import_file, load_import_file
 from utils.case_import_process_confirmed_segmentation import (
@@ -60,10 +61,10 @@ def case_import(
         authenticated=req.state.authenticated,
     )
 
-    if not file.filename.lower().endswith(".xlsx"):
+    if not file.filename.lower().endswith((".xlsx", ".xlsm")):
         raise HTTPException(
             status_code=400,
-            detail="Only .xlsx files are supported",
+            detail="Only .xlsx and .xlsm files are supported",
         )
 
     content = file.file.read()
@@ -78,8 +79,14 @@ def case_import(
 
     validate_workbook(xls)
 
-    data_df = pd.read_excel(xls, sheet_name="data")
-    mapping_df = pd.read_excel(xls, sheet_name="mapping")
+    try:
+        data_df = pd.read_excel(xls, sheet_name="data")
+        mapping_df = pd.read_excel(xls, sheet_name="mapping")
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to read required sheets",
+        )
 
     if data_df.empty or mapping_df.empty:
         raise HTTPException(
@@ -87,11 +94,13 @@ def case_import(
             detail="Data or Mapping sheet is empty",
         )
 
-    # Save file
+    # 🔒 HARD BLOCK: Mapping must be ready
+    validate_ready_for_upload(mapping_df)
+
+    # Save file only if fully valid
     file_import_id = str(uuid.uuid4())
     file_path = save_import_file(file_import_id, content)
 
-    # Persist import session
     case_import = create_case_import(
         session=session,
         user_id=user.id,
@@ -131,8 +140,8 @@ def segmentation_preview(
     content = load_import_file(case_import.file_path)
     df = load_data_dataframe_from_bytes(content)
 
-    variable = payload.segmentation_variable
-    var_type = payload.variable_type
+    variable = payload.segmentation_variable.lower()
+    var_type = payload.variable_type.lower()
 
     if variable not in df.columns:
         raise HTTPException(
@@ -180,16 +189,12 @@ def generate_segment_values(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    # Authorization
     verify_case_creator(
         session=session,
         authenticated=req.state.authenticated,
     )
 
-    # Process confirmed segmentation
-    result = process_confirmed_segmentation(
-        request=payload,
+    return process_confirmed_segmentation(
+        payload=payload,
         session=session,
     )
-
-    return result

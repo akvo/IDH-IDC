@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from io import BytesIO
 from fastapi import HTTPException
@@ -70,7 +71,7 @@ def generate_categorical_segments(df: pd.DataFrame, column: str):
         segments.append(
             {
                 "index": idx,
-                "name": str(value),
+                "name": column,
                 "operator": "is",
                 "value": value,
             }
@@ -90,37 +91,57 @@ def generate_numerical_segments(
             detail="Selected variable has no valid numerical values",
         )
 
-    quantiles = [series.quantile(i / n_segments) for i in range(1, n_segments)]
+    # Sort values and split into equal-frequency buckets
+    values = np.sort(series.to_numpy())
+    buckets = np.array_split(values, n_segments)
 
     segments = []
-    prev = None
+    seen = set()
 
-    for idx, q in enumerate(quantiles + [None], start=1):
-        if prev is None:
-            condition = {
-                "operator": "<=",
-                "value": round(q, 4),
-            }
-        elif q is None:
-            condition = {
-                "operator": ">",
-                "value": round(prev, 4),
-            }
-        else:
-            condition = {
-                "operator": "between",
-                "value": [round(prev, 4), round(q, 4)],
-            }
+    for idx, bucket in enumerate(buckets, start=1):
+        value = round(float(bucket.max()), 2)
+        if value in seen:
+            continue
+        seen.add(value)
 
         segments.append(
             {
                 "index": idx,
-                "name": f"Segment {idx}",
-                "operator": condition["operator"],
-                "value": condition["value"],
+                "name": column,
+                "operator": "<=",
+                "value": value,
             }
         )
 
-        prev = q
-
     return segments
+
+
+def validate_ready_for_upload(mapping_df: pd.DataFrame) -> None:
+    """
+    Expects mapping sheet format:
+    | Ready for upload | YES/NO |
+    | Number of issues | <int> |
+    """
+
+    # Normalize columns
+    mapping_df = mapping_df.copy()
+    mapping_df.columns = mapping_df.columns.str.strip().str.lower()
+
+    # First column = label, second column = value
+    first_col = mapping_df.iloc[:, 0].astype(str).str.strip().str.lower()
+
+    ready_row = mapping_df.loc[first_col == "ready for upload"]
+
+    if ready_row.empty:
+        raise HTTPException(
+            status_code=400,
+            detail="Mapping sheet missing 'Ready for upload' flag",
+        )
+
+    ready_value = str(ready_row.iloc[0, 1]).strip().lower()
+
+    if ready_value != "yes":
+        raise HTTPException(
+            status_code=400,
+            detail="Excel file is not ready for upload. Fix issues in Mapping sheet.",  # noqa
+        )
