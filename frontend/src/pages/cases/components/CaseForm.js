@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Card,
   Form,
@@ -13,6 +13,10 @@ import {
   Alert,
   Radio,
   Switch,
+  Tabs,
+  Button,
+  Upload,
+  message,
 } from "antd";
 import {
   countryOptions,
@@ -28,6 +32,8 @@ import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
+import { DownloadOutlined, FileExcelOutlined } from "@ant-design/icons";
+import { api } from "../../../lib";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -49,6 +55,9 @@ const livestockPrompt = (
     from livestock&apos;.
   </>
 );
+
+// TODO:: Update case_import case_id column after saving the case, by adding import_id to payload
+const { Dragger } = Upload;
 
 const SecondaryForm = ({
   index,
@@ -171,6 +180,61 @@ const CaseForm = ({
   const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
   const { enableEditCase } = general;
 
+  const [messageApi, contextHolder] = message.useMessage();
+  const [uploadResult, setUploadResult] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadProps = {
+    name: "file",
+    multiple: false,
+    accept: ".xlsx",
+    disabled: uploading, // Disable while uploading
+    customRequest: async ({ file, onSuccess, onError, onProgress }) => {
+      setUploading(true); // Set uploading to true at start
+
+      try {
+        const response = await api.upload("/case-import", file, {
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            onProgress({ percent });
+          },
+        });
+
+        const result = response.data;
+        setUploadResult(result);
+        if (result.import_id) {
+          form.setFieldValue("import_id", result.import_id);
+        }
+        onSuccess(result, file);
+        messageApi.success(`${file.name} uploaded successfully`);
+      } catch (error) {
+        console.error("Upload error:", error);
+        onError(error);
+        messageApi.error(`${file.name} upload failed`);
+      } finally {
+        setUploading(false); // Re-enable after upload completes (success or error)
+      }
+    },
+    onChange(info) {
+      const { status } = info.file;
+
+      if (status === "uploading") {
+        console.info("Progress:", info.file.percent + "%");
+      }
+
+      if (status === "done") {
+        const result = info.file.response;
+        console.info("Upload completed with result:", result);
+      } else if (status === "error") {
+        console.error("Upload failed");
+      }
+    },
+    showUploadList: true,
+    maxCount: 1,
+  };
+
   const updateCaseUI = (key, value) => {
     CaseUIState.update((s) => ({
       ...s,
@@ -204,7 +268,7 @@ const CaseForm = ({
   }, [form, currentCase]);
 
   return (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} className="case-form-body-wrapper">
       {/* GENERAL INFORMATION */}
       <Col span={24}>
         <Card
@@ -445,18 +509,74 @@ const CaseForm = ({
           </Row>
         </Card>
       </Col>
-      {/* SEGMENTATION */}
+      {/* MANUAL / DATA UPLOAD */}
       <Col span={24}>
-        <Card
-          title="Create up to 5 segments"
-          className="case-setting-child-card-wrapper"
-          size="small"
-        >
-          <SegmentForm
-            deletedSegmentIds={deletedSegmentIds}
-            setDeletedSegmentIds={setDeletedSegmentIds}
-          />
-        </Card>
+        <Tabs
+          items={[
+            {
+              key: "manual",
+              label: "Manual data input",
+              children: (
+                <Col span={24}>
+                  {/* SEGMENTATION */}
+                  <Card
+                    title="Create up to 5 segments"
+                    className="case-setting-child-card-wrapper"
+                    size="small"
+                  >
+                    <SegmentForm
+                      deletedSegmentIds={deletedSegmentIds}
+                      setDeletedSegmentIds={setDeletedSegmentIds}
+                    />
+                  </Card>
+                </Col>
+              ),
+            },
+            {
+              key: "upload",
+              label: "Data upload",
+              children: (
+                <Col span={24}>
+                  {contextHolder}
+                  <h3>Upload your data</h3>
+                  <Dragger {...uploadProps}>
+                    <p className="ant-upload-drag-icon">
+                      <FileExcelOutlined />
+                    </p>
+                    <p className="ant-upload-text">
+                      {uploading
+                        ? "Uploading..."
+                        : "Select a xlsx file to import"}
+                    </p>
+                    <p className="ant-upload-hint">
+                      {uploading
+                        ? "Please wait while the file is being uploaded"
+                        : "Drag and drop file here or click to upload"}
+                    </p>
+                    <Button className="button-browse-file" disabled={uploading}>
+                      {uploading ? "Uploading..." : "Browse files"}
+                    </Button>
+                  </Dragger>
+                  <Form.Item name="import_id" hidden>
+                    <input type="hidden" />
+                  </Form.Item>
+
+                  {uploadResult && (
+                    <div style={{ marginTop: 16 }}>
+                      <h3>Upload Result:</h3>
+                      <pre>{JSON.stringify(uploadResult, null, 2)}</pre>
+                    </div>
+                  )}
+                </Col>
+              ),
+            },
+          ]}
+          tabBarExtraContent={
+            <Button className="button-ghost">
+              <DownloadOutlined /> Download template
+            </Button>
+          }
+        />
       </Col>
     </Row>
   );

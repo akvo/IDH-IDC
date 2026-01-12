@@ -46,13 +46,20 @@
 
   .case-setting-child-card-wrapper {
     .ant-card-head {
+      font-family: "TabletGothic";
       background: #f2f2f2;
     }
 
     .section-title {
+      font-family: "TabletGothic";
       font-weight: 500;
       line-height: 1.2;
     }
+  }
+
+  .ant-col,
+  label {
+    font-family: "TabletGothic";
   }
 
   .segment-card-container {
@@ -60,6 +67,79 @@
 
     .ant-card-head {
       background: transparent;
+    }
+  }
+
+  .ant-drawer-wrapper-body {
+    .ant-drawer-header {
+      .ant-btn {
+        border: none;
+      }
+    }
+
+    .ant-drawer-body {
+      padding: 0;
+
+      .case-form-body-wrapper {
+        padding: 24px;
+      }
+
+      .case-form-button-wrapper {
+        margin-top: 24px;
+        border-top: 1px solid #e2e4e9;
+        padding: 24px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .button-cancel,
+      .button-ghost {
+        background: transparent;
+        border-radius: 40px;
+        border-color: $primary-color;
+        font-weight: 700;
+        color: $primary-color;
+      }
+
+      .button-save {
+        background: $primary-color;
+        border-radius: 40px;
+        color: #ffffff;
+        font-weight: 700;
+        border-color: $primary-color;
+      }
+
+      .button-no-border {
+        border: none;
+        width: auto;
+      }
+
+      .button-browse-file {
+        font-family: "TabletGothic";
+        line-height: 24px;
+        color: var(--gray-100, #959390);
+        border-radius: 40px;
+        border: 1px solid var(--gray-100, #959390);
+        box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+      }
+
+      .ant-tabs {
+        .ant-tabs-nav {
+          margin-bottom: 24px;
+        }
+
+        h3 {
+          margin-top: 0;
+          font-family: "RocGrotesk";
+        }
+
+        .ant-upload-text,
+        .ant-upload-hint {
+          font-family: "TabletGothic";
+        }
+      }
     }
   }
 }

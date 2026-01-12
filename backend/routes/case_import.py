@@ -51,7 +51,6 @@ ROUTE_TAG_NAME = ["Case Spreadsheet Upload"]
 )
 def case_import(
     req: Request,
-    case_id: int,
     file: UploadFile = File(...),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
@@ -95,7 +94,6 @@ def case_import(
     # Persist import session
     case_import = create_case_import(
         session=session,
-        case_id=case_id,
         user_id=user.id,
         file_path=file_path,
     )

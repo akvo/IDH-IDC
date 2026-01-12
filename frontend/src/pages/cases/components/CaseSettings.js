@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, Form, message } from "antd";
+import { Form, message, Drawer, Button } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import { CaseForm } from ".";
 import {
   removeUndefinedObjectValue,
@@ -490,30 +491,20 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   };
 
   return (
-    <Modal
+    <Drawer
       title="Create new case"
+      closable={false}
+      onClose={handleCancel}
       open={open}
-      onOk={() => form.submit()}
-      okButtonProps={{
-        loading: isSaving,
-        disabled: !enableEditCase,
-      }}
-      okText="Save case"
-      onCancel={() => {
-        // reset deleted segment on cancel
-        if (deletedSegmentIds?.length) {
-          form.setFieldValue("segments", formData.segments);
-        }
-        handleCancel();
-      }}
-      width="65%"
+      width="60%"
       className="case-settings-modal-container"
       maskClosable={false}
+      extra={<Button icon={<CloseOutlined />} onClick={handleCancel} />}
     >
       {contextHolder}
       <Form
         form={form}
-        name="basic"
+        name="case-settings-form"
         layout="vertical"
         initialValues={formData}
         onValuesChange={onValuesChange}
@@ -527,8 +518,30 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           deletedSegmentIds={deletedSegmentIds}
           setDeletedSegmentIds={setDeletedSegmentIds}
         />
+        <div className="case-form-button-wrapper">
+          <Button
+            onClick={() => {
+              // reset deleted segment on cancel
+              if (deletedSegmentIds?.length) {
+                form.setFieldValue("segments", formData.segments);
+              }
+              handleCancel();
+            }}
+            className="button-cancel"
+          >
+            Cancel
+          </Button>
+          <Button
+            loading={isSaving}
+            disabled={!enableEditCase}
+            className="button-save"
+            onClick={() => form.submit()}
+          >
+            Save case
+          </Button>
+        </div>
       </Form>
-    </Modal>
+    </Drawer>
   );
 };
 
