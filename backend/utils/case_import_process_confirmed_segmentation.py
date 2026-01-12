@@ -2,215 +2,233 @@ import os
 import pandas as pd
 from typing import Dict, Any, List
 from fastapi import HTTPException
+from io import BytesIO
 
-from utils.case_import_storage import IMPORT_BASE_DIR
 from models.question import Question
-from seeder.question_public_key_map import PUBLIC_KEY_MAP
+from utils.case_import_storage import load_import_file
+from db.crud_case_import import get_case_import
 
 
-def resolve_question_id_by_public_key(
+def resolve_question(
     *,
     session,
-    public_key: str,
-) -> int:
-    question = (
-        session.query(Question)
-        .filter(Question.public_key == public_key)
-        .one_or_none()
-    )
+    question_id: int,
+    public_key: str | None = None,
+) -> Question:
+    """
+    Returns full Question object.
+    """
 
-    if not question:
+    if question_id is not None:
+        q = session.get(Question, question_id)
+        if q:
+            return q
         raise HTTPException(
             status_code=400,
-            detail=f"No question found for public_key '{public_key}'",
+            detail=f"Question not found for id {question_id}",
         )
 
-    return question.id
+    if public_key:
+        q = (
+            session.query(Question)
+            .filter(Question.public_key == public_key)
+            .one_or_none()
+        )
+        if q:
+            return q
+        raise HTTPException(
+            status_code=400,
+            detail=f"Question not found for public_key '{public_key}'",
+        )
+
+    raise HTTPException(
+        status_code=400,
+        detail="Mapping row must contain either id or public_key",
+    )
 
 
 def process_confirmed_segmentation(
     *,
-    request,
+    payload,
     session,
 ) -> Dict[str, Any]:
 
     # --------------------------------------------------
     # 1. Inputs
     # --------------------------------------------------
-    case_id = request.case_id
-    import_id = request.import_id
-    segmentation_variable = request.segmentation_variable
-    segment_type = request.variable_type
-    confirmed_segments = request.confirmed_segments
+    case_id = payload.case_id
+    segmentation_variable = payload.segmentation_variable.lower()
+    segments = sorted(payload.segments, key=lambda s: s.index)
 
     # --------------------------------------------------
-    # 2. Resolve Import File (PATH-BASED, FINAL STAGE)
+    # 2. Load import file
     # --------------------------------------------------
-    file_path = os.path.join(IMPORT_BASE_DIR, f"{import_id}.xlsx")
+    case_import = get_case_import(session=session, import_id=payload.import_id)
+    content = load_import_file(case_import.file_path)
 
-    if not os.path.exists(file_path):
-        raise HTTPException(
-            status_code=404,
-            detail="Import file not found or expired",
-        )
-
-    # --------------------------------------------------
-    # 3. Load Excel Sheets
-    # --------------------------------------------------
     try:
-        data_df = pd.read_excel(file_path, sheet_name="Data")
-        mapping_df = pd.read_excel(file_path, sheet_name="Mapping")
-    except Exception as exc:
+        xls = pd.ExcelFile(BytesIO(content))
+        data_df = pd.read_excel(xls, sheet_name="data")
+        mapping_df = pd.read_excel(xls, sheet_name="mapping")
+
+        # Normalize column names
+        data_df.columns = data_df.columns.str.strip().str.lower()
+        mapping_df.columns = mapping_df.columns.str.strip().str.lower()
+    except Exception:
         raise HTTPException(
             status_code=400,
-            detail=f"Failed to read import file: {str(exc)}",
+            detail="Failed to read import workbook",
         )
 
-    # --------------------------------------------------
-    # 4. Validate Mapping Sheet
-    # --------------------------------------------------
-    required_cols = {"public_key", "variable_name"}
-    if not required_cols.issubset(mapping_df.columns):
-        raise HTTPException(
-            status_code=400,
-            detail="Mapping sheet must contain public_key and variable_name",
-        )
-
-    valid_public_keys = set(PUBLIC_KEY_MAP.values())
-
-    invalid_keys = set(mapping_df["public_key"]) - valid_public_keys
-    if invalid_keys:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid public_key(s): {sorted(invalid_keys)}",
-        )
-
-    missing_vars = set(mapping_df["variable_name"]) - set(data_df.columns)
-    if missing_vars:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Variable not found in Data sheet: {sorted(missing_vars)}",
-        )
-
-    # --------------------------------------------------
-    # 5. Apply Mapping (Data → public_key)
-    # --------------------------------------------------
-    rename_map = dict(
-        zip(mapping_df["variable_name"], mapping_df["public_key"])
-    )
-
-    data_df = data_df.rename(columns=rename_map)
-
-    output_drivers: List[str] = (
-        mapping_df["public_key"].dropna().unique().tolist()
-    )
-
-    # --------------------------------------------------
-    # 6. Build Segmentation Column
-    # --------------------------------------------------
     if segmentation_variable not in data_df.columns:
         raise HTTPException(
             status_code=400,
-            detail=f"Segmentation variable {segmentation_variable} not found",
+            detail=f"Segmentation variable '{segmentation_variable}' not found",
         )
 
-    if segment_type == "categorical":
-        grouping_series = data_df[segmentation_variable]
-
-        actual = set(grouping_series.dropna().unique())
-        confirmed = {s.segment_name for s in confirmed_segments}
-
-        if actual != confirmed:
-            raise HTTPException(
-                status_code=400,
-                detail="Confirmed segments do not match data categories",
-            )
-
-    else:
-        labels = [s.segment_name for s in confirmed_segments]
-
-        grouping_series = pd.qcut(
-            data_df[segmentation_variable],
-            q=len(labels),
-            labels=labels,
-            duplicates="drop",
+    # --------------------------------------------------
+    # 3. Validate mapping sheet
+    # --------------------------------------------------
+    if "variable_name" not in mapping_df.columns:
+        raise HTTPException(
+            status_code=400,
+            detail="Mapping sheet must contain 'variable_name'",
         )
 
-    data_df["_segment"] = grouping_series
+    if not {"id", "public_key"} & set(mapping_df.columns):
+        raise HTTPException(
+            status_code=400,
+            detail="Mapping sheet must contain 'id' or 'public_key'",
+        )
+
+    # Output variables = variables explicitly mapped
+    output_variables = (
+        mapping_df["variable_name"]
+        .dropna()
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .unique()
+        .tolist()
+    )
 
     # --------------------------------------------------
-    # 7. Aggregate Statistics
+    # 4. Assign segment labels (UI authoritative)
     # --------------------------------------------------
-    aggregated: Dict[str, Any] = {}
+    series = data_df[segmentation_variable]
+    is_numeric = pd.api.types.is_numeric_dtype(series)
 
-    for public_key in output_drivers:
-        stats_df = (
-            data_df.groupby("_segment")[public_key]
+    def assign_segment(value):
+        if pd.isna(value):
+            return None
+
+        if is_numeric:
+            prev = None
+            for seg in segments:
+                bound = seg.value
+                if prev is None and value <= bound:
+                    return seg.name
+                if prev is not None and prev < value <= bound:
+                    return seg.name
+                prev = bound
+            return None
+
+        # categorical
+        for seg in segments:
+            if value == seg.value:
+                return seg.name
+
+        return None
+
+    data_df["_segment"] = series.apply(assign_segment)
+
+    # --------------------------------------------------
+    # 5. Aggregate statistics per output variable
+    # --------------------------------------------------
+    aggregated: Dict[str, Dict[str, Dict[str, float]]] = {}
+
+    for var in output_variables:
+        if var not in data_df.columns:
+            continue
+
+        if not pd.api.types.is_numeric_dtype(data_df[var]):
+            continue
+
+        stats = (
+            data_df.groupby("_segment")[var]
             .agg(
                 current="median",
                 feasible=lambda x: x.quantile(0.9),
             )
-            .reset_index()
+            .dropna()
+            .to_dict(orient="index")
         )
 
-        aggregated[public_key] = stats_df.to_dict("records")
+        aggregated[var] = stats
 
     # --------------------------------------------------
-    # 8. Build Segment + SegmentAnswer Payload
+    # 6. Build Segment payload
     # --------------------------------------------------
     segments_payload = []
 
-    for seg in confirmed_segments:
-        segment_name = seg.segment_name
-
+    for seg in segments:
         answers = []
 
-        for public_key, rows in aggregated.items():
-            row = next(
-                (r for r in rows if r["_segment"] == segment_name),
-                None,
-            )
+        for _, row in mapping_df.iterrows():
+            var = row["variable_name"]
 
-            if not row:
+            if var not in aggregated:
                 continue
 
-            question_id = resolve_question_id_by_public_key(
-                session=session,
-                public_key=public_key,
+            if seg.name not in aggregated[var]:
+                continue
+
+            questionID = row.get("id")
+            [qLevel, qID] = (
+                questionID.split("-")
+                if questionID and "-" in questionID
+                else [None, None]
             )
+            question = resolve_question(
+                session=session,
+                question_id=qID,
+                public_key=row.get("public_key"),
+            )
+
+            stats = aggregated[var][seg.name]
 
             answers.append(
                 {
-                    "question": question_id,
-                    "current_value": float(row["current"]),
-                    "feasible_value": float(row["feasible"]),
+                    "question_id": question.id,
+                    "question_level": qLevel,  # primary / secondary / tertiary
+                    "current_value": float(stats["current"]),
+                    "feasible_value": float(stats["feasible"]),
                 }
             )
 
         segments_payload.append(
             {
-                "name": segment_name,
+                "name": seg.name,
                 "case": case_id,
-                "number_of_farmers": seg.number_of_farmers,
                 "answers": answers,
             }
         )
 
     # --------------------------------------------------
-    # 9. Cleanup Temporary Import
+    # 7. Cleanup
     # --------------------------------------------------
-    try:
-        os.remove(file_path)
-    except Exception:
-        pass
+    # try:
+    #     os.remove(case_import.file_path)
+    # except Exception:
+    #     pass
 
     # --------------------------------------------------
-    # 10. Response
+    # 8. Response
     # --------------------------------------------------
     return {
         "status": "success",
         "case_id": case_id,
         "segments": segments_payload,
         "total_segments": len(segments_payload),
-        "drivers_processed": len(output_drivers),
+        "output_variables": len(output_variables),
     }

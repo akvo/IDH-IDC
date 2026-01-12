@@ -60,10 +60,9 @@ def case_import(
         authenticated=req.state.authenticated,
     )
 
-    if not file.filename.lower().endswith(".xlsx"):
+    if not file.filename.lower().endswith((".xlsx", ".xlsm")):
         raise HTTPException(
-            status_code=400,
-            detail="Only .xlsx files are supported",
+            status_code=400, detail="Only .xlsx and .xlsm files are supported"
         )
 
     content = file.file.read()
@@ -131,8 +130,8 @@ def segmentation_preview(
     content = load_import_file(case_import.file_path)
     df = load_data_dataframe_from_bytes(content)
 
-    variable = payload.segmentation_variable
-    var_type = payload.variable_type
+    variable = payload.segmentation_variable.lower()
+    var_type = payload.variable_type.lower()
 
     if variable not in df.columns:
         raise HTTPException(
@@ -180,16 +179,12 @@ def generate_segment_values(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
-    # Authorization
     verify_case_creator(
         session=session,
         authenticated=req.state.authenticated,
     )
 
-    # Process confirmed segmentation
-    result = process_confirmed_segmentation(
-        request=payload,
+    return process_confirmed_segmentation(
+        payload=payload,
         session=session,
     )
-
-    return result
