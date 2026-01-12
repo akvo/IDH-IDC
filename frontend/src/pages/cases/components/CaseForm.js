@@ -214,7 +214,12 @@ const CaseForm = ({
       } catch (error) {
         console.error("Upload error:", error);
         onError(error);
-        messageApi.error(`${file.name} upload failed`);
+        const { status, data } = error.response;
+        let errorText = `${file.name} upload failed.`;
+        if (status === 400 && data.detail) {
+          errorText = `${errorText} ${data.detail}`;
+        }
+        messageApi.error(errorText);
       } finally {
         setUploading(false); // Re-enable after upload completes (success or error)
       }
