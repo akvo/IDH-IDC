@@ -164,7 +164,7 @@ def segmentation_preview(
     return {
         "import_id": payload.import_id,
         "segmentation_variable": variable,
-        "type": var_type,
+        "variable_type": var_type,
         "segments": segments,
     }
 

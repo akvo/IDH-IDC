@@ -17,6 +17,7 @@ const MAX_SEGMENT = 5;
 const SegmentForm = ({
   deletedSegmentIds = [],
   setDeletedSegmentIds = () => {},
+  isDataUpload = false,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -101,7 +102,11 @@ const SegmentForm = ({
                   </Form.Item>
                 </Col>
                 <Col span={10}>
-                  <Form.Item {...restField} name={[name, "number_of_farmers"]}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "number_of_farmers"]}
+                    hidden={isDataUpload}
+                  >
                     <InputNumber
                       placeholder="Number of farmers"
                       controls={false}
@@ -109,6 +114,38 @@ const SegmentForm = ({
                       disabled={!enableEditCase}
                     />
                   </Form.Item>
+                  {isDataUpload && (
+                    <Row gutter={[12, 12]}>
+                      <Col span={12}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "operator"]}
+                          hidden={!isDataUpload}
+                        >
+                          <InputNumber
+                            placeholder="Operator"
+                            controls={false}
+                            style={{ width: "100%" }}
+                            disabled={!enableEditCase}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "value"]}
+                          hidden={!isDataUpload}
+                        >
+                          <InputNumber
+                            placeholder="Value"
+                            controls={false}
+                            style={{ width: "100%" }}
+                            disabled={!enableEditCase}
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  )}
                 </Col>
               </Row>
             </Card>

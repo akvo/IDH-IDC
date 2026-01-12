@@ -26,7 +26,7 @@ class SegmentationPreviewRequest(BaseModel):
     number_of_segments: Optional[int] = Field(
         None,
         description="Required when variable_type is numerical",
-        ge=2,
+        ge=0,
     )
 
 
@@ -43,26 +43,27 @@ class GenerateSegmentValuesRequest(BaseModel):
     confirmed_segments: List[ConfirmedSegment]
 
 
-class CategoricalCondition(BaseModel):
-    operator: Literal["is"]
-    value: str
+# class CategoricalCondition(BaseModel):
+#     operator: Literal["is"]
+#     value: str
 
 
-class NumericalCondition(BaseModel):
-    operator: Literal["<=", ">", "between"]
-    value: Union[float, List[float]]
+# class NumericalCondition(BaseModel):
+#     operator: Literal["<=", ">", "between"]
+#     value: Union[float, List[float]]
 
 
 class SegmentationSegment(BaseModel):
-    segment_index: int
-    label: str
-    condition: Union[CategoricalCondition, NumericalCondition]
+    index: int
+    name: str
+    operator: Union[Literal["<=", ">", "between"], Literal["is"]]
+    value: Union[Union[float, List[float]], str]
 
 
 class SegmentationPreviewResponse(BaseModel):
     import_id: str
     segmentation_variable: str
-    type: Literal["categorical", "numerical"]
+    variable_type: Literal["categorical", "numerical"]
     segments: List[SegmentationSegment]
 
 

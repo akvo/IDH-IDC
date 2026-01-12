@@ -69,12 +69,10 @@ def generate_categorical_segments(df: pd.DataFrame, column: str):
     for idx, value in enumerate(counts.index, start=1):
         segments.append(
             {
-                "segment_index": idx,
-                "label": str(value),
-                "condition": {
-                    "operator": "is",
-                    "value": value,
-                },
+                "index": idx,
+                "name": str(value),
+                "operator": "is",
+                "value": value,
             }
         )
 
@@ -116,9 +114,10 @@ def generate_numerical_segments(
 
         segments.append(
             {
-                "segment_index": idx,
-                "label": f"Segment {idx}",
-                "condition": condition,
+                "index": idx,
+                "name": f"Segment {idx}",
+                "operator": condition["operator"],
+                "value": condition["value"],
             }
         )
 
