@@ -4,7 +4,14 @@ import db.crud_living_income_benchmark as crud_lib
 import db.crud_user_case_access as crud_uca
 
 from math import ceil
-from fastapi import APIRouter, Request, Depends, HTTPException, Query, Response
+from fastapi import (
+    APIRouter,
+    Request,
+    Depends,
+    HTTPException,
+    Query,
+    Response,
+)
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import Optional, List
@@ -29,6 +36,7 @@ from middleware import (
     verify_case_editor,
     verify_case_viewer,
 )
+from db.crud_case_import import update_case_import_case_id
 
 security = HTTPBearer()
 case_route = APIRouter()
@@ -63,6 +71,13 @@ def create_case(
         session=session, authenticated=req.state.authenticated
     )
     case = crud_case.add_case(session=session, payload=payload, user=user)
+    # Update case_import with case_id if available in request state
+    if payload.import_id and case:
+        update_case_import_case_id(
+            session=session,
+            import_id=payload.import_id,
+            case_id=case.id,
+        )
     return case.serialize
 
 

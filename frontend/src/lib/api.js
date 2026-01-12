@@ -59,6 +59,21 @@ const API = () => {
     delete: (url, config = {}) =>
       axios({ url, method: "DELETE", ...getConfig(), ...config }),
     sendCompressedData,
+    upload: (url, file, config = {}) => {
+      const formData = new FormData();
+      formData.append("file", file);
+      return axios({
+        url,
+        method: "POST",
+        data: formData,
+        ...getConfig(),
+        ...config,
+        headers: {
+          ...getConfig().headers,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    },
     setToken: (token) => {
       api.token = token;
     },

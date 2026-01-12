@@ -9,7 +9,7 @@ import {
   InputNumber,
   Popconfirm,
 } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
 
 const MAX_SEGMENT = 5;
@@ -17,6 +17,7 @@ const MAX_SEGMENT = 5;
 const SegmentForm = ({
   deletedSegmentIds = [],
   setDeletedSegmentIds = () => {},
+  isDataUpload = false,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -84,6 +85,7 @@ const SegmentForm = ({
                   <Form.Item
                     {...restField}
                     name={[name, "name"]}
+                    label={isDataUpload ? "Segment name" : null}
                     rules={[
                       {
                         required: true,
@@ -101,14 +103,34 @@ const SegmentForm = ({
                   </Form.Item>
                 </Col>
                 <Col span={10}>
-                  <Form.Item {...restField} name={[name, "number_of_farmers"]}>
-                    <InputNumber
-                      placeholder="Number of farmers"
-                      controls={false}
-                      style={{ width: "100%" }}
-                      disabled={!enableEditCase}
-                    />
-                  </Form.Item>
+                  {isDataUpload ? (
+                    <Form.Item
+                      {...restField}
+                      name={[name, "value"]}
+                      label={isDataUpload ? "Value" : null}
+                      hidden={!isDataUpload}
+                    >
+                      <InputNumber
+                        placeholder="Value"
+                        controls={false}
+                        style={{ width: "100%" }}
+                        disabled={!enableEditCase}
+                      />
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      {...restField}
+                      name={[name, "number_of_farmers"]}
+                      hidden={isDataUpload}
+                    >
+                      <InputNumber
+                        placeholder="Number of farmers"
+                        controls={false}
+                        style={{ width: "100%" }}
+                        disabled={!enableEditCase}
+                      />
+                    </Form.Item>
+                  )}
                 </Col>
               </Row>
             </Card>
@@ -116,11 +138,12 @@ const SegmentForm = ({
           {fields.length < MAX_SEGMENT ? (
             <Form.Item>
               <Button
-                type="dashed"
+                type="ghost"
                 onClick={() => add()}
                 block
-                icon={<PlusOutlined />}
+                icon={<PlusCircleFilled />}
                 disabled={!enableEditCase}
+                className="button-ghost button-no-border"
               >
                 Add another segment
               </Button>

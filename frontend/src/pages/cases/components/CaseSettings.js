@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, Form, message } from "antd";
+import { Form, message, Drawer, Button } from "antd";
+import { CloseOutlined } from "@ant-design/icons";
 import { CaseForm } from ".";
 import {
   removeUndefinedObjectValue,
@@ -19,6 +20,8 @@ import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
+
+const dataUploadFieldPreffix = "data_upload_";
 
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
@@ -252,6 +255,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       company: values.company || null,
       other_commodities: other_commodities,
       segments: values.segments,
+      import_id: values?.import_id || null,
     };
 
     // detect is payload updated
@@ -440,12 +444,58 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           type: "success",
           content: "Case setting saved successfully.",
         });
-        setTimeout(() => {
-          form.resetFields();
-          handleCancel();
-          // always navigate to step 1 after save
-          navigate(`${routePath.idc.case}/${data.id}/${stepPath.step1.label}`);
-        }, 100);
+
+        // SAVE /case-import/generate-segment-values
+        if (values?.import_id) {
+          const confirmedSegPayload = {
+            case_id: data.id,
+            import_id: values.import_id,
+            segmentation_variable: values.data_upload_segmentation_variable,
+            segments: values.segments.map((seg) => {
+              // find segment id from data.segments
+              const findSegment = data.segments.find(
+                (s) => s.name === seg.name
+              );
+              return {
+                id: findSegment ? findSegment.id : null,
+                index: seg.index,
+                name: seg.name,
+                value: seg.value || 0,
+              };
+            }),
+          };
+          api
+            .post("case-import/generate-segment-values", confirmedSegPayload)
+            .then(() => {
+              // reset form and close drawer
+              setTimeout(() => {
+                form.resetFields();
+                handleCancel();
+                // always navigate to step 1 after save
+                navigate(
+                  `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
+                );
+              }, 100);
+            })
+            .catch((e) => {
+              console.error(e);
+              messageApi.open({
+                type: "error",
+                content: "Failed to generate segment values from import data.",
+              });
+            });
+        } else {
+          // NORMAL BEHAVIOUR
+          setTimeout(() => {
+            form.resetFields();
+            handleCancel();
+            // always navigate to step 1 after save
+            navigate(
+              `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
+            );
+          }, 100);
+        }
+        // EOL SAVE /case-import/generate-segment-values
       })
       .catch((e) => {
         console.error(e);
@@ -490,30 +540,20 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   };
 
   return (
-    <Modal
+    <Drawer
       title="Create new case"
+      closable={false}
+      onClose={handleCancel}
       open={open}
-      onOk={() => form.submit()}
-      okButtonProps={{
-        loading: isSaving,
-        disabled: !enableEditCase,
-      }}
-      okText="Save case"
-      onCancel={() => {
-        // reset deleted segment on cancel
-        if (deletedSegmentIds?.length) {
-          form.setFieldValue("segments", formData.segments);
-        }
-        handleCancel();
-      }}
-      width="65%"
+      width="60%"
       className="case-settings-modal-container"
       maskClosable={false}
+      extra={<Button icon={<CloseOutlined />} onClick={handleCancel} />}
     >
       {contextHolder}
       <Form
         form={form}
-        name="basic"
+        name="case-settings-form"
         layout="vertical"
         initialValues={formData}
         onValuesChange={onValuesChange}
@@ -526,9 +566,32 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           updateCurrentCase={updateCurrentCase}
           deletedSegmentIds={deletedSegmentIds}
           setDeletedSegmentIds={setDeletedSegmentIds}
+          dataUploadFieldPreffix={dataUploadFieldPreffix}
         />
+        <div className="case-form-button-wrapper">
+          <Button
+            onClick={() => {
+              // reset deleted segment on cancel
+              if (deletedSegmentIds?.length) {
+                form.setFieldValue("segments", formData.segments);
+              }
+              handleCancel();
+            }}
+            className="button-cancel"
+          >
+            Cancel
+          </Button>
+          <Button
+            loading={isSaving}
+            disabled={!enableEditCase}
+            className="button-save"
+            onClick={() => form.submit()}
+          >
+            Save case
+          </Button>
+        </div>
       </Form>
-    </Modal>
+    </Drawer>
   );
 };
 
