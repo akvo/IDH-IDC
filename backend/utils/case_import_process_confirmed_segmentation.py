@@ -6,7 +6,7 @@ from io import BytesIO
 
 from models.question import Question
 from models.case_commodity import CaseCommodity
-from models.segment_answer import SegmentAnswerBase
+from models.segment import SegmentUpdateBase, SegmentAnswerBase
 from utils.case_import_storage import load_import_file
 from db.crud_case_import import get_case_import
 from db.crud_segment import update_segment
@@ -233,27 +233,19 @@ def process_confirmed_segmentation(
             seg_answers.append(payload)
 
         segments_payload.append(
-            {
-                "id": seg_id,
-                "name": seg_name,
-                "case": case_id,
-                "number_of_farmers": number_of_farmers,
-                "answers": seg_answers,
-            }
+            SegmentUpdateBase(
+                id=seg_id,
+                name=seg_name,
+                case=case_id,
+                number_of_farmers=number_of_farmers,
+                answers=seg_answers,
+            )
         )
 
     # Save segment answers and update segment number_of_farmers
     update_segment(
         session=session,
-        payloads=[
-            {
-                "id": seg_id,
-                "name": seg_name,
-                "case": case_id,
-                "number_of_farmers": number_of_farmers,
-                "answers": [],
-            }
-        ],
+        payloads=segments_payload,
     )
 
     # --------------------------------------------------

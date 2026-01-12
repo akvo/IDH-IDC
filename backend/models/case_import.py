@@ -32,6 +32,7 @@ class SegmentationPreviewRequest(BaseModel):
 
 class SegmentDefinition(BaseModel):
     id: int
+    index: int
     name: str
     value: Union[int, float, str]
 

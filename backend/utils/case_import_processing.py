@@ -114,3 +114,34 @@ def generate_numerical_segments(
         )
 
     return segments
+
+
+def validate_ready_for_upload(mapping_df: pd.DataFrame) -> None:
+    """
+    Expects mapping sheet format:
+    | Ready for upload | YES/NO |
+    | Number of issues | <int> |
+    """
+
+    # Normalize columns
+    mapping_df = mapping_df.copy()
+    mapping_df.columns = mapping_df.columns.str.strip().str.lower()
+
+    # First column = label, second column = value
+    first_col = mapping_df.iloc[:, 0].astype(str).str.strip().str.lower()
+
+    ready_row = mapping_df.loc[first_col == "ready for upload"]
+
+    if ready_row.empty:
+        raise HTTPException(
+            status_code=400,
+            detail="Mapping sheet missing 'Ready for upload' flag",
+        )
+
+    ready_value = str(ready_row.iloc[0, 1]).strip().lower()
+
+    if ready_value != "yes":
+        raise HTTPException(
+            status_code=400,
+            detail="Excel file is not ready for upload. Fix issues in Mapping sheet.",  # noqa
+        )

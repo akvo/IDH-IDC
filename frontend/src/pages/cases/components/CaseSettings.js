@@ -444,12 +444,58 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           type: "success",
           content: "Case setting saved successfully.",
         });
-        setTimeout(() => {
-          form.resetFields();
-          handleCancel();
-          // always navigate to step 1 after save
-          navigate(`${routePath.idc.case}/${data.id}/${stepPath.step1.label}`);
-        }, 100);
+
+        // SAVE /case-import/generate-segment-values
+        if (values?.import_id) {
+          const confirmedSegPayload = {
+            case_id: data.id,
+            import_id: values.import_id,
+            segmentation_variable: values.data_upload_segmentation_variable,
+            segments: values.segments.map((seg) => {
+              // find segment id from data.segments
+              const findSegment = data.segments.find(
+                (s) => s.name === seg.name
+              );
+              return {
+                id: findSegment ? findSegment.id : null,
+                index: seg.index,
+                name: seg.name,
+                value: seg.value || 0,
+              };
+            }),
+          };
+          api
+            .post("case-import/generate-segment-values", confirmedSegPayload)
+            .then(() => {
+              // reset form and close drawer
+              setTimeout(() => {
+                form.resetFields();
+                handleCancel();
+                // always navigate to step 1 after save
+                navigate(
+                  `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
+                );
+              }, 100);
+            })
+            .catch((e) => {
+              console.error(e);
+              messageApi.open({
+                type: "error",
+                content: "Failed to generate segment values from import data.",
+              });
+            });
+        } else {
+          // NORMAL BEHAVIOUR
+          setTimeout(() => {
+            form.resetFields();
+            handleCancel();
+            // always navigate to step 1 after save
+            navigate(
+              `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
+            );
+          }, 100);
+        }
+        // EOL SAVE /case-import/generate-segment-values
       })
       .catch((e) => {
         console.error(e);

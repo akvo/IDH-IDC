@@ -24,6 +24,7 @@ from utils.case_import_processing import (
     extract_column_types,
     generate_categorical_segments,
     generate_numerical_segments,
+    validate_ready_for_upload,
 )
 from utils.case_import_storage import save_import_file, load_import_file
 from utils.case_import_process_confirmed_segmentation import (
@@ -62,7 +63,8 @@ def case_import(
 
     if not file.filename.lower().endswith((".xlsx", ".xlsm")):
         raise HTTPException(
-            status_code=400, detail="Only .xlsx and .xlsm files are supported"
+            status_code=400,
+            detail="Only .xlsx and .xlsm files are supported",
         )
 
     content = file.file.read()
@@ -77,8 +79,14 @@ def case_import(
 
     validate_workbook(xls)
 
-    data_df = pd.read_excel(xls, sheet_name="data")
-    mapping_df = pd.read_excel(xls, sheet_name="mapping")
+    try:
+        data_df = pd.read_excel(xls, sheet_name="data")
+        mapping_df = pd.read_excel(xls, sheet_name="mapping")
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to read required sheets",
+        )
 
     if data_df.empty or mapping_df.empty:
         raise HTTPException(
@@ -86,11 +94,13 @@ def case_import(
             detail="Data or Mapping sheet is empty",
         )
 
-    # Save file
+    # 🔒 HARD BLOCK: Mapping must be ready
+    validate_ready_for_upload(mapping_df)
+
+    # Save file only if fully valid
     file_import_id = str(uuid.uuid4())
     file_path = save_import_file(file_import_id, content)
 
-    # Persist import session
     case_import = create_case_import(
         session=session,
         user_id=user.id,
