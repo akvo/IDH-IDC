@@ -32,7 +32,13 @@ import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
-import { DownloadOutlined, FileExcelOutlined } from "@ant-design/icons";
+import {
+  FileExcelOutlined,
+  DeleteOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
 import { api } from "../../../lib";
 
 const responsiveCol = {
@@ -56,7 +62,6 @@ const livestockPrompt = (
   </>
 );
 
-// TODO:: Update case_import case_id column after saving the case, by adding import_id to payload
 const { Dragger } = Upload;
 
 const SecondaryForm = ({
@@ -184,16 +189,17 @@ const CaseForm = ({
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadResult, setUploadResult] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [fileList, setFileList] = useState([]);
 
   const uploadProps = {
     name: "file",
     multiple: false,
     accept:
       ".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12",
-    disabled: uploading, // Disable while uploading
+    disabled: uploading,
+    fileList: fileList, // Controlled file list
     customRequest: async ({ file, onSuccess, onError, onProgress }) => {
-      setUploading(true); // Set uploading to true at start
-
+      setUploading(true);
       try {
         const response = await api.upload("/case-import", file, {
           onUploadProgress: (progressEvent) => {
@@ -203,7 +209,6 @@ const CaseForm = ({
             onProgress({ percent });
           },
         });
-
         const result = response.data;
         setUploadResult(result);
         if (result.import_id) {
@@ -221,16 +226,16 @@ const CaseForm = ({
         }
         messageApi.error(errorText);
       } finally {
-        setUploading(false); // Re-enable after upload completes (success or error)
+        setUploading(false);
       }
     },
     onChange(info) {
-      const { status } = info.file;
+      const { status, fileList: newFileList } = info;
+      setFileList(newFileList); // Update file list state
 
       if (status === "uploading") {
         console.info("Progress:", info.file.percent + "%");
       }
-
       if (status === "done") {
         const result = info.file.response;
         console.info("Upload completed with result:", result);
@@ -238,7 +243,129 @@ const CaseForm = ({
         console.error("Upload failed");
       }
     },
-    showUploadList: true,
+    onRemove: () => {
+      // Clear upload result and form when file is removed
+      setUploadResult(null);
+      form.setFieldValue("import_id", null);
+      setFileList([]);
+      return true;
+    },
+    showUploadList: {
+      showRemoveIcon: true,
+      removeIcon: <DeleteOutlined />,
+    },
+    itemRender: (originNode, file) => {
+      const isError = file.status === "error";
+      const isSuccess = file.status === "done";
+
+      return (
+        <div
+          style={{
+            padding: "12px 16px",
+            border: `1px solid ${
+              isError ? "#ff4d4f" : isSuccess ? "#52c41a" : "#d9d9d9"
+            }`,
+            borderRadius: "8px",
+            backgroundColor: isError
+              ? "#fff2f0"
+              : isSuccess
+              ? "#f6ffed"
+              : "#fafafa",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "8px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", flex: 1 }}>
+            {isError ? (
+              <CloseCircleOutlined
+                style={{
+                  color: "#ff4d4f",
+                  fontSize: "20px",
+                  marginRight: "12px",
+                }}
+              />
+            ) : isSuccess ? (
+              <CheckCircleOutlined
+                style={{
+                  color: "#52c41a",
+                  fontSize: "20px",
+                  marginRight: "12px",
+                }}
+              />
+            ) : (
+              <FileExcelOutlined
+                style={{
+                  color: "#1890ff",
+                  fontSize: "20px",
+                  marginRight: "12px",
+                }}
+              />
+            )}
+            <div style={{ flex: 1 }}>
+              <div
+                style={{
+                  fontWeight: 500,
+                  color: isError ? "#ff4d4f" : "#262626",
+                }}
+              >
+                {file.name}
+              </div>
+              {file.status === "uploading" && (
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: "#8c8c8c",
+                    marginTop: "4px",
+                  }}
+                >
+                  Uploading: {file.percent}%
+                </div>
+              )}
+              {isError && (
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: "#ff4d4f",
+                    marginTop: "4px",
+                  }}
+                >
+                  Upload failed
+                </div>
+              )}
+              {isSuccess && (
+                <div
+                  style={{
+                    fontSize: "12px",
+                    color: "#52c41a",
+                    marginTop: "4px",
+                  }}
+                >
+                  Uploaded successfully
+                </div>
+              )}
+            </div>
+          </div>
+          {(isError || isSuccess) && (
+            <Button
+              type="text"
+              danger={isError}
+              icon={<DeleteOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                // Trigger the onRemove handler
+                setFileList([]);
+                setUploadResult(null);
+                form.setFieldValue("import_id", null);
+              }}
+            >
+              Remove
+            </Button>
+          )}
+        </div>
+      );
+    },
     maxCount: 1,
   };
 
@@ -548,7 +675,16 @@ const CaseForm = ({
                   <Row gutter={[16, 16]}>
                     <Col span={24}>
                       <h3>Upload your data</h3>
-                      <Dragger {...uploadProps}>
+                      <Dragger
+                        {...uploadProps}
+                        style={{
+                          display:
+                            uploadProps.fileList &&
+                            uploadProps.fileList.length > 0
+                              ? "none"
+                              : "block",
+                        }}
+                      >
                         <p className="ant-upload-drag-icon">
                           <FileExcelOutlined />
                         </p>
