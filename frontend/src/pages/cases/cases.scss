@@ -151,3 +151,29 @@
     font-family: "RocGrotesk" !important;
   }
 }
+
+.case-form-dragger-item-container {
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  .dragger-item-list-wrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+
+    h4 {
+      margin: 0;
+    }
+
+    p {
+      margin: 0;
+      margin-top: 4px;
+      word-break: break-word;
+      word-wrap: break-word;
+    }
+  }
+}

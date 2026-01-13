@@ -35,8 +35,6 @@ import { QuestionCircleOutline } from "../../../lib/icon";
 import {
   FileExcelOutlined,
   DeleteOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
   DownloadOutlined,
 } from "@ant-design/icons";
 import { api } from "../../../lib";
@@ -190,6 +188,7 @@ const CaseForm = ({
   const [uploadResult, setUploadResult] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState([]);
+  const [uploadErrorText, setUploadErrorText] = useState("");
 
   const uploadProps = {
     name: "file",
@@ -223,6 +222,7 @@ const CaseForm = ({
         let errorText = `${file.name} upload failed.`;
         if (status === 400 && data.detail) {
           errorText = `${errorText} ${data.detail}`;
+          setUploadErrorText(data.detail);
         }
         messageApi.error(errorText);
       } finally {
@@ -260,90 +260,64 @@ const CaseForm = ({
 
       return (
         <div
+          className="case-form-dragger-item-container"
           style={{
-            padding: "12px 16px",
             border: `1px solid ${
               isError ? "#ff4d4f" : isSuccess ? "#52c41a" : "#d9d9d9"
             }`,
-            borderRadius: "8px",
             backgroundColor: isError
               ? "#fff2f0"
               : isSuccess
               ? "#f6ffed"
               : "#fafafa",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "8px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", flex: 1 }}>
-            {isError ? (
-              <CloseCircleOutlined
-                style={{
-                  color: "#ff4d4f",
-                  fontSize: "20px",
-                  marginRight: "12px",
-                }}
-              />
-            ) : isSuccess ? (
-              <CheckCircleOutlined
-                style={{
-                  color: "#52c41a",
-                  fontSize: "20px",
-                  marginRight: "12px",
-                }}
-              />
-            ) : (
-              <FileExcelOutlined
-                style={{
-                  color: "#1890ff",
-                  fontSize: "20px",
-                  marginRight: "12px",
-                }}
-              />
-            )}
+          <div className="dragger-item-list-wrapper">
+            <FileExcelOutlined
+              style={{
+                color: isError ? "#ff4d4f" : isSuccess ? "#01625f" : "#1890ff",
+                fontSize: "36px",
+                marginRight: "12px",
+              }}
+            />
             <div style={{ flex: 1 }}>
-              <div
+              <h4
                 style={{
-                  fontWeight: 500,
-                  color: isError ? "#ff4d4f" : "#262626",
+                  color: isError
+                    ? "#ff4d4f"
+                    : isSuccess
+                    ? "#01625f"
+                    : "#262626",
                 }}
               >
                 {file.name}
-              </div>
+              </h4>
               {file.status === "uploading" && (
-                <div
+                <p
                   style={{
-                    fontSize: "12px",
                     color: "#8c8c8c",
-                    marginTop: "4px",
                   }}
                 >
                   Uploading: {file.percent}%
-                </div>
+                </p>
               )}
               {isError && (
                 <div
                   style={{
-                    fontSize: "12px",
                     color: "#ff4d4f",
-                    marginTop: "4px",
                   }}
                 >
-                  Upload failed
+                  Upload failed. {uploadErrorText}
                 </div>
               )}
               {isSuccess && (
-                <div
+                <p
                   style={{
-                    fontSize: "12px",
-                    color: "#52c41a",
-                    marginTop: "4px",
+                    color: "#01625f",
                   }}
                 >
                   Uploaded successfully
-                </div>
+                </p>
               )}
             </div>
           </div>
@@ -710,7 +684,7 @@ const CaseForm = ({
                       </Form.Item>
                     </Col>
                     {uploadResult && (
-                      <Col span={24} style={{ marginTop: "72px" }}>
+                      <Col span={24}>
                         <SegmentConfigurationForm
                           dataUploadFieldPreffix={dataUploadFieldPreffix}
                           uploadResult={uploadResult}

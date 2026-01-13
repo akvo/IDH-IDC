@@ -118,27 +118,40 @@ def generate_numerical_segments(
 
 def validate_ready_for_upload(mapping_df: pd.DataFrame) -> None:
     """
-    Expects mapping sheet format:
-    | Ready for upload | YES/NO |
-    | Number of issues | <int> |
+    Searches the entire mapping sheet for:
+        Ready for upload: | YES/NO
+
+    Location-independent (can be anywhere in the sheet).
     """
 
-    # Normalize columns
-    mapping_df = mapping_df.copy()
-    mapping_df.columns = mapping_df.columns.str.strip().str.lower()
+    df = mapping_df.copy()
+    df = df.applymap(lambda x: str(x).strip().lower())
 
-    # First column = label, second column = value
-    first_col = mapping_df.iloc[:, 0].astype(str).str.strip().str.lower()
+    # Find cell containing "ready for upload"
+    matches = df == "ready for upload:"
 
-    ready_row = mapping_df.loc[first_col == "ready for upload"]
-
-    if ready_row.empty:
+    if not matches.any().any():
         raise HTTPException(
             status_code=400,
             detail="Mapping sheet missing 'Ready for upload' flag",
         )
 
-    ready_value = str(ready_row.iloc[0, 1]).strip().lower()
+    # Get first match location
+    row_idx, col_idx = next(
+        (i, j)
+        for i, row in enumerate(matches.values)
+        for j, val in enumerate(row)
+        if val
+    )
+
+    # Value must be in the cell to the right
+    try:
+        ready_value = df.iat[row_idx, col_idx + 1]
+    except IndexError:
+        raise HTTPException(
+            status_code=400,
+            detail="'Ready for upload' flag has no value cell",
+        )
 
     if ready_value != "yes":
         raise HTTPException(
