@@ -585,7 +585,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           </Button>
           <Button
             loading={isSaving}
-            disabled={!enableEditCase || segmentFields?.length === MAX_SEGMENT}
+            disabled={!enableEditCase || segmentFields?.length > MAX_SEGMENT}
             className="button-save"
             onClick={() => form.submit()}
           >
