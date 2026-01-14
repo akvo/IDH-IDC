@@ -59,6 +59,7 @@ class SegmentationSegment(BaseModel):
     name: str
     operator: Union[Literal["<=", ">", "between"], Literal["is"]]
     value: Union[Union[float, List[float]], str]
+    number_of_farmers: Optional[int] = 0
 
 
 class SegmentationPreviewResponse(BaseModel):

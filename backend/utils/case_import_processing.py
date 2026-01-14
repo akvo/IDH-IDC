@@ -64,16 +64,22 @@ def extract_column_types(df: pd.DataFrame):
 
 
 def generate_categorical_segments(df: pd.DataFrame, column: str):
-    counts = df[column].fillna("Unknown").value_counts()
+    counts = (
+        df[column]
+        .fillna("Unknown")
+        .value_counts()
+        .sort_values(ascending=False)
+    )
 
     segments = []
-    for idx, value in enumerate(counts.index, start=1):
+    for idx, (value, count) in enumerate(counts.items(), start=1):
         segments.append(
             {
                 "index": idx,
                 "name": column,
                 "operator": "is",
                 "value": value,
+                "number_of_farmers": int(count),
             }
         )
 
@@ -110,8 +116,16 @@ def generate_numerical_segments(
                 "name": column,
                 "operator": "<=",
                 "value": value,
+                "number_of_farmers": len(bucket),
             }
         )
+
+    # Sort by number of farmers (descending)
+    segments.sort(key=lambda x: x["number_of_farmers"], reverse=True)
+
+    # Reassign index after sorting
+    for idx, segment in enumerate(segments, start=1):
+        segment["index"] = idx
 
     return segments
 
