@@ -48,6 +48,50 @@ const API = () => {
     }
   };
 
+  const download = async (
+    url = "",
+    options = {
+      filename: null,
+      params: {},
+    }
+  ) => {
+    const response = await axios({
+      url,
+      method: "GET",
+      ...getConfig(),
+      params: options?.params,
+      responseType: "blob",
+    });
+
+    // Try to extract filename from Content-Disposition
+    let filename = options?.filename || "download";
+
+    const disposition = response.headers["content-disposition"];
+    if (disposition) {
+      const match = disposition.match(/filename\*?=(?:UTF-8'')?"?([^"]+)"?/);
+      if (match?.[1]) {
+        filename = decodeURIComponent(match[1]);
+      }
+    }
+
+    const blob = new Blob([response.data], {
+      type: response.headers["content-type"],
+    });
+
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+
+    return true;
+  };
+
   return {
     get: (url, config = {}) => axios({ url, ...getConfig(), ...config }),
     post: (url, data, config = {}) =>
@@ -74,6 +118,7 @@ const API = () => {
         },
       });
     },
+    download: download,
     setToken: (token) => {
       api.token = token;
     },
