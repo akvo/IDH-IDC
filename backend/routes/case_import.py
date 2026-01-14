@@ -12,6 +12,8 @@ from fastapi import (
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from db.connection import get_session
+from fastapi.responses import FileResponse
+from pathlib import Path
 
 from middleware import (
     verify_case_creator,
@@ -42,6 +44,10 @@ case_import_route = APIRouter()
 
 
 ROUTE_TAG_NAME = ["Case Spreadsheet Upload"]
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+TEMPLATE_DIR = BASE_DIR / "assets" / "templates"
+TEMPLATE_NAME = "data_upload_template_v1.xlsm"
 
 
 @case_import_route.post(
@@ -197,4 +203,23 @@ def generate_segment_values(
     return process_confirmed_segmentation(
         payload=payload,
         session=session,
+    )
+
+
+@case_import_route.get(
+    "/case-import/download-template",
+    summary="Download XLSM upload template",
+    response_class=FileResponse,
+    tags=ROUTE_TAG_NAME,
+)
+def download_upload_template():
+    file_path = TEMPLATE_DIR / TEMPLATE_NAME
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Template not found")
+
+    return FileResponse(
+        path=file_path,
+        filename=TEMPLATE_NAME,
+        media_type="application/vnd.ms-excel.sheet.macroEnabled.12",
     )
