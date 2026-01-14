@@ -11,8 +11,7 @@ import {
 } from "antd";
 import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
-
-const MAX_SEGMENT = 5;
+import { MAX_SEGMENT } from ".";
 
 const SegmentForm = ({
   deletedSegmentIds = [],

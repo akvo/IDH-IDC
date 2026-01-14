@@ -190,6 +190,20 @@ const CaseForm = ({
   const [fileList, setFileList] = useState([]);
   const [uploadErrorText, setUploadErrorText] = useState("");
 
+  const resetDataUploadForm = () => {
+    form.setFieldsValue({
+      import_id: null,
+      // reset variable type
+      [`${dataUploadFieldPreffix}variable_type`]: null,
+      // reset segmentation variable when variable type changes
+      [`${dataUploadFieldPreffix}segmentation_variable`]: null,
+      // reset segments
+      segments: [{ name: null }],
+      // reset number of segments
+      [`${dataUploadFieldPreffix}number_of_segments`]: null,
+    });
+  };
+
   const uploadProps = {
     name: "file",
     multiple: false,
@@ -246,8 +260,8 @@ const CaseForm = ({
     onRemove: () => {
       // Clear upload result and form when file is removed
       setUploadResult(null);
-      form.setFieldValue("import_id", null);
       setFileList([]);
+      resetDataUploadForm();
       return true;
     },
     showUploadList: {
@@ -331,7 +345,7 @@ const CaseForm = ({
                 // Trigger the onRemove handler
                 setFileList([]);
                 setUploadResult(null);
-                form.setFieldValue("import_id", null);
+                resetDataUploadForm();
               }}
             >
               Remove

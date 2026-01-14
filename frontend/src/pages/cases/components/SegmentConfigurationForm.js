@@ -75,24 +75,15 @@ const SegmentConfigurationForm = ({
 
   const handleChangeVariableType = () => {
     // reset segmentation variable when variable type changes
+    setSegmentationPreviews(null);
     form.setFieldsValue({
       [`${dataUploadFieldPreffix}segmentation_variable`]: null,
-    });
-    // reset segments
-    form.setFieldsValue({ segments: [{ name: null }] });
-    setSegmentationPreviews(null);
-    // reset number of segments
-    form.setFieldsValue({
+      // reset segments
+      segments: [{ name: null }],
+      // reset number of segments
       [`${dataUploadFieldPreffix}number_of_segments`]: null,
     });
   };
-
-  // current segment form initial values
-  //   segments: [{
-  //   "id": 28,
-  //   "name": "< 2",
-  //   "number_of_farmers": 59
-  // }]
 
   return (
     <Row gutter={[16, 16]}>

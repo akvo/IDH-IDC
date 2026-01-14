@@ -20,6 +20,7 @@ import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
+import { MAX_SEGMENT } from ".";
 
 const dataUploadFieldPreffix = "data_upload_";
 
@@ -40,6 +41,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const { internal_user: userInternal } = UserState.useState((s) => s);
 
   const [deletedSegmentIds, setDeletedSegmentIds] = useState([]);
+  const segmentFields = Form.useWatch("segments", form);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
@@ -583,7 +585,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           </Button>
           <Button
             loading={isSaving}
-            disabled={!enableEditCase}
+            disabled={!enableEditCase || segmentFields?.length === MAX_SEGMENT}
             className="button-save"
             onClick={() => form.submit()}
           >

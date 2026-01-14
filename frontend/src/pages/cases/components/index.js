@@ -15,3 +15,5 @@ export { default as AdjustIncomeTarget } from "./AdjustIncomeTarget";
 export { default as OptimizeIncomeTarget } from "./OptimizeIncomeTarget";
 export { default as IDCSubMenu } from "./IDCSubMenu";
 export { default as SegmentConfigurationForm } from "./SegmentConfigurationForm";
+
+export const MAX_SEGMENT = 5;
