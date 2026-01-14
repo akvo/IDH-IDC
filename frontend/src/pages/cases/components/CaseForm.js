@@ -189,6 +189,7 @@ const CaseForm = ({
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [uploadErrorText, setUploadErrorText] = useState("");
+  const [downloading, setDownloading] = useState(false);
 
   const resetDataUploadForm = () => {
     form.setFieldsValue({
@@ -388,6 +389,21 @@ const CaseForm = ({
       form.setFieldValue("currency", currentCase.currency);
     }
   }, [form, currentCase]);
+
+  const handleDownloadTemplate = async () => {
+    setDownloading(true);
+    api
+      .download("/case-import/download-template", {
+        filename: "data_upload_template.xlsm",
+      })
+      .catch((error) => {
+        console.error("Download template error:", error);
+        messageApi.error("Failed to download template.");
+      })
+      .finally(() => {
+        setDownloading(false);
+      });
+  };
 
   return (
     <Row gutter={[16, 16]} className="case-form-body-wrapper">
@@ -633,6 +649,7 @@ const CaseForm = ({
       </Col>
       {/* MANUAL / DATA UPLOAD */}
       <Col span={24}>
+        {contextHolder}
         <Tabs
           items={[
             {
@@ -659,7 +676,6 @@ const CaseForm = ({
               label: "Data upload",
               children: (
                 <Col span={24}>
-                  {contextHolder}
                   <Row gutter={[16, 16]}>
                     <Col span={24}>
                       <h3>Upload your data</h3>
@@ -713,7 +729,12 @@ const CaseForm = ({
             },
           ]}
           tabBarExtraContent={
-            <Button className="button-ghost">
+            <Button
+              className="button-ghost"
+              onClick={handleDownloadTemplate}
+              disabled={downloading}
+              loading={downloading}
+            >
               <DownloadOutlined /> Download template
             </Button>
           }
