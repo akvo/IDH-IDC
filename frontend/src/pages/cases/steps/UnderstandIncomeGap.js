@@ -8,6 +8,8 @@ import {
   // ChartIncomeDriverAcrossSegments,
   ChartExploreIncomeDriverBreakdown,
   ChartIncomeLevelsForDifferentCommodities,
+  ChartHouseholdIncomeComposition,
+  ChartNeededIncomeLevel,
 } from "../visualizations";
 import { routePath } from "../../../components/route";
 
@@ -94,6 +96,20 @@ const UnderstandIncomeGap = ({
       </Col>
       <Col span={24}>
         <ChartIncomeLevelsForDifferentCommodities />
+      </Col>
+
+      {/* New Chart */}
+      <Col span={24}>
+        <Card className="card-visual-wrapper">
+          <Row gutter={[24, 24]}>
+            <Col span={12}>
+              <ChartHouseholdIncomeComposition />
+            </Col>
+            <Col span={12}>
+              <ChartNeededIncomeLevel />
+            </Col>
+          </Row>
+        </Card>
       </Col>
     </Row>
   );
