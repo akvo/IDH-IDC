@@ -117,7 +117,7 @@ const Bar = ({
             if (percentage) {
               return `${s.value}%`;
             }
-            return thousandFormatter(s.value);
+            return thousandFormatter(s.value, 2);
           },
         },
       },

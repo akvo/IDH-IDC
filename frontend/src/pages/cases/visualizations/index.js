@@ -13,3 +13,4 @@ export { default as ChartIncomeGapAcrossScenario } from "./ChartIncomeGapAcrossS
 export { default as TableScenarioOutcomes } from "./TableScenarioOutcomes";
 export { default as ChartHouseholdIncomeComposition } from "./ChartHouseholdIncomeComposition";
 export { default as ChartNeededIncomeLevel } from "./ChartNeededIncomeLevel";
+export { default as ChartFarmEconomicEfficiency } from "./ChartFarmEconomicEfficiency";
