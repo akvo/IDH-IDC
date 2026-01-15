@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
 import { Row, Col, Card, Space } from "antd";
 import {
-  ChartIncomeGap,
-  CompareIncomeGap,
-  ChartIncomeDriverAcrossSegments,
+  // ChartIncomeGap,
+  // CompareIncomeGap,
+  // ChartIncomeDriverAcrossSegments,
   ChartExploreIncomeDriverBreakdown,
   ChartIncomeLevelsForDifferentCommodities,
+  ChartHouseholdIncomeComposition,
+  ChartNeededIncomeLevel,
 } from "../visualizations";
 import { routePath } from "../../../components/route";
 
@@ -62,35 +64,53 @@ const UnderstandIncomeGap = ({
           </div>
         </Space>
       </Col>
+
       <Col span={24}>
         <Card className="card-section-wrapper">
           Understand current income and the income gap
         </Card>
       </Col>
-      {/* Chart */}
-      <Col span={24}>
+
+      {/* TODO:: DELETE */}
+      {/* <Col span={24}>
         <ChartIncomeGap />
       </Col>
       <Col span={24}>
         <CompareIncomeGap />
-      </Col>
-      {/* EOL Chart */}
-      <Col span={24}>
+      </Col> */}
+      {/* EOL TODO:: DELETE */}
+
+      {/* TODO:: DELETE */}
+      {/* <Col span={24}>
         <Card className="card-section-wrapper">
           Explore your income drivers
         </Card>
-      </Col>
-      {/* Chart */}
-      <Col span={24}>
+      </Col> */}
+      {/* <Col span={24}>
         <ChartIncomeDriverAcrossSegments />
-      </Col>
+      </Col> */}
+      {/* EOL TODO:: DELETE */}
+
       <Col span={24}>
         <ChartExploreIncomeDriverBreakdown />
       </Col>
       <Col span={24}>
         <ChartIncomeLevelsForDifferentCommodities />
       </Col>
-      {/* EOL Chart */}
+
+      {/* New Chart */}
+      <Col span={24}>
+        <Card className="card-visual-wrapper">
+          <Row gutter={[20, 20]}>
+            <Col span={12}>
+              <ChartHouseholdIncomeComposition />
+            </Col>
+            <Col span={12}>
+              <ChartNeededIncomeLevel />
+            </Col>
+          </Row>
+        </Card>
+      </Col>
     </Row>
   );
 };
