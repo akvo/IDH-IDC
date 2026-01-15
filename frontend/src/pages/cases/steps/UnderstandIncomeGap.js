@@ -12,6 +12,7 @@ import {
   ChartNeededIncomeLevel,
   ChartFarmEconomicEfficiency,
   ChartRevenueToCostRatio,
+  ChartNetIncomePerLandUnit,
 } from "../visualizations";
 import { routePath } from "../../../components/route";
 
@@ -120,6 +121,10 @@ const UnderstandIncomeGap = ({
 
       <Col span={24}>
         <ChartRevenueToCostRatio />
+      </Col>
+
+      <Col span={24}>
+        <ChartNetIncomePerLandUnit />
       </Col>
     </Row>
   );

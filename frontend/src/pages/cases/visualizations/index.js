@@ -15,3 +15,4 @@ export { default as ChartHouseholdIncomeComposition } from "./ChartHouseholdInco
 export { default as ChartNeededIncomeLevel } from "./ChartNeededIncomeLevel";
 export { default as ChartFarmEconomicEfficiency } from "./ChartFarmEconomicEfficiency";
 export { default as ChartRevenueToCostRatio } from "./ChartRevenueToCostRatio";
+export { default as ChartNetIncomePerLandUnit } from "./ChartNetIncomePerLandUnit";
