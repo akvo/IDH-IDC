@@ -5,7 +5,7 @@ import {
   backgroundColor,
   Title,
   NoData,
-  thousandFormatter,
+  formatNumberToString,
 } from "./common";
 import { sortBy, isEmpty, sumBy } from "lodash";
 
@@ -17,6 +17,8 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
   // Custom Axis Title
   const total = sumBy(data, "value");
   data = sortBy(data, "order");
+  const currency = data?.[0]?.currency;
+
   if (percentage) {
     data = data.map((x) => ({ ...x, percentage: (x.value / total) * 100 }));
   }
@@ -69,7 +71,11 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
             if (percentage) {
               return `${s.value}%`;
             }
-            return thousandFormatter(s.value);
+            let value = formatNumberToString(s.value);
+            if (currency) {
+              value = `${value} (${currency})`;
+            }
+            return value;
           },
         },
       },
