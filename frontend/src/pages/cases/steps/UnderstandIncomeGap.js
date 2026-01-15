@@ -11,6 +11,7 @@ import {
   ChartHouseholdIncomeComposition,
   ChartNeededIncomeLevel,
   ChartFarmEconomicEfficiency,
+  ChartRevenueToCostRatio,
 } from "../visualizations";
 import { routePath } from "../../../components/route";
 
@@ -115,6 +116,10 @@ const UnderstandIncomeGap = ({
 
       <Col span={24}>
         <ChartFarmEconomicEfficiency />
+      </Col>
+
+      <Col span={24}>
+        <ChartRevenueToCostRatio />
       </Col>
     </Row>
   );
