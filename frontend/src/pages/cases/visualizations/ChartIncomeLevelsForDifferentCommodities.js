@@ -233,7 +233,7 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
                   affix={true}
                   extra={{
                     axisTitle: {
-                      y: `Income  Levels (${currentCase.currency})`,
+                      y: `Income Levels (${currentCase.currency})`,
                     },
                   }}
                   showLabel={showLabel}
