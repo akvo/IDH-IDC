@@ -1,5 +1,5 @@
 import React, { useRef, useState, useMemo } from "react";
-import { Card, Row, Col, Divider } from "antd";
+import { Row, Col, Divider } from "antd";
 import { VisualCardWrapper, SegmentSelector } from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import Chart from "../../../components/chart";
@@ -87,42 +87,40 @@ const ChartHouseholdIncomeComposition = () => {
   }, [selectedSegment, dashboardData, currentCase]);
 
   return (
-    <Card className="card-visual-wrapper">
-      <VisualCardWrapper
-        title="Household Income Composition"
-        bordered
-        exportElementRef={chartHouseholdIncomeCompositionRef}
-        exportFilename="Household Income Composition"
-      >
-        <Row gutter={[20, 20]}>
-          <Col span={24}>
-            <SegmentSelector
-              selectedSegment={selectedSegment}
-              setSelectedSegment={setSelectedSegment}
-            />
-          </Col>
-          <Col span={24}>
-            <Chart
-              wrapper={false}
-              type="PIE"
-              loading={loading}
-              data={chartData}
-              percentage={true}
-            />
-          </Col>
-          <Col span={24}>
-            <Divider style={{ margin: "5px" }} />
-            <p>
-              This graph shows the composition of income and how much each
-              income source contributes to total household earnings.
-              <br />
-              Use it to identify the activities that contribute most to farmer
-              incomes.
-            </p>
-          </Col>
-        </Row>
-      </VisualCardWrapper>
-    </Card>
+    <VisualCardWrapper
+      title="Household Income Composition"
+      bordered
+      exportElementRef={chartHouseholdIncomeCompositionRef}
+      exportFilename="Household Income Composition"
+    >
+      <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <SegmentSelector
+            selectedSegment={selectedSegment}
+            setSelectedSegment={setSelectedSegment}
+          />
+        </Col>
+        <Col span={24}>
+          <Chart
+            wrapper={false}
+            type="PIE"
+            loading={loading}
+            data={chartData}
+            percentage={true}
+          />
+        </Col>
+        <Col span={24}>
+          <Divider style={{ margin: "5px" }} />
+          <p>
+            This graph shows the composition of income and how much each income
+            source contributes to total household earnings.
+            <br />
+            Use it to identify the activities that contribute most to farmer
+            incomes.
+          </p>
+        </Col>
+      </Row>
+    </VisualCardWrapper>
   );
 };
 

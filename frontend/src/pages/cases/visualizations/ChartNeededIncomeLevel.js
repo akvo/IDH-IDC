@@ -1,5 +1,5 @@
 import React, { useRef, useState, useMemo } from "react";
-import { Card, Row, Col, Divider } from "antd";
+import { Row, Col, Divider } from "antd";
 import { VisualCardWrapper, SegmentSelector } from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import Chart from "../../../components/chart";
@@ -93,40 +93,38 @@ const ChartNeededIncomeLevel = () => {
   }, [selectedSegment, dashboardData, currentCase]);
 
   return (
-    <Card className="card-visual-wrapper">
-      <VisualCardWrapper
-        title="Needed income levels"
-        bordered
-        exportElementRef={chartNeededIncomeLevel}
-        exportFilename="Needed income levels"
-      >
-        <Row gutter={[20, 20]}>
-          <Col span={24}>
-            <SegmentSelector
-              selectedSegment={selectedSegment}
-              setSelectedSegment={setSelectedSegment}
-            />
-          </Col>
-          <Col span={24}>
-            <Chart
-              wrapper={false}
-              type="PIE"
-              loading={loading}
-              data={chartData}
-            />
-          </Col>
-          <Col span={24}>
-            <Divider style={{ margin: "5px" }} />
-            <p>
-              This graph shows how much household need to earn from each income
-              source, based on their current income composition, in order to
-              reach a Living Income. Use it to understand which income streams
-              would need to increase and by how much.
-            </p>
-          </Col>
-        </Row>
-      </VisualCardWrapper>
-    </Card>
+    <VisualCardWrapper
+      title="Needed income levels"
+      bordered
+      exportElementRef={chartNeededIncomeLevel}
+      exportFilename="Needed income levels"
+    >
+      <Row gutter={[20, 20]}>
+        <Col span={24}>
+          <SegmentSelector
+            selectedSegment={selectedSegment}
+            setSelectedSegment={setSelectedSegment}
+          />
+        </Col>
+        <Col span={24}>
+          <Chart
+            wrapper={false}
+            type="PIE"
+            loading={loading}
+            data={chartData}
+          />
+        </Col>
+        <Col span={24}>
+          <Divider style={{ margin: "5px" }} />
+          <p>
+            This graph shows how much household need to earn from each income
+            source, based on their current income composition, in order to reach
+            a Living Income. Use it to understand which income streams would
+            need to increase and by how much.
+          </p>
+        </Col>
+      </Row>
+    </VisualCardWrapper>
   );
 };
 

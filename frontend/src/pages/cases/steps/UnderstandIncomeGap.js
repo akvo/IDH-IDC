@@ -101,7 +101,7 @@ const UnderstandIncomeGap = ({
       {/* New Chart */}
       <Col span={24}>
         <Card className="card-visual-wrapper">
-          <Row gutter={[24, 24]}>
+          <Row gutter={[20, 20]}>
             <Col span={12}>
               <ChartHouseholdIncomeComposition />
             </Col>
