@@ -30,7 +30,6 @@ import { QuestionCircleOutline } from "../../../lib/icon";
 import SegmentSelector from "./SegmentSelector";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { useWindowDimensions } from "../../../hooks";
-import posthog from "posthog-js";
 
 // TODO :: Optimize value not saved into DB if we doesn't fill sensitivity analysis line chart form
 // should we add new visualization config type?
@@ -286,15 +285,6 @@ const OptimizeIncomeTarget = () => {
           dimension11: driverPair, // Custom Dimension: Track combination of x-y-bin
         }
       );
-
-      // posthog event
-      posthog.capture("optimization_selected_drivers_pair", {
-        category: "Optimization model - Select the drivers you can influence",
-        action: "on run optimization model",
-        label: "Selected Drivers Pair",
-        count: 1,
-        driver_pair: driverPair, // formerly dimension11
-      });
 
       // Matomo event
       if (window._paq) {

@@ -19,7 +19,6 @@ import { UserState, UIState } from "../../../store";
 import { api } from "../../../lib";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
-import posthog from "posthog-js";
 
 const transformToSelectOptions = (values) => {
   return values.map((x) => ({
@@ -151,15 +150,6 @@ const UserForm = () => {
         1,
         { dimension2: "External" }
       );
-
-      // posthog event
-      posthog.capture("invite_external_user", {
-        category: "User Management",
-        action: "Invite External User",
-        label: "New external users",
-        count: 1,
-        user_type: "External", // replaces dimension2
-      });
 
       // Matomo Cloudron
       if (window._paq) {

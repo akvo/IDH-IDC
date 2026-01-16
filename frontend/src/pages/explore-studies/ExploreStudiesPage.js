@@ -27,7 +27,6 @@ import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import Chart from "../../components/chart";
 import { routePath } from "../../components/route";
 import { MapViewHelpText } from "../../components/utils";
-import posthog from "posthog-js";
 
 const selectProps = {
   showSearch: true,
@@ -497,15 +496,6 @@ const ExploreStudiesPage = () => {
             }
           );
 
-          // posthog event
-          posthog.capture("explore_studies_search_by_country", {
-            category: "Explore Studies Filter",
-            action: "on Search Explore Studies",
-            label: "Search by Country",
-            count: 1,
-            country: co.label, // formerly dimension5
-          });
-
           // Matomo event
           if (window._paq) {
             window._paq.push([
@@ -551,15 +541,6 @@ const ExploreStudiesPage = () => {
             }
           );
 
-          // posthog event
-          posthog.capture("explore_studies_search_by_commodity", {
-            category: "Explore Studies Filter",
-            action: "on Search Explore Studies",
-            label: "Search by Commodity",
-            count: 1,
-            commodity: co.label, // formerly dimension6
-          });
-
           // Matomo event
           if (window._paq) {
             window._paq.push([
@@ -603,15 +584,6 @@ const ExploreStudiesPage = () => {
           }
         );
 
-        // posthog event
-        posthog.capture("explore_studies_search_by_source", {
-          category: "Explore Studies Filter",
-          action: "on Search Explore Studies",
-          label: "Search by Source",
-          count: 1,
-          source: sc, // formerly dimension7
-        });
-
         // Matomo event
         if (window._paq) {
           window._paq.push([
@@ -654,15 +626,6 @@ const ExploreStudiesPage = () => {
             dimension8: dv,
           }
         );
-
-        // posthog event
-        posthog.capture("explore_studies_search_by_driver", {
-          category: "Explore Studies Filter",
-          action: "on Search Explore Studies",
-          label: "Search by Driver",
-          count: 1,
-          driver: dv, // formerly dimension8
-        });
 
         // Matomo event
         if (window._paq) {

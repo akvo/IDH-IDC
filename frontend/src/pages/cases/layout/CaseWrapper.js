@@ -37,9 +37,6 @@ import {
 import { api } from "../../../lib";
 import {
   usePiwikTrackPageTime,
-  usePlausibleTrackPageTime,
-  usePostHogTrackPageTime,
-  useUmamiTrackPageTime,
   useMatomoCaseStepAnalytics,
 } from "../../../hooks";
 import { routePath } from "../../../components/route";
@@ -150,9 +147,6 @@ const CaseSidebar = ({ step, caseId, siderCollapsed, onSave, messageApi }) => {
 const CaseWrapper = ({ children, step, caseId, currentCase, loading }) => {
   // analytic track time
   usePiwikTrackPageTime();
-  usePlausibleTrackPageTime();
-  usePostHogTrackPageTime();
-  useUmamiTrackPageTime();
   useMatomoCaseStepAnalytics();
 
   const caseButtonState = CaseUIState.useState((s) => s.caseButton);

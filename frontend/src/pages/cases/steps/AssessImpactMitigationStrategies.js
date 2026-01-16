@@ -32,7 +32,6 @@ import { removeUndefinedObjectValue } from "../../../lib";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
-import posthog from "posthog-js";
 
 /**
  * STEP 4
@@ -374,16 +373,6 @@ const AssessImpactMitigationStrategies = ({
           dimension10: combinedSelection, // Custom Dimension: Track combination of x-y-bin
         }
       );
-
-      // posthog event
-      posthog.capture("sensitivity_driver_pair_selection", {
-        category:
-          "Sensitivity Analysis - Which pairs of drivers have a strong impact on income",
-        action: "on driver selection",
-        label: "Driver Pair Selection",
-        count: 1,
-        driver_pair_selection: combinedSelection, // formerly dimension10
-      });
 
       // Matomo event
       if (window._paq) {
