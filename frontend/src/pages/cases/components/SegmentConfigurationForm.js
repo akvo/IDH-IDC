@@ -1,5 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Form, Radio, Select, InputNumber, Row, Col, Spin, Space } from "antd";
+import {
+  Form,
+  Radio,
+  Select,
+  InputNumber,
+  Row,
+  Col,
+  Spin,
+  Space,
+  Alert,
+} from "antd";
 import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
 import { SegmentForm } from ".";
@@ -27,6 +37,7 @@ const SegmentConfigurationForm = ({
     `${dataUploadFieldPreffix}number_of_segments`,
     form
   );
+  const segmentFields = Form.useWatch("segments", form);
 
   const segmentationVariableDropdownValue = useMemo(() => {
     const dataColumns = uploadResult?.columns || {};
@@ -148,12 +159,39 @@ const SegmentConfigurationForm = ({
       )}
       {segmentationPreviews?.segments?.length > 0 && !loadingPreview && (
         <Col span={24} style={{ marginTop: 16 }}>
-          <h3>Please input the thresholds for separating segments below:</h3>
-          <SegmentForm
-            deletedSegmentIds={deletedSegmentIds}
-            setDeletedSegmentIds={setDeletedSegmentIds}
-            isDataUpload={true}
-          />
+          <h3>
+            Please review or adjust thresholds for separating segments below:
+          </h3>
+          <Row gutter={[20, 20]}>
+            {
+              // Extra message for numerical variable
+              variableType === "numerical" &&
+              segmentFields?.length < numberOfSegments ? (
+                <Col span={24}>
+                  <Alert
+                    message={
+                      <>
+                        The variable {segmentationVariable} includes too many 0
+                        or missing values to meaningfully create{" "}
+                        {numberOfSegments} segment
+                        {numberOfSegments > 1 ? "s" : ""}. <br />
+                        Consider using a different variable, or adjust the
+                        thresholds manually.
+                      </>
+                    }
+                    type="warning"
+                  />
+                </Col>
+              ) : null
+            }
+            <Col span={24}>
+              <SegmentForm
+                deletedSegmentIds={deletedSegmentIds}
+                setDeletedSegmentIds={setDeletedSegmentIds}
+                isDataUpload={true}
+              />
+            </Col>
+          </Row>
         </Col>
       )}
       {/* EOL SEGMENTATION PREVIEW */}

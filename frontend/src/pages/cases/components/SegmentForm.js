@@ -106,7 +106,7 @@ const SegmentForm = ({
                     <Form.Item
                       {...restField}
                       name={[name, "value"]}
-                      label={isDataUpload ? "Value" : null}
+                      label={isDataUpload ? "Segment Threshold" : null}
                       hidden={!isDataUpload}
                     >
                       <InputNumber
