@@ -164,7 +164,7 @@ def validate_ready_for_upload(mapping_df: pd.DataFrame) -> None:
     except IndexError:
         raise HTTPException(
             status_code=400,
-            detail="'Ready for upload' flag has no value cell",
+            detail="The file has not been validated. Please refer to the instructions in the data upload template.",  # noqa
         )
 
     if ready_value != "yes":
