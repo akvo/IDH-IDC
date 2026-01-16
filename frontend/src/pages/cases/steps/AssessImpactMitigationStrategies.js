@@ -34,6 +34,7 @@ import {
   SegmentSelector,
   AdjustIncomeTarget,
   OptimizeIncomeTarget,
+  SingleDriverChange,
 } from "../components";
 import { map, groupBy, isEqual, isEmpty } from "lodash";
 import { commodities } from "../../../store/static";
@@ -46,32 +47,6 @@ import { routePath } from "../../../components/route";
 /**
  * STEP 4
  */
-
-const generateCardGridStyle = ({ header = false, type = null }) => {
-  let backgroundColor = "";
-  switch (type) {
-    case "warning":
-      backgroundColor = "#FFF4D1";
-      break;
-    case "danger":
-      backgroundColor = "#FFD0D3";
-      break;
-    case "success":
-      backgroundColor = "#DDF8E9";
-      break;
-    default:
-      backgroundColor = "#FFFFFF";
-      break;
-  }
-
-  return {
-    width: "20%",
-    hoverable: false,
-    textAlign: header ? "center" : "left",
-    backgroundColor: backgroundColor,
-    padding: "12px 16px",
-  };
-};
 
 const AssessImpactMitigationStrategies = ({
   setbackfunction,
@@ -517,71 +492,7 @@ const AssessImpactMitigationStrategies = ({
       </Col>
 
       <Col span={24}>
-        <Card
-          className="card-content-wrapper card-with-gray-header-wrapper"
-          title={
-            <Space direction="vertical">
-              <div className="title">
-                <b>Single driver change</b>
-              </div>
-              <div className="description">
-                The table below shows the minimum change needed in each driver,
-                while keeping all others at their current levels, to close the
-                income gap.
-              </div>
-            </Space>
-          }
-        >
-          <Card.Grid style={generateCardGridStyle({ header: true })}>
-            Driver
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ header: true })}>
-            Needed value
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ header: true })}>
-            Needed change
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ header: true })}>
-            Maximum feasible change
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ header: true })}>
-            Feasibility
-          </Card.Grid>
-
-          {/* Land */}
-          <Card.Grid style={generateCardGridStyle({ type: "success" })}>
-            Land
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "success" })}>
-            3 hectares
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "success" })}>
-            1800
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "success" })}>
-            1800
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "success" })}>
-            Possible within feasible levels
-          </Card.Grid>
-
-          {/* Price */}
-          <Card.Grid style={generateCardGridStyle({ type: "warning" })}>
-            Price
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "warning" })}>
-            127 LCU
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "warning" })}>
-            15.25 $
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "warning" })}>
-            1800
-          </Card.Grid>
-          <Card.Grid style={generateCardGridStyle({ type: "warning" })}>
-            Possible outside off feasible levels
-          </Card.Grid>
-        </Card>
+        <SingleDriverChange />
       </Col>
       {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
 
