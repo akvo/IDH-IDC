@@ -1,13 +1,35 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 
-const tagColors = {
+// Constants
+const TAG_COLORS = {
   success: "#01625f",
   warning: "#ffc505",
   danger: "#ff010e",
 };
 
+const BACKGROUND_COLORS = {
+  warning: "#FFF4D1",
+  danger: "#FFD0D3",
+  success: "#DDF8E9",
+  default: "#FFFFFF",
+};
+
+const COLUMN_WIDTHS = {
+  default: 18.75,
+  feasibility: 25,
+};
+
+const COLUMNS = [
+  { key: "driver", label: "Driver" },
+  { key: "neededValue", label: "Needed value" },
+  { key: "neededChange", label: "Needed change" },
+  { key: "maxFeasibleChange", label: "Maximum feasible change" },
+  { key: "feasibility", label: "Feasibility" },
+];
+
+// Helper function to generate card grid styles
 const generateCardGridStyle = ({
   header = false,
   columnKey = null,
@@ -16,62 +38,48 @@ const generateCardGridStyle = ({
   isFirstCol = false,
   isLastCol = false,
 }) => {
-  let backgroundColor = "";
-  switch (type) {
-    case "warning":
-      backgroundColor = "#FFF4D1";
-      break;
-    case "danger":
-      backgroundColor = "#FFD0D3";
-      break;
-    case "success":
-      backgroundColor = "#DDF8E9";
-      break;
-    default:
-      backgroundColor = "#FFFFFF";
-      break;
-  }
-
-  let width = 18.75; // %
-  if (columnKey === "feasibility") {
-    width = 25;
-  }
+  const backgroundColor = BACKGROUND_COLORS[type] || BACKGROUND_COLORS.default;
+  const width =
+    columnKey === "feasibility"
+      ? COLUMN_WIDTHS.feasibility
+      : COLUMN_WIDTHS.default;
 
   return {
     width: `${width}%`,
     textAlign: header ? "center" : "left",
-    backgroundColor: backgroundColor,
+    backgroundColor,
     padding: "12px 16px",
     borderBottomLeftRadius: isLastRow && isFirstCol ? "20px" : 0,
     borderBottomRightRadius: isLastRow && isLastCol ? "20px" : 0,
   };
 };
 
-const columns = [
-  {
-    key: "driver",
-    label: "Driver",
-  },
-  {
-    key: "neededValue",
-    label: "Needed value",
-  },
-  {
-    key: "neededChange",
-    label: "Needed change",
-  },
-  {
-    key: "maxFeasibleChange",
-    label: "Maximum feasible change",
-  },
-  {
-    key: "feasibility",
-    label: "Feasibility",
-  },
-];
+// Render tag component for change columns
+const ChangeTag = ({ value, type }) => {
+  if (typeof value === "undefined" || value === null) {
+    return null;
+  }
+
+  const Icon = value > 0 ? ArrowUpOutlined : ArrowDownOutlined;
+
+  return (
+    <Tag
+      icon={<Icon style={{ fontSize: "12px" }} />}
+      color={TAG_COLORS[type]}
+      bordered={false}
+      style={{
+        borderRadius: "16px",
+        padding: "2px 8px 2px 6px",
+      }}
+    >
+      <span style={{ fontSize: "12px" }}>{value}%</span>
+    </Tag>
+  );
+};
 
 const SingleDriverChange = () => {
-  const data = [
+  // Default data for static component
+  const defaultData = [
     {
       driver: "Land",
       neededValue: "3 hectares",
@@ -114,6 +122,14 @@ const SingleDriverChange = () => {
     },
   ];
 
+  const data = defaultData;
+
+  // Memoize whether columns should show tags
+  const changeColumns = useMemo(
+    () => new Set(["neededChange", "maxFeasibleChange"]),
+    []
+  );
+
   return (
     <Card
       className="card-content-wrapper card-with-gray-header-wrapper"
@@ -130,8 +146,8 @@ const SingleDriverChange = () => {
         </Space>
       }
     >
-      {/* Header */}
-      {columns.map((col) => (
+      {/* Header Row */}
+      {COLUMNS.map((col) => (
         <Card.Grid
           style={generateCardGridStyle({ header: true, columnKey: col.key })}
           key={col.key}
@@ -140,47 +156,23 @@ const SingleDriverChange = () => {
           {col.label}
         </Card.Grid>
       ))}
-      {/* EOL Header */}
 
-      {/* Values */}
-      {data.map((d, di) => {
-        const isLastRow = data?.length - 1 === di;
-        return columns.map(({ key }, ci) => {
-          const cellValue = d[key];
-          const isFirstCol = ci === 0;
-          const isLastCol = columns?.length - 1 === ci;
+      {/* Data Rows */}
+      {data.map((row, rowIndex) => {
+        const isLastRow = rowIndex === data.length - 1;
 
-          // renderTag
-          let tagComponent = null;
-          if (key === "neededChange" || key === "maxFeasibleChange") {
-            const tagValue = d?.[`${key}Percent`];
-            const tagIcon =
-              tagValue > 0 ? (
-                <ArrowUpOutlined style={{ fontSize: "12px" }} />
-              ) : (
-                <ArrowDownOutlined style={{ fontSize: "12px" }} />
-              );
-            tagComponent = (
-              <Tag
-                icon={tagIcon}
-                color={tagColors[d.type]}
-                bordered={false}
-                style={{
-                  borderRadius: "16px",
-                  padding: "2px 8px 2px 6px",
-                }}
-              >
-                <span style={{ fontSize: "12px" }}>{tagValue}%</span>
-              </Tag>
-            );
-          }
+        return COLUMNS.map((col, colIndex) => {
+          const isFirstCol = colIndex === 0;
+          const isLastCol = colIndex === COLUMNS.length - 1;
+          const cellValue = row[col.key];
+          const showTag = changeColumns.has(col.key);
 
           return (
             <Card.Grid
-              key={`${key}-${di}-${ci}`}
+              key={`${col.key}-${rowIndex}`}
               style={generateCardGridStyle({
-                columnKey: key,
-                type: d.type,
+                columnKey: col.key,
+                type: row.type,
                 isLastRow,
                 isFirstCol,
                 isLastCol,
@@ -189,14 +181,14 @@ const SingleDriverChange = () => {
             >
               <Space>
                 <div>{cellValue}</div>
-                <div> {tagComponent}</div>
+                {showTag && (
+                  <ChangeTag value={row[`${col.key}Percent`]} type={row.type} />
+                )}
               </Space>
             </Card.Grid>
           );
         });
       })}
-
-      {/* EOL Values */}
     </Card>
   );
 };
