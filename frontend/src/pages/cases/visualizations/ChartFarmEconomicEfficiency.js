@@ -31,29 +31,24 @@ const ChartFarmEconomicEfficiency = () => {
       (a) => a.caseCommodityId === primaryCaseCommodityID
     );
 
-    const totalIncomeAnswers = primaryAnswers?.filter(
-      (a) => a?.question?.id === 1
-    );
     const costAnswers = primaryAnswers?.filter((a) => a?.question?.id === 5);
     const landAnswers = primaryAnswers?.filter((a) => a?.question?.id === 2);
-    // const volumeAnswers = primaryAnswers?.filter((a) => a?.question?.id === 3);
+    const volumeAnswers = primaryAnswers?.filter((a) => a?.question?.id === 3);
 
     // psudocode
     // for values in (current, feasible)
     //   total_cost = primary-5 * primary-2
     //   total_volume = primary-3 * primary-2
-    //   farm_economic_efficiency = total_cost/primary_1
+    //   farm_economic_efficiency = total_cost/total_volume
 
     const data = ["current", "feasible"].map((it) => {
-      const totalIncome = totalIncomeAnswers?.find(
-        (val) => val.name === it
-      )?.value;
       const cost = costAnswers?.find((val) => val.name === it)?.value || 0;
       const land = landAnswers?.find((val) => val.name === it)?.value || 0;
-      // const volume = volumeAnswers?.find((val) => val.name === it)?.value || 0;
+      const volume = volumeAnswers?.find((val) => val.name === it)?.value || 0;
 
       const totalCost = cost * land;
-      const farmEconomicEfficiency = totalIncome ? totalCost / totalIncome : 0;
+      const totalVolume = volume * land;
+      const farmEconomicEfficiency = totalVolume ? totalCost / totalVolume : 0;
 
       return {
         name: it,
