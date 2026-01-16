@@ -751,6 +751,28 @@
       border: none;
     }
   }
+
+  .select-the-goal-container {
+    background: #eaf2f2;
+    border: 1px solid $primary-color;
+
+    h3 {
+      margin: 0;
+      color: $primary-color;
+      margin-bottom: 14px;
+    }
+    p {
+      margin: 0;
+    }
+
+    .ant-space,
+    .ant-input-number {
+      width: 100%;
+    }
+    .new-target-text {
+      color: var(--gray-100, #959390);
+    }
+  }
 }
 
 .adjust-income-target-modal-container,

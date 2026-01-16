@@ -12,7 +12,17 @@ import {
   CaseVisualState,
   CaseUIState,
 } from "../store";
-import { Row, Col, Card, Space, Carousel, Form, Button, message } from "antd";
+import {
+  Row,
+  Col,
+  Card,
+  Space,
+  Carousel,
+  Form,
+  Button,
+  message,
+  InputNumber,
+} from "antd";
 import {
   ChartBiggestImpactOnIncome,
   ChartMonetaryImpactOnIncome,
@@ -447,6 +457,38 @@ const AssessImpactMitigationStrategies = ({
         </Carousel>
       </Col>
       {/* EOL Carousel */}
+
+      {/* NEW - Explore: How do income drivers need to change to close the gap? */}
+      <Col span={24}>
+        <Card className="card-section-wrapper">
+          Explore: How do income drivers need to change to close the gap?
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <Card className="card-content-wrapper select-the-goal-container">
+          <Row gutter={[20, 20]} align="middle">
+            <Col span={16}>
+              <h3>Select the Goal:</h3>
+              <p>
+                Closing the income gap may not be fully achievable within your
+                feasible levels. Choose the percentage of the gap you would like
+                to close and test different scenarios. The newly chosen target
+                will be applied to all the calculations within the explore
+                section of this step.
+              </p>
+            </Col>
+            <Col span={8}>
+              <Space direction="vertical" size={2}>
+                <p>The income gap to be closed by:</p>
+                <InputNumber controls={false} />
+                <p className="new-target-text">New target: xxx Currency</p>
+              </Space>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+      {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
 
       {/* #2 Sensitivity Analysis */}
       <Col span={24}>
