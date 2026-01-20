@@ -23,7 +23,8 @@ import {
 import {
   OptimizeIncomeTarget,
   SingleDriverChange,
-  SensitivityAnalysis,
+  // SensitivityAnalysis,
+  TwoDriverHeatmap,
 } from "../components";
 import { isEqual, isEmpty } from "lodash";
 import { api } from "../../../lib";
@@ -266,15 +267,18 @@ const AssessImpactMitigationStrategies = ({
       {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
 
       {/* #2 Sensitivity Analysis => Two Driver Heatmap */}
-      <Col span={24}>
+      {/* <Col span={24}>
         <Card className="card-section-wrapper">
           Which pairs of drivers have a strong impact on income?
         </Card>
       </Col>
       <Col span={24}>
         <SensitivityAnalysis />
+      </Col> */}
+      <Col span={24}>
+        <TwoDriverHeatmap />
       </Col>
-      {/* EOL Sensitivity Analysis */}
+      {/* EOL Sensitivity Analysis => Two Driver Heatmap */}
 
       {/* #3 Optimize Income Target */}
       <Col span={24}>
