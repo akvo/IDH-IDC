@@ -22,6 +22,7 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
   if (percentage) {
     data = data.map((x) => ({ ...x, percentage: (x.value / total) * 100 }));
   }
+
   const option = {
     ...Color,
     title: {
@@ -59,14 +60,19 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
           itemStyle: { color: v.color || Color.color[vi] },
         })),
         type: "pie",
+        radius: ["0%", "60%"],
+        center: ["50%", "50%"],
         label: {
-          colorBy: "data",
-          position: "inside",
           show: true,
-          padding: 5,
-          backgroundColor: "rgba(0,0,0,.3)",
+          position: "outside",
+          color: "#333",
+          padding: [4, 8],
+          borderRadius: 4,
           ...TextStyle,
-          color: "#fff",
+          border: "solid",
+          borderWidth: 2,
+          borderColor: "inherit",
+          backgroundColor: "#fff",
           formatter: (s) => {
             if (percentage) {
               return `${s.value}%`;
@@ -78,6 +84,18 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
             return value;
           },
         },
+        labelLine: {
+          show: true,
+          length: 15,
+          length2: 10,
+          smooth: true,
+          lineStyle: {
+            width: 2,
+          },
+        },
+        labelLayout: {
+          hideOverlap: false,
+        },
       },
     ],
     ...Color,
@@ -86,6 +104,7 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
     ...extra,
     ...TextStyle,
   };
+
   return option;
 };
 
