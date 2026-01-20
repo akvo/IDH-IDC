@@ -8,6 +8,8 @@ import { VisualCardWrapper } from "../components";
 
 // Withhout bin value calculation from ChartBinningHeatmapSensitivityAnalysis
 
+const SHOW_VISUAL_DESCRIPTION = false;
+
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
   yAxis = { name: "", min: 0, max: 0 },
@@ -83,11 +85,37 @@ const getOptions = ({
         return text;
       },
     },
+    legend: {
+      data: [
+        {
+          name: "Income target is not reached",
+          itemStyle: { color: "#FF8F4E" },
+        },
+        {
+          name: "Income target is reached, but at least one driver falls outside of feasible ranges",
+          itemStyle: { color: "#FED754" },
+        },
+        {
+          name: "Income target is reached",
+          itemStyle: { color: "#5BDD91" },
+        },
+      ],
+      bottom: 8,
+      left: "center",
+      orient: "horizontal",
+      itemGap: 20,
+      textStyle: {
+        fontSize: 11,
+      },
+      itemWidth: 12,
+      itemHeight: 12,
+      icon: "circle",
+    },
     grid: {
       top: "15%",
-      left: "15%",
+      left: SHOW_VISUAL_DESCRIPTION ? "15%" : "10%",
       right: "5%",
-      bottom: "15%",
+      bottom: "20%",
       containLabel: true,
     },
     xAxis: {
@@ -142,8 +170,12 @@ const getOptions = ({
     },
     series: [
       {
+        name: "Income target is not reached",
         type: "heatmap",
-        data: dt,
+        data: dt.filter((item) => {
+          const value = item[2];
+          return value < target;
+        }),
         itemStyle: {
           borderColor: "#fff",
           borderWidth: 2,
@@ -153,38 +185,56 @@ const getOptions = ({
           color: "#000",
           fontSize: 13,
           fontWeight: 600,
-          formatter: (params) => {
-            const value = params.value[2];
-            const xAxisRange = origin.find((x) => x.name === xAxis.name);
-            const inX =
-              xAxisRange?.current < xAxisRange?.feasible
-                ? params.value[0] >= xAxisRange?.current &&
-                  params.value[0] <= xAxisRange?.feasible
-                : params.value[0] <= xAxisRange?.current &&
-                  params.value[0] >= xAxisRange?.feasible;
-            const yAxisRange = origin.find((x) => x.name === yAxis.name);
-            const inY =
-              yAxisRange?.current < yAxisRange?.feasible
-                ? params.value[1] >= yAxisRange?.current &&
-                  params.value[1] <= yAxisRange?.feasible
-                : params.value[1] <= yAxisRange?.current &&
-                  params.value[1] >= yAxisRange?.feasible;
-            const formattedValue = thousandFormatter(value);
-            if (value >= target && (!inX || !inY)) {
-              return `{out|${formattedValue}}`;
-            }
-            return value >= target
-              ? `{up|${formattedValue}}`
-              : `{down|${formattedValue}}`;
-          },
+          formatter: (params) => `{down|${thousandFormatter(params.value[2])}}`,
           rich: {
-            up: {
-              backgroundColor: "#5BDD91",
+            down: {
+              backgroundColor: "#FF8F4E",
               padding: [8, 12],
               fontWeight: 700,
               borderRadius: 10,
               width: "100%",
             },
+          },
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
+        },
+      },
+      {
+        name: "Income target is reached, but at least one driver falls outside of feasible ranges",
+        type: "heatmap",
+        data: dt.filter((item) => {
+          const value = item[2];
+          const xAxisRange = origin.find((x) => x.name === xAxis.name);
+          const inX =
+            xAxisRange?.current < xAxisRange?.feasible
+              ? item[0] >= xAxisRange?.current &&
+                item[0] <= xAxisRange?.feasible
+              : item[0] <= xAxisRange?.current &&
+                item[0] >= xAxisRange?.feasible;
+          const yAxisRange = origin.find((x) => x.name === yAxis.name);
+          const inY =
+            yAxisRange?.current < yAxisRange?.feasible
+              ? item[1] >= yAxisRange?.current &&
+                item[1] <= yAxisRange?.feasible
+              : item[1] <= yAxisRange?.current &&
+                item[1] >= yAxisRange?.feasible;
+          return value >= target && (!inX || !inY);
+        }),
+        itemStyle: {
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        label: {
+          show: true,
+          color: "#000",
+          fontSize: 13,
+          fontWeight: 600,
+          formatter: (params) => `{out|${thousandFormatter(params.value[2])}}`,
+          rich: {
             out: {
               backgroundColor: "#FED754",
               padding: [8, 12],
@@ -192,8 +242,49 @@ const getOptions = ({
               borderRadius: 10,
               width: "100%",
             },
-            down: {
-              backgroundColor: "#FF8F4E",
+          },
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
+        },
+      },
+      {
+        name: "Income target is reached",
+        type: "heatmap",
+        data: dt.filter((item) => {
+          const value = item[2];
+          const xAxisRange = origin.find((x) => x.name === xAxis.name);
+          const inX =
+            xAxisRange?.current < xAxisRange?.feasible
+              ? item[0] >= xAxisRange?.current &&
+                item[0] <= xAxisRange?.feasible
+              : item[0] <= xAxisRange?.current &&
+                item[0] >= xAxisRange?.feasible;
+          const yAxisRange = origin.find((x) => x.name === yAxis.name);
+          const inY =
+            yAxisRange?.current < yAxisRange?.feasible
+              ? item[1] >= yAxisRange?.current &&
+                item[1] <= yAxisRange?.feasible
+              : item[1] <= yAxisRange?.current &&
+                item[1] >= yAxisRange?.feasible;
+          return value >= target && inX && inY;
+        }),
+        itemStyle: {
+          borderColor: "#fff",
+          borderWidth: 2,
+        },
+        label: {
+          show: true,
+          color: "#000",
+          fontSize: 13,
+          fontWeight: 600,
+          formatter: (params) => `{up|${thousandFormatter(params.value[2])}}`,
+          rich: {
+            up: {
+              backgroundColor: "#5BDD91",
               padding: [8, 12],
               fontWeight: 700,
               borderRadius: 10,
@@ -307,7 +398,7 @@ const ChartTwoDriverHeatmap = ({ segment, data, origin }) => {
         <Col span={24}>
           <Card className="card-visual-wrapper no-padding">
             <Row gutter={[24, 24]} align="middle">
-              <Col span={16}>
+              <Col span={SHOW_VISUAL_DESCRIPTION ? 16 : 24}>
                 <VisualCardWrapper
                   title="Income Levels Heatmap"
                   tooltipText={heatmapTooltipText}
@@ -321,40 +412,42 @@ const ChartTwoDriverHeatmap = ({ segment, data, origin }) => {
                   />
                 </VisualCardWrapper>
               </Col>
-              <Col span={8}>
-                <Space direction="vertical">
-                  <div className="section-info">
-                    Use this heat map visual to identify the sweet spot (Green
-                    values, where the income target is met within feasible
-                    values).
-                    <br />
-                    <br />
-                    <b>Action</b>: Adjust and analyse impact of varying income
-                    driver combinations, values and readjusted income targets,
-                    on the feasibility of closing the gap
-                  </div>
-                  <div className="section-title">{label}</div>
-                  <Row gutter={[8, 16]} style={{ minHeight: 95 }}>
-                    <Col span={24}>
-                      <Space direction="vertical">
-                        {legends.map((l, li) => (
-                          <Space key={li}>
-                            <div
-                              style={{
-                                backgroundColor: l.color,
-                                borderRadius: 100,
-                                width: 25,
-                                height: 10,
-                              }}
-                            />
-                            <div>{l.text}</div>
-                          </Space>
-                        ))}
-                      </Space>
-                    </Col>
-                  </Row>
-                </Space>
-              </Col>
+              {SHOW_VISUAL_DESCRIPTION && (
+                <Col span={8}>
+                  <Space direction="vertical">
+                    <div className="section-info">
+                      Use this heat map visual to identify the sweet spot (Green
+                      values, where the income target is met within feasible
+                      values).
+                      <br />
+                      <br />
+                      <b>Action</b>: Adjust and analyse impact of varying income
+                      driver combinations, values and readjusted income targets,
+                      on the feasibility of closing the gap
+                    </div>
+                    <div className="section-title">{label}</div>
+                    <Row gutter={[8, 16]} style={{ minHeight: 95 }}>
+                      <Col span={24}>
+                        <Space direction="vertical">
+                          {legends.map((l, li) => (
+                            <Space key={li}>
+                              <div
+                                style={{
+                                  backgroundColor: l.color,
+                                  borderRadius: 100,
+                                  width: 25,
+                                  height: 10,
+                                }}
+                              />
+                              <div>{l.text}</div>
+                            </Space>
+                          ))}
+                        </Space>
+                      </Col>
+                    </Row>
+                  </Space>
+                </Col>
+              )}
             </Row>
           </Card>
         </Col>
