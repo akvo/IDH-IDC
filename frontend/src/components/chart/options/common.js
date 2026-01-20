@@ -4,19 +4,33 @@ export const thousandFormatter = (value, toFixed = null) => {
   if (value === null || isNaN(value)) {
     return 0;
   }
+
+  // Ensure value is a number first
+  let numValue = typeof value === "string" ? parseFloat(value) : value;
+
   if (toFixed !== null) {
-    value = parseFloat(value)?.toFixed(toFixed);
+    numValue = parseFloat(numValue.toFixed(toFixed));
   }
-  const finalValue = value
-    ? String(value).replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, "$1,")
+
+  const finalValue = numValue
+    ? String(numValue).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
     : 0;
   return finalValue;
 };
 
 export const formatNumberToString = (number) => {
-  // Convert to number if it's a string
-  const num =
-    typeof number === "string" ? parseFloat(number.replace(/,/g, "")) : number;
+  // Handle null/undefined early
+  if (number === null || typeof number === "undefined") {
+    return "0";
+  }
+
+  // Convert to number, handling both comma and period separators
+  let num = number;
+  if (typeof number === "string") {
+    // Remove any non-numeric characters except decimal point and minus
+    num = parseFloat(number.replace(/[^\d.-]/g, ""));
+  }
+  num = Number(num);
 
   // Handle invalid numbers
   if (isNaN(num)) {

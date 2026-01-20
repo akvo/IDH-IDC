@@ -88,7 +88,7 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
           show: true,
           length: 15,
           length2: 10,
-          smooth: true,
+          smooth: false,
           lineStyle: {
             width: 2,
           },
