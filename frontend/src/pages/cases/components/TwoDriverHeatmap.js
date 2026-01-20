@@ -1,16 +1,18 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Card, Space, Button, Row, Col, Form } from "antd";
 import { SegmentSelector, TwoBinningDriverForm } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { map, groupBy } from "lodash";
+import { map, groupBy, isEmpty } from "lodash";
 import { ChartTwoDriverHeatmap } from "../visualizations";
+import { commodities } from "../../../store/static";
 
 const TwoDriverHeatmap = () => {
   const [form] = Form.useForm();
 
   const [selectedSegment, setSelectedSegment] = useState(null);
-  const [binningDriverOptions, setBinningDriverOptions] = useState([]);
   const [driverPair, setDriverPair] = useState({});
+  const [binningDriverOptions, setBinningDriverOptions] = useState([]);
+  console.info(binningDriverOptions);
 
   const currentCase = CurrentCaseState.useState((s) => s);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
@@ -25,6 +27,33 @@ const TwoDriverHeatmap = () => {
       },
     }));
   };
+
+  // handle track event
+  useEffect(() => {
+    if (!isEmpty(driverPair) && Object.keys(driverPair)?.length === 3) {
+      const { xAxisName, yAxisName } = driverPair;
+      const combinedSelection = `${xAxisName} - ${yAxisName}`;
+      CustomEvent.trackEvent(
+        "Sensitivity Analysis - Which pairs of drivers have a strong impact on income", // Event Category
+        "on driver selection", // Event Action
+        "Driver Pair Selection", // Event Name
+        1, // Event Value
+        {
+          dimension10: combinedSelection, // Custom Dimension: Track combination of x-y-bin
+        }
+      );
+      console.info(
+        "track event",
+        "Sensitivity Analysis - Which pairs of drivers have a strong impact on income",
+        "on driver selection",
+        "Driver Pair Selection",
+        1,
+        {
+          dimension10: combinedSelection,
+        }
+      );
+    }
+  }, [driverPair]);
 
   const binningValues = useMemo(() => {
     const allBining = Object.keys(sensitivityAnalysis.config);
@@ -176,7 +205,6 @@ const TwoDriverHeatmap = () => {
       },
       {}
     );
-    console.log(filteredValues, "===");
     updateCaseVisualSensitivityAnalysisState({
       case: currentCase.id,
       config: {
