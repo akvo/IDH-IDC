@@ -14,14 +14,23 @@ export const thousandFormatter = (value, toFixed = null) => {
 };
 
 export const formatNumberToString = (number) => {
-  if (number < 1e3) {
-    return thousandFormatter(number);
-  } else if (number < 1e6) {
-    return (number / 1e3).toFixed(1) + "K";
-  } else if (number < 1e9) {
-    return (number / 1e6).toFixed(1) + "M";
+  // Convert to number if it's a string
+  const num =
+    typeof number === "string" ? parseFloat(number.replace(/,/g, "")) : number;
+
+  // Handle invalid numbers
+  if (isNaN(num)) {
+    return "0";
   }
-  return (number / 1e9).toFixed(1) + "B";
+
+  if (num < 1e3) {
+    return thousandFormatter(num);
+  } else if (num < 1e6) {
+    return (num / 1e3).toFixed(1) + "K";
+  } else if (num < 1e9) {
+    return (num / 1e6).toFixed(1) + "M";
+  }
+  return (num / 1e9).toFixed(1) + "B";
 };
 
 export const popupFormatter = (params) => {
