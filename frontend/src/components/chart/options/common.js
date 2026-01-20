@@ -12,10 +12,12 @@ export const thousandFormatter = (value, toFixed = null) => {
     numValue = parseFloat(numValue.toFixed(toFixed));
   }
 
-  const finalValue = numValue
-    ? String(numValue).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-    : 0;
-  return finalValue;
+  // Split into integer and decimal parts
+  const parts = String(numValue).split(".");
+  // Only add commas to the integer part
+  parts[0] = parts[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+  return parts.join(".");
 };
 
 export const formatNumberToString = (number) => {
@@ -24,13 +26,8 @@ export const formatNumberToString = (number) => {
     return "0";
   }
 
-  // Convert to number, handling both comma and period separators
-  let num = number;
-  if (typeof number === "string") {
-    // Remove any non-numeric characters except decimal point and minus
-    num = parseFloat(number.replace(/[^\d.-]/g, ""));
-  }
-  num = Number(num);
+  // Convert to number
+  const num = typeof number === "string" ? parseFloat(number) : Number(number);
 
   // Handle invalid numbers
   if (isNaN(num)) {
@@ -38,7 +35,7 @@ export const formatNumberToString = (number) => {
   }
 
   if (num < 1e3) {
-    return thousandFormatter(num);
+    return thousandFormatter(num, 1);
   } else if (num < 1e6) {
     return (num / 1e3).toFixed(1) + "K";
   } else if (num < 1e9) {
