@@ -280,15 +280,20 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           const reportedCommodity = focusCommodityOptions.find(
             (fc) => fc.value === data.focus_commodity
           );
+          const countryValue = reportedCountry
+            ? reportedCountry.label
+            : data.country;
+          const commodityValue = reportedCommodity
+            ? reportedCommodity.label
+            : data.focus_commodity;
+
           CustomEvent.trackEvent(
             "Case Overview",
             "Create new case",
             "External users Country wise",
             1,
             {
-              dimension3: reportedCountry
-                ? reportedCountry.label
-                : data.country,
+              dimension3: countryValue,
             }
           );
           CustomEvent.trackEvent(
@@ -297,11 +302,39 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
             "External users Commodity wise",
             1,
             {
-              dimension4: reportedCommodity
-                ? reportedCommodity.label
-                : data.focus_commodity,
+              dimension4: commodityValue,
             }
           );
+
+          // Matomo custom event track
+          if (window._paq) {
+            // 1️⃣ Country-wise aggregation (FREE Matomo usable)
+            window._paq.push([
+              "trackEvent",
+              "Case Overview",
+              `Create case - External - Country: ${countryValue}`, // Action
+              "", // Label (unused)
+              1,
+            ]);
+
+            // 2️⃣ Commodity-wise aggregation (FREE Matomo usable)
+            window._paq.push([
+              "trackEvent",
+              "Case Overview",
+              `Create case - External - Commodity: ${commodityValue}`, // Action
+              "",
+              1,
+            ]);
+
+            // 3️⃣ Optional clean event for future paid reporting
+            window._paq.push([
+              "trackEvent",
+              "Case Overview",
+              "Create case",
+              `user_type=external|country=${countryValue}|commodity=${commodityValue}`,
+              1,
+            ]);
+          }
         }
         // EOL track event
 
