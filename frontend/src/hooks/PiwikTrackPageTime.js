@@ -10,12 +10,11 @@ const usePiwikTrackPageTime = () => {
     const sendTimeSpentEvent = () => {
       const timeSpent = Math.floor((Date.now() - startTimeRef.current) / 1000);
 
+      // updated due to adding group income-driver-calculator into the path
       const segments = location.pathname.split("/").filter(Boolean);
+      const [, currentPage, caseId, step] = segments;
 
-      if (segments[0] === "case" && segments.length >= 3) {
-        const caseId = segments[1]; // e.g. "16"
-        const step = segments[2]; // e.g. "set-income-target"
-
+      if (currentPage === "case" && segments.length >= 3) {
         CustomEvent.trackEvent(
           "Page Duration", // Event Category
           step, // Event Action (e.g. step name)
