@@ -24,6 +24,36 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+
+    <!-- Matomo Cloudron -->
+    <script>
+      var testEnvs = ["test", "staging"];
+      var localEnvs = ["ngrok", ".dev"];
+      var origin = window?.location?.origin;
+      var siteID = testEnvs.some((env) => origin?.includes(env))
+        ? "1"
+        : localEnvs.some((env) => origin?.includes(env))
+        ? "2"
+        : "3";
+
+      var _paq = (window._paq = window._paq || []);
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(["trackPageView"]);
+      _paq.push(["enableLinkTracking"]);
+      (function () {
+        var u = "https://matomo.cloud.akvo.org/";
+        _paq.push(["setTrackerUrl", u + "matomo.php"]);
+        _paq.push(["setSiteId", siteID]);
+        var d = document,
+          g = d.createElement("script"),
+          s = d.getElementsByTagName("script")[0];
+        g.async = true;
+        g.src = u + "matomo.js";
+        s.parentNode.insertBefore(g, s);
+      })();
+    </script>
+    <!-- End Matomo Code -->
+
     <title>IDH - Toolkit towards better incomes</title>
   </head>
   <body>

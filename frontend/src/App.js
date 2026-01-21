@@ -37,7 +37,7 @@ import {
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
-import { useSignOut } from "./hooks";
+import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
 
 const optionRoutes = [
@@ -66,6 +66,9 @@ const App = () => {
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
   const signOut = useSignOut();
+
+  // Matomo Page View Tracking
+  useMatomoPageView();
 
   const isExternalUser = useMemo(() => {
     return userRole === "user" && !isInternalUser;
