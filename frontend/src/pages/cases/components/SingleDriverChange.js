@@ -3,13 +3,19 @@ import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { SegmentSelector } from "../components";
-import { sumBy } from "lodash";
+import { sumBy, min, max } from "lodash";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
 // Constants
 const TAG_COLORS = {
+  success: "#b4dccf",
+  warning: "#ffe8ac",
+  danger: "#fea8af",
+};
+
+const TAG_FONT_COLORS = {
   success: "#01625f",
-  warning: "#ffc505",
+  warning: "#000",
   danger: "#ff010e",
 };
 
@@ -32,6 +38,50 @@ const COLUMNS = [
   { key: "maxFeasibleChange", label: "Maximum feasible change" },
   { key: "feasibility", label: "Feasibility" },
 ];
+
+// Default data for static component (FORMAT)
+// const defaultData = [
+//   {
+//     driver: "Land",
+//     neededValue: "3 hectares",
+//     neededChange: 1800,
+//     neededChangePercent: 12,
+//     maxFeasibleChange: 1800,
+//     maxFeasibleChangePercent: 17,
+//     feasibility: "Possible within feasible levels",
+//     type: "success",
+//   },
+//   {
+//     driver: "Price",
+//     neededValue: "127 LCU",
+//     neededChange: "15.25 USD",
+//     neededChangePercent: 78,
+//     maxFeasibleChange: 1800,
+//     maxFeasibleChangePercent: 42,
+//     feasibility: "Possible outside of feasible levels",
+//     type: "warning",
+//   },
+//   {
+//     driver: "Volume",
+//     neededValue: "1750 kg/hectare",
+//     neededChange: "2100 kg",
+//     neededChangePercent: 72,
+//     maxFeasibleChange: 1800,
+//     maxFeasibleChangePercent: 32,
+//     feasibility: "Possible outside of feasible levels",
+//     type: "warning",
+//   },
+//   {
+//     driver: "Cost of production",
+//     neededValue: "-32 LCU",
+//     neededChange: "111 USD/hectare",
+//     neededChangePercent: -12,
+//     maxFeasibleChange: 1800,
+//     maxFeasibleChangePercent: -12,
+//     feasibility: "Not possible",
+//     type: "danger",
+//   },
+// ];
 
 // Helper function to generate card grid styles
 const generateCardGridStyle = ({
@@ -68,7 +118,7 @@ const ChangeTag = ({ value, type }) => {
 
   return (
     <Tag
-      icon={<Icon style={{ fontSize: "12px" }} />}
+      icon={<Icon style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }} />}
       color={TAG_COLORS[type]}
       bordered={false}
       style={{
@@ -76,7 +126,9 @@ const ChangeTag = ({ value, type }) => {
         padding: "2px 8px 2px 6px",
       }}
     >
-      <span style={{ fontSize: "12px" }}>{value}%</span>
+      <span style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }}>
+        {value}%
+      </span>
     </Tag>
   );
 };
@@ -139,21 +191,10 @@ const SingleDriverChange = () => {
       "value"
     );
 
-    console.table({
-      currentPrimary2,
-      currentPrimary3,
-      currentPrimary4,
-      currentPrimary5,
-      currentSecondaryIncome,
-      currentTertiaryIncome,
-      currentOtherDiversifiedIncome,
-    });
-
     // commodity detail
     const primaryCommodity = questionGroups?.find(
       (qg) => qg?.case_commodity_type === "focus"
     );
-    console.log(primaryCommodity);
     // eol commodity detail
 
     const mainDrivers = questionGroups?.[0]?.questions?.find(
@@ -162,21 +203,89 @@ const SingleDriverChange = () => {
 
     const data = mainDrivers.map((q) => {
       const qID = q.id;
-      let rowData = {
+      const rowData = {
         qid: qID,
       };
+
       let measurementUnit = "";
       if (q?.unit) {
         measurementUnit = q.unit
           .split("/")
           .map((u) => u.trim())
           .map((u) => {
+            if (u === "currency") {
+              return currentCase?.currency || "";
+            }
             return u === "crop"
               ? primaryCommodity.name?.toLowerCase() || ""
               : primaryCommodity?.[u];
           })
           .join("/");
       }
+
+      // needed value calculation
+      // for primary-2
+      // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income) /
+      //      ((primary-3 × primary-4) - primary-5)
+      let neededValue = 0;
+      if (qID === 2) {
+        neededValue =
+          (incomeTarget -
+            currentSecondaryIncome -
+            currentTertiaryIncome -
+            currentOtherDiversifiedIncome) /
+          (currentPrimary3 * currentPrimary4 - currentPrimary5);
+      }
+      //
+      // for primary-3
+      // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
+      //      (primary-2 × primary-4)
+      if (qID === 3) {
+        neededValue =
+          (incomeTarget -
+            currentSecondaryIncome -
+            currentTertiaryIncome -
+            currentOtherDiversifiedIncome +
+            currentPrimary2 * currentPrimary5) /
+          (currentPrimary2 * currentPrimary4);
+      }
+      //
+      // for primary-4
+      // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
+      //      (primary-2 × primary-3)
+      //
+      if (qID === 4) {
+        neededValue =
+          (incomeTarget -
+            currentSecondaryIncome -
+            currentTertiaryIncome -
+            currentOtherDiversifiedIncome +
+            currentPrimary2 * currentPrimary5) /
+          (currentPrimary2 * currentPrimary3);
+      }
+      // for primary-5
+      // needed_value = ((primary-2 × primary-3 × primary-4) + secondary-1 + tertiary-1 + other_diversified_income - income_target) /
+      //  primary-2
+      if (qID === 5) {
+        neededValue =
+          (currentPrimary2 * currentPrimary3 * currentPrimary4 +
+            currentSecondaryIncome +
+            currentTertiaryIncome +
+            currentOtherDiversifiedIncome -
+            incomeTarget) /
+          currentPrimary2;
+      }
+      // eol needed value calculation
+
+      const currentValue =
+        primaryCommodityAnswers?.find(
+          (a) => a.name === "current" && a.questionId === qID
+        )?.value || 0;
+      const feasibleValue =
+        primaryCommodityAnswers?.find(
+          (a) => a.name === "feasible" && a.questionId === qID
+        )?.value || 0;
+
       // populate the rowData
       COLUMNS.forEach(({ key: colKey }) => {
         rowData[colKey] = "NA";
@@ -184,111 +293,53 @@ const SingleDriverChange = () => {
           rowData[colKey] = q.text;
         }
         if (colKey === "neededValue") {
-          // for primary-2
-          // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income) /
-          //      ((primary-3 × primary-4) - primary-5)
-          let neededValue = 0;
-          if (qID === 2) {
-            neededValue =
-              (incomeTarget -
-                currentSecondaryIncome -
-                currentTertiaryIncome -
-                currentOtherDiversifiedIncome) /
-              (currentPrimary3 * currentPrimary4 - currentPrimary5);
-          }
-          //
-          // for primary-3
-          // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
-          //      (primary-2 × primary-4)
-          if (qID === 3) {
-            neededValue =
-              (incomeTarget -
-                currentSecondaryIncome -
-                currentTertiaryIncome -
-                currentOtherDiversifiedIncome +
-                currentPrimary2 * currentPrimary5) /
-              (currentPrimary2 * currentPrimary4);
-          }
-          //
-          // for primary-4
-          // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
-          //      (primary-2 × primary-3)
-          //
-          if (qID === 4) {
-            neededValue =
-              (incomeTarget -
-                currentSecondaryIncome -
-                currentTertiaryIncome -
-                currentOtherDiversifiedIncome +
-                currentPrimary2 * currentPrimary5) /
-              (currentPrimary2 * currentPrimary3);
-          }
-          // for primary-5
-          // needed_value = ((primary-2 × primary-3 × primary-4) + secondary-1 + tertiary-1 + other_diversified_income - income_target) /
-          //  primary-2
-          if (qID === 5) {
-            neededValue =
-              (currentPrimary2 * currentPrimary3 * currentPrimary4 +
-                currentSecondaryIncome +
-                currentTertiaryIncome +
-                currentOtherDiversifiedIncome -
-                incomeTarget) /
-              currentPrimary2;
-          }
           rowData[colKey] = `${thousandFormatter(
             neededValue,
             2
           )} ${measurementUnit}`;
         }
+        if (colKey === "neededChange") {
+          const neededChange = neededValue - currentValue;
+          const neededChangePercent = (neededChange / currentValue) * 100;
+          rowData[colKey] = thousandFormatter(neededChange, 2);
+          rowData[`${colKey}Percent`] = thousandFormatter(
+            neededChangePercent,
+            2
+          );
+        }
+        if (colKey === "maxFeasibleChange") {
+          const maxFeasibleChange = feasibleValue - currentValue;
+          const maxFeasibleChangePercent =
+            (maxFeasibleChange / currentValue) * 100;
+          rowData[colKey] = thousandFormatter(maxFeasibleChange, 2);
+          rowData[`${colKey}Percent`] = thousandFormatter(
+            maxFeasibleChangePercent,
+            2
+          );
+        }
+        if (colKey === "feasibility") {
+          const lowerBound = min(currentValue, feasibleValue);
+          const upperBound = max(currentValue, feasibleValue);
+          let feasibility = "";
+          let type = null;
+          if (neededValue < 0) {
+            feasibility = "Not possible";
+            type = "danger";
+          } else if (lowerBound <= neededValue <= upperBound) {
+            feasibility = "Possible within feasible levels";
+            type = "success";
+          } else {
+            feasibility = "Possible outside of feasible levels";
+            type = "warning";
+          }
+          rowData[colKey] = feasibility;
+          rowData["type"] = type;
+        }
       });
       return rowData;
     });
     return data;
-  }, [questionGroups, currentDashboardData]);
-
-  // Default data for static component
-  const defaultData = [
-    {
-      driver: "Land",
-      neededValue: "3 hectares",
-      neededChange: 1800,
-      neededChangePercent: 12,
-      maxFeasibleChange: 1800,
-      maxFeasibleChangePercent: 17,
-      feasibility: "Possible within feasible levels",
-      type: "success",
-    },
-    {
-      driver: "Price",
-      neededValue: "127 LCU",
-      neededChange: "15.25 USD",
-      neededChangePercent: 78,
-      maxFeasibleChange: 1800,
-      maxFeasibleChangePercent: 42,
-      feasibility: "Possible outside of feasible levels",
-      type: "warning",
-    },
-    {
-      driver: "Volume",
-      neededValue: "1750 kg/hectare",
-      neededChange: "2100 kg",
-      neededChangePercent: 72,
-      maxFeasibleChange: 1800,
-      maxFeasibleChangePercent: 32,
-      feasibility: "Possible outside of feasible levels",
-      type: "warning",
-    },
-    {
-      driver: "Cost of production",
-      neededValue: "-32 LCU",
-      neededChange: "111 USD/hectare",
-      neededChangePercent: -12,
-      maxFeasibleChange: 1800,
-      maxFeasibleChangePercent: -12,
-      feasibility: "Not possible",
-      type: "danger",
-    },
-  ];
+  }, [questionGroups, currentDashboardData, currentCase]);
 
   const data = tableData;
 
