@@ -201,7 +201,7 @@ const SingleDriverChange = () => {
       (q) => q?.question_type === "aggregator"
     )?.childrens;
 
-    const data = mainDrivers.map((q) => {
+    const data = mainDrivers?.map((q) => {
       const qID = q.id;
       const rowData = {
         qid: qID,

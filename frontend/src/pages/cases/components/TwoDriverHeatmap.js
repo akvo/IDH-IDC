@@ -129,10 +129,10 @@ const TwoDriverHeatmap = () => {
     );
     const data = map(groupBy(drivers, "question.id"), (d, i) => {
       const currentQuestion = d[0].question;
-      const unitName = currentQuestion.unit
-        .split("/")
-        .map((u) => u.trim())
-        .map((u) => {
+      const unitName = currentQuestion?.unit
+        ?.split("/")
+        ?.map((u) => u.trim())
+        ?.map((u) => {
           if (u === "currency") {
             return currencyUnit;
           }
@@ -142,7 +142,7 @@ const TwoDriverHeatmap = () => {
                 ?.name?.toLowerCase() || ""
             : focusCommodity?.[u];
         })
-        .join(" / ");
+        ?.join(" / ");
       return {
         key: parseInt(i) - 1,
         name: currentQuestion.text,
@@ -237,6 +237,23 @@ const TwoDriverHeatmap = () => {
     form.setFieldsValue(filteredValues);
   };
 
+  const handleOnClear = () => {
+    const allValues = form.getFieldsValue();
+    const resetValues = {
+      [`${selectedSegment}_x-axis-driver`]: null,
+      [`${selectedSegment}_x-axis-min-value`]: null,
+      [`${selectedSegment}_x-axis-max-value`]: null,
+      [`${selectedSegment}_y-axis-driver`]: null,
+      [`${selectedSegment}_y-axis-min-value`]: null,
+      [`${selectedSegment}_y-axis-max-value`]: null,
+    };
+    form.setFieldsValue(resetValues);
+    onSensitivityAnalysisValuesChange(
+      { [`${selectedSegment}_x-axis-driver`]: null },
+      { ...allValues, ...resetValues }
+    );
+  };
+
   return (
     <Card
       className="card-content-wrapper card-with-gray-header-wrapper"
@@ -254,7 +271,13 @@ const TwoDriverHeatmap = () => {
             </Space>
           </Col>
           <Col span={6} align="end">
-            <Button style={{ float: "right" }}>Clear</Button>
+            <Button
+              style={{ float: "right", marginRight: "4px", marginTop: "4px" }}
+              className="button-ghost"
+              onClick={handleOnClear}
+            >
+              Clear
+            </Button>
           </Col>
         </Row>
       }
