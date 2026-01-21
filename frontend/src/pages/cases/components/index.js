@@ -19,5 +19,6 @@ export { default as SingleDriverChange } from "./SingleDriverChange";
 export { default as SensitivityAnalysis } from "./SensitivityAnalysis";
 export { default as TwoDriverHeatmap } from "./TwoDriverHeatmap";
 export { default as TwoBinningDriverForm } from "./TwoBinningDriverForm";
+export { default as ExploreChangeToCloseTheGap } from "./ExploreChangeToCloseTheGap";
 
 export const MAX_SEGMENT = 5;
