@@ -1,6 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import { CaseVisualState, CurrentCaseState } from "../store";
+import { SegmentSelector } from "../components";
+import { sumBy } from "lodash";
+import { thousandFormatter } from "../../../components/chart/options/common";
 
 // Constants
 const TAG_COLORS = {
@@ -78,6 +82,170 @@ const ChangeTag = ({ value, type }) => {
 };
 
 const SingleDriverChange = () => {
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const { dashboardData, questionGroups } = CaseVisualState.useState((s) => s);
+
+  const [selectedSegment, setSelectedSegment] = useState(null);
+
+  const currentDashboardData = useMemo(
+    () => dashboardData?.find((d) => d.id === selectedSegment),
+    [dashboardData, selectedSegment]
+  );
+
+  const tableData = useMemo(() => {
+    const incomeTarget = currentDashboardData?.target || 0;
+
+    // current - feasible answers for each commodity/crop
+    const primaryCommodityAnswers = currentDashboardData?.answers?.filter(
+      (a) => a.commodityType === "focus"
+    );
+    const secondaryCommodityAnswers = currentDashboardData?.answers?.filter(
+      (a) => a.commodityType === "secondary"
+    );
+    const tertiaryCommodityAnswers = currentDashboardData?.answers?.filter(
+      (a) => a.commodityType === "tertiary"
+    );
+    const diversifiedCommodityAnswers = currentDashboardData?.answers?.filter(
+      (a) => a.commodityType === "diversified"
+    );
+    // eol current - feasible answers for each commodity/crop
+
+    const currentPrimary2 =
+      primaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 2
+      )?.value || 0;
+    const currentPrimary3 =
+      primaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 3
+      )?.value || 0;
+    const currentPrimary4 =
+      primaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 4
+      )?.value || 0;
+    const currentPrimary5 =
+      primaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 5
+      )?.value || 0;
+    const currentSecondaryIncome =
+      secondaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 1
+      )?.value || 0;
+    const currentTertiaryIncome =
+      tertiaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 1
+      )?.value || 0;
+    const currentOtherDiversifiedIncome = sumBy(
+      diversifiedCommodityAnswers?.filter((a) => a.name === "current"),
+      "value"
+    );
+
+    console.table({
+      currentPrimary2,
+      currentPrimary3,
+      currentPrimary4,
+      currentPrimary5,
+      currentSecondaryIncome,
+      currentTertiaryIncome,
+      currentOtherDiversifiedIncome,
+    });
+
+    // commodity detail
+    const primaryCommodity = questionGroups?.find(
+      (qg) => qg?.case_commodity_type === "focus"
+    );
+    console.log(primaryCommodity);
+    // eol commodity detail
+
+    const mainDrivers = questionGroups?.[0]?.questions?.find(
+      (q) => q?.question_type === "aggregator"
+    )?.childrens;
+
+    const data = mainDrivers.map((q) => {
+      const qID = q.id;
+      let rowData = {
+        qid: qID,
+      };
+      let measurementUnit = "";
+      if (q?.unit) {
+        measurementUnit = q.unit
+          .split("/")
+          .map((u) => u.trim())
+          .map((u) => {
+            return u === "crop"
+              ? primaryCommodity.name?.toLowerCase() || ""
+              : primaryCommodity?.[u];
+          })
+          .join("/");
+      }
+      // populate the rowData
+      COLUMNS.forEach(({ key: colKey }) => {
+        rowData[colKey] = "NA";
+        if (colKey === "driver") {
+          rowData[colKey] = q.text;
+        }
+        if (colKey === "neededValue") {
+          // for primary-2
+          // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income) /
+          //      ((primary-3 × primary-4) - primary-5)
+          let neededValue = 0;
+          if (qID === 2) {
+            neededValue =
+              (incomeTarget -
+                currentSecondaryIncome -
+                currentTertiaryIncome -
+                currentOtherDiversifiedIncome) /
+              (currentPrimary3 * currentPrimary4 - currentPrimary5);
+          }
+          //
+          // for primary-3
+          // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
+          //      (primary-2 × primary-4)
+          if (qID === 3) {
+            neededValue =
+              (incomeTarget -
+                currentSecondaryIncome -
+                currentTertiaryIncome -
+                currentOtherDiversifiedIncome +
+                currentPrimary2 * currentPrimary5) /
+              (currentPrimary2 * currentPrimary4);
+          }
+          //
+          // for primary-4
+          // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
+          //      (primary-2 × primary-3)
+          //
+          if (qID === 4) {
+            neededValue =
+              (incomeTarget -
+                currentSecondaryIncome -
+                currentTertiaryIncome -
+                currentOtherDiversifiedIncome +
+                currentPrimary2 * currentPrimary5) /
+              (currentPrimary2 * currentPrimary3);
+          }
+          // for primary-5
+          // needed_value = ((primary-2 × primary-3 × primary-4) + secondary-1 + tertiary-1 + other_diversified_income - income_target) /
+          //  primary-2
+          if (qID === 5) {
+            neededValue =
+              (currentPrimary2 * currentPrimary3 * currentPrimary4 +
+                currentSecondaryIncome +
+                currentTertiaryIncome +
+                currentOtherDiversifiedIncome -
+                incomeTarget) /
+              currentPrimary2;
+          }
+          rowData[colKey] = `${thousandFormatter(
+            neededValue,
+            2
+          )} ${measurementUnit}`;
+        }
+      });
+      return rowData;
+    });
+    return data;
+  }, [questionGroups, currentDashboardData]);
+
   // Default data for static component
   const defaultData = [
     {
@@ -122,7 +290,7 @@ const SingleDriverChange = () => {
     },
   ];
 
-  const data = defaultData;
+  const data = tableData;
 
   // Memoize whether columns should show tags
   const changeColumns = useMemo(
@@ -143,6 +311,10 @@ const SingleDriverChange = () => {
             while keeping all others at their current levels, to close the
             income gap.
           </div>
+          <SegmentSelector
+            selectedSegment={selectedSegment}
+            setSelectedSegment={setSelectedSegment}
+          />
         </Space>
       }
     >
@@ -158,7 +330,7 @@ const SingleDriverChange = () => {
       ))}
 
       {/* Data Rows */}
-      {data.map((row, rowIndex) => {
+      {data?.map((row, rowIndex) => {
         const isLastRow = rowIndex === data.length - 1;
 
         return COLUMNS.map((col, colIndex) => {
