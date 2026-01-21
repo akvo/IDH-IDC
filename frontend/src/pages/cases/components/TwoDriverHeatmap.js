@@ -1,15 +1,14 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Card, Space, Button, Row, Col, Form } from "antd";
-import { SegmentSelector, TwoBinningDriverForm } from "../components";
+import { TwoBinningDriverForm } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { map, groupBy, isEmpty } from "lodash";
 import { ChartTwoDriverHeatmap } from "../visualizations";
 import { commodities } from "../../../store/static";
 
-const TwoDriverHeatmap = () => {
+const TwoDriverHeatmap = ({ selectedSegment }) => {
   const [form] = Form.useForm();
 
-  const [selectedSegment, setSelectedSegment] = useState(null);
   const [driverPair, setDriverPair] = useState({});
   const [binningDriverOptions, setBinningDriverOptions] = useState([]);
   console.info(binningDriverOptions);
@@ -291,10 +290,6 @@ const TwoDriverHeatmap = () => {
             and feasible levels by default, but you can adjust these to test any
             combination.
           </p>
-          <SegmentSelector
-            selectedSegment={selectedSegment}
-            setSelectedSegment={setSelectedSegment}
-          />
         </Col>
 
         {/* BINNING FORM */}

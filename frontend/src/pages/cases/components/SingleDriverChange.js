@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { SegmentSelector } from "../components";
 import { sumBy, min, max } from "lodash";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
@@ -133,11 +132,9 @@ const ChangeTag = ({ value, type }) => {
   );
 };
 
-const SingleDriverChange = () => {
+const SingleDriverChange = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { dashboardData, questionGroups } = CaseVisualState.useState((s) => s);
-
-  const [selectedSegment, setSelectedSegment] = useState(null);
 
   const currentDashboardData = useMemo(
     () => dashboardData?.find((d) => d.id === selectedSegment),
@@ -362,10 +359,6 @@ const SingleDriverChange = () => {
             while keeping all others at their current levels, to close the
             income gap.
           </div>
-          <SegmentSelector
-            selectedSegment={selectedSegment}
-            setSelectedSegment={setSelectedSegment}
-          />
         </Space>
       }
     >
