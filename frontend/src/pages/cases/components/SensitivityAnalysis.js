@@ -49,6 +49,28 @@ const SensitivityAnalysis = () => {
           dimension10: combinedSelection, // Custom Dimension: Track combination of x-y-bin
         }
       );
+
+      // Matomo event
+      if (window._paq) {
+        // 1️⃣ Aggregatable event for FREE Matomo
+        window._paq.push([
+          "trackEvent",
+          "Sensitivity Analysis",
+          `Driver pair selected - ${combinedSelection}`, // Action
+          "", // Label unused
+          1,
+        ]);
+
+        // 2️⃣ Structured event for future paid reports
+        window._paq.push([
+          "trackEvent",
+          "Sensitivity Analysis",
+          "Driver pair selected",
+          `driver_pair=${combinedSelection}`,
+          1,
+        ]);
+      }
+
       console.info(
         "track event",
         "Sensitivity Analysis - Which pairs of drivers have a strong impact on income",

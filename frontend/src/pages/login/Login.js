@@ -42,6 +42,27 @@ const Login = () => {
       1,
       { dimension1: "Clicked" }
     );
+
+    // Matomo event
+    if (window._paq) {
+      // 1️⃣ Free Matomo-friendly event (readable & countable)
+      window._paq.push([
+        "trackEvent",
+        "Registration",
+        "Click Email Link - Living Income Email",
+        "",
+        1,
+      ]);
+
+      // 2️⃣ Upgrade-safe canonical event (future parsing)
+      window._paq.push([
+        "trackEvent",
+        "Registration",
+        "Click Email Link",
+        "source=living_income_email",
+        1,
+      ]);
+    }
   };
 
   const onFinish = (values) => {
