@@ -12,9 +12,13 @@ const colors = { current: "#1b726f", feasible: "#9cc2c1" };
 const ChartNetIncomePerLandUnit = () => {
   const chartFarmEconomicEfficiencyRef = useRef(null);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+  const { dashboardData, questionGroups } = CaseVisualState.useState((s) => s);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
+
+  const focusCommodity = useMemo(() => {
+    return questionGroups?.find((qg) => qg.case_commodity_type === "focus");
+  }, [questionGroups]);
 
   const chartData = useMemo(() => {
     const primaryCaseCommodityID = currentCase?.case_commodities?.find(
@@ -87,7 +91,8 @@ const ChartNetIncomePerLandUnit = () => {
         <Col span={10}>
           <Space direction="vertical">
             <div className="section-title">
-              Focus crop net income per land unit
+              Focus crop net income per{" "}
+              {focusCommodity?.area_size_unit || "land unit"}
             </div>
             <div className="section-description">
               This metric captures the net profit earned from the crop per unit
@@ -100,11 +105,6 @@ const ChartNetIncomePerLandUnit = () => {
               indicator helps understand whether land productivity is improving
               and whether interventions are resulting in better economic
               outcomes.
-              <br />
-              <small style={{ color: "#959390" }}>
-                *“land unit” to automatically change to what user selected e.g.
-                hectare/acre etc.
-              </small>
             </div>
           </Space>
         </Col>
