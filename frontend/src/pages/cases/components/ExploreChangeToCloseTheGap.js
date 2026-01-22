@@ -5,6 +5,7 @@ import {
   SegmentSelector,
   SingleDriverChange,
   TwoDriverHeatmap,
+  AdjustIncomeTarget,
 } from "../components";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
@@ -16,20 +17,6 @@ const ExploreChangeToCloseTheGap = () => {
 
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [adjustedGoal, setAdjustedGoal] = useState(0);
-
-  const handleOnSaveAdjustedGoal = ({ updatedValue = {} }) => {
-    CaseVisualState.update((s) => ({
-      ...s,
-      sensitivityAnalysis: {
-        ...s.sensitivityAnalysis,
-        config: {
-          ...s.sensitivityAnalysis.config,
-          ...adjustedValues,
-          ...updatedValue,
-        },
-      },
-    }));
-  };
 
   console.log(sensitivityAnalysis?.config, "config");
   const currentDashboardData = useMemo(() => {
@@ -74,6 +61,11 @@ const ExploreChangeToCloseTheGap = () => {
                   />
                 </Col>
                 <Col span={8}>
+                  <AdjustIncomeTarget
+                    selectedSegment={selectedSegment}
+                    buttonView={true}
+                  />
+                  {/*
                   <Space direction="vertical" size={2}>
                     <p>The income gap to be closed by:</p>
                     <InputNumber
@@ -86,7 +78,7 @@ const ExploreChangeToCloseTheGap = () => {
                       New target: {`${thousandFormatter(adjustedGoal, 2)}`}{" "}
                       {`${currentCase?.currency}`}
                     </p>
-                  </Space>
+                  </Space> */}
                 </Col>
               </Row>
             </Col>
