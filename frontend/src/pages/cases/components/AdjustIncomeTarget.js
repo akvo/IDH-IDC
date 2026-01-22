@@ -17,7 +17,7 @@ import {
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
-const AdjustIncomeTarget = ({ selectedSegment }) => {
+const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
@@ -145,8 +145,33 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
     }
   };
 
-  return (
-    <div>
+  const renderView = () => {
+    if (buttonView) {
+      return (
+        <Row gutter={[20, 20]} className="adjust-income-target-wrapper">
+          <Col span={24} align="end">
+            <Button
+              className="button-ghost-white"
+              onClick={() => setShowAdjustIncomeModal(true)}
+              style={{ float: "right" }}
+            >
+              Adjust your income target
+            </Button>
+          </Col>
+          <Col span={24} align="end">
+            <span
+              className="adjusted-income-target-value-wrapper"
+              style={{ float: "right" }}
+            >
+              Adjusted income target: {adjustedIncomeTarget.value}{" "}
+              {currentCase?.currency || ""} ({adjustedIncomeTarget.percent}%)
+            </span>
+          </Col>
+        </Row>
+      );
+    }
+
+    return (
       <Card className="card-section-wrapper adjust-income-target-wrapper">
         <Row gutter={[20, 14]} align="middle">
           <Col span={12}>
@@ -180,7 +205,12 @@ const AdjustIncomeTarget = ({ selectedSegment }) => {
           </Col>
         </Row>
       </Card>
+    );
+  };
 
+  return (
+    <div>
+      {renderView()}
       <Modal
         title="Adjust your income target"
         open={showAdjustIncomeModal}

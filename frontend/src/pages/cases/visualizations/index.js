@@ -16,3 +16,4 @@ export { default as ChartNeededIncomeLevel } from "./ChartNeededIncomeLevel";
 export { default as ChartFarmEconomicEfficiency } from "./ChartFarmEconomicEfficiency";
 export { default as ChartRevenueToCostRatio } from "./ChartRevenueToCostRatio";
 export { default as ChartNetIncomePerLandUnit } from "./ChartNetIncomePerLandUnit";
+export { default as ChartTwoDriverHeatmap } from "./ChartTwoDriverHeatmap";
