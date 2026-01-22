@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { sumBy, min, max } from "lodash";
+import { sumBy, min, max, upperFirst } from "lodash";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
 // Constants
@@ -23,9 +23,11 @@ const BACKGROUND_COLORS = {
   danger: "#FFD0D3",
   success: "#DDF8E9",
   default: "#FFFFFF",
+  group: "#FFFFFF",
 };
 
 const COLUMN_WIDTHS = {
+  group: 100,
   default: 18.75,
   feasibility: 25,
 };
@@ -41,44 +43,19 @@ const COLUMNS = [
 // Default data for static component (FORMAT)
 // const defaultData = [
 //   {
-//     driver: "Land",
-//     neededValue: "3 hectares",
-//     neededChange: 1800,
-//     neededChangePercent: 12,
-//     maxFeasibleChange: 1800,
-//     maxFeasibleChangePercent: 17,
-//     feasibility: "Possible within feasible levels",
-//     type: "success",
-//   },
-//   {
-//     driver: "Price",
-//     neededValue: "127 LCU",
-//     neededChange: "15.25 USD",
-//     neededChangePercent: 78,
-//     maxFeasibleChange: 1800,
-//     maxFeasibleChangePercent: 42,
-//     feasibility: "Possible outside of feasible levels",
-//     type: "warning",
-//   },
-//   {
-//     driver: "Volume",
-//     neededValue: "1750 kg/hectare",
-//     neededChange: "2100 kg",
-//     neededChangePercent: 72,
-//     maxFeasibleChange: 1800,
-//     maxFeasibleChangePercent: 32,
-//     feasibility: "Possible outside of feasible levels",
-//     type: "warning",
-//   },
-//   {
-//     driver: "Cost of production",
-//     neededValue: "-32 LCU",
-//     neededChange: "111 USD/hectare",
-//     neededChangePercent: -12,
-//     maxFeasibleChange: 1800,
-//     maxFeasibleChangePercent: -12,
-//     feasibility: "Not possible",
-//     type: "danger",
+//     group: "primary",
+//     rowData: [
+//       {
+//         driver: "Land",
+//         neededValue: "3 hectares",
+//         neededChange: 1800,
+//         neededChangePercent: 12,
+//         maxFeasibleChange: 1800,
+//         maxFeasibleChangePercent: 17,
+//         feasibility: "Possible within feasible levels",
+//         type: "success",
+//       },
+//     ],
 //   },
 // ];
 
@@ -95,6 +72,8 @@ const generateCardGridStyle = ({
   const width =
     columnKey === "feasibility"
       ? COLUMN_WIDTHS.feasibility
+      : columnKey === "group"
+      ? COLUMN_WIDTHS.group
       : COLUMN_WIDTHS.default;
 
   return {
@@ -104,6 +83,7 @@ const generateCardGridStyle = ({
     padding: "12px 16px",
     borderBottomLeftRadius: isLastRow && isFirstCol ? "20px" : 0,
     borderBottomRightRadius: isLastRow && isLastCol ? "20px" : 0,
+    fontWeight: columnKey === "group" ? 500 : "normal",
   };
 };
 
@@ -159,6 +139,7 @@ const SingleDriverChange = ({ selectedSegment }) => {
     );
     // eol current - feasible answers for each commodity/crop
 
+    // current
     const currentPrimary2 =
       primaryCommodityAnswers?.find(
         (a) => a.name === "current" && a.questionId === 2
@@ -175,10 +156,29 @@ const SingleDriverChange = ({ selectedSegment }) => {
       primaryCommodityAnswers?.find(
         (a) => a.name === "current" && a.questionId === 5
       )?.value || 0;
+
+    // feasible
+    const currentSecondary2 =
+      secondaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 2
+      )?.value || 0;
+    const currentSecondary3 =
+      secondaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 3
+      )?.value || 0;
+    const currentSecondary4 =
+      secondaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 4
+      )?.value || 0;
+    const currentSecondary5 =
+      secondaryCommodityAnswers?.find(
+        (a) => a.name === "current" && a.questionId === 5
+      )?.value || 0;
     const currentSecondaryIncome =
       secondaryCommodityAnswers?.find(
         (a) => a.name === "current" && a.questionId === 1
       )?.value || 0;
+
     const currentTertiaryIncome =
       tertiaryCommodityAnswers?.find(
         (a) => a.name === "current" && a.questionId === 1
@@ -194,151 +194,288 @@ const SingleDriverChange = ({ selectedSegment }) => {
     );
     // eol commodity detail
 
-    const mainDrivers = questionGroups?.[0]?.questions?.find(
-      (q) => q?.question_type === "aggregator"
-    )?.childrens;
+    const res = questionGroups?.map((qg) => {
+      // if breakdown false use aggregator value for secondary crop
+      // tertiary will always use aggregator value
+      const breakdown = qg?.breakdown;
+      const commodityType = qg?.case_commodity_type;
 
-    const data = mainDrivers?.map((q) => {
-      const qID = q.id;
-      const rowData = {
-        qid: qID,
+      const groupData = {
+        group: qg?.commodity_type === "focus" ? "primary" : qg.commodity_type,
       };
 
-      let measurementUnit = "";
-      if (q?.unit) {
-        measurementUnit = q.unit
-          .split("/")
-          .map((u) => u.trim())
-          .map((u) => {
-            if (u === "currency") {
-              return currentCase?.currency || "";
-            }
-            return u === "crop"
-              ? primaryCommodity.name?.toLowerCase() || ""
-              : primaryCommodity?.[u];
-          })
-          .join("/");
+      // populate questions as row base
+      let questions = [];
+      if (commodityType === "diversified") {
+        questions = [
+          {
+            id: [qg?.questions?.map((q) => q.id)],
+            parent: null,
+            unit: "currency",
+            question_type: "question",
+            text: "Other diversified income",
+            description: null,
+            default_value: null,
+            created_by: null,
+            childrens: [],
+          },
+        ];
+      } else if (
+        commodityType === "tertiary" ||
+        (commodityType === "secondary" && !breakdown)
+      ) {
+        questions = qg?.questions;
+      } else {
+        questions = qg?.questions?.find(
+          (q) => q?.question_type === "aggregator"
+        )?.childrens;
       }
 
-      // needed value calculation
-      // for primary-2
-      // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income) /
-      //      ((primary-3 × primary-4) - primary-5)
-      let neededValue = 0;
-      if (qID === 2) {
-        neededValue =
-          (incomeTarget -
-            currentSecondaryIncome -
-            currentTertiaryIncome -
-            currentOtherDiversifiedIncome) /
-          (currentPrimary3 * currentPrimary4 - currentPrimary5);
+      // populate current answers based on commodity type
+      let answers = [];
+      if (commodityType === "diversified") {
+        answers = diversifiedCommodityAnswers;
+      } else if (commodityType === "tertiary") {
+        answers = tertiaryCommodityAnswers;
+      } else if (commodityType === "secondary") {
+        answers = secondaryCommodityAnswers;
+      } else {
+        answers = primaryCommodityAnswers;
       }
-      //
-      // for primary-3
-      // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
-      //      (primary-2 × primary-4)
-      if (qID === 3) {
-        neededValue =
-          (incomeTarget -
-            currentSecondaryIncome -
+
+      const data = questions?.map((q) => {
+        const qID = q.id;
+        const rowData = {
+          qid: qID,
+        };
+
+        let measurementUnit = "";
+        if (q?.unit) {
+          measurementUnit = q.unit
+            .split("/")
+            .map((u) => u.trim())
+            .map((u) => {
+              if (u === "currency") {
+                return currentCase?.currency || "";
+              }
+              return u === "crop"
+                ? primaryCommodity.name?.toLowerCase() || ""
+                : primaryCommodity?.[u];
+            })
+            .join("/");
+        }
+
+        // needed value calculation
+        // for primary-2
+        // needed_value = (secondary-1 + tertiary-1 + other_diversified_income - income_target) / (primary-5 - (primary-3*primary-4))
+        let neededValue = 0;
+        if (commodityType === "focus" && qID === 2) {
+          neededValue =
+            (currentSecondaryIncome +
+              currentTertiaryIncome +
+              currentOtherDiversifiedIncome -
+              incomeTarget) /
+            (currentPrimary5 - currentPrimary3 * currentPrimary4);
+        }
+        //
+        // for primary-3
+        // needed_value = ((primary-5*primary-2) - secondary-1 - tertiary-1 - other_diversified_income + income_target) / (primary-2*primary-4)
+        if (commodityType === "focus" && qID === 3) {
+          neededValue =
+            (currentPrimary5 * currentPrimary2 -
+              currentSecondaryIncome -
+              currentTertiaryIncome -
+              currentOtherDiversifiedIncome +
+              incomeTarget) /
+            (currentPrimary2 * currentPrimary4);
+        }
+        //
+        // for primary-4
+        // needed_value = ((primary-5*primary-2) - secondary-1 - tertiary-1 - other_diversified_income + income_target) / (primary-2*primary-3)
+        if (commodityType === "focus" && qID === 4) {
+          neededValue =
+            (currentPrimary5 * currentPrimary2 -
+              currentSecondaryIncome -
+              currentTertiaryIncome -
+              currentOtherDiversifiedIncome +
+              incomeTarget) /
+            (currentPrimary2 * currentPrimary3);
+        }
+        // for primary-5
+        // needed_value = ((primary-2*primary-3*primary-4)+secondary-1+tertiary-1+other_diversified_income-income_target)/primary-2
+        if (commodityType === "focus" && qID === 5) {
+          neededValue =
+            (currentPrimary2 * currentPrimary3 * currentPrimary4 +
+              currentSecondaryIncome +
+              currentTertiaryIncome +
+              currentOtherDiversifiedIncome -
+              incomeTarget) /
+            currentPrimary2;
+        }
+
+        // secondary-1
+        // needed_value = (primary-5*primary-2) - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + income_target
+        if (commodityType === "secondary" && !breakdown && qID === 1) {
+          neededValue =
+            currentPrimary5 * currentPrimary2 -
+            currentPrimary2 * currentPrimary3 * currentPrimary4 -
             currentTertiaryIncome -
             currentOtherDiversifiedIncome +
-            currentPrimary2 * currentPrimary5) /
-          (currentPrimary2 * currentPrimary4);
-      }
-      //
-      // for primary-4
-      // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income + (primary-2 × primary-5)) /
-      //      (primary-2 × primary-3)
-      //
-      if (qID === 4) {
-        neededValue =
-          (incomeTarget -
-            currentSecondaryIncome -
+            incomeTarget;
+        }
+
+        // secondary-2
+        // needed_value = (income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2)) / (secondary-3*secondary-4 - secondary-5)
+        if (commodityType === "secondary" && breakdown && qID === 2) {
+          neededValue =
+            (incomeTarget -
+              currentPrimary2 * currentPrimary3 * currentPrimary4 -
+              currentTertiaryIncome -
+              currentOtherDiversifiedIncome +
+              currentPrimary5 * currentPrimary2) /
+            (currentSecondary3 * currentSecondary4 - currentSecondary5);
+        }
+
+        // secondary-3
+        // needed_value = ((income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2*)) + (secondary-2*secondary-5)) / (secondary-2*secondary-4)
+        if (commodityType === "secondary" && breakdown && qID === 3) {
+          neededValue =
+            incomeTarget -
+            currentPrimary2 * currentPrimary3 * currentPrimary4 -
             currentTertiaryIncome -
             currentOtherDiversifiedIncome +
-            currentPrimary2 * currentPrimary5) /
-          (currentPrimary2 * currentPrimary3);
-      }
-      // for primary-5
-      // needed_value = ((primary-2 × primary-3 × primary-4) + secondary-1 + tertiary-1 + other_diversified_income - income_target) /
-      //  primary-2
-      if (qID === 5) {
-        neededValue =
-          (currentPrimary2 * currentPrimary3 * currentPrimary4 +
-            currentSecondaryIncome +
+            currentPrimary5 * currentPrimary2 +
+            (currentSecondary2 * currentSecondary5) /
+              (currentSecondary2 * currentSecondary4);
+        }
+
+        // secondary-4
+        // needed_value = ((income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2)) + (secondary-2*secondary-5)) / (secondary-2*secondary-3)
+        if (commodityType === "secondary" && breakdown && qID === 4) {
+          neededValue =
+            (incomeTarget -
+              currentPrimary2 * currentPrimary3 * currentPrimary4 -
+              currentTertiaryIncome -
+              currentOtherDiversifiedIncome +
+              currentPrimary5 * currentPrimary2 +
+              currentSecondary2 * currentSecondary5) /
+            (currentSecondary2 * currentSecondary3);
+        }
+
+        // secondary-5
+        // needed_value = (secondary-3*secondary-4) - ((income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2)) / secondary-2)
+        if (commodityType === "secondary" && breakdown && qID === 5) {
+          neededValue =
+            currentSecondary3 * currentSecondary4 -
+            (incomeTarget -
+              currentPrimary2 * currentPrimary3 * currentPrimary4 -
+              currentTertiaryIncome -
+              currentOtherDiversifiedIncome +
+              currentPrimary5 * currentPrimary2) /
+              currentSecondary2;
+        }
+
+        // tertiary-1
+        // needed_value = (primary-5*primary-2) - (primary-2*primary-3*primary-4) - secondary-1 - other_diversified_income + income_target
+        if (commodityType === "tertiary" && qID === 1) {
+          neededValue =
+            currentPrimary5 * currentPrimary2 -
+            currentPrimary2 * currentPrimary3 * currentPrimary4 -
+            currentSecondaryIncome -
+            currentOtherDiversifiedIncome +
+            incomeTarget;
+        }
+
+        // other diversified income
+        // needed_value = (primary-5*primary-2) - (primary-2*primary-3*primary-4) - secondary-1 - tertiary-1 + income_target
+        if (commodityType === "diversified") {
+          neededValue =
+            currentPrimary5 * currentPrimary2 -
+            currentPrimary2 * currentPrimary3 * currentPrimary4 -
+            currentSecondaryIncome -
             currentTertiaryIncome +
-            currentOtherDiversifiedIncome -
-            incomeTarget) /
-          currentPrimary2;
-      }
-      // eol needed value calculation
-
-      const currentValue =
-        primaryCommodityAnswers?.find(
-          (a) => a.name === "current" && a.questionId === qID
-        )?.value || 0;
-      const feasibleValue =
-        primaryCommodityAnswers?.find(
-          (a) => a.name === "feasible" && a.questionId === qID
-        )?.value || 0;
-
-      // populate the rowData
-      COLUMNS.forEach(({ key: colKey }) => {
-        rowData[colKey] = "NA";
-        if (colKey === "driver") {
-          rowData[colKey] = q.text;
+            incomeTarget;
         }
-        if (colKey === "neededValue") {
-          rowData[colKey] = `${thousandFormatter(
-            neededValue,
-            2
-          )} ${measurementUnit}`;
-        }
-        if (colKey === "neededChange") {
-          const neededChange = neededValue - currentValue;
-          const neededChangePercent = (neededChange / currentValue) * 100;
-          rowData[colKey] = thousandFormatter(neededChange, 2);
-          rowData[`${colKey}Percent`] = thousandFormatter(
-            neededChangePercent,
-            2
+        // eol needed value calculation
+
+        // populate answers by qid
+        let currentValue =
+          answers?.find((a) => a.name === "current" && a.questionId === qID)
+            ?.value || 0;
+        let feasibleValue =
+          answers?.find((a) => a.name === "feasible" && a.questionId === qID)
+            ?.value || 0;
+        if (commodityType === "diversified") {
+          currentValue = sumBy(
+            answers?.filter((a) => a.name === "current"),
+            "value"
+          );
+          feasibleValue = sumBy(
+            answers?.filter((a) => a.name === "feasible"),
+            "value"
           );
         }
-        if (colKey === "maxFeasibleChange") {
-          const maxFeasibleChange = feasibleValue - currentValue;
-          const maxFeasibleChangePercent =
-            (maxFeasibleChange / currentValue) * 100;
-          rowData[colKey] = thousandFormatter(maxFeasibleChange, 2);
-          rowData[`${colKey}Percent`] = thousandFormatter(
-            maxFeasibleChangePercent,
-            2
-          );
-        }
-        if (colKey === "feasibility") {
-          const lowerBound = min(currentValue, feasibleValue);
-          const upperBound = max(currentValue, feasibleValue);
-          let feasibility = "";
-          let type = null;
-          if (neededValue < 0) {
-            feasibility = "Not possible";
-            type = "danger";
-          } else if (lowerBound <= neededValue <= upperBound) {
-            feasibility = "Possible within feasible levels";
-            type = "success";
-          } else {
-            feasibility = "Possible outside of feasible levels";
-            type = "warning";
+        // eol populate answers by qid
+
+        // populate the rowData
+        COLUMNS.forEach(({ key: colKey }) => {
+          rowData[colKey] = "NA";
+          if (colKey === "driver") {
+            rowData[colKey] = q.text;
           }
-          rowData[colKey] = feasibility;
-          rowData["type"] = type;
-        }
+          if (colKey === "neededValue") {
+            rowData[colKey] = `${thousandFormatter(
+              neededValue,
+              2
+            )} ${measurementUnit}`;
+          }
+          if (colKey === "neededChange") {
+            const neededChange = neededValue - currentValue;
+            const neededChangePercent =
+              currentValue > 0 ? (neededChange / currentValue) * 100 : 0;
+            rowData[colKey] = thousandFormatter(neededChange, 2);
+            rowData[`${colKey}Percent`] = thousandFormatter(
+              neededChangePercent,
+              2
+            );
+          }
+          if (colKey === "maxFeasibleChange") {
+            const maxFeasibleChange = feasibleValue - currentValue;
+            const maxFeasibleChangePercent =
+              currentValue > 0 ? (maxFeasibleChange / currentValue) * 100 : 0;
+            rowData[colKey] = thousandFormatter(maxFeasibleChange, 2);
+            rowData[`${colKey}Percent`] = thousandFormatter(
+              maxFeasibleChangePercent,
+              2
+            );
+          }
+          if (colKey === "feasibility") {
+            const lowerBound = min(currentValue, feasibleValue);
+            const upperBound = max(currentValue, feasibleValue);
+            let feasibility = "";
+            let type = null;
+            if (neededValue < 0) {
+              feasibility = "Not possible";
+              type = "danger";
+            } else if (lowerBound <= neededValue <= upperBound) {
+              feasibility = "Possible within feasible levels";
+              type = "success";
+            } else {
+              feasibility = "Possible outside of feasible levels";
+              type = "warning";
+            }
+            rowData[colKey] = feasibility;
+            rowData["type"] = type;
+          }
+        });
+        return rowData;
       });
-      return rowData;
-    });
-    return data;
-  }, [questionGroups, currentDashboardData, currentCase]);
 
-  const data = tableData;
+      groupData["rowData"] = data;
+      return groupData;
+    });
+    return res;
+  }, [questionGroups, currentDashboardData, currentCase]);
 
   // Memoize whether columns should show tags
   const changeColumns = useMemo(
@@ -374,36 +511,60 @@ const SingleDriverChange = ({ selectedSegment }) => {
       ))}
 
       {/* Data Rows */}
-      {data?.map((row, rowIndex) => {
-        const isLastRow = rowIndex === data.length - 1;
+      {tableData?.map((d, groupIndex) => {
+        const groupName =
+          d.group === "diversified"
+            ? "Other Diversified"
+            : `${upperFirst(d.group)}`;
 
-        return COLUMNS.map((col, colIndex) => {
-          const isFirstCol = colIndex === 0;
-          const isLastCol = colIndex === COLUMNS.length - 1;
-          const cellValue = row[col.key];
-          const showTag = changeColumns.has(col.key);
+        const groupCardGrid = [
+          <Card.Grid
+            key={`${d.group}-${groupIndex}`}
+            style={generateCardGridStyle({
+              columnKey: "group",
+              type: "group",
+            })}
+            hoverable={false}
+          >
+            <div>{groupName}</div>
+          </Card.Grid>,
+        ];
 
-          return (
-            <Card.Grid
-              key={`${col.key}-${rowIndex}`}
-              style={generateCardGridStyle({
-                columnKey: col.key,
-                type: row.type,
-                isLastRow,
-                isFirstCol,
-                isLastCol,
-              })}
-              hoverable={false}
-            >
-              <Space>
-                <div>{cellValue}</div>
-                {showTag && (
-                  <ChangeTag value={row[`${col.key}Percent`]} type={row.type} />
-                )}
-              </Space>
-            </Card.Grid>
-          );
+        const rowCardGrid = d?.rowData?.map((row, rowIndex) => {
+          const isLastRow = groupIndex === tableData?.length - 1;
+          return COLUMNS.map((col, colIndex) => {
+            const isFirstCol = colIndex === 0;
+            const isLastCol = colIndex === COLUMNS.length - 1;
+            const cellValue = row[col.key];
+            const showTag = changeColumns.has(col.key);
+
+            return (
+              <Card.Grid
+                key={`${col.key}-${rowIndex}`}
+                style={generateCardGridStyle({
+                  columnKey: col.key,
+                  type: row.type,
+                  isLastRow,
+                  isFirstCol,
+                  isLastCol,
+                })}
+                hoverable={false}
+              >
+                <Space>
+                  <div>{cellValue}</div>
+                  {showTag && (
+                    <ChangeTag
+                      value={row[`${col.key}Percent`]}
+                      type={row.type}
+                    />
+                  )}
+                </Space>
+              </Card.Grid>
+            );
+          });
         });
+
+        return [...groupCardGrid, ...rowCardGrid];
       })}
     </Card>
   );
