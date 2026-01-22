@@ -114,7 +114,14 @@ const ChangeTag = ({ value, type }) => {
 
 const SingleDriverChange = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { dashboardData, questionGroups } = CaseVisualState.useState((s) => s);
+  const { dashboardData, questionGroups, sensitivityAnalysis } =
+    CaseVisualState.useState((s) => s);
+
+  const adjustedIncometarget = useMemo(() => {
+    const adjustedTarget =
+      sensitivityAnalysis?.config?.[`${selectedSegment}_adjusted-target`] || 0;
+    return adjustedTarget;
+  }, [sensitivityAnalysis?.config, selectedSegment]);
 
   const currentDashboardData = useMemo(
     () => dashboardData?.find((d) => d.id === selectedSegment),
@@ -122,7 +129,10 @@ const SingleDriverChange = ({ selectedSegment }) => {
   );
 
   const tableData = useMemo(() => {
-    const incomeTarget = currentDashboardData?.target || 0;
+    const currentTarget = currentDashboardData?.target || 0;
+    const incomeTarget = adjustedIncometarget
+      ? adjustedIncometarget
+      : currentTarget;
 
     // current - feasible answers for each commodity/crop
     const primaryCommodityAnswers = currentDashboardData?.answers?.filter(
@@ -475,7 +485,7 @@ const SingleDriverChange = ({ selectedSegment }) => {
       return groupData;
     });
     return res;
-  }, [questionGroups, currentDashboardData, currentCase]);
+  }, [questionGroups, currentDashboardData, currentCase, adjustedIncometarget]);
 
   // Memoize whether columns should show tags
   const changeColumns = useMemo(

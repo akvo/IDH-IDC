@@ -1,47 +1,21 @@
-import React, { useMemo, useState, useEffect } from "react";
-import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
-import { Row, Col, Card, Space, InputNumber } from "antd";
+import React, { useState } from "react";
+import { Row, Col, Card } from "antd";
 import {
   SegmentSelector,
   SingleDriverChange,
   TwoDriverHeatmap,
   AdjustIncomeTarget,
 } from "../components";
-import { thousandFormatter } from "../../../components/chart/options/common";
 
 const ExploreChangeToCloseTheGap = () => {
-  const currentCase = CurrentCaseState.useState((s) => s);
-  const { sensitivityAnalysis, prevSensitivityAnalysis, dashboardData } =
-    CaseVisualState.useState((s) => s);
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
-
   const [selectedSegment, setSelectedSegment] = useState(null);
-  const [adjustedGoal, setAdjustedGoal] = useState(0);
-
-  console.log(sensitivityAnalysis?.config, "config");
-  const currentDashboardData = useMemo(() => {
-    const curr = dashboardData?.find((d) => d.id === selectedSegment);
-    setAdjustedGoal(curr?.target || 0);
-    return curr;
-  }, [dashboardData, selectedSegment]);
-
-  const handleOnCloseGapChange = (value) => {
-    const originalTarget = currentDashboardData?.target || 0;
-    const currentIncome = currentDashboardData?.total_current_income || 0;
-    const incomeGap = originalTarget - currentIncome;
-
-    const percentToCloseByField = value;
-
-    const newTarget = currentIncome + incomeGap * (percentToCloseByField / 100);
-    setAdjustedGoal(newTarget);
-  };
 
   return (
     <Row gutter={[24, 24]}>
       <Col span={24}>
         <Card className="card-content-wrapper select-the-goal-container">
           <Row gutter={[20, 20]}>
-            <Col span={24}>
+            <Col span={16}>
               <h3>Select the Goal:</h3>
               <p>
                 Closing the income gap may not be fully achievable within your
@@ -51,6 +25,12 @@ const ExploreChangeToCloseTheGap = () => {
                 section of this step.
               </p>
             </Col>
+            <Col span={8}>
+              <AdjustIncomeTarget
+                selectedSegment={selectedSegment}
+                buttonView={true}
+              />
+            </Col>
             <Col span={24}>
               <Row gutter={[20, 20]}>
                 <Col span={16}>
@@ -59,26 +39,6 @@ const ExploreChangeToCloseTheGap = () => {
                     selectedSegment={selectedSegment}
                     setSelectedSegment={setSelectedSegment}
                   />
-                </Col>
-                <Col span={8}>
-                  <AdjustIncomeTarget
-                    selectedSegment={selectedSegment}
-                    buttonView={true}
-                  />
-                  {/*
-                  <Space direction="vertical" size={2}>
-                    <p>The income gap to be closed by:</p>
-                    <InputNumber
-                      controls={false}
-                      addonAfter="%"
-                      onChange={handleOnCloseGapChange}
-                      disabled={!enableEditCase}
-                    />
-                    <p className="new-target-text">
-                      New target: {`${thousandFormatter(adjustedGoal, 2)}`}{" "}
-                      {`${currentCase?.currency}`}
-                    </p>
-                  </Space> */}
                 </Col>
               </Row>
             </Col>

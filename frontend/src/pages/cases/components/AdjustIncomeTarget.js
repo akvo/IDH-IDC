@@ -149,16 +149,20 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
     if (buttonView) {
       return (
         <Row gutter={[20, 20]} className="adjust-income-target-wrapper">
-          <Col span={24}>
+          <Col span={24} align="end">
             <Button
               className="button-ghost-white"
               onClick={() => setShowAdjustIncomeModal(true)}
+              style={{ float: "right" }}
             >
               Adjust your income target
             </Button>
           </Col>
-          <Col span={24}>
-            <span className="adjusted-income-target-value-wrapper">
+          <Col span={24} align="end">
+            <span
+              className="adjusted-income-target-value-wrapper"
+              style={{ float: "right" }}
+            >
               Adjusted income target: {adjustedIncomeTarget.value}{" "}
               {currentCase?.currency || ""} ({adjustedIncomeTarget.percent}%)
             </span>
