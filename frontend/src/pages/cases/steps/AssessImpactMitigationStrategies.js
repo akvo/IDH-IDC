@@ -13,7 +13,7 @@ import {
 } from "../visualizations";
 import {
   OptimizeIncomeTarget,
-  SensitivityAnalysis,
+  // SensitivityAnalysis,
   ExploreChangeToCloseTheGap,
 } from "../components";
 import { isEqual, isEmpty } from "lodash";
@@ -231,16 +231,16 @@ const AssessImpactMitigationStrategies = ({
       </Col>
       {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
 
-      {/* #2 Sensitivity Analysis => Two Driver Heatmap */}
-      <Col span={24}>
+      {/* #2 Sensitivity Analysis */}
+      {/* <Col span={24}>
         <Card className="card-section-wrapper">
           Which pairs of drivers have a strong impact on income?
         </Card>
       </Col>
       <Col span={24}>
         <SensitivityAnalysis />
-      </Col>
-      {/* EOL Sensitivity Analysis => Two Driver Heatmap */}
+      </Col> */}
+      {/* EOL Sensitivity Analysis */}
 
       {/* #3 Optimize Income Target */}
       <Col span={24}>
