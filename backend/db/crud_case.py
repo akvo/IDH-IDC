@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, cast
+from sqlalchemy import and_, cast, or_
 from sqlalchemy.dialects.postgresql import TEXT
 from typing import Optional, List
 from typing_extensions import TypedDict
@@ -265,9 +265,15 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
             prev_segment = (
                 session.query(Segment)
                 .filter(
-                    and_(
-                        Segment.case == case.id,
-                        Segment.id == segment.id,
+                    or_(
+                        and_(
+                            Segment.case == case.id,
+                            Segment.id == segment.id,
+                        ),
+                        and_(
+                            Segment.case == case.id,
+                            Segment.name == segment.name,
+                        ),
                     )
                 )
                 .first()

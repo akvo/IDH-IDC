@@ -11,8 +11,6 @@ from utils.case_import_storage import load_import_file
 from db.crud_case_import import get_case_import
 from db.crud_segment import update_segment
 
-# TODO :: When saving (POST) a case commodity or segments, please check by case ID and segment name, use create or update logic
-
 
 # --------------------------------------------------
 # Question resolver

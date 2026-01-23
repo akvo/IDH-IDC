@@ -256,7 +256,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       tags: values.tags || null,
       company: values.company || null,
       other_commodities: other_commodities,
-      segments: values.segments,
+      segments: form.getFieldValue("segments") || values.segments,
       import_id: values?.import_id || null,
     };
 
@@ -278,6 +278,30 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
     apiCall
       .then((res) => {
+        // NEW 23-06-2026 :: set form segments id fields value after saving the data
+        const currentSegments = form.getFieldValue("segments") || [];
+        const segmentsWithID = data?.segments?.length
+          ? orderBy(data.segments, ["id"])
+          : [];
+        const updatedSegmentFields = currentSegments?.map((segment) => {
+          const findSegmentByName = segmentsWithID?.find(
+            (s) => s?.name?.toLowerCase() === segment?.name?.toLowerCase()
+          );
+          if (findSegmentByName?.id) {
+            return {
+              ...segment,
+              id: findSegmentByName.id,
+              name: findSegmentByName.name,
+            };
+          }
+          return segment;
+        });
+        form.setFieldsValue({
+          import_id: data?.import_id || null,
+          segments: updatedSegmentFields,
+        });
+        // EOL NEW 23-06-2026 set form segments id fields value after saving the data
+
         // track event: external user create new case (PoC)
         if (!userInternal && isNewCase) {
           const reportedCountry = countryOptions.find(
