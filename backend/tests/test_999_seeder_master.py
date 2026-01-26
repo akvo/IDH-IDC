@@ -56,6 +56,10 @@ class TestSeederMaster:
                     {"id": 6, "name": "Pecans"},
                 ],
             },
+            {"id": 100, "name": "Crop", "commodities": []},
+            {"id": 101, "name": "Aquaculture", "commodities": []},
+            {"id": 102, "name": "Livestock", "commodities": []},
+            {"id": 103, "name": "Timber", "commodities": []},
         ]
         countries = (
             session.query(Country).filter(Country.parent.is_(None)).all()
@@ -99,7 +103,8 @@ class TestSeederMaster:
     #     assert commodity_count == 11
 
     # @pytest.mark.asyncio
-    # async def test_seeder_business_unit_org_tag(self, session: Session) -> None:
+    # async def test_seeder_business_unit_org_tag(
+    # self, session: Session) -> None:
     #     seeder_business_unit(session=session)
     #     business_unit_count = session.query(BusinessUnit).count()
     #     assert business_unit_count == 5

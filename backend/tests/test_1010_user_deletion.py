@@ -56,6 +56,7 @@ class TestUserDeletion:
                 "cases": [
                     {"label": "Bali Coffee Production (Private)", "value": 2},
                     {"label": "Bali Rice and Corn with Segment", "value": 12},
+                    {"label": "Case from spreadsheet import", "value": 13},
                 ],
             }
         }

@@ -54,6 +54,7 @@ TEMPLATE_NAME = "data_upload_template.xlsm"
     "/case-import",
     response_model=CaseImportResponse,
     summary="Upload case spreadsheet file",
+    name="case_import:upload_file",
     tags=ROUTE_TAG_NAME,
 )
 def case_import(
@@ -128,6 +129,7 @@ def case_import(
     "/case-import/segmentation-preview",
     response_model=SegmentationPreviewResponse,
     summary="Generate prefilled segmentation splits",
+    name="case_import:segmentation_preview",
     tags=ROUTE_TAG_NAME,
 )
 def segmentation_preview(
@@ -187,6 +189,7 @@ def segmentation_preview(
 @case_import_route.post(
     "/case-import/generate-segment-values",
     summary="Generate segment values for case commodities",
+    name="case_import:generate_segment_values",
     tags=ROUTE_TAG_NAME,
 )
 def generate_segment_values(
