@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
-import { SegmentForm } from ".";
+import { MAX_SEGMENT, SegmentForm } from ".";
 
 const SegmentConfigurationForm = ({
   uploadResult = {},
@@ -96,6 +96,51 @@ const SegmentConfigurationForm = ({
     });
   };
 
+  const segmentNumericalWarning = useMemo(() => {
+    // Extra message for numerical variable
+    if (
+      variableType === "numerical" &&
+      segmentFields?.length < numberOfSegments
+    ) {
+      return (
+        <Col span={24}>
+          <Alert
+            message={
+              <>
+                The variable {segmentationVariable} includes too many 0 or
+                missing values to meaningfully create {numberOfSegments} segment
+                {numberOfSegments > 1 ? "s" : ""}. <br />
+                Consider using a different variable, or adjust the thresholds
+                manually.
+              </>
+            }
+            type="warning"
+          />
+        </Col>
+      );
+    }
+    return null;
+  }, [variableType, segmentFields, numberOfSegments, segmentationVariable]);
+
+  const maxSegmentWarning = useMemo(() => {
+    if (segmentFields?.length > MAX_SEGMENT) {
+      return (
+        <Col span={24}>
+          <Alert
+            message={
+              <>
+                The variable {segmentationVariable} includes more than five
+                unique values. To proceed, please keep only up to 5 segments.
+              </>
+            }
+            type="warning"
+          />
+        </Col>
+      );
+    }
+    return null;
+  }, [segmentFields, segmentationVariable]);
+
   return (
     <Row gutter={[16, 16]}>
       {/* SEGMENT CONFIGURATION */}
@@ -163,27 +208,8 @@ const SegmentConfigurationForm = ({
             Please review or adjust thresholds for separating segments below:
           </h3>
           <Row gutter={[20, 20]}>
-            {
-              // Extra message for numerical variable
-              variableType === "numerical" &&
-              segmentFields?.length < numberOfSegments ? (
-                <Col span={24}>
-                  <Alert
-                    message={
-                      <>
-                        The variable {segmentationVariable} includes too many 0
-                        or missing values to meaningfully create{" "}
-                        {numberOfSegments} segment
-                        {numberOfSegments > 1 ? "s" : ""}. <br />
-                        Consider using a different variable, or adjust the
-                        thresholds manually.
-                      </>
-                    }
-                    type="warning"
-                  />
-                </Col>
-              ) : null
-            }
+            {segmentNumericalWarning}
+            {maxSegmentWarning}
             <Col span={24}>
               <SegmentForm
                 deletedSegmentIds={deletedSegmentIds}
