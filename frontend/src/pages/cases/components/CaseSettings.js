@@ -534,7 +534,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
                 navigate(
                   `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
                 );
-              }, 100);
+              }, 1000);
             })
             .catch((e) => {
               console.error(e);
