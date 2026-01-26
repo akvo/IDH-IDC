@@ -278,6 +278,14 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
     apiCall
       .then((res) => {
+        let data = res?.data || {};
+        data = {
+          ...data,
+          segments: data?.segments?.length
+            ? orderBy(data.segments, ["id"])
+            : [],
+        };
+
         // NEW 23-06-2026 :: set form segments id fields value after saving the data
         const currentSegments = form.getFieldValue("segments") || [];
         const segmentsWithID = data?.segments?.length
@@ -369,13 +377,6 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         // EOL track event
 
         setPrevCaseSettingValue(filteredCurrentValue);
-        let data = res?.data || {};
-        data = {
-          ...data,
-          segments: data?.segments?.length
-            ? orderBy(data.segments, ["id"])
-            : [],
-        };
 
         const lowestSegmentId = data?.segments?.[0]?.id;
         const newActiveSegmentId = deleteSegment
@@ -525,7 +526,20 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           };
           api
             .post("case-import/generate-segment-values", confirmedSegPayload)
-            .then(() => {
+            .then((res) => {
+              const generatedData = res.data;
+
+              /// update currentCase global state with generated segments from generatedData
+              // when successfully generated segment values
+              if (generatedData?.segments?.length) {
+                CurrentCaseState.update((s) => ({
+                  ...s,
+                  segments: orderBy(generatedData.segments, "id"),
+                  import_id: generatedData?.import_id || null,
+                }));
+              }
+              // EOL
+
               // reset form and close drawer
               setTimeout(() => {
                 form.resetFields();

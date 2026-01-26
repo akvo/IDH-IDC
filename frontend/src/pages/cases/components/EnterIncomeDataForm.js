@@ -371,7 +371,7 @@ const EnterIncomeDataDriver = ({
 
         const parentQuestionField = `${fieldKey}-${question?.parent}`;
 
-        // TODO :: remove this code to fix issue total income/section total
+        // TODO :: remove this code to fix issue total income/section total (DONT REMOVE)
         /**
          * e.g. primary section total should be 1400
          * but if this part of code active the section total become 1600
@@ -380,7 +380,11 @@ const EnterIncomeDataDriver = ({
         const parentQuestionValue =
           initialDriverValues?.[parentQuestionField] || 0;
 
-        if (!parentQuestionValue && currentCase?.import_id) {
+        if (
+          parentQuestion?.question_type === "aggregator" &&
+          !parentQuestionValue &&
+          currentCase?.import_id
+        ) {
           const allChildrensValues = calculateChildrenValues(
             question,
             fieldKey,
@@ -396,12 +400,17 @@ const EnterIncomeDataDriver = ({
             : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
           if (parentQuestion) {
             // use parent value if they already have value
-            const formValue =
-              parentQuestionValue || parentQuestionValue === 0
-                ? roundToDecimal(parentQuestionValue)
-                : roundToDecimal(sumAllChildrensValues);
+            const formValue = parentQuestionValue
+              ? roundToDecimal(parentQuestionValue)
+              : roundToDecimal(sumAllChildrensValues);
             // EOL use parent value if they already have value
             form.setFieldValue(parentQuestionField, formValue);
+            // trigger on change
+            onValuesChange(
+              { [parentQuestionField]: formValue },
+              form.getFieldsValue()
+            );
+            // eol trigger on change
             updateSectionTotalValues(
               commodity.commodity_type,
               fieldName,
