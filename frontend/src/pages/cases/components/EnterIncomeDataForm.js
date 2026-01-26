@@ -146,6 +146,9 @@ const EnterIncomeDataQuestions = ({
           <Form.Item
             name={`current-${fieldKey}`}
             className="current-feasible-field"
+            getValueProps={(value) => ({
+              value: value ? parseFloat(value?.toFixed(2)) : value,
+            })}
           >
             <InputNumber
               style={{ width: "100%" }}
@@ -160,6 +163,9 @@ const EnterIncomeDataQuestions = ({
           <Form.Item
             name={`feasible-${fieldKey}`}
             className="current-feasible-field"
+            getValueProps={(value) => ({
+              value: value ? parseFloat(value?.toFixed(2)) : value,
+            })}
           >
             <InputNumber
               style={{ width: "100%" }}
@@ -369,37 +375,41 @@ const EnterIncomeDataDriver = ({
         /**
          * e.g. primary section total should be 1400
          * but if this part of code active the section total become 1600
+         * ONLY RUN THIS IF PARENT QUESTION VALUE === 0 TO RE-EVALUATE THE TOTAL INCOME
+         */
         const parentQuestionValue =
           initialDriverValues?.[parentQuestionField] || 0;
 
-        const allChildrensValues = calculateChildrenValues(
-          question,
-          fieldKey,
-          initialDriverValues
-        );
-
-        const sumAllChildrensValues = parentQuestion?.default_value
-          ? getFunctionDefaultValue(
-              parentQuestion,
-              fieldKey,
-              allChildrensValues
-            )
-          : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-        if (parentQuestion) {
-          // use parent value if they already have value
-          const formValue =
-            parentQuestionValue || parentQuestionValue === 0
-              ? roundToDecimal(parentQuestionValue)
-              : roundToDecimal(sumAllChildrensValues);
-          // EOL use parent value if they already have value
-          form.setFieldValue(parentQuestionField, formValue);
-          updateSectionTotalValues(
-            commodity.commodity_type,
-            fieldName,
-            sumAllChildrensValues
+        if (!parentQuestionValue && currentCase?.import_id) {
+          const allChildrensValues = calculateChildrenValues(
+            question,
+            fieldKey,
+            initialDriverValues
           );
+
+          const sumAllChildrensValues = parentQuestion?.default_value
+            ? getFunctionDefaultValue(
+                parentQuestion,
+                fieldKey,
+                allChildrensValues
+              )
+            : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+          if (parentQuestion) {
+            // use parent value if they already have value
+            const formValue =
+              parentQuestionValue || parentQuestionValue === 0
+                ? roundToDecimal(parentQuestionValue)
+                : roundToDecimal(sumAllChildrensValues);
+            // EOL use parent value if they already have value
+            form.setFieldValue(parentQuestionField, formValue);
+            updateSectionTotalValues(
+              commodity.commodity_type,
+              fieldName,
+              sumAllChildrensValues
+            );
+          }
         }
-        */
+        // EOL RECALCULATE TOTAL INCOME
         // EOL remove this code to fix issue total income/section total
 
         if (parentQuestion?.parent) {
@@ -414,7 +424,7 @@ const EnterIncomeDataDriver = ({
       }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialDriverValues]);
+  }, [initialDriverValues, currentCase?.import_id]);
 
   return (
     <Row align="middle">

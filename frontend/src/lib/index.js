@@ -117,26 +117,43 @@ export const generateSegmentPayloads = (
 };
 
 export const InputNumberThousandFormatter = {
-  formatter: (value, _, round = false) => {
-    if (round) {
-      value = Math.round(parseFloat(value));
+  formatter: (value, _, round = false, decimals) => {
+    if (!value && value !== 0) {
+      return "";
     }
 
-    // Convert value to a string and split into integer and decimal parts
-    const [integerPart, decimalPart] = `${value}`.split(".");
+    let numValue = parseFloat(value);
 
-    // Format the integer part with commas
+    if (isNaN(numValue)) {
+      return "";
+    }
+
+    if (round) {
+      numValue = Math.round(numValue);
+    }
+
+    // Apply decimal precision if specified
+    if (typeof decimals === "number") {
+      numValue = parseFloat(numValue.toFixed(decimals));
+    }
+
+    const [integerPart, decimalPart] = `${numValue}`.split(".");
     const formattedIntegerPart = integerPart.replace(
       /\B(?=(\d{3})+(?!\d))/g,
       ","
     );
 
-    // Combine the formatted integer part with the decimal part, if it exists
     return typeof decimalPart !== "undefined"
       ? `${formattedIntegerPart}.${decimalPart}`
       : formattedIntegerPart;
   },
-  parser: (value) => value.replace(/\$\s?|(,*)/g, ""),
+  parser: (value) => {
+    if (!value) {
+      return null;
+    }
+    const parsed = value.replace(/\$\s?|(,*)/g, "");
+    return parsed === "" ? null : Number(parsed); // Returns number
+  },
 };
 
 export const removeUndefinedObjectValue = (obj) => {

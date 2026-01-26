@@ -403,6 +403,7 @@ class TestCaseRoute:
             "segments": [],
             "tags": [1],
             "company": None,
+            "import_id": None,
         }
 
     @pytest.mark.asyncio
@@ -482,4 +483,5 @@ class TestCaseRoute:
             "private": False,
             "tags": [1],
             "company": None,
+            "import_id": None,
         }

@@ -43,7 +43,9 @@ class TestProcurementLibraryV2PracticeRoutes:
                 "created_at",
                 "updated_at",
             }
-            assert expected_keys.issubset(practice.keys()), "Response missing required fields"
+            assert expected_keys.issubset(
+                practice.keys()
+            ), "Response missing required fields"
 
     # ============================================================
     # /plv2/practices?search=...
@@ -54,7 +56,8 @@ class TestProcurementLibraryV2PracticeRoutes:
     ):
         search = "soil"
         res = await client.get(
-            app.url_path_for("plv2:get_all_practices"), params={"search": search}
+            app.url_path_for("plv2:get_all_practices"),
+            params={"search": search},
         )
         assert res.status_code == 200
         res_json = res.json()
@@ -68,9 +71,13 @@ class TestProcurementLibraryV2PracticeRoutes:
         self, app: FastAPI, session: Session, client: AsyncClient
     ):
         # Try with one of the known impact areas (income or environmental)
-        indicator = session.query(PLIndicator).filter(
-            PLIndicator.name.in_(["income_impact", "environmental_impact"])
-        ).first()
+        indicator = (
+            session.query(PLIndicator)
+            .filter(
+                PLIndicator.name.in_(["income_impact", "environmental_impact"])
+            )
+            .first()
+        )
         if not indicator:
             pytest.skip("No impact indicator found in DB")
 
@@ -84,7 +91,7 @@ class TestProcurementLibraryV2PracticeRoutes:
         assert "data" in res_json
         assert isinstance(res_json["data"], list)
 
-        # Optionally check that the filter works (non-empty or logically consistent)
+        # Optionally check that the filter works
         if res_json["data"]:
             assert any(
                 p["is_environmental"] or p["is_income"]
@@ -138,9 +145,13 @@ class TestProcurementLibraryV2PracticeRoutes:
     async def test_get_practices_with_combined_filters(
         self, app: FastAPI, session: Session, client: AsyncClient
     ):
-        indicator = session.query(PLIndicator).filter(
-            PLIndicator.name.in_(["income_impact", "environmental_impact"])
-        ).first()
+        indicator = (
+            session.query(PLIndicator)
+            .filter(
+                PLIndicator.name.in_(["income_impact", "environmental_impact"])
+            )
+            .first()
+        )
         attr = session.query(PLAttribute).first()
 
         if not (indicator and attr):
@@ -170,15 +181,33 @@ class TestProcurementLibraryV2PracticeRoutes:
         practice = session.query(PLPracticeIntervention).first()
         assert practice, "No practice found in DB for test"
         res = await client.get(
-            app.url_path_for("plv2:get_detail_by_practice_id", practice_id=practice.id)
+            app.url_path_for(
+                "plv2:get_detail_by_practice_id", practice_id=practice.id
+            )
         )
         assert res.status_code == 200
         res_json = res.json()
 
         expected_keys = {
-            'id', 'label', 'intervention_definition', 'enabling_conditions', 'business_rationale', 'farmer_rationale', 'risks_n_trade_offs', 'intervention_impact_income', 'intervention_impact_env', 'source_or_evidence', 'is_environmental', 'is_income', 'created_at', 'tags', 'scores'
+            "id",
+            "label",
+            "intervention_definition",
+            "enabling_conditions",
+            "business_rationale",
+            "farmer_rationale",
+            "risks_n_trade_offs",
+            "intervention_impact_income",
+            "intervention_impact_env",
+            "source_or_evidence",
+            "is_environmental",
+            "is_income",
+            "created_at",
+            "tags",
+            "scores",
         }
-        assert expected_keys.issubset(res_json.keys()), "Detail response missing fields"
+        assert expected_keys.issubset(
+            res_json.keys()
+        ), "Detail response missing fields"
         assert res_json["id"] == practice.id
 
     # ============================================================
@@ -190,12 +219,15 @@ class TestProcurementLibraryV2PracticeRoutes:
     ):
         invalid_id = 999999
         res = await client.get(
-            app.url_path_for("plv2:get_detail_by_practice_id", practice_id=invalid_id)
+            app.url_path_for(
+                "plv2:get_detail_by_practice_id", practice_id=invalid_id
+            )
         )
         assert res.status_code == 404
         assert res.json() == {"detail": "Practice not found"}
 
         # ============================================================
+
     # /plv2/practices-by-attribute-ids
     # ============================================================
     @pytest.mark.asyncio
@@ -214,15 +246,25 @@ class TestProcurementLibraryV2PracticeRoutes:
             params={"attribute_ids": attribute_ids, "limit": 3},
         )
 
-        assert res.status_code == 200, f"Unexpected status code: {res.status_code}"
+        assert (
+            res.status_code == 200
+        ), f"Unexpected status code: {res.status_code}"
         res_json = res.json()
 
         # Expect a list of practices
         assert isinstance(res_json, list), "Response should be a list"
         if res_json:
             practice = res_json[0]
-            expected_keys = {"id", "label", "is_environmental", "is_income", "tags"}
-            assert expected_keys.issubset(practice.keys()), "Missing keys in practice response"
+            expected_keys = {
+                "id",
+                "label",
+                "is_environmental",
+                "is_income",
+                "tags",
+            }
+            assert expected_keys.issubset(
+                practice.keys()
+            ), "Missing keys in practice response"
             assert isinstance(practice["tags"], list), "Tags should be a list"
 
     # ============================================================
@@ -243,4 +285,6 @@ class TestProcurementLibraryV2PracticeRoutes:
         assert res.status_code == 200
         res_json = res.json()
         assert isinstance(res_json, list)
-        assert len(res_json) == 0, "Expected empty list when no practices match"
+        assert (
+            len(res_json) == 0
+        ), "Expected empty list when no practices match"
