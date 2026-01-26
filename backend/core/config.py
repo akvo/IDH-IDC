@@ -56,6 +56,10 @@ JS_FILE = "./config.min.js"
 
 
 def generate_config_file() -> None:
+    if os.environ.get("TESTING"):
+        print("[TESTING] No config should be generated")
+        return None
+
     print("[START] Generating config")
     session = SessionLocal()
     env_js = "var __ENV__={"

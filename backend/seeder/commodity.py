@@ -24,7 +24,9 @@ def seeder_commodity(session: Session):
     commodity_category = commodity_category.rename(
         columns={"group_id": "id", "group_name": "name"}
     )
-    commodity_category = commodity_category.drop_duplicates(subset="id").reset_index()
+    commodity_category = commodity_category.drop_duplicates(
+        subset="id"
+    ).reset_index()
     commodity_category = commodity_category[["id", "name"]]
     category_objects = []
     for index, row in commodity_category.iterrows():
@@ -51,11 +53,15 @@ def seeder_commodity(session: Session):
     print("[DATABASE UPDATED]: Commodity Category")
 
     commodities = commodities[["id", "group_id", "name"]]
-    commodities = commodities.rename(columns={"group_id": "commodity_category"})
+    commodities = commodities.rename(
+        columns={"group_id": "commodity_category"}
+    )
     commodity_objects = []
     for index, row in commodities.iterrows():
         # find prev commodity
-        commodity = session.query(Commodity).filter(Commodity.id == row["id"]).first()
+        commodity = (
+            session.query(Commodity).filter(Commodity.id == row["id"]).first()
+        )
         if commodity:
             # update
             commodity.commodity_category = row["commodity_category"]

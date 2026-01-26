@@ -1,6 +1,5 @@
 import db.crud_case as crud_case
 import db.crud_user_business_unit as crud_bu
-import db.crud_living_income_benchmark as crud_lib
 import db.crud_user_case_access as crud_uca
 
 from math import ceil
@@ -40,18 +39,6 @@ from db.crud_case_import import update_case_import_case_id
 
 security = HTTPBearer()
 case_route = APIRouter()
-
-
-def get_segment_benchmark(session: Session, case):
-    for segment in case["segments"]:
-        benchmark = crud_lib.get_by_country_region_year(
-            session=session,
-            country=case["country"],
-            region=segment["region"],
-            year=case["year"],
-        )
-        segment["benchmark"] = benchmark
-    return case
 
 
 @case_route.post(
@@ -271,7 +258,7 @@ def update_case(
             session=session, case_id=case_id, user_id=user.id
         )
     case = case.to_case_detail
-    case = get_segment_benchmark(session=session, case=case)
+    case = crud_case.get_segment_benchmark(session=session, case=case)
     return case
 
 
@@ -293,7 +280,7 @@ def get_case_by_id(
     )
     case = crud_case.get_case_by_id(session=session, id=case_id)
     case = case.to_case_detail
-    case = get_segment_benchmark(session=session, case=case)
+    case = crud_case.get_segment_benchmark(session=session, case=case)
     return case
 
 

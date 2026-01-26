@@ -83,7 +83,6 @@ class TestCaseWithSegmentRoute:
             "multiple_commodities": False,
             "logo": None,
             "created_by": 1,
-            "status": 0,
             "segments": [
                 {
                     "id": 4,
@@ -94,6 +93,8 @@ class TestCaseWithSegmentRoute:
                     "adult": None,
                     "child": None,
                     "number_of_farmers": 10,
+                    "answers": {},
+                    "benchmark": None,
                 },
                 {
                     "id": 5,
@@ -104,6 +105,8 @@ class TestCaseWithSegmentRoute:
                     "adult": None,
                     "child": None,
                     "number_of_farmers": 8,
+                    "answers": {},
+                    "benchmark": None,
                 },
             ],
             "case_commodities": [
@@ -133,6 +136,7 @@ class TestCaseWithSegmentRoute:
                 },
             ],
             "private": False,
+            "status": 0,
             "tags": [1],
             "company": 1,
         }

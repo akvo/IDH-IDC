@@ -23,7 +23,6 @@ from models.case_commodity import (
 )
 from models.segment import (
     Segment,
-    SegmentDict,
     SegmentWithAnswersDict,
     CaseSettingSegmentPayload,
 )
@@ -82,7 +81,7 @@ class CaseDict(TypedDict):
     multiple_commodities: bool
     logo: Optional[str]
     created_by: int
-    segments: Optional[List[SegmentDict]]
+    segments: Optional[List[SegmentWithAnswersDict]]
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
     status: int
@@ -258,6 +257,15 @@ class Case(Base):
 
     @property
     def serialize(self) -> CaseDict:
+        # Get the most recent import_id if exists
+        import_id = None
+        if self.case_imports:
+            # Sort by created_at and get the most recent one
+            most_recent_import = max(
+                self.case_imports, key=lambda x: x.created_at
+            )
+            import_id = str(most_recent_import.id)
+
         return {
             "id": self.id,
             "name": self.name,
@@ -277,11 +285,14 @@ class Case(Base):
             "logo": self.logo,
             "created_by": self.created_by,
             "case_commodities": [pc.simplify for pc in self.case_commodities],
-            "segments": [ps.serialize for ps in self.case_segments],
+            "segments": [
+                ps.serialize_with_answers for ps in self.case_segments
+            ],
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
             "company": self.company,
             "status": self.status,
+            "import_id": import_id,
         }
 
     @property

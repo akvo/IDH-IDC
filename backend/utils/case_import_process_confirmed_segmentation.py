@@ -10,6 +10,7 @@ from models.segment import SegmentUpdateBase, SegmentAnswerBase
 from utils.case_import_storage import load_import_file
 from db.crud_case_import import get_case_import
 from db.crud_segment import update_segment
+from db.crud_case import get_case_by_id, get_segment_benchmark
 
 
 # --------------------------------------------------
@@ -206,9 +207,21 @@ def process_confirmed_segmentation(
     except Exception:
         pass
 
-    return {
-        "status": "success",
-        "case_id": case_id,
-        "segments": segment_payloads,
-        "total_segments": len(segment_payloads),
-    }
+    # return case detail instead of segments
+    case = get_case_by_id(session=session, id=case_id)
+    case = case.to_case_detail
+    case = get_segment_benchmark(session=session, case=case)
+
+    print("=== GENERATED SEGMENTS FROM EXCEL ===")
+    print(
+        {
+            "status": "success",
+            "case_id": case_id,
+            "segments": segment_payloads,
+            "total_segments": len(segment_payloads),
+        }
+    )
+    print("=== EOL GENERATED SEGMENTS FROM EXCEL ===")
+
+    case["import_id"] = payload.import_id
+    return case

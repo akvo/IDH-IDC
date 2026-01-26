@@ -1,3 +1,5 @@
+import db.crud_living_income_benchmark as crud_lib
+
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, cast, or_
 from sqlalchemy.dialects.postgresql import TEXT
@@ -426,3 +428,15 @@ def get_case_by_company(session: Session, company: int) -> CaseDict:
 def get_case_countries(session: Session) -> List[int]:
     cases = session.query(Case.country).all()
     return set([x[0] for x in cases])
+
+
+def get_segment_benchmark(session: Session, case):
+    for segment in case["segments"]:
+        benchmark = crud_lib.get_by_country_region_year(
+            session=session,
+            country=case["country"],
+            region=segment["region"],
+            year=case["year"],
+        )
+        segment["benchmark"] = benchmark
+    return case
