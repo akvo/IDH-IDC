@@ -116,6 +116,7 @@ class CaseDetailDict(TypedDict):
     status: int
     tags: Optional[List[int]] = []
     company: Optional[int] = None
+    import_id: Optional[str] = None
 
 
 class Case(Base):
@@ -198,6 +199,12 @@ class Case(Base):
         cascade="all, delete",
         passive_deletes=True,
         backref="company_cases",
+    )
+    case_imports = relationship(
+        "CaseImport",
+        cascade="all, delete",
+        passive_deletes=True,
+        backref="case_detail",
     )
 
     def __init__(
@@ -343,6 +350,15 @@ class Case(Base):
 
     @property
     def to_case_detail(self) -> CaseDetailDict:
+        # Get the most recent import_id if exists
+        import_id = None
+        if self.case_imports:
+            # Sort by created_at and get the most recent one
+            most_recent_import = max(
+                self.case_imports, key=lambda x: x.created_at
+            )
+            import_id = str(most_recent_import.id)
+
         return {
             "id": self.id,
             "name": self.name,
@@ -374,6 +390,7 @@ class Case(Base):
             "tags": [ct.tag for ct in self.case_tags],
             "company": self.company,
             "status": self.status,
+            "import_id": import_id,
         }
 
     @property

@@ -281,6 +281,7 @@ class TestCaseWithSegmentRoute:
             "private": False,
             "tags": [1],
             "company": 1,
+            "import_id": None,
         }
 
     @pytest.mark.asyncio
