@@ -9,6 +9,7 @@ import {
   InputNumber,
   Popconfirm,
   Tag,
+  Spin,
 } from "antd";
 import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
@@ -18,6 +19,8 @@ const SegmentForm = ({
   deletedSegmentIds = [],
   setDeletedSegmentIds = () => {},
   isDataUpload = false,
+  handleOnChangeFieldValue = (/* currentSegment, value */) => {},
+  segmentFieldsLoading = {},
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -45,10 +48,13 @@ const SegmentForm = ({
         <>
           {fields.map(({ key, name, ...restField }, index) => {
             const relatedSegment = segmentFields?.[name] || null;
-            const numberOfFarmers = relatedSegment
-              ? relatedSegment?.number_of_farmers
-              : null;
+            const numberOfFarmers =
+              relatedSegment || relatedSegment?.number_of_farmers === 0
+                ? relatedSegment?.number_of_farmers
+                : null;
             const formItemStyle = isDataUpload ? { marginBottom: "5px" } : {};
+            const isLoading =
+              segmentFieldsLoading?.[`index_${relatedSegment?.index}`];
 
             return (
               <Card
@@ -131,7 +137,17 @@ const SegmentForm = ({
                           placeholder="Value"
                           controls={false}
                           style={{ width: "100%" }}
-                          disabled={!enableEditCase}
+                          disabled={!enableEditCase || isLoading}
+                          suffix={
+                            isDataUpload && isLoading ? (
+                              <Spin size="small" />
+                            ) : (
+                              ""
+                            )
+                          }
+                          onChange={(val) =>
+                            handleOnChangeFieldValue(relatedSegment, val)
+                          }
                         />
                       </Form.Item>
                     ) : (
@@ -150,7 +166,8 @@ const SegmentForm = ({
                       </Form.Item>
                     )}
                   </Col>
-                  {isDataUpload && numberOfFarmers ? (
+                  {isDataUpload &&
+                  (numberOfFarmers || numberOfFarmers === 0) ? (
                     <Col span={24}>
                       <Tag>
                         <p style={{ margin: 0 }}>

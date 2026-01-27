@@ -24,6 +24,9 @@ const SegmentConfigurationForm = ({
 
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [segmentationPreviews, setSegmentationPreviews] = useState(null);
+  const [segmentFieldsLoading, setSegmentFieldsLoading] = useState({
+    index_1: false,
+  });
 
   const variableType = Form.useWatch(
     `${dataUploadFieldPreffix}variable_type`,
@@ -83,6 +86,56 @@ const SegmentConfigurationForm = ({
     numberOfSegments,
     uploadResult.import_id,
   ]);
+
+  const handleOnChangeFieldValue = (selectedSegment, value) => {
+    setSegmentFieldsLoading((prev) => ({
+      ...prev,
+      [`index_${selectedSegment.index}`]: true,
+    }));
+    const updatedSegmentPayload = segmentFields?.map((s) => {
+      if (s.index === selectedSegment.index) {
+        return {
+          index: s.index,
+          value,
+        };
+      }
+      return {
+        index: s.index,
+        value: s.value,
+      };
+    });
+
+    const recalculatePayload = {
+      import_id: uploadResult.import_id,
+      variable_type: variableType,
+      segmentation_variable: segmentationVariable,
+      segments: updatedSegmentPayload,
+    };
+
+    api
+      .post("/case-import/recalculate-segmentation", recalculatePayload)
+      .then((res) => {
+        setSegmentationPreviews(res.data);
+        // set segment values to form initialValue here
+        form.setFieldsValue({ segments: res.data.segments || [] });
+        const segmentFieldIndex = selectedSegment.index - 1;
+        // set edited field to focus after change
+        setTimeout(() => {
+          form
+            .getFieldInstance(["segments", segmentFieldIndex, "value"])
+            ?.focus();
+        }, 500);
+      })
+      .catch((e) => {
+        console.error("Error recalculate segmentation:", e);
+      })
+      .finally(() => {
+        setSegmentFieldsLoading((prev) => ({
+          ...prev,
+          [`index_${selectedSegment.index}`]: false,
+        }));
+      });
+  };
 
   const handleChangeVariableType = () => {
     // reset segmentation variable when variable type changes
@@ -215,6 +268,8 @@ const SegmentConfigurationForm = ({
                 deletedSegmentIds={deletedSegmentIds}
                 setDeletedSegmentIds={setDeletedSegmentIds}
                 isDataUpload={true}
+                handleOnChangeFieldValue={handleOnChangeFieldValue}
+                segmentFieldsLoading={segmentFieldsLoading}
               />
             </Col>
           </Row>
