@@ -115,9 +115,20 @@ const SegmentConfigurationForm = ({
     api
       .post("/case-import/recalculate-segmentation", recalculatePayload)
       .then((res) => {
-        setSegmentationPreviews(res.data);
+        // update res data segments with the segmentFields name
+        const updatedSegments = res?.data?.segments?.map((s) => {
+          const findSegment = segmentFields.find((x) => x.index === s.index);
+          if (findSegment?.name) {
+            return {
+              ...s,
+              name: findSegment.name,
+            };
+          }
+          return s;
+        });
+        setSegmentationPreviews({ ...res.data, segments: updatedSegments });
         // set segment values to form initialValue here
-        form.setFieldsValue({ segments: res.data.segments || [] });
+        form.setFieldsValue({ segments: updatedSegments });
         const segmentFieldIndex = selectedSegment.index - 1;
         // set edited field to focus after change
         setTimeout(() => {
