@@ -131,14 +131,15 @@ def calculate_numerical_segments_from_cuts(
         )
 
     # Sort by farmers DESC (your current behavior)
-    segments.sort(
-        key=lambda x: x["number_of_farmers"],
-        reverse=True,
-    )
+    # remove comment if needed to recalculate
+    # segments.sort(
+    #     key=lambda x: x["number_of_farmers"],
+    #     reverse=True,
+    # )
 
     # Reindex
-    for i, seg in enumerate(segments, start=1):
-        seg["index"] = i
+    # for i, seg in enumerate(segments, start=1):
+    #     seg["index"] = i
 
     return segments
 
