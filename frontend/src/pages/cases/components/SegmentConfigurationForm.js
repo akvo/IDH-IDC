@@ -268,8 +268,9 @@ const SegmentConfigurationForm = ({
       )}
       {segmentationPreviews?.segments?.length > 0 && !loadingPreview && (
         <Col span={24} style={{ marginTop: 16 }}>
-          <h3>
-            Please review or adjust thresholds for separating segments below:
+          <h3 style={{ fontSize: "16px" }}>
+            Please create unique segment names and review/tweak thresholds for
+            separating segments:
           </h3>
           <Row gutter={[20, 20]}>
             {segmentNumericalWarning}

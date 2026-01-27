@@ -57,6 +57,16 @@ def create_case(
     user = verify_case_creator(
         session=session, authenticated=req.state.authenticated
     )
+
+    if payload.segments:
+        # Check for duplicate segment names in the payload
+        segment_names = [seg.name for seg in payload.segments if seg.name]
+        if len(segment_names) != len(set(segment_names)):
+            raise HTTPException(
+                status_code=400,
+                detail="Failed to save case setting: The segments need to have unique names.",  # noqa
+            )
+
     case = crud_case.add_case(session=session, payload=payload, user=user)
     # Update case_import with case_id if available in request state
     if payload.import_id and case:

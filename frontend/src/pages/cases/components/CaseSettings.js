@@ -577,6 +577,10 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         if (status === 403) {
           errorText = data.detail;
         }
+        if (status === 400 && data?.detail?.includes("unique names")) {
+          // should have unique segment name
+          errorText = data.detail;
+        }
         messageApi.open({
           type: "error",
           content: errorText,
