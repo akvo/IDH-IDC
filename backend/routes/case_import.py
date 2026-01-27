@@ -27,6 +27,7 @@ from utils.case_import_processing import (
     generate_categorical_segments,
     generate_numerical_segments,
     validate_ready_for_upload,
+    recalculate_numerical_segments,
 )
 from utils.case_import_storage import save_import_file, load_import_file
 from utils.case_import_process_confirmed_segmentation import (
@@ -37,6 +38,7 @@ from models.case_import import (
     SegmentationPreviewRequest,
     SegmentationPreviewResponse,
     GenerateSegmentValuesRequest,
+    SegmentationRecalculateRequest,
 )
 
 security = HTTPBearer()
@@ -226,3 +228,73 @@ def download_upload_template():
         filename=TEMPLATE_NAME,
         media_type="application/vnd.ms-excel.sheet.macroEnabled.12",
     )
+
+
+@case_import_route.post(
+    "/case-import/recalculate-segmentation",
+    summary="Recalculate segmentation after user edits segment values",
+    name="case_import:recalculate_segmentation",
+    tags=ROUTE_TAG_NAME,
+)
+def recalculate_segmentation(
+    req: Request,
+    payload: SegmentationRecalculateRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_case_creator(
+        session=session,
+        authenticated=req.state.authenticated,
+    )
+
+    case_import = get_case_import(
+        session=session,
+        import_id=payload.import_id,
+    )
+
+    content = load_import_file(case_import.file_path)
+    df = load_data_dataframe_from_bytes(content)
+
+    variable = payload.segmentation_variable.lower()
+    var_type = payload.variable_type.lower()
+
+    if variable not in df.columns:
+        raise HTTPException(
+            status_code=400,
+            detail="Segmentation variable not found in data sheet",
+        )
+
+    # -------- CATEGORICAL --------
+    if var_type == "categorical":
+        # No recalculation needed; categories are fixed
+        segments = generate_categorical_segments(
+            df=df,
+            column=variable,
+        )
+
+    # -------- NUMERICAL --------
+    elif var_type == "numerical":
+        if not payload.segments:
+            raise HTTPException(
+                status_code=400,
+                detail="Segments are required for numerical recalculation",
+            )
+
+        segments = recalculate_numerical_segments(
+            df=df,
+            column=variable,
+            segments=[seg.dict() for seg in payload.segments],
+        )
+
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid variable type",
+        )
+
+    return {
+        "import_id": payload.import_id,
+        "segmentation_variable": variable,
+        "variable_type": var_type,
+        "segments": segments,
+    }
