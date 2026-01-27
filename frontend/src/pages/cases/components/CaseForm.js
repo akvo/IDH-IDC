@@ -208,8 +208,7 @@ const CaseForm = ({
   const uploadProps = {
     name: "file",
     multiple: false,
-    accept:
-      ".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12",
+    accept: ".xlsm,application/vnd.ms-excel.sheet.macroEnabled.12",
     disabled: uploading,
     fileList: fileList, // Controlled file list
     customRequest: async ({ file, onSuccess, onError, onProgress }) => {
@@ -695,7 +694,7 @@ const CaseForm = ({
                         <p className="ant-upload-text">
                           {uploading
                             ? "Uploading..."
-                            : "Select a xlsx file to import"}
+                            : "Select a xlsm file to import"}
                         </p>
                         <p className="ant-upload-hint">
                           {uploading
