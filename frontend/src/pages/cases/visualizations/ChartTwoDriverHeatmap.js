@@ -76,7 +76,7 @@ const getOptions = ({
         const value = params.value[2];
         const x = params.value[0];
         const y = params.value[1];
-        let text = `<span style="color: #000;">${value}</span><br>`;
+        let text = `<span style="color: #000;">Reached income: ${value}</span><br>`;
         text += `<span>Income Target: ${
           target ? target?.toFixed() : 0
         }</span><br>`;
