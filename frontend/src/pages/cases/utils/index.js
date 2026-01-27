@@ -9,6 +9,7 @@ const handleQuestionType = (
   updateSectionTotalValues = (/*commodity_type, fieldName, value*/) => {}
 ) => {
   if (!question?.parent) {
+    // handle aggregator and diversified questions
     if (question?.question_type === "aggregator") {
       const value = values?.[`${fieldKey}-${question.id}`] || 0;
       updateSectionTotalValues(commodity.commodity_type, fieldName, value);
