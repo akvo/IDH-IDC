@@ -44,16 +44,6 @@ class GenerateSegmentValuesRequest(BaseModel):
     segments: List[SegmentDefinition]
 
 
-# class CategoricalCondition(BaseModel):
-#     operator: Literal["is"]
-#     value: str
-
-
-# class NumericalCondition(BaseModel):
-#     operator: Literal["<=", ">", "between"]
-#     value: Union[float, List[float]]
-
-
 class SegmentationSegment(BaseModel):
     index: int
     name: str
@@ -69,6 +59,21 @@ class SegmentationPreviewResponse(BaseModel):
     segments: List[SegmentationSegment]
 
 
+class SegmentValueInput(BaseModel):
+    index: int = Field(..., ge=1)
+    value: float | str
+
+
+class SegmentationRecalculateRequest(BaseModel):
+    import_id: str
+    segmentation_variable: str
+    variable_type: Literal["numerical", "categorical"]
+    segments: List[SegmentValueInput]
+
+
+# TODO ::
+# Do we need to save the segmentation_variable, variable_type,
+# number of segments (segment configuration) into the DB?
 class CaseImport(Base):
     __tablename__ = "case_import"
 

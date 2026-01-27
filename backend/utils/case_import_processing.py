@@ -36,25 +36,18 @@ def validate_workbook(xls: pd.ExcelFile):
 
 
 def extract_column_types(df: pd.DataFrame):
-    categorical = []
-    numerical = []
+    categorical, numerical = [], []
 
     for col in df.columns:
-        series = df[col]
-
-        # Skip empty columns
-        if series.dropna().empty:
+        series = df[col].dropna()
+        if series.empty:
             continue
 
         if pd.api.types.is_numeric_dtype(series):
             numerical.append(col)
-        elif pd.api.types.is_bool_dtype(series):
-            categorical.append(col)
         elif pd.api.types.is_datetime64_any_dtype(series):
-            # Ignore for now (explicitly)
             continue
         else:
-            # object, string, mixed → categorical
             categorical.append(col)
 
     return {
@@ -64,12 +57,7 @@ def extract_column_types(df: pd.DataFrame):
 
 
 def generate_categorical_segments(df: pd.DataFrame, column: str):
-    counts = (
-        df[column]
-        .fillna("Unknown")
-        .value_counts()
-        .sort_values(ascending=False)
-    )
+    counts = df[column].fillna("Unknown").value_counts()
 
     segments = []
     for idx, (value, count) in enumerate(counts.items(), start=1):
@@ -86,48 +74,117 @@ def generate_categorical_segments(df: pd.DataFrame, column: str):
     return segments
 
 
-def generate_numerical_segments(
-    df: pd.DataFrame, column: str, n_segments: int
+def generate_numerical_cut_values(
+    df: pd.DataFrame,
+    column: str,
+    n_segments: int,
 ):
-    series = df[column].dropna()
+    series = df[column].dropna().to_numpy()
 
-    if series.empty:
+    if series.size == 0:
         raise HTTPException(
             status_code=400,
             detail="Selected variable has no valid numerical values",
         )
 
-    # Sort values and split into equal-frequency buckets
-    values = np.sort(series.to_numpy())
-    buckets = np.array_split(values, n_segments)
+    # Equal-frequency cuts via quantiles
+    quantiles = np.linspace(0, 1, n_segments + 1)[1:]
+    cuts = np.quantile(series, quantiles)
+
+    # Deduplicate & round
+    cuts = np.unique(np.round(cuts, 2))
+
+    if cuts.size == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to generate segmentation cuts",
+        )
+
+    return cuts
+
+
+def calculate_numerical_segments_from_cuts(
+    df: pd.DataFrame,
+    column: str,
+    cuts: np.ndarray,
+):
+    values = df[column].dropna().to_numpy()
+
+    # Assign bucket indices
+    bucket_idx = np.digitize(values, bins=cuts, right=True)
+
+    counts = np.bincount(
+        bucket_idx,
+        minlength=len(cuts),
+    )
 
     segments = []
-    seen = set()
-
-    for idx, bucket in enumerate(buckets, start=1):
-        value = round(float(bucket.max()), 2)
-        if value in seen:
-            continue
-        seen.add(value)
-
+    for idx, (cut, count) in enumerate(zip(cuts, counts), start=1):
         segments.append(
             {
                 "index": idx,
                 "name": column,
                 "operator": "<=",
-                "value": value,
-                "number_of_farmers": len(bucket),
+                "value": float(cut),
+                "number_of_farmers": int(count),
             }
         )
 
-    # Sort by number of farmers (descending)
-    segments.sort(key=lambda x: x["number_of_farmers"], reverse=True)
+    # Sort by farmers DESC (your current behavior)
+    segments.sort(
+        key=lambda x: x["number_of_farmers"],
+        reverse=True,
+    )
 
-    # Reassign index after sorting
-    for idx, segment in enumerate(segments, start=1):
-        segment["index"] = idx
+    # Reindex
+    for i, seg in enumerate(segments, start=1):
+        seg["index"] = i
 
     return segments
+
+
+def generate_numerical_segments(
+    df: pd.DataFrame,
+    column: str,
+    n_segments: int,
+):
+    cuts = generate_numerical_cut_values(
+        df=df,
+        column=column,
+        n_segments=n_segments,
+    )
+
+    return calculate_numerical_segments_from_cuts(
+        df=df,
+        column=column,
+        cuts=cuts,
+    )
+
+
+def recalculate_numerical_segments(
+    df: pd.DataFrame,
+    column: str,
+    segments: list[dict],
+):
+    cuts = np.array(
+        [
+            float(seg["value"])
+            for seg in sorted(segments, key=lambda x: x["index"])
+        ],
+        dtype=float,
+    )
+
+    if not np.all(np.diff(cuts) > 0):
+        raise HTTPException(
+            status_code=400,
+            detail="Segment values must be strictly increasing",
+        )
+
+    return calculate_numerical_segments_from_cuts(
+        df=df,
+        column=column,
+        cuts=cuts,
+    )
 
 
 def validate_ready_for_upload(mapping_df: pd.DataFrame) -> None:

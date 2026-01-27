@@ -462,3 +462,265 @@ class TestCaseImport:
             "status": 0,
             "import_id": import_id,
         }
+
+    @pytest.mark.asyncio
+    async def test_case_import_recalculate_segmentation_categorical(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # Upload valid file
+        with open(VALID_FILE, "rb") as f:
+            files = {
+                "file": (
+                    "valid.xlsm",
+                    f.read(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # noqa
+                )
+            }
+
+        res = await client.post(
+            app.url_path_for("case_import:upload_file"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            files=files,
+        )
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        payload = {
+            "import_id": import_id,
+            "segmentation_variable": "hh_farmer_gender",
+            "variable_type": "categorical",
+            "segments": [
+                # user-provided values should be ignored for categorical
+                {"index": 1, "value": "Male"},
+                {"index": 2, "value": "Female"},
+            ],
+        }
+
+        # no auth
+        res = await client.post(
+            app.url_path_for("case_import:recalculate_segmentation"),
+            json=payload,
+        )
+        assert res.status_code == 403
+
+        # admin auth
+        res = await client.post(
+            app.url_path_for("case_import:recalculate_segmentation"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json=payload,
+        )
+
+        assert res.status_code == 200
+        body = res.json()
+
+        assert body["import_id"] == import_id
+        assert body["segmentation_variable"] == "hh_farmer_gender"
+        assert body["variable_type"] == "categorical"
+
+        assert body["segments"] == [
+            {
+                "index": 1,
+                "name": "hh_farmer_gender",
+                "operator": "is",
+                "value": "Male",
+                "number_of_farmers": 345,
+            },
+            {
+                "index": 2,
+                "name": "hh_farmer_gender",
+                "operator": "is",
+                "value": "Female",
+                "number_of_farmers": 63,
+            },
+        ]
+
+    @pytest.mark.asyncio
+    async def test_case_import_recalculate_segmentation_numerical(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # Upload valid file
+        with open(VALID_FILE, "rb") as f:
+            files = {
+                "file": (
+                    "valid.xlsm",
+                    f.read(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # noqa
+                )
+            }
+
+        res = await client.post(
+            app.url_path_for("case_import:upload_file"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            files=files,
+        )
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        payload = {
+            "import_id": import_id,
+            "segmentation_variable": "hh_farmer_age",  # numerical column
+            "variable_type": "numerical",
+            "segments": [
+                {"index": 1, "value": 30},
+                {"index": 2, "value": 45},
+                {"index": 3, "value": 60},
+            ],
+        }
+
+        res = await client.post(
+            app.url_path_for("case_import:recalculate_segmentation"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json=payload,
+        )
+
+        assert res.status_code == 200
+        body = res.json()
+
+        assert body["import_id"] == import_id
+        assert body["segmentation_variable"] == "hh_farmer_age"
+        assert body["variable_type"] == "numerical"
+        assert len(body["segments"]) == 3
+
+        for segment in body["segments"]:
+            assert "index" in segment
+            assert "operator" in segment
+            assert "value" in segment
+            assert "number_of_farmers" in segment
+            assert segment["number_of_farmers"] >= 0
+
+    @pytest.mark.asyncio
+    async def test_recalculate_segmentation_numerical_missing_segments(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # Upload valid file
+        with open(VALID_FILE, "rb") as f:
+            files = {
+                "file": (
+                    "valid.xlsm",
+                    f.read(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # noqa
+                )
+            }
+
+        res = await client.post(
+            app.url_path_for("case_import:upload_file"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            files=files,
+        )
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        payload = {
+            "import_id": import_id,
+            "segmentation_variable": "hh_farmer_age",
+            "variable_type": "numerical",
+            "segments": [],
+        }
+
+        res = await client.post(
+            app.url_path_for("case_import:recalculate_segmentation"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json=payload,
+        )
+
+        assert res.status_code == 400
+        assert res.json() == {
+            "detail": "Segments are required for numerical recalculation"
+        }
+
+    @pytest.mark.asyncio
+    async def test_case_import_segmentation_preview_vs_recalculate_numerical(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        # Upload valid file
+        with open(VALID_FILE, "rb") as f:
+            files = {
+                "file": (
+                    "valid.xlsm",
+                    f.read(),
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # noqa
+                )
+            }
+
+        res = await client.post(
+            app.url_path_for("case_import:upload_file"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            files=files,
+        )
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        # -------------------------------
+        # 1. Segmentation preview
+        # -------------------------------
+        preview_res = await client.post(
+            app.url_path_for("case_import:segmentation_preview"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json={
+                "import_id": import_id,
+                "segmentation_variable": "hh_farmer_age",
+                "variable_type": "numerical",
+                "number_of_segments": 2,
+            },
+        )
+
+        assert preview_res.status_code == 200
+        preview_body = preview_res.json()
+
+        assert "segments" in preview_body
+        assert len(preview_body["segments"]) > 1
+
+        preview_segments = preview_body["segments"]
+
+        # Capture original values for comparison
+        original_values = [s["value"] for s in preview_segments]
+        original_counts = [s["number_of_farmers"] for s in preview_segments]
+
+        # -------------------------------
+        # 2. User edits segment boundaries
+        # -------------------------------
+        edited_segments = []
+        for idx, seg in enumerate(preview_segments):
+            # Shift boundary slightly to force recalculation
+            edited_segments.append(
+                {
+                    "index": idx + 1,
+                    "value": seg["value"] + 5,
+                }
+            )
+
+        # -------------------------------
+        # 3. Recalculate
+        # -------------------------------
+        recalc_res = await client.post(
+            app.url_path_for("case_import:recalculate_segmentation"),
+            headers={"Authorization": f"Bearer {admin_account.token}"},
+            json={
+                "import_id": import_id,
+                "segmentation_variable": "hh_farmer_age",
+                "variable_type": "numerical",
+                "segments": edited_segments,
+            },
+        )
+
+        assert recalc_res.status_code == 200
+        recalc_body = recalc_res.json()
+
+        recalculated_segments = recalc_body["segments"]
+
+        # -------------------------------
+        # 4. Compare preview vs recalculation
+        # -------------------------------
+        new_values = [s["value"] for s in recalculated_segments]
+        new_counts = [s["number_of_farmers"] for s in recalculated_segments]
+
+        # Boundaries must reflect edited values
+        assert new_values != original_values
+
+        # At least one segment should change farmer count
+        assert new_counts != original_counts
+
+        # Sanity checks
+        for seg in recalculated_segments:
+            assert seg["number_of_farmers"] >= 0
+            assert "operator" in seg
