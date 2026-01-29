@@ -9,6 +9,7 @@ import { VisualCardWrapper } from "../components";
 // Withhout bin value calculation from ChartBinningHeatmapSensitivityAnalysis
 
 const SHOW_VISUAL_DESCRIPTION = false;
+const HEATMAP_SIZE = 8;
 
 const getOptions = ({
   xAxis = { name: "", min: 0, max: 0 },
@@ -22,15 +23,19 @@ const getOptions = ({
   origin = [],
 }) => {
   const xAxisData = [
-    ...range(xAxis.min, xAxis.max, (xAxis.max - xAxis.min) / 4).map((x) =>
-      x.toFixed(2)
-    ),
+    ...range(
+      xAxis.min,
+      xAxis.max,
+      (xAxis.max - xAxis.min) / (HEATMAP_SIZE - 1)
+    ).map((x) => x.toFixed(2)),
     xAxis.max.toFixed(2),
   ];
   const yAxisData = [
-    ...range(yAxis.min, yAxis.max, (yAxis.max - yAxis.min) / 4).map((x) =>
-      x.toFixed(2)
-    ),
+    ...range(
+      yAxis.min,
+      yAxis.max,
+      (yAxis.max - yAxis.min) / (HEATMAP_SIZE - 1)
+    ).map((x) => x.toFixed(2)),
     yAxis.max.toFixed(2),
   ];
 
@@ -113,7 +118,7 @@ const getOptions = ({
     },
     grid: {
       top: "15%",
-      left: SHOW_VISUAL_DESCRIPTION ? "15%" : "10%",
+      left: SHOW_VISUAL_DESCRIPTION ? "15%" : "6%",
       right: "5%",
       bottom: "20%",
       containLabel: true,
@@ -189,7 +194,7 @@ const getOptions = ({
           rich: {
             down: {
               backgroundColor: "#FF8F4E",
-              padding: [8, 12],
+              padding: [5, 10],
               fontWeight: 700,
               borderRadius: 10,
               width: "100%",
@@ -237,7 +242,7 @@ const getOptions = ({
           rich: {
             out: {
               backgroundColor: "#FED754",
-              padding: [8, 12],
+              padding: [5, 10],
               fontWeight: 700,
               borderRadius: 10,
               width: "100%",
@@ -285,7 +290,7 @@ const getOptions = ({
           rich: {
             up: {
               backgroundColor: "#5BDD91",
-              padding: [8, 12],
+              padding: [5, 10],
               fontWeight: 700,
               borderRadius: 10,
               width: "100%",
@@ -405,7 +410,7 @@ const ChartTwoDriverHeatmap = ({ segment, data, origin }) => {
                   bordered
                 >
                   <Chart
-                    height={450}
+                    height={485}
                     wrapper={false}
                     type="BAR"
                     override={getOptions({ ...heatmapData, origin })}
