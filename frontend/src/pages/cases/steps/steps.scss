@@ -761,9 +761,15 @@
       margin: 0;
       color: $primary-color;
       margin-bottom: 14px;
+      font-size: 16px;
     }
-    p {
+    p,
+    h4 {
       margin: 0;
+      font-weight: normal;
+    }
+    h4 {
+      margin-bottom: 8px;
     }
 
     .ant-space,

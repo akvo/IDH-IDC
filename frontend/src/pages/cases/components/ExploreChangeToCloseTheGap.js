@@ -14,7 +14,18 @@ const ExploreChangeToCloseTheGap = () => {
     <Row gutter={[24, 24]}>
       <Col span={24}>
         <Card className="card-content-wrapper select-the-goal-container">
-          <Row gutter={[20, 20]}>
+          <Row gutter={[20, 20]} align="bottom">
+            <Col span={24}>
+              <Row gutter={[20, 20]}>
+                <Col span={16}>
+                  <h4>Select the segment for which you want to explore.</h4>
+                  <SegmentSelector
+                    selectedSegment={selectedSegment}
+                    setSelectedSegment={setSelectedSegment}
+                  />
+                </Col>
+              </Row>
+            </Col>
             <Col span={16}>
               <h3>Select the Goal:</h3>
               <p>
@@ -30,17 +41,6 @@ const ExploreChangeToCloseTheGap = () => {
                 selectedSegment={selectedSegment}
                 buttonView={true}
               />
-            </Col>
-            <Col span={24}>
-              <Row gutter={[20, 20]}>
-                <Col span={16}>
-                  <p>Select the segment for which you want to explore.</p>
-                  <SegmentSelector
-                    selectedSegment={selectedSegment}
-                    setSelectedSegment={setSelectedSegment}
-                  />
-                </Col>
-              </Row>
             </Col>
           </Row>
         </Card>
