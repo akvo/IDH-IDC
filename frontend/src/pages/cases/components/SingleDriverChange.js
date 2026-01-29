@@ -97,7 +97,13 @@ const ChangeTag = ({ value, type }) => {
 
   return (
     <Tag
-      icon={<Icon style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }} />}
+      icon={
+        value === 0 ? (
+          ""
+        ) : (
+          <Icon style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }} />
+        )
+      }
       color={TAG_COLORS[type]}
       bordered={false}
       style={{
@@ -106,7 +112,7 @@ const ChangeTag = ({ value, type }) => {
       }}
     >
       <span style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }}>
-        {value}%
+        {thousandFormatter(value, 2)}%
       </span>
     </Tag>
   );
@@ -277,15 +283,15 @@ const SingleDriverChange = ({ selectedSegment }) => {
 
         // needed value calculation
         // for primary-2
-        // needed_value = (secondary-1 + tertiary-1 + other_diversified_income - income_target) / (primary-5 - (primary-3*primary-4))
+        // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income) / (primary-3 * primary-4 - primary-5)
         let neededValue = 0;
         if (commodityType === "focus" && qID === 2) {
           neededValue =
-            (currentSecondaryIncome +
-              currentTertiaryIncome +
-              currentOtherDiversifiedIncome -
-              incomeTarget) /
-            (currentPrimary5 - currentPrimary3 * currentPrimary4);
+            (incomeTarget -
+              currentSecondaryIncome -
+              currentTertiaryIncome -
+              currentOtherDiversifiedIncome) /
+            (currentPrimary3 * currentPrimary4 - currentPrimary5);
         }
         //
         // for primary-3
@@ -444,24 +450,18 @@ const SingleDriverChange = ({ selectedSegment }) => {
             const neededChangePercent =
               currentValue > 0 ? (neededChange / currentValue) * 100 : 0;
             rowData[colKey] = thousandFormatter(neededChange, 2);
-            rowData[`${colKey}Percent`] = thousandFormatter(
-              neededChangePercent,
-              2
-            );
+            rowData[`${colKey}Percent`] = neededChangePercent;
           }
           if (colKey === "maxFeasibleChange") {
             const maxFeasibleChange = feasibleValue - currentValue;
             const maxFeasibleChangePercent =
               currentValue > 0 ? (maxFeasibleChange / currentValue) * 100 : 0;
             rowData[colKey] = thousandFormatter(maxFeasibleChange, 2);
-            rowData[`${colKey}Percent`] = thousandFormatter(
-              maxFeasibleChangePercent,
-              2
-            );
+            rowData[`${colKey}Percent`] = maxFeasibleChangePercent;
           }
           if (colKey === "feasibility") {
-            const lowerBound = min(currentValue, feasibleValue);
-            const upperBound = max(currentValue, feasibleValue);
+            const lowerBound = min([currentValue, feasibleValue]);
+            const upperBound = max([currentValue, feasibleValue]);
             let feasibility = "";
             let type = null;
             if (neededValue < 0) {
