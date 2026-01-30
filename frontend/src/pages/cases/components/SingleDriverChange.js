@@ -464,16 +464,18 @@ const SingleDriverChange = ({ selectedSegment }) => {
             const upperBound = max([currentValue, feasibleValue]);
             let feasibility = "";
             let type = null;
+
             if (neededValue < 0) {
               feasibility = "Not possible";
               type = "danger";
-            } else if (lowerBound <= neededValue <= upperBound) {
+            } else if (neededValue >= lowerBound && neededValue <= upperBound) {
               feasibility = "Possible within feasible levels";
               type = "success";
             } else {
               feasibility = "Possible outside of feasible levels";
               type = "warning";
             }
+
             rowData[colKey] = feasibility;
             rowData["type"] = type;
           }
