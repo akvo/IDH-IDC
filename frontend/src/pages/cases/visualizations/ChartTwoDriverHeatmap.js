@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import Chart from "../../../components/chart";
-import { range } from "lodash";
 import { getFunctionDefaultValue } from "../../../lib";
 import { Row, Col, Space, Card } from "antd";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { VisualCardWrapper } from "../components";
+// import { range } from "lodash";
 
 // Withhout bin value calculation from ChartBinningHeatmapSensitivityAnalysis
 
@@ -22,22 +22,36 @@ const getOptions = ({
   target = 0,
   origin = [],
 }) => {
-  const xAxisData = [
-    ...range(
-      xAxis.min,
-      xAxis.max,
-      (xAxis.max - xAxis.min) / (HEATMAP_SIZE - 1)
-    ).map((x) => x.toFixed(2)),
-    xAxis.max.toFixed(2),
-  ];
-  const yAxisData = [
-    ...range(
-      yAxis.min,
-      yAxis.max,
-      (yAxis.max - yAxis.min) / (HEATMAP_SIZE - 1)
-    ).map((x) => x.toFixed(2)),
-    yAxis.max.toFixed(2),
-  ];
+  // TODO:: Remove after task ENG-2487 marked as DONE
+  // const xAxisData = [
+  //   ...range(
+  //     xAxis.min,
+  //     xAxis.max,
+  //     (xAxis.max - xAxis.min) / (HEATMAP_SIZE - 1)
+  //   ).map((x) => x.toFixed(2)),
+  //   xAxis.max.toFixed(2),
+  // ];
+  // const yAxisData = [
+  //   ...range(
+  //     yAxis.min,
+  //     yAxis.max,
+  //     (yAxis.max - yAxis.min) / (HEATMAP_SIZE - 1)
+  //   ).map((x) => x.toFixed(2)),
+  //   yAxis.max.toFixed(2),
+  // ];
+  // EOL TODO::
+
+  const xAxisData = Array.from({ length: HEATMAP_SIZE }, (_, i) => {
+    const value =
+      xAxis.min + (i * (xAxis.max - xAxis.min)) / (HEATMAP_SIZE - 1);
+    return value.toFixed(2);
+  });
+
+  const yAxisData = Array.from({ length: HEATMAP_SIZE }, (_, i) => {
+    const value =
+      yAxis.min + (i * (yAxis.max - yAxis.min)) / (HEATMAP_SIZE - 1);
+    return value.toFixed(2);
+  });
 
   const dt = xAxisData
     .map((h) => {
