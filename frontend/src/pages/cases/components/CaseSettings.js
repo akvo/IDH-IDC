@@ -24,6 +24,16 @@ import { MAX_SEGMENT } from ".";
 
 const dataUploadFieldPreffix = "data_upload_";
 
+// TODO :: SEGMENTATION UPDATE
+/**
+ *
+ * 1. For categorical segmentation preview:
+ *    - show the segment threshold as the segment name
+ *    - show the number of farmers at the segment threshold position
+ * 2. For numerical segmentation preview:
+ *    - segment threshold field name become dynamic: using the name from selected segmentation variable
+ */
+
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();

@@ -6,6 +6,8 @@ import { map, groupBy, isEmpty } from "lodash";
 import { ChartTwoDriverHeatmap } from "../visualizations";
 import { commodities } from "../../../store/static";
 
+// TODO :: the heatmap show 0 value for second segment in data upload example spreadheet
+
 const TwoDriverHeatmap = ({ selectedSegment }) => {
   const [form] = Form.useForm();
 

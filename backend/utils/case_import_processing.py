@@ -64,7 +64,7 @@ def generate_categorical_segments(df: pd.DataFrame, column: str):
         segments.append(
             {
                 "index": idx,
-                "name": column,
+                "name": value,
                 "operator": "is",
                 "value": value,
                 "number_of_farmers": int(count),

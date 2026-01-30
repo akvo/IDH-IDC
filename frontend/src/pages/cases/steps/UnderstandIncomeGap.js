@@ -19,6 +19,10 @@ import { routePath } from "../../../components/route";
 /**
  * STEP 3
  */
+
+// TODO :: When successfully load data from spreadsheet and not update any "Step 2 Enter Income Data"
+// the chart's not loaded properly (show's no data), while in step 2 the data already calculated.
+
 const UnderstandIncomeGap = ({
   setbackfunction,
   setnextfunction,

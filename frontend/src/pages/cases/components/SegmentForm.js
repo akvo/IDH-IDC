@@ -32,6 +32,10 @@ const SegmentForm = ({
     `${dataUploadFieldPreffix}variable_type`,
     form
   );
+  const segmentationVariable = Form.useWatch(
+    `${dataUploadFieldPreffix}segmentation_variable`,
+    form
+  );
 
   const onDelete = ({ field = {}, remove = () => {} }) => {
     // add delete segment into deletedSegmentIds state
@@ -131,43 +135,76 @@ const SegmentForm = ({
                     </Form.Item>
                   </Col>
                   <Col span={10}>
-                    {isDataUpload ? (
-                      <Row align="middle" className="segment-threshold-row">
-                        <Col span={3}>
-                          {/* show operator of segment Threshold */}
-                          <p className={`operator ${variableType}`}>
-                            {operator}
-                          </p>
-                          {/* EOL show operator of segment Threshold */}
-                        </Col>
-                        <Col span={21}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, "value"]}
-                            label={isDataUpload ? "Segment Threshold" : null}
-                            hidden={!isDataUpload}
-                            style={formItemStyle}
-                          >
-                            <InputNumber
-                              placeholder="Value"
-                              controls={false}
-                              style={{ width: "100%" }}
-                              disabled={!enableEditCase || isLoading}
-                              suffix={
-                                isDataUpload && isLoading ? (
-                                  <Spin size="small" />
-                                ) : (
-                                  ""
-                                )
+                    {
+                      // show segment threshold only for numerical variableType
+                      isDataUpload ? (
+                        <Row align="middle" className="segment-threshold-row">
+                          {variableType === "numerical" && (
+                            <Col span={3}>
+                              {/* show operator of segment Threshold */}
+                              <p className={`operator ${variableType}`}>
+                                {operator}
+                              </p>
+                              {/* EOL show operator of segment Threshold */}
+                            </Col>
+                          )}
+                          <Col span={21}>
+                            <Form.Item
+                              {...restField}
+                              name={[name, "value"]}
+                              label={isDataUpload ? segmentationVariable : null}
+                              hidden={
+                                !isDataUpload || variableType === "categorical"
                               }
-                              onChange={(val) =>
-                                handleOnChangeFieldValue(relatedSegment, val)
-                              }
-                            />
-                          </Form.Item>
-                        </Col>
-                      </Row>
+                              style={formItemStyle}
+                            >
+                              <InputNumber
+                                placeholder="Value"
+                                controls={false}
+                                style={{ width: "100%" }}
+                                disabled={!enableEditCase || isLoading}
+                                suffix={
+                                  isDataUpload && isLoading ? (
+                                    <Spin size="small" />
+                                  ) : (
+                                    ""
+                                  )
+                                }
+                                onChange={(val) =>
+                                  handleOnChangeFieldValue(relatedSegment, val)
+                                }
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      ) : (
+                        ""
+                      )
+                    }
+
+                    {isDataUpload && variableType === "categorical" ? (
+                      <Form.Item
+                        {...restField}
+                        label={isDataUpload ? "Number of farmers" : null}
+                        name={[name, "number_of_farmers"]}
+                        hidden={
+                          !isDataUpload ||
+                          (isDataUpload && variableType === "numerical")
+                        }
+                        style={formItemStyle}
+                      >
+                        <InputNumber
+                          placeholder="Number of farmers"
+                          controls={false}
+                          style={{ width: "100%", color: "#000" }}
+                          disabled={true}
+                        />
+                      </Form.Item>
                     ) : (
+                      ""
+                    )}
+
+                    {!isDataUpload ? (
                       <Form.Item
                         {...restField}
                         name={[name, "number_of_farmers"]}
@@ -181,9 +218,12 @@ const SegmentForm = ({
                           disabled={!enableEditCase}
                         />
                       </Form.Item>
+                    ) : (
+                      ""
                     )}
                   </Col>
                   {isDataUpload &&
+                  variableType === "numerical" &&
                   (numberOfFarmers || numberOfFarmers === 0) ? (
                     <Col span={24}>
                       <Tag>
