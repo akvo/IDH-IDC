@@ -177,3 +177,14 @@
     }
   }
 }
+
+.segment-threshold-row {
+  p.operator {
+    margin: 0;
+    margin-top: 26px;
+
+    &.numerical {
+      font-size: 20px;
+    }
+  }
+}

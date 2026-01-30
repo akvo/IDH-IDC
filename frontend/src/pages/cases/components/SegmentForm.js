@@ -21,12 +21,17 @@ const SegmentForm = ({
   isDataUpload = false,
   handleOnChangeFieldValue = (/* currentSegment, value */) => {},
   segmentFieldsLoading = {},
+  dataUploadFieldPreffix = "",
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
 
   const form = Form.useFormInstance();
   const segmentFields = Form.useWatch("segments", form);
+  const variableType = Form.useWatch(
+    `${dataUploadFieldPreffix}variable_type`,
+    form
+  );
 
   const onDelete = ({ field = {}, remove = () => {} }) => {
     // add delete segment into deletedSegmentIds state
@@ -55,6 +60,7 @@ const SegmentForm = ({
             const formItemStyle = isDataUpload ? { marginBottom: "5px" } : {};
             const isLoading =
               segmentFieldsLoading?.[`index_${relatedSegment?.index}`];
+            const operator = relatedSegment?.operator || null;
 
             return (
               <Card
@@ -126,30 +132,41 @@ const SegmentForm = ({
                   </Col>
                   <Col span={10}>
                     {isDataUpload ? (
-                      <Form.Item
-                        {...restField}
-                        name={[name, "value"]}
-                        label={isDataUpload ? "Segment Threshold" : null}
-                        hidden={!isDataUpload}
-                        style={formItemStyle}
-                      >
-                        <InputNumber
-                          placeholder="Value"
-                          controls={false}
-                          style={{ width: "100%" }}
-                          disabled={!enableEditCase || isLoading}
-                          suffix={
-                            isDataUpload && isLoading ? (
-                              <Spin size="small" />
-                            ) : (
-                              ""
-                            )
-                          }
-                          onChange={(val) =>
-                            handleOnChangeFieldValue(relatedSegment, val)
-                          }
-                        />
-                      </Form.Item>
+                      <Row align="middle" className="segment-threshold-row">
+                        <Col span={3}>
+                          {/* show operator of segment Threshold */}
+                          <p className={`operator ${variableType}`}>
+                            {operator}
+                          </p>
+                          {/* EOL show operator of segment Threshold */}
+                        </Col>
+                        <Col span={21}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "value"]}
+                            label={isDataUpload ? "Segment Threshold" : null}
+                            hidden={!isDataUpload}
+                            style={formItemStyle}
+                          >
+                            <InputNumber
+                              placeholder="Value"
+                              controls={false}
+                              style={{ width: "100%" }}
+                              disabled={!enableEditCase || isLoading}
+                              suffix={
+                                isDataUpload && isLoading ? (
+                                  <Spin size="small" />
+                                ) : (
+                                  ""
+                                )
+                              }
+                              onChange={(val) =>
+                                handleOnChangeFieldValue(relatedSegment, val)
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
                     ) : (
                       <Form.Item
                         {...restField}

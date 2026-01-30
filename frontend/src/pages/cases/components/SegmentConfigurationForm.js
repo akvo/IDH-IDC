@@ -282,6 +282,7 @@ const SegmentConfigurationForm = ({
                 isDataUpload={true}
                 handleOnChangeFieldValue={handleOnChangeFieldValue}
                 segmentFieldsLoading={segmentFieldsLoading}
+                dataUploadFieldPreffix={dataUploadFieldPreffix}
               />
             </Col>
           </Row>
