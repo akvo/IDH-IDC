@@ -108,6 +108,24 @@ def calculate_numerical_segments_from_cuts(
     column: str,
     cuts: np.ndarray,
 ):
+    """
+    Generate numerical segments based on cut values.
+
+    Args:
+        df: DataFrame containing the data
+        column: Name of the column to segment
+        cuts: Array of cut values defining the upper bounds of segments
+
+    Returns:
+        List of segment dictionaries containing:
+        - index: Segment index (1-based)
+        - name: Variable name
+        - operator: Comparison operator (<=)
+        - value: Upper bound (cut value)
+        - number_of_farmers: Count of records in this segment
+        - min: lower bound of the segment range
+        - max: upper bound of the segment range
+    """
     values = df[column].dropna().to_numpy()
 
     # Assign bucket indices
@@ -119,7 +137,43 @@ def calculate_numerical_segments_from_cuts(
     )
 
     segments = []
+
+    # Calculate min/max for each segment
+    # For the first segment, min is the minimum value in the dataset
+    # For subsequent segments, min is the previous segment's upper bound (cut)
+    data_min = np.min(values) if values.size > 0 else 0
+
+    # Check if data is integer-like
+    is_integer_data = False
+    if values.size > 0:
+        is_integer_data = np.all(np.mod(values, 1) == 0)
+
     for idx, (cut, count) in enumerate(zip(cuts, counts), start=1):
+        # Determine range for this segment
+        if idx == 1:
+            # If the cut is smaller than data_min, using data_min would result
+            # in an inverted range (e.g. min=20, max=10).
+            # We cap the min at the cut value in that case.
+            seg_min = min(data_min, cut)
+        else:
+            prev_cut = cuts[idx - 2]
+            if is_integer_data:
+                # For integers, next segment starts at prev_cut + 1
+                # We assume floor(prev_cut) to handle any float artifacts,
+                # effectively +1 integer unit.
+                seg_min = np.floor(prev_cut) + 1
+            else:
+                # For floats, we add a small step to avoid visual overlap
+                # since precision is 2 decimals
+                seg_min = prev_cut + 0.01
+
+        if is_integer_data:
+            seg_max = np.floor(cut)
+            # Also floor seg_min if it came from data_min to be consistent
+            seg_min = np.floor(seg_min)
+        else:
+            seg_max = cut
+
         segments.append(
             {
                 "index": idx,
@@ -127,6 +181,8 @@ def calculate_numerical_segments_from_cuts(
                 "operator": "<=",
                 "value": float(cut),
                 "number_of_farmers": int(count),
+                "min": float(round(seg_min, 2)),
+                "max": float(round(seg_max, 2)),
             }
         )
 

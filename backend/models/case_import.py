@@ -50,6 +50,12 @@ class SegmentationSegment(BaseModel):
     operator: Union[Literal["<=", ">", "between"], Literal["is"]]
     value: Union[Union[float, List[float]], str]
     number_of_farmers: Optional[int] = 0
+    min: Optional[float] = Field(
+        None, description="Lower bound of the segment range"
+    )
+    max: Optional[float] = Field(
+        None, description="Upper bound of the segment range"
+    )
 
 
 class SegmentationPreviewResponse(BaseModel):

@@ -9,6 +9,8 @@ from sqlalchemy.orm import Session
 
 from tests.test_000_main import Acc
 from models.case import LivingIncomeStudyEnum
+from utils.case_import_processing import generate_numerical_segments
+import pandas as pd
 
 sys.path.append("..")
 
@@ -359,6 +361,16 @@ class TestCaseImport:
 
         assert res.status_code == 200
 
+        # Verify min/max presence
+        data = res.json()
+        assert "segments" in data
+        for segment in data["segments"]:
+            assert "min" in segment
+            assert "max" in segment
+            assert segment["min"] is not None
+            assert segment["max"] is not None
+            assert segment["min"] <= segment["max"]
+
     @pytest.mark.asyncio
     async def test_recalculate_segmentation_numerical_missing_segments(
         self,
@@ -435,3 +447,43 @@ class TestCaseImport:
 
         assert new_values != original_values
         assert new_counts != original_counts
+
+        for segment in recalc.json()["segments"]:
+            assert "min" in segment
+            assert "max" in segment
+            assert segment["min"] is not None
+            assert segment["max"] is not None
+            assert segment["min"] <= segment["max"]
+
+    def test_unit_generate_numerical_segments_logic(self):
+        """
+        Unit test to verify the logic for integer vs float segmentation ranges.
+        """
+        # 1. Integer Data
+        # Range logic: next_min = prev_max + 1
+        data_int = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        df_int = pd.DataFrame({"val": data_int})
+        segments = generate_numerical_segments(df_int, "val", 3)
+
+        assert len(segments) == 3
+        for i in range(1, len(segments)):
+            prev_max = segments[i - 1]["max"]
+            curr_min = segments[i]["min"]
+            assert (
+                curr_min == prev_max + 1
+            ), f"Integer logic failed: segment {i+1} min {curr_min} should be prev max {prev_max} + 1"  # noqa
+
+        # 2. Float Data
+        # Range logic: next_min = prev_max + 0.01
+        data_float = [10.5, 20.5, 30.5, 40.5, 50.5, 60.5]
+        df_float = pd.DataFrame({"val": data_float})
+        segments_float = generate_numerical_segments(df_float, "val", 2)
+
+        assert len(segments_float) == 2
+        for i in range(1, len(segments_float)):
+            prev_max = segments_float[i - 1]["max"]
+            curr_min = segments_float[i]["min"]
+            expected_min = round(prev_max + 0.01, 2)
+            assert (
+                abs(curr_min - expected_min) < 0.0001
+            ), f"Float logic failed: segment {i+1} min {curr_min} should be {expected_min}"  # noqa

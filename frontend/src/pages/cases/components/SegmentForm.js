@@ -15,6 +15,9 @@ import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { MAX_SEGMENT } from ".";
 
+const LEFT_COL_SPAN = 14;
+const RIGHT_COL_SPAN = 10;
+
 const SegmentForm = ({
   deletedSegmentIds = [],
   setDeletedSegmentIds = () => {},
@@ -64,7 +67,8 @@ const SegmentForm = ({
             const formItemStyle = isDataUpload ? { marginBottom: "5px" } : {};
             const isLoading =
               segmentFieldsLoading?.[`index_${relatedSegment?.index}`];
-            const operator = relatedSegment?.operator || null;
+            const rangeMin = relatedSegment?.min || 0;
+            const rangeMax = relatedSegment?.max || 0;
 
             return (
               <Card
@@ -112,7 +116,7 @@ const SegmentForm = ({
                   >
                     <Input disabled />
                   </Form.Item>
-                  <Col span={14}>
+                  <Col span={LEFT_COL_SPAN}>
                     <Form.Item
                       {...restField}
                       name={[name, "name"]}
@@ -134,49 +138,36 @@ const SegmentForm = ({
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={10}>
+                  <Col span={RIGHT_COL_SPAN}>
                     {
                       // show segment threshold only for numerical variableType
                       isDataUpload ? (
-                        <Row align="middle" className="segment-threshold-row">
-                          {variableType === "numerical" && (
-                            <Col span={3}>
-                              {/* show operator of segment Threshold */}
-                              <p className={`operator ${variableType}`}>
-                                {operator}
-                              </p>
-                              {/* EOL show operator of segment Threshold */}
-                            </Col>
-                          )}
-                          <Col span={21}>
-                            <Form.Item
-                              {...restField}
-                              name={[name, "value"]}
-                              label={isDataUpload ? segmentationVariable : null}
-                              hidden={
-                                !isDataUpload || variableType === "categorical"
-                              }
-                              style={formItemStyle}
-                            >
-                              <InputNumber
-                                placeholder="Value"
-                                controls={false}
-                                style={{ width: "100%" }}
-                                disabled={!enableEditCase || isLoading}
-                                suffix={
-                                  isDataUpload && isLoading ? (
-                                    <Spin size="small" />
-                                  ) : (
-                                    ""
-                                  )
-                                }
-                                onChange={(val) =>
-                                  handleOnChangeFieldValue(relatedSegment, val)
-                                }
-                              />
-                            </Form.Item>
-                          </Col>
-                        </Row>
+                        <Form.Item
+                          {...restField}
+                          name={[name, "value"]}
+                          label={isDataUpload ? segmentationVariable : null}
+                          hidden={
+                            !isDataUpload || variableType === "categorical"
+                          }
+                          style={formItemStyle}
+                        >
+                          <InputNumber
+                            placeholder="Value"
+                            controls={false}
+                            style={{ width: "100%" }}
+                            disabled={!enableEditCase || isLoading}
+                            suffix={
+                              isDataUpload && isLoading ? (
+                                <Spin size="small" />
+                              ) : (
+                                ""
+                              )
+                            }
+                            onChange={(val) =>
+                              handleOnChangeFieldValue(relatedSegment, val)
+                            }
+                          />
+                        </Form.Item>
                       ) : (
                         ""
                       )
@@ -226,11 +217,22 @@ const SegmentForm = ({
                   variableType === "numerical" &&
                   (numberOfFarmers || numberOfFarmers === 0) ? (
                     <Col span={24}>
-                      <Tag>
-                        <p style={{ margin: 0 }}>
-                          Number of farmers: {numberOfFarmers}
-                        </p>
-                      </Tag>
+                      <Row gutter={[12, 12]}>
+                        <Col span={LEFT_COL_SPAN}>
+                          <Tag>
+                            <p style={{ margin: 0 }}>
+                              Number of farmers: {numberOfFarmers}
+                            </p>
+                          </Tag>
+                        </Col>
+                        <Col span={RIGHT_COL_SPAN}>
+                          <Tag>
+                            <p style={{ margin: 0 }}>
+                              Segment range: {rangeMin} - {rangeMax}
+                            </p>
+                          </Tag>
+                        </Col>
+                      </Row>
                     </Col>
                   ) : (
                     ""
