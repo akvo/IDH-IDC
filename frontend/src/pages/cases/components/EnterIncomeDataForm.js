@@ -362,14 +362,19 @@ const EnterIncomeDataDriver = ({
           });
         })
       ).then(() => {
-        // Wait a bit to allow previous computations to finish
+        // wait a bit to update the segment state
         setTimeout(() => {
-          keysToProcess.forEach((key) => {
-            onValuesChange(
-              { [key]: initialDriverValues?.[key] || 0 },
-              initialDriverValues
-            );
+          // instead of using first key, we need to find the question id that contains qid 1
+          const firstKey = keysToProcess.find((key) => {
+            // need to find the question id that contains qid 1
+            const questionId = key.split("-")?.[2];
+            return parseInt(questionId) === 1;
           });
+          if (firstKey) {
+            updateCurrentSegmentState({
+              answers: { ...segment?.answers, ...form.getFieldsValue() },
+            });
+          }
         }, 500);
       });
     }
