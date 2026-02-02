@@ -62,11 +62,18 @@ This skill contains specialized workflows and instructions for the IDH-IDC proje
   ```
   _Uses `pytest` and `flake8`_
 
-- **Frontend Tests**:
+- **Frontend Tests (Interactive)**:
   ```bash
   docker compose exec frontend yarn test
   ```
-  _Uses `react-scripts test`_
+  _Uses `react-scripts test` (Watch mode)_
+
+- **Frontend Tests (CI/One-off)**:
+  ```bash
+  docker compose exec frontend yarn test:ci
+  ```
+  _Runs tests once with coverage (Non-interactive)_
+
 - **Frontend Lint**:
   ```bash
   docker compose exec frontend yarn lint
