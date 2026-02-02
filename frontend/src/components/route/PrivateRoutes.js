@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
+import { routePath } from "./paths";
 
 const PrivateRoutes = () => {
   const [cookies] = useCookies(["AUTH_TOKEN"]);
@@ -16,7 +17,7 @@ const PrivateRoutes = () => {
   return authTokenAvailable || (userId && userActive) ? (
     <Outlet />
   ) : (
-    <Navigate to="/" />
+    <Navigate to={routePath.idc.login} />
   );
 };
 
