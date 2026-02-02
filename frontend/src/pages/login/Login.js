@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./login.scss";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
 import {
   Row,
@@ -28,6 +28,7 @@ const client_secret = env?.client_secret || "test";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
@@ -84,7 +85,9 @@ const Login = () => {
         setCookie("AUTH_TOKEN", data?.access_token);
         api.setToken(cookies?.AUTH_TOKEN);
         setTimeout(() => {
-          navigate(routePath.idc.dashboard, { state: { fromLogin: true } });
+          const from =
+            location.state?.from?.pathname || routePath.idc.dashboard;
+          navigate(from, { replace: true, state: { fromLogin: true } });
         }, 100);
       })
       .catch((e) => {

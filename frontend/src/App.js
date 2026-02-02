@@ -162,64 +162,56 @@ const App = () => {
         </div>
       ) : (
         <Routes>
-          <Route path="*" element={<NotFound />} />
-          {userRole !== null ? (
-            <Route element={<PrivateRoutes />}>
-              {/* IDC Dashboard after login */}
-              <Route
-                exact
-                path={routePath.idc.dashboard}
-                element={<Welcome />}
-              />
+          {/* Route path="*" element={<NotFound />} */}
+          {/* {userRole !== null ? ( */}
+          <Route element={<PrivateRoutes />}>
+            {/* IDC Dashboard after login */}
+            <Route exact path={routePath.idc.dashboard} element={<Welcome />} />
 
-              {/* Case */}
-              {/* Manage new cases step routes */}
-              <Route exact path={routePath.idc.cases} element={<Cases />} />
-              <Route
-                exact
-                path={`${routePath.idc.case}/:caseId/:step`}
-                element={<Case />}
-              />
+            {/* Case */}
+            {/* Manage new cases step routes */}
+            <Route exact path={routePath.idc.cases} element={<Cases />} />
+            <Route
+              exact
+              path={`${routePath.idc.case}/:caseId/:step`}
+              element={<Case />}
+            />
 
-              {/* TODO:: Delete later Old  Page */}
-              {host !== PROD_HOST && (
-                <>
-                  <Route
-                    exact
-                    path="/old-welcome"
-                    element={<OldWelcome signOut={signOut} />}
-                  />
-                  <Route exact path="/old-cases" element={<OldCases />} />
-                  <Route exact path="/old-cases/new" element={<OldCase />} />
-                  <Route
-                    exact
-                    path="/old-cases/:caseId"
-                    element={<OldCase />}
-                  />
-                </>
-              )}
-              {/* EOL Case */}
+            {/* TODO:: Delete later Old  Page */}
+            {host !== PROD_HOST && (
+              <>
+                <Route
+                  exact
+                  path="/old-welcome"
+                  element={<OldWelcome signOut={signOut} />}
+                />
+                <Route exact path="/old-cases" element={<OldCases />} />
+                <Route exact path="/old-cases/new" element={<OldCase />} />
+                <Route exact path="/old-cases/:caseId" element={<OldCase />} />
+              </>
+            )}
+            {/* EOL Case */}
 
-              {/* for all logged in user route */}
-              <Route
-                exact
-                path={routePath.idc.exploreStudies}
-                element={<ExploreStudiesPage />}
-              />
-              <Route
-                exact
-                path={`${routePath.idc.exploreStudies}/:countryId/:commodityId/:driverId`}
-                element={<ExploreStudiesPage />}
-              />
-              <Route
-                exact
-                path={routePath.idc.livingIncomeBenchmarkExplorer}
-                element={<LivingIncomeBenchmarkExplorer />}
-              />
-            </Route>
-          ) : (
+            {/* for all logged in user route */}
+            <Route
+              exact
+              path={routePath.idc.exploreStudies}
+              element={<ExploreStudiesPage />}
+            />
+            <Route
+              exact
+              path={`${routePath.idc.exploreStudies}/:countryId/:commodityId/:driverId`}
+              element={<ExploreStudiesPage />}
+            />
+            <Route
+              exact
+              path={routePath.idc.livingIncomeBenchmarkExplorer}
+              element={<LivingIncomeBenchmarkExplorer />}
+            />
+          </Route>
+          {/* ) : (
             ""
-          )}
+          )} */}
           {!isExternalUser ? (
             <Route element={<PrivateRoutes />}>
               <Route
@@ -264,17 +256,14 @@ const App = () => {
           ) : (
             ""
           )}
-
           {/* ITK Homepage */}
           <Route exact path="/" element={<Home />} />
           {/* EOL ITK Homepage */}
-
           {/* IDC PAGE */}
           <Route exact path={routePath.idc.landing} element={<Landing />} />
           <Route exact path={routePath.idc.login} element={<Login />} />
           <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}
-
           <Route
             exact
             path="/tools-and-resources"
@@ -305,7 +294,6 @@ const App = () => {
             path="/procurement-library/intervention-library"
             element={<ProcurementPage.InterventionLibrary />}
           />
-
           {/*
           DISABLE PL methodology page
           <Route
@@ -331,6 +319,7 @@ const App = () => {
             path="/reset-password/:tokenId"
             element={<ResetPassword />}
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       )}
     </PageLayout>
