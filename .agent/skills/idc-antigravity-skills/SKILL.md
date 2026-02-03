@@ -86,6 +86,31 @@ This skill contains specialized workflows and instructions for the IDH-IDC proje
   ```
   **Available Containers**: `backend`, `frontend`, `mainnetwork`, `db`, `pgadmin`
 
+### Commit and Pull Request
+Follow this workflow before submitting any changes:
+
+1. **Verification**: Run the appropriate checks based on the files edited:
+    - **Frontend**: Run linting and tests if any frontend files are modified.
+      ```bash
+      docker compose exec frontend yarn lint
+      docker compose exec frontend yarn test:ci
+      ```
+    - **Backend**: Run checks if any backend files are modified.
+      ```bash
+      ./dc.sh exec backend ./check.sh
+      ```
+2. **Commit Message**: Use the issue number in brackets followed by a descriptive message.
+   ```bash
+   git add .
+   git commit -m "[#ISSUE_NUMBER] Descriptive message about the change"
+   ```
+3. **GEMINI.md Update**: Always update the `Recent Changes` section in `GEMINI.md` to document the feature/fix.
+4. **Push and PR**: Push the branch and create a PR into `staging` with a clear description of the logic, UI changes, and verification steps.
+   ```bash
+   git push origin <branch-name>
+   gh pr create --base staging --head <branch-name> --title "[#ISSUE_NUMBER] ..." --body "..."
+   ```
+
 ## Deployment
 - **CI/CD**: GitHub Actions (`.github/workflows/deploy.yml`)
 - **Target**: Deploy to "Test Cluster" on push to `main` branch.
