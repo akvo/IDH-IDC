@@ -21,6 +21,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented "Redirect After Login" feature to return users to their originally requested page.
     - Resolved circular dependencies in route definitions by extracting `paths.js`.
     - Fixed 404 behavior for unauthenticated users on protected routes.
+- **Closing the Gap Calculation (PR #706)**:
+    - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
+    - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.
+    - Centralized calculation logic to ensure consistency across "Explore" and "Sensitivity Analysis" sections.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
