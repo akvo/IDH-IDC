@@ -517,10 +517,18 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
         // SAVE /case-import/generate-segment-values
         if (values?.import_id) {
+          // determine segmentation variable fallback from segments if global variable is null
+          // this handles the case where segments are added via inline generators without a global selection
+          const firstSegmentWithVar = values.segments?.find(
+            (s) => s.segmentation_variable
+          );
+          const fallbackVar = firstSegmentWithVar?.segmentation_variable;
+
           const confirmedSegPayload = {
             case_id: data.id,
             import_id: values.import_id,
-            segmentation_variable: values.data_upload_segmentation_variable,
+            segmentation_variable:
+              values.data_upload_segmentation_variable || fallbackVar,
             segments: values.segments.map((seg) => {
               // find segment id from data.segments
               const findSegment = data.segments.find(
