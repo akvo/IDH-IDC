@@ -17,16 +17,39 @@ import {
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
-const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
+const AdjustIncomeTarget = ({
+  selectedSegment,
+  buttonView = false,
+  onlyClosingGap = false,
+  inlineView = false,
+}) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
 
   const [showAdjustIncomeModal, setShowAdjustIncomeModal] = useState(false);
-  const [percentageSensitivity, setPercentageSensitivity] = useState(true);
+  const [calculationType, setCalculationType] = useState(
+    onlyClosingGap ? "closing_gap" : "percentage"
+  );
   const [adjustedValues, setAdjustedValues] = useState({});
 
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+
+  const currentSegmentData = useMemo(() => {
+    return dashboardData.find((s) => s.id === selectedSegment);
+  }, [dashboardData, selectedSegment]);
+
+  const currentIncome = useMemo(() => {
+    return currentSegmentData?.total_current_income || 0;
+  }, [currentSegmentData]);
+
   // initial load adjusted income target
+  useEffect(() => {
+    if (onlyClosingGap) {
+      setCalculationType("closing_gap");
+    }
+  }, [onlyClosingGap]);
+
   useEffect(() => {
     if (!isEmpty(sensitivityAnalysis?.config)) {
       setAdjustedValues(
@@ -39,21 +62,36 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const currentSegmentDetail = useMemo(() => {
+    if (selectedSegment && currentCase?.segments?.length) {
+      const res = currentCase.segments.find((s) => s.id === selectedSegment);
+      return res;
+    }
+    return null;
+  }, [currentCase?.segments, selectedSegment]);
+
   const adustedTargetChange = useMemo(() => {
-    if (percentageSensitivity) {
+    if (calculationType === "percentage") {
       const res =
         adjustedValues?.[
           `${selectedSegment}_absolute-increase_adjusted-target`
         ] || 0;
       return thousandFormatter(res, 2);
     }
+    if (calculationType === "absolute") {
+      const res =
+        adjustedValues?.[
+          `${selectedSegment}_percentage-increase_adjusted-target`
+        ] || 0;
+      return `${res}%`;
+    }
     const res =
-      adjustedValues?.[
-        `${selectedSegment}_percentage-increase_adjusted-target`
-      ] || 0;
-    return `${res}%`;
+      adjustedValues?.[`${selectedSegment}_adjusted-target`] ||
+      currentSegmentDetail?.target ||
+      0;
+    return thousandFormatter(res, 2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSegment, percentageSensitivity, adjustedValues]);
+  }, [selectedSegment, calculationType, adjustedValues]);
 
   const adjustedIncomeTarget = useMemo(() => {
     const adjustedTarget =
@@ -78,21 +116,14 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
     };
   }, [selectedSegment, sensitivityAnalysis?.config, currentCase?.segments]);
 
-  const currentSegmentDetail = useMemo(() => {
-    if (selectedSegment && currentCase?.segments?.length) {
-      const res = currentCase.segments.find((s) => s.id === selectedSegment);
-      return res;
-    }
-    return null;
-  }, [currentCase?.segments, selectedSegment]);
-
   const onAdjustTarget = (value, qtype) => {
     const currentValue = currentSegmentDetail?.target
       ? parseFloat(currentSegmentDetail.target)
       : 0;
     let newValue = {};
     let adjustedTarget = 0;
-    if (qtype === "percentage" && percentageSensitivity) {
+
+    if (qtype === "percentage" && calculationType === "percentage") {
       const absoluteValue = value ? (currentValue * value) / 100 : 0;
       adjustedTarget = value ? (absoluteValue + currentValue).toFixed(2) : 0;
       newValue = {
@@ -102,7 +133,7 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
         [`${selectedSegment}_percentage-increase_adjusted-target`]: value,
       };
     }
-    if (qtype === "absolute" && !percentageSensitivity) {
+    if (qtype === "absolute" && calculationType === "absolute") {
       adjustedTarget = value || 0;
       const absoluteChanged = value - currentValue;
       const percentage = currentValue ? absoluteChanged / currentValue : 0;
@@ -115,11 +146,25 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
           absoluteChanged,
       };
     }
+    if (qtype === "closing_gap" && calculationType === "closing_gap") {
+      const gap = currentValue - currentIncome;
+      adjustedTarget = value
+        ? (currentIncome + (value / 100) * gap).toFixed(2)
+        : currentIncome;
+      newValue = {
+        ...newValue,
+        [`${selectedSegment}_closing-gap-percentage_adjusted-target`]: value,
+      };
+    }
+
     newValue = {
       ...newValue,
       [`${selectedSegment}_adjusted-target`]: parseFloat(adjustedTarget),
     };
     setAdjustedValues((prev) => ({ ...prev, ...newValue }));
+    if (inlineView) {
+      handleOnSaveAdjustIncomeTarget({ updatedValue: newValue });
+    }
   };
 
   const handleOnSaveAdjustIncomeTarget = ({ updatedValue = {} }) => {
@@ -137,15 +182,46 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
     setShowAdjustIncomeModal(false);
   };
 
-  const onChangePercentage = (value) => {
-    if (value === "percentage") {
-      setPercentageSensitivity(true);
-    } else {
-      setPercentageSensitivity(false);
-    }
+  const onChangeCalculationType = (value) => {
+    setCalculationType(value);
   };
 
   const renderView = () => {
+    if (inlineView) {
+      const qtype = calculationType;
+      return (
+        <div className="adjust-income-target-inline-wrapper">
+          <div className="input-label" style={{ marginBottom: 8 }}>
+            The income gap to be closed by:
+          </div>
+          <InputNumber
+            style={{
+              width: "100%",
+              borderRadius: 8,
+              height: 40,
+              display: "flex",
+              alignItems: "center",
+            }}
+            addonAfter="%"
+            {...InputNumberThousandFormatter}
+            controls={false}
+            onChange={(value) => onAdjustTarget(value, qtype)}
+            value={
+              adjustedValues?.[
+                `${selectedSegment}_closing-gap-percentage_adjusted-target`
+              ]
+            }
+          />
+          <div className="new-target-text">
+            New target:{" "}
+            <b>
+              {adjustedIncomeTarget.value} {currentCase?.currency || "LCU"}
+            </b>
+          </div>
+        </div>
+      );
+    }
+
     if (buttonView) {
       return (
         <Row gutter={[20, 20]} className="adjust-income-target-wrapper">
@@ -249,21 +325,29 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
             <div className="description">
               <Row>
                 <Col span={8}>
-                  <Select
-                    style={{ width: "100%" }}
-                    options={[
-                      {
-                        label: "Percentage",
-                        value: "percentage",
-                      },
-                      {
-                        label: "Absolute",
-                        value: "absolute",
-                      },
-                    ]}
-                    onChange={onChangePercentage}
-                    value={percentageSensitivity ? "percentage" : "absolute"}
-                  />
+                  {!onlyClosingGap ? (
+                    <Select
+                      style={{ width: "100%" }}
+                      options={[
+                        {
+                          label: "By Percentage Increase",
+                          value: "percentage",
+                        },
+                        {
+                          label: "By Absolute Value",
+                          value: "absolute",
+                        },
+                        {
+                          label: "By Closing the Gap %",
+                          value: "closing_gap",
+                        },
+                      ]}
+                      onChange={onChangeCalculationType}
+                      value={calculationType}
+                    />
+                  ) : (
+                    <b>Closing the Gap Calculation</b>
+                  )}
                 </Col>
               </Row>
             </div>
@@ -275,7 +359,17 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
             </Space>
             <div className="description">
               <Row gutter={[20, 20]} align="start">
-                <Col span={7}>
+                <Col span={6}>
+                  <div className="input-label">Current Income</div>
+                  <div className="current-target-wrapper">
+                    {thousandFormatter(
+                      currentIncome,
+                      determineDecimalRound(currentIncome)
+                    )}{" "}
+                    <small>({currentCase?.currency})</small>
+                  </div>
+                </Col>
+                <Col span={6}>
                   <div className="input-label">Current Target</div>
                   <div className="current-target-wrapper">
                     {currentSegmentDetail
@@ -287,46 +381,55 @@ const AdjustIncomeTarget = ({ selectedSegment, buttonView = false }) => {
                     <small>({currentCase?.currency})</small>
                   </div>
                 </Col>
-                <Col span={10}>
+                <Col span={6}>
                   <div className="input-label">
-                    {percentageSensitivity ? "% Change" : "Adjusted Target"}
+                    {calculationType === "percentage"
+                      ? "% Change"
+                      : calculationType === "absolute"
+                      ? "Adjusted Target"
+                      : "Close the Gap %"}
                   </div>
-                  {["absolute", "percentage"].map((qtype) => (
+                  {["absolute", "percentage", "closing_gap"].map((qtype) => (
                     <div
                       key={qtype}
                       style={{
-                        display:
-                          qtype !== "percentage" && percentageSensitivity
-                            ? "none"
-                            : qtype === "percentage" && !percentageSensitivity
-                            ? "none"
-                            : "",
+                        display: qtype !== calculationType ? "none" : "",
                       }}
                     >
                       <InputNumber
                         style={{
                           width: "90%",
                         }}
-                        addonAfter={qtype === "percentage" ? "%" : ""}
+                        addonAfter={
+                          qtype === "percentage" || qtype === "closing_gap"
+                            ? "%"
+                            : ""
+                        }
                         {...InputNumberThousandFormatter}
                         controls={false}
                         onChange={(value) => onAdjustTarget(value, qtype)}
                         value={
-                          percentageSensitivity
+                          qtype === "percentage"
                             ? adjustedValues?.[
                                 `${selectedSegment}_percentage-increase_adjusted-target`
                               ]
-                            : adjustedValues?.[
+                            : qtype === "absolute"
+                            ? adjustedValues?.[
                                 `${selectedSegment}_adjusted-target`
+                              ]
+                            : adjustedValues?.[
+                                `${selectedSegment}_closing-gap-percentage_adjusted-target`
                               ]
                         }
                       />
                     </div>
                   ))}
                 </Col>
-                <Col span={7}>
+                <Col span={6}>
                   <div className="input-label">
-                    {percentageSensitivity ? "Adjusted Target" : "% Change"}
+                    {calculationType === "absolute"
+                      ? "% Change"
+                      : "Adjusted Target"}
                   </div>
                   <div className="adjusted-target-wrapper">
                     {adustedTargetChange}

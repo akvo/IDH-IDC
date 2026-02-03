@@ -26,7 +26,7 @@ const ExploreChangeToCloseTheGap = () => {
                 </Col>
               </Row>
             </Col>
-            <Col span={16}>
+            <Col span={18}>
               <h3>Select the Goal:</h3>
               <p>
                 Closing the income gap may not be fully achievable within your
@@ -36,10 +36,11 @@ const ExploreChangeToCloseTheGap = () => {
                 section of this step.
               </p>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <AdjustIncomeTarget
                 selectedSegment={selectedSegment}
-                buttonView={true}
+                inlineView={true}
+                onlyClosingGap={true}
               />
             </Col>
           </Row>
