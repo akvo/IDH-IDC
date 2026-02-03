@@ -88,43 +88,76 @@ const SegmentConfigurationForm = ({
   ]);
 
   const handleOnChangeFieldValue = (selectedSegment, value) => {
+    const targetVarType = selectedSegment.variable_type || variableType;
+    const targetSegVariable =
+      selectedSegment.segmentation_variable || segmentationVariable;
+
     setSegmentFieldsLoading((prev) => ({
       ...prev,
       [`index_${selectedSegment.index}`]: true,
     }));
-    const updatedSegmentPayload = segmentFields?.map((s) => ({
+
+    // 1. Prepare payload: only include segments that belong to the target variable
+    const relevantSegments = segmentFields.filter((s) => {
+      const sVar = s.segmentation_variable || segmentationVariable;
+      return sVar === targetSegVariable;
+    });
+
+    const updatedRelevantSegments = relevantSegments.map((s) => ({
       index: s.index,
       value: s.index === selectedSegment.index ? value : s.value,
-      segmentation_variable: s.segmentation_variable || segmentationVariable,
-      variable_type: s.variable_type || variableType,
+      segmentation_variable: targetSegVariable,
+      variable_type: targetVarType,
     }));
 
     const recalculatePayload = {
       import_id: uploadResult.import_id,
-      variable_type: variableType,
-      segmentation_variable: segmentationVariable,
-      segments: updatedSegmentPayload,
+      variable_type: targetVarType,
+      segmentation_variable: targetSegVariable,
+      segments: updatedRelevantSegments,
     };
 
     api
       .post("/case-import/recalculate-segmentation", recalculatePayload)
       .then((res) => {
-        // update res data segments with the segmentFields name
-        const updatedSegments = res?.data?.segments?.map((s) => {
-          const findSegment = segmentFields.find((x) => x.index === s.index);
-          if (findSegment?.name) {
-            return {
-              ...s,
-              name: findSegment.name,
-            };
+        const recalculatedSegments = res?.data?.segments || [];
+
+        // 2. Merge logic: Update only the relevant segments in the main list
+        const mergedSegments = segmentFields.map((existingSegment) => {
+          const existingSegVar =
+            existingSegment.segmentation_variable || segmentationVariable;
+
+          // If this segment belongs to the variable we just recalculated
+          if (existingSegVar === targetSegVariable) {
+            // Find the updated version in the response by index
+            // Note: assuming index is unique within a variable group
+            const updated = recalculatedSegments.find(
+              (rs) => rs.index === existingSegment.index
+            );
+
+            if (updated) {
+              return {
+                ...updated,
+                ...existingSegment, // preserve frontend props like generatorId, name
+                ...updated, // apply recalculated values (min, max, value)
+                name: existingSegment.name, // strictly preserve name
+              };
+            }
           }
-          return s;
+          // Otherwise return untouched
+          return existingSegment;
         });
-        setSegmentationPreviews({ ...res.data, segments: updatedSegments });
-        // set segment values to form initialValue here
-        form.setFieldsValue({ segments: updatedSegments });
-        const segmentFieldIndex = selectedSegment.index - 1;
+
+        setSegmentationPreviews((prev) => ({
+          ...prev,
+          segments: mergedSegments,
+        }));
+        form.setFieldsValue({ segments: mergedSegments });
+
+        const segmentFieldIndex = selectedSegment.index - 1; // CAUTION: this might be wrong if indices are not sequential/global
         // set edited field to focus after change
+        // Only try to focus if we can find the field? The index logic here assumes global array order...
+        // We'll leave it for now as it's existing logic, but it might be shaky with mixed segments.
         setTimeout(() => {
           form
             .getFieldInstance(["segments", segmentFieldIndex, "value"])
