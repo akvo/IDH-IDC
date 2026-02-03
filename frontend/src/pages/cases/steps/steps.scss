@@ -761,7 +761,7 @@
       margin: 0;
       color: $primary-color;
       margin-bottom: 14px;
-      font-size: 16px;
+      font-size: 18px;
     }
     p,
     h4 {
@@ -778,6 +778,8 @@
     }
     .new-target-text {
       color: var(--gray-100, #4b4b4b);
+      font-size: 14px;
+      margin-top: 8px;
     }
   }
 }
