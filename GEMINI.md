@@ -32,6 +32,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Enforced 5-segment limit across all addition methods.
     - Added dev workflows for frontend linting and backend testing.
     - Fixed and verified segment value generation for mixed numerical/categorical variables.
+    - Fixed UI bug where threshold fields were missing for numerical segments in inline generators.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

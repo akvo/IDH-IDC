@@ -59,7 +59,13 @@ const SegmentGenerator = ({ uploadResult, onUpdate, onRemove }) => {
       api
         .post("/case-import/segmentation-preview", payload)
         .then((res) => {
-          onUpdate(res.data.segments || []);
+          const segments = res.data.segments || [];
+          const enrichedSegments = segments.map((s) => ({
+            ...s,
+            variable_type: variableType,
+            segmentation_variable: segmentationVariable,
+          }));
+          onUpdate(enrichedSegments);
         })
         .catch((e) => {
           console.error("Error fetching preview:", e);
@@ -341,6 +347,7 @@ const DataUploadSegmentForm = ({
               // show segment threshold only for numerical variableType
               <Form.Item
                 {...restField}
+                name={[name, "value"]}
                 label={segVarLabel}
                 hidden={segVarType === "categorical"}
                 style={formItemStyle}
