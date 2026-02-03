@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
-import { MAX_SEGMENT, SegmentForm } from ".";
+import { MAX_SEGMENT, DataUploadSegmentForm } from ".";
 
 const SegmentConfigurationForm = ({
   uploadResult = {},
@@ -92,18 +92,12 @@ const SegmentConfigurationForm = ({
       ...prev,
       [`index_${selectedSegment.index}`]: true,
     }));
-    const updatedSegmentPayload = segmentFields?.map((s) => {
-      if (s.index === selectedSegment.index) {
-        return {
-          index: s.index,
-          value,
-        };
-      }
-      return {
-        index: s.index,
-        value: s.value,
-      };
-    });
+    const updatedSegmentPayload = segmentFields?.map((s) => ({
+      index: s.index,
+      value: s.index === selectedSegment.index ? value : s.value,
+      segmentation_variable: s.segmentation_variable || segmentationVariable,
+      variable_type: s.variable_type || variableType,
+    }));
 
     const recalculatePayload = {
       import_id: uploadResult.import_id,
@@ -276,20 +270,19 @@ const SegmentConfigurationForm = ({
             {segmentNumericalWarning}
             {maxSegmentWarning}
             <Col span={24}>
-              <SegmentForm
+              <DataUploadSegmentForm
                 deletedSegmentIds={deletedSegmentIds}
                 setDeletedSegmentIds={setDeletedSegmentIds}
-                isDataUpload={true}
                 handleOnChangeFieldValue={handleOnChangeFieldValue}
                 segmentFieldsLoading={segmentFieldsLoading}
                 dataUploadFieldPreffix={dataUploadFieldPreffix}
+                uploadResult={uploadResult}
               />
             </Col>
           </Row>
         </Col>
       )}
       {/* EOL SEGMENTATION PREVIEW */}
-      {/* TODO:: Handle add another segment for data upload */}
     </Row>
   );
 };

@@ -31,10 +31,12 @@ class SegmentationPreviewRequest(BaseModel):
 
 
 class SegmentDefinition(BaseModel):
-    id: int
+    id: Optional[int] = None
     index: int
     name: str
     value: Union[int, float, str]
+    segmentation_variable: Optional[str] = None
+    variable_type: Optional[Literal["categorical", "numerical"]] = None
 
 
 class GenerateSegmentValuesRequest(BaseModel):
@@ -56,6 +58,8 @@ class SegmentationSegment(BaseModel):
     max: Optional[float] = Field(
         None, description="Upper bound of the segment range"
     )
+    segmentation_variable: Optional[str] = None
+    variable_type: Optional[Literal["categorical", "numerical"]] = None
 
 
 class SegmentationPreviewResponse(BaseModel):
@@ -68,6 +72,8 @@ class SegmentationPreviewResponse(BaseModel):
 class SegmentValueInput(BaseModel):
     index: int = Field(..., ge=1)
     value: float | str
+    segmentation_variable: Optional[str] = None
+    variable_type: Optional[Literal["categorical", "numerical"]] = None
 
 
 class SegmentationRecalculateRequest(BaseModel):

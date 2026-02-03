@@ -25,6 +25,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
     - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.
     - Centralized calculation logic to ensure consistency across "Explore" and "Sensitivity Analysis" sections.
+- **Multiple Segment Addition Methods (Issue #683)**:
+    - Implemented UI to add segments based on different variables for data uploads.
+    - Refactored `SegmentForm` into simplified `SegmentForm` (manual) and `DataUploadSegmentForm` (complex).
+    - Added inline segment generators with visual grouping and automatic segment management.
+    - Enforced 5-segment limit across all addition methods.
+    - Added dev workflows for frontend linting and backend testing.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

@@ -531,6 +531,11 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
                 index: seg.index,
                 name: seg.name,
                 value: seg.value || 0,
+                segmentation_variable:
+                  seg.segmentation_variable ||
+                  values.data_upload_segmentation_variable,
+                variable_type:
+                  seg.variable_type || values.data_upload_variable_type,
               };
             }),
           };

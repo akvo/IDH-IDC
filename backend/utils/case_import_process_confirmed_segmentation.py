@@ -113,9 +113,44 @@ def process_confirmed_segmentation(
         seg_id = seg.id
         seg_name = seg.name
 
+        # Use per-segment variable if specified, otherwise fallback to default
+        seg_var = (
+            (seg.segmentation_variable or segmentation_variable)
+            .strip()
+            .lower()
+        )
+        seg_type = (
+            seg.variable_type or "numerical"
+        ).lower()  # default to numerical
+
+        if seg_var not in data_df.columns:
+            raise HTTPException(
+                400, f"Segmentation variable '{seg_var}' not found in data"
+            )
+
+        seg_series = data_df[seg_var]
+        seg_is_numeric = pd.api.types.is_numeric_dtype(seg_series)
+
+        if not seg_is_numeric:
+            seg_series = seg_series.astype(str).str.strip().str.lower()
+
         # ---------- APPLY SEGMENT FILTER ----------
-        if is_numeric:
-            lower = float(segments[idx - 1].value) if idx > 0 else None
+        if seg_type == "numerical" and seg_is_numeric:
+            # Find the previous segment of the SAME variable for lower bound
+            prev_seg_same_var = next(
+                (
+                    s
+                    for s in reversed(segments[:idx])
+                    if (s.segmentation_variable or segmentation_variable)
+                    .strip()
+                    .lower()
+                    == seg_var
+                ),
+                None,
+            )
+            lower = (
+                float(prev_seg_same_var.value) if prev_seg_same_var else None
+            )
             upper = float(seg.value)
 
             if lower is None:
@@ -123,7 +158,9 @@ def process_confirmed_segmentation(
             else:
                 mask = (seg_series > lower) & (seg_series <= upper)
         else:
-            mask = seg_series == str(seg.value).strip().lower()
+            # Categorical or non-numeric
+            val = str(seg.value).strip().lower()
+            mask = seg_series == val
 
         seg_df = data_df[mask]
         number_of_farmers = int(len(seg_df))
