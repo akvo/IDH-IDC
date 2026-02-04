@@ -4,6 +4,13 @@ import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { sumBy, min, max, upperFirst } from "lodash";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import {
+  getTargetPrimaryIncome,
+  getTargetSecondaryIncome,
+  getTargetTertiaryIncome,
+  getTargetDiversifiedIncome,
+  calculateBreakdownDriver,
+} from "../utils/incomeCalculations";
 
 // Constants
 const TAG_COLORS = {
@@ -155,55 +162,6 @@ const SingleDriverChange = ({ selectedSegment }) => {
     );
     // eol current - feasible answers for each commodity/crop
 
-    // current
-    const currentPrimary2 =
-      primaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 2
-      )?.value || 0;
-    const currentPrimary3 =
-      primaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 3
-      )?.value || 0;
-    const currentPrimary4 =
-      primaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 4
-      )?.value || 0;
-    const currentPrimary5 =
-      primaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 5
-      )?.value || 0;
-
-    // feasible
-    const currentSecondary2 =
-      secondaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 2
-      )?.value || 0;
-    const currentSecondary3 =
-      secondaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 3
-      )?.value || 0;
-    const currentSecondary4 =
-      secondaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 4
-      )?.value || 0;
-    const currentSecondary5 =
-      secondaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 5
-      )?.value || 0;
-    const currentSecondaryIncome =
-      secondaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 1
-      )?.value || 0;
-
-    const currentTertiaryIncome =
-      tertiaryCommodityAnswers?.find(
-        (a) => a.name === "current" && a.questionId === 1
-      )?.value || 0;
-    const currentOtherDiversifiedIncome = sumBy(
-      diversifiedCommodityAnswers?.filter((a) => a.name === "current"),
-      "value"
-    );
-
     // commodity detail
     const primaryCommodity = questionGroups?.find(
       (qg) => qg?.case_commodity_type === "focus"
@@ -281,136 +239,80 @@ const SingleDriverChange = ({ selectedSegment }) => {
             .join("/");
         }
 
+        const getAnswer = (commodityAnswers, qId, type = "current") =>
+          commodityAnswers?.find((a) => a.name === type && a.questionId === qId)
+            ?.value || 0;
+
+        const primaryDrivers = {
+          d2: getAnswer(primaryCommodityAnswers, 2),
+          d3: getAnswer(primaryCommodityAnswers, 3),
+          d4: getAnswer(primaryCommodityAnswers, 4),
+          d5: getAnswer(primaryCommodityAnswers, 5),
+        };
+
+        const secondaryDrivers = {
+          d2: getAnswer(secondaryCommodityAnswers, 2),
+          d3: getAnswer(secondaryCommodityAnswers, 3),
+          d4: getAnswer(secondaryCommodityAnswers, 4),
+          d5: getAnswer(secondaryCommodityAnswers, 5),
+        };
+
+        const currentPrimaryIncome =
+          primaryDrivers.d2 *
+          (primaryDrivers.d3 * primaryDrivers.d4 - primaryDrivers.d5);
+
+        const currentSecondaryIncome = getAnswer(secondaryCommodityAnswers, 1);
+        const currentTertiaryIncome = getAnswer(tertiaryCommodityAnswers, 1);
+        const currentOtherDiversifiedIncome = sumBy(
+          diversifiedCommodityAnswers?.filter((a) => a.name === "current"),
+          "value"
+        );
+
         // needed value calculation
-        // for primary-2
-        // needed_value = (income_target - secondary-1 - tertiary-1 - other_diversified_income) / (primary-3 * primary-4 - primary-5)
         let neededValue = 0;
-        if (commodityType === "focus" && qID === 2) {
-          neededValue =
-            (incomeTarget -
-              currentSecondaryIncome -
-              currentTertiaryIncome -
-              currentOtherDiversifiedIncome) /
-            (currentPrimary3 * currentPrimary4 - currentPrimary5);
-        }
-        //
-        // for primary-3
-        // needed_value = ((primary-5*primary-2) - secondary-1 - tertiary-1 - other_diversified_income + income_target) / (primary-2*primary-4)
-        if (commodityType === "focus" && qID === 3) {
-          neededValue =
-            (currentPrimary5 * currentPrimary2 -
-              currentSecondaryIncome -
-              currentTertiaryIncome -
-              currentOtherDiversifiedIncome +
-              incomeTarget) /
-            (currentPrimary2 * currentPrimary4);
-        }
-        //
-        // for primary-4
-        // needed_value = ((primary-5*primary-2) - secondary-1 - tertiary-1 - other_diversified_income + income_target) / (primary-2*primary-3)
-        if (commodityType === "focus" && qID === 4) {
-          neededValue =
-            (currentPrimary5 * currentPrimary2 -
-              currentSecondaryIncome -
-              currentTertiaryIncome -
-              currentOtherDiversifiedIncome +
-              incomeTarget) /
-            (currentPrimary2 * currentPrimary3);
-        }
-        // for primary-5
-        // needed_value = ((primary-2*primary-3*primary-4)+secondary-1+tertiary-1+other_diversified_income-income_target)/primary-2
-        if (commodityType === "focus" && qID === 5) {
-          neededValue =
-            (currentPrimary2 * currentPrimary3 * currentPrimary4 +
-              currentSecondaryIncome +
-              currentTertiaryIncome +
-              currentOtherDiversifiedIncome -
-              incomeTarget) /
-            currentPrimary2;
-        }
 
-        // secondary-1
-        // needed_value = (primary-5*primary-2) - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + income_target
-        if (commodityType === "secondary" && !breakdown && qID === 1) {
-          neededValue =
-            currentPrimary5 * currentPrimary2 -
-            currentPrimary2 * currentPrimary3 * currentPrimary4 -
-            currentTertiaryIncome -
-            currentOtherDiversifiedIncome +
-            incomeTarget;
-        }
-
-        // secondary-2
-        // needed_value = (income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2)) / (secondary-3*secondary-4 - secondary-5)
-        if (commodityType === "secondary" && breakdown && qID === 2) {
-          neededValue =
-            (incomeTarget -
-              currentPrimary2 * currentPrimary3 * currentPrimary4 -
-              currentTertiaryIncome -
-              currentOtherDiversifiedIncome +
-              currentPrimary5 * currentPrimary2) /
-            (currentSecondary3 * currentSecondary4 - currentSecondary5);
-        }
-
-        // secondary-3
-        // needed_value = ((income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2*)) + (secondary-2*secondary-5)) / (secondary-2*secondary-4)
-        if (commodityType === "secondary" && breakdown && qID === 3) {
-          neededValue =
-            incomeTarget -
-            currentPrimary2 * currentPrimary3 * currentPrimary4 -
-            currentTertiaryIncome -
-            currentOtherDiversifiedIncome +
-            currentPrimary5 * currentPrimary2 +
-            (currentSecondary2 * currentSecondary5) /
-              (currentSecondary2 * currentSecondary4);
-        }
-
-        // secondary-4
-        // needed_value = ((income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2)) + (secondary-2*secondary-5)) / (secondary-2*secondary-3)
-        if (commodityType === "secondary" && breakdown && qID === 4) {
-          neededValue =
-            (incomeTarget -
-              currentPrimary2 * currentPrimary3 * currentPrimary4 -
-              currentTertiaryIncome -
-              currentOtherDiversifiedIncome +
-              currentPrimary5 * currentPrimary2 +
-              currentSecondary2 * currentSecondary5) /
-            (currentSecondary2 * currentSecondary3);
-        }
-
-        // secondary-5
-        // needed_value = (secondary-3*secondary-4) - ((income_target - (primary-2*primary-3*primary-4) - tertiary-1 - other_diversified_income + (primary-5*primary-2)) / secondary-2)
-        if (commodityType === "secondary" && breakdown && qID === 5) {
-          neededValue =
-            currentSecondary3 * currentSecondary4 -
-            (incomeTarget -
-              currentPrimary2 * currentPrimary3 * currentPrimary4 -
-              currentTertiaryIncome -
-              currentOtherDiversifiedIncome +
-              currentPrimary5 * currentPrimary2) /
-              currentSecondary2;
-        }
-
-        // tertiary-1
-        // needed_value = (primary-5*primary-2) - (primary-2*primary-3*primary-4) - secondary-1 - other_diversified_income + income_target
-        if (commodityType === "tertiary" && qID === 1) {
-          neededValue =
-            currentPrimary5 * currentPrimary2 -
-            currentPrimary2 * currentPrimary3 * currentPrimary4 -
-            currentSecondaryIncome -
-            currentOtherDiversifiedIncome +
-            incomeTarget;
-        }
-
-        // other diversified income
-        // needed_value = (primary-5*primary-2) - (primary-2*primary-3*primary-4) - secondary-1 - tertiary-1 + income_target
-        if (commodityType === "diversified") {
-          neededValue =
-            currentPrimary5 * currentPrimary2 -
-            currentPrimary2 * currentPrimary3 * currentPrimary4 -
-            currentSecondaryIncome -
-            currentTertiaryIncome +
-            incomeTarget;
+        if (commodityType === "focus") {
+          const targetPrimary = getTargetPrimaryIncome(
+            incomeTarget,
+            currentSecondaryIncome,
+            currentTertiaryIncome,
+            currentOtherDiversifiedIncome
+          );
+          neededValue = calculateBreakdownDriver(
+            targetPrimary,
+            primaryDrivers,
+            qID
+          );
+        } else if (commodityType === "secondary") {
+          const targetSecondary = getTargetSecondaryIncome(
+            incomeTarget,
+            currentPrimaryIncome,
+            currentTertiaryIncome,
+            currentOtherDiversifiedIncome
+          );
+          if (breakdown) {
+            neededValue = calculateBreakdownDriver(
+              targetSecondary,
+              secondaryDrivers,
+              qID
+            );
+          } else if (qID === 1) {
+            neededValue = targetSecondary;
+          }
+        } else if (commodityType === "tertiary" && qID === 1) {
+          neededValue = getTargetTertiaryIncome(
+            incomeTarget,
+            currentPrimaryIncome,
+            currentSecondaryIncome,
+            currentOtherDiversifiedIncome
+          );
+        } else if (commodityType === "diversified") {
+          neededValue = getTargetDiversifiedIncome(
+            incomeTarget,
+            currentPrimaryIncome,
+            currentSecondaryIncome,
+            currentTertiaryIncome
+          );
         }
         // eol needed value calculation
 
