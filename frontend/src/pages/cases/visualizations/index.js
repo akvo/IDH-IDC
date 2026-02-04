@@ -17,3 +17,4 @@ export { default as ChartFarmEconomicEfficiency } from "./ChartFarmEconomicEffic
 export { default as ChartRevenueToCostRatio } from "./ChartRevenueToCostRatio";
 export { default as ChartNetIncomePerLandUnit } from "./ChartNetIncomePerLandUnit";
 export { default as ChartTwoDriverHeatmap } from "./ChartTwoDriverHeatmap";
+export { default as ThreeDriverCombinationChart } from "./ThreeDriverCombinationChart";
