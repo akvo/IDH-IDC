@@ -821,7 +821,7 @@
       }
 
       .three-driver-combination-chart {
-        margin-top: 32px;
+        margin-top: 24px;
         text-align: left;
 
         .combination-card {
@@ -854,8 +854,7 @@
           }
 
           .card-body {
-            padding: 24px;
-            background: #f9f9f9;
+            background: #fff;
 
             .combination-flex-wrapper {
               display: flex;
@@ -867,7 +866,7 @@
                 flex-direction: column;
                 justify-content: space-between;
                 height: 100px;
-                padding: 12px 0;
+                padding: 12px 0 12px 24px;
                 flex: 0 0 160px;
 
                 .side-label-item {
@@ -884,6 +883,8 @@
                 flex: 1;
                 gap: 8px;
                 justify-content: space-between;
+                padding: 24px;
+                background: #f9f9f9;
 
                 .value-column {
                   flex: 1;
@@ -895,14 +896,14 @@
             }
 
             .value-box {
-              height: 44px;
+              padding: 8px;
               display: flex;
               align-items: center;
               justify-content: center;
               border-radius: 8px;
               font-family: "RocGrotesk";
               font-size: 14px;
-              font-weight: 500;
+              font-weight: 700;
 
               &.x-value {
                 background: #62d3a0;
@@ -928,7 +929,7 @@
         .chart-legend {
           display: flex;
           justify-content: center;
-          margin-top: 16px;
+          margin-top: 12px;
           font-family: "TabletGothic";
           font-size: 12px;
           color: #454545;

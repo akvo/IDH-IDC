@@ -200,12 +200,12 @@ const ThreeDriverCombinationChart = ({
         ))}
 
         <div className="chart-legend">
-          <Space size={24}>
-            <Space>
+          <Space size={24} align="center">
+            <Space align="center">
               <div className="legend-pips feasible" />
               <span>Driver within feasible ranges</span>
             </Space>
-            <Space>
+            <Space align="center">
               <div className="legend-pips not-feasible" />
               <span>Driver outside feasible ranges</span>
             </Space>
