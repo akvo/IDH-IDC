@@ -850,6 +850,13 @@
               font-size: 14px;
               font-weight: 700;
               color: $primary-color;
+
+              &.feasible {
+                color: #5bdd91;
+              }
+              &.not-feasible {
+                color: #ff8f4e;
+              }
             }
           }
 
@@ -904,23 +911,17 @@
               font-family: "RocGrotesk";
               font-size: 14px;
               font-weight: 700;
+              color: #000;
 
               &.x-value {
-                background: #62d3a0;
-                color: #000;
-                border: none;
                 opacity: 0.8;
               }
 
-              &.third-value {
-                &.feasible {
-                  background: #5bdd91;
-                  color: #000;
-                }
-                &.not-feasible {
-                  background: #ff8f4e;
-                  color: #000;
-                }
+              &.feasible {
+                background: #5bdd91;
+              }
+              &.not-feasible {
+                background: #ff8f4e;
               }
             }
           }

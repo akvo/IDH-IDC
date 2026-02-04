@@ -86,8 +86,15 @@ const ThreeDriverCombinationChart = ({
     const results = [];
     for (let yIdx = 0; yIdx < 4; yIdx++) {
       const yVal = getYAxisValue(yIdx);
+
+      const isYFeasible =
+        yAxisDriver.current < yAxisDriver.feasible
+          ? yVal >= yAxisDriver.current && yVal <= yAxisDriver.feasible
+          : yVal <= yAxisDriver.current && yVal >= yAxisDriver.feasible;
+
       const row = {
         yValue: yVal,
+        isYFeasible,
         cols: [],
       };
 
@@ -122,11 +129,6 @@ const ThreeDriverCombinationChart = ({
             ? xVal >= xAxisDriver.current && xVal <= xAxisDriver.feasible
             : xVal <= xAxisDriver.current && xVal >= xAxisDriver.feasible;
 
-        const isYFeasible =
-          yAxisDriver.current < yAxisDriver.feasible
-            ? yVal >= yAxisDriver.current && yVal <= yAxisDriver.feasible
-            : yVal <= yAxisDriver.current && yVal >= yAxisDriver.feasible;
-
         const isThirdFeasible =
           thirdDriver.current < thirdDriver.feasible
             ? requiredThirdValue >= thirdDriver.current &&
@@ -136,8 +138,9 @@ const ThreeDriverCombinationChart = ({
 
         row.cols.push({
           xValue: xVal,
+          isXFeasible,
           thirdValue: requiredThirdValue,
-          isAllFeasible: isXFeasible && isYFeasible && isThirdFeasible,
+          isThirdFeasible,
         });
       }
       results.push(row);
@@ -181,12 +184,16 @@ const ThreeDriverCombinationChart = ({
                 <div className="value-columns-flex">
                   {row.cols.map((col, colIdx) => (
                     <div key={colIdx} className="value-column">
-                      <div className="value-box x-value">
+                      <div
+                        className={`value-box x-value ${
+                          col.isXFeasible ? "feasible" : "not-feasible"
+                        }`}
+                      >
                         {thousandFormatter(col.xValue, 2)}
                       </div>
                       <div
                         className={`value-box third-value ${
-                          col.isAllFeasible ? "feasible" : "not-feasible"
+                          col.isThirdFeasible ? "feasible" : "not-feasible"
                         }`}
                       >
                         {thousandFormatter(col.thirdValue, 2)}

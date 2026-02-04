@@ -28,6 +28,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Integrated dynamic ranges for X and Y axes derived from "Two driver heatmap" configuration.
     - Added color coding (Green/Orange) to indicate feasibility based on driver ranges.
     - Implemented 2-decimal rounding for all numerical displays.
+    - Implemented dynamic feasibility color coding for each driver independently.
     - Integrated dynamic descriptions and conditional visibility based on driver selection.
     - Refactored shared card and step styles into `steps.scss`.
     - Finalized UI styling and alignment refinements for the combination chart.
