@@ -32,9 +32,11 @@ class SegmentationPreviewRequest(BaseModel):
 
 class SegmentDefinition(BaseModel):
     id: Optional[int] = None
-    index: int
+    index: Optional[int] = None
     name: str
     value: Union[int, float, str]
+    number_of_farmers: Optional[int] = 0
+    is_manual: bool = False
     segmentation_variable: Optional[str] = None
     variable_type: Optional[Literal["categorical", "numerical"]] = None
 

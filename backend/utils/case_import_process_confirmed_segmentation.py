@@ -56,7 +56,8 @@ def process_confirmed_segmentation(
 
     case_id = payload.case_id
     segmentation_variable = payload.segmentation_variable.strip().lower()
-    segments = sorted(payload.segments, key=lambda s: s.index)
+    # Use segments in the order provided by the frontend
+    segments = payload.segments
 
     # --------------------------------------------------
     # Load import file
@@ -135,7 +136,12 @@ def process_confirmed_segmentation(
             seg_series = seg_series.astype(str).str.strip().str.lower()
 
         # ---------- APPLY SEGMENT FILTER ----------
-        if seg_type == "numerical" and seg_is_numeric:
+        if seg.is_manual:
+            number_of_farmers = seg.number_of_farmers or 0
+            seg_df = (
+                pd.DataFrame()
+            )  # Empty DF for manual segments, will skip aggregation
+        elif seg_type == "numerical" and seg_is_numeric:
             # Find the previous segment of the SAME variable for lower bound
             prev_seg_same_var = next(
                 (
@@ -145,6 +151,7 @@ def process_confirmed_segmentation(
                     .strip()
                     .lower()
                     == seg_var
+                    and not s.is_manual
                 ),
                 None,
             )
@@ -157,13 +164,16 @@ def process_confirmed_segmentation(
                 mask = seg_series <= upper
             else:
                 mask = (seg_series > lower) & (seg_series <= upper)
+
+            seg_df = data_df[mask]
+            number_of_farmers = int(len(seg_df))
         else:
             # Categorical or non-numeric
             val = str(seg.value).strip().lower()
             mask = seg_series == val
 
-        seg_df = data_df[mask]
-        number_of_farmers = int(len(seg_df))
+            seg_df = data_df[mask]
+            number_of_farmers = int(len(seg_df))
 
         answers = []
 

@@ -15,7 +15,7 @@ import {
   PrevCaseState,
   stepPath,
 } from "../store";
-import { isEqual, isEmpty, orderBy } from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
@@ -115,14 +115,11 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         reporting_period: currentCase.reporting_period,
         company: currentCase.company,
         segments: currentCase?.segments?.length
-          ? orderBy(
-              currentCase.segments.map((s) => ({
-                id: s.id,
-                name: s.name,
-                number_of_farmers: s.number_of_farmers,
-              })),
-              ["id"]
-            )
+          ? currentCase.segments.map((s) => ({
+              id: s.id,
+              name: s.name,
+              number_of_farmers: s.number_of_farmers,
+            }))
           : [""],
       };
       // secondary
@@ -281,16 +278,12 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         let data = res?.data || {};
         data = {
           ...data,
-          segments: data?.segments?.length
-            ? orderBy(data.segments, ["id"])
-            : [],
+          segments: data?.segments?.length ? data.segments : [],
         };
 
         // NEW 23-06-2026 :: set form segments id fields value after saving the data
         const currentSegments = form.getFieldValue("segments") || [];
-        const segmentsWithID = data?.segments?.length
-          ? orderBy(data.segments, ["id"])
-          : [];
+        const segmentsWithID = data?.segments?.length ? data.segments : [];
         const updatedSegmentFields = currentSegments?.map((segment) => {
           const findSegmentByName = segmentsWithID?.find(
             (s) => s?.name?.toLowerCase() === segment?.name?.toLowerCase()
@@ -519,16 +512,18 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
             import_id: values.import_id,
             segmentation_variable:
               values.data_upload_segmentation_variable || fallbackVar,
-            segments: values.segments.map((seg) => {
+            segments: values.segments.map((seg, idx) => {
               // find segment id from data.segments
               const findSegment = data.segments.find(
                 (s) => s.name === seg.name
               );
               return {
                 id: findSegment ? findSegment.id : null,
-                index: seg.index,
+                index: idx,
                 name: seg.name,
                 value: seg.value || 0,
+                number_of_farmers: seg.number_of_farmers || 0,
+                is_manual: !!seg.is_manual,
                 segmentation_variable:
                   seg.segmentation_variable ||
                   values.data_upload_segmentation_variable,
@@ -547,7 +542,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
               if (generatedData?.segments?.length) {
                 CurrentCaseState.update((s) => ({
                   ...s,
-                  segments: orderBy(generatedData.segments, "id"),
+                  segments: generatedData.segments,
                   import_id: generatedData?.import_id || null,
                 }));
               }

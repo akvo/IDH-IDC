@@ -171,10 +171,6 @@ const Case = () => {
         .get(`case/${caseId}`)
         .then((res) => {
           const { data } = res;
-          if (data?.segments?.length) {
-            // order the segments by it's ID
-            data["segments"] = orderBy(data.segments, ["id"]);
-          }
           CurrentCaseState.update((s) => ({ ...s, ...data }));
           PrevCaseState.update((s) => ({ ...s, ...data }));
           // set default active segmentId
@@ -182,7 +178,7 @@ const Case = () => {
             ...s,
             general: {
               ...s.general,
-              activeSegmentId: orderBy(data.segments, ["id"])?.[0]?.id || null,
+              activeSegmentId: data.segments?.[0]?.id || null,
             },
           }));
         })

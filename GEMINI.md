@@ -38,6 +38,9 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Fixed seeder unique constraint violations and updated backend tests for master seeder stability.
     - Implemented interleaved chronological layout for manual segments and generators.
     - Fixed field interactivity: correctly disabled "Number of farmers" for generated categorical/numerical segments while keeping it enabled for manual ones.
+    - Implemented manual segment support in Case Import: manual farmer counts are preserved and data filtering is skipped on backend.
+    - Fixed 422 error during segmentation submission by making index optional and correctly identifying manual segments via a hidden flag.
+    - Preserved interleaved segment ordering across session and save cycles by removing ID-based sorting in the frontend.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

@@ -236,7 +236,12 @@ const DataUploadSegmentForm = ({
 
   const addManual = (add) => {
     const manualId = `manual-${Date.now()}`;
-    add({ name: "", number_of_farmers: 0, layoutId: manualId });
+    add({
+      name: "",
+      number_of_farmers: 0,
+      layoutId: manualId,
+      is_manual: true,
+    });
     setLayoutSequence((prev) => [...prev, manualId]);
   };
 
@@ -354,6 +359,16 @@ const DataUploadSegmentForm = ({
             style={formItemStyle}
           >
             <Input disabled />
+          </Form.Item>
+          {/* Hidden manual flag */}
+          <Form.Item
+            {...restField}
+            name={[name, "is_manual"]}
+            hidden={true}
+            style={formItemStyle}
+            valuePropName="checked"
+          >
+            <Input type="checkbox" disabled />
           </Form.Item>
           <Col span={LEFT_COL_SPAN}>
             <Form.Item
