@@ -3,6 +3,7 @@ export { default as DebounceSelect } from "./DebounceSelect";
 export { default as CaseFilter } from "./CaseFilter";
 export { default as CaseSettings } from "./CaseSettings";
 export { default as SegmentForm } from "./SegmentForm";
+export { default as DataUploadSegmentForm } from "./DataUploadSegmentForm";
 export { default as CaseForm } from "./CaseForm";
 export { default as EnterIncomeDataForm } from "./EnterIncomeDataForm";
 export { default as VisualCardWrapper } from "./VisualCardWrapper";

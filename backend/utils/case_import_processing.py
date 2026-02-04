@@ -223,25 +223,99 @@ def recalculate_numerical_segments(
     column: str,
     segments: list[dict],
 ):
-    cuts = np.array(
-        [
-            float(seg["value"])
-            for seg in sorted(segments, key=lambda x: x["index"])
-        ],
-        dtype=float,
-    )
+    """
+    Recalculate numerical segments with support for per-segment variables.
+    """
+    sorted_segments = sorted(segments, key=lambda x: x["index"])
+    processed_segments = []
 
-    if not np.all(np.diff(cuts) > 0):
-        raise HTTPException(
-            status_code=400,
-            detail="Segment values must be strictly increasing",
+    for idx, seg in enumerate(sorted_segments):
+        # Use per-segment variable if specified, otherwise fallback to default
+        seg_var = (seg.get("segmentation_variable") or column).strip().lower()
+        seg_type = (seg.get("variable_type") or "numerical").lower()
+
+        if seg_var not in df.columns:
+            raise HTTPException(
+                400, f"Segmentation variable '{seg_var}' not found in data"
+            )
+
+        series = df[seg_var].dropna().to_numpy()
+        is_numeric = pd.api.types.is_numeric_dtype(df[seg_var])
+        is_integer_data = is_numeric and np.all(np.mod(series, 1) == 0)
+
+        # Find the previous segment of the SAME variable for lower bound
+        prev_seg_same_var = next(
+            (
+                s
+                for s in reversed(sorted_segments[:idx])
+                if (s.get("segmentation_variable") or column).strip().lower()
+                == seg_var
+            ),
+            None,
         )
 
-    return calculate_numerical_segments_from_cuts(
-        df=df,
-        column=column,
-        cuts=cuts,
-    )
+        lower_bound = (
+            float(prev_seg_same_var["value"]) if prev_seg_same_var else None
+        )
+        upper_bound = float(seg["value"])
+
+        # Calculate count
+        if seg_type == "numerical" and is_numeric:
+            if lower_bound is None:
+                count = np.sum(series <= upper_bound)
+                # min is min of data or upper_bound (to avoid inversion)
+                data_min = np.min(series) if series.size > 0 else 0
+                seg_min = min(data_min, upper_bound)
+            else:
+                count = np.sum(
+                    (series > lower_bound) & (series <= upper_bound)
+                )
+                if is_integer_data:
+                    seg_min = np.floor(lower_bound) + 1
+                else:
+                    seg_min = lower_bound + 0.01
+
+            seg_max = np.floor(upper_bound) if is_integer_data else upper_bound
+            if is_integer_data:
+                seg_min = np.floor(seg_min)
+
+            processed_segments.append(
+                {
+                    "index": seg["index"],
+                    "name": seg_var,
+                    "operator": "<=",
+                    "value": float(upper_bound),
+                    "number_of_farmers": int(count),
+                    "min": float(round(seg_min, 2)),
+                    "max": float(round(seg_max, 2)),
+                    "segmentation_variable": seg_var,
+                    "variable_type": seg_type,
+                }
+            )
+        else:
+            # Categorical fallback
+            val = str(seg["value"]).strip().lower()
+            # If data is not numeric in DF, use string comparison
+            if not is_numeric:
+                count = np.sum(
+                    df[seg_var].astype(str).str.strip().str.lower() == val
+                )
+            else:
+                count = np.sum(df[seg_var] == seg["value"])
+
+            processed_segments.append(
+                {
+                    "index": seg["index"],
+                    "name": seg_var,
+                    "operator": "is",
+                    "value": seg["value"],
+                    "number_of_farmers": int(count),
+                    "segmentation_variable": seg_var,
+                    "variable_type": seg_type,
+                }
+            )
+
+    return processed_segments
 
 
 def validate_ready_for_upload(mapping_df: pd.DataFrame) -> None:

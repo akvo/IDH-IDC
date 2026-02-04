@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   Form,
   Radio,
@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
-import { MAX_SEGMENT, SegmentForm } from ".";
+import { MAX_SEGMENT, DataUploadSegmentForm } from ".";
 
 const SegmentConfigurationForm = ({
   uploadResult = {},
@@ -50,21 +50,34 @@ const SegmentConfigurationForm = ({
     return dataColumns[variableType].map((col) => ({ label: col, value: col }));
   }, [uploadResult, variableType]);
 
+  const lastFetchRef = useRef(null);
+
   useEffect(() => {
     const allowFetchPreview =
       variableType === "numerical"
         ? [variableType, segmentationVariable, numberOfSegments]
         : [variableType, segmentationVariable];
 
-    if (allowFetchPreview.every((val) => val) && uploadResult?.import_id) {
-      // fetch segment preview endpoint here
-      setLoadingPreview(true);
+    if (
+      allowFetchPreview.every((val) => val) &&
+      uploadResult?.import_id &&
+      !loadingPreview
+    ) {
       const payload = {
         import_id: uploadResult.import_id,
         variable_type: variableType,
         segmentation_variable: segmentationVariable,
         number_of_segments: numberOfSegments ? numberOfSegments : 0,
       };
+
+      const payloadString = JSON.stringify(payload);
+      if (lastFetchRef.current === payloadString) {
+        return;
+      }
+      lastFetchRef.current = payloadString;
+
+      // fetch segment preview endpoint here
+      setLoadingPreview(true);
       api
         .post("/case-import/segmentation-preview", payload)
         .then((res) => {
@@ -85,52 +98,106 @@ const SegmentConfigurationForm = ({
     segmentationVariable,
     numberOfSegments,
     uploadResult.import_id,
+    loadingPreview,
+  ]);
+
+  // Sync global/manual segment count
+  useEffect(() => {
+    // Only apply sync if Global Variable Type is numerical
+    if (variableType === "numerical" && segmentFields?.length > 1) {
+      // Manual/Global segments are those without a generatorId
+      const manualSegments = segmentFields.filter((s) => !s.generatorId);
+      const currentCount = manualSegments.length;
+
+      // Only update if current count differs from form value
+      if (currentCount !== numberOfSegments) {
+        // If 0, set to null to clear field instead of showing "0"
+        const newValue = currentCount === 0 ? null : currentCount;
+
+        form.setFieldsValue({
+          [`${dataUploadFieldPreffix}number_of_segments`]: newValue,
+        });
+      }
+    }
+  }, [
+    segmentFields,
+    numberOfSegments,
+    dataUploadFieldPreffix,
+    form,
+    variableType,
   ]);
 
   const handleOnChangeFieldValue = (selectedSegment, value) => {
+    const targetVarType = selectedSegment.variable_type || variableType;
+    const targetSegVariable =
+      selectedSegment.segmentation_variable || segmentationVariable;
+
     setSegmentFieldsLoading((prev) => ({
       ...prev,
       [`index_${selectedSegment.index}`]: true,
     }));
-    const updatedSegmentPayload = segmentFields?.map((s) => {
-      if (s.index === selectedSegment.index) {
-        return {
-          index: s.index,
-          value,
-        };
-      }
-      return {
-        index: s.index,
-        value: s.value,
-      };
+
+    // 1. Prepare payload: only include segments that belong to the target variable
+    const relevantSegments = segmentFields.filter((s) => {
+      const sVar = s.segmentation_variable || segmentationVariable;
+      return sVar === targetSegVariable;
     });
+
+    const updatedRelevantSegments = relevantSegments.map((s) => ({
+      index: s.index,
+      value: s.index === selectedSegment.index ? value : s.value,
+      segmentation_variable: targetSegVariable,
+      variable_type: targetVarType,
+    }));
 
     const recalculatePayload = {
       import_id: uploadResult.import_id,
-      variable_type: variableType,
-      segmentation_variable: segmentationVariable,
-      segments: updatedSegmentPayload,
+      variable_type: targetVarType,
+      segmentation_variable: targetSegVariable,
+      segments: updatedRelevantSegments,
     };
 
     api
       .post("/case-import/recalculate-segmentation", recalculatePayload)
       .then((res) => {
-        // update res data segments with the segmentFields name
-        const updatedSegments = res?.data?.segments?.map((s) => {
-          const findSegment = segmentFields.find((x) => x.index === s.index);
-          if (findSegment?.name) {
-            return {
-              ...s,
-              name: findSegment.name,
-            };
+        const recalculatedSegments = res?.data?.segments || [];
+
+        // 2. Merge logic: Update only the relevant segments in the main list
+        const mergedSegments = segmentFields.map((existingSegment) => {
+          const existingSegVar =
+            existingSegment.segmentation_variable || segmentationVariable;
+
+          // If this segment belongs to the variable we just recalculated
+          if (existingSegVar === targetSegVariable) {
+            // Find the updated version in the response by index
+            // Note: assuming index is unique within a variable group
+            const updated = recalculatedSegments.find(
+              (rs) => rs.index === existingSegment.index
+            );
+
+            if (updated) {
+              return {
+                ...updated,
+                ...existingSegment, // preserve frontend props like generatorId, name
+                ...updated, // apply recalculated values (min, max, value)
+                name: existingSegment.name, // strictly preserve name
+              };
+            }
           }
-          return s;
+          // Otherwise return untouched
+          return existingSegment;
         });
-        setSegmentationPreviews({ ...res.data, segments: updatedSegments });
-        // set segment values to form initialValue here
-        form.setFieldsValue({ segments: updatedSegments });
-        const segmentFieldIndex = selectedSegment.index - 1;
+
+        setSegmentationPreviews((prev) => ({
+          ...prev,
+          segments: mergedSegments,
+        }));
+        form.setFieldsValue({ segments: mergedSegments });
+
+        const segmentFieldIndex = selectedSegment.index - 1; // CAUTION: this might be wrong if indices are not sequential/global
         // set edited field to focus after change
+        // Only try to focus if we can find the field? The index logic here assumes global array order...
+        // We'll leave it for now as it's existing logic, but it might be shaky with mixed segments.
         setTimeout(() => {
           form
             .getFieldInstance(["segments", segmentFieldIndex, "value"])
@@ -246,7 +313,7 @@ const SegmentConfigurationForm = ({
           required={variableType === "numerical"}
         >
           <InputNumber
-            min={1}
+            min={0}
             max={5}
             style={{ width: "100%" }}
             placeholder="e.g. 3"
@@ -276,20 +343,19 @@ const SegmentConfigurationForm = ({
             {segmentNumericalWarning}
             {maxSegmentWarning}
             <Col span={24}>
-              <SegmentForm
+              <DataUploadSegmentForm
                 deletedSegmentIds={deletedSegmentIds}
                 setDeletedSegmentIds={setDeletedSegmentIds}
-                isDataUpload={true}
                 handleOnChangeFieldValue={handleOnChangeFieldValue}
                 segmentFieldsLoading={segmentFieldsLoading}
                 dataUploadFieldPreffix={dataUploadFieldPreffix}
+                uploadResult={uploadResult}
               />
             </Col>
           </Row>
         </Col>
       )}
       {/* EOL SEGMENTATION PREVIEW */}
-      {/* TODO:: Handle add another segment for data upload */}
     </Row>
   );
 };

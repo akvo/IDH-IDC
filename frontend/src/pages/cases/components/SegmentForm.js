@@ -8,8 +8,6 @@ import {
   Input,
   InputNumber,
   Popconfirm,
-  Tag,
-  Spin,
 } from "antd";
 import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
@@ -21,24 +19,9 @@ const RIGHT_COL_SPAN = 10;
 const SegmentForm = ({
   deletedSegmentIds = [],
   setDeletedSegmentIds = () => {},
-  isDataUpload = false,
-  handleOnChangeFieldValue = (/* currentSegment, value */) => {},
-  segmentFieldsLoading = {},
-  dataUploadFieldPreffix = "",
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
-
-  const form = Form.useFormInstance();
-  const segmentFields = Form.useWatch("segments", form);
-  const variableType = Form.useWatch(
-    `${dataUploadFieldPreffix}variable_type`,
-    form
-  );
-  const segmentationVariable = Form.useWatch(
-    `${dataUploadFieldPreffix}segmentation_variable`,
-    form
-  );
 
   const onDelete = ({ field = {}, remove = () => {} }) => {
     // add delete segment into deletedSegmentIds state
@@ -59,17 +42,6 @@ const SegmentForm = ({
       {(fields, { add, remove }) => (
         <>
           {fields.map(({ key, name, ...restField }, index) => {
-            const relatedSegment = segmentFields?.[name] || null;
-            const numberOfFarmers =
-              relatedSegment || relatedSegment?.number_of_farmers === 0
-                ? relatedSegment?.number_of_farmers
-                : null;
-            const formItemStyle = isDataUpload ? { marginBottom: "5px" } : {};
-            const isLoading =
-              segmentFieldsLoading?.[`index_${relatedSegment?.index}`];
-            const rangeMin = relatedSegment?.min || 0;
-            const rangeMax = relatedSegment?.max || 0;
-
             return (
               <Card
                 key={key}
@@ -99,7 +71,6 @@ const SegmentForm = ({
                       <Button
                         type="icon"
                         icon={<DeleteOutlined style={{ color: "red" }} />}
-                        // onClick={() => remove(name)}
                         disabled={!enableEditCase}
                       />
                     </Popconfirm>
@@ -112,7 +83,7 @@ const SegmentForm = ({
                     {...restField}
                     name={[name, "id"]}
                     hidden={true}
-                    style={formItemStyle}
+                    style={{ marginBottom: 0 }}
                   >
                     <Input disabled />
                   </Form.Item>
@@ -120,14 +91,14 @@ const SegmentForm = ({
                     <Form.Item
                       {...restField}
                       name={[name, "name"]}
-                      label={isDataUpload ? "Segment name" : null}
+                      label="Segment name"
                       rules={[
                         {
                           required: true,
                           message: `Segment ${index + 1} name required`,
                         },
                       ]}
-                      style={formItemStyle}
+                      style={{ marginBottom: 0 }}
                     >
                       <Input
                         width="100%"
@@ -139,104 +110,20 @@ const SegmentForm = ({
                     </Form.Item>
                   </Col>
                   <Col span={RIGHT_COL_SPAN}>
-                    {
-                      // show segment threshold only for numerical variableType
-                      isDataUpload ? (
-                        <Form.Item
-                          {...restField}
-                          name={[name, "value"]}
-                          label={isDataUpload ? segmentationVariable : null}
-                          hidden={
-                            !isDataUpload || variableType === "categorical"
-                          }
-                          style={formItemStyle}
-                        >
-                          <InputNumber
-                            placeholder="Value"
-                            controls={false}
-                            style={{ width: "100%" }}
-                            disabled={!enableEditCase || isLoading}
-                            suffix={
-                              isDataUpload && isLoading ? (
-                                <Spin size="small" />
-                              ) : (
-                                ""
-                              )
-                            }
-                            onChange={(val) =>
-                              handleOnChangeFieldValue(relatedSegment, val)
-                            }
-                          />
-                        </Form.Item>
-                      ) : (
-                        ""
-                      )
-                    }
-
-                    {isDataUpload && variableType === "categorical" ? (
-                      <Form.Item
-                        {...restField}
-                        label={isDataUpload ? "Number of farmers" : null}
-                        name={[name, "number_of_farmers"]}
-                        hidden={
-                          !isDataUpload ||
-                          (isDataUpload && variableType === "numerical")
-                        }
-                        style={formItemStyle}
-                      >
-                        <InputNumber
-                          placeholder="Number of farmers"
-                          controls={false}
-                          style={{ width: "100%", color: "#000" }}
-                          disabled={true}
-                        />
-                      </Form.Item>
-                    ) : (
-                      ""
-                    )}
-
-                    {!isDataUpload ? (
-                      <Form.Item
-                        {...restField}
-                        name={[name, "number_of_farmers"]}
-                        hidden={isDataUpload}
-                        style={formItemStyle}
-                      >
-                        <InputNumber
-                          placeholder="Number of farmers"
-                          controls={false}
-                          style={{ width: "100%" }}
-                          disabled={!enableEditCase}
-                        />
-                      </Form.Item>
-                    ) : (
-                      ""
-                    )}
+                    <Form.Item
+                      {...restField}
+                      name={[name, "number_of_farmers"]}
+                      label="Number of farmers"
+                      style={{ marginBottom: 0 }}
+                    >
+                      <InputNumber
+                        placeholder="Number of farmers"
+                        controls={false}
+                        style={{ width: "100%" }}
+                        disabled={!enableEditCase}
+                      />
+                    </Form.Item>
                   </Col>
-                  {isDataUpload &&
-                  variableType === "numerical" &&
-                  (numberOfFarmers || numberOfFarmers === 0) ? (
-                    <Col span={24}>
-                      <Row gutter={[12, 12]}>
-                        <Col span={LEFT_COL_SPAN}>
-                          <Tag>
-                            <p style={{ margin: 0 }}>
-                              Number of farmers: {numberOfFarmers}
-                            </p>
-                          </Tag>
-                        </Col>
-                        <Col span={RIGHT_COL_SPAN}>
-                          <Tag>
-                            <p style={{ margin: 0 }}>
-                              Segment range: {rangeMin} - {rangeMax}
-                            </p>
-                          </Tag>
-                        </Col>
-                      </Row>
-                    </Col>
-                  ) : (
-                    ""
-                  )}
                 </Row>
               </Card>
             );

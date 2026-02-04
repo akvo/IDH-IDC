@@ -56,7 +56,8 @@ def process_confirmed_segmentation(
 
     case_id = payload.case_id
     segmentation_variable = payload.segmentation_variable.strip().lower()
-    segments = sorted(payload.segments, key=lambda s: s.index)
+    # Use segments in the order provided by the frontend
+    segments = payload.segments
 
     # --------------------------------------------------
     # Load import file
@@ -113,20 +114,66 @@ def process_confirmed_segmentation(
         seg_id = seg.id
         seg_name = seg.name
 
+        # Use per-segment variable if specified, otherwise fallback to default
+        seg_var = (
+            (seg.segmentation_variable or segmentation_variable)
+            .strip()
+            .lower()
+        )
+        seg_type = (
+            seg.variable_type or "numerical"
+        ).lower()  # default to numerical
+
+        if seg_var not in data_df.columns:
+            raise HTTPException(
+                400, f"Segmentation variable '{seg_var}' not found in data"
+            )
+
+        seg_series = data_df[seg_var]
+        seg_is_numeric = pd.api.types.is_numeric_dtype(seg_series)
+
+        if not seg_is_numeric:
+            seg_series = seg_series.astype(str).str.strip().str.lower()
+
         # ---------- APPLY SEGMENT FILTER ----------
-        if is_numeric:
-            lower = float(segments[idx - 1].value) if idx > 0 else None
+        if seg.is_manual:
+            number_of_farmers = seg.number_of_farmers or 0
+            seg_df = (
+                pd.DataFrame()
+            )  # Empty DF for manual segments, will skip aggregation
+        elif seg_type == "numerical" and seg_is_numeric:
+            # Find the previous segment of the SAME variable for lower bound
+            prev_seg_same_var = next(
+                (
+                    s
+                    for s in reversed(segments[:idx])
+                    if (s.segmentation_variable or segmentation_variable)
+                    .strip()
+                    .lower()
+                    == seg_var
+                    and not s.is_manual
+                ),
+                None,
+            )
+            lower = (
+                float(prev_seg_same_var.value) if prev_seg_same_var else None
+            )
             upper = float(seg.value)
 
             if lower is None:
                 mask = seg_series <= upper
             else:
                 mask = (seg_series > lower) & (seg_series <= upper)
-        else:
-            mask = seg_series == str(seg.value).strip().lower()
 
-        seg_df = data_df[mask]
-        number_of_farmers = int(len(seg_df))
+            seg_df = data_df[mask]
+            number_of_farmers = int(len(seg_df))
+        else:
+            # Categorical or non-numeric
+            val = str(seg.value).strip().lower()
+            mask = seg_series == val
+
+            seg_df = data_df[mask]
+            number_of_farmers = int(len(seg_df))
 
         answers = []
 
@@ -211,17 +258,6 @@ def process_confirmed_segmentation(
     case = get_case_by_id(session=session, id=case_id)
     case = case.to_case_detail
     case = get_segment_benchmark(session=session, case=case)
-
-    print("=== GENERATED SEGMENTS FROM EXCEL ===")
-    print(
-        {
-            "status": "success",
-            "case_id": case_id,
-            "segments": segment_payloads,
-            "total_segments": len(segment_payloads),
-        }
-    )
-    print("=== EOL GENERATED SEGMENTS FROM EXCEL ===")
 
     case["import_id"] = payload.import_id
     return case

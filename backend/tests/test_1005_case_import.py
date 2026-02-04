@@ -487,3 +487,139 @@ class TestCaseImport:
             assert (
                 abs(curr_min - expected_min) < 0.0001
             ), f"Float logic failed: segment {i+1} min {curr_min} should be {expected_min}"  # noqa
+
+    @pytest.mark.asyncio
+    async def test_case_import_generate_segment_values_mixed_variables(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        upload_file_factory,
+        admin_headers,
+    ):
+        """
+        Test generating segment values with mixed variables
+        (Numerical and Categorical)within the same segmentation logic.
+        """
+        run_seeder()
+
+        res = await upload_file_factory(VALID_FILE, admin_headers)
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        # Create a dummy case to link to
+        segments_data = [
+            {"name": "Young Farmers", "value": "Young Farmers"},
+            {"name": "Male Farmers", "value": "Male Farmers"},
+            {"name": "Older Farmers", "value": "Older Farmers"},
+        ]
+
+        payload = {
+            "name": "Mixed Segment Case",
+            "description": "Testing mixed variable segmentation",
+            "date": "2024-10-03",
+            "year": 2024,
+            "country": 2,
+            "focus_commodity": 2,
+            "currency": "USD",
+            "area_size_unit": "hectare",
+            "volume_measurement_unit": "liters",
+            "cost_of_production_unit": "Per-area",
+            "reporting_period": "Per-season",
+            "segmentation": True,
+            "living_income_study": LivingIncomeStudyEnum.better_income.value,
+            "multiple_commodities": False,
+            "other_commodities": [],
+            "tags": [],
+            "company": None,
+            "segments": segments_data,
+        }
+
+        case_res = await client.post(
+            app.url_path_for("case:create"),
+            headers=admin_headers,
+            json=payload,
+        )
+        assert case_res.status_code == 200
+        case_id = case_res.json()["id"]
+
+        # Prepare segments with IDs and mixed variables
+        # Segment 1: Age <= 30 (Numerical)
+        # Segment 2: Gender = Male (Categorical)
+        # Segment 3: Age <= 60 (Numerical)
+
+        # Note: Segments 1 and 3 share variable 'hh_farmer_age'.
+        # Segment 2 breaks the sequence.
+
+        segments_payload = []
+        created_segments = case_res.json()["segments"]
+
+        # Young Farmers (Age <= 30)
+        segments_payload.append(
+            {
+                "id": created_segments[0]["id"],
+                "index": 1,
+                "name": "Young Farmers",
+                "value": 30,
+                "segmentation_variable": "hh_farmer_age",
+                "variable_type": "numerical",
+            }
+        )
+
+        # Male Farmers (Gender = Male)
+        segments_payload.append(
+            {
+                "id": created_segments[1]["id"],
+                "index": 2,
+                "name": "Male Farmers",
+                "value": "male",
+                "segmentation_variable": "hh_farmer_gender",
+                "variable_type": "categorical",
+            }
+        )
+
+        # Older Farmers (Age <= 60)
+        # Ideally this means > 30 and <= 60 if we consider Segment 1 as the
+        # previous same-var segment.
+        segments_payload.append(
+            {
+                "id": created_segments[2]["id"],
+                "index": 3,
+                "name": "Older Farmers",
+                "value": 60,
+                "segmentation_variable": "hh_farmer_age",
+                "variable_type": "numerical",
+            }
+        )
+
+        res = await client.post(
+            app.url_path_for("case_import:generate_segment_values"),
+            headers=admin_headers,
+            json={
+                "case_id": case_id,
+                "import_id": import_id,
+                "segmentation_variable": "hh_farmer_age",  # Default/Global
+                "segments": segments_payload,
+            },
+        )
+        assert res.status_code == 200
+        data = res.json()
+
+        # Verify segments and answers
+        assert "segments" in data
+        assert len(data["segments"]) == 3
+
+        for segment in data["segments"]:
+            assert "answers" in segment
+            assert isinstance(segment["answers"], dict)
+            assert len(segment["answers"]) > 0
+
+            # Check answer structure
+            # Answers are keyed by "current-{commodity}-{question}"
+            # or "feasible-..."
+            # Values are floats/ints
+            for key, value in segment["answers"].items():
+                assert key.startswith("current-") or key.startswith(
+                    "feasible-"
+                )
+                assert value is not None

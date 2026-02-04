@@ -25,6 +25,24 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
     - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.
     - Centralized calculation logic to ensure consistency across "Explore" and "Sensitivity Analysis" sections.
+- **Multiple Segment Addition Methods (Issue #683)**:
+    - Implemented UI to add segments based on different variables for data uploads.
+    - Refactored `SegmentForm` into simplified `SegmentForm` (manual) and `DataUploadSegmentForm` (complex).
+    - Added inline segment generators with visual grouping and automatic segment management.
+    - Enforced 5-segment limit across all addition methods.
+    - Added dev workflows for frontend linting and backend testing.
+    - Fixed and verified segment value generation for mixed numerical/categorical variables.
+    - Fixed UI bug where threshold fields were missing for numerical segments in inline generators.
+    - Fixed regression where editing a numerical segment's threshold during mixed segmentation caused other fields to disappear.
+    - Synced "Number of Segments" input with actual segment count to reflect deletions in inline generators.
+    - Fixed seeder unique constraint violations and updated backend tests for master seeder stability.
+    - Implemented interleaved chronological layout for manual segments and generators.
+    - Fixed field interactivity: correctly disabled "Number of farmers" for generated categorical/numerical segments while keeping it enabled for manual ones.
+    - Implemented manual segment support in Case Import: manual farmer counts are preserved and data filtering is skipped on backend.
+    - Fixed 422 error during segmentation submission by making index optional and correctly identifying manual segments via a hidden flag.
+    - Preserved interleaved segment ordering across session and save cycles by removing ID-based sorting in the frontend.
+    - Optimized segmentation preview fetches with caching to prevent redundant API calls.
+    - Improved manual segment count synchronization and allowed 0 as a valid input for cleared states.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
