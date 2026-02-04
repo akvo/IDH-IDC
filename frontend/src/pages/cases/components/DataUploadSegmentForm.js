@@ -199,43 +199,29 @@ const DataUploadSegmentForm = ({
   const form = Form.useFormInstance();
   const segmentFields = Form.useWatch("segments", form);
 
+  // State to track the chronological sequence of additions (manual segment IDs or generator IDs)
+  const [layoutSequence, setLayoutSequence] = useState([]);
+
   // State to track active generators. Each generator has a unique ID and the segments it produced.
   const [generators, setGenerators] = useState([]);
-
-  // Track manual segments separate from generator segments if needed,
-  // but simplistic approach: rely on Form.List.
-  // We need to know which segments in the Form.List belong to which generator to update them.
-  // Strategy: Add a hidden `generator_id` field to segments?
-  // Or keep track of indices? Indices shift.
-  // Better: Generators trigger a rebuild of their specific segments.
-  // BUT: user can manually edit those segments. We should probably purely append/replace.
-
-  // Let's try tracking ranges or IDs.
-  // Simplest: Each generator maintains its own list of segments in state.
-  // The main form "segments" is a composition of [Manual Segments] + [Gen 1 Segments] + [Gen 2 Segments].
-  // This is hard with Antd Form.List.
-
-  // Alternative: When a generator updates, it finds its previous segments and replaces them.
-  // How to find them? Maybe we attach `generatorId` to the segment object in the form.
 
   const handleGeneratorUpdate = (generatorId, newSegments) => {
     const currentSegments = form.getFieldValue("segments") || [];
     const taggedNewSegments = newSegments.map((s) => ({ ...s, generatorId }));
 
-    // Filter out old segments from this generator
-    const cleanSegments = currentSegments.filter(
+    // Rebuild segments: keep segments for OTHER generators or manual segments.
+    // Replace segments for THIS specific generator.
+    const otherSegs = currentSegments.filter(
       (s) => s.generatorId !== generatorId
     );
-
-    // Combine.
-    // We allow exceeding MAX_SEGMENT so that the UI can warn the user (via parent component).
     form.setFieldsValue({
-      segments: [...cleanSegments, ...taggedNewSegments],
+      segments: [...otherSegs, ...taggedNewSegments],
     });
   };
 
   const removeGenerator = (id) => {
     setGenerators((prev) => prev.filter((g) => g.id !== id));
+    setLayoutSequence((prev) => prev.filter((item) => item !== id));
     // Also remove its segments
     const currentSegments = form.getFieldValue("segments") || [];
     const cleanSegments = currentSegments.filter((s) => s.generatorId !== id);
@@ -243,11 +229,23 @@ const DataUploadSegmentForm = ({
   };
 
   const addGenerator = () => {
-    const newId = Date.now().toString(); // simple ID
+    const newId = `gen-${Date.now()}`;
     setGenerators((prev) => [...prev, { id: newId }]);
+    setLayoutSequence((prev) => [...prev, newId]);
   };
 
-  const onDelete = ({ field = {}, remove = () => {} }) => {
+  const addManual = (add) => {
+    const manualId = `manual-${Date.now()}`;
+    add({ name: "", number_of_farmers: 0, layoutId: manualId });
+    setLayoutSequence((prev) => [...prev, manualId]);
+  };
+
+  const onDelete = ({ field = {}, remove = () => {}, layoutId }) => {
+    // remove from layout sequence
+    if (layoutId) {
+      setLayoutSequence((prev) => prev.filter((id) => id !== layoutId));
+    }
+
     // add delete segment into deletedSegmentIds state
     const deletedIdsLength = deletedSegmentIds.length;
     const segmentIndex = field.name;
@@ -275,6 +273,8 @@ const DataUploadSegmentForm = ({
   const renderSegmentCard = (field, index, remove) => {
     const { key, name, ...restField } = field;
     const relatedSegment = segmentFields?.[name] || null;
+    const isManual = !!relatedSegment?.layoutId?.startsWith("manual-");
+
     const numberOfFarmers =
       relatedSegment || relatedSegment?.number_of_farmers === 0
         ? relatedSegment?.number_of_farmers
@@ -308,7 +308,11 @@ const DataUploadSegmentForm = ({
               </div>
             }
             onConfirm={() =>
-              onDelete({ field: { key, name, ...restField }, remove })
+              onDelete({
+                field: { key, name, ...restField },
+                remove,
+                layoutId: relatedSegment?.layoutId,
+              })
             }
             okText="Delete"
             cancelText="Cancel"
@@ -342,6 +346,15 @@ const DataUploadSegmentForm = ({
           >
             <Input disabled />
           </Form.Item>
+          {/* Hidden layout ID for chronological tracking */}
+          <Form.Item
+            {...restField}
+            name={[name, "layoutId"]}
+            hidden={true}
+            style={formItemStyle}
+          >
+            <Input disabled />
+          </Form.Item>
           <Col span={LEFT_COL_SPAN}>
             <Form.Item
               {...restField}
@@ -366,12 +379,12 @@ const DataUploadSegmentForm = ({
           </Col>
           <Col span={RIGHT_COL_SPAN}>
             {
-              // show segment threshold only for numerical variableType
+              // show segment threshold only for numerical variableType and if generated
               <Form.Item
                 {...restField}
                 name={[name, "value"]}
                 label={segVarLabel}
-                hidden={segVarType === "categorical"}
+                hidden={segVarType === "categorical" || isManual}
                 style={formItemStyle}
               >
                 <InputNumber
@@ -387,26 +400,23 @@ const DataUploadSegmentForm = ({
               </Form.Item>
             }
 
-            {segVarType === "categorical" ? (
-              <Form.Item
-                {...restField}
-                label="Number of farmers"
-                name={[name, "number_of_farmers"]}
-                hidden={segVarType === "numerical"}
-                style={formItemStyle}
-              >
-                <InputNumber
-                  placeholder="Number of farmers"
-                  controls={false}
-                  style={{ width: "100%", color: "#000" }}
-                  disabled={true}
-                />
-              </Form.Item>
-            ) : (
-              ""
-            )}
+            <Form.Item
+              {...restField}
+              label="Number of farmers"
+              name={[name, "number_of_farmers"]}
+              hidden={segVarType === "numerical" && !isManual}
+              style={formItemStyle}
+            >
+              <InputNumber
+                placeholder="Number of farmers"
+                controls={false}
+                style={{ width: "100%", color: "#000" }}
+                disabled={!isManual || !enableEditCase}
+              />
+            </Form.Item>
           </Col>
-          {segVarType === "numerical" &&
+          {!isManual &&
+          segVarType === "numerical" &&
           (numberOfFarmers || numberOfFarmers === 0) ? (
             <Col span={24}>
               <Row gutter={[12, 12]}>
@@ -437,46 +447,65 @@ const DataUploadSegmentForm = ({
   return (
     <Form.List name="segments">
       {(fields, { add, remove }) => {
-        // Group fields by generator
-        const manualFields = fields.filter(
-          (f) => !segmentFields?.[f.name]?.generatorId
-        );
-
         return (
           <>
-            {/* MANUAL SEGMENTS */}
-            {manualFields.map((field) =>
-              renderSegmentCard(field, field.name, remove)
-            )}
+            {/* Render any segments that were NOT in layoutSequence (e.g. initial loads if any) at the top */}
+            {fields.map((field) => {
+              const seg = segmentFields?.[field.name];
+              if (seg?.layoutId && layoutSequence.includes(seg.layoutId)) {
+                return null;
+              }
+              if (
+                seg?.generatorId &&
+                layoutSequence.includes(seg.generatorId)
+              ) {
+                return null;
+              }
+              return renderSegmentCard(field, field.name, remove);
+            })}
 
-            {/* GENERATORS AND THEIR SEGMENTS */}
-            {generators.map((gen) => {
-              const genFields = fields.filter(
-                (f) => segmentFields?.[f.name]?.generatorId === gen.id
-              );
-              return (
-                <div key={gen.id}>
-                  <SegmentGenerator
-                    uploadResult={uploadResult}
-                    onUpdate={(segments) =>
-                      handleGeneratorUpdate(gen.id, segments)
-                    }
-                    onRemove={() => removeGenerator(gen.id)}
-                    currentCount={genFields.length}
-                  />
-                  <div
-                    style={{
-                      marginTop: 16,
-                      paddingLeft: 12,
-                      borderLeft: "2px solid #f0f0f0",
-                    }}
-                  >
-                    {genFields.map((field) =>
-                      renderSegmentCard(field, field.name, remove)
-                    )}
+            {layoutSequence.map((seqId) => {
+              const gen = generators.find((g) => g.id === seqId);
+              if (gen) {
+                // Render Generator block
+                const genFields = fields.filter(
+                  (f) => segmentFields?.[f.name]?.generatorId === gen.id
+                );
+                return (
+                  <div key={gen.id}>
+                    <SegmentGenerator
+                      uploadResult={uploadResult}
+                      onUpdate={(segments) =>
+                        handleGeneratorUpdate(gen.id, segments)
+                      }
+                      onRemove={() => removeGenerator(gen.id)}
+                      currentCount={genFields.length}
+                    />
+                    <div
+                      style={{
+                        marginTop: 16,
+                        paddingLeft: 12,
+                        borderLeft: "2px solid #f0f0f0",
+                      }}
+                    >
+                      {genFields.map((field) =>
+                        renderSegmentCard(field, field.name, remove)
+                      )}
+                    </div>
                   </div>
-                </div>
+                );
+              }
+
+              // Otherwise it's a manual segment ID
+              const manualField = fields.find(
+                (f) => segmentFields?.[f.name]?.layoutId === seqId
               );
+
+              if (manualField) {
+                return renderSegmentCard(manualField, manualField.name, remove);
+              }
+
+              return null;
             })}
 
             {/* Add Buttons */}
@@ -486,7 +515,7 @@ const DataUploadSegmentForm = ({
                   <Col>
                     <Button
                       type="ghost"
-                      onClick={() => add({ name: "", number_of_farmers: 0 })}
+                      onClick={() => addManual(add)}
                       block
                       icon={<PlusCircleFilled />}
                       disabled={!enableEditCase}
