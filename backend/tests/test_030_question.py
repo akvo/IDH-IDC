@@ -60,7 +60,7 @@ class TestQuestionRoute:
                 "case_commodity_id": 4,
                 "case_commodity_type": "focus",
                 "commodity_id": 1,
-                "commodity_name": "Wheat",
+                "commodity_name": "Test Wheat",
                 "questions": [
                     {
                         "id": 1,
@@ -102,7 +102,7 @@ class TestQuestionRoute:
                 "case_commodity_id": 1,
                 "case_commodity_type": "focus",
                 "commodity_id": 2,
-                "commodity_name": "Rice",
+                "commodity_name": "Test Rice",
                 "questions": [
                     {
                         "id": 1,
@@ -157,7 +157,7 @@ class TestQuestionRoute:
                 "case_commodity_id": 1,
                 "case_commodity_type": "focus",
                 "commodity_id": 2,
-                "commodity_name": "Rice",
+                "commodity_name": "Test Rice",
                 "questions": [
                     {
                         "id": 1,
@@ -199,7 +199,7 @@ class TestQuestionRoute:
                 "case_commodity_id": 2,
                 "case_commodity_type": "secondary",
                 "commodity_id": 3,
-                "commodity_name": "Corn",
+                "commodity_name": "Test Corn",
                 "questions": [
                     {
                         "id": 1,

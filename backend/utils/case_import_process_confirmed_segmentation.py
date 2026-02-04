@@ -249,16 +249,5 @@ def process_confirmed_segmentation(
     case = case.to_case_detail
     case = get_segment_benchmark(session=session, case=case)
 
-    print("=== GENERATED SEGMENTS FROM EXCEL ===")
-    print(
-        {
-            "status": "success",
-            "case_id": case_id,
-            "segments": segment_payloads,
-            "total_segments": len(segment_payloads),
-        }
-    )
-    print("=== EOL GENERATED SEGMENTS FROM EXCEL ===")
-
     case["import_id"] = payload.import_id
     return case

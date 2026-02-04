@@ -73,9 +73,9 @@ class TestAddMasterDataWithoutDedenpentToUser:
             {
                 "name": "Grains",
                 "children": [
-                    {"name": "Wheat"},
-                    {"name": "Rice"},
-                    {"name": "Corn"},
+                    {"name": "Test Wheat"},
+                    {"name": "Test Rice"},
+                    {"name": "Test Corn"},
                 ],
             },
             {
@@ -105,9 +105,9 @@ class TestAddMasterDataWithoutDedenpentToUser:
                 "id": 1,
                 "name": "Grains",
                 "commodities": [
-                    {"id": 1, "name": "Wheat"},
-                    {"id": 2, "name": "Rice"},
-                    {"id": 3, "name": "Corn"},
+                    {"id": 1, "name": "Test Wheat"},
+                    {"id": 2, "name": "Test Rice"},
+                    {"id": 3, "name": "Test Corn"},
                 ],
             },
             {
