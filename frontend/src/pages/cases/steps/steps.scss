@@ -827,7 +827,7 @@
         .combination-card {
           background: #ffffff;
           border: 1px solid #dfdfdf;
-          box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+          // box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
           border-radius: 20px;
           overflow: hidden;
 
@@ -841,15 +841,15 @@
 
             .label {
               font-family: "TabletGothic";
-              font-size: 16px;
+              font-size: 14px;
               color: #454545;
             }
 
             .value {
               font-family: "RocGrotesk";
-              font-size: 18px;
-              font-weight: 500;
-              color: #01625f;
+              font-size: 14px;
+              font-weight: 700;
+              color: $primary-color;
             }
           }
 
@@ -857,17 +857,40 @@
             padding: 24px;
             background: #f9f9f9;
 
-            .side-labels {
+            .combination-flex-wrapper {
               display: flex;
-              flex-direction: column;
-              justify-content: space-between;
-              height: 100px;
+              align-items: center;
+              gap: 16px;
 
-              .side-label-item {
-                font-family: "TabletGothic";
-                font-size: 14px;
-                color: #454545;
-                font-weight: 500;
+              .side-labels {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                height: 100px;
+                padding: 12px 0;
+                flex: 0 0 160px;
+
+                .side-label-item {
+                  font-family: "TabletGothic";
+                  font-size: 14px;
+                  color: #454545;
+                  font-weight: 500;
+                  text-align: right;
+                }
+              }
+
+              .value-columns-flex {
+                display: flex;
+                flex: 1;
+                gap: 8px;
+                justify-content: space-between;
+
+                .value-column {
+                  flex: 1;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 12px;
+                }
               }
             }
 
@@ -880,16 +903,8 @@
               font-family: "RocGrotesk";
               font-size: 14px;
               font-weight: 500;
-              margin-bottom: 12px;
-
-              &:last-child {
-                margin-bottom: 0;
-              }
 
               &.x-value {
-                background: #e6f7ff;
-                color: #003a8c;
-                border: 1px solid #91d5ff;
                 background: #62d3a0;
                 color: #000;
                 border: none;

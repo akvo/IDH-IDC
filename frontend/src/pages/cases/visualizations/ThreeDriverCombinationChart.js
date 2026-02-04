@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { CaseVisualState } from "../store";
 import { getFunctionDefaultValue } from "../../../lib";
 import { yAxisFormula } from "../../../lib/formula";
-import { Row, Col, Space } from "antd";
+import { Space } from "antd";
 import { thousandFormatter } from "../../../components/chart/options/common";
 
 const ThreeDriverCombinationChart = ({
@@ -169,34 +169,32 @@ const ThreeDriverCombinationChart = ({
               </span>
             </div>
             <div className="card-body">
-              <Row gutter={12}>
-                <Col span={4} className="side-labels">
+              <div className="combination-flex-wrapper">
+                <div className="side-labels">
                   <div className="side-label-item">
                     And {xAxisDriver.name} is:
                   </div>
                   <div className="side-label-item">
                     Then {thirdDriver.name} has to be:
                   </div>
-                </Col>
-                <Col span={20}>
-                  <Row gutter={8}>
-                    {row.cols.map((col, colIdx) => (
-                      <Col key={colIdx} span={4}>
-                        <div className="value-box x-value">
-                          {thousandFormatter(col.xValue, 2)}
-                        </div>
-                        <div
-                          className={`value-box third-value ${
-                            col.isAllFeasible ? "feasible" : "not-feasible"
-                          }`}
-                        >
-                          {thousandFormatter(col.thirdValue, 2)}
-                        </div>
-                      </Col>
-                    ))}
-                  </Row>
-                </Col>
-              </Row>
+                </div>
+                <div className="value-columns-flex">
+                  {row.cols.map((col, colIdx) => (
+                    <div key={colIdx} className="value-column">
+                      <div className="value-box x-value">
+                        {thousandFormatter(col.xValue, 2)}
+                      </div>
+                      <div
+                        className={`value-box third-value ${
+                          col.isAllFeasible ? "feasible" : "not-feasible"
+                        }`}
+                      >
+                        {thousandFormatter(col.thirdValue, 2)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         ))}
