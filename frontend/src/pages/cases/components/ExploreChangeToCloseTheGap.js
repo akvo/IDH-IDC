@@ -5,6 +5,7 @@ import {
   SingleDriverChange,
   TwoDriverHeatmap,
   AdjustIncomeTarget,
+  ThreeDriverCalculator,
 } from "../components";
 
 const ExploreChangeToCloseTheGap = () => {
@@ -53,6 +54,10 @@ const ExploreChangeToCloseTheGap = () => {
 
       <Col span={24}>
         <TwoDriverHeatmap selectedSegment={selectedSegment} />
+      </Col>
+
+      <Col span={24}>
+        <ThreeDriverCalculator selectedSegment={selectedSegment} />
       </Col>
     </Row>
   );

@@ -21,6 +21,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented "Redirect After Login" feature to return users to their originally requested page.
     - Resolved circular dependencies in route definitions by extracting `paths.js`.
     - Fixed 404 behavior for unauthenticated users on protected routes.
+- **Three Driver Calculator Implementation (Issue #709)**:
+    - Implemented `ThreeDriverCalculator` component shell for Step 4.
+    - Added dynamic description text based on selected X, Y, and third drivers.
+    - Implemented logic to disable drivers in the third dropdown if already selected in X or Y.
+    - Moved shared card styles from `App.scss` to `steps.scss` and refactored component styles.
+    - Integrated the new section into the `ExploreChangeToCloseTheGap` page.
 - **Closing the Gap Calculation (PR #706)**:
     - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
     - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.
