@@ -5,6 +5,7 @@ import { CaseVisualState, CurrentCaseState } from "../store";
 import { map, groupBy } from "lodash";
 import { commodities } from "../../../store/static";
 import { selectProps } from "../../../lib";
+import { ThreeDriverCombinationChart } from "../visualizations";
 
 const ThreeDriverCalculator = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -51,6 +52,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
         ?.join(" / ");
       return {
         key: parseInt(i) - 1,
+        qid: currentQuestion.id,
         name: currentQuestion.text,
         current: d.find((a) => a.name === "current")?.value || 0,
         feasible: d.find((a) => a.name === "feasible")?.value || 0,
@@ -69,6 +71,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
     return dataSource.map((x) => ({
       value: x.name,
       label: x.name,
+      qid: x.qid,
     }));
   }, [dataSource]);
 
@@ -87,6 +90,18 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
       disabled: d.value === xAxisDriver || d.value === yAxisDriver,
     }));
   }, [drivers, xAxisDriver, yAxisDriver]);
+
+  const selectedThirdDriver = useMemo(() => {
+    return dataSource.find((d) => d.name === thirdDriver);
+  }, [dataSource, thirdDriver]);
+
+  const xAxisDetails = useMemo(() => {
+    return dataSource.find((d) => d.name === xAxisDriver);
+  }, [dataSource, xAxisDriver]);
+
+  const yAxisDetails = useMemo(() => {
+    return dataSource.find((d) => d.name === yAxisDriver);
+  }, [dataSource, yAxisDriver]);
 
   return (
     <Card
@@ -136,20 +151,30 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
 
         {thirdDriver && (
           <Col span={24} className="combination-section">
-            <Space direction="vertical" size={16}>
-              <h3 className="title combination-title">
-                What combination of drivers close to income gap?
-              </h3>
-              <p className="combination-description">
-                The table below shows the required level of <b>{thirdDriver}</b>{" "}
-                needed to close the living income gap for four different
-                combinations of <b>{xAxisDriver || "[X]"}</b> and{" "}
-                <b>{yAxisDriver || "[Y]"}</b>. The values for{" "}
-                <b>{xAxisDriver || "[X]"}</b> and <b>{yAxisDriver || "[Y]"}</b>{" "}
-                are taken from the ranges defined above. The table focuses on
-                combinations that are most likely to reach the income target
-                while staying within feasible levels for the selected drivers.
-              </p>
+            <Space direction="vertical" size={24} style={{ width: "100%" }}>
+              <Space direction="vertical" size={16}>
+                <h3 className="title combination-title">
+                  What combination of drivers close to income gap?
+                </h3>
+                <p className="combination-description">
+                  The table below shows the required level of{" "}
+                  <b>{thirdDriver}</b> needed to close the living income gap for
+                  four different combinations of <b>{xAxisDriver || "[X]"}</b>{" "}
+                  and <b>{yAxisDriver || "[Y]"}</b>. The values for{" "}
+                  <b>{xAxisDriver || "[X]"}</b> and{" "}
+                  <b>{yAxisDriver || "[Y]"}</b> are taken from the ranges
+                  defined above. The table focuses on combinations that are most
+                  likely to reach the income target while staying within
+                  feasible levels for the selected drivers.
+                </p>
+              </Space>
+
+              <ThreeDriverCombinationChart
+                selectedSegment={selectedSegment}
+                thirdDriver={selectedThirdDriver}
+                xAxisDriver={xAxisDetails}
+                yAxisDriver={yAxisDetails}
+              />
             </Space>
           </Col>
         )}
