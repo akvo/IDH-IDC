@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   Form,
   Radio,
@@ -50,21 +50,34 @@ const SegmentConfigurationForm = ({
     return dataColumns[variableType].map((col) => ({ label: col, value: col }));
   }, [uploadResult, variableType]);
 
+  const lastFetchRef = useRef(null);
+
   useEffect(() => {
     const allowFetchPreview =
       variableType === "numerical"
         ? [variableType, segmentationVariable, numberOfSegments]
         : [variableType, segmentationVariable];
 
-    if (allowFetchPreview.every((val) => val) && uploadResult?.import_id) {
-      // fetch segment preview endpoint here
-      setLoadingPreview(true);
+    if (
+      allowFetchPreview.every((val) => val) &&
+      uploadResult?.import_id &&
+      !loadingPreview
+    ) {
       const payload = {
         import_id: uploadResult.import_id,
         variable_type: variableType,
         segmentation_variable: segmentationVariable,
         number_of_segments: numberOfSegments ? numberOfSegments : 0,
       };
+
+      const payloadString = JSON.stringify(payload);
+      if (lastFetchRef.current === payloadString) {
+        return;
+      }
+      lastFetchRef.current = payloadString;
+
+      // fetch segment preview endpoint here
+      setLoadingPreview(true);
       api
         .post("/case-import/segmentation-preview", payload)
         .then((res) => {
@@ -85,12 +98,13 @@ const SegmentConfigurationForm = ({
     segmentationVariable,
     numberOfSegments,
     uploadResult.import_id,
+    loadingPreview,
   ]);
 
   // Sync global/manual segment count
   useEffect(() => {
     // Only apply sync if Global Variable Type is numerical
-    if (variableType === "numerical" && segmentFields) {
+    if (variableType === "numerical" && segmentFields?.length > 1) {
       // Manual/Global segments are those without a generatorId
       const manualSegments = segmentFields.filter((s) => !s.generatorId);
       const currentCount = manualSegments.length;
@@ -299,7 +313,7 @@ const SegmentConfigurationForm = ({
           required={variableType === "numerical"}
         >
           <InputNumber
-            min={1}
+            min={0}
             max={5}
             style={{ width: "100%" }}
             placeholder="e.g. 3"
