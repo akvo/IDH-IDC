@@ -87,6 +87,32 @@ const SegmentConfigurationForm = ({
     uploadResult.import_id,
   ]);
 
+  // Sync global/manual segment count
+  useEffect(() => {
+    // Only apply sync if Global Variable Type is numerical
+    if (variableType === "numerical" && segmentFields) {
+      // Manual/Global segments are those without a generatorId
+      const manualSegments = segmentFields.filter((s) => !s.generatorId);
+      const currentCount = manualSegments.length;
+
+      // Only update if current count differs from form value
+      if (currentCount !== numberOfSegments) {
+        // If 0, set to null to clear field instead of showing "0"
+        const newValue = currentCount === 0 ? null : currentCount;
+
+        form.setFieldsValue({
+          [`${dataUploadFieldPreffix}number_of_segments`]: newValue,
+        });
+      }
+    }
+  }, [
+    segmentFields,
+    numberOfSegments,
+    dataUploadFieldPreffix,
+    form,
+    variableType,
+  ]);
+
   const handleOnChangeFieldValue = (selectedSegment, value) => {
     const targetVarType = selectedSegment.variable_type || variableType;
     const targetSegVariable =

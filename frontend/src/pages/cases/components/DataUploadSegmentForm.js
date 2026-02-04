@@ -25,7 +25,12 @@ import { selectProps, api } from "../../../lib";
 const LEFT_COL_SPAN = 14;
 const RIGHT_COL_SPAN = 10;
 
-const SegmentGenerator = ({ uploadResult, onUpdate, onRemove }) => {
+const SegmentGenerator = ({
+  uploadResult,
+  onUpdate,
+  onRemove,
+  currentCount,
+}) => {
   const [variableType, setVariableType] = useState("categorical");
   const [segmentationVariable, setSegmentationVariable] = useState(null);
   const [numberOfSegments, setNumberOfSegments] = useState(null);
@@ -41,6 +46,23 @@ const SegmentGenerator = ({ uploadResult, onUpdate, onRemove }) => {
       value: col,
     }));
   }, [uploadResult, variableType]);
+
+  // Sync internal state with actual number of segments (e.g. after deletion)
+  useEffect(() => {
+    // Only sync for numerical because deleting categorical segments shouldn't change the requested "number" (logic varies, but safety first)
+    // Actually, for categorical we usually don't set "number of segments", we select specific categories.
+    // So this sync is primarily for Numerical distribution.
+    if (variableType === "numerical") {
+      if (
+        typeof currentCount === "number" &&
+        currentCount !== numberOfSegments
+      ) {
+        // If count is 0, set to null (empty) so it doesn't show "0" in input
+        setNumberOfSegments(currentCount === 0 ? null : currentCount);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCount, variableType]);
 
   useEffect(() => {
     const allowFetch =
@@ -440,6 +462,7 @@ const DataUploadSegmentForm = ({
                       handleGeneratorUpdate(gen.id, segments)
                     }
                     onRemove={() => removeGenerator(gen.id)}
+                    currentCount={genFields.length}
                   />
                   <div
                     style={{
@@ -459,8 +482,8 @@ const DataUploadSegmentForm = ({
             {/* Add Buttons */}
             {fields.length < MAX_SEGMENT ? (
               <Form.Item style={{ marginTop: 16 }}>
-                <Row gutter={[12, 12]}>
-                  <Col span={12}>
+                <Row gutter={[12, 12]} align="middle">
+                  <Col>
                     <Button
                       type="ghost"
                       onClick={() => add({ name: "", number_of_farmers: 0 })}
@@ -473,7 +496,7 @@ const DataUploadSegmentForm = ({
                       Add segment manually
                     </Button>
                   </Col>
-                  <Col span={12}>
+                  <Col>
                     <Button
                       type="ghost"
                       block
@@ -483,7 +506,7 @@ const DataUploadSegmentForm = ({
                       style={{ textAlign: "left", padding: "0 8px" }}
                       onClick={addGenerator}
                     >
-                      Add segment based on variable
+                      Add segment based on a different variable
                     </Button>
                   </Col>
                 </Row>
