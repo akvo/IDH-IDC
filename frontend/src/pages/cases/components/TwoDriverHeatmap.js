@@ -27,6 +27,12 @@ const TwoDriverHeatmap = ({ selectedSegment }) => {
     }));
   };
 
+  useEffect(() => {
+    if (!isEmpty(sensitivityAnalysis?.config)) {
+      form.setFieldsValue(sensitivityAnalysis.config);
+    }
+  }, [sensitivityAnalysis?.config, form]);
+
   // handle track event
   useEffect(() => {
     if (!isEmpty(driverPair) && Object.keys(driverPair)?.length === 3) {
