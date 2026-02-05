@@ -12,7 +12,32 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
 
-  const [thirdDriver, setThirdDriver] = useState(null);
+  // const [thirdDriver, setThirdDriver] = useState(null);
+  const thirdDriver = useMemo(() => {
+    return (
+      sensitivityAnalysis?.config?.[`${selectedSegment}_third-driver`] || null
+    );
+  }, [sensitivityAnalysis?.config, selectedSegment]);
+
+  const handleThirdDriverChange = (value) => {
+    CaseVisualState.update((s) => ({
+      ...s,
+      sensitivityAnalysis: {
+        ...s.sensitivityAnalysis,
+        config: {
+          ...s.sensitivityAnalysis.config,
+          [`${selectedSegment}_third-driver`]: value,
+        },
+      },
+      prevSensitivityAnalysis: {
+        ...s.prevSensitivityAnalysis,
+        config: {
+          ...s.prevSensitivityAnalysis.config,
+          [`${selectedSegment}_third-driver`]: value,
+        },
+      },
+    }));
+  };
 
   const dataSource = useMemo(() => {
     if (!selectedSegment) {
@@ -151,7 +176,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
               {...selectProps}
               options={options}
               value={thirdDriver}
-              onChange={setThirdDriver}
+              onChange={handleThirdDriverChange}
               placeholder="Select driver"
               disabled={!selectedSegment}
             />
