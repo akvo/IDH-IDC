@@ -73,6 +73,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Reverted baseline income for secondary/tertiary crops to use aggregator values (q1) for accuracy.
     - Implemented unit tests for `incomeCalculations` utility.
     - Improved component readability and simplified data processing in `SingleDriverChange.js`.
+- **Income Driver Calculation Refinement (Issue #711)**:
+    - Resolved race conditions in `EnterIncomeDataForm` initialization by replacing asynchronous change simulations with a structured single-pass synchronization.
+    - Implemented bottom-up question derivation logic to automatically calculate parent aggregator values (e.g., q1 total) when missing from input data.
+    - Refactored global state synchronization in `EnterIncomeDataForm` to use functional updates and deep merging, preventing data loss across driver groups and ensuring correct data flow to Step 3.
+    - Removed fragile 500ms timeout workaround from the initialization lifecycle.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
