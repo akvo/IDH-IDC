@@ -39,6 +39,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Integrated "Diversified Income" as a selectable driver for three-driver analysis, including full formula and feasibility support.
     - Implemented state persistence for the third driver selection, ensuring it is saved and reloaded across user sessions and segment changes.
     - Fixed heatmap form synchronization: added `useEffect` to ensure form fields correctly load and update from global state.
+    - Improved synchronization for adjusted income targets, ensuring global state values are correctly loaded on component mount and updates.
 - **Closing the Gap Calculation (PR #706)**:
     - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
     - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.

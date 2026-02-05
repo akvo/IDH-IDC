@@ -60,7 +60,7 @@ const AdjustIncomeTarget = ({
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [sensitivityAnalysis?.config]);
 
   const currentSegmentDetail = useMemo(() => {
     if (selectedSegment && currentCase?.segments?.length) {
