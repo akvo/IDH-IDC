@@ -59,6 +59,17 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
         unitName: unitName,
       };
     });
+
+    // Add Diversified Income as a driver
+    data.push({
+      key: "diversified-income",
+      qid: 9002,
+      name: "Diversified Income",
+      current: segmentData.total_current_diversified_income || 0,
+      feasible: segmentData.total_feasible_diversified_income || 0,
+      unitName: currencyUnit,
+    });
+
     return data;
   }, [
     selectedSegment,

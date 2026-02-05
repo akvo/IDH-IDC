@@ -36,6 +36,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Included unit names (e.g., kilograms/acres) in `ThreeDriverCombinationChart` value boxes for improved readability and immediate feasibility verification.
     - Refined UI styling by removing opacity from X-axis driver boxes and increasing label width and font weight for better alignment.
     - Updated Three Driver calculator description text to be more precise and dynamic.
+    - Integrated "Diversified Income" as a selectable driver for three-driver analysis, including full formula and feasibility support.
 - **Closing the Gap Calculation (PR #706)**:
     - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
     - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.

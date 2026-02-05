@@ -115,7 +115,15 @@ const ThreeDriverCombinationChart = ({
 
         // Add special IDs
         values.push({ id: "line-9001", value: target });
-        values.push({ id: "line-9002", value: diversified });
+
+        let divVal = diversified;
+        if (xAxisDriver.name === "Diversified Income") {
+          divVal = xVal;
+        }
+        if (yAxisDriver.name === "Diversified Income") {
+          divVal = yVal;
+        }
+        values.push({ id: "line-9002", value: divVal });
 
         const requiredThirdValue = getFunctionDefaultValue(
           { default_value: formula },
