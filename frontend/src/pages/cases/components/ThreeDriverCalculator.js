@@ -157,10 +157,10 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
                   What combination of drivers close to income gap?
                 </h3>
                 <p className="combination-description">
-                  The table below shows the required level of{" "}
-                  <b>{thirdDriver}</b> needed to close the living income gap for
-                  four different combinations of <b>{xAxisDriver || "[X]"}</b>{" "}
-                  and <b>{yAxisDriver || "[Y]"}</b>. The values for{" "}
+                  The tables below show the <b>{thirdDriver}</b> needed to close
+                  the living income gap for different combinations of{" "}
+                  <b>{xAxisDriver || "[X]"}</b> and{" "}
+                  <b>{yAxisDriver || "[Y]"}</b>. The values for{" "}
                   <b>{xAxisDriver || "[X]"}</b> and{" "}
                   <b>{yAxisDriver || "[Y]"}</b> are taken from the ranges
                   defined above. The table focuses on combinations that are most
