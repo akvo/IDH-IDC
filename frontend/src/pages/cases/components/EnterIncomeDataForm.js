@@ -235,13 +235,13 @@ const EnterIncomeDataDriver = ({
     return questions;
   }, [group]);
 
-  const updateCurrentSegmentState = (updatedSegmentValue) => {
+  const updateCurrentSegmentState = (updatedAnswers) => {
     CurrentCaseState.update((s) => {
       s.segments = s.segments.map((prev) => {
         if (prev.id === segment.id) {
           return {
             ...prev,
-            ...updatedSegmentValue,
+            answers: { ...prev.answers, ...updatedAnswers },
           };
         }
         return prev;
@@ -337,46 +337,72 @@ const EnterIncomeDataDriver = ({
       );
     }
 
-    updateCurrentSegmentState({
-      answers: { ...segment?.answers, ...form.getFieldsValue() },
-    });
+    updateCurrentSegmentState(form.getFieldsValue());
   };
 
   useEffect(() => {
     if (!isEmpty(initialDriverValues)) {
-      const formKeys = Object.keys(form.getFieldsValue());
-      const initialDriverValuesKeys = Object.keys(initialDriverValues);
-      const keysToProcess = [
-        ...new Set([...formKeys, ...initialDriverValuesKeys]),
-      ];
+      const syncValues = { ...initialDriverValues };
 
-      // Process keys in parallel using `Promise.all`
-      Promise.all(
-        keysToProcess.map((key) => {
-          return new Promise((resolve) => {
-            onValuesChange(
-              { [key]: initialDriverValues?.[key] || 0 },
-              initialDriverValues
-            );
-            resolve();
+      // Sort questions bottom-up (deepest level first) to derive parent values
+      const sortedQuestions = orderBy(flattenQuestionList, ["level"], ["desc"]);
+
+      sortedQuestions.forEach((q) => {
+        if (q.childrens && q.childrens.length > 0) {
+          // It's a parent, calculate its value from children for both current and feasible
+          ["current", "feasible"].forEach((fieldName) => {
+            const fieldKey = `${fieldName}-${group.id}`;
+            const parentField = `${fieldKey}-${q.id}`;
+
+            // If parent value is missing or 0, derive it from its children
+            if (!syncValues[parentField]) {
+              const childrenValues = q.childrens.map((child) => ({
+                id: `${fieldKey}-${child.id}`,
+                value: syncValues[`${fieldKey}-${child.id}`] || 0,
+              }));
+
+              const derivedValue = q.default_value
+                ? getFunctionDefaultValue(q, fieldKey, childrenValues)
+                : childrenValues.reduce((acc, { value }) => acc + value, 0);
+
+              syncValues[parentField] = roundToDecimal(derivedValue);
+            }
           });
-        })
-      ).then(() => {
-        // wait a bit to update the segment state
-        setTimeout(() => {
-          // instead of using first key, we need to find the question id that contains qid 1
-          const firstKey = keysToProcess.find((key) => {
-            // need to find the question id that contains qid 1
-            const questionId = key.split("-")?.[2];
-            return parseInt(questionId) === 1;
-          });
-          if (firstKey) {
-            updateCurrentSegmentState({
-              answers: { ...segment?.answers, ...form.getFieldsValue() },
-            });
-          }
-        }, 500);
+        }
       });
+
+      // Update form values with derived synchronization object
+      form.setFieldsValue(syncValues);
+
+      // Reset section totals for this group's commodity types to avoid double-counting
+      const uniqueCommodityTypes = [
+        ...new Set(group.questions.map(() => group.commodity_type)),
+      ];
+      uniqueCommodityTypes.forEach((ct) => {
+        updateSectionTotalValues(ct, "current", 0);
+        updateSectionTotalValues(ct, "feasible", 0);
+      });
+
+      // Update section totals using top-level questions and derived syncValues
+      group.questions.forEach((q) => {
+        const commodity = currentCase.case_commodities.find(
+          (cc) => cc.id === group.id
+        );
+        ["current", "feasible"].forEach((fieldName) => {
+          handleQuestionType(
+            q,
+            commodity,
+            fieldName,
+            syncValues,
+            `${fieldName}-${group.id}`,
+            flattenQuestionList,
+            updateSectionTotalValues
+          );
+        });
+      });
+
+      // Sync with global state including newly derived parent values
+      updateCurrentSegmentState(syncValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialDriverValues]);
