@@ -18,3 +18,4 @@ export { default as ChartRevenueToCostRatio } from "./ChartRevenueToCostRatio";
 export { default as ChartNetIncomePerLandUnit } from "./ChartNetIncomePerLandUnit";
 export { default as ChartTwoDriverHeatmap } from "./ChartTwoDriverHeatmap";
 export { default as ThreeDriverCombinationChart } from "./ThreeDriverCombinationChart";
+export { default as GapClosingPieChart } from "./GapClosingPieChart";

@@ -5,7 +5,11 @@ import { CaseVisualState, CurrentCaseState } from "../store";
 import { map, groupBy } from "lodash";
 import { commodities } from "../../../store/static";
 import { selectProps } from "../../../lib";
-import { ThreeDriverCombinationChart } from "../visualizations";
+import {
+  ThreeDriverCombinationChart,
+  GapClosingPieChart,
+} from "../visualizations";
+import { yAxisFormula } from "../../../lib/formula";
 
 const ThreeDriverCalculator = ({ selectedSegment }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -104,11 +108,13 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
   ]);
 
   const drivers = useMemo(() => {
-    return dataSource.map((x) => ({
-      value: x.name,
-      label: x.name,
-      qid: x.qid,
-    }));
+    return dataSource
+      .filter((x) => yAxisFormula[`#${x.qid}`])
+      .map((x) => ({
+        value: x.name,
+        label: x.name,
+        qid: x.qid,
+      }));
   }, [dataSource]);
 
   const xAxisDriver = useMemo(
@@ -183,7 +189,16 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
           </Space>
         </Col>
 
-        {/* Breakdown of closing the gap - Ignored for now as per user request */}
+        {thirdDriver && (
+          <Col span={24}>
+            <GapClosingPieChart
+              selectedSegment={selectedSegment}
+              thirdDriver={selectedThirdDriver}
+              xAxisDriver={xAxisDetails}
+              yAxisDriver={yAxisDetails}
+            />
+          </Col>
+        )}
 
         {thirdDriver && (
           <Col span={24} className="combination-section">
