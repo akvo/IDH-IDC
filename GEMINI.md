@@ -33,6 +33,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Refactored shared card and step styles into `steps.scss`.
     - Finalized UI styling and alignment refinements for the combination chart.
     - Fixed negative calculation results for Land and Animals/Area drivers by correcting formula numerators in `formula.js`.
+    - Included unit names (e.g., kilograms/acres) in `ThreeDriverCombinationChart` value boxes for improved readability and immediate feasibility verification.
+    - Refined UI styling by removing opacity from X-axis driver boxes and increasing label width and font weight for better alignment.
 - **Closing the Gap Calculation (PR #706)**:
     - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
     - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.

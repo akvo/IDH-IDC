@@ -189,14 +189,16 @@ const ThreeDriverCombinationChart = ({
                           col.isXFeasible ? "feasible" : "not-feasible"
                         }`}
                       >
-                        {thousandFormatter(col.xValue, 2)}
+                        {thousandFormatter(col.xValue, 2)}{" "}
+                        {xAxisDriver.unitName}
                       </div>
                       <div
                         className={`value-box third-value ${
                           col.isThirdFeasible ? "feasible" : "not-feasible"
                         }`}
                       >
-                        {thousandFormatter(col.thirdValue, 2)}
+                        {thousandFormatter(col.thirdValue, 2)}{" "}
+                        {thirdDriver.unitName}
                       </div>
                     </div>
                   ))}

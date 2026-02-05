@@ -874,13 +874,13 @@
                 justify-content: space-between;
                 height: 100px;
                 padding: 12px 0 12px 24px;
-                flex: 0 0 160px;
+                flex: 0 0 250px;
 
                 .side-label-item {
                   font-family: "TabletGothic";
                   font-size: 14px;
                   color: #454545;
-                  font-weight: 500;
+                  font-weight: 700;
                   text-align: right;
                 }
               }
@@ -912,10 +912,6 @@
               font-size: 14px;
               font-weight: 700;
               color: #000;
-
-              &.x-value {
-                opacity: 0.8;
-              }
 
               &.feasible {
                 background: #5bdd91;
