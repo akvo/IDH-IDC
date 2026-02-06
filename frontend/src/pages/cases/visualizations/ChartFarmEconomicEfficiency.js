@@ -93,15 +93,15 @@ const ChartFarmEconomicEfficiency = () => {
           <Space direction="vertical">
             <div className="section-title">Farm Economic Efficiency</div>
             <div className="section-description">
-              This indicator shows the amount of cash a farmer must invest to
-              produce one unit of raw material. It reflects how effectively
-              inputs are converted into harvest and is calculated by dividing
-              total production costs by total volume produced. A lower value
-              suggests efficient use of inputs and strong agronomic performance,
-              while a higher value may indicate low yields, poor input-use
-              efficiency or rising input prices. Over time, this metric helps
-              identify whether farmers are becoming more cost-efficient and
-              whether production systems are improving or deteriorating.
+              This graph shows the cash a farmer needs to invest to produce one
+              unit of the primary commodity. It is calculated by dividing total
+              production costs by total output and indicates how efficiently
+              inputs are converted into harvest. Lower values reflect more
+              efficient input use and stronger agronomic performance, while
+              higher values may point to low yields, inefficient input use, or
+              higher input prices. Over time, this metric helps assess whether
+              cost efficiency and production performance are improving or
+              deteriorating.
             </div>
           </Space>
         </Col>

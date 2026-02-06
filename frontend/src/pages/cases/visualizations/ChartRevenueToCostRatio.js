@@ -67,16 +67,16 @@ const ChartRevenueToCostRatio = () => {
           <Space direction="vertical">
             <div className="section-title">Revenue to cost ratio</div>
             <div className="section-description">
-              This ratio shows how much revenue the crop generates for every
-              unit of money spent producing it. It is calculated as crop revenue
-              divided by production costs and reflects the farmer&apos;s return
-              on investment after accounting for price levels, premiums and
-              production practices. Higher values indicate profitable production
-              and effective farm and post-harvest management, while lower values
-              point to thin margins, unfavourable prices or overspending on
-              inputs. Tracking this ratio over time helps assess financial
-              resilience and how market conditions or agronomic changes
-              influence household income.
+              This graph shows how much revenue the primary commodity generates
+              for every unit of money spent producing it. It is calculated as
+              primary commodity revenue divided by production costs and reflects
+              the farmer&apos;s return on investment after accounting for price
+              levels, premiums and production practices. Higher values indicate
+              profitable production and effective farm and post-harvest
+              management, while lower values point to thin margins, unfavourable
+              prices or overspending on inputs. Tracking this ratio over time
+              helps assess financial resilience and how market conditions or
+              agronomic changes influence household income.
             </div>
           </Space>
         </Col>

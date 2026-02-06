@@ -95,8 +95,8 @@ const ChartNetIncomePerLandUnit = () => {
               {focusCommodity?.area_size_unit || "land unit"}
             </div>
             <div className="section-description">
-              This metric captures the net profit earned from the crop per unit
-              of land and is calculated by dividing net income by the cultivated
+              This metric captures the profit earned from the crop per unit of
+              land and is calculated by dividing net income by the cultivated
               area. It reflects how well farmers translate land into financial
               returns and is influenced by yields, input use, soil health and
               management practices. Higher values show profitable and efficient
@@ -104,7 +104,7 @@ const ChartNetIncomePerLandUnit = () => {
               degraded soils or suboptimal agronomy. Monitoring changes in this
               indicator helps understand whether land productivity is improving
               and whether interventions are resulting in better economic
-              outcomes.
+              outcomes
             </div>
           </Space>
         </Col>
