@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import {
   Form,
   Card,
@@ -47,12 +47,13 @@ const SegmentGenerator = ({
     }));
   }, [uploadResult, variableType]);
 
+  const prevCountRef = useRef(currentCount);
+
   // Sync internal state with actual number of segments (e.g. after deletion)
   useEffect(() => {
-    // Only sync for numerical because deleting categorical segments shouldn't change the requested "number" (logic varies, but safety first)
-    // Actually, for categorical we usually don't set "number of segments", we select specific categories.
-    // So this sync is primarily for Numerical distribution.
-    if (variableType === "numerical") {
+    // Only sync if the actual count has changed (e.g. user deleted a segment)
+    // This prevents resetting the field when the user is just typing a new number.
+    if (variableType === "numerical" && prevCountRef.current !== currentCount) {
       if (
         typeof currentCount === "number" &&
         currentCount !== numberOfSegments
@@ -61,6 +62,7 @@ const SegmentGenerator = ({
         setNumberOfSegments(currentCount === 0 ? null : currentCount);
       }
     }
+    prevCountRef.current = currentCount;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCount, variableType]);
 

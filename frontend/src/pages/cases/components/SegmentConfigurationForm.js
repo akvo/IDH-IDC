@@ -101,6 +101,8 @@ const SegmentConfigurationForm = ({
     loadingPreview,
   ]);
 
+  const prevManualCountRef = useRef(0);
+
   // Sync global/manual segment count
   useEffect(() => {
     // Only apply sync if Global Variable Type is numerical
@@ -109,8 +111,11 @@ const SegmentConfigurationForm = ({
       const manualSegments = segmentFields.filter((s) => !s.generatorId);
       const currentCount = manualSegments.length;
 
-      // Only update if current count differs from form value
-      if (currentCount !== numberOfSegments) {
+      // Only update if current count differs from form value AND the actual count has changed (e.g. deletion)
+      if (
+        currentCount !== numberOfSegments &&
+        prevManualCountRef.current !== currentCount
+      ) {
         // If 0, set to null to clear field instead of showing "0"
         const newValue = currentCount === 0 ? null : currentCount;
 
@@ -118,6 +123,7 @@ const SegmentConfigurationForm = ({
           [`${dataUploadFieldPreffix}number_of_segments`]: newValue,
         });
       }
+      prevManualCountRef.current = currentCount;
     }
   }, [
     segmentFields,
