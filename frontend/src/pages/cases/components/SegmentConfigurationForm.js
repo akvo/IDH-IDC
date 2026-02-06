@@ -107,8 +107,10 @@ const SegmentConfigurationForm = ({
   useEffect(() => {
     // Only apply sync if Global Variable Type is numerical
     if (variableType === "numerical" && segmentFields?.length > 1) {
-      // Manual/Global segments are those without a generatorId
-      const manualSegments = segmentFields.filter((s) => !s.generatorId);
+      // Manual/Global segments are those without a generatorId AND NOT marked as manual
+      const manualSegments = segmentFields.filter(
+        (s) => !s.generatorId && !s.is_manual
+      );
       const currentCount = manualSegments.length;
 
       // Only update if current count differs from form value AND the actual count has changed (e.g. deletion)
