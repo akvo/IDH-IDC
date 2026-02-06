@@ -1192,8 +1192,10 @@
       font-size: 14px !important;
       font-style: normal;
       font-weight: 500;
-      line-height: 157.15%;
+      line-height: 1.25;
       color: #000 !important;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
     }
 
     .description {

@@ -81,7 +81,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Improved component readability and simplified data processing in `SingleDriverChange.js`.
 - **Visualization Description Refinement (Issue #686, #688)**:
     - Refined descriptive text for `ChartNetIncomePerLandUnit`, `ChartRevenueToCostRatio`, and `ChartFarmEconomicEfficiency` to improve clarity and terminology consistency.
-    - Standardized terminology by using "graph" instead of "ratio" or "indicator" and "primary commodity" instead of "crop" or "raw material" where appropriate.
+    - Updated `ChartNeededIncomeLevel` to show additional income needed (gap breakdown) instead of total needed income, and refined its title and description.
+    - Implemented title wrapping in `VisualCardWrapper` to prevent long titles from overflowing or overlapping.
+    - Improved responsiveness of chart headers in `VisualCardWrapper` to prevent title overlap with buttons on smaller screens.
+    - Aligned chart heights for Household Income Composition and Needed Income Level for better visual consistency.
+    - Standardized terminology by using "graph" or "chart" instead of "ratio" or "indicator" and "primary commodity" instead of "crop" or "raw material" where appropriate.
 - **Income Driver Calculation Refinement (Issue #711)**:
     - Resolved race conditions in `EnterIncomeDataForm` initialization by replacing asynchronous change simulations with a structured single-pass synchronization.
     - Implemented bottom-up question derivation logic to automatically calculate parent aggregator values (e.g., q1 total) when missing from input data.

@@ -107,11 +107,12 @@ const ChartHouseholdIncomeComposition = () => {
             loading={loading}
             data={chartData}
             percentage={true}
+            height={415}
           />
         </Col>
         <Col span={24}>
           <Divider style={{ margin: "5px" }} />
-          <p>
+          <p style={{ minHeight: 100 }}>
             This graph shows the composition of income and how much each income
             source contributes to total household earnings.
             <br />

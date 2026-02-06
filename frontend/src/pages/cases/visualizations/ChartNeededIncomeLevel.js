@@ -77,10 +77,11 @@ const ChartNeededIncomeLevel = () => {
       })
       ?.filter((v) => v?.totalCurrentIncome)
       ?.map((val) => {
-        // income_target_source = income_target * (income_type/total_current_income)
+        // income_target_source = (income_target * (income_type/total_current_income)) - current_income
         const income_target_source =
           val?.incomeTarget *
-          (val?.totalCurrentIncome / val?.totalCurrentIncomeAll);
+            (val?.totalCurrentIncome / val?.totalCurrentIncomeAll) -
+          val?.totalCurrentIncome;
         return {
           name: upperFirst(val.label),
           value: income_target_source,
@@ -94,10 +95,10 @@ const ChartNeededIncomeLevel = () => {
 
   return (
     <VisualCardWrapper
-      title="Needed income levels"
+      title="Additional income needed by income source to reach a living income"
       bordered
       exportElementRef={chartNeededIncomeLevel}
-      exportFilename="Needed income levels"
+      exportFilename="Additional income needed by income source to reach a living income"
     >
       <Row gutter={[20, 20]}>
         <Col span={24}>
@@ -112,15 +113,17 @@ const ChartNeededIncomeLevel = () => {
             type="PIE"
             loading={loading}
             data={chartData}
+            height={415}
           />
         </Col>
         <Col span={24}>
           <Divider style={{ margin: "5px" }} />
-          <p>
-            This graph shows how much household need to earn from each income
-            source, based on their current income composition, in order to reach
-            a Living Income. Use it to understand which income streams would
-            need to increase and by how much.
+          <p style={{ minHeight: 100 }}>
+            This chart shows how much <i>additional</i> income a household would
+            need from each income source to reach a living income, assuming the
+            current income composition remains the same. Use it to understand
+            which income sources would need to increase, and by how much, to
+            close the living income gap.
           </p>
         </Col>
       </Row>
