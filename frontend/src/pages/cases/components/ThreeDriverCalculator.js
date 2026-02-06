@@ -189,7 +189,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
           </Space>
         </Col>
 
-        {thirdDriver && (
+        {thirdDriver && xAxisDriver && yAxisDriver && (
           <Col span={24}>
             <GapClosingPieChart
               selectedSegment={selectedSegment}
@@ -200,7 +200,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
           </Col>
         )}
 
-        {thirdDriver && (
+        {thirdDriver && xAxisDriver && yAxisDriver && (
           <Col span={24} className="combination-section">
             <Space direction="vertical" size={24} style={{ width: "100%" }}>
               <Space direction="vertical" size={16}>

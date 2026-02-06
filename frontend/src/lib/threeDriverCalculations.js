@@ -154,8 +154,14 @@ export const generateCombinations = ({
   const results = [];
   for (let yIdx = 0; yIdx < ySteps; yIdx++) {
     const yVal = getYAxisValue(yIdx);
+    const isYFeasible =
+      yAxisDriver.current < yAxisDriver.feasible
+        ? yVal >= yAxisDriver.current && yVal <= yAxisDriver.feasible
+        : yVal <= yAxisDriver.current && yVal >= yAxisDriver.feasible;
+
     const row = {
       yValue: yVal,
+      isYFeasible,
       cols: [],
     };
 

@@ -843,19 +843,22 @@
               font-family: "TabletGothic";
               font-size: 14px;
               color: #454545;
+              font-weight: 700;
             }
 
             .value {
               font-family: "RocGrotesk";
               font-size: 14px;
               font-weight: 700;
-              color: $primary-color;
+              color: #000;
+              padding: 4px 12px;
+              border-radius: 8px;
 
               &.feasible {
-                color: #5bdd91;
+                background: #5bdd91;
               }
               &.not-feasible {
-                color: #ff8f4e;
+                background: #ff8f4e;
               }
             }
           }
@@ -871,9 +874,8 @@
               .side-labels {
                 display: flex;
                 flex-direction: column;
-                justify-content: space-between;
-                height: 100px;
-                padding: 12px 0 12px 24px;
+                gap: 12px;
+                padding: 24px 0 24px 24px;
                 flex: 0 0 250px;
 
                 .side-label-item {
@@ -882,6 +884,10 @@
                   color: #454545;
                   font-weight: 700;
                   text-align: right;
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-end;
+                  height: 30px; // Match likely height of value-box with 4x12 padding
                 }
               }
 
@@ -903,7 +909,7 @@
             }
 
             .value-box {
-              padding: 8px;
+              padding: 4px 8px;
               display: flex;
               align-items: center;
               justify-content: center;
@@ -912,6 +918,7 @@
               font-size: 14px;
               font-weight: 700;
               color: #000;
+              height: 30px;
 
               &.feasible {
                 background: #5bdd91;

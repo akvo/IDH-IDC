@@ -86,6 +86,7 @@ describe("threeDriverCalculations", () => {
     });
 
     expect(combinations.length).toBe(2);
+    expect(combinations[0].isYFeasible).toBe(true);
     expect(combinations[0].cols.length).toBe(3);
     expect(combinations[0].cols[0].thirdValue).toBe(1.6);
   });

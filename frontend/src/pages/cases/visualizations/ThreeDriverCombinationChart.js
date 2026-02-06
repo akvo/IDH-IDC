@@ -48,7 +48,11 @@ const ThreeDriverCombinationChart = ({
           <div key={rowIdx} className="combination-card">
             <div className="card-header">
               <span className="label">If {yAxisDriver.name} is:</span>
-              <span className="value">
+              <span
+                className={`value ${
+                  row.isYFeasible ? "feasible" : "not-feasible"
+                }`}
+              >
                 {thousandFormatter(row.yValue, 2)} {yAxisDriver.unitName}
               </span>
             </div>
@@ -70,16 +74,18 @@ const ThreeDriverCombinationChart = ({
                           col.isXFeasible ? "feasible" : "not-feasible"
                         }`}
                       >
-                        {thousandFormatter(col.xValue, 2)}{" "}
-                        {xAxisDriver.unitName}
+                        {thousandFormatter(col.xValue, 2)}
+                        {/* Disable unit name for now, not looking good in small screen */}
+                        {/* {xAxisDriver.unitName} */}
                       </div>
                       <div
                         className={`value-box third-value ${
                           col.isThirdFeasible ? "feasible" : "not-feasible"
                         }`}
                       >
-                        {thousandFormatter(col.thirdValue, 2)}{" "}
-                        {thirdDriver.unitName}
+                        {thousandFormatter(col.thirdValue, 2)}
+                        {/* Disable unit name for now, not looking good in small screen */}
+                        {/* {thirdDriver.unitName} */}
                       </div>
                     </div>
                   ))}
