@@ -91,6 +91,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented bottom-up question derivation logic to automatically calculate parent aggregator values (e.g., q1 total) when missing from input data.
     - Refactored global state synchronization in `EnterIncomeDataForm` to use functional updates and deep merging, preventing data loss across driver groups and ensuring correct data flow to Step 3.
     - Removed fragile 500ms timeout workaround from the initialization lifecycle.
+- **Income Calculation Documentation**:
+    - Created `INCOME_CALCULATION.md` to provide a simplified, technical overview of the unified income formula and commodity-specific mappings.
+    - Reorganized documentation by moving `analytic.md` and `INCOME_CALCULATION.md` into a new `docs/` folder.
+    - Documented variable hierarchy and aggregation levels for all commodity types (Crop, Aquaculture, Livestock).
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
