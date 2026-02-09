@@ -46,7 +46,7 @@ const EquationVisualizer = ({
   const driverLabels = {
     price: labels.price || "Price",
     volume: labels.volume || "Volume",
-    cop: labels.cop || "Cost of Production",
+    cop: "COP",
     land: labels.land || (isAquaculture ? "Area" : "Land"),
   };
 
@@ -71,19 +71,39 @@ const EquationVisualizer = ({
       {secondaryLabel && (
         <>
           <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-          <IconBox icon={IncomeWhite} label="Secondary Income" />
+          <IconBox icon={IncomeWhite} label="SEC" />
         </>
       )}
       {tertiaryLabel && (
         <>
           <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-          <IconBox icon={IncomeWhite} label="Tertiary Income" />
+          <IconBox icon={IncomeWhite} label="TER" />
         </>
       )}
       <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-      <IconBox icon={DiversifiedIcon} label="Other Diversified Income" />
+      <IconBox icon={DiversifiedIcon} label="ODI" />
     </div>
   );
+
+  const Legend = () => {
+    const legendItems = [
+      { key: "COP", label: labels.cop || "Cost of Production" },
+      { key: "SEC", label: "Secondary Income" },
+      { key: "TER", label: "Tertiary Income" },
+      { key: "ODI", label: "Other Diversified Income" },
+    ];
+
+    return (
+      <div className="equation-legend">
+        {legendItems.map((item) => (
+          <div key={item.key} className="legend-item">
+            <span className="legend-abbreviation">{item.key}</span>
+            <span className="legend-label">: {item.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const renderFormulaContent = () => {
     if (isAquaculture) {
@@ -237,25 +257,28 @@ const EquationVisualizer = ({
   };
 
   return (
-    <div className="equation-visualizer-graphic">
-      <div className="equation-content-inner">
-        {renderFormulaContent()}
+    <div className="equation-visualizer-container">
+      <div className="equation-visualizer-graphic">
+        <div className="equation-content-inner">
+          {renderFormulaContent()}
 
-        {/* Equals Section */}
-        <RowSeparator
-          icon={<div className="equals-operator">=</div>}
-          color="#00565b"
-        />
-
-        {/* Result: Target Driver */}
-        <div className="formula-center-wrapper">
-          <IconBox
-            icon={driverIconsGreen[selectedDriver] || IncomeGreen}
-            label={driverLabels[selectedDriver] || "Driver"}
-            color={driverColors[selectedDriver] || "#52c41a"}
+          {/* Equals Section */}
+          <RowSeparator
+            icon={<div className="equals-operator">=</div>}
+            color="#00565b"
           />
+
+          {/* Result: Target Driver */}
+          <div className="formula-center-wrapper">
+            <IconBox
+              icon={driverIconsGreen[selectedDriver] || IncomeGreen}
+              label={driverLabels[selectedDriver] || "Driver"}
+              color={driverColors[selectedDriver] || "#52c41a"}
+            />
+          </div>
         </div>
       </div>
+      <Legend />
     </div>
   );
 };

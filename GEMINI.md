@@ -126,6 +126,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented internal value labels for cost and profit segments within the breakdown bar.
     - Implemented 2-decimal formatting for all modelling results and breakdown values.
     - Refactored `EquationVisualizer.js` to eliminate all inline styles, moving them to structured SCSS classes in `steps.scss`.
+    - Shortened multi-word labels in `EquationVisualizer` (COP, SEC, TER, ODI) and added a legend for clarity.
+    - Reduced icon circle size to 40px and icon image size to 24px in the equation visualizer.
+    - Implemented vertical and horizontal centering for all equation elements, ensuring a balanced layout.
+    - Optimized dashed boxes to wrap content tightly using `width: fit-content`.
     - Resolved React hook dependency warnings and optimized component lifecycle in the modelling interface.
     - Standardized colors and styling in Step 5 using `$primary-color`.
 
