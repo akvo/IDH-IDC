@@ -237,9 +237,12 @@ const SegmentConfigurationForm = ({
 
   const segmentNumericalWarning = useMemo(() => {
     // Extra message for numerical variable
+    const primarySegments =
+      segmentFields?.filter((s) => !s.generatorId && !s.is_manual) || [];
+
     if (
       variableType === "numerical" &&
-      segmentFields?.length < numberOfSegments
+      primarySegments.length < numberOfSegments
     ) {
       return (
         <Col span={24}>
@@ -262,7 +265,19 @@ const SegmentConfigurationForm = ({
   }, [variableType, segmentFields, numberOfSegments, segmentationVariable]);
 
   const maxSegmentWarning = useMemo(() => {
-    if (segmentFields?.length > MAX_SEGMENT) {
+    if (!segmentFields || segmentFields.length <= MAX_SEGMENT) {
+      return null;
+    }
+
+    const primarySegments = segmentFields.filter(
+      (s) => !s.generatorId && !s.is_manual
+    );
+
+    // 1. Specific categorical overflow for primary variable
+    if (
+      variableType === "categorical" &&
+      primarySegments.length > MAX_SEGMENT
+    ) {
       return (
         <Col span={24}>
           <Alert
@@ -277,8 +292,22 @@ const SegmentConfigurationForm = ({
         </Col>
       );
     }
-    return null;
-  }, [segmentFields, segmentationVariable]);
+
+    // 2. Generic total overflow (e.g. mixed variables or manual additions)
+    return (
+      <Col span={24}>
+        <Alert
+          message={
+            <>
+              You have created too many segments. To proceed, please keep only
+              up to 5 segments.
+            </>
+          }
+          type="warning"
+        />
+      </Col>
+    );
+  }, [segmentFields, variableType, segmentationVariable]);
 
   return (
     <Row gutter={[16, 16]}>
