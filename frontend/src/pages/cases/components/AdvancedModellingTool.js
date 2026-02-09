@@ -23,6 +23,7 @@ import { calculateModellingDriver } from "../utils/incomeCalculations";
 import { selectProps, flatten } from "../../../lib";
 import SegmentSelector from "./SegmentSelector";
 import { commodities } from "../../../store/static";
+import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -680,20 +681,50 @@ const AdvancedModellingTool = () => {
               </Card>
 
               <Card bordered={false} className="breakdown-card">
-                <div>
+                <div className="breakdown-header">
                   <Title level={3} className="breakdown-title">
-                    {driverLabels[selectedDriver] || selectedDriver} breakdown
+                    Price breakdown
                   </Title>
+                  <div className="breakdown-icon-wrapper">
+                    <img
+                      src={PriceWhite}
+                      alt="Price"
+                      className="breakdown-icon"
+                    />
+                  </div>
+                </div>
+
+                <div>
                   <Text className="breakdown-description">
-                    The bar below breaks down the{" "}
-                    {driverLabels[selectedDriver] || selectedDriver} for the
-                    selected scenario. Orange shows how much of the{" "}
-                    {driverLabels[selectedDriver] || selectedDriver} covers
-                    production costs. Green shows how much profit farmers earn
-                    per unit.
+                    The bar below breaks down the price for the selected
+                    scenario. Orange shows how much of the price covers
+                    production costs. Green shows how much profit farmers earn{" "}
+                    {selectedDriver === "price" || selectedDriver === "cop"
+                      ? `per ${
+                          driverUnits.price?.split(" / ")[1] || "unit"
+                        } of ${
+                          commodities.find(
+                            (c) => c.id === focusCommodityGroup?.commodity_id
+                          )?.name || "commodity"
+                        }`
+                      : "for the selected driver"}
+                    .
                   </Text>
 
                   <div className="breakdown-chart-wrapper">
+                    {calculationResult.cost || calculationResult.profit ? (
+                      <div className="price-total-display">
+                        <Text strong>
+                          Price:{" "}
+                          {thousandFormatter(
+                            calculationResult.cost + calculationResult.profit,
+                            0
+                          )}{" "}
+                          {currentCase?.currency}
+                        </Text>
+                      </div>
+                    ) : null}
+
                     {/* Real Bar Chart Logic */}
                     {calculationResult.cost || calculationResult.profit ? (
                       (() => {
@@ -709,11 +740,19 @@ const AdvancedModellingTool = () => {
                             <div
                               className="bar-segment cost"
                               style={{ width: `${costPerc}%` }}
-                            />
+                            >
+                              <span className="segment-value">
+                                {thousandFormatter(calculationResult.cost, 0)}
+                              </span>
+                            </div>
                             <div
                               className="bar-segment profit"
                               style={{ width: `${profitPerc}%` }}
-                            />
+                            >
+                              <span className="segment-value">
+                                {thousandFormatter(calculationResult.profit, 0)}
+                              </span>
+                            </div>
                           </div>
                         );
                       })()
@@ -725,12 +764,8 @@ const AdvancedModellingTool = () => {
                       </div>
                     )}
                     <div className="bar-labels-row">
-                      <Text className="label-text">
-                        Cost: {thousandFormatter(calculationResult.cost, 0)}
-                      </Text>
-                      <Text className="label-text">
-                        Profit: {thousandFormatter(calculationResult.profit, 0)}
-                      </Text>
+                      <Text className="label-text">Cost</Text>
+                      <Text className="label-text">Profit</Text>
                     </div>
                   </div>
                 </div>

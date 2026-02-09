@@ -1338,8 +1338,8 @@
           font-weight: bold;
 
           &.ant-tabs-tab-active {
-            background: #005a5b !important;
-            border-color: #005a5b !important;
+            background: $primary-color !important;
+            border-color: $primary-color !important;
             .ant-tabs-tab-btn {
               color: #fff !important;
             }
@@ -1485,8 +1485,8 @@
     }
 
     .button-calculate {
-      background: #005a5b;
-      border-color: #005a5b;
+      background: $primary-color;
+      border-color: $primary-color;
       font-weight: bold;
     }
   }
@@ -1527,50 +1527,88 @@
       padding: 10px 24px 20px 24px;
     }
 
-    .breakdown-title {
-      color: #005a5b !important;
-      margin-bottom: 8px !important;
+    .breakdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .breakdown-title {
+        color: $primary-color !important;
+        margin-bottom: 0 !important;
+        font-family: "RocGrotesk";
+        font-weight: bold;
+        font-size: 24px;
+      }
+
+      .breakdown-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        background: $primary-color;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .breakdown-icon {
+          width: 20px;
+          height: 20px;
+          object-fit: contain;
+        }
+      }
     }
 
     .breakdown-description {
-      color: #666;
+      color: #000;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     .breakdown-chart-wrapper {
-      margin-top: 32px;
+      margin-top: 24px;
       position: relative;
 
+      .price-total-display {
+        margin-bottom: 12px;
+        font-family: "RocGrotesk";
+        font-size: 18px;
+        color: #000;
+        font-weight: 700;
+      }
+
       .bar-row {
-        height: 48px;
+        height: 40px;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         display: flex;
+        gap: 4px; // Small gap between segments as seen in mockup
 
         .bar-segment {
           display: flex;
           align-items: center;
           justify-content: center;
           transition: width 0.5s ease;
+          border-radius: 8px; // Rounded segments
 
           &.cost {
-            background: #fa8c16;
+            background: #ff6e1a; // Closer to mockup orange
           }
 
           &.profit {
-            background: #005a5b;
+            background: $primary-color;
           }
 
           .segment-value {
             color: #fff;
             font-size: 16px;
             font-weight: bold;
+            font-family: "RocGrotesk";
           }
         }
       }
 
       .empty-bar-placeholder {
-        height: 48px;
+        height: 40px;
         background: #f5f5f5;
         border-radius: 8px;
         display: flex;
@@ -1585,7 +1623,9 @@
 
         .label-text {
           font-weight: bold;
-          color: rgba(0, 0, 0, 0.45);
+          font-family: "TabletGothic";
+          font-size: 14px;
+          color: #454545;
         }
       }
     }

@@ -121,6 +121,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Updated target primary income calculation to account for secondary, tertiary, and diversified income.
     - Refined UI layout by moving "Other Diversified Income" to the bottom and improved labels for clarity.
     - Updated Equation Visualizer to display secondary and tertiary income components.
+    - Refined Price Breakdown UI with a premium header, circular icon wrapper, and total price display.
+    - Switched to the custom `PriceWhite` icon from Equation Visualizer for the breakdown card.
+    - Implemented internal value labels for cost and profit segments within the breakdown bar.
+    - Standardized colors and styling in Step 5 using `$primary-color`.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
