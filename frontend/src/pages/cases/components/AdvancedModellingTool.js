@@ -16,19 +16,69 @@ import {
   UnlockOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import { CaseVisualState } from "../store";
+import { CaseVisualState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import EquationVisualizer from "./EquationVisualizer";
 import { calculateModellingDriver } from "../utils/incomeCalculations";
-import { selectProps } from "../../../lib";
+import { selectProps, flatten } from "../../../lib";
 import SegmentSelector from "./SegmentSelector";
+import { commodities } from "../../../store/static";
 
 const { Text, Title, Paragraph } = Typography;
+
+const InputRow = ({
+  label,
+  field,
+  locked,
+  isCalculationTarget,
+  isModel,
+  displayValue,
+  toggleLock,
+  handleInputChange,
+}) => {
+  return (
+    <Row align="middle" gutter={12} className="input-row-wrapper">
+      <Col span={14}>
+        <Space size={4} className="input-label-row">
+          <Text strong>{label}</Text>
+          <QuestionCircleOutlined className="input-info-icon" />
+        </Space>
+      </Col>
+      <Col span={2} align="center">
+        {isModel && (
+          <Button
+            type="text"
+            icon={
+              locked ? (
+                <LockOutlined className="lock-icon" />
+              ) : (
+                <UnlockOutlined className="unlock-icon" />
+              )
+            }
+            onClick={() => toggleLock(field)}
+          />
+        )}
+      </Col>
+      <Col span={8}>
+        <Input
+          value={thousandFormatter(displayValue, 2)}
+          onChange={(e) => {
+            const val = e.target.value.replace(/,/g, "");
+            handleInputChange(field, val);
+          }}
+          disabled={!isModel || locked || isCalculationTarget}
+          className="modelling-input"
+        />
+      </Col>
+    </Row>
+  );
+};
 
 const AdvancedModellingTool = () => {
   const { dashboardData, incomeDataDrivers } = CaseVisualState.useState(
     (s) => s
   );
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   const [selectedSegmentId, setSelectedSegmentId] = useState(null);
 
@@ -46,7 +96,7 @@ const AdvancedModellingTool = () => {
     price: true,
     volume: true,
     land: true,
-    earnings: true,
+    cop: true,
     odi: true,
   });
 
@@ -63,6 +113,13 @@ const AdvancedModellingTool = () => {
     return primaryGroup?.questionGroups?.[0] || {};
   }, [incomeDataDrivers]);
 
+  const flattenedQuestions = useMemo(() => {
+    if (!focusCommodityGroup?.questions) {
+      return [];
+    }
+    return flatten(focusCommodityGroup.questions);
+  }, [focusCommodityGroup]);
+
   const commodityCategory = focusCommodityGroup?.commodity_category;
 
   // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
@@ -76,6 +133,36 @@ const AdvancedModellingTool = () => {
     // Default for Crop, Timber
     return { price: 4, volume: 3, cop: 5, land: 2 };
   }, [commodityCategory]);
+
+  const driverUnits = useMemo(() => {
+    if (flattenedQuestions.length === 0) {
+      return {};
+    }
+
+    return Object.entries(qidMap).reduce((acc, [key, id]) => {
+      const q = flattenedQuestions.find((q) => q.id === id);
+      if (q?.unit) {
+        const unitName = q.unit
+          .split("/")
+          .map((u) => u.trim())
+          .map((u) => {
+            if (u === "crop") {
+              return (
+                commodities
+                  .find((c) => c.id === focusCommodityGroup?.commodity_id)
+                  ?.name?.toLowerCase() || ""
+              );
+            }
+            return focusCommodityGroup?.[u] || u;
+          })
+          .join(" / ");
+        acc[key] = unitName;
+      } else {
+        acc[key] = "";
+      }
+      return acc;
+    }, {});
+  }, [flattenedQuestions, focusCommodityGroup, qidMap, currentCase]);
 
   const [modelValues, setModelValues] = useState({
     price: 0,
@@ -128,6 +215,16 @@ const AdvancedModellingTool = () => {
   const handleInputChange = (field, value) => {
     setModelValues((prev) => ({ ...prev, [field]: parseFloat(value) || 0 }));
   };
+
+  // Reset calculation results when driver or segment changes
+  useEffect(() => {
+    setCalculationResult({
+      value: 0,
+      change: 0,
+      cost: 0,
+      profit: 0,
+    });
+  }, [selectedDriver, selectedSegmentId]);
 
   const getTargetIncome = () => {
     // benchmark income for the segment
@@ -199,60 +296,8 @@ const AdvancedModellingTool = () => {
     });
   };
 
-  const InputRow = ({
-    label,
-    field,
-    locked,
-    isCalculationTarget,
-    scenario,
-  }) => {
-    const isModel = scenario === "model";
-    const displayValue = isModel
-      ? field === selectedDriver && calculationResult.value
-        ? calculationResult.value
-        : modelValues[field]
-      : getSegmentAnswer(scenario, field);
-
-    return (
-      <Row align="middle" gutter={12} className="input-row-wrapper">
-        <Col span={14}>
-          <Space size={4} className="input-label-row">
-            <Text strong>{label}</Text>
-            <QuestionCircleOutlined className="input-info-icon" />
-          </Space>
-        </Col>
-        <Col span={2} align="center">
-          {isModel && (
-            <Button
-              type="text"
-              icon={
-                locked ? (
-                  <LockOutlined className="lock-icon" />
-                ) : (
-                  <UnlockOutlined className="unlock-icon" />
-                )
-              }
-              onClick={() => toggleLock(field)}
-            />
-          )}
-        </Col>
-        <Col span={8}>
-          <Input
-            value={thousandFormatter(displayValue, 2)}
-            onChange={(e) => {
-              const val = e.target.value.replace(/,/g, "");
-              handleInputChange(field, val);
-            }}
-            disabled={!isModel || locked || isCalculationTarget}
-            className="modelling-input"
-          />
-        </Col>
-      </Row>
-    );
-  };
-
   const driverLabels = useMemo(() => {
-    if (!focusCommodityGroup?.questions) {
+    if (flattenedQuestions.length === 0) {
       return {};
     }
     const fallbacks = {
@@ -262,14 +307,14 @@ const AdvancedModellingTool = () => {
       land: "Land",
     };
     return Object.entries(qidMap).reduce((acc, [key, id]) => {
-      const q = focusCommodityGroup.questions.find((q) => q.id === id);
+      const q = flattenedQuestions.find((q) => q.id === id);
       acc[key] = q ? q.text : fallbacks[key] || key;
       return acc;
     }, {});
-  }, [focusCommodityGroup, qidMap]);
+  }, [flattenedQuestions, qidMap]);
 
   const selectOptions = useMemo(() => {
-    if (!focusCommodityGroup?.questions) {
+    if (flattenedQuestions.length === 0) {
       return [];
     }
 
@@ -282,125 +327,174 @@ const AdvancedModellingTool = () => {
     };
 
     return targetQids.map((id, index) => {
-      const q = focusCommodityGroup.questions.find((q) => q.id === id);
+      const q = flattenedQuestions.find((q) => q.id === id);
       const key = keys[index];
       return {
         value: key,
         label: q ? q.text : fallbacks[key] || key,
       };
     });
-  }, [focusCommodityGroup, qidMap]);
+  }, [flattenedQuestions, qidMap]);
 
-  const renderModellingInputs = (scenario) => (
-    <div className="modelling-inputs-content">
-      <InputRow
-        label={driverLabels.price || "Price"}
-        field="price"
-        locked={lockedFields.price}
-        isCalculationTarget={selectedDriver === "price"}
-        scenario={scenario}
-      />
-      <InputRow
-        label={driverLabels.volume || "Volume"}
-        field="volume"
-        locked={lockedFields.volume}
-        isCalculationTarget={selectedDriver === "volume"}
-        scenario={scenario}
-      />
-      <InputRow
-        label={driverLabels.land || "Land"}
-        field="land"
-        locked={lockedFields.land}
-        isCalculationTarget={selectedDriver === "land"}
-        scenario={scenario}
-      />
-      <InputRow
-        label="Diversified Income"
-        field="odi"
-        locked={lockedFields.odi}
-        scenario={scenario}
-      />
+  const renderModellingInputs = (scenario) => {
+    const isModel = scenario === "model";
+    const getDisplayValue = (field) => {
+      return isModel
+        ? field === selectedDriver && calculationResult.value
+          ? calculationResult.value
+          : modelValues[field]
+        : getSegmentAnswer(scenario, field);
+    };
 
-      <Divider className="modelling-divider" />
+    return (
+      <div className="modelling-inputs-content">
+        <InputRow
+          label={`${driverLabels.price || "Price"}`}
+          field="price"
+          locked={lockedFields.price}
+          isCalculationTarget={selectedDriver === "price"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("price")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+        />
+        <InputRow
+          label={`${driverLabels.volume || "Volume"}`}
+          field="volume"
+          locked={lockedFields.volume}
+          isCalculationTarget={selectedDriver === "volume"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("volume")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+        />
+        <InputRow
+          label={`${driverLabels.land || "Land"}`}
+          field="land"
+          locked={lockedFields.land}
+          isCalculationTarget={selectedDriver === "land"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("land")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+        />
+        <InputRow
+          label={`${driverLabels.cop || "Cost of Production"}`}
+          field="cop"
+          locked={lockedFields.cop}
+          isCalculationTarget={selectedDriver === "cop"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("cop")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+        />
+        <InputRow
+          label="Diversified Income"
+          field="odi"
+          locked={lockedFields.odi}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("odi")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+        />
 
-      <Row gutter={12}>
-        <Col span={14} className="required-driver-wrapper">
-          <Text className="label-text">
-            Required {driverLabels[selectedDriver] || selectedDriver}
-          </Text>
-          <Input
-            value={thousandFormatter(
-              activeScenario === scenario ? calculationResult.value : 0,
-              2
-            )}
-            readOnly
-            suffix={
-              activeScenario === scenario && calculationResult.change ? (
-                <div
-                  className={`calc-change-tag ${
-                    calculationResult.change < 0 ? "success" : "error"
-                  }`}
-                >
-                  {calculationResult.change > 0 ? "+" : ""}
-                  {calculationResult.change.toFixed(0)}%
+        <Divider className="modelling-divider" />
+
+        <Row gutter={12} className="modelling-result-row">
+          <Col span={24}>
+            <Text className="label-text">
+              Required {driverLabels[selectedDriver] || selectedDriver} (
+              {driverUnits[selectedDriver]})
+            </Text>
+            <div className="calculation-result-container">
+              {activeScenario === scenario && calculationResult.value ? (
+                (() => {
+                  const feasibleValue = getSegmentAnswer(
+                    "feasible",
+                    selectedDriver
+                  );
+                  let isFeasible = false;
+                  if (selectedDriver === "cop") {
+                    isFeasible = calculationResult.value <= feasibleValue;
+                  } else {
+                    isFeasible = calculationResult.value >= feasibleValue;
+                  }
+
+                  return (
+                    <div className="result-display-wrapper">
+                      <div
+                        className={`result-value-box ${
+                          isFeasible ? "feasible" : "not-feasible"
+                        }`}
+                      >
+                        <span className="value-text">
+                          {thousandFormatter(calculationResult.value, 2)}
+                        </span>
+                      </div>
+                      <div className="feasibility-status">
+                        <span className="status-text">
+                          {isFeasible
+                            ? "falls within feasible levels"
+                            : "outside feasible levels"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="empty-result-placeholder">
+                  <Text type="secondary">Click Calculate to see results</Text>
                 </div>
-              ) : null
-            }
-            className="result-input"
-          />
-        </Col>
-        <Col span={10} className="feasible-value-wrapper">
-          <Text className="label-text">Feasible value</Text>
-          <Input
-            value={thousandFormatter(
-              getSegmentAnswer("feasible", selectedDriver),
-              2
-            )}
-            className="feasible-input"
-            disabled
-          />
-        </Col>
-      </Row>
+              )}
+            </div>
+          </Col>
+        </Row>
 
-      <Row gutter={12} className="footer-button-row">
-        <Col span={10}>
-          <Button
-            block
-            shape="round"
-            className="button-clear"
-            onClick={() => {
-              setCalculationResult({
-                value: 0,
-                change: 0,
-                cost: 0,
-                profit: 0,
-              });
-              setLockedFields({
-                price: true,
-                volume: true,
-                land: true,
-                earnings: true,
-                odi: true,
-              });
-            }}
-          >
-            Clear
-          </Button>
-        </Col>
-        <Col span={14}>
-          <Button
-            block
-            type="primary"
-            shape="round"
-            onClick={handleCalculate}
-            className="button-calculate"
-          >
-            Calculate
-          </Button>
-        </Col>
-      </Row>
-    </div>
-  );
+        <Row gutter={12} className="footer-button-row">
+          <Col span={10}>
+            <Button
+              block
+              shape="round"
+              className="button-clear"
+              onClick={() => {
+                setCalculationResult({
+                  value: 0,
+                  change: 0,
+                  cost: 0,
+                  profit: 0,
+                });
+                setLockedFields({
+                  price: true,
+                  volume: true,
+                  land: true,
+                  cop: true,
+                  odi: true,
+                });
+              }}
+            >
+              Clear
+            </Button>
+          </Col>
+          <Col span={14}>
+            <Button
+              block
+              type="primary"
+              shape="round"
+              onClick={handleCalculate}
+              className="button-calculate"
+            >
+              Calculate
+            </Button>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
 
   return (
     <Row className="advanced-modelling-tool-container" gutter={[24, 24]}>
@@ -502,19 +596,11 @@ const AdvancedModellingTool = () => {
                             <div
                               className="bar-segment cost"
                               style={{ width: `${costPerc}%` }}
-                            >
-                              <Text className="segment-value">
-                                {thousandFormatter(calculationResult.cost, 0)}
-                              </Text>
-                            </div>
+                            />
                             <div
                               className="bar-segment profit"
                               style={{ width: `${profitPerc}%` }}
-                            >
-                              <Text className="segment-value">
-                                {thousandFormatter(calculationResult.profit, 0)}
-                              </Text>
-                            </div>
+                            />
                           </div>
                         );
                       })()
@@ -526,8 +612,12 @@ const AdvancedModellingTool = () => {
                       </div>
                     )}
                     <div className="bar-labels-row">
-                      <Text className="label-text">Cost</Text>
-                      <Text className="label-text">Profit</Text>
+                      <Text className="label-text">
+                        Cost: {thousandFormatter(calculationResult.cost, 0)}
+                      </Text>
+                      <Text className="label-text">
+                        Profit: {thousandFormatter(calculationResult.profit, 0)}
+                      </Text>
                     </div>
                   </div>
                 </div>
