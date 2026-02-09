@@ -133,6 +133,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Optimized dashed boxes to wrap content tightly using `width: fit-content`.
     - Resolved React hook dependency warnings and optimized component lifecycle in the modelling interface.
     - Standardized colors and styling in Step 5 using `$primary-color`.
+    - Created `/check_time` workflow to automate active vs. idle time analysis based on conversation logs and git history.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
