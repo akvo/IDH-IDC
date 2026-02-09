@@ -81,12 +81,18 @@ const RowSeparator = ({ icon, color = "#595959" }) => (
   </div>
 );
 
-const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
+const EquationVisualizer = ({
+  selectedDriver = "cop",
+  labels = {},
+  category = "Crop",
+}) => {
+  const isAquaculture = category === "Aquaculture";
+
   const driverLabels = {
     price: labels.price || "Price",
     volume: labels.volume || "Volume",
     cop: labels.cop || "Cost of Production",
-    land: labels.land || "Land",
+    land: labels.land || (isAquaculture ? "Area" : "Land"),
   };
 
   const driverIconsGreen = {
@@ -103,239 +109,365 @@ const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
     land: "#faad14",
   };
 
-  // Helper to render the Diversified Income breakdown block
-  const DiversifiedIncomeBreakdown = ({ sign = "plus" }) => (
-    <>
-      <RowSeparator
-        icon={
-          sign === "plus" ? (
-            <PlusOutlined />
-          ) : (
-            <MinusOutlined style={{ fontSize: "16px" }} />
-          )
-        }
-      />
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-        }}
-      >
-        <IconBox icon={IncomeWhite} label="Secondary commodity income" />
-        <RowSeparator
-          icon={
-            sign === "minus" ? (
-              <MinusOutlined style={{ fontSize: "16px" }} />
-            ) : (
-              <PlusOutlined style={{ fontSize: "16px" }} />
-            )
-          }
-        />
-        <IconBox icon={DiversifiedIcon} label="Diversified income" />
-      </div>
-    </>
+  // Helper Segment: Expanded Target Income (Benchmark - Secondary - Diversified)
+  const ExpandedIncome = () => (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        border: "1px dashed #d9d9d9",
+        borderRadius: "20px",
+        padding: "4px 12px",
+      }}
+    >
+      <IconBox icon={BenchmarkIcon} label="Benchmark" />
+      <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+      <IconBox icon={IncomeWhite} label="Secondary commodity" />
+      <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+      <IconBox icon={DiversifiedIcon} label="Diversified income" />
+    </div>
   );
 
   const renderFormulaContent = () => {
-    switch (selectedDriver) {
-      case "price":
-      case "volume":
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ textAlign: "center" }}>
-              {/* Numerator */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingBottom: "12px",
-                }}
-              >
-                <IconBox icon={BenchmarkIcon} label="Benchmark" />
-                <RowSeparator icon={<PlusOutlined />} />
+    if (isAquaculture) {
+      switch (selectedDriver) {
+        case "price":
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                {/* Numerator: (ExpandedIncome / Land) - 1 */}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    border: "2px dashed #d9d9d9",
-                    borderRadius: "24px",
-                    padding: "8px 12px",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "20px",
+                    padding: "8px",
                   }}
                 >
-                  <IconBox icon={LandIcon} label="Land" />
+                  <div style={{ textAlign: "center" }}>
+                    <ExpandedIncome />
+                    <div
+                      style={{
+                        height: "2px",
+                        background: "#00565b",
+                        width: "100%",
+                        margin: "4px 0",
+                      }}
+                    />
+                    <IconBox icon={LandIcon} label={driverLabels.land} />
+                  </div>
                   <RowSeparator
-                    icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
                   />
-                  <IconBox icon={CopWhite} label="Cost of production" />
+                  <div
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      color: "#00565b",
+                      padding: "0 10px",
+                    }}
+                  >
+                    1
+                  </div>
                 </div>
-                <DiversifiedIncomeBreakdown sign="minus" />
+                {/* Divide by Volume */}
+                <div
+                  style={{
+                    height: "2px",
+                    background: "#00565b",
+                    width: "100%",
+                    margin: "12px 0",
+                  }}
+                />
+                <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
-              {/* Fraction Line */}
-              <div
-                style={{ height: "2px", background: "#00565b", width: "100%" }}
-              />
-              {/* Denominator */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingTop: "12px",
-                }}
-              >
+              <RowSeparator icon={<PlusOutlined />} />
+              <IconBox icon={CopWhite} label={driverLabels.cop} />
+            </div>
+          );
+        case "volume":
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                {/* Numerator: (ExpandedIncome / Land) - 1 */}
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    border: "2px dashed #d9d9d9",
-                    borderRadius: "24px",
-                    padding: "8px 12px",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "20px",
+                    padding: "8px",
                   }}
                 >
-                  <IconBox icon={LandIcon} label="Land" />
+                  <div style={{ textAlign: "center" }}>
+                    <ExpandedIncome />
+                    <div
+                      style={{
+                        height: "2px",
+                        background: "#00565b",
+                        width: "100%",
+                        margin: "4px 0",
+                      }}
+                    />
+                    <IconBox icon={LandIcon} label={driverLabels.land} />
+                  </div>
                   <RowSeparator
-                    icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
                   />
-                  <IconBox
-                    icon={selectedDriver === "price" ? VolumeWhite : PriceWhite}
-                    label={selectedDriver === "price" ? "Volume" : "Price"}
-                  />
+                  <div
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      color: "#00565b",
+                      padding: "0 10px",
+                    }}
+                  >
+                    1
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        );
-      case "cop":
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                border: "2px dashed #d9d9d9",
-                borderRadius: "24px",
-                padding: "8px 12px",
-              }}
-            >
-              <IconBox icon={VolumeWhite} label="Volume" />
-              <RowSeparator
-                icon={<CloseOutlined style={{ fontSize: "16px" }} />}
-              />
-              <IconBox icon={PriceWhite} label="Price" />
-            </div>
-            <RowSeparator icon={<PlusOutlined />} />
-            <div
-              style={{
-                textAlign: "center",
-                border: "2px dashed #d9d9d9",
-                borderRadius: "24px",
-                padding: "8px 12px",
-              }}
-            >
-              {/* Internal Numerator */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingBottom: "8px",
-                }}
-              >
-                <IconBox
-                  icon={IncomeWhite}
-                  label="Secondary commodity income"
+                {/* Divide by (Price - COP) */}
+                <div
+                  style={{
+                    height: "2px",
+                    background: "#00565b",
+                    width: "100%",
+                    margin: "12px 0",
+                  }}
                 />
-                <RowSeparator
-                  icon={<PlusOutlined style={{ fontSize: "12px" }} />}
-                />
-                <IconBox icon={DiversifiedIcon} label="Diversified income" />
-                <RowSeparator
-                  icon={<MinusOutlined style={{ fontSize: "12px" }} />}
-                />
-                <IconBox icon={BenchmarkIcon} label="Benchmark" />
-              </div>
-              {/* Internal Fraction Line */}
-              <div
-                style={{ height: "2px", background: "#00565b", width: "100%" }}
-              />
-              {/* Internal Denominator */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingTop: "8px",
-                }}
-              >
-                <IconBox icon={LandIcon} label="Land" />
-              </div>
-            </div>
-          </div>
-        );
-      case "land":
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div style={{ textAlign: "center" }}>
-              {/* Numerator */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingBottom: "12px",
-                }}
-              >
-                <IconBox icon={BenchmarkIcon} label="Benchmark" />
-                <DiversifiedIncomeBreakdown sign="minus" />
-              </div>
-              {/* Fraction Line */}
-              <div
-                style={{ height: "2px", background: "#00565b", width: "100%" }}
-              />
-              {/* Denominator */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  paddingTop: "12px",
-                }}
-              >
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    border: "2px dashed #d9d9d9",
-                    borderRadius: "24px",
-                    padding: "8px 12px",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "16px",
+                    padding: "4px",
                   }}
                 >
+                  <IconBox icon={PriceWhite} label={driverLabels.price} />
+                  <RowSeparator
+                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
+                  />
+                  <IconBox icon={CopWhite} label={driverLabels.cop} />
+                </div>
+              </div>
+            </div>
+          );
+        case "cop":
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <IconBox icon={PriceWhite} label={driverLabels.price} />
+              <RowSeparator icon={<MinusOutlined />} />
+              <div style={{ textAlign: "center" }}>
+                {/* ((ExpandedIncome / Land) - 1) / Volume */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "20px",
+                    padding: "8px",
+                  }}
+                >
+                  <div style={{ textAlign: "center" }}>
+                    <ExpandedIncome />
+                    <div
+                      style={{
+                        height: "2px",
+                        background: "#00565b",
+                        width: "100%",
+                        margin: "4px 0",
+                      }}
+                    />
+                    <IconBox icon={LandIcon} label={driverLabels.land} />
+                  </div>
+                  <RowSeparator
+                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
+                  />
+                  <div
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      color: "#00565b",
+                      padding: "0 10px",
+                    }}
+                  >
+                    1
+                  </div>
+                </div>
+                <div
+                  style={{
+                    height: "2px",
+                    background: "#00565b",
+                    width: "100%",
+                    margin: "12px 0",
+                  }}
+                />
+                <IconBox icon={VolumeWhite} label={driverLabels.volume} />
+              </div>
+            </div>
+          );
+        default:
+          return null;
+      }
+    } else {
+      // Crop / Livestock
+      switch (selectedDriver) {
+        case "price":
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                {/* Numerator: ExpandedIncome + (Land * COP) */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "20px",
+                    padding: "8px",
+                  }}
+                >
+                  <ExpandedIncome />
+                  <RowSeparator icon={<PlusOutlined />} />
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      border: "2px dashed #faad14",
-                      borderRadius: "20px",
-                      padding: "4px 8px",
+                      border: "1px dashed #d9d9d9",
+                      borderRadius: "16px",
+                      padding: "4px",
                     }}
                   >
-                    <IconBox icon={VolumeWhite} label="Volume" />
+                    <IconBox icon={LandIcon} label={driverLabels.land} />
                     <RowSeparator
-                      icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+                      icon={<CloseOutlined style={{ fontSize: "14px" }} />}
                     />
-                    <IconBox icon={PriceWhite} label="Price" />
+                    <IconBox icon={CopWhite} label={driverLabels.cop} />
                   </div>
-                  <RowSeparator icon={<MinusOutlined />} />
-                  <IconBox icon={CopWhite} label="Cost of production" />
+                </div>
+                {/* Denominator: Land * Volume */}
+                <div
+                  style={{
+                    height: "2px",
+                    background: "#00565b",
+                    width: "100%",
+                    margin: "12px 0",
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "16px",
+                    padding: "4px",
+                  }}
+                >
+                  <IconBox icon={LandIcon} label={driverLabels.land} />
+                  <RowSeparator
+                    icon={<CloseOutlined style={{ fontSize: "14px" }} />}
+                  />
+                  <IconBox icon={VolumeWhite} label={driverLabels.volume} />
                 </div>
               </div>
             </div>
-          </div>
-        );
-      default:
-        return null;
+          );
+        case "volume":
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                {/* Numerator: ExpandedIncome + (Land * COP) */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "20px",
+                    padding: "8px",
+                  }}
+                >
+                  <ExpandedIncome />
+                  <RowSeparator icon={<PlusOutlined />} />
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      border: "1px dashed #d9d9d9",
+                      borderRadius: "16px",
+                      padding: "4px",
+                    }}
+                  >
+                    <IconBox icon={LandIcon} label={driverLabels.land} />
+                    <RowSeparator
+                      icon={<CloseOutlined style={{ fontSize: "14px" }} />}
+                    />
+                    <IconBox icon={CopWhite} label={driverLabels.cop} />
+                  </div>
+                </div>
+                {/* Denominator: Land * Price */}
+                <div
+                  style={{
+                    height: "2px",
+                    background: "#00565b",
+                    width: "100%",
+                    margin: "12px 0",
+                  }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "1px dashed #d9d9d9",
+                    borderRadius: "16px",
+                    padding: "4px",
+                  }}
+                >
+                  <IconBox icon={LandIcon} label={driverLabels.land} />
+                  <RowSeparator
+                    icon={<CloseOutlined style={{ fontSize: "14px" }} />}
+                  />
+                  <IconBox icon={PriceWhite} label={driverLabels.price} />
+                </div>
+              </div>
+            </div>
+          );
+        case "cop":
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {/* (Price * Volume) - (ExpandedIncome / Land) */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  border: "1px dashed #d9d9d9",
+                  borderRadius: "16px",
+                  padding: "4px",
+                }}
+              >
+                <IconBox icon={PriceWhite} label={driverLabels.price} />
+                <RowSeparator
+                  icon={<CloseOutlined style={{ fontSize: "14px" }} />}
+                />
+                <IconBox icon={VolumeWhite} label={driverLabels.volume} />
+              </div>
+              <RowSeparator icon={<MinusOutlined />} />
+              <div style={{ textAlign: "center" }}>
+                <ExpandedIncome />
+                <div
+                  style={{
+                    height: "2px",
+                    background: "#00565b",
+                    width: "100%",
+                    margin: "4px 0",
+                  }}
+                />
+                <IconBox icon={LandIcon} label={driverLabels.land} />
+              </div>
+            </div>
+          );
+        default:
+          return null;
+      }
     }
   };
 
@@ -345,18 +477,18 @@ const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
       style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "flex-start", // Changed from center to prevent left cropping
+        justifyContent: "flex-start",
         width: "100%",
         overflowX: "auto",
         padding: "20px 0",
-        minHeight: "300px",
+        minHeight: "450px", // Increased for expanded formulas
       }}
     >
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          margin: "0 auto", // Center if fits, otherwise stay at start
+          margin: "0 auto",
           padding: "0 20px",
         }}
       >
@@ -369,7 +501,7 @@ const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
               style={{
                 fontSize: "40px",
                 fontWeight: "bold",
-                margin: "0 16px",
+                margin: "0 24px",
                 color: "#00565b",
               }}
             >

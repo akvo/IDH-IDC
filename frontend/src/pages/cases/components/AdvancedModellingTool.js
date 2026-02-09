@@ -19,7 +19,7 @@ import {
 import { CaseVisualState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import EquationVisualizer from "./EquationVisualizer";
-import { calculateBreakdownDriver } from "../utils/incomeCalculations";
+import { calculateModellingDriver } from "../utils/incomeCalculations";
 import { selectProps } from "../../../lib";
 import SegmentSelector from "./SegmentSelector";
 
@@ -137,7 +137,7 @@ const AdvancedModellingTool = () => {
     if (activeScenario === "model") {
       diversifiedEarnings = modelValues.odi || 0;
     } else {
-      diversifiedEarnings = segment?.total_feasible_diversified_income || 0;
+      diversifiedEarnings = getSegmentAnswer(activeScenario, "odi");
     }
 
     return targetIncomeLevel - diversifiedEarnings;
@@ -145,27 +145,44 @@ const AdvancedModellingTool = () => {
 
   const handleCalculate = () => {
     const targetPrimaryIncome = getTargetIncome();
-    const drivers = {
-      d2: modelValues.land,
-      d3: modelValues.volume,
-      d4: modelValues.price,
-      d5: modelValues.cop,
-    };
 
-    const qid = qidMap[selectedDriver];
+    let drivers = {};
+    if (activeScenario === "model") {
+      drivers = {
+        land: modelValues.land,
+        volume: modelValues.volume,
+        price: modelValues.price,
+        cop: modelValues.cop,
+      };
+    } else {
+      drivers = {
+        land: getSegmentAnswer(activeScenario, "land"),
+        volume: getSegmentAnswer(activeScenario, "volume"),
+        price: getSegmentAnswer(activeScenario, "price"),
+        cop: getSegmentAnswer(activeScenario, "cop"),
+      };
+    }
 
-    const result = calculateBreakdownDriver(targetPrimaryIncome, drivers, qid);
+    const result = calculateModellingDriver(
+      targetPrimaryIncome,
+      drivers,
+      selectedDriver,
+      commodityCategory
+    );
 
-    // Calculate breakdown
-    const currentPrice =
-      selectedDriver === "price" ? result : modelValues.price;
-    const currentVolume =
-      selectedDriver === "volume" ? result : modelValues.volume;
-    const currentLand = selectedDriver === "land" ? result : modelValues.land;
-    const currentCop = selectedDriver === "cop" ? result : modelValues.cop;
+    // Calculate current scenario values for the breakdown
+    const currentPrice = selectedDriver === "price" ? result : drivers.price;
+    const currentVolume = selectedDriver === "volume" ? result : drivers.volume;
+    const currentLand = drivers.land;
+    const currentCop = selectedDriver === "cop" ? result : drivers.cop;
 
-    const unitCost =
-      currentVolume !== 0 ? (currentCop * currentLand) / currentVolume : 0;
+    let unitCost = 0;
+    if (commodityCategory === "Aquaculture") {
+      unitCost = currentCop;
+    } else {
+      unitCost =
+        currentVolume !== 0 ? (currentCop * currentLand) / currentVolume : 0;
+    }
     const profit = currentPrice - unitCost;
 
     const feasibleValue = getSegmentAnswer("feasible", selectedDriver);
@@ -451,6 +468,7 @@ const AdvancedModellingTool = () => {
                 <EquationVisualizer
                   selectedDriver={selectedDriver}
                   labels={driverLabels}
+                  category={commodityCategory}
                 />
               </Card>
 

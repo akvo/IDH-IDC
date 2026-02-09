@@ -97,10 +97,61 @@ const calculateBreakdownDriver = (targetIncomeForCommodity, drivers, qid) => {
   }
 };
 
+/**
+ * Specialized calculation for Advanced Modelling Tool
+ * @param {number} targetIncome - The target income level (benchmark - diversified)
+ * @param {Object} drivers - Current values of land, volume, price, cop
+ * @param {string} qKey - The driver key being calculated ('price', 'volume', 'cop')
+ * @param {string} category - Commodity category (Crop, Aquaculture, Livestock)
+ */
+const calculateModellingDriver = (targetIncome, drivers, qKey, category) => {
+  const { land, volume, price, cop } = drivers;
+  const isAquaculture = category === "Aquaculture";
+
+  if (land === 0) {
+    return 0;
+  }
+
+  if (isAquaculture) {
+    switch (qKey) {
+      case "price":
+        // Income = L * (V * (P - C) + 1)
+        // (Income / L - 1) / V + C = P
+        return volume !== 0 ? (targetIncome / land - 1) / volume + cop : 0;
+      case "volume": {
+        // V = (Income / L - 1) / (P - C)
+        const denomV = price - cop;
+        return denomV !== 0 ? (targetIncome / land - 1) / denomV : 0;
+      }
+      case "cop":
+        // C = P - (Income / L - 1) / V
+        return volume !== 0 ? price - (targetIncome / land - 1) / volume : 0;
+      default:
+        return 0;
+    }
+  } else {
+    // Crop/Livestock: Income = L * (V * P - C)
+    switch (qKey) {
+      case "price":
+        // P = (Income / L + C) / V
+        return volume !== 0 ? (targetIncome / land + cop) / volume : 0;
+      case "volume":
+        // V = (Income / L + C) / P
+        return price !== 0 ? (targetIncome / land + cop) / price : 0;
+      case "cop":
+        // C = V * P - Income / L
+        return volume * price - targetIncome / land;
+      default:
+        return 0;
+    }
+  }
+};
+
 export {
   getTargetPrimaryIncome,
   getTargetSecondaryIncome,
   getTargetTertiaryIncome,
   getTargetDiversifiedIncome,
   calculateBreakdownDriver,
+  calculateModellingDriver,
 };
