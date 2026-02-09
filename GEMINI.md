@@ -98,6 +98,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Step 5 Refactoring & Advanced Modelling Tool (Issue #713)**:
     - Extracted all scenario modeling logic, state, and UI sections (1, 2, and 3) from `ClosingGap.js` into a standalone `StandardScenarioModeling` component.
     - Implemented `AdvancedModellingTool` as a new high-fidelity modelling interface for Step 5.
+    - Created `create_pr.md` workflow to automate standard Pull Request generation with base branch selection.
     - Integrated `EquationVisualizer` for graphical representation of income driver formulas, utilizing project-specific asset icons for improved visual consistency.
     - Implemented dynamic QID mapping to support Crops, Aquaculture, and Livestock in modelling calculations.
     - Implemented `SegmentSelector` in `AdvancedModellingTool.js` to enable dynamic segment-specific modelling scenarios.
