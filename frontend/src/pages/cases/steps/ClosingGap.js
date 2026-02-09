@@ -151,9 +151,7 @@ const ClosingGap = ({
       <Col span={24} className="header-wrapper">
         <div>
           <Space direction="vertical">
-            <div className="title">
-              Modelling different intervention scenarios
-            </div>
+            <div className="title">Closing the gap</div>
             <div className="description">
               This section enables you to create scenarios and test different
               strategies to close the income gap. By adjusting each income

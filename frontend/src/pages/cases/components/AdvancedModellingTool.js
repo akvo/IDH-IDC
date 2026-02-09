@@ -27,6 +27,8 @@ import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg
 
 const { Text, Title, Paragraph } = Typography;
 
+// TODO :: Check if the Save functionality already saved the modeling value
+
 const InputRow = ({
   label,
   field,
@@ -745,17 +747,24 @@ const AdvancedModellingTool = () => {
                               className="bar-segment cost"
                               style={{ width: `${costPerc}%` }}
                             >
-                              <span className="segment-value">
-                                {thousandFormatter(calculationResult.cost, 2)}
-                              </span>
+                              {costPerc > 10 && (
+                                <span className="segment-value">
+                                  {thousandFormatter(calculationResult.cost, 2)}
+                                </span>
+                              )}
                             </div>
                             <div
                               className="bar-segment profit"
                               style={{ width: `${profitPerc}%` }}
                             >
-                              <span className="segment-value">
-                                {thousandFormatter(calculationResult.profit, 2)}
-                              </span>
+                              {profitPerc > 10 && (
+                                <span className="segment-value">
+                                  {thousandFormatter(
+                                    calculationResult.profit,
+                                    2
+                                  )}
+                                </span>
+                              )}
                             </div>
                           </div>
                         );

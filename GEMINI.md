@@ -124,7 +124,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Updated Equation Visualizer to display secondary and tertiary income components.
     - Refined Price Breakdown UI with a premium header, circular icon wrapper, and total price display.
     - Switched to the custom `PriceWhite` icon from Equation Visualizer for the breakdown card.
-    - Implemented internal value labels for cost and profit segments within the breakdown bar.
+    - Implemented internal value labels for cost and profit segments within the breakdown bar with conditional visibility to prevent cropping for small segments.
     - Implemented 2-decimal formatting for all modelling results and breakdown values.
     - Refactored `EquationVisualizer.js` to eliminate all inline styles, moving them to structured SCSS classes in `steps.scss`.
     - Shortened multi-word labels in `EquationVisualizer` (COP, SEC, TER, ODI) and added a legend for clarity.
