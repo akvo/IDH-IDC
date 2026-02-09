@@ -1,21 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
-import { StandardScenarioModeling } from "../components";
-import { isEmpty, orderBy, isEqual } from "lodash";
-import {
-  ChartIncomeGapAcrossScenario,
-  TableScenarioOutcomes,
-} from "../visualizations";
+import { AdvancedModellingTool } from "../components";
+import { isEmpty, isEqual } from "lodash";
 import { api, removeUndefinedObjectValue } from "../../../lib";
 
 /**
  * STEP 5
  */
-
-const MAX_SCENARIO = 3;
-// deleteButtonPosition was here
 
 const ClosingGap = ({
   setbackfunction,
@@ -176,7 +169,9 @@ const ClosingGap = ({
         </div>
       </Col>
 
-      <StandardScenarioModeling />
+      <Col span={24}>
+        <AdvancedModellingTool />
+      </Col>
 
       {/* Complete Button */}
       <Col span={24}>
