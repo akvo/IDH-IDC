@@ -95,6 +95,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Created `INCOME_CALCULATION.md` to provide a simplified, technical overview of the unified income formula and commodity-specific mappings.
     - Reorganized documentation by moving `analytic.md` and `INCOME_CALCULATION.md` into a new `docs/` folder.
     - Documented variable hierarchy and aggregation levels for all commodity types (Crop, Aquaculture, Livestock).
+- **Step 5 Refactoring (Issue #713)**:
+    - Extracted all scenario modeling logic, state, and UI sections (1, 2, and 3) from `ClosingGap.js` into a standalone `StandardScenarioModeling` component.
+    - Streamlined `ClosingGap.js` into a clean shell container to prepare for the new advanced Modelling Tool.
+    - Encapsulated scenario-specific state and lifecycle hooks to improve modularity and maintainability.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
