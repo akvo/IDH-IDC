@@ -1,15 +1,23 @@
 import React from "react";
-import {
-  ShopOutlined,
-  TagOutlined,
-  DollarOutlined,
-  LineChartOutlined,
-  GlobalOutlined,
-  CoffeeOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  MinusOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, CloseOutlined, MinusOutlined } from "@ant-design/icons";
+
+// Custom icons - specialised for the equation visualizer
+// White variants (for the formula side)
+import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg";
+import VolumeWhite from "../../../assets/icons/equaion-visualizer/volume_white.svg";
+import CopWhite from "../../../assets/icons/equaion-visualizer/cost_of_production_white.svg";
+import IncomeWhite from "../../../assets/icons/equaion-visualizer/income_white.svg";
+
+// Green variants (for the result side)
+import PriceGreen from "../../../assets/icons/equaion-visualizer/price_green.svg";
+import VolumeGreen from "../../../assets/icons/equaion-visualizer/volume_green.svg";
+import CopGreen from "../../../assets/icons/equaion-visualizer/cost_of_production_green.svg";
+import IncomeGreen from "../../../assets/icons/equaion-visualizer/income_green.svg";
+
+// Single variant icons
+import LandIcon from "../../../assets/icons/equaion-visualizer/land.svg";
+import DiversifiedIcon from "../../../assets/icons/equaion-visualizer/diversified_income.svg";
+import BenchmarkIcon from "../../../assets/icons/equaion-visualizer/benchmark.svg";
 
 const IconBox = ({ icon, label, color = "#005a5b" }) => (
   <div
@@ -28,9 +36,18 @@ const IconBox = ({ icon, label, color = "#005a5b" }) => (
         fontSize: "24px",
         marginBottom: "8px",
         boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+        overflow: "hidden",
       }}
     >
-      {icon}
+      {typeof icon === "string" ? (
+        <img
+          src={icon}
+          alt={label}
+          style={{ width: "32px", height: "32px", objectFit: "contain" }}
+        />
+      ) : (
+        icon
+      )}
     </div>
     <div
       style={{
@@ -72,18 +89,254 @@ const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
     land: labels.land || "Land",
   };
 
-  const driverIcons = {
-    price: <TagOutlined />,
-    volume: <ShopOutlined />,
-    cop: <CoffeeOutlined />,
-    land: <GlobalOutlined />,
+  const driverIconsGreen = {
+    price: PriceGreen,
+    volume: VolumeGreen,
+    cop: CopGreen,
+    land: LandIcon,
   };
 
   const driverColors = {
     price: "#faad14",
-    volume: "#1890ff",
-    cop: "#fa8c16",
-    land: "#52c41a",
+    volume: "#faad14",
+    cop: "#faad14",
+    land: "#faad14",
+  };
+
+  // Helper to render the Diversified Income breakdown block
+  const DiversifiedIncomeBreakdown = ({ sign = "plus" }) => (
+    <>
+      <RowSeparator
+        icon={
+          sign === "plus" ? (
+            <PlusOutlined />
+          ) : (
+            <MinusOutlined style={{ fontSize: "16px" }} />
+          )
+        }
+      />
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+        }}
+      >
+        <IconBox icon={IncomeWhite} label="Secondary commodity income" />
+        <RowSeparator
+          icon={
+            sign === "minus" ? (
+              <MinusOutlined style={{ fontSize: "16px" }} />
+            ) : (
+              <PlusOutlined style={{ fontSize: "16px" }} />
+            )
+          }
+        />
+        <IconBox icon={DiversifiedIcon} label="Diversified income" />
+      </div>
+    </>
+  );
+
+  const renderFormulaContent = () => {
+    switch (selectedDriver) {
+      case "price":
+      case "volume":
+        return (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ textAlign: "center" }}>
+              {/* Numerator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingBottom: "12px",
+                }}
+              >
+                <IconBox icon={BenchmarkIcon} label="Benchmark" />
+                <RowSeparator icon={<PlusOutlined />} />
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "2px dashed #d9d9d9",
+                    borderRadius: "24px",
+                    padding: "8px 12px",
+                  }}
+                >
+                  <IconBox icon={LandIcon} label="Land" />
+                  <RowSeparator
+                    icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+                  />
+                  <IconBox icon={CopWhite} label="Cost of production" />
+                </div>
+                <DiversifiedIncomeBreakdown sign="minus" />
+              </div>
+              {/* Fraction Line */}
+              <div
+                style={{ height: "2px", background: "#00565b", width: "100%" }}
+              />
+              {/* Denominator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingTop: "12px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "2px dashed #d9d9d9",
+                    borderRadius: "24px",
+                    padding: "8px 12px",
+                  }}
+                >
+                  <IconBox icon={LandIcon} label="Land" />
+                  <RowSeparator
+                    icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+                  />
+                  <IconBox
+                    icon={selectedDriver === "price" ? VolumeWhite : PriceWhite}
+                    label={selectedDriver === "price" ? "Volume" : "Price"}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case "cop":
+        return (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                border: "2px dashed #d9d9d9",
+                borderRadius: "24px",
+                padding: "8px 12px",
+              }}
+            >
+              <IconBox icon={VolumeWhite} label="Volume" />
+              <RowSeparator
+                icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+              />
+              <IconBox icon={PriceWhite} label="Price" />
+            </div>
+            <RowSeparator icon={<PlusOutlined />} />
+            <div
+              style={{
+                textAlign: "center",
+                border: "2px dashed #d9d9d9",
+                borderRadius: "24px",
+                padding: "8px 12px",
+              }}
+            >
+              {/* Internal Numerator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingBottom: "8px",
+                }}
+              >
+                <IconBox
+                  icon={IncomeWhite}
+                  label="Secondary commodity income"
+                />
+                <RowSeparator
+                  icon={<PlusOutlined style={{ fontSize: "12px" }} />}
+                />
+                <IconBox icon={DiversifiedIcon} label="Diversified income" />
+                <RowSeparator
+                  icon={<MinusOutlined style={{ fontSize: "12px" }} />}
+                />
+                <IconBox icon={BenchmarkIcon} label="Benchmark" />
+              </div>
+              {/* Internal Fraction Line */}
+              <div
+                style={{ height: "2px", background: "#00565b", width: "100%" }}
+              />
+              {/* Internal Denominator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingTop: "8px",
+                }}
+              >
+                <IconBox icon={LandIcon} label="Land" />
+              </div>
+            </div>
+          </div>
+        );
+      case "land":
+        return (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ textAlign: "center" }}>
+              {/* Numerator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingBottom: "12px",
+                }}
+              >
+                <IconBox icon={BenchmarkIcon} label="Benchmark" />
+                <DiversifiedIncomeBreakdown sign="minus" />
+              </div>
+              {/* Fraction Line */}
+              <div
+                style={{ height: "2px", background: "#00565b", width: "100%" }}
+              />
+              {/* Denominator */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingTop: "12px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    border: "2px dashed #d9d9d9",
+                    borderRadius: "24px",
+                    padding: "8px 12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      border: "2px dashed #faad14",
+                      borderRadius: "20px",
+                      padding: "4px 8px",
+                    }}
+                  >
+                    <IconBox icon={VolumeWhite} label="Volume" />
+                    <RowSeparator
+                      icon={<CloseOutlined style={{ fontSize: "16px" }} />}
+                    />
+                    <IconBox icon={PriceWhite} label="Price" />
+                  </div>
+                  <RowSeparator icon={<MinusOutlined />} />
+                  <IconBox icon={CopWhite} label="Cost of production" />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -92,107 +345,33 @@ const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
       style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "flex-start", // Changed from center to prevent left cropping
         width: "100%",
         overflowX: "auto",
+        padding: "20px 0",
+        minHeight: "300px",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center" }}>
-        {/* Numerator & Denominator Group */}
-        <div style={{ textAlign: "center" }}>
-          {/* Top Row: (Volume x Price) + (Secondary + Diversified - Benchmark) */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingBottom: "12px",
-            }}
-          >
-            {selectedDriver !== "volume" && selectedDriver !== "price" && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: "2px dashed #d9d9d9",
-                  borderRadius: "16px",
-                  padding: "8px",
-                }}
-              >
-                <IconBox icon={<ShopOutlined />} label="Volume" />
-                <RowSeparator
-                  icon={<CloseOutlined style={{ fontSize: "16px" }} />}
-                />
-                <IconBox icon={<TagOutlined />} label="Price" />
-              </div>
-            )}
-
-            {(selectedDriver === "volume" || selectedDriver === "price") && (
-              <IconBox icon={<DollarOutlined />} label="Primary Inc." />
-            )}
-
-            <RowSeparator icon={<PlusOutlined />} />
-
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                border: "2px dashed #d9d9d9",
-                borderRadius: "16px",
-                padding: "8px",
-              }}
-            >
-              <IconBox icon={<DollarOutlined />} label="Secondary" />
-              <RowSeparator
-                icon={<PlusOutlined style={{ fontSize: "16px" }} />}
-              />
-              <IconBox icon={<CoffeeOutlined />} label="Diversified" />
-              <RowSeparator
-                icon={<MinusOutlined style={{ fontSize: "16px" }} />}
-              />
-              <IconBox icon={<LineChartOutlined />} label="Benchmark" />
-            </div>
-          </div>
-
-          {/* Fraction Line */}
-          <div
-            style={{
-              height: "2px",
-              background: "#005a5b",
-              width: "100%",
-            }}
-          />
-
-          {/* Bottom Row: Denominator */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              paddingTop: "12px",
-            }}
-          >
-            {selectedDriver === "cop" ? (
-              <IconBox icon={<GlobalOutlined />} label="Land" />
-            ) : selectedDriver === "price" ? (
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <IconBox icon={<ShopOutlined />} label="Volume" />
-                <RowSeparator
-                  icon={<CloseOutlined style={{ fontSize: "16px" }} />}
-                />
-                <IconBox icon={<GlobalOutlined />} label="Land" />
-              </div>
-            ) : (
-              <IconBox icon={<TagOutlined />} label="Price" />
-            )}
-          </div>
-        </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          margin: "0 auto", // Center if fits, otherwise stay at start
+          padding: "0 20px",
+        }}
+      >
+        {renderFormulaContent()}
 
         {/* Equals Section */}
         <RowSeparator
           icon={
             <div
-              style={{ fontSize: "32px", fontWeight: "bold", marginLeft: 16 }}
+              style={{
+                fontSize: "40px",
+                fontWeight: "bold",
+                margin: "0 16px",
+                color: "#00565b",
+              }}
             >
               =
             </div>
@@ -200,11 +379,11 @@ const EquationVisualizer = ({ selectedDriver = "cop", labels = {} }) => {
         />
 
         {/* Result: Target Driver */}
-        <div style={{ marginLeft: 16 }}>
+        <div style={{ textAlign: "center" }}>
           <IconBox
-            icon={driverIcons[selectedDriver]}
-            label={driverLabels[selectedDriver]}
-            color={driverColors[selectedDriver]}
+            icon={driverIconsGreen[selectedDriver] || IncomeGreen}
+            label={driverLabels[selectedDriver] || "Driver"}
+            color={driverColors[selectedDriver] || "#52c41a"}
           />
         </div>
       </div>

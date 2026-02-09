@@ -98,11 +98,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Step 5 Refactoring & Advanced Modelling Tool (Issue #713)**:
     - Extracted all scenario modeling logic, state, and UI sections (1, 2, and 3) from `ClosingGap.js` into a standalone `StandardScenarioModeling` component.
     - Implemented `AdvancedModellingTool` as a new high-fidelity modelling interface for Step 5.
-    - Integrated `EquationVisualizer` for graphical representation of income driver formulas.
+    - Integrated `EquationVisualizer` for graphical representation of income driver formulas, utilizing project-specific asset icons for improved visual consistency.
     - Implemented dynamic QID mapping to support Crops, Aquaculture, and Livestock in modelling calculations.
     - Added real-time profit/cost breakdown visualization using a dynamic bar chart.
     - Synchronized driver labels and selectable options with the global question state for terminal terminology consistency.
-    - Refined UI with localized card padding and standard Ant Design `Card` components for improved layout density.
+    - Refined UI by integrating modelling inputs directly into scenario tabs, eliminating visual gaps and ensuring a unified interface.
+    - Refactored `AdvancedModellingTool.js` to eliminate code duplication using a `renderModellingInputs` helper function.
+    - Standardized styling with Ant Design `.card-section-wrapper` and moved all static styles to `steps.scss`.
     - Encapsulated scenario-specific state and lifecycle hooks to improve modularity and maintainability.
 
 ## Codebase Structure
