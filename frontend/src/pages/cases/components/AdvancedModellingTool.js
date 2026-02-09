@@ -63,7 +63,6 @@ const AdvancedModellingTool = () => {
     return primaryGroup?.questionGroups?.[0] || {};
   }, [incomeDataDrivers]);
 
-  const ccid = focusCommodityGroup?.id;
   const commodityCategory = focusCommodityGroup?.commodity_category;
 
   // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
