@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Row,
   Col,
@@ -21,6 +21,7 @@ import { thousandFormatter } from "../../../components/chart/options/common";
 import EquationVisualizer from "./EquationVisualizer";
 import { calculateBreakdownDriver } from "../utils/incomeCalculations";
 import { selectProps } from "../../../lib";
+import SegmentSelector from "./SegmentSelector";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -29,8 +30,15 @@ const AdvancedModellingTool = () => {
     (s) => s
   );
 
-  // For this tool, we focus on the first segment for now
-  const segment = useMemo(() => dashboardData?.[0] || {}, [dashboardData]);
+  const [selectedSegmentId, setSelectedSegmentId] = useState(null);
+
+  // Focus on selected segment
+  const segment = useMemo(() => {
+    if (!selectedSegmentId) {
+      return dashboardData?.[0] || {};
+    }
+    return dashboardData?.find((d) => d.id === selectedSegmentId) || {};
+  }, [dashboardData, selectedSegmentId]);
 
   const [selectedDriver, setSelectedDriver] = useState("cop");
   const [activeScenario, setActiveScenario] = useState("model");
@@ -70,34 +78,49 @@ const AdvancedModellingTool = () => {
     return { price: 4, volume: 3, cop: 5, land: 2 };
   }, [commodityCategory]);
 
-  const driverKeys = useMemo(
-    () => ({
-      price: `${ccid}-${qidMap.price}`,
-      volume: `${ccid}-${qidMap.volume}`,
-      cop: `${ccid}-${qidMap.cop}`,
-      land: `${ccid}-${qidMap.land}`,
-    }),
-    [ccid, qidMap]
-  );
-
   const [modelValues, setModelValues] = useState({
     price: 0,
     volume: 0,
     cop: 0,
     land: 0,
+    odi: 0,
   });
+
+  const getSegmentAnswer = useCallback(
+    (scenario, field) => {
+      if (field === "odi") {
+        return (
+          segment?.[`total_${scenario}_diversified_income`] ||
+          segment?.[`total_${scenario}_other_income`] ||
+          0
+        );
+      }
+
+      const qid = qidMap[field];
+      if (Array.isArray(segment?.answers)) {
+        return (
+          segment.answers.find(
+            (a) => a.name === scenario && a.questionId === qid
+          )?.value || 0
+        );
+      }
+      return 0;
+    },
+    [segment, qidMap]
+  );
 
   // Sync initial values from segment data
   useEffect(() => {
-    if (segment?.answers) {
+    if (segment) {
       setModelValues({
-        price: segment.answers[`feasible-${driverKeys.price}`] || 0,
-        volume: segment.answers[`feasible-${driverKeys.volume}`] || 0,
-        cop: segment.answers[`feasible-${driverKeys.cop}`] || 0,
-        land: segment.answers[`feasible-${driverKeys.land}`] || 0,
+        price: getSegmentAnswer("feasible", "price"),
+        volume: getSegmentAnswer("feasible", "volume"),
+        cop: getSegmentAnswer("feasible", "cop"),
+        land: getSegmentAnswer("feasible", "land"),
+        odi: getSegmentAnswer("feasible", "odi"),
       });
     }
-  }, [segment, driverKeys]);
+  }, [segment, getSegmentAnswer]);
 
   const toggleLock = (field) => {
     setLockedFields((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -146,8 +169,7 @@ const AdvancedModellingTool = () => {
       currentVolume !== 0 ? (currentCop * currentLand) / currentVolume : 0;
     const profit = currentPrice - unitCost;
 
-    const feasibleValue =
-      segment?.answers?.[`feasible-${driverKeys[selectedDriver]}`] || 0;
+    const feasibleValue = getSegmentAnswer("feasible", selectedDriver);
     const change =
       feasibleValue !== 0
         ? ((result - feasibleValue) / feasibleValue) * 100
@@ -161,13 +183,19 @@ const AdvancedModellingTool = () => {
     });
   };
 
-  const InputRow = ({ label, field, locked, isCalculationTarget }) => {
-    const isModel = activeScenario === "model";
+  const InputRow = ({
+    label,
+    field,
+    locked,
+    isCalculationTarget,
+    scenario,
+  }) => {
+    const isModel = scenario === "model";
     const displayValue = isModel
       ? field === selectedDriver && calculationResult.value
         ? calculationResult.value
         : modelValues[field]
-      : segment?.answers?.[`${activeScenario}-${driverKeys[field]}`] || 0;
+      : getSegmentAnswer(scenario, field);
 
     return (
       <Row align="middle" gutter={12} className="input-row-wrapper">
@@ -247,30 +275,34 @@ const AdvancedModellingTool = () => {
     });
   }, [focusCommodityGroup, qidMap]);
 
-  const renderModellingInputs = () => (
+  const renderModellingInputs = (scenario) => (
     <div className="modelling-inputs-content">
       <InputRow
         label={driverLabels.price || "Price"}
         field="price"
         locked={lockedFields.price}
         isCalculationTarget={selectedDriver === "price"}
+        scenario={scenario}
       />
       <InputRow
         label={driverLabels.volume || "Volume"}
         field="volume"
         locked={lockedFields.volume}
         isCalculationTarget={selectedDriver === "volume"}
+        scenario={scenario}
       />
       <InputRow
         label={driverLabels.land || "Land"}
         field="land"
         locked={lockedFields.land}
         isCalculationTarget={selectedDriver === "land"}
+        scenario={scenario}
       />
       <InputRow
         label="Diversified Income"
         field="odi"
         locked={lockedFields.odi}
+        scenario={scenario}
       />
 
       <Divider className="modelling-divider" />
@@ -281,10 +313,13 @@ const AdvancedModellingTool = () => {
             Required {driverLabels[selectedDriver] || selectedDriver}
           </Text>
           <Input
-            value={thousandFormatter(calculationResult.value, 2)}
+            value={thousandFormatter(
+              activeScenario === scenario ? calculationResult.value : 0,
+              2
+            )}
             readOnly
             suffix={
-              calculationResult.change ? (
+              activeScenario === scenario && calculationResult.change ? (
                 <div
                   className={`calc-change-tag ${
                     calculationResult.change < 0 ? "success" : "error"
@@ -302,7 +337,7 @@ const AdvancedModellingTool = () => {
           <Text className="label-text">Feasible value</Text>
           <Input
             value={thousandFormatter(
-              segment?.answers?.[`feasible-${driverKeys[selectedDriver]}`] || 0,
+              getSegmentAnswer("feasible", selectedDriver),
               2
             )}
             className="feasible-input"
@@ -370,6 +405,14 @@ const AdvancedModellingTool = () => {
         </Paragraph>
       </Col>
 
+      {/* Segment Selector */}
+      <Col span={24}>
+        <SegmentSelector
+          selectedSegment={selectedSegmentId}
+          setSelectedSegment={setSelectedSegmentId}
+        />
+      </Col>
+
       <Col span={24}>
         <Row gutter={[24, 24]}>
           {/* Left Panel */}
@@ -396,7 +439,7 @@ const AdvancedModellingTool = () => {
                 items={["current", "feasible", "model"].map((key) => ({
                   key,
                   label: key.charAt(0).toUpperCase() + key.slice(1),
-                  children: renderModellingInputs(),
+                  children: renderModellingInputs(key),
                 }))}
               />
             </Space>
