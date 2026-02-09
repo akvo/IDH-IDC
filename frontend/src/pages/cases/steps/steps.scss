@@ -324,8 +324,6 @@
 #assess-impact-mitigation-strategies,
 #closing-gap,
 .advanced-modelling-tool-container {
-  margin-bottom: 100px;
-
   .card-section-wrapper {
     border-radius: 20px;
     background: #01625f;
@@ -1325,17 +1323,17 @@
         .ant-tabs-nav-list {
           width: 100%;
           display: flex;
+          gap: 2px;
         }
         .ant-tabs-tab {
           flex: 1;
           justify-content: center;
-          border-radius: 8px !important;
-          margin: 0 4px !important;
+          border-radius: 12px 12px 0 0 !important;
           background: #fff;
-          border: 1px solid #d9d9d9;
+          border: 1px solid #f0f0f0;
           transition: all 0.3s;
           height: 40px;
-          font-weight: bold;
+          font-family: "TabletGothic";
 
           &.ant-tabs-tab-active {
             background: $primary-color !important;
@@ -1347,7 +1345,7 @@
 
           &:not(.ant-tabs-tab-active) {
             .ant-tabs-tab-btn {
-              color: #666 !important;
+              color: #000 !important;
             }
           }
         }
@@ -1356,7 +1354,7 @@
       > .ant-tabs-content-holder {
         background: #fff;
         border: 1px solid #f0f0f0;
-        border-radius: 12px;
+        border-radius: 0 0 12px 12px;
         padding: 24px;
         margin-top: -1px;
         position: relative;
@@ -1464,12 +1462,13 @@
             font-family: "TabletGothic";
             font-size: 16px;
             color: #000;
+            font-weight: bold;
           }
         }
       }
 
       .empty-result-placeholder {
-        padding: 16px;
+        padding: 7px 10px;
         background: #f5f5f5;
         border-radius: 12px;
         text-align: center;
@@ -1510,7 +1509,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
     .ant-card-body {
-      min-height: 350px;
       background: #fff;
       border-radius: 12px;
       padding: 12px 20px;
@@ -1628,6 +1626,133 @@
           color: #454545;
         }
       }
+    }
+  }
+
+  // Equation Visualizer Refactored Styles
+  .equation-visualizer-graphic {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    padding: 20px 0;
+    min-height: 295px;
+
+    .equation-content-inner {
+      display: flex;
+      align-items: center;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .icon-box-container {
+      text-align: center;
+      display: inline-block;
+      margin: 0 8px;
+
+      .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 24px;
+        margin-bottom: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+        img {
+          width: 32px;
+          height: 32px;
+          object-fit: contain;
+        }
+      }
+
+      .icon-label {
+        background: #ebf2f2;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        color: #005a5b;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+    }
+
+    .row-separator {
+      font-size: 20px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 50px;
+    }
+
+    .expanded-income-container {
+      display: flex;
+      align-items: center;
+      border: 1px dashed #d9d9d9;
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    .formula-group-dashed {
+      display: flex;
+      align-items: center;
+      border: 1px dashed #d9d9d9;
+      border-radius: 20px;
+      padding: 8px;
+
+      &.small-radius {
+        border-radius: 16px;
+        padding: 4px;
+      }
+    }
+
+    .fraction-part {
+      text-align: center;
+      flex: 1;
+    }
+
+    .fraction-line {
+      height: 2px;
+      background: #00565b;
+      width: 100%;
+      margin: 4px 0;
+
+      &.large-margin {
+        margin: 12px 0;
+      }
+    }
+
+    .equals-operator {
+      font-size: 40px;
+      font-weight: bold;
+      margin: 0 24px;
+      color: #00565b;
+    }
+
+    .formula-center-wrapper {
+      text-align: center;
+    }
+
+    .text-number-large {
+      font-size: 20px;
+      font-weight: bold;
+      color: #00565b;
+      padding: 0 10px;
+    }
+
+    .flex-center {
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-14 {
+      font-size: 14px;
     }
   }
 }

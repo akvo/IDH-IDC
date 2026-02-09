@@ -20,63 +20,16 @@ import DiversifiedIcon from "../../../assets/icons/equaion-visualizer/diversifie
 import BenchmarkIcon from "../../../assets/icons/equaion-visualizer/benchmark.svg";
 
 const IconBox = ({ icon, label, color = "#005a5b" }) => (
-  <div
-    style={{ textAlign: "center", display: "inline-block", margin: "0 8px" }}
-  >
-    <div
-      style={{
-        width: "50px",
-        height: "50px",
-        borderRadius: "50%",
-        background: color,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        color: "#fff",
-        fontSize: "24px",
-        marginBottom: "8px",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-        overflow: "hidden",
-      }}
-    >
-      {typeof icon === "string" ? (
-        <img
-          src={icon}
-          alt={label}
-          style={{ width: "32px", height: "32px", objectFit: "contain" }}
-        />
-      ) : (
-        icon
-      )}
+  <div className="icon-box-container">
+    <div className="icon-circle" style={{ background: color }}>
+      {typeof icon === "string" ? <img src={icon} alt={label} /> : icon}
     </div>
-    <div
-      style={{
-        background: "#ebf2f2",
-        padding: "2px 8px",
-        borderRadius: "12px",
-        fontSize: "11px",
-        color: "#005a5b",
-        fontWeight: "bold",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {label}
-    </div>
+    <div className="icon-label">{label}</div>
   </div>
 );
 
 const RowSeparator = ({ icon, color = "#595959" }) => (
-  <div
-    style={{
-      fontSize: "20px",
-      color: color,
-      padding: "0 4px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "50px",
-    }}
-  >
+  <div className="row-separator" style={{ color: color }}>
     {icon}
   </div>
 );
@@ -113,29 +66,21 @@ const EquationVisualizer = ({
 
   // Helper Segment: Expanded Target Income (Benchmark - Secondary - Tertiary - Diversified)
   const ExpandedIncome = () => (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        border: "1px dashed #d9d9d9",
-        borderRadius: "20px",
-        padding: "4px 12px",
-      }}
-    >
+    <div className="expanded-income-container">
       <IconBox icon={BenchmarkIcon} label="Benchmark" />
       {secondaryLabel && (
         <>
-          <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+          <RowSeparator icon={<MinusOutlined className="icon-14" />} />
           <IconBox icon={IncomeWhite} label="Secondary Income" />
         </>
       )}
       {tertiaryLabel && (
         <>
-          <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+          <RowSeparator icon={<MinusOutlined className="icon-14" />} />
           <IconBox icon={IncomeWhite} label="Tertiary Income" />
         </>
       )}
-      <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+      <RowSeparator icon={<MinusOutlined className="icon-14" />} />
       <IconBox icon={DiversifiedIcon} label="Other Diversified Income" />
     </div>
   );
@@ -145,53 +90,20 @@ const EquationVisualizer = ({
       switch (selectedDriver) {
         case "price":
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
+            <div className="flex-center">
+              <div className="formula-center-wrapper">
                 {/* Numerator: (ExpandedIncome / Land) - 1 */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "20px",
-                    padding: "8px",
-                  }}
-                >
-                  <div style={{ textAlign: "center" }}>
+                <div className="formula-group-dashed">
+                  <div className="formula-center-wrapper">
                     <ExpandedIncome />
-                    <div
-                      style={{
-                        height: "2px",
-                        background: "#00565b",
-                        width: "100%",
-                        margin: "4px 0",
-                      }}
-                    />
+                    <div className="fraction-line" />
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                   </div>
-                  <RowSeparator
-                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
-                  />
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#00565b",
-                      padding: "0 10px",
-                    }}
-                  >
-                    1
-                  </div>
+                  <RowSeparator icon={<MinusOutlined className="icon-14" />} />
+                  <div className="text-number-large">1</div>
                 </div>
                 {/* Divide by Volume */}
-                <div
-                  style={{
-                    height: "2px",
-                    background: "#00565b",
-                    width: "100%",
-                    margin: "12px 0",
-                  }}
-                />
+                <div className="fraction-line large-margin" />
                 <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
               <RowSeparator icon={<PlusOutlined />} />
@@ -200,66 +112,23 @@ const EquationVisualizer = ({
           );
         case "volume":
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
+            <div className="flex-center">
+              <div className="formula-center-wrapper">
                 {/* Numerator: (ExpandedIncome / Land) - 1 */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "20px",
-                    padding: "8px",
-                  }}
-                >
-                  <div style={{ textAlign: "center" }}>
+                <div className="formula-group-dashed">
+                  <div className="formula-center-wrapper">
                     <ExpandedIncome />
-                    <div
-                      style={{
-                        height: "2px",
-                        background: "#00565b",
-                        width: "100%",
-                        margin: "4px 0",
-                      }}
-                    />
+                    <div className="fraction-line" />
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                   </div>
-                  <RowSeparator
-                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
-                  />
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#00565b",
-                      padding: "0 10px",
-                    }}
-                  >
-                    1
-                  </div>
+                  <RowSeparator icon={<MinusOutlined className="icon-14" />} />
+                  <div className="text-number-large">1</div>
                 </div>
                 {/* Divide by (Price - COP) */}
-                <div
-                  style={{
-                    height: "2px",
-                    background: "#00565b",
-                    width: "100%",
-                    margin: "12px 0",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "16px",
-                    padding: "4px",
-                  }}
-                >
+                <div className="fraction-line large-margin" />
+                <div className="formula-group-dashed small-radius">
                   <IconBox icon={PriceWhite} label={driverLabels.price} />
-                  <RowSeparator
-                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
-                  />
+                  <RowSeparator icon={<MinusOutlined className="icon-14" />} />
                   <IconBox icon={CopWhite} label={driverLabels.cop} />
                 </div>
               </div>
@@ -267,54 +136,21 @@ const EquationVisualizer = ({
           );
         case "cop":
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="flex-center">
               <IconBox icon={PriceWhite} label={driverLabels.price} />
               <RowSeparator icon={<MinusOutlined />} />
-              <div style={{ textAlign: "center" }}>
+              <div className="formula-center-wrapper">
                 {/* ((ExpandedIncome / Land) - 1) / Volume */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "20px",
-                    padding: "8px",
-                  }}
-                >
-                  <div style={{ textAlign: "center" }}>
+                <div className="formula-group-dashed">
+                  <div className="formula-center-wrapper">
                     <ExpandedIncome />
-                    <div
-                      style={{
-                        height: "2px",
-                        background: "#00565b",
-                        width: "100%",
-                        margin: "4px 0",
-                      }}
-                    />
+                    <div className="fraction-line" />
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                   </div>
-                  <RowSeparator
-                    icon={<MinusOutlined style={{ fontSize: "14px" }} />}
-                  />
-                  <div
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: "bold",
-                      color: "#00565b",
-                      padding: "0 10px",
-                    }}
-                  >
-                    1
-                  </div>
+                  <RowSeparator icon={<MinusOutlined className="icon-14" />} />
+                  <div className="text-number-large">1</div>
                 </div>
-                <div
-                  style={{
-                    height: "2px",
-                    background: "#00565b",
-                    width: "100%",
-                    margin: "12px 0",
-                  }}
-                />
+                <div className="fraction-line large-margin" />
                 <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
             </div>
@@ -327,58 +163,25 @@ const EquationVisualizer = ({
       switch (selectedDriver) {
         case "price":
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
+            <div className="flex-center">
+              <div className="formula-center-wrapper">
                 {/* Numerator: ExpandedIncome + (Land * COP) */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "20px",
-                    padding: "8px",
-                  }}
-                >
+                <div className="formula-group-dashed">
                   <ExpandedIncome />
                   <RowSeparator icon={<PlusOutlined />} />
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      border: "1px dashed #d9d9d9",
-                      borderRadius: "16px",
-                      padding: "4px",
-                    }}
-                  >
+                  <div className="formula-group-dashed small-radius">
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                     <RowSeparator
-                      icon={<CloseOutlined style={{ fontSize: "14px" }} />}
+                      icon={<CloseOutlined className="icon-14" />}
                     />
                     <IconBox icon={CopWhite} label={driverLabels.cop} />
                   </div>
                 </div>
                 {/* Denominator: Land * Volume */}
-                <div
-                  style={{
-                    height: "2px",
-                    background: "#00565b",
-                    width: "100%",
-                    margin: "12px 0",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "16px",
-                    padding: "4px",
-                  }}
-                >
+                <div className="fraction-line large-margin" />
+                <div className="formula-group-dashed small-radius">
                   <IconBox icon={LandIcon} label={driverLabels.land} />
-                  <RowSeparator
-                    icon={<CloseOutlined style={{ fontSize: "14px" }} />}
-                  />
+                  <RowSeparator icon={<CloseOutlined className="icon-14" />} />
                   <IconBox icon={VolumeWhite} label={driverLabels.volume} />
                 </div>
               </div>
@@ -386,58 +189,25 @@ const EquationVisualizer = ({
           );
         case "volume":
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ textAlign: "center" }}>
+            <div className="flex-center">
+              <div className="formula-center-wrapper">
                 {/* Numerator: ExpandedIncome + (Land * COP) */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "20px",
-                    padding: "8px",
-                  }}
-                >
+                <div className="formula-group-dashed">
                   <ExpandedIncome />
                   <RowSeparator icon={<PlusOutlined />} />
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      border: "1px dashed #d9d9d9",
-                      borderRadius: "16px",
-                      padding: "4px",
-                    }}
-                  >
+                  <div className="formula-group-dashed small-radius">
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                     <RowSeparator
-                      icon={<CloseOutlined style={{ fontSize: "14px" }} />}
+                      icon={<CloseOutlined className="icon-14" />}
                     />
                     <IconBox icon={CopWhite} label={driverLabels.cop} />
                   </div>
                 </div>
                 {/* Denominator: Land * Price */}
-                <div
-                  style={{
-                    height: "2px",
-                    background: "#00565b",
-                    width: "100%",
-                    margin: "12px 0",
-                  }}
-                />
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    border: "1px dashed #d9d9d9",
-                    borderRadius: "16px",
-                    padding: "4px",
-                  }}
-                >
+                <div className="fraction-line large-margin" />
+                <div className="formula-group-dashed small-radius">
                   <IconBox icon={LandIcon} label={driverLabels.land} />
-                  <RowSeparator
-                    icon={<CloseOutlined style={{ fontSize: "14px" }} />}
-                  />
+                  <RowSeparator icon={<CloseOutlined className="icon-14" />} />
                   <IconBox icon={PriceWhite} label={driverLabels.price} />
                 </div>
               </div>
@@ -445,34 +215,17 @@ const EquationVisualizer = ({
           );
         case "cop":
           return (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="flex-center">
               {/* (Price * Volume) - (ExpandedIncome / Land) */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  border: "1px dashed #d9d9d9",
-                  borderRadius: "16px",
-                  padding: "4px",
-                }}
-              >
+              <div className="formula-group-dashed small-radius">
                 <IconBox icon={PriceWhite} label={driverLabels.price} />
-                <RowSeparator
-                  icon={<CloseOutlined style={{ fontSize: "14px" }} />}
-                />
+                <RowSeparator icon={<CloseOutlined className="icon-14" />} />
                 <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
               <RowSeparator icon={<MinusOutlined />} />
-              <div style={{ textAlign: "center" }}>
+              <div className="formula-center-wrapper">
                 <ExpandedIncome />
-                <div
-                  style={{
-                    height: "2px",
-                    background: "#00565b",
-                    width: "100%",
-                    margin: "4px 0",
-                  }}
-                />
+                <div className="fraction-line" />
                 <IconBox icon={LandIcon} label={driverLabels.land} />
               </div>
             </div>
@@ -484,46 +237,18 @@ const EquationVisualizer = ({
   };
 
   return (
-    <div
-      className="equation-visualizer-graphic"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: "100%",
-        overflowX: "auto",
-        padding: "20px 0",
-        minHeight: "450px", // Increased for expanded formulas
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          margin: "0 auto",
-          padding: "0 20px",
-        }}
-      >
+    <div className="equation-visualizer-graphic">
+      <div className="equation-content-inner">
         {renderFormulaContent()}
 
         {/* Equals Section */}
         <RowSeparator
-          icon={
-            <div
-              style={{
-                fontSize: "40px",
-                fontWeight: "bold",
-                margin: "0 24px",
-                color: "#00565b",
-              }}
-            >
-              =
-            </div>
-          }
+          icon={<div className="equals-operator">=</div>}
+          color="#00565b"
         />
 
         {/* Result: Target Driver */}
-        <div style={{ textAlign: "center" }}>
+        <div className="formula-center-wrapper">
           <IconBox
             icon={driverIconsGreen[selectedDriver] || IncomeGreen}
             label={driverLabels[selectedDriver] || "Driver"}

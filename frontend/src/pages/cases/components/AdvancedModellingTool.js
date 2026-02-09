@@ -41,7 +41,7 @@ const InputRow = ({
     <Row align="middle" gutter={12} className="input-row-wrapper">
       <Col span={14}>
         <Space size={4} className="input-label-row">
-          <Text strong>{label}</Text>
+          <Text>{label}</Text>
           <QuestionCircleOutlined className="input-info-icon" />
         </Space>
       </Col>
@@ -183,7 +183,7 @@ const AdvancedModellingTool = () => {
       }
       return acc;
     }, {});
-  }, [flattenedQuestions, focusCommodityGroup, qidMap, currentCase]);
+  }, [flattenedQuestions, focusCommodityGroup, qidMap]);
 
   const [modelValues, setModelValues] = useState({
     price: 0,
@@ -629,10 +629,13 @@ const AdvancedModellingTool = () => {
 
       {/* Segment Selector */}
       <Col span={24}>
-        <SegmentSelector
-          selectedSegment={selectedSegmentId}
-          setSelectedSegment={setSelectedSegmentId}
-        />
+        <Space direction="vertical" size="small">
+          <Text>Select the segment for which you want to model.</Text>
+          <SegmentSelector
+            selectedSegment={selectedSegmentId}
+            setSelectedSegment={setSelectedSegmentId}
+          />
+        </Space>
       </Col>
 
       <Col span={24}>
@@ -712,18 +715,19 @@ const AdvancedModellingTool = () => {
                   </Text>
 
                   <div className="breakdown-chart-wrapper">
-                    {calculationResult.cost || calculationResult.profit ? (
-                      <div className="price-total-display">
-                        <Text strong>
-                          Price:{" "}
-                          {thousandFormatter(
-                            calculationResult.cost + calculationResult.profit,
-                            0
-                          )}{" "}
-                          {currentCase?.currency}
-                        </Text>
-                      </div>
-                    ) : null}
+                    <div className="price-total-display">
+                      <Text strong>
+                        Price:{" "}
+                        {calculationResult.cost || calculationResult.profit
+                          ? thousandFormatter(
+                              calculationResult.cost + calculationResult.profit,
+                              2
+                            ) +
+                            " " +
+                            currentCase?.currency
+                          : "-"}
+                      </Text>
+                    </div>
 
                     {/* Real Bar Chart Logic */}
                     {calculationResult.cost || calculationResult.profit ? (
@@ -742,7 +746,7 @@ const AdvancedModellingTool = () => {
                               style={{ width: `${costPerc}%` }}
                             >
                               <span className="segment-value">
-                                {thousandFormatter(calculationResult.cost, 0)}
+                                {thousandFormatter(calculationResult.cost, 2)}
                               </span>
                             </div>
                             <div
@@ -750,7 +754,7 @@ const AdvancedModellingTool = () => {
                               style={{ width: `${profitPerc}%` }}
                             >
                               <span className="segment-value">
-                                {thousandFormatter(calculationResult.profit, 0)}
+                                {thousandFormatter(calculationResult.profit, 2)}
                               </span>
                             </div>
                           </div>
