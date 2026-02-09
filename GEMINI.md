@@ -116,6 +116,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added driver unit display to the modelling results header for improved context.
     - Fixed linting warnings and optimized question lookup logic in the modelling interface.
     - Implemented comprehensive unit tests for modelling driver calculations.
+    - Integrated secondary and tertiary income as whole drivers in the Advanced Modelling Tool.
+    - Implemented robust lookup for secondary/tertiary commodity income aggregators.
+    - Updated target primary income calculation to account for secondary, tertiary, and diversified income.
+    - Refined UI layout by moving "Other Diversified Income" to the bottom and improved labels for clarity.
+    - Updated Equation Visualizer to display secondary and tertiary income components.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

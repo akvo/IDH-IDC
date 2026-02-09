@@ -98,6 +98,8 @@ const AdvancedModellingTool = () => {
     land: true,
     cop: true,
     odi: true,
+    secondary: true,
+    tertiary: true,
   });
 
   const [calculationResult, setCalculationResult] = useState({
@@ -111,6 +113,24 @@ const AdvancedModellingTool = () => {
   const focusCommodityGroup = useMemo(() => {
     const primaryGroup = incomeDataDrivers?.find((d) => d.type === "primary");
     return primaryGroup?.questionGroups?.[0] || {};
+  }, [incomeDataDrivers]);
+
+  const secondaryGroup = useMemo(() => {
+    const diversified = incomeDataDrivers?.find(
+      (d) => d.type === "diversified"
+    );
+    return diversified?.questionGroups?.find(
+      (qg) => qg.commodity_type === "secondary"
+    );
+  }, [incomeDataDrivers]);
+
+  const tertiaryGroup = useMemo(() => {
+    const diversified = incomeDataDrivers?.find(
+      (d) => d.type === "diversified"
+    );
+    return diversified?.questionGroups?.find(
+      (qg) => qg.commodity_type === "tertiary"
+    );
   }, [incomeDataDrivers]);
 
   const flattenedQuestions = useMemo(() => {
@@ -170,16 +190,67 @@ const AdvancedModellingTool = () => {
     cop: 0,
     land: 0,
     odi: 0,
+    secondary: 0,
+    tertiary: 0,
   });
 
   const getSegmentAnswer = useCallback(
     (scenario, field) => {
+      const qidAggregator = 1;
+
+      if (field === "secondary" || field === "tertiary") {
+        const group = field === "secondary" ? secondaryGroup : tertiaryGroup;
+        if (!group) {
+          return 0;
+        }
+        if (Array.isArray(segment?.answers)) {
+          return (
+            segment.answers.find(
+              (a) =>
+                a.name === scenario &&
+                a.caseCommodityId === group.id &&
+                (a.questionId === qidAggregator ||
+                  a.question?.question_type === "aggregator" ||
+                  !a.question?.parent)
+            )?.value || 0
+          );
+        }
+        return 0;
+      }
+
       if (field === "odi") {
-        return (
+        const totalDiversified =
           segment?.[`total_${scenario}_diversified_income`] ||
           segment?.[`total_${scenario}_other_income`] ||
-          0
-        );
+          0;
+
+        let secondaryVal = 0;
+        if (secondaryGroup && Array.isArray(segment?.answers)) {
+          secondaryVal =
+            segment.answers.find(
+              (a) =>
+                a.name === scenario &&
+                a.caseCommodityId === secondaryGroup.id &&
+                (a.questionId === qidAggregator ||
+                  a.question?.question_type === "aggregator" ||
+                  !a.question?.parent)
+            )?.value || 0;
+        }
+
+        let tertiaryVal = 0;
+        if (tertiaryGroup && Array.isArray(segment?.answers)) {
+          tertiaryVal =
+            segment.answers.find(
+              (a) =>
+                a.name === scenario &&
+                a.caseCommodityId === tertiaryGroup.id &&
+                (a.questionId === qidAggregator ||
+                  a.question?.question_type === "aggregator" ||
+                  !a.question?.parent)
+            )?.value || 0;
+        }
+
+        return totalDiversified - secondaryVal - tertiaryVal;
       }
 
       const qid = qidMap[field];
@@ -192,7 +263,7 @@ const AdvancedModellingTool = () => {
       }
       return 0;
     },
-    [segment, qidMap]
+    [segment, qidMap, secondaryGroup, tertiaryGroup]
   );
 
   // Sync initial values from segment data
@@ -204,6 +275,8 @@ const AdvancedModellingTool = () => {
         cop: getSegmentAnswer("feasible", "cop"),
         land: getSegmentAnswer("feasible", "land"),
         odi: getSegmentAnswer("feasible", "odi"),
+        secondary: getSegmentAnswer("feasible", "secondary"),
+        tertiary: getSegmentAnswer("feasible", "tertiary"),
       });
     }
   }, [segment, getSegmentAnswer]);
@@ -231,13 +304,25 @@ const AdvancedModellingTool = () => {
     const targetIncomeLevel = segment?.income_target_level || 0;
 
     let diversifiedEarnings = 0;
+    let secondaryEarnings = 0;
+    let tertiaryEarnings = 0;
+
     if (activeScenario === "model") {
       diversifiedEarnings = modelValues.odi || 0;
+      secondaryEarnings = modelValues.secondary || 0;
+      tertiaryEarnings = modelValues.tertiary || 0;
     } else {
       diversifiedEarnings = getSegmentAnswer(activeScenario, "odi");
+      secondaryEarnings = getSegmentAnswer(activeScenario, "secondary");
+      tertiaryEarnings = getSegmentAnswer(activeScenario, "tertiary");
     }
 
-    return targetIncomeLevel - diversifiedEarnings;
+    return (
+      targetIncomeLevel -
+      diversifiedEarnings -
+      secondaryEarnings -
+      tertiaryEarnings
+    );
   };
 
   const handleCalculate = () => {
@@ -392,8 +477,32 @@ const AdvancedModellingTool = () => {
           toggleLock={toggleLock}
           handleInputChange={handleInputChange}
         />
+        {secondaryGroup && (
+          <InputRow
+            label="Secondary Income"
+            field="secondary"
+            locked={lockedFields.secondary}
+            scenario={scenario}
+            isModel={isModel}
+            displayValue={getDisplayValue("secondary")}
+            toggleLock={toggleLock}
+            handleInputChange={handleInputChange}
+          />
+        )}
+        {tertiaryGroup && (
+          <InputRow
+            label="Tertiary Income"
+            field="tertiary"
+            locked={lockedFields.tertiary}
+            scenario={scenario}
+            isModel={isModel}
+            displayValue={getDisplayValue("tertiary")}
+            toggleLock={toggleLock}
+            handleInputChange={handleInputChange}
+          />
+        )}
         <InputRow
-          label="Diversified Income"
+          label="Other Diversified Income"
           field="odi"
           locked={lockedFields.odi}
           scenario={scenario}
@@ -474,6 +583,8 @@ const AdvancedModellingTool = () => {
                   land: true,
                   cop: true,
                   odi: true,
+                  secondary: true,
+                  tertiary: true,
                 });
               }}
             >
@@ -563,6 +674,8 @@ const AdvancedModellingTool = () => {
                   selectedDriver={selectedDriver}
                   labels={driverLabels}
                   category={commodityCategory}
+                  secondaryLabel={secondaryGroup?.commodity_name}
+                  tertiaryLabel={tertiaryGroup?.commodity_name}
                 />
               </Card>
 

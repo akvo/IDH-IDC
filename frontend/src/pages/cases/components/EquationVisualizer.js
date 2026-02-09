@@ -85,6 +85,8 @@ const EquationVisualizer = ({
   selectedDriver = "cop",
   labels = {},
   category = "Crop",
+  secondaryLabel = "Secondary commodity",
+  tertiaryLabel = "Tertiary commodity",
 }) => {
   const isAquaculture = category === "Aquaculture";
 
@@ -109,7 +111,7 @@ const EquationVisualizer = ({
     land: "#faad14",
   };
 
-  // Helper Segment: Expanded Target Income (Benchmark - Secondary - Diversified)
+  // Helper Segment: Expanded Target Income (Benchmark - Secondary - Tertiary - Diversified)
   const ExpandedIncome = () => (
     <div
       style={{
@@ -121,10 +123,20 @@ const EquationVisualizer = ({
       }}
     >
       <IconBox icon={BenchmarkIcon} label="Benchmark" />
+      {secondaryLabel && (
+        <>
+          <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+          <IconBox icon={IncomeWhite} label="Secondary Income" />
+        </>
+      )}
+      {tertiaryLabel && (
+        <>
+          <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
+          <IconBox icon={IncomeWhite} label="Tertiary Income" />
+        </>
+      )}
       <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
-      <IconBox icon={IncomeWhite} label="Secondary commodity" />
-      <RowSeparator icon={<MinusOutlined style={{ fontSize: "14px" }} />} />
-      <IconBox icon={DiversifiedIcon} label="Diversified income" />
+      <IconBox icon={DiversifiedIcon} label="Other Diversified Income" />
     </div>
   );
 
