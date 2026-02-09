@@ -1577,7 +1577,7 @@
       .bar-row {
         height: 40px;
         border-radius: 8px;
-        overflow: hidden;
+        overflow: visible; // Allow segments/labels to overflow if narrow
         display: flex;
         gap: 4px; // Small gap between segments as seen in mockup
 
@@ -1587,6 +1587,8 @@
           justify-content: center;
           transition: width 0.5s ease;
           border-radius: 8px; // Rounded segments
+          overflow: visible; // Allow value to overflow if segment is narrow
+          position: relative;
 
           &.cost {
             background: #ff6e1a; // Closer to mockup orange
@@ -1601,6 +1603,10 @@
             font-size: 16px;
             font-weight: bold;
             font-family: "RocGrotesk";
+            white-space: nowrap; // Prevent text wrapping
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5); // Add shadow for better legibility when overflowing
           }
         }
       }

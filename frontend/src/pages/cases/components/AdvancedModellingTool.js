@@ -747,24 +747,17 @@ const AdvancedModellingTool = () => {
                               className="bar-segment cost"
                               style={{ width: `${costPerc}%` }}
                             >
-                              {costPerc > 10 && (
-                                <span className="segment-value">
-                                  {thousandFormatter(calculationResult.cost, 2)}
-                                </span>
-                              )}
+                              <span className="segment-value">
+                                {thousandFormatter(calculationResult.cost, 2)}
+                              </span>
                             </div>
                             <div
                               className="bar-segment profit"
                               style={{ width: `${profitPerc}%` }}
                             >
-                              {profitPerc > 10 && (
-                                <span className="segment-value">
-                                  {thousandFormatter(
-                                    calculationResult.profit,
-                                    2
-                                  )}
-                                </span>
-                              )}
+                              <span className="segment-value">
+                                {thousandFormatter(calculationResult.profit, 2)}
+                              </span>
                             </div>
                           </div>
                         );
