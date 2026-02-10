@@ -24,10 +24,9 @@ import { selectProps, flatten } from "../../../lib";
 import SegmentSelector from "./SegmentSelector";
 import { commodities } from "../../../store/static";
 import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg";
+import { isEqual } from "lodash";
 
 const { Text, Title, Paragraph } = Typography;
-
-// TODO :: Check if the Save functionality already saved the modeling value
 
 const InputRow = ({
   label,
@@ -83,7 +82,14 @@ const AdvancedModellingTool = () => {
   );
   const currentCase = CurrentCaseState.useState((s) => s);
 
-  const [selectedSegmentId, setSelectedSegmentId] = useState(null);
+  // Initialize state from global store if available
+  const advancedModelingConfig = CaseVisualState.useState(
+    (s) => s.scenarioModeling?.config?.advancedModeling
+  );
+
+  const [selectedSegmentId, setSelectedSegmentId] = useState(
+    advancedModelingConfig?.selectedSegmentId || null
+  );
 
   // Focus on selected segment
   const segment = useMemo(() => {
@@ -93,24 +99,179 @@ const AdvancedModellingTool = () => {
     return dashboardData?.find((d) => d.id === selectedSegmentId) || {};
   }, [dashboardData, selectedSegmentId]);
 
-  const [selectedDriver, setSelectedDriver] = useState("cop");
-  const [activeScenario, setActiveScenario] = useState("model");
-  const [lockedFields, setLockedFields] = useState({
-    price: true,
-    volume: true,
-    land: true,
-    cop: true,
-    odi: true,
-    secondary: true,
-    tertiary: true,
-  });
+  const [selectedDriver, setSelectedDriver] = useState(
+    advancedModelingConfig?.selectedDriver || "cop"
+  );
 
-  const [calculationResult, setCalculationResult] = useState({
-    value: 0,
-    change: 0,
-    cost: 0,
-    profit: 0,
-  });
+  // Helper to get initial data for the current segment
+  const getInitialSegmentData = () => {
+    const defaultData = {
+      activeScenario: "model",
+      lockedFields: {
+        price: true,
+        volume: true,
+        land: true,
+        cop: true,
+        odi: true,
+        secondary: true,
+        tertiary: true,
+      },
+      modelValues: {
+        price: 0,
+        volume: 0,
+        cop: 0,
+        land: 0,
+        odi: 0,
+        secondary: 0,
+        tertiary: 0,
+      },
+      calculationResult: {
+        value: 0,
+        change: 0,
+        cost: 0,
+        profit: 0,
+      },
+    };
+
+    if (
+      selectedSegmentId &&
+      advancedModelingConfig?.segmentData?.[selectedSegmentId]
+    ) {
+      return {
+        ...defaultData,
+        ...advancedModelingConfig.segmentData[selectedSegmentId],
+      };
+    }
+    return defaultData;
+  };
+
+  const initialData = getInitialSegmentData();
+
+  const [activeScenario, setActiveScenario] = useState(
+    initialData.activeScenario
+  );
+  const [lockedFields, setLockedFields] = useState(initialData.lockedFields);
+  const [calculationResult, setCalculationResult] = useState(
+    initialData.calculationResult
+  );
+  const [modelValues, setModelValues] = useState(initialData.modelValues);
+
+  // Sync state to global store (Local -> Global)
+  useEffect(() => {
+    const currentSegmentData = {
+      activeScenario,
+      lockedFields,
+      modelValues,
+      calculationResult,
+    };
+
+    CaseVisualState.update((s) => {
+      const prevConfig = s.scenarioModeling?.config?.advancedModeling;
+      const prevSegmentData =
+        prevConfig?.segmentData?.[selectedSegmentId] || {};
+
+      // Check if root config changed (driver/segment)
+      const rootChanged =
+        prevConfig?.selectedSegmentId !== selectedSegmentId ||
+        prevConfig?.selectedDriver !== selectedDriver;
+
+      // Check if segment data changed
+      const segmentChanged = !isEqual(prevSegmentData, currentSegmentData);
+
+      if (rootChanged || segmentChanged) {
+        return {
+          ...s,
+          scenarioModeling: {
+            ...s.scenarioModeling,
+            config: {
+              ...s.scenarioModeling.config,
+              advancedModeling: {
+                selectedSegmentId,
+                selectedDriver,
+                segmentData: {
+                  ...prevConfig?.segmentData,
+                  [selectedSegmentId]: currentSegmentData,
+                },
+              },
+            },
+          },
+        };
+      }
+      return s;
+    });
+  }, [
+    selectedSegmentId,
+    selectedDriver,
+    activeScenario,
+    lockedFields,
+    modelValues,
+    calculationResult,
+  ]);
+
+  // Sync global store to local state (Global -> Local)
+  useEffect(() => {
+    if (advancedModelingConfig) {
+      // 1. Check Root Config (Segment/Driver)
+      if (
+        advancedModelingConfig.selectedSegmentId &&
+        advancedModelingConfig.selectedSegmentId !== selectedSegmentId
+      ) {
+        setSelectedSegmentId(advancedModelingConfig.selectedSegmentId);
+        // Note: Changing selectedSegmentId will trigger the other effect, but we should probably load data here too?
+        // Actually, if we change ID here, the next render will handle data loading if we wire it right.
+        // But let's look up data now for atomicity.
+        const segmentData =
+          advancedModelingConfig.segmentData?.[
+            advancedModelingConfig.selectedSegmentId
+          ];
+        if (segmentData) {
+          setActiveScenario(segmentData.activeScenario || "model");
+          setLockedFields(segmentData.lockedFields || {});
+          setModelValues(segmentData.modelValues || {});
+          setCalculationResult(segmentData.calculationResult || {});
+        }
+      }
+
+      if (
+        advancedModelingConfig.selectedDriver &&
+        advancedModelingConfig.selectedDriver !== selectedDriver
+      ) {
+        setSelectedDriver(advancedModelingConfig.selectedDriver);
+      }
+
+      // 2. Check Segment Data (for current segment)
+      if (selectedSegmentId) {
+        const storedData =
+          advancedModelingConfig.segmentData?.[selectedSegmentId];
+        if (storedData) {
+          if (
+            storedData.activeScenario &&
+            storedData.activeScenario !== activeScenario
+          ) {
+            setActiveScenario(storedData.activeScenario);
+          }
+          if (
+            storedData.lockedFields &&
+            !isEqual(storedData.lockedFields, lockedFields)
+          ) {
+            setLockedFields(storedData.lockedFields);
+          }
+          if (
+            storedData.modelValues &&
+            !isEqual(storedData.modelValues, modelValues)
+          ) {
+            setModelValues(storedData.modelValues);
+          }
+          if (
+            storedData.calculationResult &&
+            !isEqual(storedData.calculationResult, calculationResult)
+          ) {
+            setCalculationResult(storedData.calculationResult);
+          }
+        }
+      }
+    }
+  }, [advancedModelingConfig]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Find primary commodity QIDs
   const focusCommodityGroup = useMemo(() => {
@@ -187,18 +348,8 @@ const AdvancedModellingTool = () => {
     }, {});
   }, [flattenedQuestions, focusCommodityGroup, qidMap]);
 
-  const [modelValues, setModelValues] = useState({
-    price: 0,
-    volume: 0,
-    cop: 0,
-    land: 0,
-    odi: 0,
-    secondary: 0,
-    tertiary: 0,
-  });
-
   const getSegmentAnswer = useCallback(
-    (scenario, field) => {
+    (scenario, field, targetSegment = segment) => {
       const qidAggregator = 1;
 
       if (field === "secondary" || field === "tertiary") {
@@ -206,9 +357,9 @@ const AdvancedModellingTool = () => {
         if (!group) {
           return 0;
         }
-        if (Array.isArray(segment?.answers)) {
+        if (Array.isArray(targetSegment?.answers)) {
           return (
-            segment.answers.find(
+            targetSegment.answers.find(
               (a) =>
                 a.name === scenario &&
                 a.caseCommodityId === group.id &&
@@ -223,14 +374,14 @@ const AdvancedModellingTool = () => {
 
       if (field === "odi") {
         const totalDiversified =
-          segment?.[`total_${scenario}_diversified_income`] ||
-          segment?.[`total_${scenario}_other_income`] ||
+          targetSegment?.[`total_${scenario}_diversified_income`] ||
+          targetSegment?.[`total_${scenario}_other_income`] ||
           0;
 
         let secondaryVal = 0;
-        if (secondaryGroup && Array.isArray(segment?.answers)) {
+        if (secondaryGroup && Array.isArray(targetSegment?.answers)) {
           secondaryVal =
-            segment.answers.find(
+            targetSegment.answers.find(
               (a) =>
                 a.name === scenario &&
                 a.caseCommodityId === secondaryGroup.id &&
@@ -241,9 +392,9 @@ const AdvancedModellingTool = () => {
         }
 
         let tertiaryVal = 0;
-        if (tertiaryGroup && Array.isArray(segment?.answers)) {
+        if (tertiaryGroup && Array.isArray(targetSegment?.answers)) {
           tertiaryVal =
-            segment.answers.find(
+            targetSegment.answers.find(
               (a) =>
                 a.name === scenario &&
                 a.caseCommodityId === tertiaryGroup.id &&
@@ -257,9 +408,9 @@ const AdvancedModellingTool = () => {
       }
 
       const qid = qidMap[field];
-      if (Array.isArray(segment?.answers)) {
+      if (Array.isArray(targetSegment?.answers)) {
         return (
-          segment.answers.find(
+          targetSegment.answers.find(
             (a) => a.name === scenario && a.questionId === qid
           )?.value || 0
         );
@@ -271,7 +422,17 @@ const AdvancedModellingTool = () => {
 
   // Sync initial values from segment data
   useEffect(() => {
-    if (segment) {
+    // Only sync if modelValues are empty/zero (initial load) and we have segment data
+    // OR if selectedSegment changes and we want to reset (but here we want persistence?)
+    // Actually, if we are loading saved data, we might NOT want to overwrite with segment defaults immediately
+    // unless the saved data is empty.
+
+    // Let's rely on the fact that if savedConfig exists, we used that.
+    // If not, modelValues is all 0s.
+    // So if modelValues is all 0s, populate from feasible.
+    const isModelValuesEmpty = Object.values(modelValues).every((v) => v === 0);
+
+    if (segment && isModelValuesEmpty) {
       setModelValues({
         price: getSegmentAnswer("feasible", "price"),
         volume: getSegmentAnswer("feasible", "volume"),
@@ -282,7 +443,11 @@ const AdvancedModellingTool = () => {
         tertiary: getSegmentAnswer("feasible", "tertiary"),
       });
     }
-  }, [segment, getSegmentAnswer]);
+  }, [segment, getSegmentAnswer]); // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Removed modelValues from dependency to avoid infinite loop or overwriting user changes?
+  // Added isModelValuesEmpty check to prevent overwriting user input on re-renders if segment changes?
+  // Actually, if segment changes, we might want to reload feasible values if the user hasn't started modeling for THAT segment?
+  // For now, let's keep it simple: if all 0, load feasible.
 
   const toggleLock = (field) => {
     setLockedFields((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -300,7 +465,90 @@ const AdvancedModellingTool = () => {
       cost: 0,
       profit: 0,
     });
-  }, [selectedDriver, selectedSegmentId]);
+  }, [selectedDriver]);
+
+  const handleSegmentChange = (newSegmentId) => {
+    // Check if we already have data for this segment in the store
+    const storedData = advancedModelingConfig?.segmentData?.[newSegmentId];
+
+    if (storedData) {
+      // Just switch the segment ID in the store
+      // Effect 2 will handle loading the data into local state
+      CaseVisualState.update((s) => ({
+        ...s,
+        scenarioModeling: {
+          ...s.scenarioModeling,
+          config: {
+            ...s.scenarioModeling.config,
+            advancedModeling: {
+              ...s.scenarioModeling.config.advancedModeling,
+              selectedSegmentId: newSegmentId,
+            },
+          },
+        },
+      }));
+    } else {
+      // Generate defaults for the new segment
+      const newSegment =
+        dashboardData?.find((d) => d.id === newSegmentId) || {};
+
+      const defaultModelValues = {
+        price: getSegmentAnswer("feasible", "price", newSegment),
+        volume: getSegmentAnswer("feasible", "volume", newSegment),
+        cop: getSegmentAnswer("feasible", "cop", newSegment),
+        land: getSegmentAnswer("feasible", "land", newSegment),
+        odi: getSegmentAnswer("feasible", "odi", newSegment),
+        secondary: getSegmentAnswer("feasible", "secondary", newSegment),
+        tertiary: getSegmentAnswer("feasible", "tertiary", newSegment),
+      };
+
+      const defaultCalculationResult = {
+        value: 0,
+        change: 0,
+        cost: 0,
+        profit: 0,
+      };
+
+      const defaultLockedFields = {
+        price: true,
+        volume: true,
+        land: true,
+        cop: true,
+        odi: true,
+        secondary: true,
+        tertiary: true,
+      };
+
+      const defaultActiveScenario = "model";
+
+      // Update store with new ID AND new segment data
+      CaseVisualState.update((s) => {
+        const prevConfig = s.scenarioModeling?.config?.advancedModeling;
+        return {
+          ...s,
+          scenarioModeling: {
+            ...s.scenarioModeling,
+            config: {
+              ...s.scenarioModeling.config,
+              advancedModeling: {
+                ...prevConfig,
+                selectedSegmentId: newSegmentId,
+                segmentData: {
+                  ...prevConfig?.segmentData,
+                  [newSegmentId]: {
+                    modelValues: defaultModelValues,
+                    calculationResult: defaultCalculationResult,
+                    lockedFields: defaultLockedFields,
+                    activeScenario: defaultActiveScenario,
+                  },
+                },
+              },
+            },
+          },
+        };
+      });
+    }
+  };
 
   const getTargetIncome = () => {
     // benchmark income for the segment
@@ -635,7 +883,7 @@ const AdvancedModellingTool = () => {
           <Text>Select the segment for which you want to model.</Text>
           <SegmentSelector
             selectedSegment={selectedSegmentId}
-            setSelectedSegment={setSelectedSegmentId}
+            setSelectedSegment={handleSegmentChange}
           />
         </Space>
       </Col>
