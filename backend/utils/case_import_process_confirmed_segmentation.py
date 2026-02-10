@@ -214,7 +214,9 @@ def process_confirmed_segmentation(
                 raise HTTPException(
                     status_code=400,
                     detail=(
-                        f"Case commodity not found for level '{level}' (mapping id: {raw_id})"  # noqa
+                        f"Commodity level '{level}' found in data mapping "
+                        f"but not defined in Case Details. "
+                        f"Please add '{level}' commodity first."
                     ),
                 )
 

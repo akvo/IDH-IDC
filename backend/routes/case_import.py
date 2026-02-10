@@ -150,13 +150,22 @@ def segmentation_preview(
     content = load_import_file(case_import.file_path)
     df = load_data_dataframe_from_bytes(content)
 
-    variable = payload.segmentation_variable.lower()
+    variable_input = payload.segmentation_variable.strip()
     var_type = payload.variable_type.lower()
 
-    if variable not in df.columns:
+    # Case-insensitive column search
+    variable = next(
+        (c for c in df.columns if c.strip().lower() == variable_input.lower()),
+        None,
+    )
+
+    if not variable:
         raise HTTPException(
             status_code=400,
-            detail="Segmentation variable not found in data sheet",
+            detail=(
+                f"Segmentation variable '{variable_input}' "
+                "not found in data sheet"
+            ),
         )
 
     if var_type == "categorical":
@@ -255,13 +264,22 @@ def recalculate_segmentation(
     content = load_import_file(case_import.file_path)
     df = load_data_dataframe_from_bytes(content)
 
-    variable = payload.segmentation_variable.lower()
+    variable_input = payload.segmentation_variable.strip()
     var_type = payload.variable_type.lower()
 
-    if variable not in df.columns:
+    # Case-insensitive column search
+    variable = next(
+        (c for c in df.columns if c.strip().lower() == variable_input.lower()),
+        None,
+    )
+
+    if not variable:
         raise HTTPException(
             status_code=400,
-            detail="Segmentation variable not found in data sheet",
+            detail=(
+                f"Segmentation variable '{variable_input}' "
+                "not found in data sheet"
+            ),
         )
 
     # -------- CATEGORICAL --------

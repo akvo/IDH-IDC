@@ -560,9 +560,13 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
             })
             .catch((e) => {
               console.error(e);
+              const detail =
+                e?.response?.data?.detail ||
+                "Failed to generate segment values from import data.";
               messageApi.open({
                 type: "error",
-                content: "Failed to generate segment values from import data.",
+                content: detail,
+                duration: 5,
               });
             });
         } else {

@@ -33,7 +33,7 @@ def get_case_import(
     if not obj:
         raise HTTPException(
             status_code=404,
-            detail="Import session not found for this case",
+            detail=f"Import session {import_id} not found",
         )
 
     return obj

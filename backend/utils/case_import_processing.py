@@ -231,12 +231,21 @@ def recalculate_numerical_segments(
 
     for idx, seg in enumerate(sorted_segments):
         # Use per-segment variable if specified, otherwise fallback to default
-        seg_var = (seg.get("segmentation_variable") or column).strip().lower()
+        seg_var_input = (
+            (seg.get("segmentation_variable") or column).strip().lower()
+        )
         seg_type = (seg.get("variable_type") or "numerical").lower()
 
-        if seg_var not in df.columns:
+        # Resolve actual column name case-insensitively
+        seg_var = next(
+            (c for c in df.columns if c.strip().lower() == seg_var_input),
+            None,
+        )
+
+        if not seg_var:
             raise HTTPException(
-                400, f"Segmentation variable '{seg_var}' not found in data"
+                400,
+                f"Segmentation variable '{seg_var_input}' not found in data",
             )
 
         series = df[seg_var].dropna().to_numpy()
