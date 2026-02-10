@@ -23,7 +23,7 @@ def load_import_file(path: str) -> bytes:
     if not os.path.exists(path):
         raise HTTPException(
             status_code=404,
-            detail="Import file not found or expired",
+            detail=f"Import file {path} not found or expired",
         )
 
     with open(path, "rb") as f:
