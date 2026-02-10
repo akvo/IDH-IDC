@@ -73,6 +73,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Fixed "Number of Segments" synchronization bug: ensured the input field doesn't reset while typing by only syncing when the actual segment count changes (e.g., via deletion).
     - Fixed field interactivity: correctly disabled "Number of farmers" for generated categorical/numerical segments while keeping it enabled for manual ones.
     - Fixed manual segment field visibility: ensured adding a manual segment doesn't trigger global count synchronization or overwrite manual fields with global variables.
+    - Refined segment limit warnings: implemented three distinct levels (numerical data insufficiency, categorical variable overflow, and total limit overflow) to provide precise feedback while enforcing the 5-segment limit.
 - **Single Driver Change Refinement (Issue #696)**:
     - Extracted complex calculation logic into `incomeCalculations.js` utility.
     - Fixed identification of calculation bugs and corrected parenthesis errors in secondary driver formulas.
