@@ -1421,7 +1421,7 @@
           align-items: center;
           padding: 8px 16px;
           border-radius: 40px;
-          min-width: 200px;
+          min-width: 175px;
           gap: 12px;
 
           &.feasible {
@@ -1641,15 +1641,33 @@
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    // overflow-x: auto;
+    overflow-x: auto;
     padding: 20px 0;
     min-height: 242px;
+
+    /* Custom scrollbar for better UX */
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
 
     .equation-content-inner {
       display: flex;
       align-items: center;
       margin: 0 auto;
       padding: 0 20px;
+      white-space: nowrap;
+      min-width: min-content;
     }
 
     .icon-box-container {
@@ -1773,12 +1791,81 @@
     .icon-14 {
       font-size: 14px;
     }
+
+    // Responsive scaling for 1366px and below (covers 1280x720)
+    @media (max-width: 1366px) {
+      padding: 10px 0;
+      min-height: 180px;
+
+      .icon-box-container {
+        margin: 0 4px;
+
+        .icon-circle {
+          width: 32px;
+          height: 32px;
+          font-size: 16px;
+          margin-bottom: 4px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+          img {
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        .icon-label {
+          font-size: 10px;
+          padding: 1px 6px;
+          border-radius: 10px;
+        }
+      }
+
+      .row-separator {
+        font-size: 14px;
+        padding: 0 2px;
+        height: 32px;
+      }
+
+      .expanded-income-container {
+        padding: 4px 8px;
+        border-radius: 16px;
+      }
+
+      .formula-group-dashed {
+        padding: 6px;
+        border-radius: 16px;
+
+        &.small-radius {
+          border-radius: 12px;
+          padding: 3px;
+        }
+      }
+
+      .fraction-line {
+        min-width: 45px;
+        margin: 3px 0;
+
+        &.large-margin {
+          margin: 8px 0;
+        }
+      }
+
+      .equals-operator {
+        font-size: 28px;
+        margin: 0 14px;
+      }
+
+      .text-number-large {
+        font-size: 16px;
+        padding: 0 6px;
+      }
+    }
   }
 
   .equation-legend {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-between;
     gap: 16px;
     margin-top: 10px;
     padding: 10px 20px;
@@ -1788,7 +1875,6 @@
     .legend-item {
       display: flex;
       align-items: center;
-      font-size: 12px;
       color: #595959;
 
       .legend-abbreviation {
@@ -1798,10 +1884,26 @@
         padding: 1px 6px;
         border-radius: 8px;
         margin-right: 4px;
+        font-size: 13px !important;
       }
 
       .legend-label {
         font-weight: normal;
+        font-size: 13px !important;
+      }
+    }
+
+    // Responsive scaling for 1366px and below (covers 1280x720)
+    @media (max-width: 1366px) {
+      gap: 10px;
+      padding: 8px 10px;
+      margin-top: 6px;
+
+      .legend-item {
+        .legend-abbreviation {
+          padding: 1px 4px;
+          border-radius: 6px;
+        }
       }
     }
   }

@@ -271,7 +271,8 @@ const AdvancedModellingTool = () => {
         }
       }
     }
-  }, [advancedModelingConfig]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advancedModelingConfig]);
 
   // Find primary commodity QIDs
   const focusCommodityGroup = useMemo(() => {
@@ -443,7 +444,8 @@ const AdvancedModellingTool = () => {
         tertiary: getSegmentAnswer("feasible", "tertiary"),
       });
     }
-  }, [segment, getSegmentAnswer]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segment, getSegmentAnswer]);
   // Removed modelValues from dependency to avoid infinite loop or overwriting user changes?
   // Added isModelValuesEmpty check to prevent overwriting user input on re-renders if segment changes?
   // Actually, if segment changes, we might want to reload feasible values if the user hasn't started modeling for THAT segment?
