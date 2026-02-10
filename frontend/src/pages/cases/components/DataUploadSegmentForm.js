@@ -12,6 +12,7 @@ import {
   Spin,
   Radio,
   Select,
+  Alert,
 } from "antd";
 import {
   DeleteOutlined,
@@ -35,6 +36,7 @@ const SegmentGenerator = ({
   const [segmentationVariable, setSegmentationVariable] = useState(null);
   const [numberOfSegments, setNumberOfSegments] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const variableOptions = useMemo(() => {
     const dataColumns = uploadResult?.columns || {};
@@ -74,6 +76,7 @@ const SegmentGenerator = ({
 
     if (allowFetch.every((val) => val) && uploadResult?.import_id) {
       setLoading(true);
+      setError(null);
       const payload = {
         import_id: uploadResult.import_id,
         variable_type: variableType,
@@ -93,6 +96,11 @@ const SegmentGenerator = ({
         })
         .catch((e) => {
           console.error("Error fetching preview:", e);
+          setError(
+            e?.response?.data?.detail ||
+              e?.message ||
+              "An error occurred while fetching the segmentation preview."
+          );
         })
         .finally(() => {
           setLoading(false);
@@ -180,6 +188,11 @@ const SegmentGenerator = ({
         {loading && (
           <Col span={24} style={{ textAlign: "center", marginTop: 10 }}>
             <Spin size="small" /> Generating segments...
+          </Col>
+        )}
+        {error && !loading && (
+          <Col span={24} style={{ marginTop: 8 }}>
+            <Alert message={error} type="error" />
           </Col>
         )}
       </Row>

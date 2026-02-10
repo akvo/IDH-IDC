@@ -145,6 +145,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Adjusted Case Sidebar layout and scrolling behavior for better usability on 1280x720 screens.
     - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency.
 
+- **Segmentation Preview Error Handling (Issue #717)**:
+    - Implemented error handling for segmentation preview API calls to prevent silent failures.
+    - Added state management to track and display API errors in both `SegmentConfigurationForm` and `DataUploadSegmentForm` (SegmentGenerator).
+    - Integrated basic Ant Design `Alert` components (no icon, no title) for compact, inline error messaging.
+    - Verified implementation with frontend linting and ensured no unused imports.
+
 ## Codebase Structure
 - `backend/`: FastAPI application code.
     - `routes/`: API route definitions.

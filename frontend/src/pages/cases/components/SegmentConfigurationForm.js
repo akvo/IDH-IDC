@@ -23,6 +23,7 @@ const SegmentConfigurationForm = ({
   const form = Form.useFormInstance();
 
   const [loadingPreview, setLoadingPreview] = useState(false);
+  const [errorPreview, setErrorPreview] = useState(null);
   const [segmentationPreviews, setSegmentationPreviews] = useState(null);
   const [segmentFieldsLoading, setSegmentFieldsLoading] = useState({
     index_1: false,
@@ -78,6 +79,7 @@ const SegmentConfigurationForm = ({
 
       // fetch segment preview endpoint here
       setLoadingPreview(true);
+      setErrorPreview(null);
       api
         .post("/case-import/segmentation-preview", payload)
         .then((res) => {
@@ -87,6 +89,11 @@ const SegmentConfigurationForm = ({
         })
         .catch((e) => {
           console.error("Error fetching segmentation preview:", e);
+          setErrorPreview(
+            e?.response?.data?.detail ||
+              e?.message ||
+              "An error occurred while fetching the segmentation preview."
+          );
         })
         .finally(() => {
           setLoadingPreview(false);
@@ -368,6 +375,11 @@ const SegmentConfigurationForm = ({
             <Spin />
             <div>Loading segmentation preview...</div>
           </Space>
+        </Col>
+      )}
+      {errorPreview && !loadingPreview && (
+        <Col span={24} style={{ marginTop: 8 }}>
+          <Alert message={errorPreview} type="error" />
         </Col>
       )}
       {segmentationPreviews?.segments?.length > 0 && !loadingPreview && (
