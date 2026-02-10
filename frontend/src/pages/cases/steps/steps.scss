@@ -322,9 +322,8 @@
 
 #understand-income-gap,
 #assess-impact-mitigation-strategies,
-#closing-gap {
-  margin-bottom: 100px;
-
+#closing-gap,
+.advanced-modelling-tool-container {
   .card-section-wrapper {
     border-radius: 20px;
     background: #01625f;
@@ -1301,3 +1300,633 @@
   }
 }
 // EOL Custom TreeSelect style
+
+.advanced-modelling-tool-container {
+  width: 100%;
+
+  .tool-description {
+    font-size: 14px;
+    color: #000;
+  }
+
+  .scenario-tabs-custom {
+    &.ant-tabs-card {
+      > .ant-tabs-nav {
+        margin: 0;
+
+        &::before {
+          display: none;
+        }
+        .ant-tabs-nav-wrap {
+          margin-bottom: 0px;
+        }
+        .ant-tabs-nav-list {
+          width: 100%;
+          display: flex;
+          gap: 2px;
+        }
+        .ant-tabs-tab {
+          flex: 1;
+          justify-content: center;
+          border-radius: 12px 12px 0 0 !important;
+          background: #fff;
+          border: 1px solid #f0f0f0;
+          transition: all 0.3s;
+          height: 40px;
+          font-family: "TabletGothic";
+
+          &.ant-tabs-tab-active {
+            background: $primary-color !important;
+            border-color: $primary-color !important;
+            .ant-tabs-tab-btn {
+              color: #fff !important;
+            }
+          }
+
+          &:not(.ant-tabs-tab-active) {
+            .ant-tabs-tab-btn {
+              color: #000 !important;
+            }
+          }
+        }
+      }
+
+      > .ant-tabs-content-holder {
+        background: #fff;
+        border: 1px solid #f0f0f0;
+        border-radius: 0 0 12px 12px;
+        padding: 24px;
+        margin-top: -1px;
+        position: relative;
+        z-index: 1;
+
+        .modelling-inputs-content {
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  .input-row-wrapper {
+    margin-bottom: 16px;
+
+    .input-label-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .input-info-icon {
+      color: #bfbfbf;
+      font-size: 12px;
+    }
+
+    .lock-icon {
+      color: #bfbfbf;
+    }
+
+    .unlock-icon {
+      color: #1890ff;
+    }
+
+    .modelling-input {
+      text-align: right;
+      border-radius: 8px;
+
+      &.ant-input-disabled {
+        background: #f5f5f5 !important;
+        color: rgba(0, 0, 0, 0.65);
+      }
+    }
+  }
+
+  .modelling-result-row {
+    margin-top: 16px;
+
+    .label-text {
+      font-size: 14px;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .calculation-result-container {
+      margin-top: 12px;
+
+      .result-display-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .result-value-box {
+          display: flex;
+          align-items: center;
+          padding: 8px 16px;
+          border-radius: 40px;
+          min-width: 175px;
+          gap: 12px;
+
+          &.feasible {
+            background: #5bdd91;
+          }
+          &.not-feasible {
+            background: #ff8f4e;
+          }
+
+          .segment-initial {
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5bdd91;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          &.not-feasible .segment-initial {
+            color: #ff8f4e;
+          }
+
+          .value-text {
+            font-family: "RocGrotesk";
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+          }
+        }
+
+        .feasibility-status {
+          .status-text {
+            font-family: "TabletGothic";
+            font-size: 16px;
+            color: #000;
+            font-weight: bold;
+          }
+        }
+      }
+
+      .empty-result-placeholder {
+        padding: 7px 10px;
+        background: #f5f5f5;
+        border-radius: 12px;
+        text-align: center;
+      }
+    }
+  }
+
+  .footer-button-row {
+    margin-top: 24px;
+
+    .button-clear {
+      font-weight: bold;
+    }
+
+    .button-calculate {
+      background: $primary-color;
+      border-color: $primary-color;
+      font-weight: bold;
+    }
+  }
+
+  .panel-space {
+    width: 100%;
+    height: 100%;
+    display: flex !important;
+    flex-direction: column;
+
+    & > div:last-child {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .driver-select-label {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .modelling-divider {
+    margin: 16px 0;
+  }
+
+  .visualizer-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+    .ant-card-body {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px 20px;
+      overflow: hidden;
+    }
+  }
+
+  .breakdown-card {
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .ant-card-body {
+      padding: 10px 24px 20px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+
+      & > div:last-child {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+    }
+
+    .breakdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      .breakdown-title {
+        color: $primary-color !important;
+        margin-bottom: 0 !important;
+        font-family: "RocGrotesk";
+        font-weight: bold;
+        font-size: 24px;
+      }
+
+      .breakdown-icon-wrapper {
+        width: 36px;
+        height: 36px;
+        background: $primary-color;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .breakdown-icon {
+          width: 20px;
+          height: 20px;
+          object-fit: contain;
+        }
+      }
+    }
+
+    .breakdown-description {
+      color: #000;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .breakdown-chart-wrapper {
+      margin-top: 24px;
+      position: relative;
+
+      .price-total-display {
+        margin-bottom: 12px;
+        font-family: "RocGrotesk";
+        font-size: 18px;
+        color: #000;
+        font-weight: 700;
+      }
+
+      .bar-row {
+        height: 40px;
+        border-radius: 8px;
+        overflow: visible; // Allow segments/labels to overflow if narrow
+        display: flex;
+        gap: 4px; // Small gap between segments as seen in mockup
+
+        .bar-segment {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: width 0.5s ease;
+          border-radius: 8px; // Rounded segments
+          overflow: visible; // Allow value to overflow if segment is narrow
+          position: relative;
+
+          &.cost {
+            background: #ff6e1a; // Closer to mockup orange
+          }
+
+          &.profit {
+            background: $primary-color;
+          }
+
+          .segment-value {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: "RocGrotesk";
+            white-space: nowrap; // Prevent text wrapping
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5); // Add shadow for better legibility when overflowing
+          }
+        }
+      }
+
+      .empty-bar-placeholder {
+        height: 40px;
+        background: #f5f5f5;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bar-labels-row {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+
+        .label-text {
+          font-weight: bold;
+          font-family: "TabletGothic";
+          font-size: 14px;
+          color: #454545;
+        }
+      }
+    }
+  }
+
+  // Equation Visualizer Refactored Styles
+  .equation-visualizer-graphic {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    overflow-x: auto;
+    padding: 20px 0;
+    min-height: 242px;
+
+    /* Custom scrollbar for better UX */
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    .equation-content-inner {
+      display: flex;
+      align-items: center;
+      margin: 0 auto;
+      padding: 0 20px;
+      white-space: nowrap;
+      min-width: min-content;
+    }
+
+    .icon-box-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 8px;
+      vertical-align: middle;
+
+      .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 20px;
+        margin-bottom: 6px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+
+        img {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+        }
+      }
+
+      .icon-label {
+        background: #ebf2f2;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        color: #005a5b;
+        font-weight: bold;
+        white-space: nowrap;
+      }
+    }
+
+    .row-separator {
+      font-size: 18px;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+    }
+
+    .expanded-income-container {
+      display: flex;
+      align-items: center;
+      border: 1px dashed #d9d9d9;
+      border-radius: 20px;
+      padding: 4px 12px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    .formula-group-dashed {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #d9d9d9;
+      border-radius: 20px;
+      padding: 8px;
+      width: fit-content;
+      margin: 0 auto;
+
+      &.small-radius {
+        border-radius: 16px;
+        padding: 4px;
+      }
+    }
+
+    .fraction-part {
+      text-align: center;
+      flex: 1;
+    }
+
+    .fraction-line {
+      height: 2px;
+      background: #00565b;
+      width: 100%;
+      min-width: 60px;
+      margin: 4px 0;
+
+      &.large-margin {
+        margin: 12px 0;
+      }
+    }
+
+    .equals-operator {
+      font-size: 40px;
+      font-weight: bold;
+      margin: 0 24px;
+      color: #00565b;
+    }
+
+    .formula-center-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .text-number-large {
+      font-size: 20px;
+      font-weight: bold;
+      color: #00565b;
+      padding: 0 10px;
+    }
+
+    .flex-center {
+      display: flex;
+      align-items: center;
+    }
+
+    .icon-14 {
+      font-size: 14px;
+    }
+
+    // Responsive scaling for 1366px and below (covers 1280x720)
+    @media (max-width: 1366px) {
+      padding: 10px 0;
+      min-height: 180px;
+
+      .icon-box-container {
+        margin: 0 4px;
+
+        .icon-circle {
+          width: 32px;
+          height: 32px;
+          font-size: 16px;
+          margin-bottom: 4px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+          img {
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        .icon-label {
+          font-size: 10px;
+          padding: 1px 6px;
+          border-radius: 10px;
+        }
+      }
+
+      .row-separator {
+        font-size: 14px;
+        padding: 0 2px;
+        height: 32px;
+      }
+
+      .expanded-income-container {
+        padding: 4px 8px;
+        border-radius: 16px;
+      }
+
+      .formula-group-dashed {
+        padding: 6px;
+        border-radius: 16px;
+
+        &.small-radius {
+          border-radius: 12px;
+          padding: 3px;
+        }
+      }
+
+      .fraction-line {
+        min-width: 45px;
+        margin: 3px 0;
+
+        &.large-margin {
+          margin: 8px 0;
+        }
+      }
+
+      .equals-operator {
+        font-size: 28px;
+        margin: 0 14px;
+      }
+
+      .text-number-large {
+        font-size: 16px;
+        padding: 0 6px;
+      }
+    }
+  }
+
+  .equation-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-top: 1px solid #f0f0f0;
+    font-family: "TabletGothic";
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      color: #595959;
+
+      .legend-abbreviation {
+        font-weight: bold;
+        color: $primary-color;
+        background: #ebf2f2;
+        padding: 1px 6px;
+        border-radius: 8px;
+        margin-right: 4px;
+        font-size: 13px !important;
+      }
+
+      .legend-label {
+        font-weight: normal;
+        font-size: 13px !important;
+      }
+    }
+
+    // Responsive scaling for 1366px and below (covers 1280x720)
+    @media (max-width: 1366px) {
+      gap: 10px;
+      padding: 8px 10px;
+      margin-top: 6px;
+
+      .legend-item {
+        .legend-abbreviation {
+          padding: 1px 4px;
+          border-radius: 6px;
+        }
+      }
+    }
+  }
+}

@@ -96,6 +96,54 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Created `INCOME_CALCULATION.md` to provide a simplified, technical overview of the unified income formula and commodity-specific mappings.
     - Reorganized documentation by moving `analytic.md` and `INCOME_CALCULATION.md` into a new `docs/` folder.
     - Documented variable hierarchy and aggregation levels for all commodity types (Crop, Aquaculture, Livestock).
+- **Step 5 Refactoring & Advanced Modelling Tool (Issue #713)**:
+    - Extracted all scenario modeling logic, state, and UI sections (1, 2, and 3) from `ClosingGap.js` into a standalone `StandardScenarioModeling` component.
+    - Implemented `AdvancedModellingTool` as a new high-fidelity modelling interface for Step 5.
+    - Created `create_pr.md` workflow to automate standard Pull Request generation with base branch selection.
+    - Integrated `EquationVisualizer` for graphical representation of income driver formulas, utilizing project-specific asset icons for improved visual consistency.
+    - Implemented dynamic QID mapping to support Crops, Aquaculture, and Livestock in modelling calculations.
+    - Implemented `SegmentSelector` in `AdvancedModellingTool.js` to enable dynamic segment-specific modelling scenarios.
+    - Added real-time profit/cost breakdown visualization using a dynamic bar chart.
+    - Synchronized driver labels and selectable options with the global question state for terminal terminology consistency.
+    - Refined UI by integrating modelling inputs directly into scenario tabs and implementing scenario-aware field loading for consistent data display.
+    - Refactored `AdvancedModellingTool.js` to eliminate code duplication using a `renderModellingInputs` helper function.
+    - Standardized styling with Ant Design `.card-section-wrapper` and moved all static styles to `steps.scss`.
+    - Encapsulated scenario-specific state and lifecycle hooks to improve modularity and maintainability.
+    - Implemented category-specific modelling formulas for Crops, Livestock, and Aquaculture in a centralized utility.
+    - Added unit-cost and unit-profit breakdown visualization for each modelling scenario.
+    - Refactored `EquationVisualizer` to display detailed, expanded mathematical models including benchmark, secondary, and diversified income components.
+    - Implemented Advanced Modelling Tool result display with feasibility color-coding and dynamic status text.
+    - Integrated question flattening logic to correctly resolve nested driver units and labels.
+    - Refined UI styling for modelling result row and feasibility status, including color-coded boxes and bold labels.
+    - Added driver unit display to the modelling results header for improved context.
+    - Fixed linting warnings and optimized question lookup logic in the modelling interface.
+    - Implemented comprehensive unit tests for modelling driver calculations.
+    - Integrated secondary and tertiary income as whole drivers in the Advanced Modelling Tool.
+    - Implemented robust lookup for secondary/tertiary commodity income aggregators.
+    - Updated target primary income calculation to account for secondary, tertiary, and diversified income.
+    - Refined UI layout by moving "Other Diversified Income" to the bottom and improved labels for clarity.
+    - Updated Equation Visualizer to display secondary and tertiary income components.
+    - Refined Price Breakdown UI with a premium header, circular icon wrapper, and total price display.
+    - Switched to the custom `PriceWhite` icon from Equation Visualizer for the breakdown card.
+    - Refined price breakdown bar chart labels to prevent cropping on narrow segments by allowing overflow and ensuring text does not wrap.
+    - Implemented 2-decimal formatting for all modelling results and breakdown values.
+    - Refactored `EquationVisualizer.js` to eliminate all inline styles, moving them to structured SCSS classes in `steps.scss`.
+    - Shortened multi-word labels in `EquationVisualizer` (COP, SEC, TER, ODI) and added a legend for clarity.
+    - Reduced icon circle size to 40px and icon image size to 24px in the equation visualizer.
+    - Implemented vertical and horizontal centering for all equation elements, ensuring a balanced layout.
+    - Optimized dashed boxes to wrap content tightly using `width: fit-content`.
+    - Resolved React hook dependency warnings and optimized component lifecycle in the modelling interface.
+    - Standardized colors and styling in Step 5 using `$primary-color`.
+    - Created `/check_time` workflow to automate active vs. idle time analysis based on conversation logs and git history.
+    - Implemented per-segment persistence for modelling values, ensuring data is saved and restored when switching between segments.
+    - Refactored `EquationVisualizer` to be responsive, including horizontal scrolling and specific scaling for 1280x720 screens.
+    - Refined Equation Visualizer legend styles for smaller screens.
+    - Fixed linting warning in `AdvancedModellingTool.js` regarding `useEffect` dependencies.
+    - Resolved continuous re-rendering issue in `AdvancedModellingTool` by refining state synchronization logic.
+    - Implemented per-segment persistence for the selected driver in `AdvancedModellingTool`, ensuring the user's choice is saved and restored when switching segments.
+    - Reset calculation result when switching drivers in `AdvancedModellingTool` to prevent stale data display.
+    - Adjusted Case Sidebar layout and scrolling behavior for better usability on 1280x720 screens.
+    - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

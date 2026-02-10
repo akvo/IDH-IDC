@@ -136,7 +136,11 @@
 @media (max-height: 720px) {
   .case-sidebar-container {
     overflow: auto;
-    height: 95vh;
+    height: 90vh;
+
+    .case-step-container {
+      padding-bottom: 150px;
+    }
   }
 }
 
