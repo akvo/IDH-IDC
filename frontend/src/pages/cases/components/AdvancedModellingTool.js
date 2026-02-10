@@ -99,13 +99,10 @@ const AdvancedModellingTool = () => {
     return dashboardData?.find((d) => d.id === selectedSegmentId) || {};
   }, [dashboardData, selectedSegmentId]);
 
-  const [selectedDriver, setSelectedDriver] = useState(
-    advancedModelingConfig?.selectedDriver || "cop"
-  );
-
   // Helper to get initial data for the current segment
   const getInitialSegmentData = () => {
     const defaultData = {
+      selectedDriver: "cop",
       activeScenario: "model",
       lockedFields: {
         price: true,
@@ -147,6 +144,9 @@ const AdvancedModellingTool = () => {
 
   const initialData = getInitialSegmentData();
 
+  const [selectedDriver, setSelectedDriver] = useState(
+    initialData.selectedDriver
+  );
   const [activeScenario, setActiveScenario] = useState(
     initialData.activeScenario
   );
@@ -159,6 +159,7 @@ const AdvancedModellingTool = () => {
   // Sync state to global store (Local -> Global)
   useEffect(() => {
     const currentSegmentData = {
+      selectedDriver,
       activeScenario,
       lockedFields,
       modelValues,
@@ -170,10 +171,8 @@ const AdvancedModellingTool = () => {
       const prevSegmentData =
         prevConfig?.segmentData?.[selectedSegmentId] || {};
 
-      // Check if root config changed (driver/segment)
-      const rootChanged =
-        prevConfig?.selectedSegmentId !== selectedSegmentId ||
-        prevConfig?.selectedDriver !== selectedDriver;
+      // Check if root config changed (segment only)
+      const rootChanged = prevConfig?.selectedSegmentId !== selectedSegmentId;
 
       // Check if segment data changed
       const segmentChanged = !isEqual(prevSegmentData, currentSegmentData);
@@ -187,7 +186,6 @@ const AdvancedModellingTool = () => {
               ...s.scenarioModeling.config,
               advancedModeling: {
                 selectedSegmentId,
-                selectedDriver,
                 segmentData: {
                   ...prevConfig?.segmentData,
                   [selectedSegmentId]: currentSegmentData,
@@ -226,24 +224,26 @@ const AdvancedModellingTool = () => {
           ];
         if (segmentData) {
           setActiveScenario(segmentData.activeScenario || "model");
+          setSelectedDriver(segmentData.selectedDriver || "cop");
           setLockedFields(segmentData.lockedFields || {});
           setModelValues(segmentData.modelValues || {});
           setCalculationResult(segmentData.calculationResult || {});
         }
       }
 
-      if (
-        advancedModelingConfig.selectedDriver &&
-        advancedModelingConfig.selectedDriver !== selectedDriver
-      ) {
-        setSelectedDriver(advancedModelingConfig.selectedDriver);
-      }
+      // removed global driver sync
 
       // 2. Check Segment Data (for current segment)
       if (selectedSegmentId) {
         const storedData =
           advancedModelingConfig.segmentData?.[selectedSegmentId];
         if (storedData) {
+          if (
+            storedData.selectedDriver &&
+            storedData.selectedDriver !== selectedDriver
+          ) {
+            setSelectedDriver(storedData.selectedDriver);
+          }
           if (
             storedData.activeScenario &&
             storedData.activeScenario !== activeScenario
@@ -459,16 +459,6 @@ const AdvancedModellingTool = () => {
     setModelValues((prev) => ({ ...prev, [field]: parseFloat(value) || 0 }));
   };
 
-  // Reset calculation results when driver or segment changes
-  useEffect(() => {
-    setCalculationResult({
-      value: 0,
-      change: 0,
-      cost: 0,
-      profit: 0,
-    });
-  }, [selectedDriver]);
-
   const handleSegmentChange = (newSegmentId) => {
     // Check if we already have data for this segment in the store
     const storedData = advancedModelingConfig?.segmentData?.[newSegmentId];
@@ -522,6 +512,7 @@ const AdvancedModellingTool = () => {
       };
 
       const defaultActiveScenario = "model";
+      const defaultSelectedDriver = "cop";
 
       // Update store with new ID AND new segment data
       CaseVisualState.update((s) => {
@@ -542,6 +533,7 @@ const AdvancedModellingTool = () => {
                     calculationResult: defaultCalculationResult,
                     lockedFields: defaultLockedFields,
                     activeScenario: defaultActiveScenario,
+                    selectedDriver: defaultSelectedDriver,
                   },
                 },
               },
