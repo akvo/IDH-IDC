@@ -5,9 +5,9 @@ export const contactCardContent = [
     email: "yuca@agri-logic.nl",
   },
   {
-    name: "Pavithra Ram",
+    name: "Vaibhav Panpaliya",
     organisation: "IDH",
-    email: "ram@idhtrade.org",
+    email: "panpaliya@idhtrade.org",
   },
   {
     name: "Antonie Fountain",

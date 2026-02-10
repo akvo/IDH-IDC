@@ -471,7 +471,7 @@ const Welcome = () => {
             <Card className="map-card-wrapper">
               <MapViewHelpText
                 type="hover-hint"
-                relevantPageMessage="total cases and farmers mapped to the it"
+                relevantPageMessage="total number of cases and farmers mapped to it"
               />
 
               <Chart
