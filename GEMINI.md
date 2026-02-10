@@ -141,6 +141,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Fixed linting warning in `AdvancedModellingTool.js` regarding `useEffect` dependencies.
     - Resolved continuous re-rendering issue in `AdvancedModellingTool` by refining state synchronization logic.
     - Implemented per-segment persistence for the selected driver in `AdvancedModellingTool`, ensuring the user's choice is saved and restored when switching segments.
+    - Reset calculation result when switching drivers in `AdvancedModellingTool` to prevent stale data display.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

@@ -893,7 +893,15 @@ const AdvancedModellingTool = () => {
                 </Text>
                 <Select
                   value={selectedDriver}
-                  onChange={setSelectedDriver}
+                  onChange={(val) => {
+                    setSelectedDriver(val);
+                    setCalculationResult({
+                      value: 0,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                    });
+                  }}
                   options={selectOptions}
                   {...selectProps}
                 />
