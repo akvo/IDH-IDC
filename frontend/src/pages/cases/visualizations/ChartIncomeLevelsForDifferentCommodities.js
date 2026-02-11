@@ -92,8 +92,8 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
           (a) =>
             a.name === x &&
             a.commodityId === cm.commodityId &&
-            !a.question.parent &&
-            a.question.question_type !== "diversified"
+            !a.question?.parent &&
+            a.question?.question_type !== "diversified"
         );
         const newTotalValue =
           incomeQuestion && incomeQuestion?.value
@@ -148,8 +148,8 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
       .filter(
         (a) =>
           (!a.commodityId || !a.commodityName) &&
-          a.question.question_type === "diversified" &&
-          !a.question.parent
+          a.question?.question_type === "diversified" &&
+          !a.question?.parent
       )
       .flatMap((a) => a.question);
     diversifiedQUestions = uniqBy(diversifiedQUestions, "id");

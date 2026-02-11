@@ -34,14 +34,17 @@ export const formatNumberToString = (number) => {
     return "0";
   }
 
-  if (num < 1e3) {
-    return thousandFormatter(num, 1);
-  } else if (num < 1e6) {
-    return (num / 1e3).toFixed(1) + "K";
-  } else if (num < 1e9) {
-    return (num / 1e6).toFixed(1) + "M";
+  const absNum = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+
+  if (absNum < 1e3) {
+    return sign + thousandFormatter(absNum, 1);
+  } else if (absNum < 1e6) {
+    return sign + (absNum / 1e3).toFixed(1) + "K";
+  } else if (absNum < 1e9) {
+    return sign + (absNum / 1e6).toFixed(1) + "M";
   }
-  return (num / 1e9).toFixed(1) + "B";
+  return sign + (absNum / 1e9).toFixed(1) + "B";
 };
 
 export const popupFormatter = (params) => {

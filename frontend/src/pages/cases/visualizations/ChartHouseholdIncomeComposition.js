@@ -57,6 +57,7 @@ const ChartHouseholdIncomeComposition = () => {
         const totalIncome = currentDashboardData?.answers?.filter(
           (a) =>
             a?.question?.question_type === "aggregator" &&
+            !a?.question?.parent &&
             a.caseCommodityId === cc.id
         );
         const totalCurrentIncome =
@@ -74,14 +75,16 @@ const ChartHouseholdIncomeComposition = () => {
       ?.filter((v) => v?.totalCurrentIncome)
       ?.map((val) => {
         // percentage_income = income_type/total_current_income *100
-        const percentageIncome =
-          (val?.totalCurrentIncome / val?.totalCurrentIncomeAll) * 100;
+        const percentageIncome = val?.totalCurrentIncomeAll
+          ? (val?.totalCurrentIncome / val?.totalCurrentIncomeAll) * 100
+          : 0;
         return {
           name: upperFirst(val.label),
           value: percentageIncome,
           color: val.color,
         };
-      });
+      })
+      ?.filter((v) => v.value !== 0);
     setLoading(false);
     return caseCommoditiesTotalIncome;
   }, [selectedSegment, dashboardData, currentCase]);

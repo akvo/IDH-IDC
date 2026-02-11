@@ -56,7 +56,7 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
         data: data.map((v, vi) => ({
           name: v.name,
           value: percentage ? v.percentage?.toFixed(2) : v.value,
-          count: v.value,
+          count: v.count !== undefined ? v.count : v.value,
           itemStyle: { color: v.color || Color.color[vi] },
         })),
         type: "pie",
@@ -77,7 +77,9 @@ const Pie = ({ data, percentage, chartTitle, extra = {} }) => {
             if (percentage) {
               return `${s.value}%`;
             }
-            let value = formatNumberToString(s.value);
+            const displayValue =
+              s.data.count !== undefined ? s.data.count : s.value;
+            let value = formatNumberToString(displayValue);
             if (currency) {
               value = `${value} (${currency})`;
             }

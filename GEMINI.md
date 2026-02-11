@@ -145,6 +145,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Adjusted Case Sidebar layout and scrolling behavior for better usability on 1280x720 screens.
     - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency.
 
+- **Visualization & Step 3/4 Fixes (Issue #719)**:
+    - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
+    - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.
+    - Refined `formatNumberToString` utility to support absolute thresholds for K/M/B suffixes, ensuring negative values are formatted correctly with their sign.
+    - Optimized `ChartNeededIncomeLevel.js` to align with the requested distribution formula and filtered out zero-value sectors for a cleaner UI.
+    - Added safety null-checks and robust driver lookup logic across all Step 3/4 visualization components.
+    - Verified all changes with frontend linting and manual code review.
+
 - **Segmentation Preview & Value Generation Error Handling (Issue #717)**:
     - Implemented error handling for segmentation preview API calls to prevent silent failures.
     - Added state management to track and display API errors in both `SegmentConfigurationForm` and `DataUploadSegmentForm`.

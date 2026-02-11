@@ -37,7 +37,7 @@ const ChartMonetaryImpactOnIncome = () => {
       .map((d) => d.question.text);
 
     const totalValueData = data.answers.find(
-      (dd) => dd.name === "current" && !dd.parent
+      (dd) => dd.name === "current" && !dd.question?.parent && dd.commodityFocus
     );
 
     const currentValues = dataSeries.filter((d) => d.name === "current");

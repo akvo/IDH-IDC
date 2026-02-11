@@ -32,7 +32,7 @@ const ChartBiggestImpactOnIncome = () => {
       (a) => a.commodityFocus
     );
     const driverQuestion = focusCommodityData.find(
-      (a) => a.name === "current" && !a.parent
+      (a) => a.name === "current" && !a.question?.parent && a.commodityFocus
     );
     const indicators =
       driverQuestion && driverQuestion?.question?.childrens
