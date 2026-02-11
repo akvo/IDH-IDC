@@ -221,6 +221,12 @@ const Case = () => {
           tmp["questions"] = addLevelIntoQuestions({
             questions: tmp.questions,
           });
+          const category = masterCommodityCategories.find((cat) =>
+            cat.commodities.some((c) => c.id === cc.commodity)
+          );
+          if (category) {
+            tmp["commodity_category"] = category.name;
+          }
           if (cc.commodity_type === "focus") {
             incomeDataDriversTmp.push({
               type: "primary",
@@ -414,7 +420,7 @@ const Case = () => {
             (q) =>
               q.id === parseInt(questionId) &&
               q.parent === 1 &&
-              q.commodityId === commodity.commodity
+              q.commodity_id === commodity.commodity
           );
           const question = flattenedQuestionGroups.find(
             (q) =>

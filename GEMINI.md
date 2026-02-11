@@ -150,6 +150,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.
     - Refined `formatNumberToString` utility to support absolute thresholds for K/M/B suffixes, ensuring negative values are formatted correctly with their sign.
     - Optimized `ChartNeededIncomeLevel.js` to align with the requested distribution formula and filtered out zero-value sectors for a cleaner UI.
+    - Fixed data loading in "Change Indicators" charts by implementing dynamic QID lookup based on commodity category.
+    - Resolved `Case.js` bug where cost questions were incorrectly identified due to property name mismatch (`commodityId` -> `commodity_id`).
+    - Added commodity category name lookup in `Case.js` to support dynamic chart logic and Advanced Modelling Tool.
+    - Implemented division by zero protection in `ChartRevenueToCostRatio.js` and `ChartNetIncomePerLandUnit.js` to prevent `Infinity` results.
+    - Resolved linting warnings in `Pie.js` regarding `undefined` property checks.
     - Added safety null-checks and robust driver lookup logic across all Step 3/4 visualization components.
     - Verified all changes with frontend linting and manual code review.
 
