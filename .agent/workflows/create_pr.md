@@ -9,7 +9,8 @@ description: Create a Pull Request with an informative title and clear descripti
 3. Analyze the changes since the **Base Branch** to generate the PR content.
    - Run `git diff <base_branch>...<current_branch> --stat` to see the changed files.
    - Run `git log <base_branch>...<current_branch> --oneline` to see the commit history.
-4. PROPOSE a Pull Request Title and Description to the user for approval.
+4. Ensure `GEMINI.md` is updated with the summarized changes under the "Recent Changes" section.
+5. PROPOSE a Pull Request Title and Description to the user for approval.
    - **PR Title**: `[#ISSUE_NUMBER] Concise summary of the feature/fix`.
    - **PR Description**:
      - **Summary**: Overview of accomplishments.

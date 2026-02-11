@@ -171,6 +171,9 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added case-insensitive matching for segmentation variables to improve upload robustness.
     - Updated `CaseSettings.js` to display specific backend error details in the frontend for segment generation.
     - Verified implementation with frontend linting and backend tests.
+- **Workflow Improvements**:
+    - Automated `check_time` workflow with `analyze_time.py` script to calculate active vs idle time from logs and git history.
+    - Updated `create_pr` workflow to include `GEMINI.md` update step.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
