@@ -205,17 +205,31 @@ const SingleDriverChange = ({ selectedSegment }) => {
         )?.childrens;
       }
 
-      // populate current answers based on commodity type
-      let answers = [];
-      if (commodityType === "diversified") {
-        answers = diversifiedCommodityAnswers;
-      } else if (commodityType === "tertiary") {
-        answers = tertiaryCommodityAnswers;
-      } else if (commodityType === "secondary") {
-        answers = secondaryCommodityAnswers;
-      } else {
-        answers = primaryCommodityAnswers;
-      }
+      const answers =
+        commodityType === "diversified"
+          ? diversifiedCommodityAnswers
+          : commodityType === "tertiary"
+          ? tertiaryCommodityAnswers
+          : commodityType === "secondary"
+          ? secondaryCommodityAnswers
+          : primaryCommodityAnswers;
+
+      const primaryCategory =
+        primaryCommodity?.commodity_category?.toLowerCase();
+      const primaryQidMap =
+        primaryCategory === "livestock"
+          ? { price: 42, volume: 41, cop: 43, land: 40 }
+          : primaryCategory === "aquaculture"
+          ? { price: 4, volume: 3, cop: 26, land: 2 }
+          : { price: 4, volume: 3, cop: 5, land: 2 };
+
+      const commodityCategory = qg?.commodity_category?.toLowerCase();
+      const qidMap =
+        commodityCategory === "livestock"
+          ? { price: 42, volume: 41, cop: 43, land: 40 }
+          : commodityCategory === "aquaculture"
+          ? { price: 4, volume: 3, cop: 26, land: 2 }
+          : { price: 4, volume: 3, cop: 5, land: 2 };
 
       const data = questions?.map((q) => {
         const qID = q.id;
@@ -232,10 +246,18 @@ const SingleDriverChange = ({ selectedSegment }) => {
               if (u === "currency") {
                 return currentCase?.currency || "";
               }
-              return u === "crop"
-                ? primaryCommodity.name?.toLowerCase() || ""
-                : primaryCommodity?.[u];
+              if (u === "crop") {
+                return primaryCommodity.name?.toLowerCase() || "";
+              }
+              if (u === "land" || u === "area_size_unit") {
+                return primaryCommodity?.area_size_unit || "";
+              }
+              if (u === "volume" || u === "volume_measurement_unit") {
+                return primaryCommodity?.volume_measurement_unit || "";
+              }
+              return primaryCommodity?.[u] || u;
             })
+            .filter((u) => u)
             .join("/");
         }
 
@@ -244,17 +266,24 @@ const SingleDriverChange = ({ selectedSegment }) => {
             ?.value || 0;
 
         const primaryDrivers = {
-          d2: getAnswer(primaryCommodityAnswers, 2),
-          d3: getAnswer(primaryCommodityAnswers, 3),
-          d4: getAnswer(primaryCommodityAnswers, 4),
-          d5: getAnswer(primaryCommodityAnswers, 5),
+          d2: getAnswer(primaryCommodityAnswers, primaryQidMap.land),
+          d3: getAnswer(primaryCommodityAnswers, primaryQidMap.volume),
+          d4: getAnswer(primaryCommodityAnswers, primaryQidMap.price),
+          d5: getAnswer(primaryCommodityAnswers, primaryQidMap.cop),
         };
 
+        const secQidMap =
+          qg?.commodity_category === "Livestock"
+            ? { price: 42, volume: 41, cop: 43, land: 40 }
+            : qg?.commodity_category === "Aquaculture"
+            ? { price: 4, volume: 3, cop: 26, land: 2 }
+            : { price: 4, volume: 3, cop: 5, land: 2 };
+
         const secondaryDrivers = {
-          d2: getAnswer(secondaryCommodityAnswers, 2),
-          d3: getAnswer(secondaryCommodityAnswers, 3),
-          d4: getAnswer(secondaryCommodityAnswers, 4),
-          d5: getAnswer(secondaryCommodityAnswers, 5),
+          d2: getAnswer(secondaryCommodityAnswers, secQidMap.land),
+          d3: getAnswer(secondaryCommodityAnswers, secQidMap.volume),
+          d4: getAnswer(secondaryCommodityAnswers, secQidMap.price),
+          d5: getAnswer(secondaryCommodityAnswers, secQidMap.cop),
         };
 
         const currentPrimaryIncome =
@@ -281,7 +310,15 @@ const SingleDriverChange = ({ selectedSegment }) => {
           neededValue = calculateBreakdownDriver(
             targetPrimary,
             primaryDrivers,
-            qID
+            qID === qidMap.land
+              ? 2
+              : qID === qidMap.volume
+              ? 3
+              : qID === qidMap.price
+              ? 4
+              : qID === qidMap.cop
+              ? 5
+              : qID
           );
         } else if (commodityType === "secondary") {
           const targetSecondary = getTargetSecondaryIncome(
@@ -294,7 +331,15 @@ const SingleDriverChange = ({ selectedSegment }) => {
             neededValue = calculateBreakdownDriver(
               targetSecondary,
               secondaryDrivers,
-              qID
+              qID === secQidMap.land
+                ? 2
+                : qID === secQidMap.volume
+                ? 3
+                : qID === secQidMap.price
+                ? 4
+                : qID === secQidMap.cop
+                ? 5
+                : qID
             );
           } else if (qID === 1) {
             neededValue = targetSecondary;

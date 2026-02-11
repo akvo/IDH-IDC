@@ -14,7 +14,9 @@ const colors = { current: "#1b726f", feasible: "#9cc2c1" };
 const ChartFarmEconomicEfficiency = () => {
   const chartFarmEconomicEfficiencyRef = useRef(null);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+  const { dashboardData, incomeDataDrivers } = CaseVisualState.useState(
+    (s) => s
+  );
 
   const [selectedSegment, setSelectedSegment] = useState(null);
 
@@ -23,28 +25,46 @@ const ChartFarmEconomicEfficiency = () => {
       (cc) => cc?.commodity_type === "focus"
     )?.id;
 
-    const currentDashboardData = dashboardData.find(
-      (d) => d.id === selectedSegment
-    );
+    const currentDashboardData =
+      dashboardData.find((d) => d.id === selectedSegment) || dashboardData?.[0];
 
     const primaryAnswers = currentDashboardData?.answers?.filter(
       (a) => a.caseCommodityId === primaryCaseCommodityID
     );
 
-    const costAnswers = primaryAnswers?.filter((a) => a?.question?.id === 5);
-    const landAnswers = primaryAnswers?.filter((a) => a?.question?.id === 2);
-    const volumeAnswers = primaryAnswers?.filter((a) => a?.question?.id === 3);
+    const focusCommodityGroup = incomeDataDrivers?.find(
+      (d) => d.type === "primary"
+    )?.questionGroups?.[0];
 
-    // psudocode
-    // for values in (current, feasible)
-    //   total_cost = primary-5 * primary-2
-    //   total_volume = primary-3 * primary-2
-    //   farm_economic_efficiency = total_cost/total_volume
+    const commodityCategory = focusCommodityGroup?.commodity_category;
+
+    // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
+    let qidMap = { volume: 3, cop: 5, land: 2 };
+    if (commodityCategory === "Livestock") {
+      qidMap = { volume: 41, cop: 43, land: 40 };
+    } else if (commodityCategory === "Aquaculture") {
+      qidMap = { volume: 3, cop: 26, land: 2 };
+    }
+
+    const costAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.cop
+    );
+    const landAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.land
+    );
+    const volumeAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.volume
+    );
 
     const data = ["current", "feasible"].map((it) => {
       const cost = costAnswers?.find((val) => val.name === it)?.value || 0;
       const land = landAnswers?.find((val) => val.name === it)?.value || 0;
       const volume = volumeAnswers?.find((val) => val.name === it)?.value || 0;
+
+      // for values in (current, feasible)
+      //   total_cost = primary-5 * primary-2
+      //   total_volume = primary-3 * primary-2
+      //   farm_economic_efficiency = total_cost/primary_1
 
       const totalCost = cost * land;
       const totalVolume = volume * land;
@@ -58,7 +78,7 @@ const ChartFarmEconomicEfficiency = () => {
       };
     });
     return data;
-  }, [currentCase, dashboardData, selectedSegment]);
+  }, [currentCase, dashboardData, selectedSegment, incomeDataDrivers]);
 
   return (
     <Card className="card-visual-wrapper">

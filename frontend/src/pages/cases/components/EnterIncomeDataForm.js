@@ -43,6 +43,7 @@ const EnterIncomeDataQuestions = ({
   const [collapsed, setCollapsed] = useState(
     question.question_type !== "aggregator"
   );
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   // fieldKey format: [case_commodity]-[question_id]
   const fieldKey = `${group.id}-${question.id}`;
@@ -70,21 +71,35 @@ const EnterIncomeDataQuestions = ({
 
   const disableInput = !enableEditCase ? true : isCollapsible && !collapsed;
 
-  const unitName = useMemo(
-    () =>
-      question.unit
-        .split("/")
-        .map((u) => u.trim())
-        .map((u) =>
-          u === "crop"
-            ? commodities
-                .find((c) => c.id === group?.commodity_id)
-                ?.name?.toLowerCase() || ""
-            : group?.[u]
-        )
-        .join(" / "),
-    [question.unit, group]
-  );
+  const unitName = useMemo(() => {
+    if (!question.unit) {
+      return "";
+    }
+    return question.unit
+      .split("/")
+      .map((u) => u.trim())
+      .map((u) => {
+        if (u === "crop") {
+          return (
+            commodities
+              .find((c) => c.id === group?.commodity_id)
+              ?.name?.toLowerCase() || ""
+          );
+        }
+        if (u === "land" || u === "area_size_unit") {
+          return group?.area_size_unit || "";
+        }
+        if (u === "volume" || u === "volume_measurement_unit") {
+          return group?.volume_measurement_unit || "";
+        }
+        if (u === "currency") {
+          return currentCase?.currency || "";
+        }
+        return group?.[u] || u;
+      })
+      .filter((u) => u) // Remove empty strings to avoid trailing slashes
+      .join(" / ");
+  }, [question.unit, group, currentCase?.currency]);
 
   return (
     <>

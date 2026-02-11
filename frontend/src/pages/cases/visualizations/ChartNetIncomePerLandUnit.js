@@ -12,7 +12,8 @@ const colors = { current: "#1b726f", feasible: "#9cc2c1" };
 const ChartNetIncomePerLandUnit = () => {
   const chartFarmEconomicEfficiencyRef = useRef(null);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { dashboardData, questionGroups } = CaseVisualState.useState((s) => s);
+  const { dashboardData, questionGroups, incomeDataDrivers } =
+    CaseVisualState.useState((s) => s);
 
   const [selectedSegment, setSelectedSegment] = useState(null);
 
@@ -25,18 +26,31 @@ const ChartNetIncomePerLandUnit = () => {
       (cc) => cc?.commodity_type === "focus"
     )?.id;
 
-    const currentDashboardData = dashboardData.find(
-      (d) => d.id === selectedSegment
-    );
+    const currentDashboardData =
+      dashboardData.find((d) => d.id === selectedSegment) || dashboardData?.[0];
 
     const primaryAnswers = currentDashboardData?.answers?.filter(
       (a) => a.caseCommodityId === primaryCaseCommodityID
     );
 
+    const focusCommodityGroup = incomeDataDrivers?.find(
+      (d) => d.type === "primary"
+    )?.questionGroups?.[0];
+
+    const commodityCategory = focusCommodityGroup?.commodity_category;
+
+    // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
+    let qidMap = { totalIncome: 1, land: 2 };
+    if (commodityCategory === "Livestock") {
+      qidMap = { totalIncome: 1, land: 40 };
+    }
+
     const totalIncomeAnswers = primaryAnswers?.filter(
-      (a) => a?.question?.id === 1
+      (a) => (a.questionId || a?.question?.id) === qidMap.totalIncome
     );
-    const landAnswers = primaryAnswers?.filter((a) => a?.question?.id === 2);
+    const landAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.land
+    );
 
     // psudocode
     // for values in (current, feasible):
@@ -47,7 +61,7 @@ const ChartNetIncomePerLandUnit = () => {
         (val) => val.name === it
       )?.value;
       const land = landAnswers?.find((val) => val.name === it)?.value || 0;
-      const netIncomeLandUnit = totalIncome / land;
+      const netIncomeLandUnit = land ? totalIncome / land : 0;
 
       return {
         name: it,
@@ -57,7 +71,7 @@ const ChartNetIncomePerLandUnit = () => {
       };
     });
     return data;
-  }, [currentCase, dashboardData, selectedSegment]);
+  }, [currentCase, dashboardData, selectedSegment, incomeDataDrivers]);
 
   return (
     <Card className="card-visual-wrapper">

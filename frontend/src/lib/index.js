@@ -128,16 +128,20 @@ export const InputNumberThousandFormatter = {
       return "";
     }
 
+    let formattedNum = "";
+
     if (round) {
       numValue = Math.round(numValue);
     }
 
     // Apply decimal precision if specified
     if (typeof decimals === "number") {
-      numValue = parseFloat(numValue.toFixed(decimals));
+      formattedNum = numValue.toFixed(decimals);
+    } else {
+      formattedNum = `${numValue}`;
     }
 
-    const [integerPart, decimalPart] = `${numValue}`.split(".");
+    const [integerPart, decimalPart] = formattedNum.split(".");
     const formattedIntegerPart = integerPart.replace(
       /\B(?=(\d{3})+(?!\d))/g,
       ","

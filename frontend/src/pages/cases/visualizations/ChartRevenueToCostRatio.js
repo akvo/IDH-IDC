@@ -12,7 +12,9 @@ const colors = { current: "#1b726f", feasible: "#9cc2c1" };
 const ChartRevenueToCostRatio = () => {
   const chartFarmEconomicEfficiencyRef = useRef(null);
   const currentCase = CurrentCaseState.useState((s) => s);
-  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
+  const { dashboardData, incomeDataDrivers } = CaseVisualState.useState(
+    (s) => s
+  );
 
   const [selectedSegment, setSelectedSegment] = useState(null);
 
@@ -21,24 +23,39 @@ const ChartRevenueToCostRatio = () => {
       (cc) => cc?.commodity_type === "focus"
     )?.id;
 
-    const currentDashboardData = dashboardData.find(
-      (d) => d.id === selectedSegment
-    );
+    const currentDashboardData =
+      dashboardData.find((d) => d.id === selectedSegment) || dashboardData?.[0];
 
     const primaryAnswers = currentDashboardData?.answers?.filter(
       (a) => a.caseCommodityId === primaryCaseCommodityID
     );
 
-    const costAnswers = primaryAnswers?.filter((a) => a?.question?.id === 5);
-    const landAnswers = primaryAnswers?.filter((a) => a?.question?.id === 2);
-    const volumeAnswers = primaryAnswers?.filter((a) => a?.question?.id === 3);
-    const priceAnswers = primaryAnswers?.filter((a) => a?.question?.id === 4);
+    const focusCommodityGroup = incomeDataDrivers?.find(
+      (d) => d.type === "primary"
+    )?.questionGroups?.[0];
 
-    // psudocode
-    // for values in (current, feasible):
-    //   total_cost = primary-5 * primary-2
-    //   revenue = primary-2*primary-3*primary-4
-    //   revenue_to_cost_ration = revnue/total_cost
+    const commodityCategory = focusCommodityGroup?.commodity_category;
+
+    // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
+    let qidMap = { price: 4, volume: 3, cop: 5, land: 2 };
+    if (commodityCategory === "Livestock") {
+      qidMap = { price: 42, volume: 41, cop: 43, land: 40 };
+    } else if (commodityCategory === "Aquaculture") {
+      qidMap = { price: 4, volume: 3, cop: 26, land: 2 };
+    }
+
+    const costAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.cop
+    );
+    const landAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.land
+    );
+    const volumeAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.volume
+    );
+    const priceAnswers = primaryAnswers?.filter(
+      (a) => (a.questionId || a?.question?.id) === qidMap.price
+    );
 
     const data = ["current", "feasible"].map((it) => {
       const cost = costAnswers?.find((val) => val.name === it)?.value || 0;
@@ -46,9 +63,14 @@ const ChartRevenueToCostRatio = () => {
       const volume = volumeAnswers?.find((val) => val.name === it)?.value || 0;
       const price = priceAnswers?.find((val) => val.name === it)?.value || 0;
 
+      // for values in (current, feasible):
+      //   total_cost = primary-5 * primary-2
+      //   revenue = primary-2*primary-3*primary-4
+      //   revenue_to_cost_ration = revenue/total_cost
+
       const totalCost = cost * land;
       const revenue = land * price * volume;
-      const revenueToCostRatio = revenue / totalCost;
+      const revenueToCostRatio = totalCost ? revenue / totalCost : 0;
 
       return {
         name: it,
@@ -58,7 +80,7 @@ const ChartRevenueToCostRatio = () => {
       };
     });
     return data;
-  }, [currentCase, dashboardData, selectedSegment]);
+  }, [currentCase, dashboardData, selectedSegment, incomeDataDrivers]);
 
   return (
     <Card className="card-visual-wrapper">

@@ -60,6 +60,7 @@ const ChartNeededIncomeLevel = () => {
         const totalIncome = currentDashboardData?.answers?.filter(
           (a) =>
             a?.question?.question_type === "aggregator" &&
+            !a?.question?.parent &&
             a.caseCommodityId === cc.id
         );
         const totalCurrentIncome =
@@ -78,17 +79,19 @@ const ChartNeededIncomeLevel = () => {
       ?.filter((v) => v?.totalCurrentIncome)
       ?.map((val) => {
         // income_target_source = (income_target * (income_type/total_current_income)) - current_income
-        const income_target_source =
-          val?.incomeTarget *
-            (val?.totalCurrentIncome / val?.totalCurrentIncomeAll) -
-          val?.totalCurrentIncome;
+        const share = val?.totalCurrentIncomeAll
+          ? val?.totalCurrentIncome / val?.totalCurrentIncomeAll
+          : 0;
+        const gap = val?.incomeTarget * share - val?.totalCurrentIncome;
         return {
           name: upperFirst(val.label),
-          value: income_target_source,
+          value: Math.abs(gap),
+          count: gap,
           color: val.color,
           currency,
         };
-      });
+      })
+      ?.filter((v) => v.count !== 0);
     setLoading(false);
     return caseCommoditiesTotalIncome;
   }, [selectedSegment, dashboardData, currentCase]);

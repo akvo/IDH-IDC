@@ -170,7 +170,7 @@ const ChartExploreIncomeDriverBreakdown = () => {
           const findDriver = driverOptionsDropdown.find(
             (d) => d.value === selectedDriver
           );
-          if (findDriver.type === "focus") {
+          if (findDriver?.type === "focus") {
             stack = findDriver.childrens.map((d, di) => {
               const answer = selectedSegmentData.answers
                 .filter((a) => a.commodityFocus && a.name === x)
@@ -191,7 +191,7 @@ const ChartExploreIncomeDriverBreakdown = () => {
             });
             // childrens doesn't have value / answers
             const check = stack.filter((x) => x.value);
-            if (!check.length) {
+            if (!check.length && findDriver) {
               const parentAnswer = selectedSegmentData.answers
                 .filter((a) => a.commodityFocus && a.name === x)
                 .find((a) => a.questionId === findDriver.value);
@@ -212,7 +212,7 @@ const ChartExploreIncomeDriverBreakdown = () => {
               ];
             }
           }
-          if (findDriver.type === "diversified") {
+          if (findDriver?.type === "diversified") {
             stack = findDriver.childrens.map((d, di) => {
               let value = 0;
               // Calculate others commodity
