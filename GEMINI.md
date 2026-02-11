@@ -174,6 +174,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Workflow Improvements**:
     - Automated `check_time` workflow with `analyze_time.py` script to calculate active vs idle time from logs and git history.
     - Updated `create_pr` workflow to include `GEMINI.md` update step.
+- **Fixed Crop Deactivation (Issue #721)**:
+    - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and UI.
+    - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.
+    - Added a comprehensive backend regression test `test_fix_commodity_removal.py` to verify the fix and prevent future regressions.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
