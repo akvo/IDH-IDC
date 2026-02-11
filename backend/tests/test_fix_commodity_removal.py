@@ -58,8 +58,17 @@ class TestCaseCommodityRemoval:
         assert 2 in case_commodity_ids
 
         # 2. Update the case to REMOVE Secondary commodity
+        # AND ADD Tertiary commodity
         update_payload = create_payload.copy()
-        update_payload["other_commodities"] = []  # Remove secondary
+        update_payload["other_commodities"] = [
+            {
+                "commodity": 4,
+                "breakdown": True,
+                "commodity_type": CaseCommodityType.tertiary.value,
+                "volume_measurement_unit": "kilograms",
+                "area_size_unit": "acre",
+            }
+        ]  # Remove secondary, add tertiary
 
         # Update case with admin credentials
         res = await client.put(
@@ -71,9 +80,7 @@ class TestCaseCommodityRemoval:
         assert res.status_code == 200
         res = res.json()
 
-        # 3. Verify Removal
-        # Check that case_commodities only contains focus
-        # (and maybe diversified)
+        # 3. Verify Removal and Addition
         case_commodity_ids = [
             cc["commodity"] for cc in res["case_commodities"]
         ]
@@ -83,6 +90,16 @@ class TestCaseCommodityRemoval:
 
         # Secondary commodity (id 2) should be DELETED
         assert 2 not in case_commodity_ids
+
+        # Tertiary commodity (id 4) should be ADDED
+        assert 4 in case_commodity_ids
+
+        # Check that all returned commodities have a valid ID (PK)
+        # This confirms that newly added commodities
+        # get their IDs back immediately
+        for cc in res["case_commodities"]:
+            assert cc["id"] is not None
+            assert isinstance(cc["id"], int)
 
         # If Diversified was there, it should remain.
         if 3 in [

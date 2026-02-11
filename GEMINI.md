@@ -175,9 +175,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Automated `check_time` workflow with `analyze_time.py` script to calculate active vs idle time from logs and git history.
     - Updated `create_pr` workflow to include `GEMINI.md` update step.
 - **Fixed Crop Deactivation (Issue #721)**:
-    - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and UI.
+    - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
     - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.
-    - Added a comprehensive backend regression test `test_fix_commodity_removal.py` to verify the fix and prevent future regressions.
+    - Added `session.commit()` and `session.refresh(case)` in backend to ensure newly added commodities receive valid IDs immediately, resolving a recurring 422 error.
+    - Implemented a confirmation dialog in `CaseSettings.js` to warn users before permanently deactivating crops.
+    - Added safety checks in `Case.js` to handle missing commodity data and filter out commodities without IDs during initialization.
+    - Reinforced `EnterIncomeData.js` with defensive payload filtering to strip out invalid commodity IDs (e.g., "null") before submission.
+    - Verified fix with a new backend regression test `test_fix_commodity_removal.py` and front-to-back integration checks.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

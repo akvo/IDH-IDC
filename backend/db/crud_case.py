@@ -227,6 +227,7 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
         prev_focus_commodity.volume_measurement_unit = (
             payload.volume_measurement_unit
         )
+
     # handle update other commodities
     if payload.other_commodities is not None:
         payload_commodity_types = []
@@ -251,9 +252,6 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
                 prev_case_commodity.volume_measurement_unit = (
                     val.volume_measurement_unit
                 )
-                session.commit()
-                session.flush()
-                session.refresh(prev_case_commodity)
             else:
                 case_commodity = CaseCommodity(
                     commodity=val.commodity,
@@ -285,6 +283,11 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
         )
         for cc in commodities_to_remove:
             session.delete(cc)
+
+    # Ensure all changes are committed and IDs are generated
+    session.commit()
+    session.flush()
+    session.refresh(case)
 
     # handle update segments
     if payload.segments:

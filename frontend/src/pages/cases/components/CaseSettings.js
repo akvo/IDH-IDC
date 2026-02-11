@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, message, Drawer, Button } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { Form, message, Drawer, Button, Modal } from "antd";
+import { CloseOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { CaseForm } from ".";
 import {
   removeUndefinedObjectValue,
@@ -604,27 +604,66 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   };
 
   const onFinish = (values) => {
-    setIsSaving(true);
-    setFormData(values);
+    const handleSave = () => {
+      setIsSaving(true);
+      setFormData(values);
 
-    // handle if any segments deleted
-    if (deletedSegmentIds?.length) {
-      Promise.all(deletedSegmentIds.map((sId) => api.delete(`segment/${sId}`)))
-        .then(() => {
-          setDeletedSegmentIds([]);
-          setTimeout(() => {
-            saveCaseSettings(values, true);
-          }, 100);
-        })
-        .catch((e) => {
-          console.error(e);
-          messageApi.open({
-            type: "error",
-            content: "Failed to delete segments.",
+      // handle if any segments deleted
+      if (deletedSegmentIds?.length) {
+        Promise.all(
+          deletedSegmentIds.map((sId) => api.delete(`segment/${sId}`))
+        )
+          .then(() => {
+            setDeletedSegmentIds([]);
+            setTimeout(() => {
+              saveCaseSettings(values, true);
+            }, 100);
+          })
+          .catch((e) => {
+            console.error(e);
+            messageApi.open({
+              type: "error",
+              content: "Failed to delete segments.",
+            });
+            setIsSaving(false);
           });
-        });
+      } else {
+        saveCaseSettings(values);
+      }
+    };
+
+    const hasSecondarySaved = currentCase?.case_commodities?.some(
+      (c) => c.commodity_type === "secondary"
+    );
+    const hasTertiarySaved = currentCase?.case_commodities?.some(
+      (c) => c.commodity_type === "tertiary"
+    );
+
+    const isRemovingSecondary = hasSecondarySaved && !secondary.enable;
+    const isRemovingTertiary = hasTertiarySaved && !tertiary.enable;
+
+    if (isRemovingSecondary || isRemovingTertiary) {
+      let cropType = "";
+      if (isRemovingSecondary && isRemovingTertiary) {
+        cropType = "secondary and tertiary crops";
+      } else if (isRemovingSecondary) {
+        cropType = "secondary crop";
+      } else {
+        cropType = "tertiary crop";
+      }
+
+      Modal.confirm({
+        title: `Are you sure you want to remove this ${cropType}?`,
+        icon: <ExclamationCircleOutlined />,
+        content: `Removing this ${cropType} will permanently delete all associated data. This action cannot be undone.`,
+        okText: "Yes, remove it",
+        okType: "danger",
+        cancelText: "No, keep it",
+        onOk: handleSave,
+        onCancel: () => setIsSaving(false),
+      });
     } else {
-      saveCaseSettings(values);
+      handleSave();
     }
   };
 
