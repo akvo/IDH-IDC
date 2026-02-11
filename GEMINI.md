@@ -154,6 +154,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Resolved `Case.js` bug where cost questions were incorrectly identified due to property name mismatch (`commodityId` -> `commodity_id`).
     - Added commodity category name lookup in `Case.js` to support dynamic chart logic and Advanced Modelling Tool.
     - Implemented division by zero protection in `ChartRevenueToCostRatio.js` and `ChartNetIncomePerLandUnit.js` to prevent `Infinity` results.
+    - Resolved unit display issues in `SingleDriverChange.js` and `EnterIncomeDataForm.js` by implementing robust unit lookup for Land and Volume drivers.
+    - Fixed 0 value calculation bugs in `SingleDriverChange.js` by implementing dynamic QID mapping for primary, secondary, and diversified commodities.
+    - Refined `InputNumberThousandFormatter` to support explicit decimal padding and applied it to the Two Driver Heatmap binning form to enforce 2-decimal rounding.
+    - Implemented case-insensitive matching for commodity categories in dynamic QID lookups across `SingleDriverChange.js` and `AdvancedModellingTool.js`.
+    - Resolved `ReferenceError` and `TypeError` in frontend components related to store state access.
     - Resolved linting warnings in `Pie.js` regarding `undefined` property checks.
     - Added safety null-checks and robust driver lookup logic across all Step 3/4 visualization components.
     - Verified all changes with frontend linting and manual code review.

@@ -112,7 +112,10 @@ const TwoBinningDriverForm = ({
             >
               <InputNumber
                 className="binning-input"
-                {...InputNumberThousandFormatter}
+                formatter={(value) =>
+                  InputNumberThousandFormatter.formatter(value, null, false, 2)
+                }
+                parser={InputNumberThousandFormatter.parser}
                 disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
@@ -126,7 +129,10 @@ const TwoBinningDriverForm = ({
             >
               <InputNumber
                 className="binning-input"
-                {...InputNumberThousandFormatter}
+                formatter={(value) =>
+                  InputNumberThousandFormatter.formatter(value, null, false, 2)
+                }
+                parser={InputNumberThousandFormatter.parser}
                 disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
@@ -159,7 +165,10 @@ const TwoBinningDriverForm = ({
             >
               <InputNumber
                 className="binning-input"
-                {...InputNumberThousandFormatter}
+                formatter={(value) =>
+                  InputNumberThousandFormatter.formatter(value, null, false, 2)
+                }
+                parser={InputNumberThousandFormatter.parser}
                 disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}
@@ -173,7 +182,10 @@ const TwoBinningDriverForm = ({
             >
               <InputNumber
                 className="binning-input"
-                {...InputNumberThousandFormatter}
+                formatter={(value) =>
+                  InputNumberThousandFormatter.formatter(value, null, false, 2)
+                }
+                parser={InputNumberThousandFormatter.parser}
                 disabled={!enableEditCase}
                 controls={false}
                 style={binningDriverFormStyles.inputNumber}

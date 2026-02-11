@@ -305,14 +305,15 @@ const AdvancedModellingTool = () => {
     return flatten(focusCommodityGroup.questions);
   }, [focusCommodityGroup]);
 
-  const commodityCategory = focusCommodityGroup?.commodity_category;
+  const commodityCategory =
+    focusCommodityGroup?.commodity_category?.toLowerCase();
 
   // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
   const qidMap = useMemo(() => {
-    if (commodityCategory === "Livestock") {
+    if (commodityCategory === "livestock") {
       return { price: 42, volume: 41, cop: 43, land: 40 };
     }
-    if (commodityCategory === "Aquaculture") {
+    if (commodityCategory === "aquaculture") {
       return { price: 4, volume: 3, cop: 26, land: 2 };
     }
     // Default for Crop, Timber
