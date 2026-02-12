@@ -4,8 +4,14 @@ description: Create a Pull Request with an informative title and clear descripti
 
 1. ASK the user for the **Base Branch** (e.g., `staging`, `main`) and the **Issue Number** (e.g., `#713`).
 2. Identify the current branch name and ensure all changes are committed and pushed.
-   - Run `git branch --show-current` to get the current branch.
-   - Run `git push origin <current_branch>` if needed.
+// turbo
+   ```bash
+   git branch --show-current
+   ```
+// turbo
+   ```bash
+   git push origin $(git branch --show-current)
+   ```
 3. Analyze the changes since the **Base Branch** to generate the PR content.
    - Run `git diff <base_branch>...<current_branch> --stat` to see the changed files.
    - Run `git log <base_branch>...<current_branch> --oneline` to see the commit history.

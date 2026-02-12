@@ -3,6 +3,7 @@ description: Analyze active vs idle time spent on tasks and issues
 ---
 
 1. Run the automated time analysis script for the specific issue or task keyword:
+// turbo
    ```bash
    ./.agent/scripts/analyze_time.py <issue_number_or_keyword>
    ```
