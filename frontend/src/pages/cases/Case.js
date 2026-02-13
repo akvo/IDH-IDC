@@ -588,6 +588,18 @@ const Case = () => {
               ...sensitivityAnalysisTmp,
             },
           }));
+        } else {
+          CaseVisualState.update((s) => ({
+            ...s,
+            sensitivityAnalysis: {
+              ...s.sensitivityAnalysis,
+              case: currentCase.id,
+            },
+            prevSensitivityAnalysis: {
+              ...s.prevSensitivityAnalysis,
+              case: currentCase.id,
+            },
+          }));
         }
         // Scenario modeling
         const scenarioModelingTmp = data.find(
@@ -627,6 +639,18 @@ const Case = () => {
                   })
                 ),
               },
+            },
+          }));
+        } else {
+          CaseVisualState.update((s) => ({
+            ...s,
+            scenarioModeling: {
+              ...s.scenarioModeling,
+              case: currentCase.id,
+            },
+            prevScenarioModeling: {
+              ...s.prevScenarioModeling,
+              case: currentCase.id,
             },
           }));
         }

@@ -28,6 +28,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
       ...s,
       sensitivityAnalysis: {
         ...s.sensitivityAnalysis,
+        case: currentCase.id,
         config: {
           ...s.sensitivityAnalysis.config,
           [`${selectedSegment}_third-driver`]: value,
@@ -35,6 +36,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
       },
       prevSensitivityAnalysis: {
         ...s.prevSensitivityAnalysis,
+        case: currentCase.id,
         config: {
           ...s.prevSensitivityAnalysis.config,
           [`${selectedSegment}_third-driver`]: value,

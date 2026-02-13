@@ -142,8 +142,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Resolved continuous re-rendering issue in `AdvancedModellingTool` by refining state synchronization logic.
     - Implemented per-segment persistence for the selected driver in `AdvancedModellingTool`, ensuring the user's choice is saved and restored when switching segments.
     - Reset calculation result when switching drivers in `AdvancedModellingTool` to prevent stale data display.
-    - Adjusted Case Sidebar layout and scrolling behavior for better usability on 1280x720 screens.
     - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency.
+    - Resolved persistence issues in Step 4 and 5: fixed bug where `AdvancedModellingTool` and `ThreeDriverCalculator` failed to save data due to missing `case` ID in the global store.
+    - Implemented explicit `case` ID initialization in `Case.js` for modelling tabs to ensure first-time saves are successful.
+    - Reinforced `AdvancedModellingTool.js` and `ThreeDriverCalculator.js` with robust `case` ID preservation during state updates.
+    - Refined backend logic in `backend/models/case.py` to correctly detect advanced scenario modeling data, excluding "null" keys and supporting traditional scenario values as fallback.
 
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
