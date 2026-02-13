@@ -171,6 +171,16 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added case-insensitive matching for segmentation variables to improve upload robustness.
     - Updated `CaseSettings.js` to display specific backend error details in the frontend for segment generation.
     - Verified implementation with frontend linting and backend tests.
+- **Skill and Workflow Refactoring**:
+    - Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing` for better task-specific guidance.
+    - Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection and `// turbo` annotations for smoother execution.
+    - Implemented new utility workflows: `seed_data`, `view_logs`, and `run_frontend_test`.
+    - Centralized all project commands to use the `./dc.sh` wrapper for consistency.
+- **Piwik Pro to Matomo Migration**:
+    - Implemented `idc-analytics` skill to provide structured guidelines for decommissioning Piwik Pro and hardening Matomo tracking.
+    - Added `resolve_analytics_conflict` workflow for a step-by-step migration path and tracker conflict resolution.
+    - Integrated dynamic environment-based `siteID` selection logic (Staging: 1, Local: 2, Prod: 3) into implementation guides.
+    - Refactored tracking patterns to use isolated Matomo instances, preventing `_paq` namespace collisions with legacy scripts.
 - **Workflow Improvements**:
     - Automated `check_time` workflow with `analyze_time.py` script to calculate active vs idle time from logs and git history.
     - Updated `create_pr` workflow to include `GEMINI.md` update step.

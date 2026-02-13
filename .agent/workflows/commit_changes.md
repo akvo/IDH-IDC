@@ -1,7 +1,11 @@
 ---
 description: Commit changes to git following project guidelines
 ---
-1. Inspect the changes by running `git status` and `git diff --stat`.
+11. Inspect the changes by running `git status` and `git diff --stat`.
+// turbo
+   ```bash
+   git status && git diff --stat
+   ```
 2. Analyze the changes to determine if they should be a single commit or split into multiple commits.
    - If there are many files changed or unrelated changes, propose splitting the commits.
    - If the changes are focused and related, propose a single commit.

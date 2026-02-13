@@ -1,0 +1,31 @@
+---
+name: idc-testing
+description: Testing and linting for IDH-IDC backend and frontend.
+---
+
+# IDC Testing Skills
+
+Quality assurance workflows including unit tests and linting.
+
+## Backend Verification
+
+- **Full Check**:
+  ```bash
+  ./dc.sh exec backend ./check.sh
+  ```
+  _Includes pytest and flake8_
+
+## Frontend Verification
+
+- **Linting**:
+  ```bash
+  ./dc.sh exec frontend yarn lint
+  ```
+- **Interactive Tests**:
+  ```bash
+  ./dc.sh exec frontend yarn test
+  ```
+- **CI Mode Tests**:
+  ```bash
+  ./dc.sh exec frontend yarn test:ci
+  ```
