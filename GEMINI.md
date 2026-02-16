@@ -127,7 +127,9 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Resolved continuous re-rendering issue in `AdvancedModellingTool` by refining state synchronization logic.
     - Implemented per-segment persistence for the selected driver in `AdvancedModellingTool`, ensuring the user's choice is saved and restored when switching segments.
     - Reset calculation result when switching drivers in `AdvancedModellingTool` to prevent stale data display.
-    - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency.
+    - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency by implementing flex-growth rules for the Equation Visualizer and Scenario Tabs.
+    - Resolved excessive spacing in the Price Breakdown card by using standardized fixed margins while maintaining equal-height alignment across all screen sizes.
+    - Updated `AdvancedModellingTool.js` with `left-panel` and `right-panel` classes for precise CSS targeting of internal Space components.
     - Resolved persistence issues in Step 4 and 5: fixed bug where `AdvancedModellingTool` and `ThreeDriverCalculator` failed to save data due to missing `case` ID in the global store.
     - Implemented explicit `case` ID initialization in `Case.js` for modelling tabs to ensure first-time saves are successful.
     - Reinforced `AdvancedModellingTool.js` and `ThreeDriverCalculator.js` with robust `case` ID preservation during state updates.

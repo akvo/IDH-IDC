@@ -912,10 +912,14 @@ const AdvancedModellingTool = () => {
       </Col>
 
       <Col span={24}>
-        <Row gutter={[24, 24]}>
+        <Row gutter={[24, 24]} align="stretch">
           {/* Left Panel */}
           <Col span={10}>
-            <Space direction="vertical" size="large" className="panel-space">
+            <Space
+              direction="vertical"
+              size="large"
+              className="panel-space left-panel"
+            >
               <div>
                 <Text className="driver-select-label">
                   Select the driver you want to model:
@@ -953,7 +957,11 @@ const AdvancedModellingTool = () => {
 
           {/* Right Panel */}
           <Col span={14}>
-            <Space direction="vertical" size="middle" className="panel-space">
+            <Space
+              direction="vertical"
+              size="middle"
+              className="panel-space right-panel"
+            >
               <Card bordered={false} className="visualizer-card">
                 <EquationVisualizer
                   selectedDriver={selectedDriver}

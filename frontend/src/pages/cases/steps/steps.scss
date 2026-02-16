@@ -1359,9 +1359,27 @@
         margin-top: -1px;
         position: relative;
         z-index: 1;
+        flex: 1; // Fill available height
+        display: flex;
+        flex-direction: column;
+
+        .ant-tabs-content {
+          height: 100%;
+          .ant-tabs-tabpane {
+            height: 100%;
+          }
+        }
 
         .modelling-inputs-content {
           padding: 0;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+
+          .footer-button-row {
+            margin-top: auto; // Push buttons to bottom
+            padding-top: 24px;
+          }
         }
       }
     }
@@ -1477,7 +1495,7 @@
   }
 
   .footer-button-row {
-    margin-top: 24px;
+    // margin-top: 24px; // Handled by modelling-inputs-content flex
 
     .button-clear {
       font-weight: bold;
@@ -1496,10 +1514,35 @@
     display: flex !important;
     flex-direction: column;
 
-    & > div:last-child {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    &.ant-space {
+      display: flex !important;
+    }
+
+    &.left-panel {
+      & > .ant-space-item:last-child {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        // Ensure scenario-tabs-custom inside panel-space fills height
+        .scenario-tabs-custom {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+      }
+    }
+
+    &.right-panel {
+      & > .ant-space-item:first-child {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .visualizer-card {
+          flex: 1;
+        }
+      }
     }
   }
 
@@ -1516,12 +1559,20 @@
     border-radius: 12px;
     border: 1px solid #f0f0f0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex: 1; // Allow Visualizer to grow
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
 
     .ant-card-body {
       background: #fff;
       border-radius: 12px;
-      padding: 12px 20px;
+      padding: 24px 20px; // Increased padding
       overflow: hidden;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -1529,7 +1580,7 @@
     border-radius: 12px;
     border: 1px solid #f0f0f0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    flex: 1;
+    // flex: 1; // Removed to allow natural height
     display: flex;
     flex-direction: column;
 
@@ -1543,7 +1594,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
+        // justify-content: flex-end; // Removed to eliminate gap between title and description
       }
     }
 
@@ -1585,7 +1636,8 @@
     }
 
     .breakdown-chart-wrapper {
-      margin-top: 24px;
+      margin-top: 32px; // Fixed spacing to avoid giant gap
+      padding-top: 0;
       position: relative;
 
       .price-total-display {
