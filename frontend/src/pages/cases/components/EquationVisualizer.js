@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { PlusOutlined, CloseOutlined, MinusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
 
@@ -56,7 +56,36 @@ const EquationVisualizer = ({
   showLegend = false,
   showTooltip = true,
 }) => {
+  const containerRef = useRef(null);
+  const contentRef = useRef(null);
+  const [scale, setScale] = useState(1);
   const isAquaculture = category === "Aquaculture";
+
+  // Function to calculate and set scale
+  const updateScale = () => {
+    if (containerRef.current && contentRef.current) {
+      const containerWidth = containerRef.current.offsetWidth - 40; // padding
+      const contentWidth = contentRef.current.scrollWidth;
+
+      if (contentWidth > containerWidth) {
+        setScale(containerWidth / contentWidth);
+      } else {
+        setScale(1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, [selectedDriver, category, secondaryLabel, tertiaryLabel]);
+
+  // Also update scale when showLegend changes as it might affect vertical space/layout
+  useEffect(() => {
+    const timer = setTimeout(updateScale, 100);
+    return () => clearTimeout(timer);
+  }, [showLegend]);
 
   const driverLabels = {
     price: labels.price || "Price",
@@ -150,7 +179,7 @@ const EquationVisualizer = ({
                 <div className="fraction-line large-margin" />
                 <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
-              <RowSeparator icon={<PlusOutlined />} />
+              <RowSeparator icon={<PlusOutlined className="icon-14" />} />
               <IconBox
                 icon={CopWhite}
                 label={driverLabels.cop}
@@ -190,7 +219,7 @@ const EquationVisualizer = ({
           return (
             <div className="flex-center">
               <IconBox icon={PriceWhite} label={driverLabels.price} />
-              <RowSeparator icon={<MinusOutlined />} />
+              <RowSeparator icon={<MinusOutlined className="icon-14" />} />
               <div className="formula-center-wrapper">
                 {/* ((ExpandedIncome / Land) - 1) / Volume */}
                 <div className="formula-group-dashed">
@@ -220,7 +249,7 @@ const EquationVisualizer = ({
                 {/* Numerator: ExpandedIncome + (Land * COP) */}
                 <div className="formula-group-dashed">
                   <ExpandedIncome />
-                  <RowSeparator icon={<PlusOutlined />} />
+                  <RowSeparator icon={<PlusOutlined className="icon-14" />} />
                   <div className="formula-group-dashed small-radius">
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                     <RowSeparator
@@ -250,7 +279,7 @@ const EquationVisualizer = ({
                 {/* Numerator: ExpandedIncome + (Land * COP) */}
                 <div className="formula-group-dashed">
                   <ExpandedIncome />
-                  <RowSeparator icon={<PlusOutlined />} />
+                  <RowSeparator icon={<PlusOutlined className="icon-14" />} />
                   <div className="formula-group-dashed small-radius">
                     <IconBox icon={LandIcon} label={driverLabels.land} />
                     <RowSeparator
@@ -282,7 +311,7 @@ const EquationVisualizer = ({
                 <RowSeparator icon={<CloseOutlined className="icon-14" />} />
                 <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
-              <RowSeparator icon={<MinusOutlined />} />
+              <RowSeparator icon={<MinusOutlined className="icon-14" />} />
               <div className="formula-center-wrapper">
                 <ExpandedIncome />
                 <div className="fraction-line" />
@@ -298,8 +327,16 @@ const EquationVisualizer = ({
 
   return (
     <div className="equation-visualizer-container">
-      <div className="equation-visualizer-graphic">
-        <div className="equation-content-inner">
+      <div className="equation-visualizer-graphic" ref={containerRef}>
+        <div
+          className="equation-content-inner"
+          ref={contentRef}
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+            transition: "transform 0.3s ease",
+          }}
+        >
           {renderFormulaContent()}
 
           {/* Equals Section */}

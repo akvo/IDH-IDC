@@ -92,10 +92,6 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented bottom-up question derivation logic to automatically calculate parent aggregator values (e.g., q1 total) when missing from input data.
     - Refactored global state synchronization in `EnterIncomeDataForm` to use functional updates and deep merging, preventing data loss across driver groups and ensuring correct data flow to Step 3.
     - Removed fragile 500ms timeout workaround from the initialization lifecycle.
-- **Income Calculation Documentation**:
-    - Created `INCOME_CALCULATION.md` to provide a simplified, technical overview of the unified income formula and commodity-specific mappings.
-    - Reorganized documentation by moving `analytic.md` and `INCOME_CALCULATION.md` into a new `docs/` folder.
-    - Documented variable hierarchy and aggregation levels for all commodity types (Crop, Aquaculture, Livestock).
 - **Step 5 Refactoring & Advanced Modelling Tool (Issue #713)**:
     - Extracted all scenario modeling logic, state, and UI sections (1, 2, and 3) from `ClosingGap.js` into a standalone `StandardScenarioModeling` component.
     - Implemented `AdvancedModellingTool` as a new high-fidelity modelling interface for Step 5.
@@ -111,30 +107,19 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Encapsulated scenario-specific state and lifecycle hooks to improve modularity and maintainability.
     - Implemented category-specific modelling formulas for Crops, Livestock, and Aquaculture in a centralized utility.
     - Added unit-cost and unit-profit breakdown visualization for each modelling scenario.
-    - Refactored `EquationVisualizer` to display detailed, expanded mathematical models including benchmark, secondary, and diversified income components.
-    - Implemented Advanced Modelling Tool result display with feasibility color-coding and dynamic status text.
-    - Integrated question flattening logic to correctly resolve nested driver units and labels.
-    - Refined UI styling for modelling result row and feasibility status, including color-coded boxes and bold labels.
-    - Added driver unit display to the modelling results header for improved context.
-    - Fixed linting warnings and optimized question lookup logic in the modelling interface.
-    - Implemented comprehensive unit tests for modelling driver calculations.
-    - Integrated secondary and tertiary income as whole drivers in the Advanced Modelling Tool.
-    - Implemented robust lookup for secondary/tertiary commodity income aggregators.
-    - Updated target primary income calculation to account for secondary, tertiary, and diversified income.
-    - Refined UI layout by moving "Other Diversified Income" to the bottom and improved labels for clarity.
-    - Updated Equation Visualizer to display secondary and tertiary income components.
-    - Refined Price Breakdown UI with a premium header, circular icon wrapper, and total price display.
-    - Switched to the custom `PriceWhite` icon from Equation Visualizer for the breakdown card.
-    - Refined price breakdown bar chart labels to prevent cropping on narrow segments by allowing overflow and ensuring text does not wrap.
-    - Implemented 2-decimal formatting for all modelling results and breakdown values.
     - Refactored `EquationVisualizer.js` to eliminate all inline styles, moving them to structured SCSS classes in `steps.scss`.
+    - Implemented dynamic JavaScript-based scaling in `EquationVisualizer.js` to ensure the formula fits within its card on all screen sizes without horizontal overflow.
+    - Implemented vertical and horizontal centering for all equation elements, ensuring a balanced layout and preventing cropping.
+    - Standardized and refined equation symbols (+, -, *, =) to be more proportionate and harmonious with the driver icons.
+    - Simplified `RowSeparator` usage and ensured consistent color coding for all operators in the visualizer.
     - Shortened multi-word labels in `EquationVisualizer` (COP, SEC, TER, ODI) and added a legend for clarity.
+    - Integrated `antd` `Tooltip` directly into `IconBox` component for better discoverability.
+    - Made the bottom legend in `EquationVisualizer` configurable via `showLegend` prop.
+    - Updated `steps.scss` to handle optional legend visibility and simplified cursor behavior.
     - Reduced icon circle size to 40px and icon image size to 24px in the equation visualizer.
-    - Implemented vertical and horizontal centering for all equation elements, ensuring a balanced layout.
     - Optimized dashed boxes to wrap content tightly using `width: fit-content`.
     - Resolved React hook dependency warnings and optimized component lifecycle in the modelling interface.
     - Standardized colors and styling in Step 5 using `$primary-color`.
-    - Created `/check_time` workflow to automate active vs. idle time analysis based on conversation logs and git history.
     - Implemented per-segment persistence for modelling values, ensuring data is saved and restored when switching between segments.
     - Refactored `EquationVisualizer` to be responsive, including horizontal scrolling and specific scaling for 1280x720 screens.
     - Refined Equation Visualizer legend styles for smaller screens.
@@ -147,7 +132,6 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented explicit `case` ID initialization in `Case.js` for modelling tabs to ensure first-time saves are successful.
     - Reinforced `AdvancedModellingTool.js` and `ThreeDriverCalculator.js` with robust `case` ID preservation during state updates.
     - Refined backend logic in `backend/models/case.py` to correctly detect advanced scenario modeling data, excluding "null" keys and supporting traditional scenario values as fallback.
-
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.
@@ -165,7 +149,6 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Resolved linting warnings in `Pie.js` regarding `undefined` property checks.
     - Added safety null-checks and robust driver lookup logic across all Step 3/4 visualization components.
     - Verified all changes with frontend linting and manual code review.
-
 - **Segmentation Preview & Value Generation Error Handling (Issue #717)**:
     - Implemented error handling for segmentation preview API calls to prevent silent failures.
     - Added state management to track and display API errors in both `SegmentConfigurationForm` and `DataUploadSegmentForm`.
@@ -174,27 +157,6 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added case-insensitive matching for segmentation variables to improve upload robustness.
     - Updated `CaseSettings.js` to display specific backend error details in the frontend for segment generation.
     - Verified implementation with frontend linting and backend tests.
-- **Skill and Workflow Refactoring**:
-    - Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing` for better task-specific guidance.
-    - Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection and `// turbo` annotations for smoother execution.
-    - Implemented new utility workflows: `seed_data`, `view_logs`, and `run_frontend_test`.
-    - Centralized all project commands to use the `./dc.sh` wrapper for consistency.
-- **Piwik Pro to Matomo Migration**:
-    - Implemented `idc-analytics` skill to provide structured guidelines for decommissioning Piwik Pro and hardening Matomo tracking.
-    - Added `resolve_analytics_conflict` workflow for a step-by-step migration path and tracker conflict resolution.
-    - Integrated dynamic environment-based `siteID` selection logic (Staging: 1, Local: 2, Prod: 3) into implementation guides.
-    - Refactored tracking patterns to use isolated Matomo instances, preventing `_paq` namespace collisions with legacy scripts.
-- **Time Analysis Automation (/check_time)**:
-    - Updated `analyze_time.py` to support grouping activities by issue number (e.g., `#713`).
-    - Implemented flexible argument support: run with no params (today), with issue number, or with specific date.
-    - Added detailed idle time explanation and threshold-based gap reporting.
-    - Refined `/check_time` workflow documentation to include interactive decision-making for analysis criteria.
-- **Advanced Modelling Tool Refinement (Issue #713)**:
-    - Implemented legend as tooltips in `EquationVisualizer` to improve vertical space.
-    - Integrated `antd` `Tooltip` directly into `IconBox` component for better discoverability.
-    - Made the bottom legend in `EquationVisualizer` configurable via `showLegend` prop.
-    - Added `showTooltip` prop to toggle icon-based tooltips.
-    - Updated `steps.scss` to handle optional legend visibility and simplified cursor behavior.
 - **Fixed Crop Deactivation (Issue #721)**:
     - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
     - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.
@@ -203,6 +165,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added safety checks in `Case.js` to handle missing commodity data and filter out commodities without IDs during initialization.
     - Reinforced `EnterIncomeData.js` with defensive payload filtering to strip out invalid commodity IDs (e.g., "null") before submission.
     - Verified fix with a new backend regression test `test_fix_commodity_removal.py` and front-to-back integration checks.
+- **Technical Improvements & Workflows**:
+    - **General Refactoring**: Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing`.
+    - **Workflows**: Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection; implemented `seed_data`, `view_logs`, and `run_frontend_test`.
+    - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
+    - **Time Analysis**: Updated `analyze_time.py` to support grouping by issue number and detailed idle time analysis (/check_time).
+    - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

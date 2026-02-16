@@ -1661,9 +1661,9 @@
   .equation-visualizer-graphic {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center; // Always center the equation
     width: 100%;
-    overflow-x: auto;
+    overflow: hidden; // Scaling handles fit, hide overflow
     padding: 20px 0;
     min-height: 242px;
 
@@ -1689,7 +1689,8 @@
       margin: 0 auto;
       padding: 0 20px;
       white-space: nowrap;
-      min-width: min-content;
+      width: max-content; // Important for JS scaling calculation
+      transition: transform 0.3s ease;
     }
 
     .icon-box-container {
@@ -1736,12 +1737,13 @@
     }
 
     .row-separator {
-      font-size: 18px;
+      font-size: 14px; // Reduced to match icon-14
       padding: 0 4px;
       display: flex;
       align-items: center;
       justify-content: center;
       height: 40px;
+      color: #00565b; // Match primary color for operators
     }
 
     .expanded-income-container {
@@ -1788,9 +1790,9 @@
     }
 
     .equals-operator {
-      font-size: 40px;
+      font-size: 28px; // Reduced from 40px for better proportion
       font-weight: bold;
-      margin: 0 24px;
+      margin: 0 20px;
       color: #00565b;
     }
 
