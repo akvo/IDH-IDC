@@ -184,9 +184,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added `resolve_analytics_conflict` workflow for a step-by-step migration path and tracker conflict resolution.
     - Integrated dynamic environment-based `siteID` selection logic (Staging: 1, Local: 2, Prod: 3) into implementation guides.
     - Refactored tracking patterns to use isolated Matomo instances, preventing `_paq` namespace collisions with legacy scripts.
-- **Workflow Improvements**:
-    - Automated `check_time` workflow with `analyze_time.py` script to calculate active vs idle time from logs and git history.
-    - Updated `create_pr` workflow to include `GEMINI.md` update step.
+- **Time Analysis Automation (/check_time)**:
+    - Updated `analyze_time.py` to support grouping activities by issue number (e.g., `#713`).
+    - Implemented flexible argument support: run with no params (today), with issue number, or with specific date.
+    - Added detailed idle time explanation and threshold-based gap reporting.
+    - Refined `/check_time` workflow documentation to include interactive decision-making for analysis criteria.
 - **Fixed Crop Deactivation (Issue #721)**:
     - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
     - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.
