@@ -182,6 +182,7 @@ const AdvancedModellingTool = () => {
           ...s,
           scenarioModeling: {
             ...s.scenarioModeling,
+            case: currentCase.id,
             config: {
               ...s.scenarioModeling.config,
               advancedModeling: {
@@ -204,6 +205,7 @@ const AdvancedModellingTool = () => {
     lockedFields,
     modelValues,
     calculationResult,
+    currentCase.id,
   ]);
 
   // Sync global store to local state (Global -> Local)
@@ -471,6 +473,7 @@ const AdvancedModellingTool = () => {
         ...s,
         scenarioModeling: {
           ...s.scenarioModeling,
+          case: currentCase.id,
           config: {
             ...s.scenarioModeling.config,
             advancedModeling: {
@@ -522,6 +525,7 @@ const AdvancedModellingTool = () => {
           ...s,
           scenarioModeling: {
             ...s.scenarioModeling,
+            case: currentCase.id,
             config: {
               ...s.scenarioModeling.config,
               advancedModeling: {

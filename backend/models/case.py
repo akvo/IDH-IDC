@@ -309,11 +309,29 @@ class Case(Base):
             for v in self.case_visualization
             if v.tab == VisualizationTab.scenario_modeling
         ]
-        # Check if any of them contain scenario data
+        # Check if any of them contain scenario data (traditional or advanced)
         has_scenario_data = any(
-            v.config.get("scenarioData")
-            and v.config.get("scenarioOutcomeDataSource")
-            and any(s["scenarioValues"] for s in v.config["scenarioData"])
+            (
+                # Advanced modelling tool check
+                v.config.get("advancedModeling")
+                and any(
+                    sv.get("calculationResult", {}).get("value")
+                    for k, sv in v.config.get("advancedModeling", {})
+                    .get("segmentData", {})
+                    .items()
+                    if k != "null"
+                )
+            )
+            or (
+                # Traditional scenario modeling check
+                # if Step 5 is updated to consistently populate it.
+                v.config.get("scenarioData")
+                and v.config.get("scenarioOutcomeDataSource")
+                and any(
+                    s.get("scenarioValues")
+                    for s in v.config.get("scenarioData", [])
+                )
+            )
             for v in scenario_modeling_visualizations
         )
         # get scenario outcome data source

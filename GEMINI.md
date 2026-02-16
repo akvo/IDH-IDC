@@ -142,8 +142,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Resolved continuous re-rendering issue in `AdvancedModellingTool` by refining state synchronization logic.
     - Implemented per-segment persistence for the selected driver in `AdvancedModellingTool`, ensuring the user's choice is saved and restored when switching segments.
     - Reset calculation result when switching drivers in `AdvancedModellingTool` to prevent stale data display.
-    - Adjusted Case Sidebar layout and scrolling behavior for better usability on 1280x720 screens.
     - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency.
+    - Resolved persistence issues in Step 4 and 5: fixed bug where `AdvancedModellingTool` and `ThreeDriverCalculator` failed to save data due to missing `case` ID in the global store.
+    - Implemented explicit `case` ID initialization in `Case.js` for modelling tabs to ensure first-time saves are successful.
+    - Reinforced `AdvancedModellingTool.js` and `ThreeDriverCalculator.js` with robust `case` ID preservation during state updates.
+    - Refined backend logic in `backend/models/case.py` to correctly detect advanced scenario modeling data, excluding "null" keys and supporting traditional scenario values as fallback.
 
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
@@ -181,9 +184,19 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added `resolve_analytics_conflict` workflow for a step-by-step migration path and tracker conflict resolution.
     - Integrated dynamic environment-based `siteID` selection logic (Staging: 1, Local: 2, Prod: 3) into implementation guides.
     - Refactored tracking patterns to use isolated Matomo instances, preventing `_paq` namespace collisions with legacy scripts.
-- **Workflow Improvements**:
-    - Automated `check_time` workflow with `analyze_time.py` script to calculate active vs idle time from logs and git history.
-    - Updated `create_pr` workflow to include `GEMINI.md` update step.
+- **Time Analysis Automation (/check_time)**:
+    - Updated `analyze_time.py` to support grouping activities by issue number (e.g., `#713`).
+    - Implemented flexible argument support: run with no params (today), with issue number, or with specific date.
+    - Added detailed idle time explanation and threshold-based gap reporting.
+    - Refined `/check_time` workflow documentation to include interactive decision-making for analysis criteria.
+- **Fixed Crop Deactivation (Issue #721)**:
+    - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
+    - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.
+    - Added `session.commit()` and `session.refresh(case)` in backend to ensure newly added commodities receive valid IDs immediately, resolving a recurring 422 error.
+    - Implemented a confirmation dialog in `CaseSettings.js` to warn users before permanently deactivating crops.
+    - Added safety checks in `Case.js` to handle missing commodity data and filter out commodities without IDs during initialization.
+    - Reinforced `EnterIncomeData.js` with defensive payload filtering to strip out invalid commodity IDs (e.g., "null") before submission.
+    - Verified fix with a new backend regression test `test_fix_commodity_removal.py` and front-to-back integration checks.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

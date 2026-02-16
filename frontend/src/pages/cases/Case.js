@@ -208,7 +208,7 @@ const Case = () => {
           );
           return findCommodity;
         })
-        .filter((x) => x);
+        .filter((cc) => cc && cc.id);
 
       api.get(`/questions/${currentCase.id}`).then((res) => {
         const { data } = res;
@@ -350,6 +350,10 @@ const Case = () => {
                   (cc) => cc.id === parseInt(caseCommodityId)
                 );
 
+                if (!commodity) {
+                  return;
+                }
+
                 const question = flattenQuestionList.find(
                   (q) => q.id === parseInt(questionId)
                 );
@@ -407,65 +411,74 @@ const Case = () => {
       // eol generate questions
       const mappedData = currentCase.segments.map((segment) => {
         const answers = isEmpty(segment?.answers) ? {} : segment.answers;
-        const remappedAnswers = Object.keys(answers).map((key) => {
-          const [fieldKey, caseCommodityId, questionId] = key.split("-");
-          const commodity = currentCase.case_commodities.find(
-            (cc) => cc.id === parseInt(caseCommodityId)
-          );
-          const commodityFocus = commodity.commodity_type === "focus";
-          const totalCommodityValue = totalCommodityQuestions.find(
-            (q) => q.id === parseInt(questionId)
-          );
-          const cost = costQuestions.find(
-            (q) =>
-              q.id === parseInt(questionId) &&
-              q.parent === 1 &&
-              q.commodity_id === commodity.commodity
-          );
-          const question = flattenedQuestionGroups.find(
-            (q) =>
-              q.id === parseInt(questionId) &&
-              q.commodity_id === commodity.commodity
-          );
-          const totalOtherDiversifiedIncome =
-            question?.question_type === "diversified" && !question.parent;
-          return {
-            name: fieldKey,
-            question: question,
-            commodityFocus: commodityFocus,
-            commodityType: commodity.commodity_type,
-            caseCommodityId: parseInt(caseCommodityId),
-            commodityId: commodity.commodity,
-            commodityName: commodityNames[commodity.commodity],
-            questionId: parseInt(questionId),
-            value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
-            isTotalFeasibleFocusIncome:
-              totalCommodityValue && commodityFocus && fieldKey === "feasible"
-                ? true
-                : false,
-            isTotalFeasibleDiversifiedIncome:
-              totalCommodityValue && !commodityFocus && fieldKey === "feasible"
-                ? true
-                : totalOtherDiversifiedIncome && fieldKey === "feasible"
-                ? true
-                : false,
-            isTotalCurrentFocusIncome:
-              totalCommodityValue && commodityFocus && fieldKey === "current"
-                ? true
-                : false,
-            isTotalCurrentDiversifiedIncome:
-              totalCommodityValue && !commodityFocus && fieldKey === "current"
-                ? true
-                : totalOtherDiversifiedIncome && fieldKey === "current"
-                ? true
-                : false,
-            feasibleCost:
-              cost && answers[key] && fieldKey === "feasible" ? true : false,
-            currentCost:
-              cost && answers[key] && fieldKey === "current" ? true : false,
-            costName: cost ? cost.text : "",
-          };
-        });
+        const remappedAnswers = Object.keys(answers)
+          .map((key) => {
+            const [fieldKey, caseCommodityId, questionId] = key.split("-");
+            const commodity = currentCase.case_commodities.find(
+              (cc) => cc.id === parseInt(caseCommodityId)
+            );
+
+            if (!commodity) {
+              return null;
+            }
+
+            const commodityFocus = commodity.commodity_type === "focus";
+            const totalCommodityValue = totalCommodityQuestions.find(
+              (q) => q.id === parseInt(questionId)
+            );
+            const cost = costQuestions.find(
+              (q) =>
+                q.id === parseInt(questionId) &&
+                q.parent === 1 &&
+                q.commodity_id === commodity.commodity
+            );
+            const question = flattenedQuestionGroups.find(
+              (q) =>
+                q.id === parseInt(questionId) &&
+                q.commodity_id === commodity.commodity
+            );
+            const totalOtherDiversifiedIncome =
+              question?.question_type === "diversified" && !question.parent;
+            return {
+              name: fieldKey,
+              question: question,
+              commodityFocus: commodityFocus,
+              commodityType: commodity.commodity_type,
+              caseCommodityId: parseInt(caseCommodityId),
+              commodityId: commodity.commodity,
+              commodityName: commodityNames[commodity.commodity],
+              questionId: parseInt(questionId),
+              value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
+              isTotalFeasibleFocusIncome:
+                totalCommodityValue && commodityFocus && fieldKey === "feasible"
+                  ? true
+                  : false,
+              isTotalFeasibleDiversifiedIncome:
+                totalCommodityValue &&
+                !commodityFocus &&
+                fieldKey === "feasible"
+                  ? true
+                  : totalOtherDiversifiedIncome && fieldKey === "feasible"
+                  ? true
+                  : false,
+              isTotalCurrentFocusIncome:
+                totalCommodityValue && commodityFocus && fieldKey === "current"
+                  ? true
+                  : false,
+              isTotalCurrentDiversifiedIncome:
+                totalCommodityValue && !commodityFocus && fieldKey === "current"
+                  ? true
+                  : totalOtherDiversifiedIncome && fieldKey === "current"
+                  ? true
+                  : false,
+              feasibleCost:
+                cost && answers[key] && fieldKey === "feasible" ? true : false,
+              currentCost:
+                cost && answers[key] && fieldKey === "current" ? true : false,
+              costName: cost ? cost.text : "",
+            };
+          })
+          .filter((a) => a);
 
         const totalCurrentIncomeAnswer = totalIncomeQuestions
           .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
@@ -575,6 +588,18 @@ const Case = () => {
               ...sensitivityAnalysisTmp,
             },
           }));
+        } else {
+          CaseVisualState.update((s) => ({
+            ...s,
+            sensitivityAnalysis: {
+              ...s.sensitivityAnalysis,
+              case: currentCase.id,
+            },
+            prevSensitivityAnalysis: {
+              ...s.prevSensitivityAnalysis,
+              case: currentCase.id,
+            },
+          }));
         }
         // Scenario modeling
         const scenarioModelingTmp = data.find(
@@ -614,6 +639,18 @@ const Case = () => {
                   })
                 ),
               },
+            },
+          }));
+        } else {
+          CaseVisualState.update((s) => ({
+            ...s,
+            scenarioModeling: {
+              ...s.scenarioModeling,
+              case: currentCase.id,
+            },
+            prevScenarioModeling: {
+              ...s.prevScenarioModeling,
+              case: currentCase.id,
             },
           }));
         }

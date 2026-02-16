@@ -35,11 +35,18 @@ const generateSegmentAnswersPayload = ({
   // Use reduce to accumulate answers grouped by question ID
   const groupedAnswers = Object.keys(answerValues).reduce((acc, key) => {
     const [fieldName, caseCommodityId, questionId] = key.split("-");
+    const parsedCommodityId = parseInt(caseCommodityId);
+
+    // Filter out invalid case_commodity IDs (e.g., "null", NaN)
+    if (isNaN(parsedCommodityId)) {
+      return acc;
+    }
+
     const questionKey = `${caseCommodityId}-${questionId}`;
 
     if (!acc[questionKey]) {
       acc[questionKey] = {
-        case_commodity: parseInt(caseCommodityId),
+        case_commodity: parsedCommodityId,
         question: parseInt(questionId),
         segment: segmentId,
       };
