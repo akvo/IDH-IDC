@@ -189,6 +189,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented flexible argument support: run with no params (today), with issue number, or with specific date.
     - Added detailed idle time explanation and threshold-based gap reporting.
     - Refined `/check_time` workflow documentation to include interactive decision-making for analysis criteria.
+- **Advanced Modelling Tool Refinement (Issue #713)**:
+    - Implemented legend as tooltips in `EquationVisualizer` to improve vertical space.
+    - Integrated `antd` `Tooltip` directly into `IconBox` component for better discoverability.
+    - Made the bottom legend in `EquationVisualizer` configurable via `showLegend` prop.
+    - Added `showTooltip` prop to toggle icon-based tooltips.
+    - Updated `steps.scss` to handle optional legend visibility and simplified cursor behavior.
 - **Fixed Crop Deactivation (Issue #721)**:
     - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
     - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.

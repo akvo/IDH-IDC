@@ -1700,6 +1700,10 @@
       margin: 0 8px;
       vertical-align: middle;
 
+      &.has-tooltip {
+        cursor: default;
+      }
+
       .icon-circle {
         width: 40px;
         height: 40px;

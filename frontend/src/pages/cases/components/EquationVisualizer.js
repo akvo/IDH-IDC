@@ -1,5 +1,6 @@
 import React from "react";
 import { PlusOutlined, CloseOutlined, MinusOutlined } from "@ant-design/icons";
+import { Tooltip } from "antd";
 
 // Custom icons - specialised for the equation visualizer
 // White variants (for the formula side)
@@ -19,14 +20,26 @@ import LandIcon from "../../../assets/icons/equaion-visualizer/land.svg";
 import DiversifiedIcon from "../../../assets/icons/equaion-visualizer/diversified_income.svg";
 import BenchmarkIcon from "../../../assets/icons/equaion-visualizer/benchmark.svg";
 
-const IconBox = ({ icon, label, color = "#005a5b" }) => (
-  <div className="icon-box-container">
-    <div className="icon-circle" style={{ background: color }}>
-      {typeof icon === "string" ? <img src={icon} alt={label} /> : icon}
+const IconBox = ({ icon, label, color = "#005a5b", tooltip }) => {
+  const content = (
+    <div className={`icon-box-container ${tooltip ? "has-tooltip" : ""}`}>
+      <div className="icon-circle" style={{ background: color }}>
+        {typeof icon === "string" ? <img src={icon} alt={label} /> : icon}
+      </div>
+      <div className="icon-label">{label}</div>
     </div>
-    <div className="icon-label">{label}</div>
-  </div>
-);
+  );
+
+  if (tooltip) {
+    return (
+      <Tooltip title={tooltip} mouseEnterDelay={0.3}>
+        {content}
+      </Tooltip>
+    );
+  }
+
+  return content;
+};
 
 const RowSeparator = ({ icon, color = "#595959" }) => (
   <div className="row-separator" style={{ color: color }}>
@@ -40,6 +53,8 @@ const EquationVisualizer = ({
   category = "Crop",
   secondaryLabel = "Secondary commodity",
   tertiaryLabel = "Tertiary commodity",
+  showLegend = false,
+  showTooltip = true,
 }) => {
   const isAquaculture = category === "Aquaculture";
 
@@ -64,6 +79,15 @@ const EquationVisualizer = ({
     land: "#faad14",
   };
 
+  const descriptions = {
+    COP: labels.cop || "Cost of Production",
+    SEC: "Secondary Income",
+    TER: "Tertiary Income",
+    ODI: "Other Diversified Income",
+  };
+
+  const getTooltip = (label) => (showTooltip ? descriptions[label] : null);
+
   // Helper Segment: Expanded Target Income (Benchmark - Secondary - Tertiary - Diversified)
   const ExpandedIncome = () => (
     <div className="expanded-income-container">
@@ -71,26 +95,26 @@ const EquationVisualizer = ({
       {secondaryLabel && (
         <>
           <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-          <IconBox icon={IncomeWhite} label="SEC" />
+          <IconBox icon={IncomeWhite} label="SEC" tooltip={getTooltip("SEC")} />
         </>
       )}
       {tertiaryLabel && (
         <>
           <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-          <IconBox icon={IncomeWhite} label="TER" />
+          <IconBox icon={IncomeWhite} label="TER" tooltip={getTooltip("TER")} />
         </>
       )}
       <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-      <IconBox icon={DiversifiedIcon} label="ODI" />
+      <IconBox icon={DiversifiedIcon} label="ODI" tooltip={getTooltip("ODI")} />
     </div>
   );
 
   const Legend = () => {
     const legendItems = [
-      { key: "COP", label: labels.cop || "Cost of Production" },
-      { key: "SEC", label: "Secondary Income" },
-      { key: "TER", label: "Tertiary Income" },
-      { key: "ODI", label: "Other Diversified Income" },
+      { key: "COP", label: descriptions.COP },
+      { key: "SEC", label: descriptions.SEC },
+      { key: "TER", label: descriptions.TER },
+      { key: "ODI", label: descriptions.ODI },
     ];
 
     return (
@@ -127,7 +151,11 @@ const EquationVisualizer = ({
                 <IconBox icon={VolumeWhite} label={driverLabels.volume} />
               </div>
               <RowSeparator icon={<PlusOutlined />} />
-              <IconBox icon={CopWhite} label={driverLabels.cop} />
+              <IconBox
+                icon={CopWhite}
+                label={driverLabels.cop}
+                tooltip={getTooltip("COP")}
+              />
             </div>
           );
         case "volume":
@@ -149,7 +177,11 @@ const EquationVisualizer = ({
                 <div className="formula-group-dashed small-radius">
                   <IconBox icon={PriceWhite} label={driverLabels.price} />
                   <RowSeparator icon={<MinusOutlined className="icon-14" />} />
-                  <IconBox icon={CopWhite} label={driverLabels.cop} />
+                  <IconBox
+                    icon={CopWhite}
+                    label={driverLabels.cop}
+                    tooltip={getTooltip("COP")}
+                  />
                 </div>
               </div>
             </div>
@@ -194,7 +226,11 @@ const EquationVisualizer = ({
                     <RowSeparator
                       icon={<CloseOutlined className="icon-14" />}
                     />
-                    <IconBox icon={CopWhite} label={driverLabels.cop} />
+                    <IconBox
+                      icon={CopWhite}
+                      label={driverLabels.cop}
+                      tooltip={getTooltip("COP")}
+                    />
                   </div>
                 </div>
                 {/* Denominator: Land * Volume */}
@@ -220,7 +256,11 @@ const EquationVisualizer = ({
                     <RowSeparator
                       icon={<CloseOutlined className="icon-14" />}
                     />
-                    <IconBox icon={CopWhite} label={driverLabels.cop} />
+                    <IconBox
+                      icon={CopWhite}
+                      label={driverLabels.cop}
+                      tooltip={getTooltip("COP")}
+                    />
                   </div>
                 </div>
                 {/* Denominator: Land * Price */}
@@ -274,11 +314,12 @@ const EquationVisualizer = ({
               icon={driverIconsGreen[selectedDriver] || IncomeGreen}
               label={driverLabels[selectedDriver] || "Driver"}
               color={driverColors[selectedDriver] || "#52c41a"}
+              tooltip={selectedDriver === "cop" ? getTooltip("COP") : null}
             />
           </div>
         </div>
       </div>
-      <Legend />
+      {showLegend && <Legend />}
     </div>
   );
 };
