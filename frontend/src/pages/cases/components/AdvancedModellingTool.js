@@ -12,11 +12,7 @@ import {
   Divider,
   Alert,
 } from "antd";
-import {
-  LockOutlined,
-  UnlockOutlined,
-  QuestionCircleOutlined,
-} from "@ant-design/icons";
+import { LockOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import EquationVisualizer from "./EquationVisualizer";
@@ -48,19 +44,7 @@ const InputRow = ({
         </Space>
       </Col>
       <Col span={2} align="center">
-        {isModel && (
-          <Button
-            type="text"
-            icon={
-              locked ? (
-                <LockOutlined className="lock-icon" />
-              ) : (
-                <UnlockOutlined className="unlock-icon" />
-              )
-            }
-            onClick={() => toggleLock(field)}
-          />
-        )}
+        {!isModel && <LockOutlined className="lock-icon static-lock" />}
       </Col>
       <Col span={8}>
         <Input
@@ -69,7 +53,7 @@ const InputRow = ({
             const val = e.target.value.replace(/,/g, "");
             handleInputChange(field, val);
           }}
-          disabled={!isModel || locked || isCalculationTarget}
+          disabled={!isModel || isCalculationTarget}
           className="modelling-input"
         />
       </Col>
@@ -106,13 +90,13 @@ const AdvancedModellingTool = () => {
       selectedDriver: "cop",
       activeScenario: "model",
       lockedFields: {
-        price: true,
-        volume: true,
-        land: true,
-        cop: true,
-        odi: true,
-        secondary: true,
-        tertiary: true,
+        price: false,
+        volume: false,
+        land: false,
+        cop: false,
+        odi: false,
+        secondary: false,
+        tertiary: false,
       },
       modelValues: {
         price: 0,
@@ -262,12 +246,57 @@ const AdvancedModellingTool = () => {
           ) {
             setLockedFields(storedData.lockedFields);
           }
-          if (
-            storedData.modelValues &&
-            !isEqual(storedData.modelValues, modelValues)
-          ) {
-            setModelValues(storedData.modelValues);
+
+          if (storedData.modelValues) {
+            // Check for stale data (matches feasible)
+            const fields = [
+              "price",
+              "volume",
+              "land",
+              "cop",
+              "odi",
+              "secondary",
+              "tertiary",
+            ];
+            const targetSegment =
+              dashboardData?.find((d) => d.id === selectedSegmentId) || {};
+
+            const isStale = fields.every((f) => {
+              const val = storedData.modelValues[f];
+              const feasible = getSegmentAnswer("feasible", f, targetSegment);
+              return val === feasible;
+            });
+
+            if (isStale) {
+              const getPrefillValue = (field) => {
+                const currentVal = getSegmentAnswer(
+                  "current",
+                  field,
+                  targetSegment
+                );
+                return currentVal !== 0
+                  ? currentVal
+                  : getSegmentAnswer("feasible", field, targetSegment);
+              };
+
+              const refreshedValues = {
+                price: getPrefillValue("price"),
+                volume: getPrefillValue("volume"),
+                cop: getPrefillValue("cop"),
+                land: getPrefillValue("land"),
+                odi: getPrefillValue("odi"),
+                secondary: getPrefillValue("secondary"),
+                tertiary: getPrefillValue("tertiary"),
+              };
+
+              if (!isEqual(refreshedValues, modelValues)) {
+                setModelValues(refreshedValues);
+              }
+            } else if (!isEqual(storedData.modelValues, modelValues)) {
+              setModelValues(storedData.modelValues);
+            }
           }
+
           if (
             storedData.calculationResult &&
             !isEqual(storedData.calculationResult, calculationResult)
@@ -278,7 +307,7 @@ const AdvancedModellingTool = () => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [advancedModelingConfig]);
+  }, [advancedModelingConfig, selectedSegmentId, dashboardData]);
 
   // Find primary commodity QIDs
   const focusCommodityGroup = useMemo(() => {
@@ -441,14 +470,21 @@ const AdvancedModellingTool = () => {
     const isModelValuesEmpty = Object.values(modelValues).every((v) => v === 0);
 
     if (segment && isModelValuesEmpty) {
+      const getPrefillValue = (field) => {
+        const currentVal = getSegmentAnswer("current", field);
+        return currentVal !== 0
+          ? currentVal
+          : getSegmentAnswer("feasible", field);
+      };
+
       setModelValues({
-        price: getSegmentAnswer("feasible", "price"),
-        volume: getSegmentAnswer("feasible", "volume"),
-        cop: getSegmentAnswer("feasible", "cop"),
-        land: getSegmentAnswer("feasible", "land"),
-        odi: getSegmentAnswer("feasible", "odi"),
-        secondary: getSegmentAnswer("feasible", "secondary"),
-        tertiary: getSegmentAnswer("feasible", "tertiary"),
+        price: getPrefillValue("price"),
+        volume: getPrefillValue("volume"),
+        cop: getPrefillValue("cop"),
+        land: getPrefillValue("land"),
+        odi: getPrefillValue("odi"),
+        secondary: getPrefillValue("secondary"),
+        tertiary: getPrefillValue("tertiary"),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -467,12 +503,51 @@ const AdvancedModellingTool = () => {
   };
 
   const handleSegmentChange = (newSegmentId) => {
-    // Check if we already have data for this segment in the store
     const storedData = advancedModelingConfig?.segmentData?.[newSegmentId];
+    const newSegment = dashboardData?.find((d) => d.id === newSegmentId) || {};
 
-    if (storedData) {
-      // Just switch the segment ID in the store
-      // Effect 2 will handle loading the data into local state
+    const getPrefillValue = (field, target) => {
+      const currentVal = getSegmentAnswer("current", field, target);
+      return currentVal !== 0
+        ? currentVal
+        : getSegmentAnswer("feasible", field, target);
+    };
+
+    let finalModelValues = {
+      price: getPrefillValue("price", newSegment),
+      volume: getPrefillValue("volume", newSegment),
+      cop: getPrefillValue("cop", newSegment),
+      land: getPrefillValue("land", newSegment),
+      odi: getPrefillValue("odi", newSegment),
+      secondary: getPrefillValue("secondary", newSegment),
+      tertiary: getPrefillValue("tertiary", newSegment),
+    };
+
+    // Detect stale data if storedData exists
+    if (storedData?.modelValues) {
+      const fields = [
+        "price",
+        "volume",
+        "land",
+        "cop",
+        "odi",
+        "secondary",
+        "tertiary",
+      ];
+      const isStale = fields.every((f) => {
+        const val = storedData.modelValues[f];
+        const feasible = getSegmentAnswer("feasible", f, newSegment);
+        return val === feasible;
+      });
+
+      if (!isStale) {
+        // Keep user customisations if NOT stale
+        finalModelValues = storedData.modelValues;
+      }
+    }
+
+    if (storedData && finalModelValues === storedData.modelValues) {
+      // Just switch the segment ID in the store if data is NOT stale
       CaseVisualState.update((s) => ({
         ...s,
         scenarioModeling: {
@@ -488,20 +563,7 @@ const AdvancedModellingTool = () => {
         },
       }));
     } else {
-      // Generate defaults for the new segment
-      const newSegment =
-        dashboardData?.find((d) => d.id === newSegmentId) || {};
-
-      const defaultModelValues = {
-        price: getSegmentAnswer("feasible", "price", newSegment),
-        volume: getSegmentAnswer("feasible", "volume", newSegment),
-        cop: getSegmentAnswer("feasible", "cop", newSegment),
-        land: getSegmentAnswer("feasible", "land", newSegment),
-        odi: getSegmentAnswer("feasible", "odi", newSegment),
-        secondary: getSegmentAnswer("feasible", "secondary", newSegment),
-        tertiary: getSegmentAnswer("feasible", "tertiary", newSegment),
-      };
-
+      // Create or update segment data with refreshed values
       const defaultCalculationResult = {
         value: null,
         change: 0,
@@ -513,19 +575,18 @@ const AdvancedModellingTool = () => {
       };
 
       const defaultLockedFields = {
-        price: true,
-        volume: true,
-        land: true,
-        cop: true,
-        odi: true,
-        secondary: true,
-        tertiary: true,
+        price: false,
+        volume: false,
+        land: false,
+        cop: false,
+        odi: false,
+        secondary: false,
+        tertiary: false,
       };
 
       const defaultActiveScenario = "model";
       const defaultSelectedDriver = "cop";
 
-      // Update store with new ID AND new segment data
       CaseVisualState.update((s) => {
         const prevConfig = s.scenarioModeling?.config?.advancedModeling;
         return {
@@ -541,11 +602,16 @@ const AdvancedModellingTool = () => {
                 segmentData: {
                   ...prevConfig?.segmentData,
                   [newSegmentId]: {
-                    modelValues: defaultModelValues,
-                    calculationResult: defaultCalculationResult,
-                    lockedFields: defaultLockedFields,
-                    activeScenario: defaultActiveScenario,
-                    selectedDriver: defaultSelectedDriver,
+                    ...(storedData || {}),
+                    modelValues: finalModelValues,
+                    calculationResult:
+                      storedData?.calculationResult || defaultCalculationResult,
+                    lockedFields:
+                      storedData?.lockedFields || defaultLockedFields,
+                    activeScenario:
+                      storedData?.activeScenario || defaultActiveScenario,
+                    selectedDriver:
+                      storedData?.selectedDriver || defaultSelectedDriver,
                   },
                 },
               },
@@ -874,13 +940,13 @@ const AdvancedModellingTool = () => {
                   profit: 0,
                 });
                 setLockedFields({
-                  price: true,
-                  volume: true,
-                  land: true,
-                  cop: true,
-                  odi: true,
-                  secondary: true,
-                  tertiary: true,
+                  price: false,
+                  volume: false,
+                  land: false,
+                  cop: false,
+                  odi: false,
+                  secondary: false,
+                  tertiary: false,
                 });
               }}
             >

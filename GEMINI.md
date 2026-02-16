@@ -146,6 +146,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Corrected driver-aware feasibility logic to properly handle Price/Volume (higher = better) vs. CoP (lower = better).
     - Enhanced guidance UI: implemented styled Alert-based hints positioned below calculation results for improved readability.
     - Implemented comprehensive regression tests in `modellingFixes.test.js` to verify raw value calculations and UI state transitions.
+    - Implemented static locks for "Current" and "Feasible" scenarios in Step 5 to clearly indicate read-only data.
+    - Refined the "Model" scenario UI to be unlocked by default with hidden icons, providing a clean modeling interface.
+    - Implemented a "stale data" detection mechanism to automatically refresh model values from the "Current" scenario if they match the "Feasible" baseline.
+    - Preserved background "lock flag" state and logic for future toggleability while hiding it from the current UI.
+    - Resolved a `ReferenceError` (lexical declaration) by refactoring the data initialization lifecycle to ensure all functions are defined before use.
+    - Optimized per-segment persistence to ensure that starting model values are always relevant to the current segment state.
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.
