@@ -325,7 +325,7 @@ const SegmentConfigurationForm = ({
         </p>
         <Form.Item
           name={`${dataUploadFieldPreffix}segmentation_variable`}
-          label="Segmentation variable"
+          label="Select a variable to segment by:"
           required
           style={{ marginBottom: 16 }}
         >

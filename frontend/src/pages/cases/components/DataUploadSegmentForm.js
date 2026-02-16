@@ -138,7 +138,7 @@ const SegmentGenerator = ({
             <b>Variable type</b>
           </p>
           <Form.Item
-            label="Segmentation variable"
+            label="Select a variable to segment by:"
             style={{ marginBottom: 16 }}
             required
           >
