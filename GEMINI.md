@@ -132,6 +132,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented explicit `case` ID initialization in `Case.js` for modelling tabs to ensure first-time saves are successful.
     - Reinforced `AdvancedModellingTool.js` and `ThreeDriverCalculator.js` with robust `case` ID preservation during state updates.
     - Refined backend logic in `backend/models/case.py` to correctly detect advanced scenario modeling data, excluding "null" keys and supporting traditional scenario values as fallback.
+    - Resolved a bug where calculation results of exactly `0` were not displayed in the modelling tool by using `null` as the initial state.
+    - Implemented "Income target already met" detection; the tool now displays the current driver value instead of a negative or zero value when the target is already reached, providing clearer feedback.
+    - Reverted calculation bounding logic in `incomeCalculations.js` to return raw theoretical values for mathematical precision, while handling UI display constraints in the component layer.
+    - Refined the price breakdown chart to handle theoretical results gracefully and display percentage contributions of cost and profit.
+    - Resolved ESLint `no-case-declarations` errors in `incomeCalculations.js` by implementing proper block scoping for case statements.
+    - Implemented comprehensive regression tests in `modellingFixes.test.js` to verify raw value calculations and UI state transitions.
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.

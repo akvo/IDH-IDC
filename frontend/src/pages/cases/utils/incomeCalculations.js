@@ -114,33 +114,38 @@ const calculateModellingDriver = (targetIncome, drivers, qKey, category) => {
 
   if (isAquaculture) {
     switch (qKey) {
-      case "price":
+      case "price": {
         // Income = L * (V * (P - C) + 1)
         // (Income / L - 1) / V + C = P
         return volume !== 0 ? (targetIncome / land - 1) / volume + cop : 0;
+      }
       case "volume": {
         // V = (Income / L - 1) / (P - C)
         const denomV = price - cop;
         return denomV !== 0 ? (targetIncome / land - 1) / denomV : 0;
       }
-      case "cop":
+      case "cop": {
         // C = P - (Income / L - 1) / V
         return volume !== 0 ? price - (targetIncome / land - 1) / volume : 0;
+      }
       default:
         return 0;
     }
   } else {
     // Crop/Livestock: Income = L * (V * P - C)
     switch (qKey) {
-      case "price":
+      case "price": {
         // P = (Income / L + C) / V
         return volume !== 0 ? (targetIncome / land + cop) / volume : 0;
-      case "volume":
+      }
+      case "volume": {
         // V = (Income / L + C) / P
         return price !== 0 ? (targetIncome / land + cop) / price : 0;
-      case "cop":
+      }
+      case "cop": {
         // C = V * P - Income / L
         return volume * price - targetIncome / land;
+      }
       default:
         return 0;
     }

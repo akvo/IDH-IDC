@@ -123,10 +123,11 @@ const AdvancedModellingTool = () => {
         tertiary: 0,
       },
       calculationResult: {
-        value: 0,
+        value: null,
         change: 0,
         cost: 0,
         profit: 0,
+        isTargetMet: false,
       },
     };
 
@@ -499,10 +500,11 @@ const AdvancedModellingTool = () => {
       };
 
       const defaultCalculationResult = {
-        value: 0,
+        value: null,
         change: 0,
         cost: 0,
         profit: 0,
+        isTargetMet: false,
       };
 
       const defaultLockedFields = {
@@ -602,32 +604,51 @@ const AdvancedModellingTool = () => {
       commodityCategory
     );
 
-    // Calculate current scenario values for the breakdown
-    const currentPrice = selectedDriver === "price" ? result : drivers.price;
-    const currentVolume = selectedDriver === "volume" ? result : drivers.volume;
-    const currentLand = drivers.land;
-    const currentCop = selectedDriver === "cop" ? result : drivers.cop;
-
-    let unitCost = 0;
-    if (commodityCategory === "Aquaculture") {
-      unitCost = currentCop;
+    // Detect if target is met
+    const currentVal =
+      selectedDriver === "cop" ? drivers.cop : drivers[selectedDriver];
+    let isTargetMet = false;
+    if (targetPrimaryIncome <= 0) {
+      isTargetMet = true;
+    } else if (selectedDriver === "cop") {
+      isTargetMet = result >= currentVal;
     } else {
-      unitCost =
-        currentVolume !== 0 ? (currentCop * currentLand) / currentVolume : 0;
+      isTargetMet = result <= currentVal;
     }
+
+    // Final Solution:
+    // If target is met, show the current value (no change needed).
+    // Otherwise show the calculated break-even result (capped at 0).
+    let finalResult = isTargetMet ? currentVal : result;
+
+    // Safety cap at 0 for display consistency
+    finalResult = Math.max(0, finalResult);
+
+    // Calculate current scenario values for the breakdown
+    const currentPrice =
+      selectedDriver === "price" ? finalResult : drivers.price;
+    const currentVolume =
+      selectedDriver === "volume" ? finalResult : drivers.volume;
+    const currentCop = selectedDriver === "cop" ? finalResult : drivers.cop;
+
+    // Manager Feedback: Updated breakdown formulas
+    // cost = cop / volume
+    // profit = price - cost
+    const unitCost = currentVolume !== 0 ? currentCop / currentVolume : 0;
     const profit = currentPrice - unitCost;
 
     const feasibleValue = getSegmentAnswer("feasible", selectedDriver);
     const change =
       feasibleValue !== 0
-        ? ((result - feasibleValue) / feasibleValue) * 100
+        ? ((finalResult - feasibleValue) / feasibleValue) * 100
         : 0;
 
     setCalculationResult({
-      value: result,
+      value: finalResult,
       change: change,
       cost: unitCost,
       profit: profit,
+      isTargetMet: isTargetMet,
     });
   };
 
@@ -675,7 +696,7 @@ const AdvancedModellingTool = () => {
     const isModel = scenario === "model";
     const getDisplayValue = (field) => {
       return isModel
-        ? field === selectedDriver && calculationResult.value
+        ? field === selectedDriver && calculationResult.value !== null
           ? calculationResult.value
           : modelValues[field]
         : getSegmentAnswer(scenario, field);
@@ -771,7 +792,8 @@ const AdvancedModellingTool = () => {
               {driverUnits[selectedDriver]})
             </Text>
             <div className="calculation-result-container">
-              {activeScenario === scenario && calculationResult.value ? (
+              {activeScenario === scenario &&
+              calculationResult.value !== null ? (
                 (() => {
                   const feasibleValue = getSegmentAnswer(
                     "feasible",
@@ -797,7 +819,9 @@ const AdvancedModellingTool = () => {
                       </div>
                       <div className="feasibility-status">
                         <span className="status-text">
-                          {isFeasible
+                          {calculationResult.isTargetMet
+                            ? "Income target already met"
+                            : isFeasible
                             ? "falls within feasible levels"
                             : "outside feasible levels"}
                         </span>
@@ -822,7 +846,7 @@ const AdvancedModellingTool = () => {
               className="button-clear"
               onClick={() => {
                 setCalculationResult({
-                  value: 0,
+                  value: null,
                   change: 0,
                   cost: 0,
                   profit: 0,
@@ -901,7 +925,7 @@ const AdvancedModellingTool = () => {
                   onChange={(val) => {
                     setSelectedDriver(val);
                     setCalculationResult({
-                      value: 0,
+                      value: null,
                       change: 0,
                       cost: 0,
                       profit: 0,
@@ -975,7 +999,7 @@ const AdvancedModellingTool = () => {
                     <div className="price-total-display">
                       <Text strong>
                         Price:{" "}
-                        {calculationResult.cost || calculationResult.profit
+                        {calculationResult.value !== null
                           ? thousandFormatter(
                               calculationResult.cost + calculationResult.profit,
                               2
@@ -987,15 +1011,31 @@ const AdvancedModellingTool = () => {
                     </div>
 
                     {/* Real Bar Chart Logic */}
-                    {calculationResult.cost || calculationResult.profit ? (
+                    {calculationResult.value !== null ? (
                       (() => {
+                        // Manager Feedback: Use raw values for calculation but ensure breakdown logic
+                        // If target is met, we might want to show the scenario breakdown instead of theoretical
+                        // because theoretical breakdown for negative prices doesn't make sense visually.
+                        const displayCost =
+                          calculationResult.isTargetMet &&
+                          calculationResult.cost < 0
+                            ? 0
+                            : calculationResult.cost;
+                        const displayProfit =
+                          calculationResult.isTargetMet &&
+                          calculationResult.profit < 0
+                            ? 0
+                            : calculationResult.profit;
+
                         const total =
-                          calculationResult.cost + calculationResult.profit;
+                          Math.abs(displayCost) + Math.abs(displayProfit);
                         const costPerc =
-                          total !== 0
-                            ? (calculationResult.cost / total) * 100
-                            : 0;
+                          total !== 0 ? (displayCost / total) * 100 : 0;
                         const profitPerc = 100 - costPerc;
+
+                        // cost_percentage = cost/price*100
+                        // profit_percentage = profit/price*100
+                        // Note: total is the price here.
                         return (
                           <div className="bar-row">
                             <div
@@ -1003,7 +1043,7 @@ const AdvancedModellingTool = () => {
                               style={{ width: `${costPerc}%` }}
                             >
                               <span className="segment-value">
-                                {thousandFormatter(calculationResult.cost, 2)}
+                                {thousandFormatter(costPerc, 2)}%
                               </span>
                             </div>
                             <div
@@ -1011,7 +1051,7 @@ const AdvancedModellingTool = () => {
                               style={{ width: `${profitPerc}%` }}
                             >
                               <span className="segment-value">
-                                {thousandFormatter(calculationResult.profit, 2)}
+                                {thousandFormatter(profitPerc, 2)}%
                               </span>
                             </div>
                           </div>
