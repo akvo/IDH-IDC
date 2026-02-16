@@ -1431,8 +1431,16 @@
 
       .result-display-wrapper {
         display: flex;
-        align-items: center;
-        gap: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        width: 100%;
+
+        .result-main-row {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
 
         .result-value-box {
           display: flex;
@@ -1481,6 +1489,29 @@
             font-size: 16px;
             color: #000;
             font-weight: bold;
+          }
+        }
+
+        .calculation-message-wrapper {
+          width: 100%;
+          margin-top: 4px;
+
+          .ant-alert {
+            border-radius: 12px;
+            background: #fdfaf0;
+            border: 1px solid #ffe58f;
+            padding: 8px 12px;
+
+            .ant-alert-message {
+              font-family: "TabletGothic";
+              font-size: 13px;
+              line-height: 1.5;
+              color: rgba(0, 0, 0, 0.7);
+            }
+
+            .ant-alert-icon {
+              color: #faad14;
+            }
           }
         }
       }

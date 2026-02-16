@@ -140,6 +140,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Reverted calculation bounding logic in `incomeCalculations.js` to return raw theoretical values for mathematical precision, while handling UI display constraints in the component layer.
     - Refined the price breakdown chart to handle theoretical results gracefully and display percentage contributions of cost and profit.
     - Resolved ESLint `no-case-declarations` errors in `incomeCalculations.js` by implementing proper block scoping for case statements.
+    - Refined calculation bounding logic: implemented scenario-specific guidance for surplus (income decrease message) and impossible targets (physically unreachable warning).
+    - Decoupled input fields from calculation results to preserve user "What-If" assumptions while showing required thresholds.
+    - Updated Price Breakdown visualization: automatically displays 100% Profit for impossible cost scenarios.
+    - Corrected driver-aware feasibility logic to properly handle Price/Volume (higher = better) vs. CoP (lower = better).
+    - Enhanced guidance UI: implemented styled Alert-based hints positioned below calculation results for improved readability.
     - Implemented comprehensive regression tests in `modellingFixes.test.js` to verify raw value calculations and UI state transitions.
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.

@@ -10,6 +10,7 @@ import {
   Input,
   Button,
   Divider,
+  Alert,
 } from "antd";
 import {
   LockOutlined,
@@ -128,6 +129,8 @@ const AdvancedModellingTool = () => {
         cost: 0,
         profit: 0,
         isTargetMet: false,
+        state: "normal",
+        message: null,
       },
     };
 
@@ -505,6 +508,8 @@ const AdvancedModellingTool = () => {
         cost: 0,
         profit: 0,
         isTargetMet: false,
+        state: "normal",
+        message: null,
       };
 
       const defaultLockedFields = {
@@ -604,25 +609,23 @@ const AdvancedModellingTool = () => {
       commodityCategory
     );
 
-    // Detect if target is met
-    const currentVal =
-      selectedDriver === "cop" ? drivers.cop : drivers[selectedDriver];
-    let isTargetMet = false;
-    if (targetPrimaryIncome <= 0) {
-      isTargetMet = true;
-    } else if (selectedDriver === "cop") {
-      isTargetMet = result >= currentVal;
-    } else {
-      isTargetMet = result <= currentVal;
+    // Identify Calculation State
+    // Scenario 1: Surplus (Target met or exceeded)
+    // Scenario 3: Impossible (Math requires negative values to hit target)
+    let state = "normal";
+    let message = null;
+
+    if (targetPrimaryIncome <= 0 || (result < 0 && selectedDriver !== "cop")) {
+      state = "surplus";
+      message =
+        "Farmers in this segment already earn more than the income target. In this calculated scenario, incomes would decrease.";
+    } else if (result < 0 && selectedDriver === "cop") {
+      state = "impossible";
+      message =
+        "It is not physically possible to reach the income target with the specified model values.";
     }
 
-    // Final Solution:
-    // If target is met, show the current value (no change needed).
-    // Otherwise show the calculated break-even result (capped at 0).
-    let finalResult = isTargetMet ? currentVal : result;
-
-    // Safety cap at 0 for display consistency
-    finalResult = Math.max(0, finalResult);
+    const finalResult = Math.max(0, result);
 
     // Calculate current scenario values for the breakdown
     const currentPrice =
@@ -631,11 +634,16 @@ const AdvancedModellingTool = () => {
       selectedDriver === "volume" ? finalResult : drivers.volume;
     const currentCop = selectedDriver === "cop" ? finalResult : drivers.cop;
 
-    // Manager Feedback: Updated breakdown formulas
     // cost = cop / volume
     // profit = price - cost
-    const unitCost = currentVolume !== 0 ? currentCop / currentVolume : 0;
-    const profit = currentPrice - unitCost;
+    let unitCost = currentVolume !== 0 ? currentCop / currentVolume : 0;
+    let profit = currentPrice - unitCost;
+
+    // Handle 100% Profit for Impossible CoP
+    if (state === "impossible") {
+      unitCost = 0;
+      profit = currentPrice;
+    }
 
     const feasibleValue = getSegmentAnswer("feasible", selectedDriver);
     const change =
@@ -643,12 +651,20 @@ const AdvancedModellingTool = () => {
         ? ((finalResult - feasibleValue) / feasibleValue) * 100
         : 0;
 
+    const isTargetMet =
+      targetPrimaryIncome <= 0 ||
+      (selectedDriver === "cop"
+        ? drivers.cop <= result
+        : drivers[selectedDriver] >= result);
+
     setCalculationResult({
       value: finalResult,
       change: change,
       cost: unitCost,
       profit: profit,
       isTargetMet: isTargetMet,
+      state: state,
+      message: message,
     });
   };
 
@@ -695,11 +711,7 @@ const AdvancedModellingTool = () => {
   const renderModellingInputs = (scenario) => {
     const isModel = scenario === "model";
     const getDisplayValue = (field) => {
-      return isModel
-        ? field === selectedDriver && calculationResult.value !== null
-          ? calculationResult.value
-          : modelValues[field]
-        : getSegmentAnswer(scenario, field);
+      return isModel ? modelValues[field] : getSegmentAnswer(scenario, field);
     };
 
     return (
@@ -801,31 +813,41 @@ const AdvancedModellingTool = () => {
                   );
                   let isFeasible = false;
                   if (selectedDriver === "cop") {
-                    isFeasible = calculationResult.value <= feasibleValue;
-                  } else {
+                    // For CoP, a higher required value is "easier" (more room for expense)
                     isFeasible = calculationResult.value >= feasibleValue;
+                  } else {
+                    // For Price/Volume, a lower required value is "easier" (less performance needed)
+                    isFeasible = calculationResult.value <= feasibleValue;
                   }
 
                   return (
                     <div className="result-display-wrapper">
-                      <div
-                        className={`result-value-box ${
-                          isFeasible ? "feasible" : "not-feasible"
-                        }`}
-                      >
-                        <span className="value-text">
-                          {thousandFormatter(calculationResult.value, 2)}
-                        </span>
+                      <div className="result-main-row">
+                        <div
+                          className={`result-value-box ${
+                            isFeasible ? "feasible" : "not-feasible"
+                          }`}
+                        >
+                          <span className="value-text">
+                            {thousandFormatter(calculationResult.value, 2)}
+                          </span>
+                        </div>
+                        <div className="feasibility-status">
+                          <span className="status-text">
+                            {isFeasible
+                              ? "falls within feasible levels"
+                              : "outside feasible levels"}
+                          </span>
+                        </div>
                       </div>
-                      <div className="feasibility-status">
-                        <span className="status-text">
-                          {calculationResult.isTargetMet
-                            ? "Income target already met"
-                            : isFeasible
-                            ? "falls within feasible levels"
-                            : "outside feasible levels"}
-                        </span>
-                      </div>
+                      {calculationResult.message && (
+                        <div className="calculation-message-wrapper">
+                          <Alert
+                            message={calculationResult.message}
+                            type="info"
+                          />
+                        </div>
+                      )}
                     </div>
                   );
                 })()
@@ -1021,16 +1043,14 @@ const AdvancedModellingTool = () => {
                     {/* Real Bar Chart Logic */}
                     {calculationResult.value !== null ? (
                       (() => {
-                        // Manager Feedback: Use raw values for calculation but ensure breakdown logic
+                        // Use raw values for calculation but ensure breakdown logic
                         // If target is met, we might want to show the scenario breakdown instead of theoretical
                         // because theoretical breakdown for negative prices doesn't make sense visually.
                         const displayCost =
-                          calculationResult.isTargetMet &&
                           calculationResult.cost < 0
                             ? 0
                             : calculationResult.cost;
                         const displayProfit =
-                          calculationResult.isTargetMet &&
                           calculationResult.profit < 0
                             ? 0
                             : calculationResult.profit;
