@@ -28,11 +28,11 @@ const { Text, Title, Paragraph } = Typography;
 const InputRow = ({
   label,
   field,
-  locked,
+  // locked,
   isCalculationTarget,
   isModel,
   displayValue,
-  toggleLock,
+  // toggleLock,
   handleInputChange,
 }) => {
   return (
