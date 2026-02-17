@@ -172,15 +172,11 @@ def segmentation_preview(
         segments = generate_categorical_segments(df, variable)
 
     elif var_type == "numerical":
-        if not payload.number_of_segments:
-            raise HTTPException(
-                status_code=400,
-                detail="number_of_segments is required for numerical variable",
-            )
         segments = generate_numerical_segments(
             df,
             variable,
             payload.number_of_segments,
+            strategy=payload.strategy,
         )
 
     else:
@@ -302,6 +298,7 @@ def recalculate_segmentation(
             df=df,
             column=variable,
             segments=[seg.dict() for seg in payload.segments],
+            strategy=payload.strategy,
         )
 
     else:

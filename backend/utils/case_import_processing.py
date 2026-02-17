@@ -78,6 +78,7 @@ def generate_numerical_cut_values(
     df: pd.DataFrame,
     column: str,
     n_segments: int,
+    strategy: str = "equal_frequency",
 ):
     series = df[column].dropna().to_numpy()
 
@@ -87,9 +88,19 @@ def generate_numerical_cut_values(
             detail="Selected variable has no valid numerical values",
         )
 
-    # Equal-frequency cuts via quantiles
-    quantiles = np.linspace(0, 1, n_segments + 1)[1:]
-    cuts = np.quantile(series, quantiles)
+    # Strategy Selector
+    if strategy == "equal_interval":
+        # Equal-interval cuts
+        cuts = np.linspace(np.min(series), np.max(series), n_segments + 1)[1:]
+    else:
+        # Equal-frequency cuts via quantiles
+        # method='closest_observation' ensures thresholds are actual data points
+        quantiles = np.linspace(0, 1, n_segments + 1)[1:]
+        cuts = np.quantile(
+            series,
+            quantiles,
+            method="closest_observation",
+        )
 
     # Deduplicate & round
     cuts = np.unique(np.round(cuts, 2))
@@ -204,11 +215,13 @@ def generate_numerical_segments(
     df: pd.DataFrame,
     column: str,
     n_segments: int,
+    strategy: str = "equal_frequency",
 ):
     cuts = generate_numerical_cut_values(
         df=df,
         column=column,
         n_segments=n_segments,
+        strategy=strategy,
     )
 
     return calculate_numerical_segments_from_cuts(
@@ -222,6 +235,7 @@ def recalculate_numerical_segments(
     df: pd.DataFrame,
     column: str,
     segments: list[dict],
+    strategy: str = "equal_frequency",
 ):
     """
     Recalculate numerical segments with support for per-segment variables.
