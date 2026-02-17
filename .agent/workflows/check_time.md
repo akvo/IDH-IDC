@@ -2,13 +2,12 @@
 description: Run automated time analysis and group activities by issue number
 ---
 
-1. **Decide on the analysis criteria**:
-   - Do you want to check for **Today**?
-   - Do you want to check for a **Specific Date**?
-   - Do you want to filter by **Specific Issue(s)**?
-   - Do you want to group all activities for a period?
+1. **Ask the user for analysis criteria**:
+   - Prompt the user to confirm if they want to check for **Today** or a **Specific Date**.
+   - Ask if they wish to filter by **Specific Issue(s)** or keywords.
+   - Wait for the user's input before proceeding.
 
-2. Run the automated time analysis script based on your choice:
+2. **Run the automated time analysis script** based on the user's choice:
    - **Scenario A: All activities for today**
      ```bash
      ./.agent/scripts/analyze_time.py

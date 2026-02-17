@@ -205,7 +205,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Standardized backend patterns (FastAPI DI for sessions/auth, business logic decoupling).
         - Consolidated workflow rules for Git, PRs, and activity logging.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
-    - **Time Analysis**: Updated `analyze_time.py` to support grouping by issue number and detailed idle time analysis (/check_time).
+    - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
     - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 
 ## Codebase Structure
