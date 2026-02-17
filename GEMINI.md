@@ -188,6 +188,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Technical Improvements & Workflows**:
     - **General Refactoring**: Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing`.
     - **Workflows**: Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection; implemented `seed_data`, `view_logs`, and `run_frontend_test`.
+    - **Project Rules Implementation**:
+        - Created comprehensive `.agent/rules/PROJECT_RULES.md` defining FE/BE coding standards and best practices.
+        - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
+        - Standardized backend patterns (FastAPI DI for sessions/auth, business logic decoupling).
+        - Consolidated workflow rules for Git, PRs, and activity logging.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
     - **Time Analysis**: Updated `analyze_time.py` to support grouping by issue number and detailed idle time analysis (/check_time).
     - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.

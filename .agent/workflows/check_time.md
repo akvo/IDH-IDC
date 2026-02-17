@@ -1,3 +1,7 @@
+---
+description: Run automated time analysis and group activities by issue number
+---
+
 1. **Decide on the analysis criteria**:
    - Do you want to check for **Today**?
    - Do you want to check for a **Specific Date**?
