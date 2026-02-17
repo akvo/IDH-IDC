@@ -7,11 +7,7 @@ description: Core technology stack, environment setup, and basic usage for IDH-I
 
 General technical information and basic environment operations for the IDH-IDC project.
 
-## Technology Stack
-
-- **Backend**: FastAPI (Python), SQLAlchemy, Alembic, Pytest
-- **Frontend**: React (CRA), Ant Design, Pullstate, Jest
-- **Infra**: Docker, Docker Compose, Kubernetes
+Note: For the detailed technical standards and tech stack requirements, refer to [.agent/rules/PROJECT_RULES.md](file:///Users/galihpratama/Sites/IDH-IDC/.agent/rules/PROJECT_RULES.md).
 
 ## Environment Setup
 

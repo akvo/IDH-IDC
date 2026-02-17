@@ -1,6 +1,10 @@
-# IDH-IDC Project Rules for AI Agents
-
 These rules define the technical standards, design patterns, and workflow requirements for the IDH-IDC project. All AI agents MUST follow these guidelines to ensure consistency and quality.
+
+## 0. Agent Asset Hierarchy
+To maintain alignment across agent resources, we follow this structural hierarchy:
+1. **Rules** (`.agent/rules/`): **The Law.** Universal technical standards, design constraints, and mandatory procedures.
+2. **Skills** (`.agent/skills/`): **Technical Knowledge.** Deep domain expertise and situational knowledge for specific subsystems.
+3. **Workflows** (`.agent/workflows/`): **Recipes.** Actionable, step-by-step procedures for common tasks (e.g., slash commands).
 
 ## 1. Core Technology Stack
 

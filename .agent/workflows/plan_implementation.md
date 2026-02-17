@@ -9,16 +9,7 @@ description: Create a comprehensive implementation plan for a feature or bug fix
    - **Goal**: Brief summary of the problem and what the change accomplishes.
    - **User Review Required**: Highlight breaking changes or design decisions.
    - **Proposed Changes**: Detailed breakdown by file.
-     - **Frontend Standards**:
-       - **Framework**: React (Functional Components + Hooks).
-       - **UI Library**: Ant Design (antd).
-       - **State Management**: Pullstate.
-       - **Linting**: Must pass `docker compose exec frontend yarn lint` (ESLint).
-       - **Testing**: `docker compose exec frontend yarn test:ci` or interactive `yarn test`.
-     - **Backend Standards**:
-       - **Framework**: FastAPI (Python).
-       - **Database**: SQLAlchemy + Alembic migrations.
-       - **Linting/Testing**: Must pass `./dc.sh exec backend ./check.sh` (includes `flake8` and `pytest`).
+      - **Technical Standards**: All changes MUST strictly adhere to the technical standards and best practices defined in [.agent/rules/PROJECT_RULES.md](file:///Users/galihpratama/Sites/IDH-IDC/.agent/rules/PROJECT_RULES.md).
    - **Verification Plan**:
      - **Automated**: List specific commands to run (e.g., `yarn lint`, `./check.sh`).
      - **Manual**: Step-by-step browser verification instructions.

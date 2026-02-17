@@ -188,6 +188,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Technical Improvements & Workflows**:
     - **General Refactoring**: Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing`.
     - **Workflows**: Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection; implemented `seed_data`, `view_logs`, and `run_frontend_test`.
+    - **Asset Alignment & Centralized Rules**:
+        - Unified Rules, Skills, and Workflows into a cohesive hierarchy (The Law > Knowledge > Recipes).
+        - Standardized all container commands to use `./dc.sh` wrapper for consistency.
+        - Streamlined workflows by centralizing technical standards in `PROJECT_RULES.md`.
+        - Added cross-references between specialized skills and actionable workflows.
     - **Project Rules Implementation**:
         - Created comprehensive `.agent/rules/PROJECT_RULES.md` defining FE/BE coding standards and best practices.
         - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).

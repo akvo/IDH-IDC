@@ -1,6 +1,6 @@
 ---
 name: idc-testing
-description: Testing and linting for IDH-IDC backend and frontend.
+description: Testing and linting for IDH-IDC backend and frontend. Use `/run_frontend_lint`, `/run_backend_test`, and `/run_frontend_test` for automated verification.
 ---
 
 # IDC Testing Skills

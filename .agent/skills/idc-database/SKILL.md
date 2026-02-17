@@ -1,6 +1,6 @@
 ---
 name: idc-database
-description: Database management, seeding, and migrations for IDH-IDC.
+description: Database management, seeding, and migrations for IDH-IDC. Refer to `/seed_data` workflow for step-by-step seeding instructions.
 ---
 
 # IDC Database Skills
