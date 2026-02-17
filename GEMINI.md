@@ -198,6 +198,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Standardized all container commands to use `./dc.sh` wrapper for consistency.
         - Streamlined workflows by centralizing technical standards in `PROJECT_RULES.md`.
         - Added cross-references between specialized skills and actionable workflows.
+        - Implemented **Synchronicity Mandate**: mandatory immediate updates to all related agent assets (Skills, Workflows, Docs) when a rule is updated.
     - **Project Rules Implementation**:
         - Created comprehensive `.agent/rules/PROJECT_RULES.md` defining FE/BE coding standards and best practices.
         - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
