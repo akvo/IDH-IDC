@@ -28,6 +28,10 @@ class SegmentationPreviewRequest(BaseModel):
         description="Required when variable_type is numerical",
         ge=0,
     )
+    strategy: Optional[Literal["equal_frequency", "equal_interval"]] = Field(
+        "equal_frequency",
+        description="Strategy for numerical segmentation",
+    )
 
 
 class SegmentDefinition(BaseModel):
@@ -83,6 +87,10 @@ class SegmentationRecalculateRequest(BaseModel):
     segmentation_variable: str
     variable_type: Literal["numerical", "categorical"]
     segments: List[SegmentValueInput]
+    strategy: Optional[Literal["equal_frequency", "equal_interval"]] = Field(
+        "equal_frequency",
+        description="Strategy for numerical segmentation",
+    )
 
 
 # TODO ::

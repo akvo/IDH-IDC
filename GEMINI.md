@@ -185,6 +185,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added safety checks in `Case.js` to handle missing commodity data and filter out commodities without IDs during initialization.
     - Reinforced `EnterIncomeData.js` with defensive payload filtering to strip out invalid commodity IDs (e.g., "null") before submission.
     - Verified fix with a new backend regression test `test_fix_commodity_removal.py` and front-to-back integration checks.
+- **Fix Inconsistent Farmer Distribution in IDC Auto Segmentation (Issue #723)**:
+    - Resolved numerical segmentation issues by switching to non-interpolating quantiles (`closest_observation`).
+    - Prevented creation of "artificial" thresholds in data gaps, eliminating empty segments with 0 farmers.
+    - Implemented support for "Equal Interval" strategy in backend segmentation logic.
+    - Updated Pydantic models to support optional strategy selection in segmentation previews and recalculations.
 - **Technical Improvements & Workflows**:
     - **General Refactoring**: Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing`.
     - **Workflows**: Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection; implemented `seed_data`, `view_logs`, and `run_frontend_test`.
@@ -193,6 +198,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Standardized all container commands to use `./dc.sh` wrapper for consistency.
         - Streamlined workflows by centralizing technical standards in `PROJECT_RULES.md`.
         - Added cross-references between specialized skills and actionable workflows.
+        - Implemented **Synchronicity Mandate**: mandatory immediate updates to all related agent assets (Skills, Workflows, Docs) when a rule is updated.
     - **Project Rules Implementation**:
         - Created comprehensive `.agent/rules/PROJECT_RULES.md` defining FE/BE coding standards and best practices.
         - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
