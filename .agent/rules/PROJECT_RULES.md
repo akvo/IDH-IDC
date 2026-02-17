@@ -6,6 +6,7 @@ To maintain alignment across agent resources, we follow this structural hierarch
 2. **Skills** (`.agent/skills/`): **Technical Knowledge.** Deep domain expertise and situational knowledge for specific subsystems.
 3. **Workflows** (`.agent/workflows/`): **Recipes.** Actionable, step-by-step procedures for common tasks (e.g., slash commands).
 
+**Synchronicity Mandate**: Whenever a rule in `.agent/rules/` is updated, the agent MUST immediately identify and update all related Skills (`.agent/skills/`), Workflows (`.agent/workflows/`), and associated documentation in the `.agent/` directory to maintain a cohesive source of truth.
 ## 1. Core Technology Stack
 
 - **Frontend**: React (Create React App), Ant Design, echarts, pullstate.
@@ -38,6 +39,7 @@ To maintain alignment across agent resources, we follow this structural hierarch
     - `no-unused-vars`: Avoid leaving unused imports or variables.
 - **Formatting**: Use Prettier. Imports should be ordered logically: React/Third-party -> Local Components -> Local Assets/Styles.
 - **Structure**: Split complex components into granular parts. Use `src/components/chart` for visualizations and `src/lib` for shared logic/utilities.
+- **Testing**: Run frontend tests and linting inside the Docker environment using `./dc.sh run --rm frontend yarn test` or `./dc.sh run --rm frontend yarn lint`.
 
 ## 3. Backend Development Rules & Best Practices
 
@@ -55,13 +57,19 @@ To maintain alignment across agent resources, we follow this structural hierarch
 ### Coding Standards & Linting
 - **Formatting**: Use **Black** (88 characters line length).
 - **Linting**: Follow **Flake8** rules (`E203, W503` are ignored for Black compatibility).
-- **Testing**: Always include regression tests in `backend/tests` for new features or bug fixes. Run `/run_backend_test` frequently.
+- **Testing**: Always include regression tests in `backend/tests` for new features or bug fixes.
+    - **Structure**: Use test classes (`class Test...`) to group related tests.
+    - **Integration/DB Tests**: Use fixtures provided in `backend/tests/conftest.py` (e.g., `client`, `session`) for any tests requiring database access or API clients.
+    - **Unit Tests**: Clearly name unit tests with a `test_unit_` prefix (e.g., `test_unit_calculation.py`) and avoid external dependencies/DB access.
+    - **Filenaming**: Filenames MUST be descriptive and MUST NOT include issue numbers (e.g., use `test_unit_seg_bug.py` instead of `test_717_seg_bug.py`).
+    - **Execution**: Run tests using `./dc.sh run --rm backend ./check.sh`.
 
 ## 4. Workflow & Communication Rules
 
 ### Git & Pull Requests
 - **Branching**: Use descriptive branch names (e.g., `feature/issue-713-modelling-ui`).
 - **Commits**: Follow the format `[#ISSUE_NUMBER] Detailed message`. Always update `GEMINI.md` "Recent Changes" before committing.
+- **Issue Confirmation**: Agents MUST explicitly confirm the issue number with the user if there is any ambiguity before documenting it in `GEMINI.md` or using it in a commit.
 - **PRs**: Use the `/create_pr` workflow. PR descriptions must include a summary, key changes, and verification proof.
 
 ### Time Analysis
@@ -77,3 +85,8 @@ To maintain alignment across agent resources, we follow this structural hierarch
 - **Case ID Preservation**: Ensure the `case` ID is always passed and preserved during state updates to ensure successful saves.
 - **Per-Segment Persistence**: Implement per-segment persistence for scenario modeling and driver selections.
 - **Initialization**: Avoid fragile timeouts for synchronization. Use structured single-pass synchronization lifecycles.
+## 6. Scripting & Tooling
+- **Docker Environment**: All custom scripts (python, node, shell) MUST be executed within the Docker environment to ensure dependency parity.
+- **Workflow Wrapper**: Use `./dc.sh exec <service> <command>` for running scripts on active containers, or `./dc.sh run --rm <service> <command>` for one-off tasks.
+- **Dependency Management**: Ensure all required packages are listed in `backend/requirements.txt` or `frontend/package.json`.
+- **Location**: Place temporary reproduction or utility scripts in their respective service directories (`backend/` or `frontend/`) to ensure they are mounted inside the container.

@@ -15,6 +15,10 @@ Quality assurance workflows including unit tests and linting.
   ```
   _Includes pytest and flake8_
 
+- **Naming Conventions**:
+    - **Unit Tests**: Use `test_unit_` prefix (e.g., `test_unit_logic.py`).
+    - **Filenaming**: Do NOT include issue numbers in filenames. Use descriptive names instead.
+
 ## Frontend Verification
 
 - **Linting**:
