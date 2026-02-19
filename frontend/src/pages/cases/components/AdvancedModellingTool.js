@@ -862,17 +862,16 @@ const AdvancedModellingTool = () => {
       state = "surplus";
       message =
         "Farmers in this segment already earn more than the income target. In this calculated scenario, incomes would decrease.";
-    } else if (result < 0 && selectedDriver === "cop") {
+    } else if (result < 0) {
       state = "impossible";
       message =
-        "It is not physically possible to reach the income target with the specified model values.";
-    } else if (result < 0 && selectedDriver !== "cop") {
-      // This case handles negative price or volume results which are impossible but not a "surplus" in terms of current earnings
-      state = "impossible";
-      message = "Impossible target: required value is negative.";
+        selectedDriver === "cop"
+          ? "It is not physically possible to reach the income target with the specified model values."
+          : "Impossible target: required value is negative.";
     }
 
-    const finalResult = Math.max(0, result);
+    // If surplus, we show the current value of the driver to avoid confusion with theoretical/negative values
+    const finalResult = state === "surplus" ? drivers[selectedDriver] : result;
 
     // Calculate current scenario values for the breakdown
     const currentPrice =
@@ -917,6 +916,7 @@ const AdvancedModellingTool = () => {
         isTargetMet: isTargetMet,
         state: state,
         message: message,
+        rawResult: result, // Store raw result for visual logic
       },
     }));
   };
@@ -1064,13 +1064,26 @@ const AdvancedModellingTool = () => {
                     "feasible",
                     selectedDriver
                   );
+
+                  // Round to 2 decimals for precision-safe comparison
+                  const roundedResult =
+                    Math.round((scenarioResult.value || 0) * 100) / 100;
+                  const roundedFeasible =
+                    Math.round((feasibleValue || 0) * 100) / 100;
+
                   let isFeasible = false;
-                  if (selectedDriver === "cop") {
+                  if (scenarioResult.state === "surplus") {
+                    // If we are in surplus, the current performance is already feasibility-proven
+                    isFeasible = true;
+                  } else if (scenarioResult.rawResult < 0) {
+                    // Physically impossible values are never feasible
+                    isFeasible = false;
+                  } else if (selectedDriver === "cop") {
                     // For CoP, a higher required value is "easier" (more room for expense)
-                    isFeasible = scenarioResult.value >= feasibleValue;
+                    isFeasible = roundedResult >= roundedFeasible;
                   } else {
                     // For Price/Volume, a lower required value is "easier" (less performance needed)
-                    isFeasible = scenarioResult.value <= feasibleValue;
+                    isFeasible = roundedResult <= roundedFeasible;
                   }
 
                   return (
@@ -1329,6 +1342,22 @@ const AdvancedModellingTool = () => {
                       (() => {
                         const scenarioResult =
                           calculationResults[activeScenario];
+
+                        // Physically impossible warning
+                        if (scenarioResult.rawResult < 0) {
+                          const driverLabel =
+                            driverLabels[selectedDriver] || selectedDriver;
+                          return (
+                            <div className="impossible-breakdown-warning">
+                              <Alert
+                                message={`Farmers would need a negative ${driverLabel} in order to hit the income target. This is not physically possible and the price breakdown is unavailable.`}
+                                type="warning"
+                                className="impossible-alert"
+                              />
+                            </div>
+                          );
+                        }
+
                         // Use raw values for calculation but ensure breakdown logic
                         // If target is met, we might want to show the scenario breakdown instead of theoretical
                         // because theoretical breakdown for negative prices doesn't make sense visually.
