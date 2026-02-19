@@ -106,14 +106,34 @@ const AdvancedModellingTool = () => {
         secondary: 0,
         tertiary: 0,
       },
-      calculationResult: {
-        value: null,
-        change: 0,
-        cost: 0,
-        profit: 0,
-        isTargetMet: false,
-        state: "normal",
-        message: null,
+      calculationResults: {
+        current: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        feasible: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        model: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
       },
     };
 
@@ -138,8 +158,49 @@ const AdvancedModellingTool = () => {
     initialData.activeScenario
   );
   const [lockedFields, setLockedFields] = useState(initialData.lockedFields);
-  const [calculationResult, setCalculationResult] = useState(
-    initialData.calculationResult
+  // Migration: If we have an old single calculationResult, migrate it to the current mapping
+  const getMappedInitialResults = () => {
+    if (initialData.calculationResults) {
+      return initialData.calculationResults;
+    }
+    // Fallback for legacy data
+    const results = {
+      current: {
+        value: null,
+        change: 0,
+        cost: 0,
+        profit: 0,
+        isTargetMet: false,
+        state: "normal",
+        message: null,
+      },
+      feasible: {
+        value: null,
+        change: 0,
+        cost: 0,
+        profit: 0,
+        isTargetMet: false,
+        state: "normal",
+        message: null,
+      },
+      model: {
+        value: null,
+        change: 0,
+        cost: 0,
+        profit: 0,
+        isTargetMet: false,
+        state: "normal",
+        message: null,
+      },
+    };
+    if (initialData.calculationResult && activeScenario) {
+      results[activeScenario] = initialData.calculationResult;
+    }
+    return results;
+  };
+
+  const [calculationResults, setCalculationResults] = useState(
+    getMappedInitialResults()
   );
   const [modelValues, setModelValues] = useState(initialData.modelValues);
 
@@ -150,7 +211,7 @@ const AdvancedModellingTool = () => {
       activeScenario,
       lockedFields,
       modelValues,
-      calculationResult,
+      calculationResults,
     };
 
     CaseVisualState.update((s) => {
@@ -191,7 +252,7 @@ const AdvancedModellingTool = () => {
     activeScenario,
     lockedFields,
     modelValues,
-    calculationResult,
+    calculationResults,
     currentCase.id,
   ]);
 
@@ -216,7 +277,70 @@ const AdvancedModellingTool = () => {
           setSelectedDriver(segmentData.selectedDriver || "cop");
           setLockedFields(segmentData.lockedFields || {});
           setModelValues(segmentData.modelValues || {});
-          setCalculationResult(segmentData.calculationResult || {});
+          setCalculationResults(
+            segmentData.calculationResults ||
+              (segmentData.calculationResult
+                ? {
+                    current: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    feasible: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    model: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    [segmentData.activeScenario || "model"]:
+                      segmentData.calculationResult,
+                  }
+                : {
+                    current: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    feasible: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    model: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                  })
+          );
         }
       }
 
@@ -297,10 +421,10 @@ const AdvancedModellingTool = () => {
           }
 
           if (
-            storedData.calculationResult &&
-            !isEqual(storedData.calculationResult, calculationResult)
+            storedData.calculationResults &&
+            !isEqual(storedData.calculationResults, calculationResults)
           ) {
-            setCalculationResult(storedData.calculationResult);
+            setCalculationResults(storedData.calculationResults);
           }
         }
       }
@@ -563,14 +687,34 @@ const AdvancedModellingTool = () => {
       }));
     } else {
       // Create or update segment data with refreshed values
-      const defaultCalculationResult = {
-        value: null,
-        change: 0,
-        cost: 0,
-        profit: 0,
-        isTargetMet: false,
-        state: "normal",
-        message: null,
+      const defaultCalculationResults = {
+        current: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        feasible: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        model: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
       };
 
       const defaultLockedFields = {
@@ -603,8 +747,15 @@ const AdvancedModellingTool = () => {
                   [newSegmentId]: {
                     ...(storedData || {}),
                     modelValues: finalModelValues,
-                    calculationResult:
-                      storedData?.calculationResult || defaultCalculationResult,
+                    calculationResults:
+                      storedData?.calculationResults ||
+                      (storedData?.calculationResult
+                        ? {
+                            ...defaultCalculationResults,
+                            [storedData.activeScenario || "model"]:
+                              storedData.calculationResult,
+                          }
+                        : defaultCalculationResults),
                     lockedFields:
                       storedData?.lockedFields || defaultLockedFields,
                     activeScenario:
@@ -644,16 +795,19 @@ const AdvancedModellingTool = () => {
       tertiaryEarnings = getSegmentAnswer(activeScenario, "tertiary");
     }
 
-    return (
-      targetIncomeLevel -
-      diversifiedEarnings -
-      secondaryEarnings -
-      tertiaryEarnings
-    );
+    const otherIncomes =
+      diversifiedEarnings + secondaryEarnings + tertiaryEarnings;
+
+    return {
+      totalTarget: currentTarget,
+      targetPrimaryIncome: targetIncomeLevel - otherIncomes,
+      otherIncomes: otherIncomes,
+    };
   };
 
   const handleCalculate = () => {
-    const targetPrimaryIncome = getTargetIncome();
+    const { totalTarget, targetPrimaryIncome, otherIncomes } =
+      getTargetIncome();
 
     let drivers = {};
     if (activeScenario === "model") {
@@ -680,12 +834,27 @@ const AdvancedModellingTool = () => {
     );
 
     // Identify Calculation State
-    // Scenario 1: Surplus (Target met or exceeded)
-    // Scenario 3: Impossible (Math requires negative values to hit target)
     let state = "normal";
     let message = null;
 
-    if (targetPrimaryIncome <= 0 || (result < 0 && selectedDriver !== "cop")) {
+    // RIGOROUS SURPLUS VERIFICATION:
+    // We calculate the current actual primary income for this scenario
+    let actualPrimaryIncome = 0;
+    if (commodityCategory?.toLowerCase() === "aquaculture") {
+      // Aquaculture: L * (V * (P - C) + 1)
+      actualPrimaryIncome =
+        drivers.land * (drivers.volume * (drivers.price - drivers.cop) + 1);
+    } else {
+      // Crop/Livestock: L * (V * P - C)
+      actualPrimaryIncome =
+        drivers.land * (drivers.volume * drivers.price - drivers.cop);
+    }
+
+    // Total actual income for this scenario (Primary + Others)
+    const totalActualIncome = actualPrimaryIncome + otherIncomes;
+
+    // Surplus: Total scenario income already reaches total target
+    if (totalActualIncome >= totalTarget) {
       state = "surplus";
       message =
         "Farmers in this segment already earn more than the income target. In this calculated scenario, incomes would decrease.";
@@ -693,6 +862,10 @@ const AdvancedModellingTool = () => {
       state = "impossible";
       message =
         "It is not physically possible to reach the income target with the specified model values.";
+    } else if (result < 0 && selectedDriver !== "cop") {
+      // This case handles negative price or volume results which are impossible but not a "surplus" in terms of current earnings
+      state = "impossible";
+      message = "Impossible target: required value is negative.";
     }
 
     const finalResult = Math.max(0, result);
@@ -706,11 +879,12 @@ const AdvancedModellingTool = () => {
 
     // cost = cop / volume
     // profit = price - cost
-    let unitCost = currentVolume !== 0 ? currentCop / currentVolume : 0;
+    let unitCost =
+      currentVolume !== 0 && currentVolume > 0 ? currentCop / currentVolume : 0;
     let profit = currentPrice - unitCost;
 
     // Handle 100% Profit for Impossible CoP
-    if (state === "impossible") {
+    if (state === "impossible" && selectedDriver === "cop") {
       unitCost = 0;
       profit = currentPrice;
     }
@@ -721,21 +895,26 @@ const AdvancedModellingTool = () => {
         ? ((finalResult - feasibleValue) / feasibleValue) * 100
         : 0;
 
+    // Target is met if total actual income >= total target (surplus)
+    // OR if the calculated result for the specific driver meets the requirement
     const isTargetMet =
-      targetPrimaryIncome <= 0 ||
+      totalActualIncome >= totalTarget ||
       (selectedDriver === "cop"
         ? drivers.cop <= result
         : drivers[selectedDriver] >= result);
 
-    setCalculationResult({
-      value: finalResult,
-      change: change,
-      cost: unitCost,
-      profit: profit,
-      isTargetMet: isTargetMet,
-      state: state,
-      message: message,
-    });
+    setCalculationResults((prev) => ({
+      ...prev,
+      [activeScenario]: {
+        value: finalResult,
+        change: change,
+        cost: unitCost,
+        profit: profit,
+        isTargetMet: isTargetMet,
+        state: state,
+        message: message,
+      },
+    }));
   };
 
   const driverLabels = useMemo(() => {
@@ -874,9 +1053,9 @@ const AdvancedModellingTool = () => {
               {driverUnits[selectedDriver]})
             </Text>
             <div className="calculation-result-container">
-              {activeScenario === scenario &&
-              calculationResult.value !== null ? (
+              {calculationResults[scenario]?.value !== null ? (
                 (() => {
+                  const scenarioResult = calculationResults[scenario];
                   const feasibleValue = getSegmentAnswer(
                     "feasible",
                     selectedDriver
@@ -884,10 +1063,10 @@ const AdvancedModellingTool = () => {
                   let isFeasible = false;
                   if (selectedDriver === "cop") {
                     // For CoP, a higher required value is "easier" (more room for expense)
-                    isFeasible = calculationResult.value >= feasibleValue;
+                    isFeasible = scenarioResult.value >= feasibleValue;
                   } else {
                     // For Price/Volume, a lower required value is "easier" (less performance needed)
-                    isFeasible = calculationResult.value <= feasibleValue;
+                    isFeasible = scenarioResult.value <= feasibleValue;
                   }
 
                   return (
@@ -899,7 +1078,7 @@ const AdvancedModellingTool = () => {
                           }`}
                         >
                           <span className="value-text">
-                            {thousandFormatter(calculationResult.value, 2)}
+                            {thousandFormatter(scenarioResult.value, 2)}
                           </span>
                         </div>
                         <div className="feasibility-status">
@@ -910,14 +1089,15 @@ const AdvancedModellingTool = () => {
                           </span>
                         </div>
                       </div>
-                      {calculationResult.message && (
-                        <div className="calculation-message-wrapper">
-                          <Alert
-                            message={calculationResult.message}
-                            type="info"
-                          />
-                        </div>
-                      )}
+                      {activeScenario === scenario &&
+                        scenarioResult.message && (
+                          <div className="calculation-message-wrapper">
+                            <Alert
+                              message={scenarioResult.message}
+                              type="info"
+                            />
+                          </div>
+                        )}
                     </div>
                   );
                 })()
@@ -937,12 +1117,18 @@ const AdvancedModellingTool = () => {
               shape="round"
               className="button-clear"
               onClick={() => {
-                setCalculationResult({
-                  value: null,
-                  change: 0,
-                  cost: 0,
-                  profit: 0,
-                });
+                setCalculationResults((prev) => ({
+                  ...prev,
+                  [activeScenario]: {
+                    value: null,
+                    change: 0,
+                    cost: 0,
+                    profit: 0,
+                    isTargetMet: false,
+                    state: "normal",
+                    message: null,
+                  },
+                }));
                 setLockedFields({
                   price: false,
                   volume: false,
@@ -1020,11 +1206,34 @@ const AdvancedModellingTool = () => {
                   value={selectedDriver}
                   onChange={(val) => {
                     setSelectedDriver(val);
-                    setCalculationResult({
-                      value: null,
-                      change: 0,
-                      cost: 0,
-                      profit: 0,
+                    setCalculationResults({
+                      current: {
+                        value: null,
+                        change: 0,
+                        cost: 0,
+                        profit: 0,
+                        isTargetMet: false,
+                        state: "normal",
+                        message: null,
+                      },
+                      feasible: {
+                        value: null,
+                        change: 0,
+                        cost: 0,
+                        profit: 0,
+                        isTargetMet: false,
+                        state: "normal",
+                        message: null,
+                      },
+                      model: {
+                        value: null,
+                        change: 0,
+                        cost: 0,
+                        profit: 0,
+                        isTargetMet: false,
+                        state: "normal",
+                        message: null,
+                      },
                     });
                   }}
                   options={selectOptions}
@@ -1099,9 +1308,10 @@ const AdvancedModellingTool = () => {
                     <div className="price-total-display">
                       <Text strong>
                         Price:{" "}
-                        {calculationResult.value !== null
+                        {calculationResults[activeScenario]?.value !== null
                           ? thousandFormatter(
-                              calculationResult.cost + calculationResult.profit,
+                              calculationResults[activeScenario].cost +
+                                calculationResults[activeScenario].profit,
                               2
                             ) +
                             " " +
@@ -1111,19 +1321,17 @@ const AdvancedModellingTool = () => {
                     </div>
 
                     {/* Real Bar Chart Logic */}
-                    {calculationResult.value !== null ? (
+                    {calculationResults[activeScenario]?.value !== null ? (
                       (() => {
+                        const scenarioResult =
+                          calculationResults[activeScenario];
                         // Use raw values for calculation but ensure breakdown logic
                         // If target is met, we might want to show the scenario breakdown instead of theoretical
                         // because theoretical breakdown for negative prices doesn't make sense visually.
                         const displayCost =
-                          calculationResult.cost < 0
-                            ? 0
-                            : calculationResult.cost;
+                          scenarioResult.cost < 0 ? 0 : scenarioResult.cost;
                         const displayProfit =
-                          calculationResult.profit < 0
-                            ? 0
-                            : calculationResult.profit;
+                          scenarioResult.profit < 0 ? 0 : scenarioResult.profit;
 
                         const total =
                           Math.abs(displayCost) + Math.abs(displayProfit);

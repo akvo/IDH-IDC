@@ -155,6 +155,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Resolved a `ReferenceError` where `sensitivityAnalysis` was not defined in the Advanced Modelling Tool.
     - Fixed an income target calculation bug in the Advanced Modelling Tool caused by a property name typo (`income_target_level` -> `target`).
     - Implemented support for adjusted income targets from the sensitivity analysis configuration in the Advanced Modelling Tool.
+    - Refined surplus verification logic to compare total calculated income (primary + others) against the benchmark target.
+    - Decoupled surplus detection from adjusted targets to ensure baseline feasibility checks remain consistent with the original segment benchmark.
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.
