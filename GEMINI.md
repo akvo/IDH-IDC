@@ -196,6 +196,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Prevented creation of "artificial" thresholds in data gaps, eliminating empty segments with 0 farmers.
     - Implemented support for "Equal Interval" strategy in backend segmentation logic.
     - Updated Pydantic models to support optional strategy selection in segmentation previews and recalculations.
+    - Resolved floating point precision issues where values slightly exceeding cut thresholds (e.g., `1.95` stored as `1.9500001`) were excluded from segments by rounding input data to 2 decimal places.
+    - Added regression test `test_segmentation_repro.py` to verify boundary handling.
 - **Technical Improvements & Workflows**:
     - **General Refactoring**: Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing`.
     - **Workflows**: Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection; implemented `seed_data`, `view_logs`, and `run_frontend_test`.

@@ -94,7 +94,8 @@ def generate_numerical_cut_values(
         cuts = np.linspace(np.min(series), np.max(series), n_segments + 1)[1:]
     else:
         # Equal-frequency cuts via quantiles
-        # method='closest_observation' ensures thresholds are actual data points
+        # method='closest_observation' ensures
+        # thresholds are actual data points
         quantiles = np.linspace(0, 1, n_segments + 1)[1:]
         cuts = np.quantile(
             series,
@@ -138,6 +139,11 @@ def calculate_numerical_segments_from_cuts(
         - max: upper bound of the segment range
     """
     values = df[column].dropna().to_numpy()
+    # Round values to 2 decimals to match the precision of cuts
+    # (which are also rounded to 2 decimals)
+    # This prevents floating point errors where e.g. 1.9500000001
+    # falls into the >1.95 bucket
+    values = np.round(values, 2)
 
     # Assign bucket indices
     bucket_idx = np.digitize(values, bins=cuts, right=True)
@@ -263,6 +269,8 @@ def recalculate_numerical_segments(
             )
 
         series = df[seg_var].dropna().to_numpy()
+        # Round values to 2 decimals to match the precision of cuts
+        series = np.round(series, 2)
         is_numeric = pd.api.types.is_numeric_dtype(df[seg_var])
         is_integer_data = is_numeric and np.all(np.mod(series, 1) == 0)
 
