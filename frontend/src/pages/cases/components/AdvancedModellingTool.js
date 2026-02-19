@@ -7,7 +7,7 @@ import {
   Select,
   Tabs,
   Typography,
-  Input,
+  InputNumber,
   Button,
   Divider,
   Alert,
@@ -15,9 +15,13 @@ import {
 import { LockOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import {
+  InputNumberThousandFormatter,
+  flatten,
+  selectProps,
+} from "../../../lib";
 import EquationVisualizer from "./EquationVisualizer";
 import { calculateModellingDriver } from "../utils/incomeCalculations";
-import { selectProps, flatten } from "../../../lib";
 import SegmentSelector from "./SegmentSelector";
 import { commodities } from "../../../store/static";
 import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg";
@@ -47,14 +51,14 @@ const InputRow = ({
         {!isModel && <LockOutlined className="lock-icon static-lock" />}
       </Col>
       <Col span={8}>
-        <Input
-          value={thousandFormatter(displayValue, 2)}
-          onChange={(e) => {
-            const val = e.target.value.replace(/,/g, "");
-            handleInputChange(field, val);
-          }}
+        <InputNumber
+          value={displayValue}
+          onChange={(val) => handleInputChange(field, val)}
           disabled={!isModel || isCalculationTarget}
           className="modelling-input"
+          controls={false}
+          style={{ width: "100%" }}
+          {...InputNumberThousandFormatter}
         />
       </Col>
     </Row>
@@ -622,7 +626,7 @@ const AdvancedModellingTool = () => {
   };
 
   const handleInputChange = (field, value) => {
-    setModelValues((prev) => ({ ...prev, [field]: parseFloat(value) || 0 }));
+    setModelValues((prev) => ({ ...prev, [field]: value || 0 }));
   };
 
   const handleSegmentChange = (newSegmentId) => {
