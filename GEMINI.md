@@ -223,7 +223,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Consolidated workflow rules for Git, PRs, and activity logging.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
     - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
-    - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
+    - **Segmentation UI Refinement (Issue #727)**:
+    - Defined UAC and TAC for improving farmer visibility and manual adjustment flow.
+    - Planned enhanced farmer count display using IDC green boxes for better visibility.
+    - Designed new numerical range configuration UI with dual boxes and "Adjust" button.
+    - Planned "Cascading Exclusivity" logic: adjusting max of Segment N automatically updates min of Segment N+1.
+    - Planned default blank segment names with a prompt for user specification.
+    - Reorganized documentation into `docs/segmentation_ui_refinement` and provided technical context in `docs/segmentation_fix`.
+- **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.
