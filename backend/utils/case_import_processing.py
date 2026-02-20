@@ -210,7 +210,7 @@ def calculate_numerical_segments_from_cuts(
         segments.append(
             {
                 "index": idx,
-                "name": column,
+                "name": "",  # Empty by default for numerical segments
                 "operator": "<=",
                 "value": float(cut),
                 "number_of_farmers": int(count),
@@ -350,7 +350,7 @@ def recalculate_numerical_segments(
             processed_segments.append(
                 {
                     "index": seg["index"],
-                    "name": seg_var,
+                    "name": seg.get("name") or "",
                     "operator": "<=",
                     "value": float(upper_bound),
                     "number_of_farmers": int(count),

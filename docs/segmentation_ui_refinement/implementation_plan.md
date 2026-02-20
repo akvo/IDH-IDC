@@ -61,6 +61,9 @@ To ensure the UI respects user intent exactly as discussed, we will adopt the **
 - [ ] **Error Detail Stringification**: Update `CaseSettings.js` to handle `detail` objects (422 errors) from FastAPI, preventing React from crashing when an object is rendered as a child.
 - [ ] **Payload Sanitization**: Ensure `min` and `max` are only sent as numbers for numerical segments. For categorical segments, these should be `null` to avoid Pydantic validation errors (422).
 
+### UnboundLocalError Fix
+- [x] **Scoping Fix**: Move `prev_seg_same_var` lookup outside the `if/else` block in `process_confirmed_segmentation.py` to ensure it is always defined before being referenced.
+
 ## Technical Acceptance Criteria (TAC)
 
 1.  **Frontend Component Updates**:

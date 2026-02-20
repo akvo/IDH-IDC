@@ -97,6 +97,26 @@ const SegmentForm = ({
                           required: true,
                           message: `Segment ${index + 1} name required`,
                         },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (!value) {
+                              return Promise.resolve();
+                            }
+                            const segments = getFieldValue("segments") || [];
+                            const duplicate = segments.filter(
+                              (s, i) =>
+                                i !== index &&
+                                s?.name?.trim().toLowerCase() ===
+                                  value?.trim().toLowerCase()
+                            );
+                            if (duplicate.length > 0) {
+                              return Promise.reject(
+                                new Error("Segment names must be unique")
+                              );
+                            }
+                            return Promise.resolve();
+                          },
+                        }),
                       ]}
                       style={{ marginBottom: 0 }}
                     >
@@ -132,7 +152,7 @@ const SegmentForm = ({
             <Form.Item>
               <Button
                 type="ghost"
-                onClick={() => add()}
+                onClick={() => add({ name: "", number_of_farmers: 0 })}
                 block
                 icon={<PlusCircleFilled />}
                 disabled={!enableEditCase}

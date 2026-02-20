@@ -24,6 +24,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     *   Prioritized manual segment addition by swapping button order in `DataUploadSegmentForm.js`.
     *   Implemented full bi-directional cascading helpers for numerical range editing (Segment N Min updates Segment N-1 Max, and Segment N Max updates Segment N+1 Min) using a robust 0.01 precision offset.
     *   Refined "Adjust" button logic to send both boundaries simultaneously, preventing range reversion bugs.
+    *   Resolved a "Save Case" React crash by implementing robust error stringification for Pydantic/FastAPI validation errors and sanitizing segment payloads to exclude redundant `min`/`max` fields for categorical data.
+    *   Fixed missing segment answer values in Step 2 by implementing inclusive lower bounds (`>=`) for the starting segment of each variable, ensuring all farmers are captured.
+    *   Fixed `UnboundLocalError` in `process_confirmed_segmentation` by resolving a scoping bug in numerical segment processing.
+    *   Enforced manual, unique naming for numerical segments with real-time frontend validation and empty-by-default inputs.
     *   Resolved frontend lint warnings by replacing `undefined` checks with `typeof` checks.
 - **Authentication Improvements (PR #705)**:
     - Fixed infinite redirect loop for unauthenticated users accessing protected routes.

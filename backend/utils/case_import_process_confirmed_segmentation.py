@@ -149,22 +149,24 @@ def process_confirmed_segmentation(
             explicit_min = seg.min
             explicit_max = seg.max if seg.max is not None else float(seg.value)
 
+            # Find previous segment of same variable for lower bound logic
+            prev_seg_same_var = next(
+                (
+                    s
+                    for s in reversed(segments[:idx])
+                    if (s.segmentation_variable or segmentation_variable)
+                    .strip()
+                    .lower()
+                    == seg_var
+                    and not s.is_manual
+                ),
+                None,
+            )
+
             if explicit_min is not None:
                 lower = float(explicit_min)
             else:
                 # Fallback to previous segment logic
-                prev_seg_same_var = next(
-                    (
-                        s
-                        for s in reversed(segments[:idx])
-                        if (s.segmentation_variable or segmentation_variable)
-                        .strip()
-                        .lower()
-                        == seg_var
-                        and not s.is_manual
-                    ),
-                    None,
-                )
                 lower = (
                     float(prev_seg_same_var.value)
                     if prev_seg_same_var

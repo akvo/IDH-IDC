@@ -414,6 +414,26 @@ const DataUploadSegmentForm = ({
                   required: true,
                   message: `Segment ${index + 1} name required`,
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value) {
+                      return Promise.resolve();
+                    }
+                    const segments = getFieldValue("segments") || [];
+                    const duplicate = segments.filter(
+                      (s, i) =>
+                        i !== index &&
+                        s?.name?.trim().toLowerCase() ===
+                          value?.trim().toLowerCase()
+                    );
+                    if (duplicate.length > 0) {
+                      return Promise.reject(
+                        new Error("Segment names must be unique")
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
               style={formItemStyle}
             >
