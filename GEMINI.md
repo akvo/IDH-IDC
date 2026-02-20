@@ -227,6 +227,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Defined UAC and TAC for improving farmer visibility and manual adjustment flow.
         - Implemented colorized IDC Green tag style (`.farmer-count-tag`) for farmer counts for better visibility.
         - Standardized tag sizes for both farmer count and segment range (`.segment-info-tag`) for visual balance.
+        - Implemented segment name initialization: numerical segments start with blank names and a `"Please specify the segment name"` placeholder.
         - Reorganized documentation into `docs/segmentation_ui_refinement` and provided technical context in `docs/segmentation_fix`.
 - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 

@@ -83,9 +83,13 @@ const SegmentConfigurationForm = ({
       api
         .post("/case-import/segmentation-preview", payload)
         .then((res) => {
-          setSegmentationPreviews(res.data);
+          let segments = res.data.segments || [];
+          if (variableType === "numerical") {
+            segments = segments.map((s) => ({ ...s, name: null }));
+          }
+          setSegmentationPreviews({ ...res.data, segments });
           // set segment values to form initialValue here
-          form.setFieldsValue({ segments: res.data.segments || [] });
+          form.setFieldsValue({ segments });
         })
         .catch((e) => {
           console.error("Error fetching segmentation preview:", e);

@@ -400,7 +400,11 @@ const DataUploadSegmentForm = ({
             >
               <Input
                 width="100%"
-                placeholder="Segment name"
+                placeholder={
+                  segVarType === "numerical"
+                    ? "Please specify the segment name"
+                    : "Segment name"
+                }
                 disabled={!enableEditCase}
                 maxLength={15}
                 showCount={true}
