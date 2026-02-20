@@ -2019,3 +2019,63 @@
     }
   }
 }
+
+.segment-card-container {
+  .ant-card-body {
+    padding: 16px 20px;
+  }
+
+  .segment-info-tag {
+    &.ant-tag {
+      padding: 2px 12px;
+      border-radius: 4px;
+      font-family: "TabletGothic", sans-serif;
+      font-size: 13px;
+      // margin-top: 4px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .farmer-count-tag {
+    &.ant-tag {
+      @extend .segment-info-tag;
+      background-color: $primary-color;
+      color: #ffffff;
+      border: 1px solid $primary-color;
+      font-weight: bold;
+
+      p {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .threshold-adjust-btn {
+    background-color: $primary-color;
+    border-color: $primary-color;
+    color: #ffffff;
+
+    // &:hover,
+    // &:focus {
+    //   background-color: darken($primary-color, 10%);
+    //   border-color: darken($primary-color, 10%);
+    //   color: #ffffff;
+    // }
+  }
+
+  .min-max-input {
+    &.ant-input-number-affix-wrapper {
+      .ant-input-number-prefix {
+        padding-top: 4px;
+        font-family: "TabletGothic", sans-serif;
+        font-size: 12px;
+      }
+    }
+  }
+}

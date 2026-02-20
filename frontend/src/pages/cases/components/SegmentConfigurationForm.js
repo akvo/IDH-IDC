@@ -83,17 +83,27 @@ const SegmentConfigurationForm = ({
       api
         .post("/case-import/segmentation-preview", payload)
         .then((res) => {
-          setSegmentationPreviews(res.data);
+          let segments = res.data.segments || [];
+          if (variableType === "numerical") {
+            segments = segments.map((s) => ({ ...s, name: null }));
+          }
+          setSegmentationPreviews({ ...res.data, segments });
           // set segment values to form initialValue here
-          form.setFieldsValue({ segments: res.data.segments || [] });
+          form.setFieldsValue({ segments });
         })
         .catch((e) => {
           console.error("Error fetching segmentation preview:", e);
-          setErrorPreview(
-            e?.response?.data?.detail ||
-              e?.message ||
-              "An error occurred while fetching the segmentation preview."
-          );
+          const detail = e?.response?.data?.detail;
+          const errorMessage =
+            typeof detail === "string"
+              ? detail
+              : Array.isArray(detail)
+              ? detail.map((d) => d.msg || JSON.stringify(d)).join(", ")
+              : typeof detail === "object" && detail !== null
+              ? JSON.stringify(detail)
+              : e?.message ||
+                "An error occurred while fetching the segmentation preview.";
+          setErrorPreview(errorMessage);
         })
         .finally(() => {
           setLoadingPreview(false);
@@ -142,7 +152,7 @@ const SegmentConfigurationForm = ({
     variableType,
   ]);
 
-  const handleOnChangeFieldValue = (selectedSegment, value) => {
+  const handleOnChangeFieldValue = (selectedSegment, values = {}) => {
     const targetVarType = selectedSegment.variable_type || variableType;
     const targetSegVariable =
       selectedSegment.segmentation_variable || segmentationVariable;
@@ -160,12 +170,51 @@ const SegmentConfigurationForm = ({
       return sVar === targetSegVariable.toLowerCase();
     });
 
-    const updatedRelevantSegments = relevantSegments.map((s) => ({
-      index: s.index,
-      value: s.index === selectedSegment.index ? value : s.value,
-      segmentation_variable: targetSegVariable,
-      variable_type: targetVarType,
-    }));
+    const updatedRelevantSegments = relevantSegments.map((s) => {
+      let newValue = s.value;
+      let newMin = s.min;
+      let newMax = s.max;
+
+      const isCurrent = s.index === selectedSegment.index;
+      const isPrev = s.index === selectedSegment.index - 1;
+      const isNext = s.index === selectedSegment.index + 1;
+
+      // 1. Update Current Segment
+      if (isCurrent) {
+        if (typeof values.max !== "undefined") {
+          newValue = values.max;
+          newMax = values.max;
+        } else if (typeof values.value !== "undefined") {
+          newValue = values.value;
+          newMax = values.value;
+        }
+        if (typeof values.min !== "undefined") {
+          newMin = values.min;
+        }
+      }
+
+      // 2. Backward Cascade (Min N -> Max N-1)
+      if (isPrev && typeof values.min !== "undefined") {
+        const offset = 0.01;
+        newValue = parseFloat((values.min - offset).toFixed(2));
+        newMax = newValue;
+      }
+
+      // 3. Forward Cascade (Max N -> Min N+1)
+      if (isNext && typeof values.max !== "undefined") {
+        const offset = 0.01;
+        newMin = parseFloat((values.max + offset).toFixed(2));
+      }
+
+      return {
+        ...s,
+        value: newValue,
+        min: newMin,
+        max: newMax,
+        segmentation_variable: targetSegVariable,
+        variable_type: targetVarType,
+      };
+    });
 
     const recalculatePayload = {
       import_id: uploadResult.import_id,
@@ -401,6 +450,7 @@ const SegmentConfigurationForm = ({
                 segmentFieldsLoading={segmentFieldsLoading}
                 dataUploadFieldPreffix={dataUploadFieldPreffix}
                 uploadResult={uploadResult}
+                segmentationPreviews={segmentationPreviews}
               />
             </Col>
           </Row>

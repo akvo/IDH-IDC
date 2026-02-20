@@ -13,6 +13,7 @@ import {
   Radio,
   Select,
   Alert,
+  Space,
 } from "antd";
 import {
   DeleteOutlined,
@@ -23,8 +24,9 @@ import { CaseUIState, CurrentCaseState } from "../store";
 import { MAX_SEGMENT } from ".";
 import { selectProps, api } from "../../../lib";
 
-const LEFT_COL_SPAN = 14;
-const RIGHT_COL_SPAN = 10;
+const LEFT_COL_SPAN = 12;
+const RIGHT_COL_SPAN = 12;
+const SHOW_SEGMENT_RANGE = false;
 
 const SegmentGenerator = ({
   uploadResult,
@@ -207,6 +209,7 @@ const DataUploadSegmentForm = ({
   segmentFieldsLoading = {},
   dataUploadFieldPreffix = "",
   uploadResult = {},
+  segmentationPreviews = null,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -301,8 +304,25 @@ const DataUploadSegmentForm = ({
         : null;
     const formItemStyle = { marginBottom: "5px" };
     const isLoading = segmentFieldsLoading?.[`index_${relatedSegment?.index}`];
-    const rangeMin = relatedSegment?.min || 0;
-    const rangeMax = relatedSegment?.max || 0;
+
+    // Static range logic: find the original segment data from segmentationPreviews
+    // to ensure the label does not update while the user is typing in the input fields.
+    const originalSegment = segmentationPreviews?.segments?.find((s) => {
+      const sVar = (
+        s.segmentation_variable || segmentationVariable
+      )?.toLowerCase();
+      const rVar = (
+        relatedSegment?.segmentation_variable || segmentationVariable
+      )?.toLowerCase();
+      return sVar === rVar && s.index === relatedSegment?.index;
+    });
+
+    const rangeMin = originalSegment
+      ? originalSegment.min
+      : relatedSegment?.min || 0;
+    const rangeMax = originalSegment
+      ? originalSegment.max || originalSegment.value
+      : relatedSegment?.max || relatedSegment?.value || 0;
 
     // Determine label based on individual segment or global fallback
     const segVarLabel =
@@ -348,7 +368,7 @@ const DataUploadSegmentForm = ({
         className="segment-card-container"
         style={{ marginBottom: 16 }}
       >
-        <Row gutter={[12, 12]} align="middle">
+        <Row gutter={[12, 12]} align="top">
           <Form.Item
             {...restField}
             name={[name, "id"]}
@@ -395,12 +415,32 @@ const DataUploadSegmentForm = ({
                   required: true,
                   message: `Segment ${index + 1} name required`,
                 },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value) {
+                      return Promise.resolve();
+                    }
+                    const segments = getFieldValue("segments") || [];
+                    const duplicate = segments.filter(
+                      (s, i) =>
+                        i !== index &&
+                        s?.name?.trim().toLowerCase() ===
+                          value?.trim().toLowerCase()
+                    );
+                    if (duplicate.length > 0) {
+                      return Promise.reject(
+                        new Error("Segment names must be unique")
+                      );
+                    }
+                    return Promise.resolve();
+                  },
+                }),
               ]}
               style={formItemStyle}
             >
               <Input
                 width="100%"
-                placeholder="Segment name"
+                placeholder="Please specify the segment name"
                 disabled={!enableEditCase}
                 maxLength={15}
                 showCount={true}
@@ -408,8 +448,66 @@ const DataUploadSegmentForm = ({
             </Form.Item>
           </Col>
           <Col span={RIGHT_COL_SPAN}>
-            {
-              // show segment threshold only for numerical variableType and if generated
+            {segVarType === "numerical" && !isManual ? (
+              <Form.Item label={segVarLabel} style={formItemStyle}>
+                <Space align="center" size="small">
+                  <Form.Item
+                    {...restField}
+                    name={[name, "min"]}
+                    style={{ marginBottom: 0 }}
+                  >
+                    <InputNumber
+                      className="min-max-input"
+                      controls={false}
+                      style={{ width: "100%" }}
+                      disabled={!enableEditCase || isLoading}
+                      prefix={"Min: "}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "value"]}
+                    style={{ marginBottom: 0 }}
+                  >
+                    <InputNumber
+                      id={`segment_${name}_value`}
+                      className="min-max-input"
+                      controls={false}
+                      style={{ width: "100%" }}
+                      disabled={!enableEditCase || isLoading}
+                      prefix={"Max: "}
+                    />
+                  </Form.Item>
+                  {isLoading && (
+                    <Spin size="small" style={{ marginTop: "6px" }} />
+                  )}
+                  <Button
+                    className="threshold-adjust-btn"
+                    onClick={() => {
+                      const minVal = form.getFieldValue([
+                        "segments",
+                        name,
+                        "min",
+                      ]);
+                      const maxVal = form.getFieldValue([
+                        "segments",
+                        name,
+                        "value",
+                      ]);
+
+                      // Send both min and max to ensure both bounds are updated and recalculated correctly
+                      handleOnChangeFieldValue(relatedSegment, {
+                        min: minVal,
+                        max: maxVal,
+                      });
+                    }}
+                    disabled={!enableEditCase || isLoading}
+                  >
+                    Adjust
+                  </Button>
+                </Space>
+              </Form.Item>
+            ) : (
               <Form.Item
                 {...restField}
                 name={[name, "value"]}
@@ -424,11 +522,11 @@ const DataUploadSegmentForm = ({
                   disabled={!enableEditCase || isLoading}
                   suffix={isLoading ? <Spin size="small" /> : ""}
                   onChange={(val) =>
-                    handleOnChangeFieldValue(relatedSegment, val)
+                    handleOnChangeFieldValue(relatedSegment, { value: val })
                   }
                 />
               </Form.Item>
-            }
+            )}
 
             <Form.Item
               {...restField}
@@ -451,18 +549,20 @@ const DataUploadSegmentForm = ({
             <Col span={24}>
               <Row gutter={[12, 12]}>
                 <Col span={LEFT_COL_SPAN}>
-                  <Tag>
-                    <p style={{ margin: 0 }}>
-                      Number of farmers: {numberOfFarmers}
-                    </p>
+                  <Tag className="farmer-count-tag">
+                    <p>Number of farmers: {numberOfFarmers}</p>
                   </Tag>
                 </Col>
                 <Col span={RIGHT_COL_SPAN}>
-                  <Tag>
-                    <p style={{ margin: 0 }}>
-                      Segment range: {rangeMin} - {rangeMax}
-                    </p>
-                  </Tag>
+                  {SHOW_SEGMENT_RANGE ? (
+                    <Tag className="segment-info-tag">
+                      <p>
+                        Segment range: {rangeMin} - {rangeMax}
+                      </p>
+                    </Tag>
+                  ) : (
+                    ""
+                  )}
                 </Col>
               </Row>
             </Col>
@@ -544,12 +644,10 @@ const DataUploadSegmentForm = ({
                 <Row gutter={[12, 12]} align="middle">
                   <Col>
                     <Button
-                      type="ghost"
                       onClick={() => addManual(add)}
                       block
                       icon={<PlusCircleFilled />}
                       disabled={!enableEditCase}
-                      className="button-ghost button-no-border"
                       style={{ textAlign: "left", padding: "0 8px" }}
                     >
                       Add segment manually

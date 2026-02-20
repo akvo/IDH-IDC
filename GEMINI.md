@@ -16,6 +16,20 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Segmentation UI Refinement (Issue #727)**:
+    - Implemented "Manual Range Authority" model: user-defined Min and Max values are strictly respected during recalculation and final segment generation.
+    *   Updated backend Pydantic models to support explicit `min` and `max` fields in segmentation requests.
+    *   Enhanced `recalculate_numerical_segments` and `process_confirmed_segmentation` to prioritize manual boundaries over automatic cascading logic.
+    *   Decoupled "Segment range" display from live form fields, ensuring it remains static/calculated until an explicitly triggered update.
+    *   Prioritized manual segment addition by swapping button order in `DataUploadSegmentForm.js`.
+    *   Implemented full bi-directional cascading helpers for numerical range editing (Segment N Min updates Segment N-1 Max, and Segment N Max updates Segment N+1 Min) using a robust 0.01 precision offset.
+    *   Refined "Adjust" button logic to send both boundaries simultaneously, preventing range reversion bugs.
+    *   Resolved a "Save Case" React crash by implementing robust error stringification for Pydantic/FastAPI validation errors and sanitizing segment payloads to exclude redundant `min`/`max` fields for categorical data.
+    *   Fixed missing segment answer values in Step 2 by implementing inclusive lower bounds (`>=`) for the starting segment of each variable, ensuring all farmers are captured.
+    *   Fixed `UnboundLocalError` in `process_confirmed_segmentation` by resolving a scoping bug in numerical segment processing.
+    *   Enforced manual, unique naming for numerical segments with real-time frontend validation and empty-by-default inputs.
+    *   Simplified Step 2 layout: adjusted grid spans (12/12), added "Min/Max" input prefixes, and made the "Segment range" display optional via toggle.
+    *   Resolved frontend lint warnings by replacing `undefined` checks with `typeof` checks.
 - **Authentication Improvements (PR #705)**:
     - Fixed infinite redirect loop for unauthenticated users accessing protected routes.
     - Implemented "Redirect After Login" feature to return users to their originally requested page.
@@ -223,7 +237,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Consolidated workflow rules for Git, PRs, and activity logging.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
     - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
-    - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
+    - **Segmentation UI Refinement (Issue #727)**:
+        - Defined UAC and TAC for improving farmer visibility and manual adjustment flow.
+        - Implemented colorized IDC Green tag style (`.farmer-count-tag`) for farmer counts for better visibility.
+        - Standardized tag sizes for both farmer count and segment range (`.segment-info-tag`) for visual balance.
+        - Implemented segment name initialization: numerical segments start with blank names and a `"Please specify the segment name"` placeholder.
+        - Reorganized documentation into `docs/segmentation_ui_refinement` and provided technical context in `docs/segmentation_fix`.
+        - Refactored Numerical Range UI using Ant Design `Space` and `InputNumber`, centering Min/Max labels below inputs and adding an IDC Green "Adjust" button.
+        - Prioritized the manual flow by making the "Add segment manually" button primary and moving it before the generator button.
+- **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

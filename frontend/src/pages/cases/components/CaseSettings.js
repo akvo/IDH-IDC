@@ -517,18 +517,22 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
               const findSegment = data.segments.find(
                 (s) => s.name === seg.name
               );
+              const sVarType =
+                seg.variable_type || values.data_upload_variable_type;
+              const isNumerical = sVarType === "numerical";
               return {
                 id: findSegment ? findSegment.id : null,
                 index: idx,
                 name: seg.name,
                 value: seg.value || 0,
+                min: isNumerical ? seg.min : null,
+                max: isNumerical ? seg.value : null,
                 number_of_farmers: seg.number_of_farmers || 0,
                 is_manual: !!seg.is_manual,
                 segmentation_variable:
                   seg.segmentation_variable ||
                   values.data_upload_segmentation_variable,
-                variable_type:
-                  seg.variable_type || values.data_upload_variable_type,
+                variable_type: sVarType,
               };
             }),
           };
@@ -560,12 +564,19 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
             })
             .catch((e) => {
               console.error(e);
-              const detail =
-                e?.response?.data?.detail ||
-                "Failed to generate segment values from import data.";
+              const detail = e?.response?.data?.detail;
+              const errorMessage =
+                typeof detail === "string"
+                  ? detail
+                  : Array.isArray(detail)
+                  ? detail.map((d) => d.msg || JSON.stringify(d)).join(", ")
+                  : typeof detail === "object" && detail !== null
+                  ? JSON.stringify(detail)
+                  : "Failed to generate segment values from import data.";
+
               messageApi.open({
                 type: "error",
-                content: detail,
+                content: errorMessage,
                 duration: 5,
               });
             });
