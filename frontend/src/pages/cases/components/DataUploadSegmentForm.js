@@ -24,8 +24,9 @@ import { CaseUIState, CurrentCaseState } from "../store";
 import { MAX_SEGMENT } from ".";
 import { selectProps, api } from "../../../lib";
 
-const LEFT_COL_SPAN = 14;
-const RIGHT_COL_SPAN = 10;
+const LEFT_COL_SPAN = 12;
+const RIGHT_COL_SPAN = 12;
+const SHOW_SEGMENT_RANGE = false;
 
 const SegmentGenerator = ({
   uploadResult,
@@ -439,11 +440,7 @@ const DataUploadSegmentForm = ({
             >
               <Input
                 width="100%"
-                placeholder={
-                  segVarType === "numerical"
-                    ? "Please specify the segment name"
-                    : "Segment name"
-                }
+                placeholder="Please specify the segment name"
                 disabled={!enableEditCase}
                 maxLength={15}
                 showCount={true}
@@ -460,9 +457,11 @@ const DataUploadSegmentForm = ({
                     style={{ marginBottom: 0 }}
                   >
                     <InputNumber
+                      className="min-max-input"
                       controls={false}
                       style={{ width: "100%" }}
                       disabled={!enableEditCase || isLoading}
+                      prefix={"Min: "}
                     />
                   </Form.Item>
                   <Form.Item
@@ -472,9 +471,11 @@ const DataUploadSegmentForm = ({
                   >
                     <InputNumber
                       id={`segment_${name}_value`}
+                      className="min-max-input"
                       controls={false}
                       style={{ width: "100%" }}
                       disabled={!enableEditCase || isLoading}
+                      prefix={"Max: "}
                     />
                   </Form.Item>
                   {isLoading && (
@@ -553,11 +554,15 @@ const DataUploadSegmentForm = ({
                   </Tag>
                 </Col>
                 <Col span={RIGHT_COL_SPAN}>
-                  <Tag className="segment-info-tag">
-                    <p>
-                      Segment range: {rangeMin} - {rangeMax}
-                    </p>
-                  </Tag>
+                  {SHOW_SEGMENT_RANGE ? (
+                    <Tag className="segment-info-tag">
+                      <p>
+                        Segment range: {rangeMin} - {rangeMax}
+                      </p>
+                    </Tag>
+                  ) : (
+                    ""
+                  )}
                 </Col>
               </Row>
             </Col>

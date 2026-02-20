@@ -2061,11 +2061,21 @@
     border-color: $primary-color;
     color: #ffffff;
 
-    &:hover,
-    &:focus {
-      background-color: darken($primary-color, 10%);
-      border-color: darken($primary-color, 10%);
-      color: #ffffff;
+    // &:hover,
+    // &:focus {
+    //   background-color: darken($primary-color, 10%);
+    //   border-color: darken($primary-color, 10%);
+    //   color: #ffffff;
+    // }
+  }
+
+  .min-max-input {
+    &.ant-input-number-affix-wrapper {
+      .ant-input-number-prefix {
+        padding-top: 4px;
+        font-family: "TabletGothic", sans-serif;
+        font-size: 12px;
+      }
     }
   }
 }
