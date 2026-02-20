@@ -41,6 +41,8 @@ class SegmentDefinition(BaseModel):
     value: Union[int, float, str]
     number_of_farmers: Optional[int] = 0
     is_manual: bool = False
+    min: Optional[float] = None
+    max: Optional[float] = None
     segmentation_variable: Optional[str] = None
     variable_type: Optional[Literal["categorical", "numerical"]] = None
 
@@ -78,6 +80,8 @@ class SegmentationPreviewResponse(BaseModel):
 class SegmentValueInput(BaseModel):
     index: int = Field(..., ge=1)
     value: float | str
+    min: Optional[float] = None
+    max: Optional[float] = None
     segmentation_variable: Optional[str] = None
     variable_type: Optional[Literal["categorical", "numerical"]] = None
 

@@ -208,6 +208,7 @@ const DataUploadSegmentForm = ({
   segmentFieldsLoading = {},
   dataUploadFieldPreffix = "",
   uploadResult = {},
+  segmentationPreviews = null,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -302,8 +303,25 @@ const DataUploadSegmentForm = ({
         : null;
     const formItemStyle = { marginBottom: "5px" };
     const isLoading = segmentFieldsLoading?.[`index_${relatedSegment?.index}`];
-    const rangeMin = relatedSegment?.min || 0;
-    const rangeMax = relatedSegment?.max || 0;
+
+    // Static range logic: find the original segment data from segmentationPreviews
+    // to ensure the label does not update while the user is typing in the input fields.
+    const originalSegment = segmentationPreviews?.segments?.find((s) => {
+      const sVar = (
+        s.segmentation_variable || segmentationVariable
+      )?.toLowerCase();
+      const rVar = (
+        relatedSegment?.segmentation_variable || segmentationVariable
+      )?.toLowerCase();
+      return sVar === rVar && s.index === relatedSegment?.index;
+    });
+
+    const rangeMin = originalSegment
+      ? originalSegment.min
+      : relatedSegment?.min || 0;
+    const rangeMax = originalSegment
+      ? originalSegment.max || originalSegment.value
+      : relatedSegment?.max || relatedSegment?.value || 0;
 
     // Determine label based on individual segment or global fallback
     const segVarLabel =
@@ -416,12 +434,15 @@ const DataUploadSegmentForm = ({
             {segVarType === "numerical" && !isManual ? (
               <Form.Item label={segVarLabel} style={formItemStyle}>
                 <Space align="center" size="small">
-                  <Form.Item style={{ marginBottom: 0 }}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "min"]}
+                    style={{ marginBottom: 0 }}
+                  >
                     <InputNumber
-                      value={rangeMin}
-                      readOnly
                       controls={false}
                       style={{ width: "100%" }}
+                      disabled={!enableEditCase || isLoading}
                     />
                   </Form.Item>
                   <Form.Item
@@ -434,9 +455,6 @@ const DataUploadSegmentForm = ({
                       controls={false}
                       style={{ width: "100%" }}
                       disabled={!enableEditCase || isLoading}
-                      onChange={(val) =>
-                        handleOnChangeFieldValue(relatedSegment, val)
-                      }
                     />
                   </Form.Item>
                   {isLoading && (
@@ -444,9 +462,24 @@ const DataUploadSegmentForm = ({
                   )}
                   <Button
                     className="threshold-adjust-btn"
-                    onClick={() =>
-                      document.getElementById(`segment_${name}_value`)?.focus()
-                    }
+                    onClick={() => {
+                      const minVal = form.getFieldValue([
+                        "segments",
+                        name,
+                        "min",
+                      ]);
+                      const maxVal = form.getFieldValue([
+                        "segments",
+                        name,
+                        "value",
+                      ]);
+
+                      // Send both min and max to ensure both bounds are updated and recalculated correctly
+                      handleOnChangeFieldValue(relatedSegment, {
+                        min: minVal,
+                        max: maxVal,
+                      });
+                    }}
                     disabled={!enableEditCase || isLoading}
                   >
                     Adjust
@@ -468,7 +501,7 @@ const DataUploadSegmentForm = ({
                   disabled={!enableEditCase || isLoading}
                   suffix={isLoading ? <Spin size="small" /> : ""}
                   onChange={(val) =>
-                    handleOnChangeFieldValue(relatedSegment, val)
+                    handleOnChangeFieldValue(relatedSegment, { value: val })
                   }
                 />
               </Form.Item>

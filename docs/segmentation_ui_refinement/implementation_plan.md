@@ -26,18 +26,47 @@ This task aims to improve the visibility of farmer counts per segment and refine
     *   Minimum and Maximum thresholds are displayed in two clearly labeled white boxes.
     *   An **"Adjust"** button (IDC Green) is placed next to these boxes.
     *   The thresholds are editable upon clicking "Adjust" or directly (as per existing logic, but with improved styling).
-4.  **Automatic Segment Exclusivity**: [x]
-    *   Modifying the **Maximum** of Segment N automatically updates the **Minimum** of Segment N+1 to match.
-    *   This ensures segments remain exclusive and continuous without manual intervention for adjacent boundaries.
+4.  **Bi-directional Segment Exclusivity**: [x]
+    *   Modifying the **Maximum** of Segment N automatically updates the **Minimum** of Segment N+1.
+    *   Modifying the **Minimum** of Segment N+1 automatically updates the **Maximum** of Segment N.
+    *   This ensures segments remain exclusive and continuous regardless of which side is adjusted.
 5.  **Prioritized Manual Flow**: [x]
     *   The option to adjust segments manually is presented as the preferred/first method.
+6.  **Recalculation Trigger**: [x]
+    *   Inputting values should not auto-trigger recalculation until "Adjust" is clicked.
+7.  **Static Calculated Range Display**: [x]
+    *   The "Segment range: X - Y" label should show the *calculated* range from the backend.
+    *   It should NOT update when the user is typing into the Min or Max boxes.
+    *   It should only update when the "Adjust" operation is completed and new backend data is received.
+
+## Numerical Range Behavior: Manual Authority
+
+To ensure the UI respects user intent exactly as discussed, we will adopt the **Manual Authority** model:
+
+1.  **Ground Truth**: The values currently visible in the **Min** and **Max** input boxes are the only values used to filter data for a segment.
+2.  **Recalculation**: When "Adjust" is clicked, the backend will count farmers where `Min < Value <= Max`.
+3.  **Full Bi-directional Cascading**:
+    *   **Backward**: Adjusting Segment N **Min** to `V` updates Segment N-1 **Max** to `V - offset`.
+    *   **Forward**: Adjusting Segment N **Max** to `V` updates Segment N+1 **Min** to `V + offset`.
+    *   *Note*: `offset` is constant at `0.01` for all numerical data types to ensure maximum mathematical precision and prevent data gaps.
+4.  **Payload Synchronization**: Both `min` and `max` fields must be explicitly synchronized in the API payload to prevent stale values from overriding the new `value` (reversion bug).
+5.  **No Reversion**: The backend must accept the provided `Min` and `Max` and return them as-is, rather than recalculating the `Min` based on a previous segment.
+
+## Bug Fixes
+
+### Answer Value Generation Fix
+- [x] **Inclusive Lower Bound**: Modified `recalculate_numerical_segments` and `process_confirmed_segmentation` to use `>=` for the first segment of each variable. This ensures the minimum value (e.g., 0) is included and answer values are generated.
+
+### Save Case React Crash Fix
+- [ ] **Error Detail Stringification**: Update `CaseSettings.js` to handle `detail` objects (422 errors) from FastAPI, preventing React from crashing when an object is rendered as a child.
+- [ ] **Payload Sanitization**: Ensure `min` and `max` are only sent as numbers for numerical segments. For categorical segments, these should be `null` to avoid Pydantic validation errors (422).
 
 ## Technical Acceptance Criteria (TAC)
 
 1.  **Frontend Component Updates**:
     *   Modify `renderSegmentCard` in [DataUploadSegmentForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/DataUploadSegmentForm.js).
     *   Implement the horizontal layout for thresholds: Range Boxes + Adjust Button.
-    *   Update [SegmentConfigurationForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/SegmentConfigurationForm.js) to handle cascading range updates in `handleOnChangeFieldValue`.
+    *   Update [SegmentConfigurationForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/SegmentConfigurationForm.js) to handle both `min` and `max` cascading range updates in `handleOnChangeFieldValue`.
 2.  **Styling**:
     *   Define new utility classes in `steps.scss` for the "Threshold Box" styles.
     *   Apply IDC branding colors: `$primary-color` (`#00605A`) for backgrounds and buttons.
@@ -65,7 +94,7 @@ This task aims to improve the visibility of farmer counts per segment and refine
 - Update `renderSegmentCard` to include Min/Max threshold boxes with "Adjust" button.
 
 #### [MODIFY] [SegmentConfigurationForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/SegmentConfigurationForm.js)
-- Update `handleOnChangeFieldValue` to implement cascading adjustment logic.
+- Update `handleOnChangeFieldValue` to implement bi-directional cascading adjustment logic (Min updates previous Max).
 
 #### [MODIFY] [steps.scss](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/styles/steps.scss)
 - Add styles for `.threshold-box-container` and `.threshold-adjust-btn`.

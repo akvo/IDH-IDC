@@ -301,26 +301,47 @@ def recalculate_numerical_segments(
             None,
         )
 
-        lower_bound = (
-            float(prev_seg_same_var["value"]) if prev_seg_same_var else None
-        )
-        upper_bound = float(seg["value"])
+        # Use explicit min/max if provided (Manual Authority)
+        explicit_min = seg.get("min")
+        explicit_max = seg.get("max") or float(seg.get("value"))
+
+        if explicit_min is not None:
+            lower_bound = float(explicit_min)
+            # When using manual min, we want to respect it EXACTLY.
+            # However, to avoid overlapping counts
+            # (if user sets Min = Prev Max),
+            # we must decide on the interval. Standard is (Min, Max].
+            # If we use > lower_bound, then a value of exactly 1.0
+            # (with Min=1.0) would be excluded.
+            # This is consistent with (1.0, 2.0].
+            seg_min = lower_bound
+        elif prev_seg_same_var:
+            lower_bound = float(prev_seg_same_var["value"])
+            seg_min = lower_bound + 0.01
+        else:
+            lower_bound = None
+            # min is min of data or upper_bound (to avoid inversion)
+            data_min = np.min(series) if series.size > 0 else 0
+            seg_min = min(data_min, explicit_max)
+
+        upper_bound = float(explicit_max)
 
         # Calculate count
         if seg_type == "numerical" and is_numeric:
             if lower_bound is None:
                 count = np.sum(series <= upper_bound)
-                # min is min of data or upper_bound (to avoid inversion)
-                data_min = np.min(series) if series.size > 0 else 0
-                seg_min = min(data_min, upper_bound)
             else:
-                count = np.sum(
-                    (series > lower_bound) & (series <= upper_bound)
-                )
-                if is_integer_data:
-                    seg_min = np.floor(lower_bound) + 1
+                # Standard (Lower, Upper] interval for subsequent segments.
+                # Use [Lower, Upper] for the very first segment of a variable
+                # to ensure the minimum value is included.
+                if prev_seg_same_var is None:
+                    count = np.sum(
+                        (series >= lower_bound) & (series <= upper_bound)
+                    )
                 else:
-                    seg_min = lower_bound + 0.01
+                    count = np.sum(
+                        (series > lower_bound) & (series <= upper_bound)
+                    )
 
             seg_max = np.floor(upper_bound) if is_integer_data else upper_bound
             if is_integer_data:

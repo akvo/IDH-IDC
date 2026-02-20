@@ -145,28 +145,44 @@ def process_confirmed_segmentation(
                 pd.DataFrame()
             )  # Empty DF for manual segments, will skip aggregation
         elif seg_type == "numerical" and seg_is_numeric:
-            # Find the previous segment of the SAME variable for lower bound
-            prev_seg_same_var = next(
-                (
-                    s
-                    for s in reversed(segments[:idx])
-                    if (s.segmentation_variable or segmentation_variable)
-                    .strip()
-                    .lower()
-                    == seg_var
-                    and not s.is_manual
-                ),
-                None,
-            )
-            lower = (
-                float(prev_seg_same_var.value) if prev_seg_same_var else None
-            )
-            upper = float(seg.value)
+            # Use explicit min/max if provided (Manual Authority)
+            explicit_min = seg.min
+            explicit_max = seg.max if seg.max is not None else float(seg.value)
+
+            if explicit_min is not None:
+                lower = float(explicit_min)
+            else:
+                # Fallback to previous segment logic
+                prev_seg_same_var = next(
+                    (
+                        s
+                        for s in reversed(segments[:idx])
+                        if (s.segmentation_variable or segmentation_variable)
+                        .strip()
+                        .lower()
+                        == seg_var
+                        and not s.is_manual
+                    ),
+                    None,
+                )
+                lower = (
+                    float(prev_seg_same_var.value)
+                    if prev_seg_same_var
+                    else None
+                )
+
+            upper = float(explicit_max)
 
             if lower is None:
                 mask = seg_series <= upper
             else:
-                mask = (seg_series > lower) & (seg_series <= upper)
+                # Standard (Lower, Upper] interval for subsequent segments.
+                # Use [Lower, Upper] for the very first segment of a variable
+                # to ensure the minimum value is included.
+                if prev_seg_same_var is None:
+                    mask = (seg_series >= lower) & (seg_series <= upper)
+                else:
+                    mask = (seg_series > lower) & (seg_series <= upper)
 
             seg_df = data_df[mask]
             number_of_farmers = int(len(seg_df))
