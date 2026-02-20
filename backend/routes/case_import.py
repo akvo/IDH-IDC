@@ -28,6 +28,7 @@ from utils.case_import_processing import (
     generate_numerical_segments,
     validate_ready_for_upload,
     recalculate_numerical_segments,
+    resolve_sheet_name,
 )
 from utils.case_import_storage import save_import_file, load_import_file
 from utils.case_import_process_confirmed_segmentation import (
@@ -89,8 +90,10 @@ def case_import(
     validate_workbook(xls)
 
     try:
-        data_df = pd.read_excel(xls, sheet_name="data")
-        mapping_df = pd.read_excel(xls, sheet_name="mapping")
+        data_sheet = resolve_sheet_name(xls, "data")
+        mapping_sheet = resolve_sheet_name(xls, "mapping")
+        data_df = pd.read_excel(xls, sheet_name=data_sheet)
+        mapping_df = pd.read_excel(xls, sheet_name=mapping_sheet)
     except Exception:
         raise HTTPException(
             status_code=400,
