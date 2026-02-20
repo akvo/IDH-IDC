@@ -154,8 +154,10 @@ const SegmentConfigurationForm = ({
 
     // 1. Prepare payload: only include segments that belong to the target variable
     const relevantSegments = segmentFields.filter((s) => {
-      const sVar = s.segmentation_variable || segmentationVariable;
-      return sVar === targetSegVariable;
+      const sVar = (
+        s.segmentation_variable || segmentationVariable
+      )?.toLowerCase();
+      return sVar === targetSegVariable.toLowerCase();
     });
 
     const updatedRelevantSegments = relevantSegments.map((s) => ({

@@ -187,6 +187,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added case-insensitive matching for segmentation variables to improve upload robustness.
     - Updated `CaseSettings.js` to display specific backend error details in the frontend for segment generation.
     - Verified implementation with frontend linting and backend tests.
+- **Segment Range Display Fix (Issue #725)**:
+    - Resolved a bug where adjusting segment thresholds caused all subsequent segment ranges to reset to the global minimum.
+    - Implemented case-insensitive variable name matching in `recalculate_numerical_segments` (backend) and `handleOnChangeFieldValue` (frontend).
+    - Ensured segment ranges correctly reflect the boundary of the previous segment regardless of variable name casing.
+    - Implemented broad case-insensitive support for case import, including sheet names ("Data", "Mapping") and validation flags.
 - **Fixed Crop Deactivation (Issue #721)**:
     - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
     - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.

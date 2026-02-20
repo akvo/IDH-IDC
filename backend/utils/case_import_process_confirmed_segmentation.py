@@ -8,6 +8,7 @@ from models.question import Question
 from models.case_commodity import CaseCommodity, CaseCommodityType
 from models.segment import SegmentUpdateBase, SegmentAnswerBase
 from utils.case_import_storage import load_import_file
+from utils.case_import_processing import resolve_sheet_name
 from db.crud_case_import import get_case_import
 from db.crud_segment import update_segment
 from db.crud_case import get_case_by_id, get_segment_benchmark
@@ -67,8 +68,10 @@ def process_confirmed_segmentation(
 
     try:
         xls = pd.ExcelFile(BytesIO(content))
-        data_df = pd.read_excel(xls, sheet_name="data")
-        mapping_df = pd.read_excel(xls, sheet_name="mapping")
+        data_sheet = resolve_sheet_name(xls, "data")
+        mapping_sheet = resolve_sheet_name(xls, "mapping")
+        data_df = pd.read_excel(xls, sheet_name=data_sheet)
+        mapping_df = pd.read_excel(xls, sheet_name=mapping_sheet)
 
         data_df.columns = data_df.columns.str.strip().str.lower()
         mapping_df.columns = mapping_df.columns.str.strip().str.lower()

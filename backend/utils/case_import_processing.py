@@ -7,10 +7,26 @@ from fastapi import HTTPException
 REQUIRED_SHEETS = {"data", "mapping"}
 
 
+def resolve_sheet_name(xls: pd.ExcelFile, target: str) -> str:
+    """Helper to resolve spreadsheet sheet name case-insensitively."""
+    return next(
+        (s for s in xls.sheet_names if s.strip().lower() == target.lower()),
+        None,
+    )
+
+
 def load_data_dataframe_from_bytes(content: bytes) -> pd.DataFrame:
     try:
         xls = pd.ExcelFile(BytesIO(content))
-        df = pd.read_excel(xls, sheet_name="data")
+        data_sheet = resolve_sheet_name(xls, "data")
+        if not data_sheet:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing required sheet: data",
+            )
+        df = pd.read_excel(xls, sheet_name=data_sheet)
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=400,
@@ -27,7 +43,7 @@ def load_data_dataframe_from_bytes(content: bytes) -> pd.DataFrame:
 
 
 def validate_workbook(xls: pd.ExcelFile):
-    missing = REQUIRED_SHEETS - set(xls.sheet_names)
+    missing = [s for s in REQUIRED_SHEETS if not resolve_sheet_name(xls, s)]
     if missing:
         raise HTTPException(
             status_code=400,
@@ -280,7 +296,7 @@ def recalculate_numerical_segments(
                 s
                 for s in reversed(sorted_segments[:idx])
                 if (s.get("segmentation_variable") or column).strip().lower()
-                == seg_var
+                == seg_var_input
             ),
             None,
         )
