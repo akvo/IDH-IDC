@@ -124,7 +124,7 @@ const SegmentForm = ({
                         width="100%"
                         placeholder="Please specify the segment name"
                         disabled={!enableEditCase}
-                        maxLength={25}
+                        maxLength={15}
                         showCount={true}
                       />
                     </Form.Item>
