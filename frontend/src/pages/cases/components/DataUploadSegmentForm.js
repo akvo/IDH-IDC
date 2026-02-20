@@ -13,6 +13,7 @@ import {
   Radio,
   Select,
   Alert,
+  Space,
 } from "antd";
 import {
   DeleteOutlined,
@@ -348,7 +349,7 @@ const DataUploadSegmentForm = ({
         className="segment-card-container"
         style={{ marginBottom: 16 }}
       >
-        <Row gutter={[12, 12]} align="middle">
+        <Row gutter={[12, 12]} align="top">
           <Form.Item
             {...restField}
             name={[name, "id"]}
@@ -412,8 +413,47 @@ const DataUploadSegmentForm = ({
             </Form.Item>
           </Col>
           <Col span={RIGHT_COL_SPAN}>
-            {
-              // show segment threshold only for numerical variableType and if generated
+            {segVarType === "numerical" && !isManual ? (
+              <Form.Item label={segVarLabel} style={formItemStyle}>
+                <Space align="center" size="small">
+                  <Form.Item style={{ marginBottom: 0 }}>
+                    <InputNumber
+                      value={rangeMin}
+                      readOnly
+                      controls={false}
+                      style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "value"]}
+                    style={{ marginBottom: 0 }}
+                  >
+                    <InputNumber
+                      id={`segment_${name}_value`}
+                      controls={false}
+                      style={{ width: "100%" }}
+                      disabled={!enableEditCase || isLoading}
+                      onChange={(val) =>
+                        handleOnChangeFieldValue(relatedSegment, val)
+                      }
+                    />
+                  </Form.Item>
+                  {isLoading && (
+                    <Spin size="small" style={{ marginTop: "6px" }} />
+                  )}
+                  <Button
+                    className="threshold-adjust-btn"
+                    onClick={() =>
+                      document.getElementById(`segment_${name}_value`)?.focus()
+                    }
+                    disabled={!enableEditCase || isLoading}
+                  >
+                    Adjust
+                  </Button>
+                </Space>
+              </Form.Item>
+            ) : (
               <Form.Item
                 {...restField}
                 name={[name, "value"]}
@@ -432,7 +472,7 @@ const DataUploadSegmentForm = ({
                   }
                 />
               </Form.Item>
-            }
+            )}
 
             <Form.Item
               {...restField}
@@ -546,12 +586,10 @@ const DataUploadSegmentForm = ({
                 <Row gutter={[12, 12]} align="middle">
                   <Col>
                     <Button
-                      type="ghost"
                       onClick={() => addManual(add)}
                       block
                       icon={<PlusCircleFilled />}
                       disabled={!enableEditCase}
-                      className="button-ghost button-no-border"
                       style={{ textAlign: "left", padding: "0 8px" }}
                     >
                       Add segment manually

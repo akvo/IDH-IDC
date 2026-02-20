@@ -229,6 +229,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Standardized tag sizes for both farmer count and segment range (`.segment-info-tag`) for visual balance.
         - Implemented segment name initialization: numerical segments start with blank names and a `"Please specify the segment name"` placeholder.
         - Reorganized documentation into `docs/segmentation_ui_refinement` and provided technical context in `docs/segmentation_fix`.
+        - Refactored Numerical Range UI using Ant Design `Space` and `InputNumber`, centering Min/Max labels below inputs and adding an IDC Green "Adjust" button.
+        - Prioritized the manual flow by making the "Add segment manually" button primary and moving it before the generator button.
 - **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 
 ## Codebase Structure

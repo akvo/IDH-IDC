@@ -15,34 +15,34 @@ This task aims to improve the visibility of farmer counts per segment and refine
 
 ## User Acceptance Criteria (UAC)
 
-1.  **Enhanced Farmer Visibility**:
+1.  **Enhanced Farmer Visibility**: [x]
     *   Each segment card displays the farmer count in a prominent box.
     *   **Style**: IDC Green background (`#00605A`), white text, bold font.
     *   **Label**: `Number of Farmers: [Count]`.
-2.  **Numerical Range Configuration UI**:
+2.  **Segment Name Initialization**: [x]
+    *   New segments have blank names by default for numerical variables.
+    *   Placeholder: `"Please specify the segment name"`.
+3.  **Numerical Range Configuration UI**: [x]
     *   Minimum and Maximum thresholds are displayed in two clearly labeled white boxes.
     *   An **"Adjust"** button (IDC Green) is placed next to these boxes.
     *   The thresholds are editable upon clicking "Adjust" or directly (as per existing logic, but with improved styling).
-3.  **Segment Name Initialization**:
-    *   New segments have blank names by default.
-    *   Placeholder: `"Please specify the segment name"`.
-4.  **Automatic Segment Exclusivity**:
+4.  **Automatic Segment Exclusivity**: [x]
     *   Modifying the **Maximum** of Segment N automatically updates the **Minimum** of Segment N+1 to match.
     *   This ensures segments remain exclusive and continuous without manual intervention for adjacent boundaries.
-5.  **Prioritized Manual Flow**:
+5.  **Prioritized Manual Flow**: [x]
     *   The option to adjust segments manually is presented as the preferred/first method.
 
 ## Technical Acceptance Criteria (TAC)
 
 1.  **Frontend Component Updates**:
     *   Modify `renderSegmentCard` in [DataUploadSegmentForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/DataUploadSegmentForm.js).
-    *   Implement the horizontal layout: Name Input (left) | Farmer Card (middle-ish) | Range Boxes + Adjust Button (right).
+    *   Implement the horizontal layout for thresholds: Range Boxes + Adjust Button.
     *   Update [SegmentConfigurationForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/SegmentConfigurationForm.js) to handle cascading range updates in `handleOnChangeFieldValue`.
 2.  **Styling**:
-    *   Define new utility classes in `steps.scss` for the "Farmer Card" and "Threshold Box" styles.
+    *   Define new utility classes in `steps.scss` for the "Threshold Box" styles.
     *   Apply IDC branding colors: `$primary-color` (`#00605A`) for backgrounds and buttons.
 3.  **Data Logic**:
-    *   Ensure the `segments` array in the form state correctly initializes `name` to `null` or `""`.
+    *   Ensure the `segments` array in the form state correctly initializes `name` to `null` or `""` for numerical variables.
     *   Implement boundary checks to prevent overlapping logic in the frontend before sending to the backend for recalculation.
 4.  **Verification**:
     *   Verify cascading logic for at least 3 segments.
@@ -62,15 +62,13 @@ This task aims to improve the visibility of farmer counts per segment and refine
 ### [Frontend]
 
 #### [MODIFY] [DataUploadSegmentForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/DataUploadSegmentForm.js)
-- Update `renderSegmentCard` to use a horizontal layout.
-- Add "Number of farmers" green box styling.
-- Add Min/Max threshold boxes with "Adjust" button.
+- Update `renderSegmentCard` to include Min/Max threshold boxes with "Adjust" button.
 
 #### [MODIFY] [SegmentConfigurationForm.js](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/components/SegmentConfigurationForm.js)
 - Update `handleOnChangeFieldValue` to implement cascading adjustment logic.
 
-#### [MODIFY] [steps.scss](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/styles/steps.scss) (Assuming this is the location)
-- Add styles for `.farmer-count-card` and `.threshold-box-container`.
+#### [MODIFY] [steps.scss](file:///Users/galihpratama/Sites/IDH-IDC/frontend/src/pages/cases/styles/steps.scss)
+- Add styles for `.threshold-box-container` and `.threshold-adjust-btn`.
 
 ## Verification Plan
 
