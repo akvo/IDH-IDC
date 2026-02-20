@@ -451,15 +451,13 @@ const DataUploadSegmentForm = ({
             <Col span={24}>
               <Row gutter={[12, 12]}>
                 <Col span={LEFT_COL_SPAN}>
-                  <Tag>
-                    <p style={{ margin: 0 }}>
-                      Number of farmers: {numberOfFarmers}
-                    </p>
+                  <Tag className="farmer-count-tag">
+                    <p>Number of farmers: {numberOfFarmers}</p>
                   </Tag>
                 </Col>
                 <Col span={RIGHT_COL_SPAN}>
-                  <Tag>
-                    <p style={{ margin: 0 }}>
+                  <Tag className="segment-info-tag">
+                    <p>
                       Segment range: {rangeMin} - {rangeMax}
                     </p>
                   </Tag>
