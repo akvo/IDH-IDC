@@ -179,6 +179,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Aligned `.agent` configuration (rules, skills, workflows) with the project stack (FastAPI/React/Docker) to support future agentic modelling tasks.
     - Created foundational Product Brief and PRD in `agent_docs/` to centralize modelling logic and requirements.
     - Implemented `/2-implement` workflow for TDD-driven development in the project stack.
+    - **Logic Refinement & Feedback Alignment**:
+        - Refined `handleCalculate` to strictly prioritize raw mathematical results over clamped values for surplus and impossible scenarios.
+        - Implemented specific guidance alerts for `surplus` (income decrease warning) and `impossible` (negative value warning) states.
+        - Updated Price Breakdown logic to conditionally hide the bar chart and Cost/Profit labels only in `impossible` scenarios, ensuring the card remains visible for structural consistency.
+        - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
+        - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
+        - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.

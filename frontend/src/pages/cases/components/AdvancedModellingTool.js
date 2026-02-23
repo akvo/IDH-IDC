@@ -865,13 +865,11 @@ const AdvancedModellingTool = () => {
     } else if (result < 0) {
       state = "impossible";
       message =
-        selectedDriver === "cop"
-          ? "It is not physically possible to reach the income target with the specified model values."
-          : "Impossible target: required value is negative.";
+        "It is not physically possible to reach the income target with the specified model values.";
     }
 
-    // If surplus, we show the current value of the driver to avoid confusion with theoretical/negative values
-    const finalResult = state === "surplus" ? drivers[selectedDriver] : result;
+    // Always show the raw result from the calculation
+    const finalResult = result;
 
     // Calculate current scenario values for the breakdown
     const currentPrice =
@@ -1344,7 +1342,7 @@ const AdvancedModellingTool = () => {
                           calculationResults[activeScenario];
 
                         // Physically impossible warning
-                        if (scenarioResult.rawResult < 0) {
+                        if (scenarioResult.state === "impossible") {
                           const driverLabel =
                             driverLabels[selectedDriver] || selectedDriver;
                           return (
@@ -1403,10 +1401,13 @@ const AdvancedModellingTool = () => {
                         </Text>
                       </div>
                     )}
-                    <div className="bar-labels-row">
-                      <Text className="label-text">Cost</Text>
-                      <Text className="label-text">Profit</Text>
-                    </div>
+                    {calculationResults[activeScenario]?.state !==
+                      "impossible" && (
+                      <div className="bar-labels-row">
+                        <Text className="label-text">Cost</Text>
+                        <Text className="label-text">Profit</Text>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
