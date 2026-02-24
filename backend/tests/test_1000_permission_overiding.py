@@ -225,7 +225,7 @@ class TestPermissionOveriding:
             "id": 3,
             "case": 11,
             "label": res["label"],
-            "value": 17,
+            "value": 8,
             "permission": "edit",
         }
 
@@ -502,13 +502,14 @@ class TestPermissionOveriding:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            "id": 22,
+            "id": 24,
             "organisation": 2,
             "email": "default_organisation_user@test.org",
             "fullname": "Test User",
             "role": "user",
             "active": False,
             "company": None,
+            "user_type": "internal",
         }
 
     @pytest.mark.asyncio
@@ -533,13 +534,14 @@ class TestPermissionOveriding:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            "id": 23,
+            "id": 25,
             "fullname": "Company User",
             "email": "company_user@test.org",
             "organisation": 2,
             "active": False,
             "role": "user",
             "company": 1,
+            "user_type": "external_regular",
         }
 
     @pytest.mark.asyncio

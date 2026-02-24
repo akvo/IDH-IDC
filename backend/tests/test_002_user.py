@@ -275,6 +275,7 @@ class TestUserEndpoint:
             "business_units": [],
             "cases": [],
             "company": None,
+            "user_type": "internal",
         }
 
     @pytest.mark.asyncio
@@ -341,6 +342,7 @@ class TestUserEndpoint:
             "role": UserRole.admin.value,
             "active": True,
             "company": None,
+            "user_type": "internal",
         }
         user = get_user_by_email(session=session, email=user_payload["email"])
         assert user.invitation_id is not None
@@ -410,6 +412,7 @@ class TestUserEndpoint:
                 "case_access": [],
                 "internal_user": True,
                 "company": None,
+                "user_type": "internal",
             },
         }
 
@@ -456,6 +459,7 @@ class TestUserEndpoint:
             "business_units": [{"business_unit": 1, "role": "member"}],
             "cases": [],
             "company": None,
+            "user_type": "internal",
         }
 
     @pytest.mark.asyncio
@@ -501,6 +505,7 @@ class TestUserEndpoint:
             "business_units": [{"business_unit": 1, "role": "member"}],
             "cases": [],
             "company": None,
+            "user_type": "internal",
         }
 
     @pytest.mark.asyncio
@@ -631,6 +636,7 @@ class TestUserEndpoint:
                     "cases_count": 0,
                     "business_unit_count": 0,
                     "company": None,
+                    "user_type": "internal",
                 },
                 {
                     "id": 4,
@@ -643,6 +649,7 @@ class TestUserEndpoint:
                     "cases_count": 0,
                     "business_unit_count": 0,
                     "company": None,
+                    "user_type": "internal",
                 },
                 {
                     "id": 3,
@@ -655,6 +662,7 @@ class TestUserEndpoint:
                     "cases_count": 0,
                     "business_unit_count": 1,
                     "company": None,
+                    "user_type": "internal",
                 },
                 {
                     "id": 2,
@@ -667,6 +675,7 @@ class TestUserEndpoint:
                     "cases_count": 0,
                     "business_unit_count": 0,
                     "company": None,
+                    "user_type": "external_regular",
                 },
                 {
                     "id": 1,
@@ -679,6 +688,7 @@ class TestUserEndpoint:
                     "cases_count": 0,
                     "business_unit_count": 0,
                     "company": None,
+                    "user_type": "internal",
                 },
             ],
             "total": 5,
@@ -822,6 +832,7 @@ class TestUserEndpoint:
                     "cases_count": 0,
                     "business_unit_count": 1,
                     "company": None,
+                    "user_type": "internal",
                 },
             ],
             "total": 1,
