@@ -140,11 +140,13 @@ For every phase, if a corresponding artifact already exists in `agent_docs/`, yo
 4. Identify coverage gaps
 5. Define CI/CD quality gates
 6. **Technical Safety Audit**: Conduct a formal risk assessment (migration safety, access guards) after implementation/PR.
+7. **UI QA Guide/Plan**: Create a step-by-step manual verification guide for the UI/UX changes.
 **Artifacts Produced**:
 - `agent_docs/test-strategy.md`
 - `agent_docs/safety-audits/safety-audit-issue-[issue-id].md`
+- `agent_docs/qa/qa-guide-issue-[issue-id].md`
 - Quality gate configuration
-**Gate**: All quality gates pass and Safety Audit is signed off
+**Gate**: All quality gates pass and Safety Audit/QA Guide are signed off
 
 ---
 
@@ -202,5 +204,5 @@ Users may start from any phase if prerequisites are met:
 | 4. Design | Sally | bmad-ux | UX Specification |
 | 5. Plan | Bob | bmad-sm | User Stories |
 | 6. Implement | Amelia | bmad-dev | Working Code |
-| 7. Test | Murat | bmad-tester | Test Strategy + Safety Audit |
+| 7. Test | Murat | bmad-tester | Test Strategy + Safety Audit + QA Guide |
 | 8. Document | Paige | bmad-writer | Technical Docs |

@@ -17,7 +17,7 @@ The BMAD (Business-Model-Architecture-Development) Method defines a structured p
 | 🎨 UX | Sally | UX Designer | UX specs, design systems, interaction patterns |
 | 🏃 SM | Bob | Scrum Master | Story creation, sprint planning, backlog grooming |
 | 💻 Dev | Amelia | Developer | TDD implementation, story-driven coding |
-| 🧪 Tester | Murat | Test Architect | Test strategy, CI/CD, quality gates, technical safety audits |
+| 🧪 Tester | Murat | Test Architect | Test strategy, CI/CD, quality gates, safety validations, QA guides |
 | 📚 Writer | Paige | Tech Writer | API docs, architecture docs, user guides |
 
 ### BMAD Lifecycle Phases

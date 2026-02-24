@@ -35,3 +35,7 @@ description: Create a Pull Request with an informative title and clear descripti
    - **Path**: `agent_docs/safety-audits/safety-audit-issue-[ISSUE_NUMBER].md`
    - **Content**: Use the `bmad-tester` skill to analyze risks, migration safety, and test coverage.
    - **Commit**: Push the audit record to the branch.
+8. **UI QA Guide/Plan**: Create a step-by-step guide for manual verification:
+   - **Path**: `agent_docs/qa/qa-guide-issue-[ISSUE_NUMBER].md`
+   - **Content**: Use the `bmad-tester` skill to define steps to verify UI changes and role visibility.
+   - **Commit**: Push the QA guide to the branch.
