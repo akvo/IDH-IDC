@@ -278,6 +278,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
         - Standardized backend patterns (FastAPI DI for sessions/auth, business logic decoupling).
         - Consolidated workflow rules for Git, PRs, and activity logging.
+    - **Technical Safety Audit Integration**:
+        - Mandatory technical safety audit requirement added to `create_pr` workflow.
+        - Integrated `safety-audits/` artifact creation into the BMAD lifecycle (Phase 7).
+        - Enhanced `bmad-tester` skill with a formal risk assessment framework (Migration, Access Guards, Regression).
+        - Updated `bmad-team.md` rules to include Safety Audit as a core Tester responsibility.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
     - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
     - **Segmentation UI Refinement (Issue #727)**:
