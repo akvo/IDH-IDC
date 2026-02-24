@@ -22,14 +22,14 @@
 
 ## Milestone Breakdown (Phased Rollout)
 
-### Phase 1: Foundation & Data Formalization [ ]
+### Phase 1: Foundation & Data Formalization [x]
 - [x] **Research & Requirement Definition**: Formalize `user_type` split (Strategy B).
 - [x] **Database Migration**: Add `user_type` enum field to `user` table (internal, external_regular, external_advanced).
 - [x] **Data Cleanup & Migration**: Script to correctly update existing users based on Business Unit presence.
 - [x] **Backend Model Updates**: Refactor `User` model and Pydantic schemas to support `user_type`.
 - **ROI**: Cleaner database architecture; infra ready for advanced access.
 
-### Phase 2: Advanced Access & UI Controls [ ]
+### Phase 2: Advanced Access & UI Controls [/]
 - [x] **API Enhancements**: Update `POST /user/register` and `PUT /user/{id}` to handle `user_type`.
 - [x] **Access Logic**: Update `get_all_case` in `backend/routes/case.py` for `external_advanced` org-wide visibility.
 - [ ] **Admin UI Update**: Implement conditional sub-selector for external types in `UserForm.js`.
