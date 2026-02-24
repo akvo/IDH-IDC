@@ -11,6 +11,7 @@ from models.user import (
     UserInvitation,
     UserRole,
     FilterUserRole,
+    UserType,
 )
 from models.user_case_access import UserCaseAccess
 from models.user_tag import UserTag
@@ -54,6 +55,18 @@ def add_user(
         invitation_id=str(uuid4()) if invitation_id else None,
         company=payload.company,
     )
+    if role == UserRole.user:
+        if payload.user_type:
+            user.user_type = payload.user_type
+        else:
+            # Default fallback for users created without a specified type
+            user.user_type = (
+                UserType.internal
+                if payload.business_units
+                else UserType.external_regular
+            )
+    else:
+        user.user_type = UserType.internal
     if payload.tags:
         for tag in payload.tags:
             user_tag = UserTag(tag=tag)
@@ -91,8 +104,19 @@ def update_user(
         payload.organisation if payload.organisation else user.organisation
     )
     user.company = payload.company
-    user.is_active = 1 if payload.is_active else user.is_active
+
     role = payload.role if payload.role else user.role
+
+    if role == UserRole.user:
+        if payload.user_type:
+            user.user_type = payload.user_type
+        # We don't overwrite if they simply updated their BU, as we don't know
+        # if they moved an external_advanced to internal.
+        # So we only set it if explicitly provided in payload for an update.
+    else:
+        user.user_type = UserType.internal
+
+    user.is_active = 1 if payload.is_active else user.is_active
     user.role = role
     all_cases = 0
     if role in [UserRole.super_admin, UserRole.admin]:
@@ -235,7 +259,13 @@ def filter_user(
         FilterUserRole.internal,
         FilterUserRole.external,
     ]:
-        user = user.filter(User.role == role.value)
+        if role in [
+            FilterUserRole.external_regular,
+            FilterUserRole.external_advanced,
+        ]:
+            user = user.filter(User.user_type == role.value)
+        else:
+            user = user.filter(User.role == role.value)
     if company:
         user = user.filter(User.company == company)
     return user

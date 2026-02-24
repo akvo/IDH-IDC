@@ -384,6 +384,16 @@ def get_case_by_private(session: Session, private: Optional[bool] = False):
     return session.query(Case).filter(Case.private == private_param).all()
 
 
+def get_case_by_organisation(session: Session, organisation_id: int):
+    cases = (
+        session.query(Case)
+        .join(User, Case.created_by == User.id)
+        .filter(User.organisation == organisation_id)
+        .all()
+    )
+    return cases
+
+
 def delete_case(session: Session, case_id: int):
     case = get_case_by_id(session=session, id=case_id)
 
