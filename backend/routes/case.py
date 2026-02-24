@@ -109,7 +109,7 @@ def get_all_case(
     )
     if (
         user.role == UserRole.user
-        and not len(user.user_business_units)
+        and user.user_type != UserType.internal
         and not user_permission
         and not user.company
         and user.user_type != UserType.external_advanced
@@ -126,7 +126,7 @@ def get_all_case(
         user_cases = [d.case for d in user_permission]
 
     # handle regular/internal user
-    if user.role == UserRole.user and len(user.user_business_units):
+    if user.role == UserRole.user and user.user_type == UserType.internal:
         # all public cases
         show_private = True
         all_public_cases = crud_case.get_case_by_private(

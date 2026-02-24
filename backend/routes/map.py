@@ -12,7 +12,7 @@ from typing_extensions import TypedDict
 
 from db.connection import get_session
 from middleware import verify_user
-from models.user import UserRole
+from models.user import UserRole, UserType
 
 security = HTTPBearer()
 map_route = APIRouter()
@@ -46,8 +46,10 @@ def get_user_cases_and_permissions(req: Request, session: Session):
     )
     if (
         user.role == UserRole.user
-        and not len(user.user_business_units)
+        and user.user_type != UserType.internal
         and not user_permission
+        and not user.company
+        and user.user_type != UserType.external_advanced
     ):
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -60,9 +62,9 @@ def get_user_cases_and_permissions(req: Request, session: Session):
         show_private = True
         user_cases = [d.case for d in user_permission]
 
-    # Handle regular/internal user
-    if user.role == UserRole.user and len(user.user_business_units):
-        # All public cases
+    # handle regular/internal user
+    if user.role == UserRole.user and user.user_type == UserType.internal:
+        # all public cases
         show_private = True
         all_public_cases = crud_case.get_case_by_private(
             session=session, private=False
