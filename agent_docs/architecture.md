@@ -40,3 +40,19 @@ sequenceDiagram
 - **Case**: The root entity for a modeling session.
 - **Segment**: A population subset with specific benchmarks and drivers.
 - **Scenario**: Modelling configurations (Current, Feasible, Modelled).
+
+## Authorisation & Data Isolation
+
+The system enforces strict data isolation based on User Role and `user_type`.
+
+### Access Matrix
+
+| User Type | Case Visibility | Admin Access |
+| :--- | :--- | :--- |
+| **Super Admin / Admin** | All cases in the system (Public & Private) | Full |
+| **Internal User** | All Public cases + Assigned Business Unit cases + Owned cases | Restricted |
+| **External Regular** | Owned cases + Cases assigned to their **Company** + Specifically Shared cases | None |
+| **External Advanced** | All cases within their **Organisation** + Shared cases | None |
+
+### Isolation Logic
+Access is enforced at the `get_all_case` route layer by dynamically constructing the SQLAlchemy filter based on the requester's `id`, `role`, `user_type`, `organisation`, and `company`.

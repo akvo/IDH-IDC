@@ -1,4 +1,4 @@
-# Feature: External User Split (Regular vs Advanced)
+# Feature: External User Split (Regular vs Advanced) [COMPLETED]
 
 ## Overview
 Currently, users with the `role == "user"` are classified as "Internal" if they belong to a business unit, and "External" otherwise. This feature formalizes this by adding a `user_type` column and splitting "External" into "Regular" and "Advanced" to better support organizational case access for partners.
