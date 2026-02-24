@@ -186,6 +186,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
         - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
         - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
+- **External (Regular) User Restrictions Planning**:
+    - Defined requirements and UAC/TAC (STORY-004) for restricting features for the `external_regular` user type.
+    - Specified that Data Spreadsheet Upload should be completely hidden.
+    - Specified that the Optimisation Algorithm chart (Step 4) and Advanced Modelling Tool (Step 5) should be set to "View Only" mode by disabling interactive inputs and run buttons.
+    - Calculated total effort estimation at ~5 hours.
 - **External User Split (Documentation)**:
     - Formalized "Internal", "External (Regular)", and "External (Advanced)" user types in the project PRD.
     - Created detailed feature specification for role-based access logic splitting External users.

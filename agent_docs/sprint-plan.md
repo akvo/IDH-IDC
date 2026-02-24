@@ -35,6 +35,7 @@
 - [ ] **Admin UI Update**: Implement conditional sub-selector for external types in `UserForm.js`.
 - [ ] **Users List Update**: Modify `Users.js` table to display `user_type` labels.
 - [ ] **Validation Logic**: Enforce mapping rules (Internal must have BU, External must have Company).
+- [ ] **Feature Restrictions (STORY-004)**: Hide Data Upload, make Optimization chart read-only, and make Advanced Modelling Tool read-only for `external_regular`.
 - [ ] **QA & Verification**: Full integration testing of access boundaries.
 - **ROI**: Full feature delivery; granular control over partner organization access.
 
@@ -42,5 +43,7 @@
 All research and requirements are finalized in:
 - [prd.md](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/prd.md)
 - [external-user-split.md](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/external-user-split.md)
+- [external-regular-restrictions.md](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/external-regular-restrictions.md)
 - [STORY-002 (Backend)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-002-external-user-split-backend.md)
-- [STORY-003 (Frontend)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-003-external-user-split-frontend.md)
+- [STORY-003 (Frontend Split)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-003-external-user-split-frontend.md)
+- [STORY-004 (Frontend Restrictions)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-004-external-regular-restrictions.md)

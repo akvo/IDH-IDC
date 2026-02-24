@@ -1,0 +1,26 @@
+# STORY-004: Apply External (Regular) Feature Restrictions
+
+## Overview
+As a product manager, I want to restrict access to specific advanced features for "External (Regular)" users, so that they are presented with a simplified experience and cannot modify complex scenario models or upload bulk data.
+
+## Context
+Following the split of external users into "Regular" and "Advanced" (STORY-002, STORY-003), specific platform restrictions must be applied to the default "External (Regular)" role. This limits their access to advanced features while maintaining the core functionality.
+
+## Acceptance Criteria (UAC)
+1. **Spreadsheet Upload Hidden**:
+   - GIVEN an External (Regular) user is creating or editing a case
+   - THEN the "Upload Spreadsheet" mechanism is completely hidden from the UI.
+2. **Optimisation Chart Read-Only**:
+   - GIVEN an External (Regular) user is viewing Step 4
+   - WHEN they interact with the Optimization algorithm chart ("What is the minimum change in drivers needed...")
+   - THEN all input fields (driver selector, percentages) and action buttons ("Run the model", "Clear results") are disabled. They can view existing optimization results but cannot run new models.
+3. **Advanced Modelling Tool Read-Only**:
+   - GIVEN an External (Regular) user is viewing Step 5 (Closing Gap)
+   - WHEN they interact with the Advanced Modelling Tool
+   - THEN all input fields, dropdowns, and the "Calculate" or interactive modeling buttons are disabled. They can view existing calculations but cannot modify inputs or select different drivers.
+
+## Technical Acceptance Criteria (TAC)
+- [ ] Determine `isExternalRegular` by checking `userState?.user_type === 'external_regular'` from the global state.
+- [ ] In `CaseForm.js`, conditionally render the `Dragger` upload component to exclude `isExternalRegular` users.
+- [ ] In `AssessImpactMitigationStrategies.js` or `OptimizeIncomeTarget.js` (Step 4), apply `disabled={true}` to `AllDriverTreeSelector`, `InputNumber` components, and disable/hide the "Run the model" and "Clear results" buttons if `isExternalRegular` is true. Ensure the visual state clearly communicates the read-only mode.
+- [ ] In `AdvancedModellingTool.js` (Step 5), apply `disabled={true}` to `SegmentSelector`, driver `Select`, `InputNumber` components, and any action buttons if `isExternalRegular` is true. Ensure the visual state clearly communicates the read-only mode (e.g., preserving static locks).
