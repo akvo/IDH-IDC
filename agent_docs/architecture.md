@@ -68,21 +68,52 @@ The IDC uses two parallel hierarchies to manage visibility:
 
 ### Implementation Detail: The ID Whitelist Pattern
 
-The backend builds a list of authorised IDs before querying the database:
+The backend builds a list of authorised IDs before querying the database. Here is the technical breakdown for each role:
 
-1.  **Initialisation**: `user_cases = []`, `show_private = False`
-2.  **Shared Access**: If the user has specific viewer permissions, IDs are added and `show_private = True`.
-3.  **Internal Role**: If `len(user_business_units) > 0`, all Public cases are added and `show_private = True`.
-4.  **Advanced Role**: If `user_type == external_advanced`, all cases in `user.organisation` are added and `show_private = True`.
-5.  **Company Role**: If `user.company` is set, all cases in that company are added.
-6.  **Ownership**: All cases where `created_by == user.id` are added and `show_private = True`.
-7.  **Shared with Me**: If the `shared_with_me` flag is passed in the request, the list is *pruned* to only contain specifically shared viewer permissions.
+#### 1. Super Admin / Admin
+*   **Stage 1 (Route)**: Sets `show_private = True` and keeps `user_cases` empty (whitelist bypass).
+*   **Stage 2 (CRUD)**: The logic in `crud_case.get_all_case` skips the `.filter(Case.private == 0)` check.
 
-**Final Query (`crud_case.py`):**
+#### 2. Internal User (`len(user_business_units) > 0`)
+*   **Stage 1 (Route)**: Sets `show_private = True` and whitelists all public cases.
+    ```python
+    all_public_cases = crud_case.get_case_by_private(session, private=False)
+    user_cases += [c.id for c in all_public_cases]
+    ```
+*   **Stage 2 (CRUD)**: The query filters the whitelist: `case.filter(Case.id.in_(user_cases))`.
+
+#### 3. External Advanced (`user_type == external_advanced`)
+*   **Stage 1 (Route)**: Sets `show_private = True` and whitelists all organisation cases.
+    ```python
+    org_cases = crud_case.get_case_by_organisation(session, user.organisation)
+    user_cases += [c.id for c in org_cases]
+    ```
+*   **Stage 2 (CRUD)**: Database query joins on `User` to match `organisation_id`.
+
+#### 4. Company User (`user.company` is set)
+*   **Stage 1 (Route)**: Whitelists all cases belonging to the specific company.
+    ```python
+    company_cases = crud_case.get_case_by_company(session, user.company)
+    user_cases += [c.id for c in company_cases]
+    ```
+*   **Stage 2 (CRUD)**: `show_private` remains `False`, so only public company cases are returned unless specifically shared.
+
+#### 5. Case Ownership & Shared Access (All Users)
+*   **Stage 1 (Route)**: Every user gets their owned cases and specifically shared cases.
+    ```python
+    owned_cases = crud_case.get_case_by_created_by(session, user.id)
+    shared_permissions = crud_uca.find_user_case_access_viewer(session, user.id)
+    user_cases += [c.id for c in owned_cases] + [p.case for p in shared_permissions]
+    ```
+*   **Stage 2 (CRUD)**: `show_private` is dynamically enabled if the whitelist is non-empty, effectively allowing users to see their own private cases.
+
+**Final SQLAlchemy Query Context:**
 ```python
+# backend/db/crud_case.py
+
 case = session.query(Case)
 if not show_private:
     case = case.filter(Case.private == 0)
-if user_cases:
+if user_cases: # Non-Admin whitelist
     case = case.filter(Case.id.in_(user_cases))
 ```
