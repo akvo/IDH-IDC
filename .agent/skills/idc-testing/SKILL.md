@@ -13,7 +13,7 @@ Quality assurance workflows including unit tests and linting.
   ```bash
   ./dc.sh exec backend ./check.sh
   ```
-  _Includes pytest and flake8_
+  _Includes pytest and flake8. **WARNING**: DO NOT run backend tests individually; they share state and depend on sequential execution. Always use `check.sh`._
 
 - **Naming Conventions**:
     - **Unit Tests**: Use `test_unit_` prefix (e.g., `test_unit_logic.py`).

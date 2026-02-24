@@ -62,7 +62,7 @@ To maintain alignment across agent resources, we follow this structural hierarch
     - **Integration/DB Tests**: Use fixtures provided in `backend/tests/conftest.py` (e.g., `client`, `session`) for any tests requiring database access or API clients.
     - **Unit Tests**: Clearly name unit tests with a `test_unit_` prefix (e.g., `test_unit_calculation.py`) and avoid external dependencies/DB access.
     - **Filenaming**: Filenames MUST be descriptive and MUST NOT include issue numbers (e.g., use `test_unit_seg_bug.py` instead of `test_717_seg_bug.py`).
-    - **Execution**: Run tests using `./dc.sh run --rm backend ./check.sh`.
+    - **Execution**: Backend tests MUST NOT be run individually (e.g., `pytest tests/test_001_auth.py`) because they are interdependent and share state. Always run the entire test suite using `./dc.sh exec backend ./check.sh`.
 
 ## 4. Workflow & Communication Rules
 
