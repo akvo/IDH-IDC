@@ -36,11 +36,11 @@ This audit validates the transition from legacy Business Unit-based staff identi
 
 ## ⚠️ Risk Assessment
 
-| Risk | Mitigation | Status |
-|      |            |        |
-| **Access Leakage** | Strictly whitelist-based `user_cases` for non-internal types. | 🟢 Low |
-| **Identity Regression** | Migration logic defaults to `internal` for anyone with BU. | 🟢 Low |
-| **API Breaking Changes** | Maintained backward compatibility for all existing endpoints. | 🟢 Low |
+| Risk | Mitigation | Likelihood | Impact | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Access Leakage** | Strictly whitelist-based `user_cases` for non-internal types. | 🟢 Low | 🔴 High | Mitigated |
+| **Identity Regression** | Migration logic defaults to `internal` for anyone with BU. | 🟢 Low | 🟡 Medium | Mitigated |
+| **API Breaking Changes** | Maintained backward compatibility for all existing endpoints. | 🟢 Low | 🔴 High | Mitigated |
 
 ---
 
