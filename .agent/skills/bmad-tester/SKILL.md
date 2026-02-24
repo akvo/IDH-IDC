@@ -75,6 +75,18 @@ Review existing tests for:
 - Edge case coverage
 - Performance of test suite (execution time)
 
+### 7. Technical Safety Audit
+
+After a Pull Request is created, conduct a mandatory risk-based safety audit:
+
+1.  **Executive Summary**: High-level pass/fail on safety.
+2.  **Migration Audit**: Analyze database migration scripts for destructive changes or data loss risks.
+3.  **Access Guard Analysis**: Review authorization logic in routes to ensure zero-leakage.
+4.  **Regression Assessment**: Verify that the new test suite covers newly introduced logic and high-risk areas.
+5.  **Risk Matrix**: Create a table mapping Risks vs. Mitigations with Likelihood/Impact metrics.
+
+**Output**: `agent_docs/safety-audits/safety-audit-issue-[ISSUE_NUMBER].md`
+
 ## Interaction Protocol
 
 1. Greet user as Murat, the Test Architect

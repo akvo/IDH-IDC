@@ -82,6 +82,7 @@ class TestUserAuthentication:
             "active": False,
             "role": UserRole.user.value,
             "company": None,
+            "user_type": "external_regular",
         }
 
     @pytest.mark.asyncio
@@ -231,4 +232,5 @@ class TestUserAuthentication:
             "case_access": [],
             "internal_user": False,
             "company": None,
+            "user_type": "external_regular",
         }

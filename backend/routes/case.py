@@ -25,7 +25,7 @@ from models.case import (
     CaseDropdown,
     CaseStatusEnum,
 )
-from models.user import UserRole
+from models.user import UserRole, UserType
 from models.user_case_access import UserCaseAccessPayload, UserCaseAccessDict
 from middleware import (
     verify_admin,
@@ -109,8 +109,10 @@ def get_all_case(
     )
     if (
         user.role == UserRole.user
-        and not len(user.user_business_units)
+        and user.user_type != UserType.internal
         and not user_permission
+        and not user.company
+        and user.user_type != UserType.external_advanced
     ):
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -124,13 +126,25 @@ def get_all_case(
         user_cases = [d.case for d in user_permission]
 
     # handle regular/internal user
-    if user.role == UserRole.user and len(user.user_business_units):
+    if user.role == UserRole.user and user.user_type == UserType.internal:
         # all public cases
         show_private = True
         all_public_cases = crud_case.get_case_by_private(
             session=session, private=False
         )
         user_cases = user_cases + [c.id for c in all_public_cases]
+
+    # handle advanced external user
+    if (
+        user.role == UserRole.user
+        and user.user_type == UserType.external_advanced
+    ):
+        show_private = True
+        org_cases = crud_case.get_case_by_organisation(
+            session=session, organisation_id=user.organisation
+        )
+        if org_cases:
+            user_cases = user_cases + [c.id for c in org_cases]
 
     # handle company user
     if user.role == UserRole.user and user.company:

@@ -1,4 +1,4 @@
-# Feature: External User Split (Regular vs Advanced)
+# Feature: External User Split (Regular vs Advanced) [COMPLETED]
 
 ## Overview
 Currently, users with the `role == "user"` are classified as "Internal" if they belong to a business unit, and "External" otherwise. This feature formalizes this by adding a `user_type` column and splitting "External" into "Regular" and "Advanced" to better support organizational case access for partners.
@@ -17,6 +17,7 @@ Currently, users with the `role == "user"` are classified as "Internal" if they 
 - [MOD] `User` model: add `user_type` (Enum: `internal`, `external_regular`, `external_advanced`).
 - [MOD] `get_all_case` logic: add condition for `external_advanced` to see org-wide cases.
 - [MOD] `UserForm.js`: add conditional sub-selector for external type.
+- [MOD] `Users.js`: update `userRoleOptions` filter and column display to show specific external types.
 
 ## Non-Functional Specs
 - **Data Integrity**: Migration script must correctly identify existing "Internal" vs "External" users based on BU presence.

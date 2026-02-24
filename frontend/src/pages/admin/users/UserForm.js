@@ -38,10 +38,8 @@ const useRoleWithBusinessUnitFieldByDefault = ["admin"];
 
 const userRoleTypeOptions = [
   { label: "IDH Internal User", value: "internal" },
-  {
-    label: "External User",
-    value: "external",
-  },
+  { label: "External Regular", value: "external_regular" },
+  { label: "External Advanced", value: "external_advanced" },
 ];
 
 const UserForm = () => {
@@ -89,7 +87,7 @@ const UserForm = () => {
           }
 
           if (data?.company) {
-            userType = "external";
+            userType = data.user_type || "external_regular";
             setShowCompany(true);
           }
 
@@ -118,12 +116,16 @@ const UserForm = () => {
 
   const onFinish = (values) => {
     setSubmitting(true);
-    const { fullname, email, role, business_units, company } = values;
+    const { fullname, email, role, business_units, company, user_type } =
+      values;
 
     const payload = new FormData();
     payload.append("fullname", fullname);
     payload.append("email", email);
     payload.append("role", role);
+    if (user_type) {
+      payload.append("user_type", user_type);
+    }
     // payload.append("organisation", organisation);
 
     let allCasesValue = adminRole.includes(role) ? true : false;
@@ -223,7 +225,7 @@ const UserForm = () => {
     if (value === "internal") {
       setShowCompany(false);
       setShowBusinessUnit(true);
-    } else {
+    } else if (value === "external_regular" || value === "external_advanced") {
       // external
       setShowBusinessUnit(false);
       setShowCompany(true);

@@ -209,6 +209,26 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Added commodity category name lookup in `Case.js` to support dynamic chart logic and Advanced Modelling Tool.
     - Implemented division by zero protection in `ChartRevenueToCostRatio.js` and `ChartNetIncomePerLandUnit.js` to prevent `Infinity` results.
     - Resolved unit display issues in `SingleDriverChange.js` and `EnterIncomeDataForm.js` by implementing robust unit lookup for Land and Volume drivers.
+- **External User Split (Full Implementation) (Issue #729)**:
+    - **Backend**:
+        - Implemented `user_type` column in `User` model with `external_regular` as default for new registrations.
+        - Added database migration `3g4h5i6j7k8l` to introduce `user_type` field.
+        - Updated `crud_user.filter_user` and `crud_case.get_all_case` to enforce role-based access isolation.
+        - `external_regular` users are restricted to viewing/editing only their own cases or cases shared with them.
+        - `external_advanced` users maintain broader visibility within their organization as per original `external` behavior.
+        - Updated backend test suite (`test_001_auth.py`, `test_002_user.py`, `test_1000_permission_overiding.py`) to verify `user_type` assertions and permission overrides.
+        - Added `test_026_external_user_case_access.py` to verify access isolation between regular and advanced external users.
+    - **Internal User Refactor**:
+        - Standardized staff identification to use the new `user_type == 'internal'` column instead of legacy Business Unit presence checks.
+        - Refactored `backend/routes/case.py` and `backend/routes/map.py` to utilize the granular identity model for Case and Map visibility filtering.
+        - Added regression test `test_027_internal_user_refactor.py` and updated `architecture.md` to reflect these changes.
+        - Resolved hardcoded ID dependency issues in `test_1000_permission_overiding.py` to support dynamic test environments.
+    - **Frontend**:
+        - Updated `UserForm.js` to allow selection of "External Regular" and "External Advanced" roles for admins.
+        - Implemented conditional sub-selector logic and robust state mapping for `user_type` in creation and edit modes.
+        - Enhanced `Users.js` list with "External Regular" and "External Advanced" role filters.
+        - Updated the user management table to display descriptive labels for specific external user types.
+        - Verified frontend integrity with linting pass.
     - Fixed 0 value calculation bugs in `SingleDriverChange.js` by implementing dynamic QID mapping for primary, secondary, and diversified commodities.
     - Refined `InputNumberThousandFormatter` to support explicit decimal padding and applied it to the Two Driver Heatmap binning form to enforce 2-decimal rounding.
     - Implemented case-insensitive matching for commodity categories in dynamic QID lookups across `SingleDriverChange.js` and `AdvancedModellingTool.js`.
@@ -258,6 +278,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
         - Standardized backend patterns (FastAPI DI for sessions/auth, business logic decoupling).
         - Consolidated workflow rules for Git, PRs, and activity logging.
+    - **Technical Safety Audit Integration**:
+        - Mandatory technical safety audit requirement added to `create_pr` workflow.
+        - Integrated `safety-audits/` artifact creation into the BMAD lifecycle (Phase 7).
+        - Enhanced `bmad-tester` skill with a formal risk assessment framework (Migration, Access Guards, Regression).
+        - Updated `bmad-team.md` rules to include Safety Audit as a core Tester responsibility.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
     - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
     - **Segmentation UI Refinement (Issue #727)**:
