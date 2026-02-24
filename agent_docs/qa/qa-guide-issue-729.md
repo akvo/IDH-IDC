@@ -16,7 +16,7 @@ This guide provides step-by-step instructions for verifying the implementation o
 5.  **Test Assignment**:
     - Select **External Advanced**, choose a Company. Save.
     - Select **External Regular**, choose a Company. Save.
-    - Select **IDH Internal**, choose an Organisation and at least one Business Unit. Save.
+    - Select **IDH Internal**, choose Business Unit. Save.
 6.  **Verify List Display**:
     - The Users table should now display the specific type (e.g., "External Advanced") instead of just "User".
 
