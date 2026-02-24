@@ -132,17 +132,19 @@ For every phase, if a corresponding artifact already exists in `agent_docs/`, yo
 
 ### Phase 7: Test 🧪
 **Agent**: bmad-tester (Murat, Test Architect)
-**Goal**: Ensure quality through comprehensive test strategy
+**Goal**: Ensure quality through comprehensive test strategy and mandatory safety audit
 **Steps**:
 1. Load the bmad-tester skill
 2. Review implemented code and existing tests
 3. Design test strategy (pyramid, quality gates)
 4. Identify coverage gaps
 5. Define CI/CD quality gates
+6. **Technical Safety Audit**: Conduct a formal risk assessment (migration safety, access guards) after implementation/PR.
 **Artifacts Produced**:
 - `agent_docs/test-strategy.md`
+- `agent_docs/safety-audits/safety-audit-issue-[issue-id].md`
 - Quality gate configuration
-**Gate**: All quality gates pass
+**Gate**: All quality gates pass and Safety Audit is signed off
 
 ---
 
@@ -200,5 +202,5 @@ Users may start from any phase if prerequisites are met:
 | 4. Design | Sally | bmad-ux | UX Specification |
 | 5. Plan | Bob | bmad-sm | User Stories |
 | 6. Implement | Amelia | bmad-dev | Working Code |
-| 7. Test | Murat | bmad-tester | Test Strategy |
+| 7. Test | Murat | bmad-tester | Test Strategy + Safety Audit |
 | 8. Document | Paige | bmad-writer | Technical Docs |

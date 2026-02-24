@@ -31,3 +31,7 @@ description: Create a Pull Request with an informative title and clear descripti
      - Provide link: `https://github.com/[ORG]/[REPO]/compare/<base_branch>...[CURRENT_BRANCH]`
      - Provide title/description for copy-paste.
 6. Confirm creation and share the PR link.
+7. **Technical Safety Audit**: Immediately after PR creation, create a mandatory safety audit artifact:
+   - **Path**: `agent_docs/safety-audits/safety-audit-issue-[ISSUE_NUMBER].md`
+   - **Content**: Use the `bmad-tester` skill to analyze risks, migration safety, and test coverage.
+   - **Commit**: Push the audit record to the branch.
