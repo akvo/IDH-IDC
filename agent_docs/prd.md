@@ -42,6 +42,11 @@
 - [HIGH] "VisualCardWrapper" usage for consistent styling.
 - [MED] Feasibility alerts (Signal Green/Orange/Impossible).
 
+### 4.4 Authentication & Access
+- [HIGH] Explicit distinction between "Internal", "External (Regular)", and "External (Advanced)" users via `user_type`.
+- [HIGH] "External (Advanced)" users can view all organization cases, mirroring internal behavior within their org boundary.
+- [HIGH] Standard "External" users migrate to "Regular" type by default.
+
 ## 5. Non-Functional Requirements
 - **Performance**: Recalculations should occur in <1s for segments up to 5,000 farmers.
 - **Persistence**: Per-segment state must be preserved in the DB for all modelling inputs.

@@ -186,6 +186,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
         - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
         - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
+- **External User Split (Documentation)**:
+    - Formalized "Internal", "External (Regular)", and "External (Advanced)" user types in the project PRD.
+    - Created detailed feature specification for role-based access logic splitting External users.
+    - Defined developer-ready User Stories with UAC/TAC for backend migration and frontend UI updates.
+    - Established a "Phased Rollout" sprint plan to support incremental feature delivery.
+- **Documentation Maintenance & Rules**:
+    - Refined BMAD team rules in `.agent/rules/bmad-team.md` to designate `sprint-plans` as living documents.
+    - Enforced versioned history for ADRs and User Stories while prioritizing updates for active sprint tracking.
 - **Visualization & Step 3/4 Fixes (Issue #719)**:
     - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
     - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.

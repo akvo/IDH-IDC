@@ -38,7 +38,8 @@ Ideate → Analyze → Architect → Design → Plan → Implement → Test → 
 7. **Documentation Maintenance**: When modifying a feature, check for existing artifacts in `agent_docs/`.
     - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions.
     - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
-    - **Chronological Records** (`ADRs`, `stories`, `sprint-plans`, `research-findings`): Always **create new** versioned files (e.g., `ADR-002.md`) to maintain history.
+    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `ADR-002.md`) to maintain a clear historical audit trail for each feature or design decision.
+    - **Sprint Plans** (`sprint-plans`): **Update existing** files to maintain a living record of current progress and status markers (using `[x]` or `[/]`).
 
 8. **Stack Awareness**: Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands, specific frameworks) documented in those rules.
 
