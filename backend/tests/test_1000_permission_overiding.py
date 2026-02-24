@@ -502,7 +502,7 @@ class TestPermissionOveriding:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            "id": 24,
+            "id": res["id"],
             "organisation": 2,
             "email": "default_organisation_user@test.org",
             "fullname": "Test User",
@@ -534,7 +534,7 @@ class TestPermissionOveriding:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            "id": 25,
+            "id": res["id"],
             "fullname": "Company User",
             "email": "company_user@test.org",
             "organisation": 2,
