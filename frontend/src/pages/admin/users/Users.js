@@ -48,8 +48,12 @@ const userRoleOptions = [
     value: "internal",
   },
   {
-    label: "External User",
-    value: "external",
+    label: "External Regular",
+    value: "external_regular",
+  },
+  {
+    label: "External Advanced",
+    value: "external_advanced",
   },
 ];
 
@@ -211,6 +215,15 @@ const Users = () => {
           .map((x) => upperFirst(x))
           .join(" ");
         if (record.role === "user") {
+          if (record.user_type === "internal") {
+            return "Internal User";
+          }
+          if (record.user_type === "external_regular") {
+            return "External Regular";
+          }
+          if (record.user_type === "external_advanced") {
+            return "External Advanced";
+          }
           const extra =
             record.business_unit_count > 0 ? "Internal" : "External";
           return `${extra} ${res}`;
