@@ -218,6 +218,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - `external_advanced` users maintain broader visibility within their organization as per original `external` behavior.
         - Updated backend test suite (`test_001_auth.py`, `test_002_user.py`, `test_1000_permission_overiding.py`) to verify `user_type` assertions and permission overrides.
         - Added `test_026_external_user_case_access.py` to verify access isolation between regular and advanced external users.
+    - **Internal User Refactor**:
+        - Standardized staff identification to use the new `user_type == 'internal'` column instead of legacy Business Unit presence checks.
+        - Refactored `backend/routes/case.py` and `backend/routes/map.py` to utilize the granular identity model for Case and Map visibility filtering.
+        - Added regression test `test_027_internal_user_refactor.py` and updated `architecture.md` to reflect these changes.
+        - Resolved hardcoded ID dependency issues in `test_1000_permission_overiding.py` to support dynamic test environments.
     - **Frontend**:
         - Updated `UserForm.js` to allow selection of "External Regular" and "External Advanced" roles for admins.
         - Implemented conditional sub-selector logic and robust state mapping for `user_type` in creation and edit modes.

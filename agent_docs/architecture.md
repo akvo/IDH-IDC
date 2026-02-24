@@ -74,7 +74,7 @@ The backend builds a list of authorised IDs before querying the database. Here i
 *   **Stage 1 (Route)**: Sets `show_private = True` and keeps `user_cases` empty (whitelist bypass).
 *   **Stage 2 (CRUD)**: The logic in `crud_case.get_all_case` skips the `.filter(Case.private == 0)` check.
 
-#### 2. Internal User (`len(user_business_units) > 0`)
+#### 2. Internal User (`user_type == internal`)
 *   **Stage 1 (Route)**: Sets `show_private = True` and whitelists all public cases.
     ```python
     all_public_cases = crud_case.get_case_by_private(session, private=False)
@@ -90,7 +90,7 @@ The backend builds a list of authorised IDs before querying the database. Here i
     ```
 *   **Stage 2 (CRUD)**: Database query joins on `User` to match `organisation_id`.
 
-#### 4. Company User (`user.company` is set)
+#### 4. Company User (`user.user_type == external_regular` and `user.company`)
 *   **Stage 1 (Route)**: Whitelists all cases belonging to the specific company.
     ```python
     company_cases = crud_case.get_case_by_company(session, user.company)
