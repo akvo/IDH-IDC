@@ -4,20 +4,23 @@
 Following the splitting of external users into "Regular" and "Advanced", this feature defines the specific platform restrictions applied to the default "External (Regular)" user type. The goal is to hide complex or sensitive tools from standard external partners.
 
 ## Requirements
-For users with `role == "user"` and `user_type == "external_regular"`, the following restrictions apply:
-1. **Data spreadsheet upload**: Hidden. The ability to upload custom data cases via spreadsheet should be completely removed from the UI.
-2. **Optimisation algorithm chart**: View Only. The interactive elements (driver selection, percentage inputs, run buttons) for the optimization chart in Step 4 should be disabled. Users can view any pre-calculated optimization results.
-3. **Advanced Modelling Tool (Impact of Investment)**: View Only. The interactive elements (inputs, selects, calculate buttons) within the modeling tool in Step 5 should be disabled, allowing the user to only view existing static calculations.
+For all users with `role == "user"` and `user_type.startsWith("external")` (currently unifying Regular and Advanced), the following restrictions apply via centralized `CaseUIState` granular flags:
 
-## User Journeys
-1. **Regular User Setup**: An External (Regular) user logs in and attempts to create a new case. They should only see standard manual entry or basic options, not the data upload tool.
-2. **Regular User Analysis**: While viewing an existing case, the user navigates through the analysis steps. They should not see the Optimisation Algorithm chart or the Impact of Investment features, ensuring they focus only on core metrics.
+1. **`enableDataUpload`**: Set to `false`.
+    - **Data spreadsheet upload**: Hidden (`CaseForm.js`).
+    - **Download Template button**: Hidden (`CaseForm.js`).
+2. **`enableAdvancedTools`**: Set to `false`.
+    - **Optimisation algorithm chart**: View Only. Interactive elements (driver selection, inputs, buttons) in Step 4 are disabled.
+    - **Advanced Modelling Tool**: View Only. Inputs, selectors, and buttons in Step 5 are disabled.
+    - **Browsing Alignment**: The `SegmentSelector` remains ENABLED in all analysis tools to allow browsing results across segments without editing privileges.
 
 ## Functional Specs
-- [MOD] Define feature-flagging or role-checking utility in the frontend to detect `external_regular`.
-- [MOD] `CaseForm.js`: Hide "Upload Spreadsheet" button/drag-and-drop mechanism.
-- [MOD] `OptimizeIncomeTarget.js` (Step 4): Pass a disabled prop based on user type to disable all form inputs, dropdowns, and run/clear buttons.
-- [MOD] `AdvancedModellingTool.js`: Pass a `readOnly` or `disabled` prop based on user type to disable all form inputs, dropdowns, and interactive modeling tabs.
+- [MOD] `CaseUIState`: Add `enableAdvancedTools` and `enableDataUpload` flags.
+- [MOD] `Case.js`: Centralize flag calculation based on `isAdmin`, `isInternal`, and `userType`.
+- [MOD] `CaseForm.js`: Hide "Data upload" tab and "Download template" button based on `enableDataUpload`.
+- [MOD] `OptimizeIncomeTarget.js` (Step 4): Pass a `disabled` prop based on `enableAdvancedTools`.
+- [MOD] `AdvancedModellingTool.js` (Step 5): Pass a `disabled` prop based on `enableAdvancedTools`.
+- [MOD] `AdjustIncomeTarget.js`: Disable the modal save button based on `enableAdvancedTools`.
 
 ## Non-Functional Specs
 - **Security**: The backend should ideally also block the upload endpoint for these users to prevent API-level circumvention.
