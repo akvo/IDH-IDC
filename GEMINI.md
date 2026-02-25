@@ -20,10 +20,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Centralized feature gating for Data Upload and Advanced Analysis tools in `CaseUIState` using granular flags (`enableAdvancedTools`, `enableDataUpload`).
     - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
     - Implemented a unified "View-Only" baseline for `external_regular` users to ensure simplified interaction and data protection.
-    - **Refinement**: Refined `external_regular` restrictions by completely hiding Data Spreadsheet upload/download (Step 1) and the Optimisation Algorithm chart (Step 4).
-    - **Permission Centralization**: Moved `isCaseCreator` logic from `Cases.js` to the global `UserState`, providing a single source of truth for case creation rights.
-    - **Edit Rights Fix**: Implemented a robust, case-insensitive ownership check in `Case.js` to ensure internal users can reliably edit their own cases.
-    - **External Advanced Pivot**: Refined the model to grant full "Power User" access (edit permissions, tool access) while strictly siloing visibility to their **Company** data in the backend.
+    - **Refinement (Logic Parity)**: Refined the permission model to strictly follow the "Editor/Viewer" authority for all advanced features.
+    - **Unified Feature Gating**: Standardized `enableAdvancedTools` and `enableImpactOfInvestment` to follow `enableEditCase` status for ALL user types (Admin, Internal, Ext Adv, Ext Reg).
+    - **Manual Range Access**: Granted **External Regular** users access to advanced modelling tools and edit rights IF assigned as an explicitly authorized "Editor".
+    - **Data Upload Restriction**: Maintained strict type-based gating for the "Data Upload" tab, restricting it to **Internal** and **External Advanced** users with **Edit Permission**.
+    - **Step 4 Cleanup**: Removed hardcoded `isExternalRegular` checks in `AssessImpactMitigationStrategies.js`, successfully decoupling component rendering from static user roles in favor of dynamic state flags.
+    - **Robustness Fix**: Implemented strict `typeof === 'string'` checks in `checkEnableEditCase` and optional chaining for `case_access` to prevent runtime crashes (e.g., `toLowerCase is not a function`) when handling sparse user or case data.
     - Updated `verify_case_creator` in `backend/middleware.py` to allow `external_advanced` users to create cases, aligning backend security with the power-user frontend model.
     - Refactored `backend/tests/test_1000_permission_overiding.py` to specifically verify granular create permissions for both `external_regular` (denied) and `external_advanced` (allowed) users.
     - Resolved widespread backend test failures by implementing robust master data seeding and relaxing static ID assertions in `test_1001_case_with_segments.py`, `test_1008_map.py`, and `test_1010_user_deletion.py`.

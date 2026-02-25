@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   stepPath,
-  CurrentCaseState,
   CaseVisualState,
   CaseUIState,
+  CurrentCaseState,
 } from "../store";
 import { Row, Col, Card, Space, Carousel, Button, message } from "antd";
 import { UserState } from "../../../store";
@@ -249,7 +249,7 @@ const AssessImpactMitigationStrategies = ({
       {/* EOL Sensitivity Analysis */}
 
       {/* #3 Optimize Income Target */}
-      {!isExternalRegular && (
+      {enableAdvancedTools && !isExternalRegular && (
         <>
           <Col span={24}>
             <Card className="card-section-wrapper">
