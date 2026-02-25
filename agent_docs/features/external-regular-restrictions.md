@@ -4,15 +4,18 @@
 Following the splitting of external users into "Regular" and "Advanced", this feature defines the specific platform restrictions applied to the default "External (Regular)" user type. The goal is to hide complex or sensitive tools from standard external partners.
 
 ## Requirements
-For all users with `role == "user"` and `user_type.startsWith("external")` (currently unifying Regular and Advanced), the following restrictions apply via centralized `CaseUIState` granular flags:
+The following centralized `CaseUIState` granular flags are used to restrict specific user types:
 
-1. **`enableDataUpload`**: Set to `false`.
-    - **Data spreadsheet upload**: Hidden (`CaseForm.js`).
-    - **Download Template button**: Hidden (`CaseForm.js`).
-2. **`enableAdvancedTools`**: Set to `false`.
-    - **Optimisation algorithm chart**: View Only. Interactive elements (driver selection, inputs, buttons) in Step 4 are disabled.
-    - **Advanced Modelling Tool**: View Only. Inputs, selectors, and buttons in Step 5 are disabled.
-    - **Browsing Alignment**: The `SegmentSelector` remains ENABLED in all analysis tools to allow browsing results across segments without editing privileges.
+1. **`external_regular`**:
+    - **`enableEditCase`**: `false` by default for cases they don't own (standard behavior).
+    - **`enableDataUpload`**: `false` (Hidden).
+    - **`enableAdvancedTools`**: `false` (View Only).
+2. **`external_advanced`**:
+    - **`enableEditCase`**: `true` (Full Edit Rights for owned cases/new cases, similar to Internal).
+    - **`enableDataUpload`**: `true` (Full Access).
+    - **`enableAdvancedTools`**: `true` (Full Access).
+    - **Visibility**: Strictly siloed to their **Company** data (no Organisation-wide access).
+3. **Browsing Alignment**: The `SegmentSelector` remains ENABLED in all analysis tools even for restricted users to allow browsing results across segments.
 
 ## Functional Specs
 - [MOD] `CaseUIState`: Add `enableAdvancedTools` and `enableDataUpload` flags.

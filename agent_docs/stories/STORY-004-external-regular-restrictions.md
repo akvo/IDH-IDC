@@ -21,7 +21,7 @@ Following the split of external users into "Regular" and "Advanced" (STORY-002, 
 
 ## Technical Acceptance Criteria (TAC)
 - [x] Implement centralized granular flags in `CaseUIState` (`enableAdvancedTools`, `enableDataUpload`).
-- [x] Calculate flags in `Case.js` by checking `isAdmin`, `isInternal`, and `userType`.
+- [x] Calculate flags in `Case.js`: `true` for Admin/Internal/External Advanced, `false` for External Regular.
 - [x] In `CaseForm.js`, conditionally render the `Data upload` tab and "Download template" button based on `enableDataUpload`.
 - [x] In `AssessImpactMitigationStrategies.js` (Step 4), apply `disabled={!enableAdvancedTools}` to sub-components.
 - [x] In `ClosingGap.js` (Step 5), apply `disabled={!enableAdvancedTools}` to the `AdvancedModellingTool` and "Mark as complete" button.

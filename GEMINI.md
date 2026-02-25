@@ -19,9 +19,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **User Restrictions & View-Only Mode (#731)**:
     - Centralized feature gating for Data Upload and Advanced Analysis tools in `CaseUIState` using granular flags (`enableAdvancedTools`, `enableDataUpload`).
     - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
-    - Implemented a unified "View-Only" baseline for all external users (Regular and Advanced) to ensure consistency.
-    - Preserved segment browsing capabilities for restricted users by keeping the `SegmentSelector` enabled across all analysis tools.
-    - Verified implementation with clean linting and documented via mandatory QA Guides and Safety Audits.
+    - Implemented a unified "View-Only" baseline for `external_regular` users to ensure simplified interaction and data protection.
+    - **External Advanced Pivot**: Refined the model to grant full "Power User" access (edit permissions, tool access) while strictly siloing visibility to their **Company** data in the backend.
+    - Updated `checkEnableEditCase` and tool flags in `Case.js` to treat `external_advanced` like internal staff for feature access.
+    - Preserved segment browsing capabilities for all users by keeping the `SegmentSelector` enabled.
+    - Verified implementation with clean linting and updated documentation via mandatory QA Guides and Safety Audits.
 - **External User Split UI Verification (#729)**:
     - Implemented UI controls for Admins to assign specific external user types: **External Regular** and **External Advanced**.
     - Updated the Users table to display granular `user_type` labels for improved transparency.

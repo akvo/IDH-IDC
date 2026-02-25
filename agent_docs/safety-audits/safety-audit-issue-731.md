@@ -9,17 +9,16 @@
 
 | Risk | Level | Mitigation |
 | :--- | :--- | :--- |
-| **Logic Bypass** | Medium | Centralized flag calculation in `Case.js` ensures that all components respect the same source of truth. |
-| **Backend Circumvention** | High | Backend safeguards are currently DEFERRED; relying on existing case ownership/sharing logic which already prevents unauthorized writes to other users' cases. |
-| **Regression in Edit Access** | Low | Verified that `isAdmin` and `isInternal` logic remains intact for staff and super-users. |
-| **Data Loss** | None | Feature gating only restricts write/calculate actions; no data deletion is automated in this feature. |
+| **Data Leakage (Advanced)** | Low | Verified backend `case.py` removes the Organisation-wide access. Advanced users are now strictly silod to their Company. |
+| **Logic Bypass (Regular)** | Medium | Centralized flag calculation in `Case.js` remains the source of truth for standard partners. |
+| **Feature Over-exposure** | Low | Intentionally granting full access to `External Advanced` as per business requirement (Power User). |
+| **Data Integrity** | Low | Permission model still relies on backend ownership checks; power users only edit their own/assigned data. |
 
 ---
 
 ## 2. Refactoring Audit
-- **Centralization**: Successfully moved `isExternalRegular` prop-drilling into a centralized `CaseUIState` granular flag system.
-- **Dependency Flow**: Verified that Step 4 and 5 sub-components correctly inherit the `disabled` state from their parent steps.
-- **Accessibility Boundary**: Segment Selector was intentionally left interactive to allow browsing across segments, posing zero security risk as it is a read-only state changes.
+- **Simplification**: Unifying External Advanced with Internal for features simplifies the `Case.js` state logic.
+- **Privacy Boundary**: Restoring Company-level visibility for Advanced users ensures Org-wide privacy is maintained by default unless explicitly shared.
 
 ---
 

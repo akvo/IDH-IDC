@@ -6,16 +6,17 @@ Currently, users with the `role == "user"` are classified as "Internal" if they 
 ## Requirements
 - **Internal**: Users belonging to a Business Unit. Access to cases within their BU/Org.
 - **External (Regular)**: Current external behavior. Access only to cases from their `company` or specifically shared with them.
-- **External (Advanced)**: Behaves like an internal user for their `organisation`. Can see all cases (private/public) within their org boundary.
+- **External (Advanced)**: Behaves like an internal user regarding **features** (full access) but is restricted to their **company** visibility (siloed).
 - **Admin Control**: Admins can select the `user_type` during creation/edit for users with the `user` role.
 
 ## User Journeys
 1. **Admin Invites Advanced Partner**: Admin creates a user, selects "External" and then "Advanced". The user is associated with an Organisation and Company.
-2. **Advanced Partner Access**: The user logs in and can see all cases created by any user in their same Organisation, helping them manage regional data.
+2. **Advanced Partner Access**: The user logs in and can see all cases created by any user in their same Company. They have full access to analysis and modelling tools for their own data.
 
 ## Functional Specs
 - [MOD] `User` model: add `user_type` (Enum: `internal`, `external_regular`, `external_advanced`).
-- [MOD] `get_all_case` logic: add condition for `external_advanced` to see org-wide cases.
+- [MOD] `get_all_case` logic: `external_advanced` users see company-wide cases (unified with regular user visibility).
+- [MOD] `Case.js`: `external_advanced` users are granted `enableEditCase` (full edit rights) and access to advanced analysis tools.
 - [MOD] `UserForm.js`: add conditional sub-selector for external type.
 - [MOD] `Users.js`: update `userRoleOptions` filter and column display to show specific external types.
 
@@ -28,7 +29,7 @@ Currently, users with the `role == "user"` are classified as "Internal" if they 
 - **API**:
   - `POST /user/register`: Payload must accept `user_type`.
   - `PUT /user/{id}`: Allow updating `user_type`.
-  - `GET /case`: Update filtering logic to include `organisation` matches for `external_advanced`.
+  - `GET /case`: Update filtering logic to ensure `external_advanced` are siloed to their **company** (unified with standard user filtering).
 - **Frontend**:
   - `UserForm.js`: Logic to toggle sub-selection based on role and primary type.
 
