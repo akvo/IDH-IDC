@@ -26,7 +26,9 @@ const AdjustIncomeTarget = ({
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
+    (s) => s.general
+  );
 
   const [showAdjustIncomeModal, setShowAdjustIncomeModal] = useState(false);
   const [calculationType, setCalculationType] = useState(
@@ -294,7 +296,7 @@ const AdjustIncomeTarget = ({
         open={showAdjustIncomeModal}
         onOk={handleOnSaveAdjustIncomeTarget}
         okButtonProps={{
-          disabled: !enableEditCase,
+          disabled: !enableEditCase || !enableAdvancedTools,
         }}
         okText="Save income target"
         onCancel={() => setShowAdjustIncomeModal(false)}

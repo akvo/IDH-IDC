@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
-import { UserState } from "../../../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
 import { AdvancedModellingTool } from "../components";
 import { isEmpty, isEqual } from "lodash";
@@ -22,8 +21,9 @@ const ClosingGap = ({
   const { scenarioModeling, prevScenarioModeling } = CaseVisualState.useState(
     (s) => s
   );
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
-  const isExternalRegular = UserState.useState((s) => s.isExternalRegular);
+  const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
+    (s) => s.general
+  );
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -170,7 +170,9 @@ const ClosingGap = ({
       </Col>
 
       <Col span={24}>
-        <AdvancedModellingTool disabled={isExternalRegular} />
+        <AdvancedModellingTool
+          disabled={!enableEditCase || !enableAdvancedTools}
+        />
       </Col>
 
       {/* Complete Button */}
@@ -191,7 +193,7 @@ const ClosingGap = ({
               className="button-complete"
               size="large"
               onClick={handleOnClickComplete}
-              disabled={isExternalRegular}
+              disabled={!enableEditCase || !enableAdvancedTools}
             >
               Mark as complete
             </Button>

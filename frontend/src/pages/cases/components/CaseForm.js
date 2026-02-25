@@ -27,7 +27,7 @@ import {
 } from "../../../store/static";
 import { selectProps, getFieldDisableStatusForCommodity } from "../../../lib";
 import { AreaUnitFields, SegmentForm, SegmentConfigurationForm } from ".";
-import { UIState, UserState } from "../../../store";
+import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
@@ -182,8 +182,7 @@ const CaseForm = ({
   const companyOptions = UIState.useState((s) => s.companyOptions);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
-  const { enableEditCase } = general;
-  const isExternalRegular = UserState.useState((s) => s.isExternalRegular);
+  const { enableEditCase, enableDataUpload } = general;
 
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadResult, setUploadResult] = useState(null);
@@ -671,7 +670,7 @@ const CaseForm = ({
                 </Col>
               ),
             },
-            !isExternalRegular && {
+            enableDataUpload && {
               key: "upload",
               label: "Data upload",
               children: (
@@ -729,14 +728,16 @@ const CaseForm = ({
             },
           ].filter(Boolean)}
           tabBarExtraContent={
-            <Button
-              className="button-ghost"
-              onClick={handleDownloadTemplate}
-              disabled={downloading}
-              loading={downloading}
-            >
-              <DownloadOutlined /> Download template
-            </Button>
+            enableDataUpload ? (
+              <Button
+                className="button-ghost"
+                onClick={handleDownloadTemplate}
+                disabled={downloading}
+                loading={downloading}
+              >
+                <DownloadOutlined /> Download template
+              </Button>
+            ) : null
           }
         />
       </Col>

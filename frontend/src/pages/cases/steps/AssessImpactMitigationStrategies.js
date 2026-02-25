@@ -6,7 +6,6 @@ import {
   CaseVisualState,
   CaseUIState,
 } from "../store";
-import { UserState } from "../../../store";
 import { Row, Col, Card, Space, Carousel, Button, message } from "antd";
 import {
   ChartBiggestImpactOnIncome,
@@ -37,8 +36,9 @@ const AssessImpactMitigationStrategies = ({
   const currentCase = CurrentCaseState.useState((s) => s);
   const { sensitivityAnalysis, prevSensitivityAnalysis } =
     CaseVisualState.useState((s) => s);
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
-  const isExternalRegular = UserState.useState((s) => s.isExternalRegular);
+  const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
+    (s) => s.general
+  );
 
   const carouselChartRef = useRef(null);
 
@@ -229,7 +229,9 @@ const AssessImpactMitigationStrategies = ({
         </Card>
       </Col>
       <Col span={24}>
-        <ExploreChangeToCloseTheGap disabled={isExternalRegular} />
+        <ExploreChangeToCloseTheGap
+          disabled={!enableEditCase || !enableAdvancedTools}
+        />
       </Col>
       {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
 
@@ -253,7 +255,10 @@ const AssessImpactMitigationStrategies = ({
       </Col>
       <Col span={24}>
         <Card className="card-content-wrapper">
-          <OptimizeIncomeTarget disabled={isExternalRegular} />
+          <OptimizeIncomeTarget
+            caseId={currentCase.id}
+            disabled={!enableEditCase || !enableAdvancedTools}
+          />
         </Card>
       </Col>
       {/* EOL Optimize Income Target */}
