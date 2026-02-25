@@ -109,12 +109,16 @@ const Case = () => {
 
   // check for enableEditCase
   useEffect(() => {
+    const isAdmin = adminRole.includes(userState?.role);
+    const isInternal = userState?.internal_user;
+    const userType = userState?.user_type;
+
     const checkEnableEditCase = () => {
-      if (adminRole.includes(userState?.role)) {
+      if (isAdmin) {
         return true;
       }
       // allow internal user to create new case
-      if (userState?.internal_user && !caseId) {
+      if (isInternal && !caseId) {
         return true;
       }
       // check user access
@@ -122,16 +126,10 @@ const Case = () => {
         (a) => a.case === parseInt(caseId)
       )?.permission;
       // allow internal user case owner to edit case
-      if (
-        userState?.internal_user &&
-        currentCase?.created_by === userState?.email
-      ) {
+      if (isInternal && currentCase?.created_by === userState?.email) {
         return true;
       }
-      if (
-        (userState?.internal_user && !userPermission) ||
-        userPermission === "view"
-      ) {
+      if ((isInternal && !userPermission) || userPermission === "view") {
         return false;
       }
       if (userPermission === "edit") {
@@ -144,11 +142,35 @@ const Case = () => {
       return false;
     };
 
+    const checkEnableAdvancedTools = () => {
+      if (isAdmin || isInternal) {
+        return true;
+      }
+      // Centralized gating for external users
+      if (userType === "external_regular" || userType === "external_advanced") {
+        return false;
+      }
+      return false;
+    };
+
+    const checkEnableDataUpload = () => {
+      if (isAdmin || isInternal) {
+        return true;
+      }
+      // Centralized gating for external users
+      if (userType === "external_regular" || userType === "external_advanced") {
+        return false;
+      }
+      return false;
+    };
+
     CaseUIState.update((s) => ({
       ...s,
       general: {
         ...s.general,
         enableEditCase: checkEnableEditCase(),
+        enableAdvancedTools: checkEnableAdvancedTools(),
+        enableDataUpload: checkEnableDataUpload(),
       },
     }));
   }, [
@@ -158,6 +180,7 @@ const Case = () => {
     userState?.case_access,
     userState?.role,
     userState?.company,
+    userState?.user_type,
     currentCase?.created_by,
     currentCase?.company,
   ]);

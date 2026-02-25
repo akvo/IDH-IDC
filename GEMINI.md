@@ -16,6 +16,17 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **User Restrictions & View-Only Mode (#731)**:
+    - Centralized feature gating for Data Upload and Advanced Analysis tools in `CaseUIState` using granular flags (`enableAdvancedTools`, `enableDataUpload`).
+    - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
+    - Implemented a unified "View-Only" baseline for all external users (Regular and Advanced) to ensure consistency.
+    - Preserved segment browsing capabilities for restricted users by keeping the `SegmentSelector` enabled across all analysis tools.
+    - Verified implementation with clean linting and documented via mandatory QA Guides and Safety Audits.
+- **External User Split UI Verification (#729)**:
+    - Implemented UI controls for Admins to assign specific external user types: **External Regular** and **External Advanced**.
+    - Updated the Users table to display granular `user_type` labels for improved transparency.
+    - Enforced organization-level visibility for **External Advanced** users, enabling lead-partner data management.
+    - Verified cross-organization security boundaries and ensured staff access logic is decoupled from Business Unit presence.
 - **Segmentation UI Refinement (Issue #727)**:
     - Implemented "Manual Range Authority" model: user-defined Min and Max values are strictly respected during recalculation and final segment generation.
     *   Updated backend Pydantic models to support explicit `min` and `max` fields in segmentation requests.
