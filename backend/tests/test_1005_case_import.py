@@ -20,6 +20,7 @@ sys.path.append("..")
 
 non_admin_account = Acc(email="viewer@akvo.org", token=None)
 admin_account = Acc(email="super_admin@akvo.org", token=None)
+regular_account = Acc(email="support@akvo.org", token=None)
 
 # ------------------------------------------------------------------
 # Test assets
@@ -72,6 +73,11 @@ def admin_headers():
 @pytest.fixture
 def non_admin_headers():
     return {"Authorization": f"Bearer {non_admin_account.token}"}
+
+
+@pytest.fixture
+def regular_headers():
+    return {"Authorization": f"Bearer {regular_account.token}"}
 
 
 @pytest.fixture
@@ -190,6 +196,19 @@ class TestCaseImport:
         assert res.json() == {
             "detail": "Only .xlsx and .xlsm files are supported"
         }
+
+    @pytest.mark.asyncio
+    async def test_case_import_external_regular_blocked(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        upload_file_factory,
+        regular_headers,
+    ):
+        # support@akvo.org is seeded as a regular user (external_regular)
+        res = await upload_file_factory(VALID_FILE, regular_headers)
+        assert res.status_code == 403
 
     @pytest.mark.asyncio
     async def test_case_import_segmentation_preview_valid_file(
