@@ -22,6 +22,7 @@ const AdjustIncomeTarget = ({
   buttonView = false,
   onlyClosingGap = false,
   inlineView = false,
+  disabled = false,
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
@@ -211,6 +212,7 @@ const AdjustIncomeTarget = ({
                 `${selectedSegment}_closing-gap-percentage_adjusted-target`
               ]
             }
+            disabled={disabled}
           />
           <div className="new-target-text">
             New target:{" "}
@@ -408,6 +410,7 @@ const AdjustIncomeTarget = ({
                         {...InputNumberThousandFormatter}
                         controls={false}
                         onChange={(value) => onAdjustTarget(value, qtype)}
+                        disabled={disabled}
                         value={
                           qtype === "percentage"
                             ? adjustedValues?.[

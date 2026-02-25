@@ -121,6 +121,7 @@ const AllDriverTreeSelector = ({
   maxCount = null,
   disabledNodes = {},
   disableDriversWithZeroChange = false,
+  disabled = false,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const { incomeDataDrivers } = CaseVisualState.useState((s) => s);
@@ -370,7 +371,7 @@ const AllDriverTreeSelector = ({
         }
       }}
       treeData={modifiedTreeData}
-      disabled={!enableEditCase}
+      disabled={disabled || !enableEditCase}
       treeDefaultExpandedKeys={[
         ...incomeDriverOptions.map((item) => item.value),
         ...value,
