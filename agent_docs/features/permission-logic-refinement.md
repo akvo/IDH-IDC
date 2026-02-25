@@ -41,3 +41,28 @@ The following table summarizes the updated permission model:
 | Ext Adv | Viewer | **No** | **Disabled (Visible)** | **No** (Hidden) |
 | Ext Reg | Editor | **Yes** | **Yes** (Except Opt. Chart) | **No** (Hidden) |
 | Ext Reg | Viewer | **No** | **Disabled (Visible)** (Except Opt. Chart) | **No** (Hidden) |
+
+## Implementation Details: Robustness & Stability
+
+### 1. Zero-Crash Data Handling
+Added robust type checking in `checkEnableEditCase` to prevent the `toLowerCase` runtime error:
+- Uses `typeof === 'string'` guards before calling string methods.
+- Coerces `created_by` to `String` where appropriate.
+- Implements optional chaining (`?.`) for nested user state properties like `case_access`.
+
+### 2. Guarding Ownership
+The owner check now includes both email and user ID comparison to handle variations in how user identity is stored:
+```javascript
+const isOwner = currentCaseCreatedBy?.toLowerCase() === userState?.email?.toLowerCase() ||
+                currentCaseCreatedBy === String(userState?.id);
+```
+
+### 3. Preventing Race Conditions
+Refactored all `CaseUIState` updates to use direct draft mutations (Immer-style) instead of object spreading. This ensures that concurrent updates (e.g., case fetching vs. permission evaluation) are atomic and do not clobber each other.
+
+```javascript
+CaseUIState.update((s) => {
+  s.general.enableEditCase = editAllowed;
+  // ... other flags
+});
+```

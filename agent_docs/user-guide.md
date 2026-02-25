@@ -16,6 +16,12 @@ If you see the message: *"It is not physically possible to reach the income targ
 
 ---
 
+## Modelling Tool: View-Only Mode
+
+If you are assigned to a case as a **Viewer**, the modelling tools (Step 4 and 5) will be **VISIBLE** so you can inspect the current population's data and feasibility, but all input fields and "Save" buttons will be **DISABLED**. This ensures that data consumers can benefit from the analysis without risk of accidental modification.
+
+---
+
 # User Management: Partner Access Levels
 
 The IDC manages partner data through three distinct access levels for "Guest" (External) users:

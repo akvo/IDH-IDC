@@ -40,6 +40,17 @@ Verify that the modeling tool accurately reflects mathematical reality through r
     - **Expect**: Required Price = 15.99 (based on formula `L * (V * (P - C) + 1)`).
     - **Result**: PASSED (Verified via formula in `incomeCalculations.js`).
 
+## Mandatory Quality Gates
+
+Following the BMAD protocol, every Pull Request must pass the following manual and technical audits:
+
+| Gate | Artifact | Responsibility |
+| :--- | :--- | :--- |
+| **Technical Safety Audit** | `agent_docs/safety-audits/` | bmad-tester (Risk analysis, migration safety) |
+| **UI QA Guide** | `agent_docs/qa/` | bmad-tester (Step-by-step UI verification) |
+
+---
+
 ## Automated Verification
-- **Frontend Linting**: `yarn lint` passed.
-- **Backend Tests**: Not applicable for these frontend-only logic changes.
+- **Frontend Linting**: `yarn lint` passed (0 errors, 0 warnings).
+- **Type Safety**: Verified via linting and robust `typeof` guards in `checkEnableEditCase`.

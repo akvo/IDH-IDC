@@ -43,9 +43,9 @@
 - [MED] Feasibility alerts (Signal Green/Orange/Impossible).
 
 ### 4.4 Authentication & Access
-- [HIGH] Explicit distinction between "Internal", "External (Regular)", and "External (Advanced)" users via `user_type`.
-- [HIGH] "External (Advanced)" users can view all organization cases, mirroring internal behavior within their org boundary.
 - [HIGH] Standard "External" users migrate to "Regular" type by default.
+- [HIGH] Permission Parity: Advanced modelling tools are visible to all but restricted to "Editor" authority for interactivity.
+- [HIGH] Data Upload Isolation: Strictly restricted to Advanced User Types (Admin/Internal/Ext Adv) with Editor permissions.
 
 ## 5. Non-Functional Requirements
 - **Performance**: Recalculations should occur in <1s for segments up to 5,000 farmers.

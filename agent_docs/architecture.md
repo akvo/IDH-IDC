@@ -117,3 +117,16 @@ if not show_private:
 if user_cases: # Non-Admin whitelist
     case = case.filter(Case.id.in_(user_cases))
 ```
+
+## Front-End Design Patterns
+
+### Safe State Mutation (Pullstate)
+To avoid race conditions during concurrent state updates (e.g., parallel data fetches clobbering each other), always use direct draft mutations in `update` calls instead of object spreading.
+
+```javascript
+// AVOID: Race condition risk
+CaseUIState.update(s => ({ ...s, general: { ...s.general, flag: true } }));
+
+// PREFERRED: Granular mutation or direct draft assignment
+CaseUIState.update(s => { s.general.flag = true; });
+```
