@@ -140,6 +140,8 @@ const App = () => {
             s.case_access = data.case_access || [];
             s.internal_user = data.internal_user;
             s.company = data.company;
+            s.user_type = data.user_type;
+            s.isExternalRegular = data.user_type === "external_regular";
           });
         })
         .catch(() => {
