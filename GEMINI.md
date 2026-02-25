@@ -205,6 +205,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Implemented specific guidance alerts for `surplus` (income decrease warning) and `impossible` (negative value warning) states.
         - Updated Price Breakdown logic to conditionally hide the bar chart and Cost/Profit labels only in `impossible` scenarios, ensuring the card remains visible for structural consistency.
         - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
+        - Reverted the Advanced Modelling Tool (Step 5) to use the original baseline target from Step 1, ensuring adjusted targets from Step 4 are only applied within Step 4 features as per manager feedback.
         - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
         - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
 - **External (Regular) User Restrictions Implementation (Issue #731)**:

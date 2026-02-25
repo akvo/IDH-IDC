@@ -67,8 +67,9 @@ const InputRow = ({
 };
 
 const AdvancedModellingTool = ({ disabled }) => {
-  const { dashboardData, incomeDataDrivers, sensitivityAnalysis } =
-    CaseVisualState.useState((s) => s);
+  const { dashboardData, incomeDataDrivers } = CaseVisualState.useState(
+    (s) => s
+  );
   const currentCase = CurrentCaseState.useState((s) => s);
 
   // Initialize state from global store if available
@@ -780,11 +781,8 @@ const AdvancedModellingTool = ({ disabled }) => {
   const getTargetIncome = () => {
     // benchmark income for the segment
     const currentTarget = segment?.target || 0;
-    const adjustedTarget =
-      sensitivityAnalysis?.config?.[`${selectedSegmentId}_adjusted-target`] ||
-      0;
 
-    const targetIncomeLevel = adjustedTarget ? adjustedTarget : currentTarget;
+    const targetIncomeLevel = currentTarget;
 
     let diversifiedEarnings = 0;
     let secondaryEarnings = 0;
