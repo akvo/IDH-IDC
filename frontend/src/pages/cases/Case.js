@@ -114,22 +114,24 @@ const Case = () => {
     const userType = userState?.user_type;
 
     const checkEnableEditCase = () => {
+      const isPowerUser = isInternal || userType === "external_advanced";
+
       if (isAdmin) {
         return true;
       }
-      // allow internal user to create new case
-      if (isInternal && !caseId) {
+      // allow power users to create new case
+      if (isPowerUser && !caseId) {
         return true;
       }
       // check user access
       const userPermission = userState.case_access.find(
         (a) => a.case === parseInt(caseId)
       )?.permission;
-      // allow internal user case owner to edit case
-      if (isInternal && currentCase?.created_by === userState?.email) {
+      // allow power user case owner to edit case
+      if (isPowerUser && currentCase?.created_by === userState?.email) {
         return true;
       }
-      if ((isInternal && !userPermission) || userPermission === "view") {
+      if ((isPowerUser && !userPermission) || userPermission === "view") {
         return false;
       }
       if (userPermission === "edit") {
@@ -147,7 +149,10 @@ const Case = () => {
         return true;
       }
       // Centralized gating for external users
-      if (userType === "external_regular" || userType === "external_advanced") {
+      if (userType === "external_advanced") {
+        return true;
+      }
+      if (userType === "external_regular") {
         return false;
       }
       return false;
@@ -158,7 +163,10 @@ const Case = () => {
         return true;
       }
       // Centralized gating for external users
-      if (userType === "external_regular" || userType === "external_advanced") {
+      if (userType === "external_advanced") {
+        return true;
+      }
+      if (userType === "external_regular") {
         return false;
       }
       return false;

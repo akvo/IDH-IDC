@@ -134,17 +134,17 @@ def get_all_case(
         )
         user_cases = user_cases + [c.id for c in all_public_cases]
 
-    # handle advanced external user
-    if (
-        user.role == UserRole.user
-        and user.user_type == UserType.external_advanced
-    ):
-        show_private = True
-        org_cases = crud_case.get_case_by_organisation(
-            session=session, organisation_id=user.organisation
-        )
-        if org_cases:
-            user_cases = user_cases + [c.id for c in org_cases]
+    # handle advanced external user - DEPRECATED: Unified with company user
+    # if (
+    #     user.role == UserRole.user
+    #     and user.user_type == UserType.external_advanced
+    # ):
+    #     show_private = True
+    #     org_cases = crud_case.get_case_by_organisation(
+    #         session=session, organisation_id=user.organisation
+    #     )
+    #     if org_cases:
+    #         user_cases = user_cases + [c.id for c in org_cases]
 
     # handle company user
     if user.role == UserRole.user and user.company:
