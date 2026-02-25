@@ -27,7 +27,7 @@ import {
 } from "../../../store/static";
 import { selectProps, getFieldDisableStatusForCommodity } from "../../../lib";
 import { AreaUnitFields, SegmentForm, SegmentConfigurationForm } from ".";
-import { UIState } from "../../../store";
+import { UIState, UserState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { uniqBy } from "lodash";
@@ -183,6 +183,7 @@ const CaseForm = ({
   const currentCase = CurrentCaseState.useState((s) => s);
   const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
   const { enableEditCase } = general;
+  const isExternalRegular = UserState.useState((s) => s.isExternalRegular);
 
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadResult, setUploadResult] = useState(null);
@@ -670,7 +671,7 @@ const CaseForm = ({
                 </Col>
               ),
             },
-            {
+            !isExternalRegular && {
               key: "upload",
               label: "Data upload",
               children: (
@@ -726,7 +727,7 @@ const CaseForm = ({
                 </Col>
               ),
             },
-          ]}
+          ].filter(Boolean)}
           tabBarExtraContent={
             <Button
               className="button-ghost"

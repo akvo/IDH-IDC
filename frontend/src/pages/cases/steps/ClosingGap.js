@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
+import { UserState } from "../../../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
 import { AdvancedModellingTool } from "../components";
 import { isEmpty, isEqual } from "lodash";
@@ -22,6 +23,7 @@ const ClosingGap = ({
     (s) => s
   );
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const isExternalRegular = UserState.useState((s) => s.isExternalRegular);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -168,7 +170,7 @@ const ClosingGap = ({
       </Col>
 
       <Col span={24}>
-        <AdvancedModellingTool />
+        <AdvancedModellingTool disabled={isExternalRegular} />
       </Col>
 
       {/* Complete Button */}
@@ -189,6 +191,7 @@ const ClosingGap = ({
               className="button-complete"
               size="large"
               onClick={handleOnClickComplete}
+              disabled={isExternalRegular}
             >
               Mark as complete
             </Button>
