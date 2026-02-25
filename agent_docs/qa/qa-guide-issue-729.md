@@ -34,15 +34,15 @@ This guide provides step-by-step instructions for verifying the implementation o
 ---
 
 ## 3. Case Visibility: External Advanced
-**Goal**: Verify "Lead" visibility for advanced partner users.
+**Goal**: Verify siloed visibility for advanced partner users.
 
 1.  **Login** as a user marked as **External Advanced**.
 2.  Navigate to the **Cases** page.
 3.  **Expectation**:
-    - You should see **all cases** belonging to your **Organisation**, regardless of which company or user created them.
-    - This includes private cases within your organization.
+    - You should see **cases** belonging to your **Company**, regardless of which user created them.
+    - You should NOT see cases from other companies in the same organization.
 4.  Navigate to the **Map** page.
-    - **Expectation**: Points on the map should reflect all data within your organization.
+    - **Expectation**: Points on the map should reflect only data within your Company.
 
 ---
 

@@ -20,7 +20,7 @@ This audit validates the transition from legacy Business Unit-based staff identi
 ### 2. Access Guard Analysis
 **Routes**: `case.py`, `map.py`
 - **Internal Tier**: Bypasses organization filtering. Verified that the check `user.user_type == UserType.internal` correctly identifies staff regardless of their BU membership.
-- **Advanced Tier**: Verified that `external_advanced` users see all cases within their `organisation_id` but are strictly blocked from other organizations.
+- **Advanced Tier**: Verified that `external_advanced` users see all cases within their `company_id` but are strictly blocked from other companies within the same organization.
 - **Regular Tier**: Verified that the whitelist logic (`user_cases`) remains restricted to personal or shared IDs.
 
 ### 3. Regression Test Coverage

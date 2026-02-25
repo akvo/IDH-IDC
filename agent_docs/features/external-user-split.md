@@ -6,7 +6,7 @@ Currently, users with the `role == "user"` are classified as "Internal" if they 
 ## Requirements
 - **Internal**: Users belonging to a Business Unit. Access to cases within their BU/Org.
 - **External (Regular)**: Current external behavior. Access only to cases from their `company` or specifically shared with them.
-- **External (Advanced)**: Behaves like an internal user regarding **features** (full access) but is restricted to their **company** visibility (siloed).
+- **External (Advanced)**: Behaves like an internal user regarding **features** (full access) but is strictly restricted to their **company** visibility (siloed). This ensures lead-partners manage only their own company data while having full power-user tools.
 - **Admin Control**: Admins can select the `user_type` during creation/edit for users with the `user` role.
 
 ## User Journeys
@@ -15,7 +15,7 @@ Currently, users with the `role == "user"` are classified as "Internal" if they 
 
 ## Functional Specs
 - [MOD] `User` model: add `user_type` (Enum: `internal`, `external_regular`, `external_advanced`).
-- [MOD] `get_all_case` logic: `external_advanced` users see company-wide cases (unified with regular user visibility).
+- [MOD] `get_all_case` logic: `external_advanced` users see company-wide cases (unified with standard external user visibility).
 - [MOD] `Case.js`: `external_advanced` users are granted `enableEditCase` (full edit rights) and access to advanced analysis tools.
 - [MOD] `UserForm.js`: add conditional sub-selector for external type.
 - [MOD] `Users.js`: update `userRoleOptions` filter and column display to show specific external types.
