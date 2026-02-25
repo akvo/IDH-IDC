@@ -1,63 +1,59 @@
-# QA Guide: User Restrictions & View-Only Mode (#731)
+# UI QA Guide: User Restrictions & View-Only Mode (#731)
 
-This guide provides instructions for verifying the feature restrictions applied to external users (Regular and Advanced) to ensure consistency and prevent unauthorized edits.
-
----
-
-## 1. Setup Phase
-1. **Identify Test Users**:
-   - `Internal`: A user with `role: "user"` and `user_type: "internal"`.
-   - `External Regular`: A user with `role: "user"` and `user_type: "external_regular"`.
-   - `External Advanced`: A user with `role: "user"` and `user_type: "external_advanced"`.
-2. **Select Case**: Use a case owned by the `Internal` user for regular testing; use cases from other companies in the same org for advanced testing.
+This guide verifies that the feature gating and permission model correctly adhere to the assigned user roles and case permissions.
 
 ---
 
-## 2. Step 1: Data Entry & Upload
-**Goal**: Verify Data Upload and CPI adjustments are correctly restricted.
+## 1. External Regular (Editor vs Viewer)
+**Goal**: Verify that External Regular editors can edit modelling data but cannot upload data or see the Optimisation Chart.
 
-1. **Login** as the `External Regular` user.
-2. Navigate to **Step 1 (Case Form)**.
-3. **Verify**:
-   - The **"Data upload"** tab and **"Download template"** button must NOT be visible.
-   - If a benchmark needs CPI adjustment (year mismatch), the **"Adjust benchmark using CPI values"** button MUST be **DISABLED**.
-4. **Login** as the `External Advanced` user.
-5. Navigate to **Step 1 (Case Form)**.
-6. **Verify**: The **"Data upload"** tab and **"Download template"** button MUST be visible.
-7. **API Verification**: Use Postman/curl to attempt `POST /case-import` as `External Regular`. **Expectation**: `403 Forbidden` with detail `"You don't have access to create a case"`.
+### A. Editor Role
+1. **Login** as a user marked as **External Regular**.
+2. **Open a Case** where you are assigned as an **Editor**.
+3. **Verify Step 1**:
+    - "Data Upload" tab must be **HIDDEN**.
+4. **Verify Step 4**:
+    - "Optimisation Algorithm" chart must be **HIDDEN**.
+    - Other tools (like Sensitivity Analysis) should be **VISIBLE and ENABLED**.
+5. **Verify Step 5**:
+    - "Advanced Modelling Tool" must be **VISIBLE and ENABLED**.
 
----
-
-## 3. Step 4: Analysis Interactivity
-**Goal**: Verify "View-Only" mode for Regular users and full access for Advanced.
-
-1. **Login** as the `External Regular` user.
-2. Navigate to **Step 4 (Assess Impact)**.
-3. **Verify**:
-   - "Explore: How do income drivers need to change..." section MUST be **VISIBLE but DISABLED** (View-Only).
-   - "Optimize Income Target" section (Header and Component) MUST be **HIDDEN**.
-4. **Login** as the `External Advanced` user.
-5. Navigate to **Step 4 (Assess Impact)**.
-6. **Verify**: All inputs in Step 4 must be **ENABLED**.
+### B. Viewer Role
+1. **Open a Case** where you are assigned as a **Viewer**.
+2. **Check Interactivity**:
+    - All modelling inputs in Step 5 should be **VISIBLE but DISABLED**.
+    - You should NOT be able to save or modify any data.
 
 ---
 
-## 4. Step 5: Modelling Interactivity
-**Goal**: Verify "View-Only" mode for Regular users and full access for Advanced.
+## 2. Advanced User (Internal/Ext Adv) - Viewer Mode
+**Goal**: Verify that Advanced users assigned as "Viewers" can see the tools but not edit them.
 
-1. **Login** as the `External Regular` user.
-2. Navigate to **Step 5 (Closing Gap)**.
-3. **Verify**: modelling Inputs and "Mark as complete" button must be **disabled/hidden**.
-4. **Login** as the `External Advanced` user.
-5. Navigate to **Step 5 (Closing Gap)**.
-6. **Verify**: modelling Inputs and "Mark as complete" button must be **ENABLED**.
+1. **Login** as **Internal** or **External Advanced**.
+2. **Open a Case** where you are assigned as a **Viewer**.
+3. **Verify Visibility**:
+    - "Data Upload" tab (Step 1) should be **HIDDEN**.
+    - Advanced Tools (Step 4 & 5) should be **VISIBLE**.
+4. **Verify Interactivity**:
+    - All inputs in Modelling tools (Step 5) must be **DISABLED**.
+    - User should see the existing model values but cannot change them.
 
 ---
 
-## 5. Visibility Check (Siloed Data)
-**Goal**: Verify External Advanced users are restricted to their company data.
+## 3. Robustness & Stability
+**Goal**: Verify the app does not crash during state transitions.
 
-1. **Login** as the `External Advanced` user.
-2. Navigate to the **Case List**.
-3. **Expectation**: You should ONLY see cases belonging to your **Company**.
-4. **Verification**: Confirm you CANNOT see cases from other companies in the same Organisation (unlike previous behavior).
+1. **Login** and navigate rapidly between different cases.
+2. **Expectation**: No "White Screen of Death" or console errors related to `toLowerCase`.
+3. **Owner Check**: Verify that a user who created a case can still edit it even if their email is stored in a different case (e.g., lowercase vs uppercase).
+
+---
+
+## 4. Logical Check (Matrix)
+
+| User Type | Role | Data Upload | Adv Tools | Opt. Chart |
+|-----------|------|-------------|-----------|------------|
+| Ext Reg | Editor | Hidden | Enabled | Hidden |
+| Ext Reg | Viewer | Hidden | Disabled | Hidden |
+| Internal | Viewer | Hidden | Disabled | Visible |
+| Ext Adv | Editor | Visible | Enabled | Visible |
