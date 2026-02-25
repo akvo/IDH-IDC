@@ -8,7 +8,7 @@ import {
   ThreeDriverCalculator,
 } from "../components";
 
-const ExploreChangeToCloseTheGap = () => {
+const ExploreChangeToCloseTheGap = ({ disabled }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
 
   return (
@@ -42,6 +42,7 @@ const ExploreChangeToCloseTheGap = () => {
                 selectedSegment={selectedSegment}
                 inlineView={true}
                 onlyClosingGap={true}
+                disabled={disabled}
               />
             </Col>
           </Row>
@@ -57,7 +58,10 @@ const ExploreChangeToCloseTheGap = () => {
       </Col>
 
       <Col span={24}>
-        <ThreeDriverCalculator selectedSegment={selectedSegment} />
+        <ThreeDriverCalculator
+          selectedSegment={selectedSegment}
+          disabled={disabled}
+        />
       </Col>
     </Row>
   );

@@ -961,6 +961,7 @@ const SetIncomeTarget = ({
                     <Button
                       className="button-green"
                       onClick={() => setNewCpiModalVisible(true)}
+                      disabled={!enableEditCase}
                     >
                       <EditOutlined /> Adjust benchmark using CPI values
                     </Button>
@@ -1012,6 +1013,7 @@ const SetIncomeTarget = ({
         title="No benchmark available for the year you selected"
         centered
         okText="Save new benchmark value"
+        okButtonProps={{ disabled: !enableEditCase }}
         className="adjust-benchmark-modal-wrapper"
         width={700}
         onCancel={() => setNewCpiModalVisible(false)}

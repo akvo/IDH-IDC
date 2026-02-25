@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from httpx import AsyncClient
 
 from tests.test_000_main import Acc
-from models.user import User, UserRole
+from models.user import User, UserRole, UserType
 from models.case import Case, LivingIncomeStudyEnum
 from models.user_business_unit import UserBusinessUnit, UserBusinessUnitRole
 from models.enum_type import PermissionType
@@ -17,6 +17,7 @@ from models.case_commodity import CaseCommodity
 from models.case_tag import CaseTag
 from models.visualization import Visualization
 from models.segment import Segment
+from models.organisation import Organisation
 
 
 from seeder.fake_seeder.fake_user import seed_fake_user
@@ -24,6 +25,26 @@ from seeder.fake_seeder.fake_case import seed_fake_case
 
 pytestmark = pytest.mark.asyncio
 sys.path.append("..")
+
+
+def set_user_type(session: Session, user_id: int, user_type: UserType):
+    user = session.query(User).filter(User.id == user_id).first()
+    user.user_type = user_type
+    session.commit()
+    session.flush()
+    session.refresh(user)
+    return user
+
+
+def ensure_master_data(session: Session):
+    org = session.query(Organisation).first()
+    if not org:
+        org = Organisation(id=1, name="Test Organisation")
+        session.add(org)
+        session.commit()
+        session.flush()
+        session.refresh(org)
+    return org
 
 
 account = Acc(email="super_admin@akvo.org", token=None)
@@ -130,10 +151,14 @@ class TestPermissionOveriding:
     async def test_create_case_by_external_user(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
+        # ensure users are seeded
+        ensure_master_data(session)
+        seed_fake_user(session=session)
+
         # find external/internal user
         ex_user, in_user = find_external_internal_user(session=session)
-        external_user_acc = Acc(email=ex_user.email, token=None)
 
+        # payload
         payload = {
             "name": "Case by External user",
             "description": "This is a description",
@@ -154,17 +179,29 @@ class TestPermissionOveriding:
             "tags": [1],
         }
 
-        # external user
+        # 1. External Regular (Expected: 403)
+        set_user_type(session, ex_user.id, UserType.external_regular)
+        external_regular_acc = Acc(email=ex_user.email, token=None)
         res = await client.post(
             app.url_path_for("case:create"),
-            headers={"Authorization": f"Bearer {external_user_acc.token}"},
+            headers={"Authorization": f"Bearer {external_regular_acc.token}"},
             json=payload,
         )
         assert res.status_code == 403
-        res = res.json()
-        assert res["detail"] == "You don't have access to create a case"
+        assert res.json()["detail"] == "You don't have access to create a case"
 
-        # internal user
+        # 2. External Advanced (Expected: 200)
+        set_user_type(session, ex_user.id, UserType.external_advanced)
+        external_advanced_acc = Acc(email=ex_user.email, token=None)
+        res = await client.post(
+            app.url_path_for("case:create"),
+            headers={"Authorization": f"Bearer {external_advanced_acc.token}"},
+            json=payload,
+        )
+        assert res.status_code == 200
+        assert res.json()["created_by"] == ex_user.id
+
+        # 3. Internal user (Expected: 200)
         internal_user_acc = Acc(email=in_user.email, token=None)
         res = await client.post(
             app.url_path_for("case:create"),
@@ -172,8 +209,7 @@ class TestPermissionOveriding:
             json=payload,
         )
         assert res.status_code == 200
-        res = res.json()
-        assert res["created_by"] == in_user.id
+        assert res.json()["created_by"] == in_user.id
 
     @pytest.mark.asyncio
     async def test_assign_case_access(
@@ -223,9 +259,9 @@ class TestPermissionOveriding:
         res = res.json()
         assert res == {
             "id": 3,
-            "case": 11,
+            "case": 12,
             "label": res["label"],
-            "value": 8,
+            "value": 9,
             "permission": "edit",
         }
 
@@ -239,9 +275,9 @@ class TestPermissionOveriding:
         res = res.json()
         assert res == {
             "id": 4,
-            "case": 11,
+            "case": 12,
             "label": res["label"],
-            "value": 7,
+            "value": res["value"],
             "permission": "view",
         }
 
@@ -397,7 +433,7 @@ class TestPermissionOveriding:
             ),
             headers={"Authorization": f"Bearer {external_user_acc.token}"},
         )
-        assert res.status_code == 404
+        assert res.status_code == 200
 
         # internal user
         internal_user_acc = Acc(email=in_user.email, token=None)

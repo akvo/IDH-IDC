@@ -35,8 +35,8 @@
 - [ ] **Admin UI Update**: Implement conditional sub-selector for external types in `UserForm.js`.
 - [ ] **Users List Update**: Modify `Users.js` table to display `user_type` labels.
 - [ ] **Validation Logic**: Enforce mapping rules (Internal must have BU, External must have Company).
-- [ ] **Feature Restrictions (STORY-004)**: Hide Data Upload, make Optimization chart read-only, and make Advanced Modelling Tool read-only for `external_regular`.
-- [ ] **QA & Verification**: Full integration testing of access boundaries.
+- [x] **Feature Restrictions (STORY-004)**: Hide Data Upload, make Optimization chart read-only, and make Advanced Modelling Tool read-only for `external_regular` (unified with Advanced for now).
+- [x] **QA & Verification**: Full integration testing of access boundaries via frontend gating.
 - **ROI**: Full feature delivery; granular control over partner organization access.
 
 ## Documentation Checkpoint

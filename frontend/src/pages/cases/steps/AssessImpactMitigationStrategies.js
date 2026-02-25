@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   stepPath,
-  CurrentCaseState,
   CaseVisualState,
   CaseUIState,
+  CurrentCaseState,
 } from "../store";
 import { Row, Col, Card, Space, Carousel, Button, message } from "antd";
+import { UserState } from "../../../store";
 import {
   ChartBiggestImpactOnIncome,
   ChartMonetaryImpactOnIncome,
@@ -36,7 +37,10 @@ const AssessImpactMitigationStrategies = ({
   const currentCase = CurrentCaseState.useState((s) => s);
   const { sensitivityAnalysis, prevSensitivityAnalysis } =
     CaseVisualState.useState((s) => s);
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
+    (s) => s.general
+  );
+  const { isExternalRegular } = UserState.useState((s) => s);
 
   const carouselChartRef = useRef(null);
 
@@ -227,7 +231,9 @@ const AssessImpactMitigationStrategies = ({
         </Card>
       </Col>
       <Col span={24}>
-        <ExploreChangeToCloseTheGap />
+        <ExploreChangeToCloseTheGap
+          disabled={!enableEditCase || !enableAdvancedTools}
+        />
       </Col>
       {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
 
@@ -243,17 +249,24 @@ const AssessImpactMitigationStrategies = ({
       {/* EOL Sensitivity Analysis */}
 
       {/* #3 Optimize Income Target */}
-      <Col span={24}>
-        <Card className="card-section-wrapper">
-          What is the minimum change in drivers needed to close the income gap
-          within feasible limits?
-        </Card>
-      </Col>
-      <Col span={24}>
-        <Card className="card-content-wrapper">
-          <OptimizeIncomeTarget />
-        </Card>
-      </Col>
+      {enableAdvancedTools && !isExternalRegular && (
+        <>
+          <Col span={24}>
+            <Card className="card-section-wrapper">
+              What is the minimum change in drivers needed to close the income
+              gap within feasible limits?
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card className="card-content-wrapper">
+              <OptimizeIncomeTarget
+                caseId={currentCase.id}
+                disabled={!enableEditCase || !enableAdvancedTools}
+              />
+            </Card>
+          </Col>
+        </>
+      )}
       {/* EOL Optimize Income Target */}
     </Row>
   );

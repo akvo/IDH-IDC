@@ -20,7 +20,12 @@ Following the split of external users into "Regular" and "Advanced" (STORY-002, 
    - THEN all input fields, dropdowns, and the "Calculate" or interactive modeling buttons are disabled. They can view existing calculations but cannot modify inputs or select different drivers.
 
 ## Technical Acceptance Criteria (TAC)
-- [ ] Determine `isExternalRegular` by checking `userState?.user_type === 'external_regular'` from the global state.
-- [ ] In `CaseForm.js`, conditionally render the `Dragger` upload component to exclude `isExternalRegular` users.
-- [ ] In `AssessImpactMitigationStrategies.js` or `OptimizeIncomeTarget.js` (Step 4), apply `disabled={true}` to `AllDriverTreeSelector`, `InputNumber` components, and disable/hide the "Run the model" and "Clear results" buttons if `isExternalRegular` is true. Ensure the visual state clearly communicates the read-only mode.
-- [ ] In `AdvancedModellingTool.js` (Step 5), apply `disabled={true}` to `SegmentSelector`, driver `Select`, `InputNumber` components, and any action buttons if `isExternalRegular` is true. Ensure the visual state clearly communicates the read-only mode (e.g., preserving static locks).
+- [x] Implement centralized granular flags in `CaseUIState` (`enableAdvancedTools`, `enableDataUpload`).
+- [x] Calculate flags in `Case.js`: `true` for Admin/Internal/External Advanced, `false` for External Regular.
+- [x] In `CaseForm.js`, conditionally render the `Data upload` tab and "Download template" button based on `enableDataUpload`.
+- [x] In `AssessImpactMitigationStrategies.js` (Step 4), apply `disabled={!enableAdvancedTools}` to sub-components.
+- [x] In `ClosingGap.js` (Step 5), apply `disabled={!enableAdvancedTools}` to the `AdvancedModellingTool` and "Mark as complete" button.
+- [x] **Backend Case Creation**: Updated `verify_case_creator` in `middleware.py` to allow `external_advanced` users to create new cases.
+- [x] **Browsing Accessibility**: Ensure `SegmentSelector` remains ENABLED within restricted tools to allow cross-segment data viewing.
+- [x] **Backend Upload Restriction**: In `backend/middleware.py`, `verify_case_creator` enforces 403 Forbidden for `external_regular` users on all case creation/import routes.
+- [x] **Test Case**: Verified in `backend/tests/test_1005_case_import.py` (`test_case_import_external_regular_blocked`).

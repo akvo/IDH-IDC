@@ -16,6 +16,27 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **User Restrictions & View-Only Mode (#731)**:
+    - Centralized feature gating for Data Upload and Advanced Analysis tools in `CaseUIState` using granular flags (`enableAdvancedTools`, `enableDataUpload`).
+    - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
+    - Implemented a unified "View-Only" baseline for `external_regular` users to ensure simplified interaction and data protection.
+    - **Refinement (Logic Parity)**: Refined the permission model to strictly follow the "Editor/Viewer" authority for all advanced features.
+    - **Unified Feature Gating**: Standardized `enableAdvancedTools` and `enableImpactOfInvestment` to follow `enableEditCase` status for ALL user types (Admin, Internal, Ext Adv, Ext Reg).
+    - **Manual Range Access**: Granted **External Regular** users access to advanced modelling tools and edit rights IF assigned as an explicitly authorized "Editor".
+    - **Data Upload Restriction**: Maintained strict type-based gating for the "Data Upload" tab, restricting it to **Internal** and **External Advanced** users with **Edit Permission**.
+    - **Step 4 Cleanup**: Removed hardcoded `isExternalRegular` checks in `AssessImpactMitigationStrategies.js`, successfully decoupling component rendering from static user roles in favor of dynamic state flags.
+    - **Robustness Fix**: Implemented strict `typeof === 'string'` checks in `checkEnableEditCase` and optional chaining for `case_access` to prevent runtime crashes (e.g., `toLowerCase is not a function`) when handling sparse user or case data.
+    - Updated `verify_case_creator` in `backend/middleware.py` to allow `external_advanced` users to create cases, aligning backend security with the power-user frontend model.
+    - Refactored `backend/tests/test_1000_permission_overiding.py` to specifically verify granular create permissions for both `external_regular` (denied) and `external_advanced` (allowed) users.
+    - Resolved widespread backend test failures by implementing robust master data seeding and relaxing static ID assertions in `test_1001_case_with_segments.py`, `test_1008_map.py`, and `test_1010_user_deletion.py`.
+    - Updated `checkEnableEditCase` and tool flags in `Case.js` to treat `external_advanced` like internal staff for feature access.
+    - Preserved segment browsing capabilities for all users by keeping the `SegmentSelector` enabled.
+    - Verified implementation with clean linting and a full passing test suite (`./check.sh`).
+- **External User Split UI Verification (#729)**:
+    - Implemented UI controls for Admins to assign specific external user types: **External Regular** and **External Advanced**.
+    - Updated the Users table to display granular `user_type` labels for improved transparency.
+    - Enforced organization-level visibility for **External Advanced** users, enabling lead-partner data management.
+    - Verified cross-organization security boundaries and ensured staff access logic is decoupled from Business Unit presence.
 - **Segmentation UI Refinement (Issue #727)**:
     - Implemented "Manual Range Authority" model: user-defined Min and Max values are strictly respected during recalculation and final segment generation.
     *   Updated backend Pydantic models to support explicit `min` and `max` fields in segmentation requests.
@@ -186,6 +207,20 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
         - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
         - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
+- **External (Regular) User Restrictions Implementation (Issue #731)**:
+    - **Frontend**:
+        - Centralized user type checking by adding `isExternalRegular` to `UserState` and initializing it in `App.js` based on `user_type`.
+        - Refactored `CaseForm.js`, `AssessImpactMitigationStrategies.js`, and `ClosingGap.js` to use the new `isExternalRegular` flag for feature gating.
+        - Hid "Data upload" tab in `CaseForm.js` for restricted users.
+        - Set Optimization Tool (Step 4) to "View Only" mode: disabled all interactive inputs, the "Run the model" button, and driver selection.
+        - Set Advanced Modelling Tool (Step 5) to "View Only" mode: disabled modelling inputs, "Calculate" button, and scenario tabs.
+        - Disabled the "Select the Goal" (AdjustIncomeTarget) and "Three driver calculator" interactive elements in Step 4.
+        - Disabled the "Mark as complete" button in Step 5 for restricted users.
+    - **Backend**:
+        - Deferring explicit backend guardrails (middleware and upload routes) for `external_regular` users pending further manager review; currently relying on existing business unit-based permission logic.
+    - **Verification**:
+        - Verified frontend integrity with linting pass.
+        - Updated `test_1005_case_import.py` to align with reverted backend focus.
 - **External (Regular) User Restrictions Planning**:
     - Defined requirements and UAC/TAC (STORY-004) for restricting features for the `external_regular` user type.
     - Specified that Data Spreadsheet Upload should be completely hidden.
@@ -278,11 +313,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
         - Standardized backend patterns (FastAPI DI for sessions/auth, business logic decoupling).
         - Consolidated workflow rules for Git, PRs, and activity logging.
-    - **Technical Safety Audit Integration**:
-        - Mandatory technical safety audit requirement added to `create_pr` workflow.
-        - Integrated `safety-audits/` artifact creation into the BMAD lifecycle (Phase 7).
-        - Enhanced `bmad-tester` skill with a formal risk assessment framework (Migration, Access Guards, Regression).
-        - Updated `bmad-team.md` rules to include Safety Audit as a core Tester responsibility.
+    - **Technical Safety and QA protocols**:
+        - Mandatory Technical Safety Audit and UI QA Guide defined in `create_pr` workflow.
+        - Integrated Safety Audit and QA Guide artifacts into Phase 7 of BMAD lifecycle.
+        - Updated `bmad-tester` skill with protocols for Risk Matrix and Manual UI Verification.
+        - Formalized Tester responsibility in `bmad-team.md` to include safety validations.
     - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
     - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
     - **Segmentation UI Refinement (Issue #727)**:

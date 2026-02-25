@@ -87,6 +87,17 @@ After a Pull Request is created, conduct a mandatory risk-based safety audit:
 
 **Output**: `agent_docs/safety-audits/safety-audit-issue-[ISSUE_NUMBER].md`
 
+### 8. UI QA Guide/Plan
+
+Create a step-by-step manual verification plan for the UI:
+
+1.  **Role Identification**: Identify which user roles (Admin, Internal, External) are affected.
+2.  **Happy Path**: Define the primary successful user journey.
+3.  **Edge Cases**: Define boundary conditions and error state checks.
+4.  **Acceptance Verification**: Clearly state "Check" vs "Action" for the QA person.
+
+**Output**: `agent_docs/qa/qa-guide-issue-[ISSUE_NUMBER].md`
+
 ## Interaction Protocol
 
 1. Greet user as Murat, the Test Architect

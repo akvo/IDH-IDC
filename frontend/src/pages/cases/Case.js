@@ -109,29 +109,38 @@ const Case = () => {
 
   // check for enableEditCase
   useEffect(() => {
+    const isAdmin = adminRole.includes(userState?.role);
+    const isInternal = userState?.internal_user;
+    const userType = userState?.user_type;
+
     const checkEnableEditCase = () => {
-      if (adminRole.includes(userState?.role)) {
+      const isPowerUser = userState?.isCaseCreator;
+
+      if (isAdmin) {
         return true;
       }
-      // allow internal user to create new case
-      if (userState?.internal_user && !caseId) {
+      // allow power users to create new case
+      if (isPowerUser && !caseId) {
         return true;
       }
       // check user access
-      const userPermission = userState.case_access.find(
+      const userPermission = userState.case_access?.find(
         (a) => a.case === parseInt(caseId)
       )?.permission;
-      // allow internal user case owner to edit case
-      if (
-        userState?.internal_user &&
-        currentCase?.created_by === userState?.email
-      ) {
+
+      // allow power user case owner to edit case (robust comparison)
+      const currentCaseCreatedBy = currentCase?.created_by
+        ? String(currentCase.created_by)
+        : "";
+      const isOwner =
+        currentCaseCreatedBy?.toLowerCase() ===
+          userState?.email?.toLowerCase() ||
+        currentCaseCreatedBy === String(userState?.id);
+
+      if (isPowerUser && isOwner) {
         return true;
       }
-      if (
-        (userState?.internal_user && !userPermission) ||
-        userPermission === "view"
-      ) {
+      if ((isPowerUser && !userPermission) || userPermission === "view") {
         return false;
       }
       if (userPermission === "edit") {
@@ -144,20 +153,26 @@ const Case = () => {
       return false;
     };
 
-    CaseUIState.update((s) => ({
-      ...s,
-      general: {
-        ...s.general,
-        enableEditCase: checkEnableEditCase(),
-      },
-    }));
+    const editAllowed = checkEnableEditCase();
+    const isAdvancedUser =
+      isAdmin || isInternal || userType === "external_advanced";
+
+    CaseUIState.update((s) => {
+      s.general.enableEditCase = editAllowed;
+      s.general.enableAdvancedTools = true; // Always visible
+      s.general.enableDataUpload = editAllowed && isAdvancedUser; // Restricted to advanced editors
+      s.general.enableImpactOfInvestment = true; // Always visible
+    });
   }, [
     caseId,
+    userState?.id,
     userState?.internal_user,
     userState?.email,
+    userState?.user_type,
     userState?.case_access,
     userState?.role,
     userState?.company,
+    userState?.isCaseCreator,
     currentCase?.created_by,
     currentCase?.company,
   ]);
@@ -174,13 +189,9 @@ const Case = () => {
           CurrentCaseState.update((s) => ({ ...s, ...data }));
           PrevCaseState.update((s) => ({ ...s, ...data }));
           // set default active segmentId
-          CaseUIState.update((s) => ({
-            ...s,
-            general: {
-              ...s.general,
-              activeSegmentId: data.segments?.[0]?.id || null,
-            },
-          }));
+          CaseUIState.update((s) => {
+            s.general.activeSegmentId = data.segments?.[0]?.id || null;
+          });
         })
         .catch((e) => {
           console.error("Error fetching case data", e);

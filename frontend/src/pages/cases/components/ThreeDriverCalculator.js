@@ -11,7 +11,7 @@ import {
 } from "../visualizations";
 import { yAxisFormula } from "../../../lib/formula";
 
-const ThreeDriverCalculator = ({ selectedSegment }) => {
+const ThreeDriverCalculator = ({ selectedSegment, disabled = false }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
@@ -186,7 +186,7 @@ const ThreeDriverCalculator = ({ selectedSegment }) => {
               value={thirdDriver}
               onChange={handleThirdDriverChange}
               placeholder="Select driver"
-              disabled={!selectedSegment}
+              disabled={!selectedSegment || disabled}
             />
           </Space>
         </Col>

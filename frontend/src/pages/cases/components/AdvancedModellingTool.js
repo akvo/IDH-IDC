@@ -38,6 +38,7 @@ const InputRow = ({
   displayValue,
   // toggleLock,
   handleInputChange,
+  disabled,
 }) => {
   return (
     <Row align="middle" gutter={12} className="input-row-wrapper">
@@ -54,7 +55,7 @@ const InputRow = ({
         <InputNumber
           value={displayValue}
           onChange={(val) => handleInputChange(field, val)}
-          disabled={!isModel || isCalculationTarget}
+          disabled={disabled || !isModel || isCalculationTarget}
           className="modelling-input"
           controls={false}
           style={{ width: "100%" }}
@@ -65,7 +66,7 @@ const InputRow = ({
   );
 };
 
-const AdvancedModellingTool = () => {
+const AdvancedModellingTool = ({ disabled }) => {
   const { dashboardData, incomeDataDrivers, sensitivityAnalysis } =
     CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -977,6 +978,7 @@ const AdvancedModellingTool = () => {
           displayValue={getDisplayValue("price")}
           toggleLock={toggleLock}
           handleInputChange={handleInputChange}
+          disabled={disabled}
         />
         <InputRow
           label={`${driverLabels.volume || "Volume"}`}
@@ -988,6 +990,7 @@ const AdvancedModellingTool = () => {
           displayValue={getDisplayValue("volume")}
           toggleLock={toggleLock}
           handleInputChange={handleInputChange}
+          disabled={disabled}
         />
         <InputRow
           label={`${driverLabels.land || "Land"}`}
@@ -999,6 +1002,7 @@ const AdvancedModellingTool = () => {
           displayValue={getDisplayValue("land")}
           toggleLock={toggleLock}
           handleInputChange={handleInputChange}
+          disabled={disabled}
         />
         <InputRow
           label={`${driverLabels.cop || "Cost of Production"}`}
@@ -1010,6 +1014,7 @@ const AdvancedModellingTool = () => {
           displayValue={getDisplayValue("cop")}
           toggleLock={toggleLock}
           handleInputChange={handleInputChange}
+          disabled={disabled}
         />
         {secondaryGroup && (
           <InputRow
@@ -1021,6 +1026,7 @@ const AdvancedModellingTool = () => {
             displayValue={getDisplayValue("secondary")}
             toggleLock={toggleLock}
             handleInputChange={handleInputChange}
+            disabled={disabled}
           />
         )}
         {tertiaryGroup && (
@@ -1033,6 +1039,7 @@ const AdvancedModellingTool = () => {
             displayValue={getDisplayValue("tertiary")}
             toggleLock={toggleLock}
             handleInputChange={handleInputChange}
+            disabled={disabled}
           />
         )}
         <InputRow
@@ -1044,6 +1051,7 @@ const AdvancedModellingTool = () => {
           displayValue={getDisplayValue("odi")}
           toggleLock={toggleLock}
           handleInputChange={handleInputChange}
+          disabled={disabled}
         />
 
         <Divider className="modelling-divider" />
@@ -1154,6 +1162,7 @@ const AdvancedModellingTool = () => {
                   tertiary: false,
                 });
               }}
+              disabled={disabled}
             >
               Clear
             </Button>
@@ -1165,6 +1174,7 @@ const AdvancedModellingTool = () => {
               shape="round"
               onClick={handleCalculate}
               className="button-calculate"
+              disabled={disabled}
             >
               Calculate
             </Button>
@@ -1253,6 +1263,7 @@ const AdvancedModellingTool = () => {
                   }}
                   options={selectOptions}
                   {...selectProps}
+                  disabled={disabled}
                 />
               </div>
 
@@ -1266,6 +1277,7 @@ const AdvancedModellingTool = () => {
                   key,
                   label: key.charAt(0).toUpperCase() + key.slice(1),
                   children: renderModellingInputs(key),
+                  disabled: disabled && key === "model", // Optionally keep current/feasible viewable?
                 }))}
               />
             </Space>

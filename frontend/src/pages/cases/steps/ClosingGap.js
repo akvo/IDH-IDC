@@ -21,7 +21,9 @@ const ClosingGap = ({
   const { scenarioModeling, prevScenarioModeling } = CaseVisualState.useState(
     (s) => s
   );
-  const { enableEditCase } = CaseUIState.useState((s) => s.general);
+  const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
+    (s) => s.general
+  );
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -168,7 +170,9 @@ const ClosingGap = ({
       </Col>
 
       <Col span={24}>
-        <AdvancedModellingTool />
+        <AdvancedModellingTool
+          disabled={!enableEditCase || !enableAdvancedTools}
+        />
       </Col>
 
       {/* Complete Button */}
@@ -189,6 +193,7 @@ const ClosingGap = ({
               className="button-complete"
               size="large"
               onClick={handleOnClickComplete}
+              disabled={!enableEditCase || !enableAdvancedTools}
             >
               Mark as complete
             </Button>
