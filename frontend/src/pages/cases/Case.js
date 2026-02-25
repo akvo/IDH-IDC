@@ -114,7 +114,7 @@ const Case = () => {
     const userType = userState?.user_type;
 
     const checkEnableEditCase = () => {
-      const isPowerUser = isInternal || userType === "external_advanced";
+      const isPowerUser = userState?.isCaseCreator;
 
       if (isAdmin) {
         return true;
@@ -127,8 +127,13 @@ const Case = () => {
       const userPermission = userState.case_access.find(
         (a) => a.case === parseInt(caseId)
       )?.permission;
-      // allow power user case owner to edit case
-      if (isPowerUser && currentCase?.created_by === userState?.email) {
+
+      // allow power user case owner to edit case (robust comparison)
+      const isOwner =
+        currentCase?.created_by?.toLowerCase() ===
+        userState?.email?.toLowerCase();
+
+      if (isPowerUser && isOwner) {
         return true;
       }
       if ((isPowerUser && !userPermission) || userPermission === "view") {
@@ -172,6 +177,20 @@ const Case = () => {
       return false;
     };
 
+    const checkEnableImpactOfInvestment = () => {
+      if (isAdmin || isInternal) {
+        return true;
+      }
+      // Centralized gating for external users
+      if (userType === "external_advanced") {
+        return true;
+      }
+      if (userType === "external_regular") {
+        return false;
+      }
+      return false;
+    };
+
     CaseUIState.update((s) => ({
       ...s,
       general: {
@@ -179,16 +198,19 @@ const Case = () => {
         enableEditCase: checkEnableEditCase(),
         enableAdvancedTools: checkEnableAdvancedTools(),
         enableDataUpload: checkEnableDataUpload(),
+        enableImpactOfInvestment: checkEnableImpactOfInvestment(),
       },
     }));
   }, [
     caseId,
     userState?.internal_user,
     userState?.email,
+    userState?.user_type,
+    userState?.email,
     userState?.case_access,
     userState?.role,
     userState?.company,
-    userState?.user_type,
+    userState?.isCaseCreator,
     currentCase?.created_by,
     currentCase?.company,
   ]);

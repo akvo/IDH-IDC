@@ -69,8 +69,8 @@ const Cases = () => {
   const {
     id: userID,
     role: userRole,
-    internal_user: userInternal,
     email: userEmail,
+    isCaseCreator,
     // case_access: userCaseAccess,
     // company: userCompany,
   } = UserState.useState((s) => s);
@@ -439,16 +439,6 @@ const Cases = () => {
     );
     return selectedFilter?.length || 0;
   }, [filters]);
-
-  const isCaseCreator = useMemo(() => {
-    if (adminRole.includes(userRole)) {
-      return true;
-    }
-    if (userInternal) {
-      return true;
-    }
-    return false;
-  }, [userRole, userInternal]);
 
   const fetchUsers = (searchValue) => {
     return api

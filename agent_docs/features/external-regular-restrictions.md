@@ -9,7 +9,8 @@ The following centralized `CaseUIState` granular flags are used to restrict spec
 1. **`external_regular`**:
     - **`enableEditCase`**: `false` by default for cases they don't own (standard behavior).
     - **`enableDataUpload`**: `false` (Hidden).
-    - **`enableAdvancedTools`**: `false` (View Only).
+    - **`enableAdvancedTools`**: `false` (Hidden for Optimisation Chart, View Only for others).
+    - **`enableImpactOfInvestment`**: `false` (Hidden - Feature under design).
 2. **`external_advanced`**:
     - **`enableEditCase`**: `true` (Full Edit Rights for owned cases/new cases, similar to Internal).
     - **`enableDataUpload`**: `true` (Full Access).
@@ -21,9 +22,10 @@ The following centralized `CaseUIState` granular flags are used to restrict spec
 - [MOD] `CaseUIState`: Add `enableAdvancedTools` and `enableDataUpload` flags.
 - [MOD] `Case.js`: Centralize flag calculation based on `isAdmin`, `isInternal`, and `userType`.
 - [MOD] `CaseForm.js`: Hide "Data upload" tab and "Download template" button based on `enableDataUpload`.
-- [MOD] `OptimizeIncomeTarget.js` (Step 4): Pass a `disabled` prop based on `enableAdvancedTools`.
-- [MOD] `AdvancedModellingTool.js` (Step 5): Pass a `disabled` prop based on `enableAdvancedTools`.
-- [MOD] `AdjustIncomeTarget.js`: Disable the modal save button based on `enableAdvancedTools`.
+- [MOD] `OptimizeIncomeTarget.js` (Step 4): Pass a `hide` or `hidden` prop based on `enableAdvancedTools` if the user is `external_regular`.
+- [MOD] `AdvancedModellingTool.js` (Step 5): Pass a `disabled` prop based on `enableAdvancedTools` (preserving view-only state).
+- [MOD] `AdjustIncomeTarget.js`: Disable the modal save button based on `enableAdvancedTools` (preserving view-only state).
+- [MOD] `Case.js`: Add `enableImpactOfInvestment` flag to `CaseUIState` as a placeholder for the future feature.
 
 ## Non-Functional Specs
 - **Security**: The backend enforces restrictions via `verify_case_creator` in `middleware.py`, ensuring `external_regular` users cannot bypass UI gates via direct API calls to creation/import endpoints.

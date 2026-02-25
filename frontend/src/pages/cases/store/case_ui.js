@@ -5,6 +5,7 @@ const defaultCaseUIState = {
     enableEditCase: true,
     enableAdvancedTools: true,
     enableDataUpload: true,
+    enableImpactOfInvestment: true,
     activeSegmentId: null,
   },
   caseButton: {

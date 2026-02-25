@@ -7,6 +7,7 @@ import {
   CaseUIState,
 } from "../store";
 import { Row, Col, Card, Space, Carousel, Button, message } from "antd";
+import { UserState } from "../../../store";
 import {
   ChartBiggestImpactOnIncome,
   ChartMonetaryImpactOnIncome,
@@ -39,6 +40,7 @@ const AssessImpactMitigationStrategies = ({
   const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
     (s) => s.general
   );
+  const { isExternalRegular } = UserState.useState((s) => s);
 
   const carouselChartRef = useRef(null);
 
@@ -247,20 +249,24 @@ const AssessImpactMitigationStrategies = ({
       {/* EOL Sensitivity Analysis */}
 
       {/* #3 Optimize Income Target */}
-      <Col span={24}>
-        <Card className="card-section-wrapper">
-          What is the minimum change in drivers needed to close the income gap
-          within feasible limits?
-        </Card>
-      </Col>
-      <Col span={24}>
-        <Card className="card-content-wrapper">
-          <OptimizeIncomeTarget
-            caseId={currentCase.id}
-            disabled={!enableEditCase || !enableAdvancedTools}
-          />
-        </Card>
-      </Col>
+      {!isExternalRegular && (
+        <>
+          <Col span={24}>
+            <Card className="card-section-wrapper">
+              What is the minimum change in drivers needed to close the income
+              gap within feasible limits?
+            </Card>
+          </Col>
+          <Col span={24}>
+            <Card className="card-content-wrapper">
+              <OptimizeIncomeTarget
+                caseId={currentCase.id}
+                disabled={!enableEditCase || !enableAdvancedTools}
+              />
+            </Card>
+          </Col>
+        </>
+      )}
       {/* EOL Optimize Income Target */}
     </Row>
   );

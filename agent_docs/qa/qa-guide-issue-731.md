@@ -14,11 +14,13 @@ This guide provides instructions for verifying the feature restrictions applied 
 ---
 
 ## 2. Step 1: Data Entry & Upload
-**Goal**: Verify Data Upload is restricted ONLY for Regular users.
+**Goal**: Verify Data Upload and CPI adjustments are correctly restricted.
 
 1. **Login** as the `External Regular` user.
 2. Navigate to **Step 1 (Case Form)**.
-3. **Verify**: The **"Data upload"** tab and **"Download template"** button must NOT be visible.
+3. **Verify**:
+   - The **"Data upload"** tab and **"Download template"** button must NOT be visible.
+   - If a benchmark needs CPI adjustment (year mismatch), the **"Adjust benchmark using CPI values"** button MUST be **DISABLED**.
 4. **Login** as the `External Advanced` user.
 5. Navigate to **Step 1 (Case Form)**.
 6. **Verify**: The **"Data upload"** tab and **"Download template"** button MUST be visible.
@@ -31,7 +33,9 @@ This guide provides instructions for verifying the feature restrictions applied 
 
 1. **Login** as the `External Regular` user.
 2. Navigate to **Step 4 (Assess Impact)**.
-3. **Verify**: Inputs in "Adjust Income Target", "Optimize Income Target", and "Three Driver Calculator" must be **disabled**.
+3. **Verify**:
+   - "Explore: How do income drivers need to change..." section MUST be **VISIBLE but DISABLED** (View-Only).
+   - "Optimize Income Target" section (Header and Component) MUST be **HIDDEN**.
 4. **Login** as the `External Advanced` user.
 5. Navigate to **Step 4 (Assess Impact)**.
 6. **Verify**: All inputs in Step 4 must be **ENABLED**.
