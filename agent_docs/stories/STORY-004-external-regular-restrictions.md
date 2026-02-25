@@ -24,3 +24,5 @@ Following the split of external users into "Regular" and "Advanced" (STORY-002, 
 - [ ] In `CaseForm.js`, conditionally render the `Dragger` upload component to exclude `isExternalRegular` users.
 - [ ] In `AssessImpactMitigationStrategies.js` or `OptimizeIncomeTarget.js` (Step 4), apply `disabled={true}` to `AllDriverTreeSelector`, `InputNumber` components, and disable/hide the "Run the model" and "Clear results" buttons if `isExternalRegular` is true. Ensure the visual state clearly communicates the read-only mode.
 - [ ] In `AdvancedModellingTool.js` (Step 5), apply `disabled={true}` to `SegmentSelector`, driver `Select`, `InputNumber` components, and any action buttons if `isExternalRegular` is true. Ensure the visual state clearly communicates the read-only mode (e.g., preserving static locks).
+- [ ] **Backend Upload Restriction**: In `backend/routes/case_import.py`, add a check for `user.user_type`. If `external_regular`, return `403 Forbidden`.
+- [ ] **Test Case**: Add a test in `backend/tests/test_1005_case_import.py` to verify that an `external_regular` user receive a 403 when attempting to upload a case spreadsheet.

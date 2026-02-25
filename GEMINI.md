@@ -186,6 +186,20 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
         - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
         - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
+- **External (Regular) User Restrictions Implementation (Issue #731)**:
+    - **Frontend**:
+        - Centralized user type checking by adding `isExternalRegular` to `UserState` and initializing it in `App.js` based on `user_type`.
+        - Refactored `CaseForm.js`, `AssessImpactMitigationStrategies.js`, and `ClosingGap.js` to use the new `isExternalRegular` flag for feature gating.
+        - Hid "Data upload" tab in `CaseForm.js` for restricted users.
+        - Set Optimization Tool (Step 4) to "View Only" mode: disabled all interactive inputs, the "Run the model" button, and driver selection.
+        - Set Advanced Modelling Tool (Step 5) to "View Only" mode: disabled modelling inputs, "Calculate" button, and scenario tabs.
+        - Disabled the "Select the Goal" (AdjustIncomeTarget) and "Three driver calculator" interactive elements in Step 4.
+        - Disabled the "Mark as complete" button in Step 5 for restricted users.
+    - **Backend**:
+        - Deferring explicit backend guardrails (middleware and upload routes) for `external_regular` users pending further manager review; currently relying on existing business unit-based permission logic.
+    - **Verification**:
+        - Verified frontend integrity with linting pass.
+        - Updated `test_1005_case_import.py` to align with reverted backend focus.
 - **External (Regular) User Restrictions Planning**:
     - Defined requirements and UAC/TAC (STORY-004) for restricting features for the `external_regular` user type.
     - Specified that Data Spreadsheet Upload should be completely hidden.
