@@ -63,3 +63,23 @@ This guide provides step-by-step instructions for verifying the implementation o
 1.  **Login** as an **External Advanced** user from *Organisation A*.
 2.  Try to access a direct URL/ID of a case from *Organisation B*.
 3.  **Expectation**: Access should be denied (404 or redirect), and the case should not appear in lists.
+
+---
+
+## 6. Feature Gating & Permissions (Refinement #731)
+**Goal**: Verify granular access controls for modelling and data tools.
+
+### A. External Regular (Editor vs Viewer)
+- **Editor**: Should see **DISABLED** "Data Upload" (Step 1) and **HIDDEN** "Optimisation Chart" (Step 4), but **ENABLED** Modelling (Step 5).
+- **Viewer**: Should see **DISABLED** Modelling (Step 5).
+
+### B. IDH Internal / External Advanced (Viewer)
+- **Viewer**: Should see **VISIBLE but DISABLED** Modelling (Step 5) and **HIDDEN** "Data Upload".
+
+### Access Control Matrix
+| User Type | Role | Data Upload | Adv Tools | Opt. Chart |
+|-----------|------|-------------|-----------|------------|
+| Ext Reg | Editor | Hidden | Enabled | Hidden |
+| Ext Reg | Viewer | Hidden | Disabled | Hidden |
+| Internal | Viewer | Hidden | Disabled | Visible |
+| Ext Adv | Editor | Visible | Enabled | Visible |
