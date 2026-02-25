@@ -25,6 +25,7 @@ Following the split of external users into "Regular" and "Advanced" (STORY-002, 
 - [x] In `CaseForm.js`, conditionally render the `Data upload` tab and "Download template" button based on `enableDataUpload`.
 - [x] In `AssessImpactMitigationStrategies.js` (Step 4), apply `disabled={!enableAdvancedTools}` to sub-components.
 - [x] In `ClosingGap.js` (Step 5), apply `disabled={!enableAdvancedTools}` to the `AdvancedModellingTool` and "Mark as complete" button.
+- [x] **Backend Case Creation**: Updated `verify_case_creator` in `middleware.py` to allow `external_advanced` users to create new cases.
 - [x] **Browsing Accessibility**: Ensure `SegmentSelector` remains ENABLED within restricted tools to allow cross-segment data viewing.
 - [ ] **Backend Upload Restriction**: In `backend/routes/case_import.py`, add a check for `user.user_type`. If `external_regular`, return `403 Forbidden`. [DEFERRED]
 - [ ] **Test Case**: Add a test in `backend/tests/test_1005_case_import.py` to verify that an `external_regular` user receive a 403 when attempting to upload a case spreadsheet. [DEFERRED]

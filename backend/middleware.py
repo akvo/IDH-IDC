@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from models.user import UserInfo, UserRole
+from models.user import UserInfo, UserRole, UserType
 from models.enum_type import PermissionType
 
 from db import crud_user
@@ -139,10 +139,18 @@ def verify_case_creator(session: Session, authenticated):
             status_code=403, detail="You don't have data access"
         )
     # overide case creator for UserRole.user
-    # case creator only for Regular/Internal User (user with BU)
+    # allow internal user (with BU) or External Advanced user to create case
     user_bu = find_user_business_units(session=session, user_id=user.id)
-    if user.role == UserRole.user and not user_bu:
-        # if External user (user without BU), restrict case creator access
+    is_internal = user.role == UserRole.user and user_bu
+    is_external_advanced = (
+        user.role == UserRole.user
+        and user.user_type == UserType.external_advanced
+    )
+
+    if user.role == UserRole.user and not (
+        is_internal or is_external_advanced
+    ):
+        # if External Regular user, restrict case creator access
         raise HTTPException(
             status_code=403, detail="You don't have access to create a case"
         )

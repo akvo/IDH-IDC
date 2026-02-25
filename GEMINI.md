@@ -21,9 +21,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
     - Implemented a unified "View-Only" baseline for `external_regular` users to ensure simplified interaction and data protection.
     - **External Advanced Pivot**: Refined the model to grant full "Power User" access (edit permissions, tool access) while strictly siloing visibility to their **Company** data in the backend.
+    - Updated `verify_case_creator` in `backend/middleware.py` to allow `external_advanced` users to create cases, aligning backend security with the power-user frontend model.
+    - Refactored `backend/tests/test_1000_permission_overiding.py` to specifically verify granular create permissions for both `external_regular` (denied) and `external_advanced` (allowed) users.
+    - Resolved widespread backend test failures by implementing robust master data seeding and relaxing static ID assertions in `test_1001_case_with_segments.py`, `test_1008_map.py`, and `test_1010_user_deletion.py`.
     - Updated `checkEnableEditCase` and tool flags in `Case.js` to treat `external_advanced` like internal staff for feature access.
     - Preserved segment browsing capabilities for all users by keeping the `SegmentSelector` enabled.
-    - Verified implementation with clean linting and updated documentation via mandatory QA Guides and Safety Audits.
+    - Verified implementation with clean linting and a full passing test suite (`./check.sh`).
 - **External User Split UI Verification (#729)**:
     - Implemented UI controls for Admins to assign specific external user types: **External Regular** and **External Advanced**.
     - Updated the Users table to display granular `user_type` labels for improved transparency.
