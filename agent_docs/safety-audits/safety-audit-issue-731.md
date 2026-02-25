@@ -7,10 +7,10 @@
 
 ## 1. Risk Assessment
 
-| Risk | Level | Mitigation |
+| risk | level | mitigation |
 | :--- | :--- | :--- |
 | **Data Leakage (Advanced)** | Low | Verified backend `case.py` removes the Organisation-wide access. Advanced users are now strictly silod to their Company. |
-| **Logic Bypass (Regular)** | Medium | Centralized flag calculation in `Case.js` remains the source of truth for standard partners. |
+| **Logic Bypass (Regular)** | Low | **Enforced**: `verify_case_creator` in `middleware.py` returns 403 Forbidden for restricted users on creation/import endpoints. |
 | **Feature Over-exposure** | Low | Intentionally granting full access to `External Advanced` as per business requirement (Power User). |
 | **Data Integrity** | Low | Permission model still relies on backend ownership checks; power users only edit their own/assigned data. |
 

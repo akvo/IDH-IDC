@@ -22,6 +22,7 @@ This guide provides instructions for verifying the feature restrictions applied 
 4. **Login** as the `External Advanced` user.
 5. Navigate to **Step 1 (Case Form)**.
 6. **Verify**: The **"Data upload"** tab and **"Download template"** button MUST be visible.
+7. **API Verification**: Use Postman/curl to attempt `POST /case-import` as `External Regular`. **Expectation**: `403 Forbidden` with detail `"You don't have access to create a case"`.
 
 ---
 

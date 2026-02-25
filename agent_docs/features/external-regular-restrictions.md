@@ -26,9 +26,9 @@ The following centralized `CaseUIState` granular flags are used to restrict spec
 - [MOD] `AdjustIncomeTarget.js`: Disable the modal save button based on `enableAdvancedTools`.
 
 ## Non-Functional Specs
-- **Security**: The backend should ideally also block the upload endpoint for these users to prevent API-level circumvention.
-- **Maintainability**: The feature toggles should be implemented using existing UserState properties to avoid prop-drilling or large component refactors.
-- **UX**: The UI should gracefully hide these elements, not just disable them, to reduce visual noise.
+- **Security**: The backend enforces restrictions via `verify_case_creator` in `middleware.py`, ensuring `external_regular` users cannot bypass UI gates via direct API calls to creation/import endpoints.
+- **Maintainability**: The feature toggles are implemented using centralized `CaseUIState` properties derived from `UserState`.
+- **UX**: UI interaction is cleanly gated (hidden or disabled) based on granular feature flags.
 
 ## Effort Estimation
 - **Data Spreadsheet Upload (CaseForm.js)**: ~1 hour (Component logic and testing)
