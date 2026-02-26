@@ -137,73 +137,88 @@ const SegmentGenerator = ({
       }
     >
       <Row gutter={[16, 16]}>
+        {/* LEFT COLUMN: Type & Variable */}
         <Col span={12}>
-          <Form.Item
-            label={
-              <Space>
-                Variable type
+          <Space direction="vertical" style={{ width: "100%" }} size="middle">
+            <Space size="middle">
+              <span style={{ fontWeight: "bold", fontSize: "14px" }}>
+                Variable type{" "}
                 <Tooltip title="What type of variable do you want to use for segmentation?">
                   <QuestionCircleOutlined
                     style={{ color: "rgba(0, 0, 0, 0.45)" }}
                   />
                 </Tooltip>
-              </Space>
-            }
-            style={{ marginBottom: 16 }}
-            required
-          >
-            <Radio.Group
-              value={variableType}
-              onChange={(e) => {
-                setVariableType(e.target.value);
-                setSegmentationVariable(null);
-                setNumberOfSegments(null);
-              }}
+              </span>
+              <Radio.Group
+                value={variableType}
+                onChange={(e) => {
+                  setVariableType(e.target.value);
+                  setSegmentationVariable(null);
+                  setNumberOfSegments(null);
+                }}
+                optionType="button"
+                buttonStyle="solid"
+              >
+                <Radio.Button value="categorical">Categorical</Radio.Button>
+                <Radio.Button value="numerical">Numerical</Radio.Button>
+              </Radio.Group>
+            </Space>
+
+            <Form.Item
+              label="Segmentation Variable:"
+              style={{ marginBottom: 0 }}
+              required
             >
-              <Radio value="categorical">Categorical</Radio>
-              <Radio value="numerical">Numerical</Radio>
-            </Radio.Group>
-          </Form.Item>
-          <Form.Item
-            label="Select a variable to segment by:"
-            style={{ marginBottom: 0 }}
-            required
-          >
-            <Select
-              {...selectProps}
-              placeholder={
-                variableType
-                  ? "Select variable"
-                  : "Select a variable type first"
-              }
-              options={variableOptions}
-              value={segmentationVariable}
-              onChange={setSegmentationVariable}
-              disabled={!variableType}
-            />
-          </Form.Item>
+              <Select
+                {...selectProps}
+                placeholder={
+                  variableType
+                    ? "variable_name"
+                    : "Select a variable type first"
+                }
+                options={variableOptions}
+                value={segmentationVariable}
+                onChange={setSegmentationVariable}
+                disabled={!variableType}
+              />
+            </Form.Item>
+          </Space>
         </Col>
+
+        {/* RIGHT COLUMN: Segmentation Summary & Count */}
         <Col span={12}>
-          <p>
-            <b>Segmentation</b>
-          </p>
-          <Form.Item
-            label="Number of Segments"
-            style={{ marginBottom: 8 }}
-            required={variableType === "numerical"}
-          >
-            <InputNumber
-              min={1}
-              max={5}
-              style={{ width: "100%" }}
-              placeholder="e.g. 3"
-              value={numberOfSegments}
-              onChange={setNumberOfSegments}
-              disabled={variableType !== "numerical"}
-            />
-          </Form.Item>
-          <small>You can select up to 5 segments</small>
+          <Space direction="vertical" style={{ width: "100%" }} size="middle">
+            <span style={{ fontWeight: "bold", fontSize: "14px" }}>
+              Segmentation{" "}
+              <Tooltip title="Configure how you want to divide your data into segments.">
+                <QuestionCircleOutlined
+                  style={{ color: "rgba(0, 0, 0, 0.45)" }}
+                />
+              </Tooltip>
+            </span>
+
+            <div>
+              <Form.Item
+                label="Number of segments:"
+                style={{ marginBottom: 8 }}
+                required={variableType === "numerical"}
+              >
+                <InputNumber
+                  min={1}
+                  max={5}
+                  style={{ width: "100%" }}
+                  placeholder="e.g. 3"
+                  value={numberOfSegments}
+                  onChange={setNumberOfSegments}
+                  disabled={variableType !== "numerical"}
+                />
+              </Form.Item>
+              <small>You can select up to 5 segments</small>
+            </div>
+          </Space>
         </Col>
+
+        {/* LOADING & ERROR STATES */}
         {loading && (
           <Col span={24} style={{ textAlign: "center", marginTop: 10 }}>
             <Spin size="small" /> Generating segments...
