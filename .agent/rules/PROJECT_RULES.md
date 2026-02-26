@@ -69,6 +69,7 @@ To maintain alignment across agent resources, we follow this structural hierarch
 ### Git & Pull Requests
 - **Branching**: Use descriptive branch names (e.g., `feature/issue-713-modelling-ui`).
 - **Commits**: Follow the format `[#ISSUE_NUMBER] Detailed message`. Always update `GEMINI.md` "Recent Changes" before committing.
+- **Push Confirmation**: Before pushing code to a remote repository, agents MUST check the current active branch and explicitly ask for the user's confirmation of the target branch. Use `git branch --show-current` to verify.
 - **Issue Confirmation**: Agents MUST explicitly confirm the issue number with the user if there is any ambiguity before documenting it in `GEMINI.md` or using it in a commit.
 - **PRs**: Use the `/create_pr` workflow. PR descriptions must include a summary, key changes, and verification proof.
 
