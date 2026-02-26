@@ -44,10 +44,11 @@ The IDC manages partner data through three distinct access levels for "Guest" (E
 When uploading your own validated data template, you can configure how the IDC segments your farmers for analysis.
 
 ## Adding Segments via Generator
-When using the "Add segment based on a different variable" option, the UI guides you through a two-step process to ensure clarity:
+When using the "Add segment based on a different variable" option, the UI utilizes a robust **two-column horizontal layout** to guide you through a logical sequence:
 
-1. **Select Variable Type**: Choose between **Categorical** (e.g., Region, Gender) or **Numerical** (e.g., Farm Size, Yield).
-    - *Tip*: Hover over the `?` icon next to "Variable type" for a quick reminder of the step's goal.
-2. **Select Variable**: Once the type is selected, the variable dropdown will populate with relevant columns from your spreadsheet.
+1.  **Select Variable Type**: Choose between **Categorical** (e.g., Region, Gender) or **Numerical** (e.g., Farm Size, Yield) using the button-style toggles.
+    - *Tip*: Look for the `?` icon next to the "Variable type" and "Segmentation" headers for contextual help.
+2.  **Select Variable**: Once the type is selected, the variable dropdown ("Select a variable to segment by:") will populate with relevant columns from your spreadsheet.
+3.  **Configure Segmentation**: For numerical variables, enter the desired number of segments in the right column.
 
-This logical flow prevents the confusion of an empty dropdown and ensures you always see compatible variables for your selected segmentation strategy.
+This layout maximizes space efficiency and prevents the confusion of an empty dropdown, ensuring a streamlined data preparation experience.
