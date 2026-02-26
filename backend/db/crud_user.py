@@ -20,7 +20,6 @@ from db.crud_user_business_unit import (
     find_users_in_same_business_unit,
     find_user_business_units,
     delete_user_business_units_by_user_id,
-    get_all_business_unit_users,
 )
 from db.crud_organisation import default_organisation
 
@@ -113,6 +112,19 @@ def update_user(
         # We don't overwrite if they simply updated their BU, as we don't know
         # if they moved an external_advanced to internal.
         # So we only set it if explicitly provided in payload for an update.
+
+        # Cleanup BU if user is updated to an external type
+        if user.user_type in [
+            UserType.external_regular,
+            UserType.external_advanced,
+        ]:
+            user_bus = find_user_business_units(
+                session=session, user_id=user.id
+            )
+            if user_bus:
+                delete_user_business_units_by_user_id(
+                    session=session, user_id=user.id
+                )
     else:
         user.user_type = UserType.internal
 
@@ -244,16 +256,18 @@ def filter_user(
     if business_unit_users:
         user = user.filter(User.id.in_(business_unit_users))
     if role and role == FilterUserRole.internal:
-        all_bus = get_all_business_unit_users(session=session)
-        user_ids = [bu.user for bu in all_bus]
         user = user.filter(
-            and_(User.id.in_(user_ids), User.role == UserRole.user)
+            and_(
+                User.user_type == UserType.internal.value,
+                User.role == UserRole.user,
+            )
         )
     if role and role == FilterUserRole.external:
-        all_bus = get_all_business_unit_users(session=session)
-        user_ids = [bu.user for bu in all_bus]
         user = user.filter(
-            and_(~User.id.in_(user_ids), User.role == UserRole.user)
+            and_(
+                User.user_type != UserType.internal.value,
+                User.role == UserRole.user,
+            )
         )
     if role and role not in [
         FilterUserRole.internal,

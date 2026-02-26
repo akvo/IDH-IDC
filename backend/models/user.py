@@ -274,9 +274,7 @@ class User(Base):
             "cases_count": len(self.user_case_access),
             "case_access": case_access,
             "internal_user": (
-                False
-                if not business_unit_detail and self.role == UserRole.user
-                else True
+                True if self.user_type == UserType.internal else False
             ),
             "company": self.company,
             "user_type": self.user_type,
