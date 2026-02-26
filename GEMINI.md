@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Git Workflow & Safety Improvements (#735)**:
+    - Formalized **Push Confirmation Rule**: Agents must now explicitly verify the active branch and ask for user confirmation before any remote push.
+    - Updated `PROJECT_RULES.md` and BMAD protocols to enforce this safety check.
+- **Data Upload Wording Refinement (#735)**:
+    - Updated "Download template" to "Download required data template" for improved clarity on IDH template requirements.
+    - Updated "Upload your data" to "Upload your validated data template" to emphasize validation status.
+    - Verified responsive layout on 1280x720 screens.
+    - Added comprehensive QA Guide and Technical Safety Audit documentation.
 - **Step 3 Missing Graphs Restoration (Issue #733)**:
     - Restored `ChartIncomeGap`, `CompareIncomeGap`, and `ChartIncomeDriverAcrossSegments` in `UnderstandIncomeGap.js`.
 - **User Restrictions & View-Only Mode (#731)**:
