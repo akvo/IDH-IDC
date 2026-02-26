@@ -24,6 +24,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Refined the visual layout to a robust two-column structure with nested Row/Col alignment for headers and button-style toggles.
     - Updated variable selection labels to "Select a variable to segment by:" and placeholders to "Select segmentation variable" for clearer intent.
     - Verified frontend integrity with a full passing linting suite (`yarn lint`).
+- **Permission Matrix Documentation**:
+    - Compiled a comprehensive permission matrix mapping User Roles (Admin, Internal, External Advanced, External Regular) to Case Access levels (Visibility, Create, Edit, View, Delete, Manage Access).
+    - Documented backend middleware synchronization with frontend gating logic in `Case.js`.
+    - Saved detailed logic breakdown to [permission-matrix.md](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/permission-matrix.md).
 - **Git Workflow & Safety Improvements (#735)**:
     - Formalized **Push Confirmation Rule**: Agents must now explicitly verify the active branch and ask for user confirmation before any remote push.
     - Updated `PROJECT_RULES.md` and BMAD protocols to enforce this safety check.
@@ -55,6 +59,9 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Updated the Users table to display granular `user_type` labels for improved transparency.
     - Enforced organization-level visibility for **External Advanced** users, enabling lead-partner data management.
     - Verified cross-organization security boundaries and ensured staff access logic is decoupled from Business Unit presence.
+    - **Filter Logic Fix**: Refactored the `Internal User` and `External User` filters in `crud_user.py` to use the `user_type` column instead of legacy Business Unit presence checks, preventing `external_regular` users from leaking into the `internal` filter views.
+    - **Enforced Data Isolation**: Implemented automatic cleanup of Business Unit associations in `update_user` whenever a user is changed to an `External` type, ensuring strict boundary preservation.
+    - **Align Identity Logic**: Updated the `internal_user` property in the `User` model to strictly check `user_type == internal`.
 - **Segmentation UI Refinement (Issue #727)**:
     - Implemented "Manual Range Authority" model: user-defined Min and Max values are strictly respected during recalculation and final segment generation.
     *   Updated backend Pydantic models to support explicit `min` and `max` fields in segmentation requests.
