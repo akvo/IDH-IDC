@@ -398,14 +398,16 @@ const SegmentConfigurationForm = ({
 
           <Form.Item
             name={`${dataUploadFieldPreffix}segmentation_variable`}
-            label="Segmentation Variable:"
+            label="Select a variable to segment by:"
             required
             style={{ marginBottom: 0 }}
           >
             <Select
               {...selectProps}
               placeholder={
-                variableType ? "variable_name" : "Select a variable type first"
+                variableType
+                  ? "Select segmentation variable"
+                  : "Select a variable type first"
               }
               options={segmentationVariableDropdownValue}
               disabled={!variableType}

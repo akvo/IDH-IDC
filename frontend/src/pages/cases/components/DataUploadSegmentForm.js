@@ -165,7 +165,7 @@ const SegmentGenerator = ({
             </Space>
 
             <Form.Item
-              label="Segmentation Variable:"
+              label="Select a variable to segment by:"
               style={{ marginBottom: 0 }}
               required
             >
@@ -173,7 +173,7 @@ const SegmentGenerator = ({
                 {...selectProps}
                 placeholder={
                   variableType
-                    ? "variable_name"
+                    ? "Select segmentation variable"
                     : "Select a variable type first"
                 }
                 options={variableOptions}
