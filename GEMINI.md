@@ -21,7 +21,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Improved initial state handling by initializing the variable type to null, preventing confusion over empty variable lists.
     - Added contextual guidance with a help tooltip ("?") for the "Variable type" label, explaining the purpose of the selection.
     - Updated documentation including User Guide, QA Guide, and Technical Safety Audit to reflect the guided selection flow.
-    - Refined the visual layout to a two-column horizontal structure with vertical field stacking for improved space utilization.
+    - Refined the visual layout to a robust two-column structure with nested Row/Col alignment for headers and button-style toggles.
     - Updated variable selection labels to "Select a variable to segment by:" and placeholders to "Select segmentation variable" for clearer intent.
     - Verified frontend integrity with a full passing linting suite (`yarn lint`).
 - **Git Workflow & Safety Improvements (#735)**:
