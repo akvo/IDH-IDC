@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Data Upload Segmentation Refinement (#737)**:
+    - Enforced a logical selection order in both `SegmentConfigurationForm.js` and `DataUploadSegmentForm.js`: users must now select a "Variable type" before the "Segmentation Variable" dropdown becomes active.
+    - Improved initial state handling by initializing the variable type to null, preventing confusion over empty variable lists.
+    - Added contextual guidance with a help tooltip ("?") for the "Variable type" label, explaining the purpose of the selection.
+    - Updated documentation including User Guide, QA Guide, and Technical Safety Audit to reflect the guided selection flow.
+    - Verified frontend integrity with a full passing linting suite (`yarn lint`).
 - **Git Workflow & Safety Improvements (#735)**:
     - Formalized **Push Confirmation Rule**: Agents must now explicitly verify the active branch and ask for user confirmation before any remote push.
     - Updated `PROJECT_RULES.md` and BMAD protocols to enforce this safety check.

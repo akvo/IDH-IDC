@@ -14,11 +14,13 @@ import {
   Select,
   Alert,
   Space,
+  Tooltip,
 } from "antd";
 import {
   DeleteOutlined,
   PlusCircleFilled,
   CloseOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
 import { MAX_SEGMENT } from ".";
@@ -34,7 +36,7 @@ const SegmentGenerator = ({
   onRemove,
   currentCount,
 }) => {
-  const [variableType, setVariableType] = useState("categorical");
+  const [variableType, setVariableType] = useState(null);
   const [segmentationVariable, setSegmentationVariable] = useState(null);
   const [numberOfSegments, setNumberOfSegments] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -136,23 +138,20 @@ const SegmentGenerator = ({
     >
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <p>
-            <b>Variable type</b>
-          </p>
           <Form.Item
-            label="Select a variable to segment by:"
+            label={
+              <Space>
+                Variable type
+                <Tooltip title="What type of variable do you want to use for segmentation?">
+                  <QuestionCircleOutlined
+                    style={{ color: "rgba(0, 0, 0, 0.45)" }}
+                  />
+                </Tooltip>
+              </Space>
+            }
             style={{ marginBottom: 16 }}
             required
           >
-            <Select
-              {...selectProps}
-              placeholder="Select variable"
-              options={variableOptions}
-              value={segmentationVariable}
-              onChange={setSegmentationVariable}
-            />
-          </Form.Item>
-          <Form.Item noStyle>
             <Radio.Group
               value={variableType}
               onChange={(e) => {
@@ -164,6 +163,24 @@ const SegmentGenerator = ({
               <Radio value="categorical">Categorical</Radio>
               <Radio value="numerical">Numerical</Radio>
             </Radio.Group>
+          </Form.Item>
+          <Form.Item
+            label="Select a variable to segment by:"
+            style={{ marginBottom: 0 }}
+            required
+          >
+            <Select
+              {...selectProps}
+              placeholder={
+                variableType
+                  ? "Select variable"
+                  : "Select a variable type first"
+              }
+              options={variableOptions}
+              value={segmentationVariable}
+              onChange={setSegmentationVariable}
+              disabled={!variableType}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>

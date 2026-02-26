@@ -37,3 +37,17 @@ The IDC manages partner data through three distinct access levels for "Guest" (E
 ### Internal User
 *   **Best for**: IDH staff and internal analysts.
 *   **Visibility**: Can see all public cases system-wide and all private cases within their assigned **Business Units**.
+---
+
+# Data Upload: Segmentation Configuration
+
+When uploading your own validated data template, you can configure how the IDC segments your farmers for analysis.
+
+## Adding Segments via Generator
+When using the "Add segment based on a different variable" option, the UI guides you through a two-step process to ensure clarity:
+
+1. **Select Variable Type**: Choose between **Categorical** (e.g., Region, Gender) or **Numerical** (e.g., Farm Size, Yield).
+    - *Tip*: Hover over the `?` icon next to "Variable type" for a quick reminder of the step's goal.
+2. **Select Variable**: Once the type is selected, the variable dropdown will populate with relevant columns from your spreadsheet.
+
+This logical flow prevents the confusion of an empty dropdown and ensures you always see compatible variables for your selected segmentation strategy.
