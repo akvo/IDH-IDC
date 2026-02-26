@@ -16,6 +16,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Step 3 Missing Graphs Restoration (Issue #733)**:
+    - Restored `ChartIncomeGap`, `CompareIncomeGap`, and `ChartIncomeDriverAcrossSegments` in `UnderstandIncomeGap.js`.
 - **User Restrictions & View-Only Mode (#731)**:
     - Centralized feature gating for Data Upload and Advanced Analysis tools in `CaseUIState` using granular flags (`enableAdvancedTools`, `enableDataUpload`).
     - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
