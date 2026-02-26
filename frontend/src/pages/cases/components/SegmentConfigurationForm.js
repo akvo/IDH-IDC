@@ -9,7 +9,9 @@ import {
   Spin,
   Space,
   Alert,
+  Tooltip,
 } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
 import { MAX_SEGMENT, DataUploadSegmentForm } from ".";
@@ -370,52 +372,92 @@ const SegmentConfigurationForm = ({
   return (
     <Row gutter={[16, 16]}>
       {/* SEGMENT CONFIGURATION */}
+      {/* LEFT COLUMN: Type & Variable */}
       <Col span={12}>
-        <p>
-          <b>Variable type</b>
-        </p>
-        <Form.Item
-          name={`${dataUploadFieldPreffix}segmentation_variable`}
-          label="Select a variable to segment by:"
-          required
-          style={{ marginBottom: 16 }}
-        >
-          <Select
-            {...selectProps}
-            placeholder="Select segmentation variable"
-            options={segmentationVariableDropdownValue}
-          />
-        </Form.Item>
-        <Form.Item
-          name={`${dataUploadFieldPreffix}variable_type`}
-          required
-          noStyle
-        >
-          <Radio.Group onChange={handleChangeVariableType}>
-            <Radio value="categorical">Categorical</Radio>
-            <Radio value="numerical">Numerical</Radio>
-          </Radio.Group>
-        </Form.Item>
+        <Row gutter={[12, 18]}>
+          <Col span={24}>
+            <Row gutter={[12, 12]}>
+              <Col span={8}>
+                <span style={{ fontWeight: "bold", fontSize: "14px" }}>
+                  Variable type{" "}
+                  <Tooltip title="What type of variable do you want to use for segmentation?">
+                    <QuestionCircleOutlined
+                      style={{ color: "rgba(0, 0, 0, 0.45)" }}
+                    />
+                  </Tooltip>
+                </span>
+              </Col>
+              <Col span={16} align="end">
+                <Form.Item
+                  name={`${dataUploadFieldPreffix}variable_type`}
+                  noStyle
+                >
+                  <Radio.Group
+                    onChange={handleChangeVariableType}
+                    optionType="button"
+                    buttonStyle="solid"
+                    style={{ float: "right" }}
+                  >
+                    <Radio.Button value="categorical">Categorical</Radio.Button>
+                    <Radio.Button value="numerical">Numerical</Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name={`${dataUploadFieldPreffix}segmentation_variable`}
+              label="Select a variable to segment by:"
+              required
+              style={{ marginBottom: 0 }}
+            >
+              <Select
+                {...selectProps}
+                placeholder={
+                  variableType
+                    ? "Select segmentation variable"
+                    : "Select a variable type first"
+                }
+                options={segmentationVariableDropdownValue}
+                disabled={!variableType}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
       </Col>
+
+      {/* RIGHT COLUMN: Segmentation Summary & Count */}
       <Col span={12}>
-        <p>
-          <b>Segmentation</b>
-        </p>
-        <Form.Item
-          name={`${dataUploadFieldPreffix}number_of_segments`}
-          label="Number of Segments"
-          style={{ marginBottom: 8 }}
-          required={variableType === "numerical"}
-        >
-          <InputNumber
-            min={0}
-            max={5}
-            style={{ width: "100%" }}
-            placeholder="e.g. 3"
-            disabled={variableType !== "numerical"}
-          />
-        </Form.Item>
-        <small>You can select up to 5 segments</small>
+        <Row gutter={[12, 29]}>
+          <Col span={24}>
+            <span style={{ fontWeight: "bold", fontSize: "14px" }}>
+              Segmentation{" "}
+              <Tooltip title="Configure how you want to divide your data into segments.">
+                <QuestionCircleOutlined
+                  style={{ color: "rgba(0, 0, 0, 0.45)" }}
+                />
+              </Tooltip>
+            </span>
+          </Col>
+          <Col span={24}>
+            <Form.Item
+              name={`${dataUploadFieldPreffix}number_of_segments`}
+              label="Number of segments:"
+              style={{ marginBottom: 8 }}
+              required={variableType === "numerical"}
+            >
+              <InputNumber
+                min={0}
+                max={5}
+                style={{ width: "100%" }}
+                placeholder="e.g. 3"
+                disabled={variableType !== "numerical"}
+              />
+            </Form.Item>
+            <small>You can select up to 5 segments</small>
+          </Col>
+        </Row>
       </Col>
       {/* EOL SEGMENT CONFIGURATION */}
 
