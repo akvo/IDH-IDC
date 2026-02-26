@@ -677,7 +677,7 @@ const CaseForm = ({
                 <Col span={24}>
                   <Row gutter={[16, 16]}>
                     <Col span={24}>
-                      <h3>Upload your data</h3>
+                      <h3>Upload your validated data template</h3>
                       <Dragger
                         {...uploadProps}
                         style={{
@@ -735,7 +735,7 @@ const CaseForm = ({
                 disabled={downloading}
                 loading={downloading}
               >
-                <DownloadOutlined /> Download template
+                <DownloadOutlined /> Download required data template
               </Button>
             ) : null
           }
