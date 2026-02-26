@@ -26,5 +26,5 @@
 **Acceptance Criteria**:
 - [x] Price Breakdown card remains visible in all states.
 - [x] If state is `impossible`, hide the bar chart and labels.
-- [ ] If state is `impossible`, show warning inside the card: *"Farmers would need a negative [Driver] in order to hit the income target. This is not physically possible and the price breakdown is unavailable."*
+- [x] If state is `impossible`, show warning inside the card: *"Farmers would need a negative [Driver] in order to hit the income target. This is not physically possible and the price breakdown is unavailable."*
 - [x] If state is `surplus` or `normal`, bar chart is visible and functional.
