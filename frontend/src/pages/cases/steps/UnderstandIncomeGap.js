@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
 import { Row, Col, Card, Space } from "antd";
 import {
-  // ChartIncomeGap,
-  // CompareIncomeGap,
-  // ChartIncomeDriverAcrossSegments,
+  ChartIncomeGap,
+  CompareIncomeGap,
+  ChartIncomeDriverAcrossSegments,
   ChartExploreIncomeDriverBreakdown,
   ChartIncomeLevelsForDifferentCommodities,
   ChartHouseholdIncomeComposition,
@@ -75,25 +75,21 @@ const UnderstandIncomeGap = ({
         </Card>
       </Col>
 
-      {/* TODO:: DELETE */}
-      {/* <Col span={24}>
+      <Col span={24}>
         <ChartIncomeGap />
       </Col>
       <Col span={24}>
         <CompareIncomeGap />
-      </Col> */}
-      {/* EOL TODO:: DELETE */}
+      </Col>
 
-      {/* TODO:: DELETE */}
-      {/* <Col span={24}>
+      <Col span={24}>
         <Card className="card-section-wrapper">
           Explore your income drivers
         </Card>
-      </Col> */}
-      {/* <Col span={24}>
+      </Col>
+      <Col span={24}>
         <ChartIncomeDriverAcrossSegments />
-      </Col> */}
-      {/* EOL TODO:: DELETE */}
+      </Col>
 
       <Col span={24}>
         <ChartExploreIncomeDriverBreakdown />
