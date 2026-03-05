@@ -7,7 +7,7 @@
 
 ### Timeline & Effort
 - **Estimated Time**: 1h
-- **Actual Time**:
+- **Actual Time**: 2h
 - **Effort Points**: 1
 
 ### Acceptance Criteria
@@ -17,9 +17,9 @@
 - [x] The Alert must display the exact message: "Farmers in this segment already earn more than the income target. This feature is therefore disabled."
 
 #### Technical Acceptance Criteria (TAC)
-- [ ] Modify `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`.
-- [ ] Calculate `isAboveTarget` using `dashboardData` fields `total_current_income` and `target`.
-- [ ] Use Ant Design `<Alert />` component with `type="info"` and `showIcon`.
+- [x] Modify `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`.
+- [x] Calculate `isAboveTarget` using `dashboardData` fields `total_current_income` and `target`.
+- [x] Use Ant Design `<Alert />` component with `type="info"` and `showIcon`.
 
 ### Technical Notes
 - Component: `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`
@@ -34,7 +34,7 @@
 
 ### Timeline & Effort
 - **Estimated Time**: 1h
-- **Actual Time**:
+- **Actual Time**: 2h
 - **Effort Points**: 1
 
 ### Acceptance Criteria
