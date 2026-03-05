@@ -134,7 +134,7 @@ const ChartNeededIncomeLevel = () => {
         </Col>
         <Col span={24}>
           {isAboveTarget ? (
-            <div style={{ height: 415, display: "flex", alignItems: "center" }}>
+            <div style={{ height: 365, display: "flex", alignItems: "center" }}>
               <IncomeGatingAlert style={{ width: "100%" }} />
             </div>
           ) : (
