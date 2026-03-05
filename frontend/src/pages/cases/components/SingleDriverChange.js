@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
-import { Card, Space, Tag, Alert } from "antd";
+import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
+import { IncomeGatingAlert } from "./index";
 import { sumBy, min, max, upperFirst } from "lodash";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import {
@@ -475,13 +476,7 @@ const SingleDriverChange = ({ selectedSegment }) => {
       }
     >
       {isAboveTarget ? (
-        <Alert
-          type="info"
-          showIcon
-          message="Income target reached"
-          description="Farmers in this segment already earn more than the income target. This feature is therefore disabled."
-          style={{ margin: "20px" }}
-        />
+        <IncomeGatingAlert style={{ margin: "20px" }} />
       ) : (
         COLUMNS.map((col) => (
           <Card.Grid

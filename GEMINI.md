@@ -25,6 +25,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Feature Gating for High Income Segments (#740)**:
     - Implemented gating logic for Step 3 "Additional income needed" chart and Step 4 "Single driver change" tool.
     - Resolved layout rendering issues in Step 4 table caused by nested grid components.
+    - Created a reusable `IncomeGatingAlert` component to centralize IDC-branded gating messages with improved icon alignment.
     - Defined requirements and UX specification for disabling analysis tools when a segment's current income exceeds the target.
     - Created Feature Document, User Story (BMAD 6.0 format), and UX Plan to guide implementation.
     - Updated project index and sprint plan to include the new feature gating scope.

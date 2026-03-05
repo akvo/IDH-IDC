@@ -1,6 +1,10 @@
 import React, { useRef, useState, useMemo } from "react";
-import { Row, Col, Divider, Alert } from "antd";
-import { VisualCardWrapper, SegmentSelector } from "../components";
+import { Row, Col, Divider } from "antd";
+import {
+  VisualCardWrapper,
+  SegmentSelector,
+  IncomeGatingAlert,
+} from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import Chart from "../../../components/chart";
 import { sumBy, upperFirst } from "lodash";
@@ -131,12 +135,7 @@ const ChartNeededIncomeLevel = () => {
         <Col span={24}>
           {isAboveTarget ? (
             <div style={{ height: 415, display: "flex", alignItems: "center" }}>
-              <Alert
-                type="info"
-                showIcon
-                message="Income target reached"
-                description="Farmers in this segment already earn more than the income target. This feature is therefore disabled."
-              />
+              <IncomeGatingAlert style={{ width: "100%" }} />
             </div>
           ) : (
             <Chart
