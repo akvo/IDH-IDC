@@ -1,12 +1,13 @@
-# Sprint Plan: Case Creation UX (Issue #739)
+# Sprint Plan: Case UX & Analysis Refinement (#739, #740)
 
 ## Sprint Objective
 Improve the "Case Creation" experience by preventing accidental data loss and providing clear feedback during the Data Upload phase.
 
 ## Stories in Scope
-| ID | Title | Priority | Status |
-|----|-------|----------|--------|
-| [STORY-739](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md) | Case Save UX Refinement | HIGH | [ ] |
+| ID | Title | Priority | Status | Actual Time |
+|----|-------|----------|--------|-------------|
+| STORY-739 | Case Save UX Refinement | HIGH | [ ] | - |
+| STORY-740 | Feature Gating for High Income | HIGH | [x] | 2h |
 
 ## Technical Approach
 - **Frontend**:

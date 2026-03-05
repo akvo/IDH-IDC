@@ -1,6 +1,10 @@
 import React, { useRef, useState, useMemo } from "react";
 import { Row, Col, Divider } from "antd";
-import { VisualCardWrapper, SegmentSelector } from "../components";
+import {
+  VisualCardWrapper,
+  SegmentSelector,
+  IncomeGatingAlert,
+} from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import Chart from "../../../components/chart";
 import { sumBy, upperFirst } from "lodash";
@@ -20,12 +24,25 @@ const ChartNeededIncomeLevel = () => {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const chartData = useMemo(() => {
-    setLoading(true);
-    // find current dashboard data by selected segment
-    const currentDashboardData = dashboardData.find(
-      (d) => d.id === selectedSegment
+  // find current dashboard data by selected segment
+  const currentDashboardData = useMemo(
+    () => dashboardData.find((d) => d.id === selectedSegment),
+    [dashboardData, selectedSegment]
+  );
+
+  const isAboveTarget = useMemo(() => {
+    return (
+      (currentDashboardData?.total_current_income || 0) >=
+      (currentDashboardData?.target || 0)
     );
+  }, [currentDashboardData]);
+
+  const chartData = useMemo(() => {
+    if (isAboveTarget) {
+      return [];
+    }
+    setLoading(true);
+
     const currency = currentCase?.currency;
     // retrieve
     const caseCommoditiesTotalIncome = currentCase?.case_commodities
@@ -94,7 +111,12 @@ const ChartNeededIncomeLevel = () => {
       ?.filter((v) => v.count !== 0);
     setLoading(false);
     return caseCommoditiesTotalIncome;
-  }, [selectedSegment, dashboardData, currentCase]);
+  }, [
+    isAboveTarget,
+    currentDashboardData,
+    currentCase?.currency,
+    currentCase?.case_commodities,
+  ]);
 
   return (
     <VisualCardWrapper
@@ -111,13 +133,19 @@ const ChartNeededIncomeLevel = () => {
           />
         </Col>
         <Col span={24}>
-          <Chart
-            wrapper={false}
-            type="PIE"
-            loading={loading}
-            data={chartData}
-            height={415}
-          />
+          {isAboveTarget ? (
+            <div style={{ height: 365, display: "flex", alignItems: "center" }}>
+              <IncomeGatingAlert style={{ width: "100%" }} />
+            </div>
+          ) : (
+            <Chart
+              wrapper={false}
+              type="PIE"
+              loading={loading}
+              data={chartData}
+              height={415}
+            />
+          )}
         </Col>
         <Col span={24}>
           <Divider style={{ margin: "5px" }} />

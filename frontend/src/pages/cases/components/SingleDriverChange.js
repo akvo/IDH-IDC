@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Card, Space, Tag } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
+import { IncomeGatingAlert } from "./index";
 import { sumBy, min, max, upperFirst } from "lodash";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import {
@@ -141,11 +142,21 @@ const SingleDriverChange = ({ selectedSegment }) => {
     [dashboardData, selectedSegment]
   );
 
-  const tableData = useMemo(() => {
+  const incomeTarget = useMemo(() => {
     const currentTarget = currentDashboardData?.target || 0;
-    const incomeTarget = adjustedIncometarget
-      ? adjustedIncometarget
-      : currentTarget;
+    return adjustedIncometarget ? adjustedIncometarget : currentTarget;
+  }, [currentDashboardData?.target, adjustedIncometarget]);
+
+  const isAboveTarget = useMemo(() => {
+    return (
+      (currentDashboardData?.total_current_income || 0) >= (incomeTarget || 0)
+    );
+  }, [currentDashboardData?.total_current_income, incomeTarget]);
+
+  const tableData = useMemo(() => {
+    if (isAboveTarget) {
+      return [];
+    }
 
     // current - feasible answers for each commodity/crop
     const primaryCommodityAnswers = currentDashboardData?.answers?.filter(
@@ -434,7 +445,13 @@ const SingleDriverChange = ({ selectedSegment }) => {
       return groupData;
     });
     return res;
-  }, [questionGroups, currentDashboardData, currentCase, adjustedIncometarget]);
+  }, [
+    questionGroups,
+    currentDashboardData,
+    currentCase,
+    incomeTarget,
+    isAboveTarget,
+  ]);
 
   // Memoize whether columns should show tags
   const changeColumns = useMemo(
@@ -458,73 +475,76 @@ const SingleDriverChange = ({ selectedSegment }) => {
         </Space>
       }
     >
-      {/* Header Row */}
-      {COLUMNS.map((col) => (
-        <Card.Grid
-          style={generateCardGridStyle({ header: true, columnKey: col.key })}
-          key={col.key}
-          hoverable={false}
-        >
-          {col.label}
-        </Card.Grid>
-      ))}
-
-      {/* Data Rows */}
-      {tableData?.map((d, groupIndex) => {
-        const groupName =
-          d.group === "diversified"
-            ? "Other Diversified"
-            : `${upperFirst(d.group)}`;
-
-        const groupCardGrid = [
+      {isAboveTarget ? (
+        <IncomeGatingAlert style={{ margin: "20px" }} />
+      ) : (
+        COLUMNS.map((col) => (
           <Card.Grid
-            key={`${d.group}-${groupIndex}`}
-            style={generateCardGridStyle({
-              columnKey: "group",
-              type: "group",
-            })}
+            style={generateCardGridStyle({ header: true, columnKey: col.key })}
+            key={col.key}
             hoverable={false}
           >
-            <div>{groupName}</div>
-          </Card.Grid>,
-        ];
+            {col.label}
+          </Card.Grid>
+        ))
+      )}
 
-        const rowCardGrid = d?.rowData?.map((row, rowIndex) => {
-          const isLastRow = groupIndex === tableData?.length - 1;
-          return COLUMNS.map((col, colIndex) => {
-            const isFirstCol = colIndex === 0;
-            const isLastCol = colIndex === COLUMNS.length - 1;
-            const cellValue = row[col.key];
-            const showTag = changeColumns.has(col.key);
+      {!isAboveTarget &&
+        tableData?.flatMap((d, groupIndex) => {
+          const groupName =
+            d.group === "diversified"
+              ? "Other Diversified"
+              : `${upperFirst(d.group)}`;
 
-            return (
-              <Card.Grid
-                key={`${col.key}-${rowIndex}`}
-                style={generateCardGridStyle({
-                  columnKey: col.key,
-                  type: row.type,
-                  isLastRow,
-                  isFirstCol,
-                  isLastCol,
-                })}
-                hoverable={false}
-              >
-                <Space>
-                  <div>{cellValue}</div>
-                  {showTag && (
-                    <ChangeTag
-                      value={row[`${col.key}Percent`]}
-                      type={row.type}
-                    />
-                  )}
-                </Space>
-              </Card.Grid>
-            );
+          const groupCardGrid = (
+            <Card.Grid
+              key={`group-${groupIndex}`}
+              style={generateCardGridStyle({
+                columnKey: "group",
+                type: "group",
+              })}
+              hoverable={false}
+            >
+              <div>{groupName}</div>
+            </Card.Grid>
+          );
+
+          const rowCardGrids = d?.rowData?.flatMap((row, rowIndex) => {
+            const isLastRow = groupIndex === tableData?.length - 1;
+            return COLUMNS.map((col, colIndex) => {
+              const isFirstCol = colIndex === 0;
+              const isLastCol = colIndex === COLUMNS.length - 1;
+              const cellValue = row[col.key];
+              const showTag = changeColumns.has(col.key);
+
+              return (
+                <Card.Grid
+                  key={`row-${groupIndex}-${rowIndex}-${col.key}`}
+                  style={generateCardGridStyle({
+                    columnKey: col.key,
+                    type: row.type,
+                    isLastRow,
+                    isFirstCol,
+                    isLastCol,
+                  })}
+                  hoverable={false}
+                >
+                  <Space>
+                    <div>{cellValue}</div>
+                    {showTag && (
+                      <ChangeTag
+                        value={row[`${col.key}Percent`]}
+                        type={row.type}
+                      />
+                    )}
+                  </Space>
+                </Card.Grid>
+              );
+            });
           });
-        });
 
-        return [...groupCardGrid, ...rowCardGrid];
-      })}
+          return [groupCardGrid, ...rowCardGrids];
+        })}
     </Card>
   );
 };

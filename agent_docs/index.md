@@ -23,6 +23,7 @@ This document serves as the master map for all project artifacts, categorized by
 
 - [Feature Directory](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/)
 - [Feature: #739 Case Save UX & Data Upload Guard](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/739-case-save-ux.md)
+- [Feature: #740 Disable Features Above Target](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/740-disable-features-above-target.md)
 
 ## Chronological Records (Audit Trail)
 > [!IMPORTANT]

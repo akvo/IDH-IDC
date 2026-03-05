@@ -25,5 +25,6 @@ export { default as ThreeDriverCalculator } from "./ThreeDriverCalculator";
 export { default as StandardScenarioModeling } from "./StandardScenarioModeling";
 export { default as AdvancedModellingTool } from "./AdvancedModellingTool";
 export { default as EquationVisualizer } from "./EquationVisualizer";
+export { default as IncomeGatingAlert } from "./IncomeGatingAlert";
 
 export const MAX_SEGMENT = 5;
