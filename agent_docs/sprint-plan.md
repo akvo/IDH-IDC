@@ -1,15 +1,30 @@
-# Sprint Plan: Data Upload Wording Refinement
+# Sprint Plan: Case Creation UX (Issue #739)
 
-## Current Sprint: Refining Data Upload UI
-**Status**: Completed
+## Sprint Objective
+Improve the "Case Creation" experience by preventing accidental data loss and providing clear feedback during the Data Upload phase.
 
-### Backlog
-- [x] **STORY-006**: Refine Data Upload Wording (Priority: High, Estimate: 1pt)
-- [x] **STORY-734-1**: Dynamic Segmentation Variable Selection (Priority: High, Estimate: 1pt)
+## Stories in Scope
+| ID | Title | Priority | Status |
+|----|-------|----------|--------|
+| [STORY-739](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md) | Case Save UX Refinement | HIGH | [ ] |
 
-### Implementation Steps
-1. [x] Planning & Architecture
-2. [x] Implementation in `CaseForm.js` (STORY-006)
-3. [x] Layout Verification (1280x720) (STORY-006)
-4. [x] **Implementation in `DataUploadSegmentForm.js` (STORY-734-1)**
-5. [x] Quality Assurance (Safety Audit & QA Guide)
+## Technical Approach
+- **Frontend**:
+    - Use `Form.useWatch` in `CaseSettings.js` to monitor `import_id` for button guarding.
+    - Implement `form.isFieldsTouched()` in `handleCancel` to trigger the exit confirmation.
+    - Standardize modal usage with `Modal.confirm`.
+
+## Verification Plan
+### Manual Verification
+1. Open "Create new case" drawer.
+2. Fill in Case Name.
+3. Switch to "Data upload" tab.
+4. Verify "Save case" button is disabled and shows tooltip.
+5. Upload a file.
+6. Verify "Save case" button becomes enabled.
+7. Click "Cancel"/ "X" and verify the "Unsaved changes" modal appears.
+8. Confirm "Discard" and verify the drawer closes.
+
+### Automated Tests
+- Run `yarn lint` to ensure no regressions.
+- (Optional) Use `App.test.js` patterns if unit testing component state is required.

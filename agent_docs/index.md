@@ -22,6 +22,7 @@ This document serves as the master map for all project artifacts, categorized by
 > Use these for task-specific or feature-level logic and requirements to keep the main PRD clean.
 
 - [Feature Directory](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/)
+- [Feature: #739 Case Save UX & Data Upload Guard](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/739-case-save-ux.md)
 
 ## Chronological Records (Audit Trail)
 > [!IMPORTANT]
@@ -29,6 +30,7 @@ This document serves as the master map for all project artifacts, categorized by
 
 - [ADRs (Architecture Decision Records)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/adrs/)
 - [User Stories](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/)
+- [Stories: #739 Case Save UX Refinement](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md)
 - [Safety Audits](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/)
 - [QA Guides](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/)
 - [Research Findings](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/research-findings.md)

@@ -22,6 +22,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Created `agent_docs/index.md` as the master project artifact map.
     - Synchronized `bmad-orchestrator.md` with reference improvements including `index.md` consultation and time tracking.
     - Added the `Create Feature Document` capability to the `bmad-pm` skill.
+- **BMAD Phase 5: Planning for Case Save UX (#739)**:
+    - Aligned user stories with the BMAD 6.0 `UAC/TAC` format, including `Timeline & Effort` and `Definition of Done`.
+    - Refined the "Save case" button logic to be tab-aware: button is disabled in "Data upload" tab if no file is present, but enabled in "Manual data input" if segments are defined.
+    - Updated the tooltip message to accurately reflect tab-specific requirements: "Please upload a data template, or switch to 'Manual data input' and define at least one segment to save this case."
+    - Documented an "Unsaved Changes Guard" requirement using `form.isFieldsTouched()` to prevent accidental data loss.
+    - Updated the project index (`agent_docs/index.md`) and sprint plan (`agent_docs/sprint-plan.md`) to reflect the consolidated planning artifacts.
+    - Synchronized `bmad-sm` skill with the reference project's latest protocols.
 - **Data Upload Segmentation Refinement (#737)**:
     - Enforced a logical selection order in both `SegmentConfigurationForm.js` and `DataUploadSegmentForm.js`: users must now select a "Variable type" before the "Segmentation Variable" dropdown becomes active.
     - Improved initial state handling by initializing the variable type to null, preventing confusion over empty variable lists.
