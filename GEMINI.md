@@ -23,6 +23,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Synchronized `bmad-orchestrator.md` with reference improvements including `index.md` consultation and time tracking.
     - Added the `Create Feature Document` capability to the `bmad-pm` skill.
 - **Feature Gating for High Income Segments (#740)**:
+    - Implemented gating logic for Step 3 "Additional income needed" chart to display an info alert when the income target is met.
     - Defined requirements and UX specification for disabling analysis tools (Step 3 Pie Chart, Step 4 Single Driver Change) when a segment's current income exceeds the target.
     - Created Feature Document, User Story (BMAD 6.0 format), and UX Plan to guide implementation.
     - Updated project index and sprint plan to include the new feature gating scope.
