@@ -44,9 +44,9 @@
 - [x] The Alert must display: "Farmers in this segment already earn more than the income target. This feature is therefore disabled."
 
 #### Technical Acceptance Criteria (TAC)
-- [ ] Modify `frontend/src/pages/cases/components/SingleDriverChange.js`.
-- [ ] Respect `adjustedIncometarget` (if present) as the `incomeTarget`.
-- [ ] Replace the table content inside the `Card` with the `<Alert />` component.
+- [x] Modify `frontend/src/pages/cases/components/SingleDriverChange.js`.
+- [x] Respect `adjustedIncometarget` (if present) as the `incomeTarget`.
+- [x] Replace the table content inside the `Card` with the `<Alert />` component.
 
 ### Technical Notes
 - Component: `frontend/src/pages/cases/components/SingleDriverChange.js`
