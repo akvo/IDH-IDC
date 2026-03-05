@@ -70,8 +70,9 @@ Compare current state vs. desired state:
 5. Flag assumptions explicitly and request validation
 6. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands, specific frameworks).
 7. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`prd.md`): Always **update** these to reflect hardened requirements.
-    - **Chronological Records** (`research-findings.md`): Always **create new** versioned files (e.g., `research-findings-v2.md`) to preserve the history of research.
+    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
+    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
+    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `research-findings.md`) to maintain history.
 
 8. Produce structured, traceable documentation
 

@@ -84,8 +84,10 @@ Check stories for readiness:
 2. Always request PRD and Architecture docs before creating stories
 3. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands).
 4. Check `agent_docs/stories/` for existing stories.
-    - **Chronological Records**: Always **create new** versioned story files (e.g., `STORY-001-v2.md`) if requirements for an existing story change significantly, or update status for minor tweaks.
-    - **Living Documents** (`sprint-plan.md`): **Update** the current sprint plan to reflect story progress.
+    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
+    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
+    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `STORY-001.md`) to maintain history.
+    - **Sprint Plans** (`sprint-plan.md`): **Update** the current sprint plan to reflect story progress.
 
 5. Generate stories non-interactively when source docs are available
 6. Present stories for review and adjustment

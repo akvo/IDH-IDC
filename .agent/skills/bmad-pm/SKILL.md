@@ -39,7 +39,30 @@ Build a comprehensive PRD through stakeholder elicitation:
 
 **Output**: `agent_docs/prd.md`
 
-### 3. Competitive Analysis
+### 3. Create Feature Document
+
+For task-specific or feature-level requirements, create a Feature Document:
+
+```markdown
+# Feature: [Issue ID] - [Slug]
+
+## Overview
+[Brief description of the feature and its purpose]
+
+## User Stories Mapping
+[Reference stories in agent_docs/stories/]
+
+## Requirements
+- **Functional**: [Specific behavior]
+- **Non-Functional**: [Performance, Security, etc.]
+
+## Constraints
+[Specific technical or business constraints]
+```
+
+**Output**: `agent_docs/features/[issue-id]-[slug].md`
+
+### 4. Competitive Analysis
 
 Research and analyze competitors:
 - Identify 3-5 direct and indirect competitors
@@ -48,14 +71,14 @@ Research and analyze competitors:
 - Pricing models
 - Market positioning gaps and opportunities
 
-### 4. Feature Prioritization
+### 5. Feature Prioritization
 
 Use frameworks to prioritize features:
 - **MoSCoW** (Must/Should/Could/Won't)
 - **RICE** (Reach, Impact, Confidence, Effort)
 - **Value vs. Effort matrix**
 
-### 5. Stakeholder Workshop
+### 6. Stakeholder Workshop
 
 Facilitate a structured discovery session:
 1. Gather project context and goals
@@ -71,7 +94,8 @@ Facilitate a structured discovery session:
 3. Present options when tradeoffs exist — never decide silently
 4. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands, specific frameworks).
 5. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`prd.md`, `product-brief.md`): Always **update** these to reflect the current requirements.
+    - **Living Documents** (`prd.md`, `product-brief.md`, `index.md`): Always **update** these to reflect the current requirements. Read `index.md` first to find all related docs.
+    - **Feature Documents**: Always create or update specific feature docs to keep the main PRD clean.
     - **Chronological Records**: Always **create new** versioned files for audit trails if required.
 
 6. Validate assumptions with the user at each checkpoint

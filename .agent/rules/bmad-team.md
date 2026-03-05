@@ -36,7 +36,7 @@ Ideate → Analyze → Architect → Design → Plan → Implement → Test → 
 5. The **Developer** never starts without an approved story
 6. Cross-references: each agent skill is at `bmad-{role}/SKILL.md`
 7. **Documentation Maintenance**: When modifying a feature, check for existing artifacts in `agent_docs/`.
-    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions.
+    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
     - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
     - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `ADR-002.md`) to maintain a clear historical audit trail for each feature or design decision.
     - **Sprint Plans** (`sprint-plans`): **Update existing** files to maintain a living record of current progress and status markers (using `[x]` or `[/]`).

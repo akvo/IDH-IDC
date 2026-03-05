@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **BMAD Team & Docs Alignment**:
+    - Aligned `.agent` rules, skills, and workflows with the reference project `~/Dev/my-antigravity-pilot`.
+    - Updated `bmad-team.md` and agent skills with a standardized documentation protocol (Living Documents vs. Chronological Records).
+    - Created `agent_docs/index.md` as the master project artifact map.
+    - Synchronized `bmad-orchestrator.md` with reference improvements including `index.md` consultation and time tracking.
+    - Added the `Create Feature Document` capability to the `bmad-pm` skill.
 - **Data Upload Segmentation Refinement (#737)**:
     - Enforced a logical selection order in both `SegmentConfigurationForm.js` and `DataUploadSegmentForm.js`: users must now select a "Variable type" before the "Segmentation Variable" dropdown becomes active.
     - Improved initial state handling by initializing the variable type to null, preventing confusion over empty variable lists.

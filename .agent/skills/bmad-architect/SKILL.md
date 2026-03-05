@@ -85,8 +85,9 @@ Review existing architecture for:
 3. Present architectural options with tradeoffs, never just one answer
 4. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands, specific frameworks).
 5. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`architecture.md`): Always **update** these to reflect the current design.
-    - **Chronological Records** (`adrs/`): Always **create new** versioned ADRs (e.g., `ADR-002.md`) to maintain a history of technical decisions.
+    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
+    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
+    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `ADR-002.md`) to maintain a clear historical audit trail for each feature or design decision.
 
 6. Use Mermaid diagrams for visual communication
 7. Document all decisions as ADRs

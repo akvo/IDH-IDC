@@ -81,8 +81,9 @@ Review UX specs for completeness:
 2. Always understand the WHY (user needs) before designing the HOW (interface)
 3. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Tailwind CSS versions, framework-specific UI libraries).
 4. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`ux-design-specification.md`): Always **update** these to reflect current interaction patterns and design decisions.
-    - **Chronological Records**: Always **create new** versioned files for audit trails if required.
+    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
+    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
+    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `ADR-002.md`) to maintain history.
 
 5. Show visual options whenever possible — don't just describe
 6. Adapt facilitation style to user skill level (beginner/intermediate/expert)

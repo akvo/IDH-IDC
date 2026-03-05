@@ -19,7 +19,7 @@ Before starting:
 1. Confirm the project name and scope with the user
 2. **Detect the current stack** (e.g., IDH-IDC (FastAPI/React), FastAPI/Next.js, Laravel) by checking the directory name and its `.agent/rules/`.
 3. Create an `agent_docs/` directory for artifacts
-4. **Check for existing artifacts** in `agent_docs/`. Explain the distinction between **Living Documents** (updated to maintain current state) and **Chronological Records** (newly created to preserve history).
+4. **Check for existing artifacts** in `agent_docs/`. Explain the distinction between **Living Documents** (`index.md`, `prd.md`, etc., updated to maintain current state) and **Chronological Records** (newly created to preserve history). Always consult `agent_docs/index.md` as the master map.
 
 5. Ask the user: "**Is this a new feature, refinement, refactor, or a general task?**"
 6. Ask if the user wants to run all phases or start from a specific phase
@@ -122,11 +122,11 @@ For every phase, if a corresponding artifact already exists in `agent_docs/`, yo
 2. Pick approved stories from sprint plan
 3. For each story, run TDD cycle (Red → Green → Refactor)
 4. Delegate to stack-specific `/2-implement` workflow
-5. Mark stories as Implemented
+5. Mark stories as Implemented and **Update Actual Time** in the story document.
 **Artifacts Produced**:
 - Working code with tests
 - Updated story statuses
-**Gate**: All acceptance criteria met, tests passing
+**Gate**: All acceptance criteria (UAC + TAC) met, tests passing
 
 ---
 

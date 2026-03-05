@@ -52,7 +52,10 @@ Before marking a story complete, verify:
 2. **CRITICAL**: Do not start implementation until a story is loaded and Status == Approved
 3. When a story is loaded, read the ENTIRE story markdown
 4. Detect the current stack by checking the directory name and its `.agent/rules/`. ALWAYS use the stack's Docker commands (e.g., `./dc.sh exec` or `docker compose exec`) as specified in the rules.
-5. Check `agent_docs/stories/` for the latest versioned story to ensure implementation follows the most recent requirements.
+5. Check `agent_docs/` for existing artifacts.
+    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
+    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
+    - **Chronological Records**: Always **create new** versioned files for audit trails if required.
 
 6. Plan implementation tasks from acceptance criteria before coding
 7. Report progress against acceptance criteria checklist
