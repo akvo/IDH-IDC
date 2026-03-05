@@ -12,9 +12,9 @@
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)
-- [ ] Given I am in Step 3, when I select a segment where `totalCurrentIncome >= targetIncome`, then the "Additional income needed by income source" pie chart must be replaced by an Information Alert.
-- [ ] Given the chart is replaced by an Alert, when I switch to a segment where `totalCurrentIncome < targetIncome`, then the pie chart must immediately reappear.
-- [ ] The Alert must display the exact message: "Farmers in this segment already earn more than the income target. This feature is therefore disabled."
+- [x] Given I am in Step 3, when I select a segment where `totalCurrentIncome >= targetIncome`, then the "Additional income needed by income source" pie chart must be replaced by an Information Alert.
+- [x] Given the chart is replaced by an Alert, when I switch to a segment where `totalCurrentIncome < targetIncome`, then the pie chart must immediately reappear.
+- [x] The Alert must display the exact message: "Farmers in this segment already earn more than the income target. This feature is therefore disabled."
 
 #### Technical Acceptance Criteria (TAC)
 - [ ] Modify `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`.
@@ -39,9 +39,9 @@
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)
-- [ ] Given I am in Step 4, when I select a segment where `totalCurrentIncome >= incomeTarget`, then the "Single driver change" table must be replaced by an Information Alert.
-- [ ] Given the table is replaced by an Alert, when the segment is changed to one below the target, then the table must reappear.
-- [ ] The Alert must display: "Farmers in this segment already earn more than the income target. This feature is therefore disabled."
+- [x] Given I am in Step 4, when I select a segment where `totalCurrentIncome >= incomeTarget`, then the "Single driver change" table must be replaced by an Information Alert.
+- [x] Given the table is replaced by an Alert, when the segment is changed to one below the target, then the table must reappear.
+- [x] The Alert must display: "Farmers in this segment already earn more than the income target. This feature is therefore disabled."
 
 #### Technical Acceptance Criteria (TAC)
 - [ ] Modify `frontend/src/pages/cases/components/SingleDriverChange.js`.
@@ -53,7 +53,7 @@
 - Logic: Uses `incomeTarget` which already incorporates sensitivity analysis adjustments.
 
 ### Definition of Done
-- [ ] Logic implemented in both components
-- [ ] Manual verification passes
-- [ ] Linting passing (`yarn lint`)
-- [ ] UX Specification updated
+- [x] Logic implemented in both components
+- [x] Manual verification passes
+- [x] Linting passing (`yarn lint`)
+- [x] UX Specification updated
