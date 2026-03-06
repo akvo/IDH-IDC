@@ -15,7 +15,10 @@ export const stepPath = {
   step5: { label: "closing-gap", value: 5 },
 };
 
-export { default as CurrentCaseState } from "./current_case";
+export {
+  default as CurrentCaseState,
+  resetCurrentCaseState,
+} from "./current_case";
 export { default as CaseUIState } from "./case_ui";
-export { default as PrevCaseState } from "./prev_case";
+export { default as PrevCaseState, resetPrevCaseState } from "./prev_case";
 export { default as CaseVisualState } from "./case_visual";
