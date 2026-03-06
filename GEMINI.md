@@ -30,7 +30,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - **Refinement**: Added `destroyOnClose` to drawer and refined `resetDataUploadForm` to ensure spreadsheet state is cleared on discard.
     - **Refinement**: Updated guard logic to detect programmatic changes (file uploads) and segment deletions.
     - **Refinement (Data Cleanup)**: Implemented immediate server-side deletion of uploaded spreadsheets upon "Discard" to ensure privacy and storage efficiency.
-    - **Refinement (Manual Maintenance)**: Created a standalone `cleanup_imports.py` script for manual purging of expired/orphaned upload records.
+    - **Refinement (Manual Maintenance)**: Created a standalone `cleanup_imports.py` script for manual purging of expired/orphaned upload records. Enhanced with verbose logging, a `--force` flag, and model imports for SQLAlchemy FK resolution.
     - Verified implementation with frontend linting, new backend test cases in `test_1005_case_import.py`, and manual UX verification.
 - **Feature Gating for High Income Segments (#740)**:
     - Implemented gating logic for Step 3 "Additional income needed" chart and Step 4 "Single driver change" tool.

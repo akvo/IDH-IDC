@@ -7,8 +7,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db.connection import SessionLocal  # noqa: E402
 from models.case_import import CaseImport  # noqa: E402
-from models.case import Case  # noqa: E402
-from models.user import User  # noqa: E402
+from models.case import Case  # noqa
+from models.user import User  # noqa
 from utils.case_import_storage import delete_import_file  # noqa: E402
 
 
