@@ -32,6 +32,7 @@ This document serves as the master map for all project artifacts, categorized by
 - [ADRs (Architecture Decision Records)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/adrs/)
 - [User Stories](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/)
 - [Stories: #739 Case Save UX Refinement](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md)
+- [Stories: #739 Data Upload Cleanup](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739-cleanup.md)
 - [Safety Audits](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/)
 - [QA Guides](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/)
 - [Research Findings](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/research-findings.md)
