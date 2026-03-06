@@ -24,11 +24,21 @@ Users reported confusion and data loss during the case creation process. Specifi
 ### 2.3 Visual Feedback
 - [MED] Ensure that clicking "Save case" provides immediate visual feedback (loading state already exists, but success/error messages should be prominent).
 
+- [x] **Immediate Cleanup**: Verified that selecting "Discard changes" triggers `DELETE /api/v1/case-import/{import_id}`.
+- [x] **Periodic Cleanup**: Created `backend/scripts/cleanup_imports.py` with verbose logging and a `--force` flag for manual/scripted maintenance.
 ## 3. Analysis (Phase 2)
-- **Frontend Component**: `CaseSettings.js` manages the drawer and the "Save case" button.
-- **State Management**: `form.watch('import_id')` or a local state `uploadResult` can be used to track upload status.
-- **Form Persistence**: The drawer currently uses `form.resetFields()` on close, which clears the state.
+- **Frontend Component**: `CaseSettings.js` manages the drawer. It should trigger a cleanup call on "Discard".
+- **Backend Lifecycle**:
+    - **Immediate Cleanup**: `DELETE /api/v1/case-import/{import_id}` endpoint.
+    - **Periodic Cleanup**: Background job to purge records where `expires_at < NOW()`.
+- **Storage**: Files are in `/tmp/idc_case_imports`. Deletion removes both file and DB record.
+- **Safety**: Cleanup skips `CaseImport` records linked to a finalized `Case`.
 
 ## 4. UX Specification (Phase 4)
 - **Button State**: Secondary/Disabled style when `activeTab === 'upload' && !importId`.
-- **Confirmation Modal**: Standard Ant Design `Modal.confirm` with "Discard changes" and "Continue editing" options.
+- **Confirmation Modal**: Standard Ant Design `Modal.confirm` with "Discard changes" and "Keep editing".
+- **Discard Behavior**: On "Discard", the `import_id` is sent to the backend for deletion while the UI resets.
+
+## 5. Technical Constraints
+- **Atomicity**: Best effort deletion for both storage and DB.
+- **Environment**: Script must have permissions for `/tmp/idc_case_imports`.

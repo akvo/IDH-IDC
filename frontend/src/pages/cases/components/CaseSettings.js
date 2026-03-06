@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Form, message, Drawer, Button, Modal } from "antd";
+import { Form, message, Drawer, Button, Modal, Tooltip } from "antd";
 import { CloseOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { CaseForm } from ".";
 import {
@@ -14,6 +14,7 @@ import {
   CurrentCaseState,
   PrevCaseState,
   stepPath,
+  resetCurrentCaseState,
 } from "../store";
 import { isEqual, isEmpty } from "lodash";
 import { UserState } from "../../../store";
@@ -42,6 +43,63 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
   const [deletedSegmentIds, setDeletedSegmentIds] = useState([]);
   const segmentFields = Form.useWatch("segments", form);
+  const [activeTab, setActiveTab] = useState("manual");
+  const importId = Form.useWatch("import_id", form);
+
+  const isUploadMissing = activeTab === "upload" && !importId;
+  const isSaveDisabled =
+    !enableEditCase || segmentFields?.length > MAX_SEGMENT || isUploadMissing;
+
+  const handleCancelWithGuard = useCallback(() => {
+    const isDirty =
+      form.isFieldsTouched() || !!importId || deletedSegmentIds.length > 0;
+
+    if (isDirty) {
+      Modal.confirm({
+        title: "Unsaved Changes",
+        icon: <ExclamationCircleOutlined />,
+        content:
+          "You have unsaved changes. Are you sure you want to discard them?",
+        okText: "Discard changes",
+        okType: "danger",
+        cancelText: "Keep editing",
+        onOk: () => {
+          // server side cleanup if importId present
+          if (importId) {
+            api
+              .delete(`/case-import/${importId}`)
+              .then(() => {})
+              .catch(() => {});
+          }
+          // reset deleted segment on discard
+          if (deletedSegmentIds?.length) {
+            form.setFieldValue("segments", formData.segments);
+          }
+          // reset global state on discard
+          if (currentCase?.id) {
+            CurrentCaseState.update((s) => ({
+              ...s,
+              ...prevCase,
+            }));
+          } else {
+            resetCurrentCaseState();
+          }
+          form.resetFields();
+          handleCancel();
+        },
+      });
+    } else {
+      handleCancel();
+    }
+  }, [
+    form,
+    handleCancel,
+    deletedSegmentIds,
+    formData.segments,
+    importId,
+    currentCase?.id,
+    prevCase,
+  ]);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
@@ -682,12 +740,15 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     <Drawer
       title="Create new case"
       closable={false}
-      onClose={handleCancel}
+      onClose={handleCancelWithGuard}
       open={open}
       width="60%"
       className="case-settings-modal-container"
       maskClosable={false}
-      extra={<Button icon={<CloseOutlined />} onClick={handleCancel} />}
+      destroyOnClose={true}
+      extra={
+        <Button icon={<CloseOutlined />} onClick={handleCancelWithGuard} />
+      }
     >
       {contextHolder}
       <Form
@@ -706,28 +767,34 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           deletedSegmentIds={deletedSegmentIds}
           setDeletedSegmentIds={setDeletedSegmentIds}
           dataUploadFieldPreffix={dataUploadFieldPreffix}
+          onTabChange={(key) => setActiveTab(key)}
         />
         <div className="case-form-button-wrapper">
-          <Button
-            onClick={() => {
-              // reset deleted segment on cancel
-              if (deletedSegmentIds?.length) {
-                form.setFieldValue("segments", formData.segments);
-              }
-              handleCancel();
-            }}
-            className="button-cancel"
-          >
+          <Button onClick={handleCancelWithGuard} className="button-cancel">
             Cancel
           </Button>
-          <Button
-            loading={isSaving}
-            disabled={!enableEditCase || segmentFields?.length > MAX_SEGMENT}
-            className="button-save"
-            onClick={() => form.submit()}
-          >
-            Save case
-          </Button>
+          {isUploadMissing ? (
+            <Tooltip title="Please upload a data template, or switch to 'Manual data input' and define at least one segment to save this case.">
+              <span className="cursor-not-allowed">
+                <Button
+                  loading={isSaving}
+                  disabled={isSaveDisabled}
+                  className="button-save"
+                >
+                  Save case
+                </Button>
+              </span>
+            </Tooltip>
+          ) : (
+            <Button
+              loading={isSaving}
+              disabled={isSaveDisabled}
+              className="button-save"
+              onClick={() => form.submit()}
+            >
+              Save case
+            </Button>
+          )}
         </div>
       </Form>
     </Drawer>

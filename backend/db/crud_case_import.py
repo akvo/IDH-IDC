@@ -53,3 +53,16 @@ def update_case_import_case_id(
     session.commit()
     session.refresh(obj)
     return obj
+
+
+def delete_case_import(
+    session: Session,
+    *,
+    import_id: str,
+) -> bool:
+    obj = session.query(CaseImport).filter(CaseImport.id == import_id).first()
+    if not obj:
+        return False
+    session.delete(obj)
+    session.commit()
+    return True

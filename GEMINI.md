@@ -22,6 +22,16 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Created `agent_docs/index.md` as the master project artifact map.
     - Synchronized `bmad-orchestrator.md` with reference improvements including `index.md` consultation and time tracking.
     - Added the `Create Feature Document` capability to the `bmad-pm` skill.
+- **Case Save UX Refinement (#739)**:
+    - Implemented tab-aware "Save case" button logic: button is now disabled in "Data upload" tab if no `import_id` is present, but enabled in "Manual data input".
+    - Added a `Tooltip` to the disabled "Save case" button providing guidance on required data upload.
+    - Implemented "Unsaved Changes Guard": added a confirmation modal (`Modal.confirm`) that triggers when attempting to close or cancel the case creation drawer with a "dirty" form.
+    - Updated `CaseForm.js` and `CaseSettings.js` to propagate and track active tab state.
+    - **Refinement**: Added `destroyOnClose` to drawer and refined `resetDataUploadForm` to ensure spreadsheet state is cleared on discard.
+    - **Refinement**: Updated guard logic to detect programmatic changes (file uploads) and segment deletions.
+    - **Refinement (Data Cleanup)**: Implemented immediate server-side deletion of uploaded spreadsheets upon "Discard" to ensure privacy and storage efficiency.
+    - **Refinement (Manual Maintenance)**: Created a standalone `cleanup_imports.py` script for manual purging of expired/orphaned upload records. Enhanced with verbose logging, a `--force` flag, and model imports for SQLAlchemy FK resolution.
+    - Verified implementation with frontend linting, new backend test cases in `test_1005_case_import.py`, and manual UX verification.
 - **Feature Gating for High Income Segments (#740)**:
     - Implemented gating logic for Step 3 "Additional income needed" chart and Step 4 "Single driver change" tool.
     - Resolved layout rendering issues in Step 4 table caused by nested grid components.

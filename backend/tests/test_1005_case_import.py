@@ -1,6 +1,7 @@
 import pytest
 import sys
 import subprocess
+import os
 
 from pathlib import Path
 from fastapi import FastAPI
@@ -642,3 +643,99 @@ class TestCaseImport:
                     "feasible-"
                 )
                 assert value is not None
+
+    @pytest.mark.asyncio
+    async def test_case_import_deletion(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        upload_file_factory,
+        admin_headers,
+        non_admin_headers,
+    ):
+        # 1. Upload file
+        res = await upload_file_factory(VALID_FILE, admin_headers)
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        # Get file path from DB to verify existence
+        from models.case_import import CaseImport
+
+        case_import = (
+            session.query(CaseImport)
+            .filter(CaseImport.id == import_id)
+            .first()
+        )
+        file_path = case_import.file_path
+        assert os.path.exists(file_path)
+
+        # 2. Try to delete with wrong user (forbidden)
+        # Assuming non_admin_headers represents a different user than admin
+        res = await client.delete(
+            app.url_path_for("case_import:delete_import", import_id=import_id),
+            headers=non_admin_headers,
+        )
+        assert res.status_code == 403
+
+        # 3. Delete with owner (success)
+        res = await client.delete(
+            app.url_path_for("case_import:delete_import", import_id=import_id),
+            headers=admin_headers,
+        )
+        assert res.status_code == 200
+        assert res.json()["status"] == "success"
+
+        # 4. Verify deletion
+        assert not os.path.exists(file_path)
+        # Use session.expire_all() or refresh to ensure we see the deletion
+        session.expire_all()
+        case_import_check = (
+            session.query(CaseImport)
+            .filter(CaseImport.id == import_id)
+            .first()
+        )
+        assert case_import_check is None
+
+    @pytest.mark.asyncio
+    async def test_case_import_manual_cleanup_script(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        upload_file_factory,
+        admin_headers,
+    ):
+        from datetime import datetime, timedelta
+        from scripts.cleanup_imports import cleanup_expired_imports
+        from models.case_import import CaseImport
+
+        # 1. Upload file
+        res = await upload_file_factory(VALID_FILE, admin_headers)
+        assert res.status_code == 200
+        import_id = res.json()["import_id"]
+
+        case_import = (
+            session.query(CaseImport)
+            .filter(CaseImport.id == import_id)
+            .first()
+        )
+        file_path = case_import.file_path
+        assert os.path.exists(file_path)
+
+        # 2. Manually make it expired
+        case_import.expires_at = datetime.utcnow() - timedelta(hours=1)
+        session.add(case_import)
+        session.commit()
+
+        # 3. Run cleanup script logic
+        cleanup_expired_imports(session=session)
+
+        # 4. Verify deletion
+        assert not os.path.exists(file_path)
+        case_import_check = (
+            session.query(CaseImport)
+            .filter(CaseImport.id == import_id)
+            .first()
+        )
+        assert case_import_check is None

@@ -28,3 +28,12 @@ def load_import_file(path: str) -> bytes:
 
     with open(path, "rb") as f:
         return f.read()
+
+
+def delete_import_file(path: str):
+    if os.path.exists(path):
+        try:
+            os.remove(path)
+        except Exception as e:
+            # Log error but don't fail the request
+            print(f"Error deleting file {path}: {e}")

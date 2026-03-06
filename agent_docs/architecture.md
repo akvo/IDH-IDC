@@ -123,10 +123,17 @@ if user_cases: # Non-Admin whitelist
 ### Safe State Mutation (Pullstate)
 To avoid race conditions during concurrent state updates (e.g., parallel data fetches clobbering each other), always use direct draft mutations in `update` calls instead of object spreading.
 
-```javascript
-// AVOID: Race condition risk
-CaseUIState.update(s => ({ ...s, general: { ...s.general, flag: true } }));
+## Data Persistence & Cleanup (Case Imports)
 
-// PREFERRED: Granular mutation or direct draft assignment
-CaseUIState.update(s => { s.general.flag = true; });
-```
+Uploaded spreadsheets and their database markers follow a two-tier cleanup lifecycle to manage storage and privacy.
+
+### 1. Storage Backend
+- **Location**: `/tmp/idc_case_imports` (Host: `/tmp/idc_case_imports`)
+- **Naming**: `{import_id}.xlsx` (UUID)
+
+### 2. Cleanup Mechanisms
+- **Immediate (Active)**: Triggered by frontend `DELETE /case-import/{import_id}` on user discard.
+- **Manual (Passive)**: A script `backend/scripts/cleanup_imports.py` can be run manually to purge records and files where `expires_at < NOW()`.
+
+### 3. Data Integrity
+Records in the `case_import` table are never deleted if they are successfully associated with a finalized `Case` (`case_id IS NOT NULL`).

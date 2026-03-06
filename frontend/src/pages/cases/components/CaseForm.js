@@ -176,6 +176,7 @@ const CaseForm = ({
   updateCurrentCase = () => {},
   setDeletedSegmentIds = () => {},
   dataUploadFieldPreffix = "",
+  onTabChange = () => {},
 }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
@@ -192,6 +193,8 @@ const CaseForm = ({
   const [downloading, setDownloading] = useState(false);
 
   const resetDataUploadForm = () => {
+    setUploadResult(null);
+    setFileList([]);
     form.setFieldsValue({
       import_id: null,
       // reset variable type
@@ -650,6 +653,7 @@ const CaseForm = ({
       <Col span={24}>
         {contextHolder}
         <Tabs
+          onChange={onTabChange}
           items={[
             {
               key: "manual",

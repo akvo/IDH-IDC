@@ -19,7 +19,11 @@ from middleware import (
     verify_case_creator,
 )
 from io import BytesIO
-from db.crud_case_import import create_case_import, get_case_import
+from db.crud_case_import import (
+    create_case_import,
+    get_case_import,
+    delete_case_import,
+)
 from utils.case_import_processing import (
     load_data_dataframe_from_bytes,
     validate_workbook,
@@ -30,7 +34,11 @@ from utils.case_import_processing import (
     recalculate_numerical_segments,
     resolve_sheet_name,
 )
-from utils.case_import_storage import save_import_file, load_import_file
+from utils.case_import_storage import (
+    save_import_file,
+    load_import_file,
+    delete_import_file,
+)
 from utils.case_import_process_confirmed_segmentation import (
     process_confirmed_segmentation,
 )
@@ -316,3 +324,48 @@ def recalculate_segmentation(
         "variable_type": var_type,
         "segments": segments,
     }
+
+
+@case_import_route.delete(
+    "/case-import/{import_id}",
+    summary="Delete spreadsheet and import session",
+    name="case_import:delete_import",
+    tags=ROUTE_TAG_NAME,
+)
+def delete_import(
+    req: Request,
+    import_id: str,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    user = verify_case_creator(
+        session=session,
+        authenticated=req.state.authenticated,
+    )
+
+    case_import = get_case_import(session=session, import_id=import_id)
+
+    # 🔒 Security: Only the owner can delete
+    if case_import.user_id != user.id:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have permission to delete this import session",
+        )
+
+    # 🔒 Safety: Don't delete if already linked to a case
+    if case_import.case_id is not None:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Cannot delete an import session that is already "
+                "associated with a case"
+            ),
+        )
+
+    # Delete file
+    delete_import_file(case_import.file_path)
+
+    # Delete DB record
+    delete_case_import(session=session, import_id=import_id)
+
+    return {"status": "success", "message": "Import session deleted"}
