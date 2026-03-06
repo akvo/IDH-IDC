@@ -12,10 +12,10 @@
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)
-- [x] Given I am in the "Create new case" drawer, when I have the "Data upload" tab selected and no file is uploaded, then the "Save case" button must be disabled.
-- [x] Given the "Save case" button is disabled due to missing upload, when I switch to the "Manual data input" tab, then the "Save case" button must immediately become enabled (unless no segments are defined).
-- [x] Given the "Save case" button is disabled, when I hover over it, then a tooltip must appear saying: "Please upload a data template, or switch to 'Manual data input' and define at least one segment to save this case."
-- [x] Given the "Save case" button is disabled, when I successfully upload a valid template, then the button must immediately become enabled.
+- [x] Given I am in the "Create new case" drawer, when I have the "Data upload" tab selected and no file is uploaded, then the "Save case" button must be disabled. (0.5h)
+- [x] Given the "Save case" button is disabled due to missing upload, when I switch to the "Manual data input" tab, then the "Save case" button must immediately become enabled (unless no segments are defined). (0.25h)
+- [x] Given the "Save case" button is disabled, when I hover over it, then a tooltip must appear saying: "Please upload a data template, or switch to 'Manual data input' and define at least one segment to save this case." (0.25h)
+- [x] Given the "Save case" button is disabled, when I successfully upload a valid template, then the button must immediately become enabled. (0.5h)
 
 #### Technical Acceptance Criteria (TAC)
 - [x] Monitor both `import_id` and the current active tab in `CaseSettings.js`.

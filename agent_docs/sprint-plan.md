@@ -6,8 +6,8 @@ Improve the "Case Creation" experience by preventing accidental data loss and pr
 ## Stories in Scope
 | ID | Title | Priority | Status | Actual Time |
 |----|-------|----------|--------|-------------|
-| STORY-739 | Case Save UX Refinement | HIGH | [x] | 1h |
-| STORY-739-C | Data Upload Cleanup | HIGH | [x] | 2h |
+| STORY-739 | Case Save UX Refinement | HIGH | [x] | 1.5h |
+| STORY-739-C | Data Upload Cleanup | HIGH | [x] | 4h |
 | STORY-740 | Feature Gating for High Income | HIGH | [x] | 2h |
 
 ## Technical Approach
