@@ -34,4 +34,11 @@ Standardize the visual experience for restricted users to ensure they understand
 | Upload Tab | Regular | Hidden |
 | Modeling Inputs | Regular | Disabled |
 | Run Model Button | Regular | Disabled + Tooltip |
-| 403 Upload Response | Regular | Global Error Alert |
+## 6. Data Cleanup Interaction (Discard)
+### User Experience
+- **Action**: When a user clicks "Discard changes" in the `Unsaved Changes` modal.
+- **Visual Pattern**: Show a loading state on the button if the server call exceeds 300ms.
+- **Feedback**:
+    - **Success**: Close the drawer immediately.
+    - **Error**: Show a non-blocking `message.warning`: *"Data discarded locally. Server-side cleanup will be handled automatically."* and close the drawer.
+- **Rationale**: Ensures the user feels their privacy is respected (data is "wiped") without introducing friction if the network fails.
