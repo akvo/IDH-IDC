@@ -176,6 +176,7 @@ const CaseForm = ({
   updateCurrentCase = () => {},
   setDeletedSegmentIds = () => {},
   dataUploadFieldPreffix = "",
+  onTabChange = () => {},
 }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
@@ -650,6 +651,7 @@ const CaseForm = ({
       <Col span={24}>
         {contextHolder}
         <Tabs
+          onChange={onTabChange}
           items={[
             {
               key: "manual",
