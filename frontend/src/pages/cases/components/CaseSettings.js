@@ -717,6 +717,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       width="60%"
       className="case-settings-modal-container"
       maskClosable={false}
+      destroyOnClose={true}
       extra={
         <Button icon={<CloseOutlined />} onClick={handleCancelWithGuard} />
       }

@@ -193,6 +193,8 @@ const CaseForm = ({
   const [downloading, setDownloading] = useState(false);
 
   const resetDataUploadForm = () => {
+    setUploadResult(null);
+    setFileList([]);
     form.setFieldsValue({
       import_id: null,
       // reset variable type
