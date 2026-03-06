@@ -50,7 +50,10 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     !enableEditCase || segmentFields?.length > MAX_SEGMENT || isUploadMissing;
 
   const handleCancelWithGuard = useCallback(() => {
-    if (form.isFieldsTouched()) {
+    const isDirty =
+      form.isFieldsTouched() || !!importId || deletedSegmentIds.length > 0;
+
+    if (isDirty) {
       Modal.confirm({
         title: "Unsaved Changes",
         icon: <ExclamationCircleOutlined />,
@@ -71,7 +74,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     } else {
       handleCancel();
     }
-  }, [form, handleCancel, deletedSegmentIds, formData.segments]);
+  }, [form, handleCancel, deletedSegmentIds, formData.segments, importId]);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
