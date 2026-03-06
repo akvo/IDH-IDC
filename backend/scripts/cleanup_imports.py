@@ -7,30 +7,48 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from db.connection import SessionLocal  # noqa: E402
 from models.case_import import CaseImport  # noqa: E402
+from models.case import Case  # noqa: E402
+from models.user import User  # noqa: E402
 from utils.case_import_storage import delete_import_file  # noqa: E402
 
 
-def cleanup_expired_imports():
+def cleanup_expired_imports(session: SessionLocal = None, force: bool = False):
     """
     Manually clean up expired case_import records and their associated files.
     Only deletes imports that are NOT associated with any case.
     """
-    session = SessionLocal()
-    now = datetime.utcnow()
+    if session is None:
+        session = SessionLocal()
 
-    # Filter for expired imports that aren't linked to a case
-    expired_imports = (
-        session.query(CaseImport)
-        .filter(CaseImport.expires_at < now, CaseImport.case_id.is_(None))
-        .all()
+    now = datetime.utcnow()
+    print(f"Current UTC time: {now}")
+
+    # Query all orphaned imports
+    orphaned_imports = (
+        session.query(CaseImport).filter(CaseImport.case_id.is_(None)).all()
     )
 
-    if not expired_imports:
-        print("No expired orphaned imports found.")
-        session.close()
+    if not orphaned_imports:
+        print("No orphaned imports found in database.")
         return
 
-    msg = f"Found {len(expired_imports)} expired orphaned imports. Starting..."
+    expired_imports = []
+    for imp in orphaned_imports:
+        is_expired = imp.expires_at and imp.expires_at < now
+        if force or is_expired:
+            expired_imports.append(imp)
+        else:
+            time_left = imp.expires_at - now
+            print(
+                f"Skipping ID {imp.id}: Not yet expired. "
+                f"Expires in {time_left}"
+            )
+
+    if not expired_imports:
+        print("No orphaned imports meet the expiration criteria.")
+        return
+
+    msg = f"Found {len(expired_imports)} imports to clean up. Starting..."
     print(msg)
 
     deleted_count = 0
@@ -48,9 +66,20 @@ def cleanup_expired_imports():
             session.rollback()
 
     session.commit()
-    session.close()
     print(f"Cleanup complete. Deleted {deleted_count} records.")
 
 
 if __name__ == "__main__":
-    cleanup_expired_imports()
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Cleanup orphaned cell imports."
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force cleanup of all orphaned imports regardless of expiration",
+    )
+    args = parser.parse_args()
+
+    cleanup_expired_imports(force=args.force)

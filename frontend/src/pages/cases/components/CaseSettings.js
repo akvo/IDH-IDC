@@ -68,15 +68,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           if (importId) {
             api
               .delete(`/case-import/${importId}`)
-              .then(() => {
-                console.log("Server side cleanup success");
-              })
-              .catch((err) => {
-                console.warn("Server side cleanup failed", err);
-                message.warning(
-                  "Data discarded locally. Server-side cleanup will be handled automatically."
-                );
-              });
+              .then(() => {})
+              .catch(() => {});
           }
           // reset deleted segment on discard
           if (deletedSegmentIds?.length) {
