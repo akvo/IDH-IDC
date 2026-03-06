@@ -8,7 +8,7 @@
 ### Timeline & Effort
 - **Estimated Time**: 4h
 - **Effort Points**: 3
-- **Actual Time**: 4h
+- **Actual Time**: 2.5h
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)

@@ -7,7 +7,7 @@
 
 ### Timeline & Effort
 - **Estimated Time**: 2h
-- **Actual Time**: 0.5h
+- **Actual Time**: 0.75h
 - **Effort Points**: 3
 
 ### Acceptance Criteria
@@ -37,7 +37,7 @@
 
 ### Timeline & Effort
 - **Estimated Time**: 2h
-- **Actual Time**: 0.5h
+- **Actual Time**: 0.75h
 - **Effort Points**: 3
 
 ### Acceptance Criteria
