@@ -14,6 +14,7 @@ import {
   CurrentCaseState,
   PrevCaseState,
   stepPath,
+  resetCurrentCaseState,
 } from "../store";
 import { isEqual, isEmpty } from "lodash";
 import { UserState } from "../../../store";
@@ -67,6 +68,15 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           if (deletedSegmentIds?.length) {
             form.setFieldValue("segments", formData.segments);
           }
+          // reset global state on discard
+          if (currentCase?.id) {
+            CurrentCaseState.update((s) => ({
+              ...s,
+              ...prevCase,
+            }));
+          } else {
+            resetCurrentCaseState();
+          }
           form.resetFields();
           handleCancel();
         },
@@ -74,7 +84,15 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
     } else {
       handleCancel();
     }
-  }, [form, handleCancel, deletedSegmentIds, formData.segments, importId]);
+  }, [
+    form,
+    handleCancel,
+    deletedSegmentIds,
+    formData.segments,
+    importId,
+    currentCase?.id,
+    prevCase,
+  ]);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
