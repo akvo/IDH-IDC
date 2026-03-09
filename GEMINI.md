@@ -21,6 +21,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Standardized the JSON schema for storing investment data in the `visualization` table's `config` column.
     - Created a comprehensive guide for **Visualization Config Schemas** covering Step 4 and Step 5 to ensure strict backward compatibility.
     - Documented architectural decisions in `ADR-005` and established a regrouped optimistic estimation of 32 hours.
+    - Decomposed the feature into 3 granular User Stories (Backend Schema, Input UI, and Impact Charts) with explicit UAC/TAC.
+    - Updated the Sprint Plan with a detailed task breakdown for the implementation phase.
 - **BMAD Team & Docs Alignment**:
     - Aligned `.agent` rules, skills, and workflows with the reference project `~/Dev/my-antigravity-pilot`.
     - Updated `bmad-team.md` and agent skills with a standardized documentation protocol (Living Documents vs. Chronological Records).
