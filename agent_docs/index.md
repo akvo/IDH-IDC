@@ -36,6 +36,8 @@ This document serves as the master map for all project artifacts, categorized by
 - [Stories: #739 Data Upload Cleanup](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739-cleanup.md)
 - [Stories: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-744-text-updates.md)
 - [Safety Audits](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/)
+- [Safety Audit: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/safety-audit-issue-744.md)
 - [QA Guides](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/)
+- [QA Guide: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/qa-guide-issue-744.md)
 - [Research Findings](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/research-findings.md)
 - [Modelling Test Scenarios](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/modelling-test-scenarios.md)
