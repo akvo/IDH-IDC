@@ -16,6 +16,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Impact of Investment Architecture (#741)**:
+    - Defined a frontend-heavy architecture for the new "Impact of Investment" premium feature to maintain real-time calculation performance.
+    - Standardized the JSON schema for storing investment data in the `visualization` table's `config` column.
+    - Created a comprehensive guide for **Visualization Config Schemas** covering Step 4 and Step 5 to ensure strict backward compatibility.
+    - Documented architectural decisions in `ADR-005` and established a regrouped optimistic estimation of 32 hours.
 - **BMAD Team & Docs Alignment**:
     - Aligned `.agent` rules, skills, and workflows with the reference project `~/Dev/my-antigravity-pilot`.
     - Updated `bmad-team.md` and agent skills with a standardized documentation protocol (Living Documents vs. Chronological Records).
