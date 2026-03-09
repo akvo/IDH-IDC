@@ -135,6 +135,27 @@
           font-family: "RocGrotesk";
         }
 
+        .ant-upload.ant-upload-drag {
+          // background-color: transparent;
+          border: 1px dashed rgba(0, 0, 0, 0.15);
+          height: auto; // Allow it to shrink
+          min-height: 190px;
+
+          .ant-upload {
+            padding: 16px 0;
+            margin: 0;
+          }
+        }
+
+        .ant-upload-hint {
+          margin-bottom: 12px;
+        }
+
+        .ant-upload-drag-icon {
+          margin-top: 0;
+          margin-bottom: 8px !important;
+        }
+
         .ant-upload-text,
         .ant-upload-hint {
           font-family: "TabletGothic";
