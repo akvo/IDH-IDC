@@ -864,7 +864,7 @@ const AdvancedModellingTool = ({ disabled }) => {
     } else if (result < 0) {
       state = "impossible";
       message =
-        "It is not physically possible to reach the income target with the specified model values.";
+        "It is not possible to reach the income target with the specified model values.";
     }
 
     // Always show the raw result from the calculation
@@ -1080,7 +1080,7 @@ const AdvancedModellingTool = ({ disabled }) => {
                     // If we are in surplus, the current performance is already feasibility-proven
                     isFeasible = true;
                   } else if (scenarioResult.rawResult < 0) {
-                    // Physically impossible values are never feasible
+                    // Impossible values are never feasible
                     isFeasible = false;
                   } else if (selectedDriver === "cop") {
                     // For CoP, a higher required value is "easier" (more room for expense)
@@ -1351,14 +1351,14 @@ const AdvancedModellingTool = ({ disabled }) => {
                         const scenarioResult =
                           calculationResults[activeScenario];
 
-                        // Physically impossible warning
+                        // Impossible warning
                         if (scenarioResult.state === "impossible") {
                           const driverLabel =
                             driverLabels[selectedDriver] || selectedDriver;
                           return (
                             <div className="impossible-breakdown-warning">
                               <Alert
-                                message={`Farmers would need a negative ${driverLabel} in order to hit the income target. This is not physically possible and the price breakdown is unavailable.`}
+                                message={`Farmers would need a negative ${driverLabel} in order to hit the income target. This is not possible and the price breakdown is unavailable.`}
                                 type="warning"
                                 className="impossible-alert"
                               />

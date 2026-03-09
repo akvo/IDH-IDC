@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Text Updates & UI Clarifications (#744)**:
+    - Updated "Data Upload" tab in `CaseForm.js` with clearer titles ("Upload your completed data template"), subtitles, and simplified instructions.
+    - Refined Data Upload UI spacing in `cases.scss` to prevent overlap with drawer footers and added `marginBottom` to the upload zone.
+    - Replaced "physically possible" with "possible" in `AdvancedModellingTool.js` to align with business terminology.
+    - Added a detailed clarification to the "Feasible" tooltip in Step 2 (`EnterIncomeData.js`) regarding 90th quantile calculation for uploaded data, including line breaks for readability.
+    - Implemented a guidance tooltip for the "Number of segments" field in `SegmentConfigurationForm.js` to explain the automatic grouping logic.
+    - Created Feature Document, User Story, and Walkthrough artifacts to document the changes and verification steps.
+    - Verified implementation with a clean `yarn lint` run and backend logic validation.
 - **BMAD Team & Docs Alignment**:
     - Aligned `.agent` rules, skills, and workflows with the reference project `~/Dev/my-antigravity-pilot`.
     - Updated `bmad-team.md` and agent skills with a standardized documentation protocol (Living Documents vs. Chronological Records).
