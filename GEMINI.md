@@ -16,6 +16,10 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Income Composition & Gap Breakdown Clarifications (#746)**:
+    - Expanded descriptions in `ChartNeededIncomeLevel.js` and `ChartHouseholdIncomeComposition.js` to clearly explain proportional allocation of the income gap across existing sources.
+    - Standardized description container heights (`minHeight: 150`) across Step 3 visualizations to ensure visual alignment and accommodate expanded text.
+    - Refined terminology to improve user understanding of how "Additional income needed" is calculated and distributed.
 - **Text Updates & UI Clarifications (#744)**:
     - Updated "Data Upload" tab in `CaseForm.js` with clearer titles ("Upload your completed data template"), subtitles, and simplified instructions.
     - Refined Data Upload UI spacing in `cases.scss` to prevent overlap with drawer footers and added `marginBottom` to the upload zone.
