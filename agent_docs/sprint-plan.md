@@ -33,7 +33,7 @@ Improve the "Case Creation" experience by preventing accidental data loss and pr
 
 ---
 
-# Sprint Plan: Impact of Investment Analysis (#741)
+# Sprint Plan: Impact of Investment Analysis (#743)
 
 ## Sprint Objective
 Enable premium users to analyze the cost-effectiveness (ROI) of different income-improvement scenarios within Step 5.
@@ -41,24 +41,24 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 ## Stories in Scope
 | ID | Title | Priority | Status | Est. Time |
 |----|-------|----------|--------|-----------|
-| STORY-741-1 | Backend Schema & Permission Gate | HIGH | [ ] | 4h |
-| STORY-741-2 | Frontend Investment Input UI | HIGH | [ ] | 6h |
-| STORY-741-3 | Frontend Calculation & Charts | HIGH | [ ] | 10h |
+| STORY-743-1 | Backend Schema & Permission Gate | HIGH | [ ] | 4h |
+| STORY-743-2 | Frontend Investment Input UI | HIGH | [ ] | 6h |
+| STORY-743-3 | Frontend Calculation & Charts | HIGH | [ ] | 10h |
 
 ## Detailed Task Breakdown
-### STORY-741-1: Backend
+### STORY-743-1: Backend
 - [ ] Define `InvestmentCost` Pydantic models in `visualization.py`
 - [ ] Implement `is_premium` validation in `visualization` POST route
 - [ ] Backend test: verify 422 for invalid investment JSON
 - [ ] Backend test: verify 403 for non-premium attempts
 
-### STORY-741-2: Frontend Input UI
+### STORY-743-2: Frontend Input UI
 - [ ] Add "Add Investment" state to `CaseVisualStore`
 - [ ] Implement `InvestmentModal` component for cost entry
 - [ ] Logic: Toggle between Total/Per-Farmer/Per-Land units
 - [ ] UI: Ensure currency formatting follows project standards
 
-### STORY-741-3: Analytics & Viz
+### STORY-743-3: Analytics & Viz
 - [ ] Logic: Proportionate cost distribution across segments
 - [ ] Logic: Net Gain / Total Investment calculation
 - [ ] Component: Impact Comparison Bar Chart
