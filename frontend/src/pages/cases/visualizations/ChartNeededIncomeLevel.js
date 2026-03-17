@@ -149,12 +149,14 @@ const ChartNeededIncomeLevel = () => {
         </Col>
         <Col span={24}>
           <Divider style={{ margin: "5px" }} />
-          <p style={{ minHeight: 100 }}>
-            This chart shows how much <i>additional</i> income a household would
-            need from each income source to reach a living income, assuming the
-            current income composition remains the same. Use it to understand
-            which income sources would need to increase, and by how much, to
-            close the living income gap.
+          <p style={{ minHeight: 150 }}>
+            This chart shows how much additional income a household would need
+            from each income source to reach a living income, assuming the
+            current income composition remains the same. The total additional
+            income needed is allocated proportionally based on the current share
+            of each income source in total household income. Use it to
+            understand which income sources would need to increase, and by how
+            much, to close the living income gap.
           </p>
         </Col>
       </Row>

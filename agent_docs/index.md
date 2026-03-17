@@ -26,6 +26,7 @@ This document serves as the master map for all project artifacts, categorized by
 - [Feature: #740 Disable Features Above Target](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/740-disable-features-above-target.md)
 - [Feature: #741 Impact of Investment (Premium)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/741-impact-of-investment.md)
 - [Documentation: Visualization Config Schemas](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/visualization-config-schema.md)
+- [Feature: #744 Text Updates & Clarification](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/744-text-updates.md)
 
 ## Chronological Records (Audit Trail)
 > [!IMPORTANT]
@@ -35,7 +36,10 @@ This document serves as the master map for all project artifacts, categorized by
 - [User Stories](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/)
 - [Stories: #739 Case Save UX Refinement](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md)
 - [Stories: #739 Data Upload Cleanup](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739-cleanup.md)
+- [Stories: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-744-text-updates.md)
 - [Safety Audits](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/)
+- [Safety Audit: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/safety-audit-issue-744.md)
 - [QA Guides](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/)
+- [QA Guide: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/qa-guide-issue-744.md)
 - [Research Findings](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/research-findings.md)
 - [Modelling Test Scenarios](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/modelling-test-scenarios.md)

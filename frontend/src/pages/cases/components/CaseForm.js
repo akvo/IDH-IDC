@@ -681,10 +681,23 @@ const CaseForm = ({
                 <Col span={24}>
                   <Row gutter={[16, 16]}>
                     <Col span={24}>
-                      <h3>Upload your validated data template</h3>
+                      <h3 style={{ marginBottom: "4px" }}>
+                        Upload your completed data template
+                      </h3>
+                      <p
+                        style={{
+                          marginTop: 0,
+                          marginBottom: "8px",
+                          color: "rgba(0, 0, 0, 0.65)",
+                        }}
+                      >
+                        Download the template, enter your data, run the
+                        validation in Excel, and upload the validated file here.
+                      </p>
                       <Dragger
                         {...uploadProps}
                         style={{
+                          marginBottom: "24px",
                           display:
                             uploadProps.fileList &&
                             uploadProps.fileList.length > 0
@@ -698,12 +711,12 @@ const CaseForm = ({
                         <p className="ant-upload-text">
                           {uploading
                             ? "Uploading..."
-                            : "Select a xlsm file to import"}
+                            : "Select a .xlsm data template to upload"}
                         </p>
                         <p className="ant-upload-hint">
                           {uploading
                             ? "Please wait while the file is being uploaded"
-                            : "Drag and drop file here or click to upload"}
+                            : "Drag and drop your data file here or click to upload"}
                         </p>
                         <Button
                           className="button-browse-file"

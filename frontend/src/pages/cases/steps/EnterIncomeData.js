@@ -312,7 +312,22 @@ const EnterIncomeData = ({
           <Space direction="vertical">
             <div className="level-text">
               Feasible{" "}
-              <Tooltip title="Feasible value can be defined as the realistically achievable improvement in each income driver, based on on-ground conditions. These estimate values can be arrived through a combination of sources like local experts, farmer interviews and published research studies.">
+              <Tooltip
+                title={
+                  <>
+                    Feasible value can be defined as the realistically
+                    achievable improvement in each income driver, based on
+                    on-ground conditions. These estimate values can be arrived
+                    through a combination of sources like local experts, farmer
+                    interviews and published research studies.
+                    <br />
+                    <br />
+                    If you used the data upload function, the feasible values
+                    represent top-performing farmers in your dataset. They are
+                    based on the 90th quantile of each driver.
+                  </>
+                }
+              >
                 <span>
                   <InfoCircleOutlined style={{ fontSize: 11 }} />
                 </span>

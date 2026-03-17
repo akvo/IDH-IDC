@@ -23,6 +23,22 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Documented architectural decisions in `ADR-005` and established a regrouped optimistic estimation of 32 hours.
     - Decomposed the feature into 3 granular User Stories (Backend Schema, Input UI, and Impact Charts) with explicit UAC/TAC.
     - Updated the Sprint Plan with a detailed task breakdown for the implementation phase.
+- **Mutually Exclusive Segmentation (Feature Planning)**:
+    - Created a comprehensive Feature Document for mutually exclusive segmentation methods (Manual vs. Data Upload).
+    - Proposed a "Re-upload to Unlock" workflow to handle spreadsheet deletions while maintaining data-driven editability in existing cases.
+    - Defined requirements for tab-switch guards, confirmation modals, and read-only UI states to enforce a maximum of 5 segments.
+- **Income Composition & Gap Breakdown Clarifications (#746)**:
+    - Expanded descriptions in `ChartNeededIncomeLevel.js` and `ChartHouseholdIncomeComposition.js` to clearly explain proportional allocation of the income gap across existing sources.
+    - Standardized description container heights (`minHeight: 150`) across Step 3 visualizations to ensure visual alignment and accommodate expanded text.
+    - Refined terminology to improve user understanding of how "Additional income needed" is calculated and distributed.
+- **Text Updates & UI Clarifications (#744)**:
+    - Updated "Data Upload" tab in `CaseForm.js` with clearer titles ("Upload your completed data template"), subtitles, and simplified instructions.
+    - Refined Data Upload UI spacing in `cases.scss` to prevent overlap with drawer footers and added `marginBottom` to the upload zone.
+    - Replaced "physically possible" with "possible" in `AdvancedModellingTool.js` to align with business terminology.
+    - Added a detailed clarification to the "Feasible" tooltip in Step 2 (`EnterIncomeData.js`) regarding 90th quantile calculation for uploaded data, including line breaks for readability.
+    - Implemented a guidance tooltip for the "Number of segments" field in `SegmentConfigurationForm.js` to explain the automatic grouping logic.
+    - Created Feature Document, User Story, and Walkthrough artifacts to document the changes and verification steps.
+    - Verified implementation with a clean `yarn lint` run and backend logic validation.
 - **BMAD Team & Docs Alignment**:
     - Aligned `.agent` rules, skills, and workflows with the reference project `~/Dev/my-antigravity-pilot`.
     - Updated `bmad-team.md` and agent skills with a standardized documentation protocol (Living Documents vs. Chronological Records).

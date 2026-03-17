@@ -443,7 +443,18 @@ const SegmentConfigurationForm = ({
           <Col span={24}>
             <Form.Item
               name={`${dataUploadFieldPreffix}number_of_segments`}
-              label="Number of segments:"
+              label={
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "4px" }}
+                >
+                  <span>Number of segments:</span>
+                  <Tooltip title="Indicate the number of segments to create from the numerical variable. After selecting the number of segments, the tool groups farmers into roughly equal-sized segments. In some datasets this may lead to unexpected results, especially when the segmentation variable contains many zero, missing, or repeated values.">
+                    <QuestionCircleOutlined
+                      style={{ color: "rgba(0, 0, 0, 0.45)", fontSize: "14px" }}
+                    />
+                  </Tooltip>
+                </div>
+              }
               style={{ marginBottom: 8 }}
               required={variableType === "numerical"}
             >
