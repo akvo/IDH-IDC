@@ -10,13 +10,11 @@
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)
-- [ ] "Add Investment Cost" button appears within each Scenario tab in Step 5.
-- [ ] Clicking the button opens a modal/form with options for:
-    - Total Cost
-    - Cost Per Farmer
-    - Cost Per Land Unit
-- [ ] The form reflects the active scenario and segment selection.
-- [ ] Selecting a unit updates the calculated "Total Investment" preview in real-time.
+- [ ] "Toggle if you have an estimate of the cost required to implement the scenarios" appears below the scenario form.
+- [ ] Enabling the toggle reveals a "Total Cost" field with unit selection.
+- [ ] Clicking the down arrow near "Total Cost" expands a Granular Breakdown section.
+- [ ] Breakdown table allows selecting "Scenario component" and defines "Cost type", "Current Value", and "Total cost" columns.
+- [ ] Real-time "Total Investment" preview updates based on breakdown or global input.
 
 #### Technical Acceptance Criteria (TAC)
 - [ ] Create `InvestmentCostForm.js` component using Ant Design.

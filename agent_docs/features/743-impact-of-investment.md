@@ -10,12 +10,14 @@ Currently, the IDC allows users to model various scenarios (e.g., price increase
 Introduce a new "Impact of Investment" analysis tool within **Step 5 (Scenario Modelling)**.
 
 ### Key Components
-1. **Investment Cost Input**:
-   - Allow users to input costs for each scenario.
-   - Support multiple cost units:
-     - **Total Cost**: Flat fee for the entire project or specific segment.
-     - **Cost Per Farmer**: Variable cost based on the number of participants.
-     - **Cost Per Land Unit**: Variable cost based on the total area (e.g., acres/hectares) in the scenario.
+1. **Investment Cost Input (Inline Section)**:
+   - **Activation Toggle**: "Toggle if you have an estimate of the cost required to implement the scenarios".
+   - **Global Input**: A "Total Cost" field with a unit selector (Total, Per Farmer, Per Land Unit).
+   - **Scenario Component Breakdown**: An expandable section (triggered by a down arrow near "Total Cost") that allows mapping costs to specific scenario components:
+     - **Scenario component**: Dropdown to select the driver/component.
+     - **Cost type**: Inherits global unit or allows override.
+     - **Current Value**: Reference value (e.g., number of farmers).
+     - **Total cost**: Calculated row total.
    - **Cost Distribution**: If a total cost is provided for a case with multiple segments, the cost is automatically distributed proportionately based on the farmer count in each segment.
 
 2. **Impact Calculation**:
@@ -111,7 +113,9 @@ This object will be stored within the `config` field of a `Visualization` record
 - **Real-time Calculation Logic**:
     - Implement the `Impact per $` formula directly in the `AdvancedModellingTool` or a shared hook.
 - **UI Components**:
-    - **Investment Cost Form**: A new modal in Step 5 for inputting costs per scenario.
+    - **Step 5 Integration**: Restore and enhance `ScenarioModelingIncomeDriversAndChart.js` to include the new ROI section.
+    - **Investment Toggle & Form**: An inline section below the scenario form for inputting costs.
+    - **Component Breakdown Table**: An expandable table for granular cost mapping (Scenario Component, Cost Type, Value, Total).
     - **Impact Charts**: A bar chart visualization showing efficiency (Impact/$) across scenarios.
     - **Efficiency Table**: A summary table comparing Scenario, Total Gain, Total Cost, and ROI.
 - **State management**:
