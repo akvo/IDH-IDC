@@ -37,6 +37,7 @@ This document serves as the master map for all project artifacts, categorized by
 - [Stories: #739 Case Save UX Refinement](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md)
 - [Stories: #739 Data Upload Cleanup](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739-cleanup.md)
 - [Stories: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-744-text-updates.md)
+- [Stories: #743-0 Component Restoration](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-0-component-restoration.md)
 - [Stories: #743-1 Backend Schema](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-1-backend-schema-gate.md)
 - [Stories: #743-2 Investment Input UI](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-2-frontend-input-ui.md)
 - [Stories: #743-3 Impact Charts](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-3-frontend-impact-charts.md)

@@ -41,11 +41,17 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 ## Stories in Scope
 | ID | Title | Priority | Status | Est. Time |
 |----|-------|----------|--------|-----------|
+| STORY-743-0 | Component Restoration (Phase 1) | HIGH | [ ] | 3h |
 | STORY-743-1 | Backend Schema & Permission Gate | HIGH | [ ] | 4h |
-| STORY-743-2 | Frontend Investment Input UI | HIGH | [ ] | 6h |
-| STORY-743-3 | Frontend Calculation & Charts | HIGH | [ ] | 10h |
+| STORY-743-2 | ROI Input UI & Toggle (Phase 2) | HIGH | [ ] | 6h |
+| STORY-743-3 | ROI Charts & Calculations (Phase 2) | HIGH | [ ] | 10h |
 
 ## Detailed Task Breakdown
+### STORY-743-0: Restoration
+- [ ] Re-integrate `ScenarioModelingIncomeDriversAndChart.js` into `ClosingGap.js`
+- [ ] Verify baseline stability and chart updates
+- [ ] Cleanup or deprecate isolated `AdvancedModellingTool.js` usage if redundant
+
 ### STORY-743-1: Backend
 - [ ] Define `InvestmentCost` Pydantic models in `visualization.py`
 - [ ] Implement `is_premium` validation in `visualization` POST route

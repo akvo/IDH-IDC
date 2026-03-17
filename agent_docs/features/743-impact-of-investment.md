@@ -9,6 +9,13 @@ Currently, the IDC allows users to model various scenarios (e.g., price increase
 ## Proposed Solution
 Introduce a new "Impact of Investment" analysis tool within **Step 5 (Scenario Modelling)**.
 
+## Implementation Phases
+### Phase 1: Baseline Restoration
+Restore `ScenarioModelingIncomeDriversAndChart.js` to Step 5 to ensure chart-driven modeling is fully functional before adding premium features.
+
+### Phase 2: ROI Extension
+Implement the inline cost toggle, granular breakdown table, and impact visualizations (ROI charts).
+
 ### Key Components
 1. **Investment Cost Input (Inline Section)**:
    - **Activation Toggle**: "Toggle if you have an estimate of the cost required to implement the scenarios".
