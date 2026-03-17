@@ -10,14 +10,18 @@
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)
-- [ ] A new "Impact Comparison" bar chart renders in Step 5.
-- [ ] The chart shows "Net Income Increase / $ Investment" for all modeled scenarios.
-- [ ] An "Efficiency Table" provides a summary of Scenario, Gain, Cost, and ROI.
-- [ ] The chart and table update immediately when costs or modelling variables change.
+- [ ] "Scenario Efficiency Comparison" bar chart renders total impact score per scenario.
+- [ ] "Impact Breakdown" chart renders impact distributed per segment.
+- [ ] "Efficiency Table" (as part of outcomes) provides Summary, Gain, Cost, and ROI score.
+- [ ] Flowchart/Visual breakdown showing component cost percentages.
+- [ ] The charts and table update immediately when costs or modelling variables change.
 
 #### Technical Acceptance Criteria (TAC)
-- [ ] Implement `calculateImpactROI` logic in `frontend/src/pages/cases/utils/incomeCalculations.js`.
-- [ ] Create `ChartImpactComparison.js` using `VisualCardWrapper`.
+- [ ] Implement `calculateImpactROI` using the formula: `(Income % Increase / Total Cost) * 100`.
+- [ ] Implement cost normalization to segment level (Total, Per Farmer, Per Land Unit).
+- [ ] Implement component percentage calculation: `(Component Cost / Total Cost) * 100`.
+- [ ] Integrate new ROI charts into the existing `ScenarioModelingIncomeDriversAndChart.js` layout, ensuring existing income charts remain functional.
+- [ ] Create `ChartScenarioEfficiency.js` and `ChartImpactBreakdown.js`.
 - [ ] Create `InvestmentEfficiencyTable.js` using Ant Design `Table`.
 - [ ] Add conditional rendering to only show these components when Investment Analysis is enabled.
 

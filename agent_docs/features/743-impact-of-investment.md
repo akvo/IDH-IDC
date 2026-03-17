@@ -21,16 +21,21 @@ Introduce a new "Impact of Investment" analysis tool within **Step 5 (Scenario M
    - **Cost Distribution**: If a total cost is provided for a case with multiple segments, the cost is automatically distributed proportionately based on the farmer count in each segment.
 
 2. **Impact Calculation**:
-   - **Main Formula**: `Impact per $ = (Net Income Increase) / (Total Investment Cost)`
-   - **Percentage Impact**: `(Income Increase %) / (Total Investment Cost) * 100`
+   - **Step 1: Income Increase %**:
+     - `income_increase_percentage = (income_increase) / (current_income)`
+     - *Note*: `income_increase` is the absolute net gain from the Step 5 scenario outcomes table.
+   - **Step 2: Impact of Investment (ROI)**:
+     - `impact_of_investment = (income_increase_percentage / total_cost_segment) * 100`
+     - *Interpretation*: The percentage point increase in household income achieved for every 100 units of currency invested.
 
 3. **Visualizations**:
-   - **Impact Comparison Chart**: A bar chart comparing "Impact per $" across all modeled scenarios.
-   - **Efficiency Table**: A summary table showing:
-     - Scenario Name
-     - Total Net Income Increase
+   - **Scenario Efficiency Comparison Chart**: A bar chart comparing the total "Impact" score across all modeled scenarios.
+   - **Impact Breakdown Chart**: A chart showing how the impact is distributed across different segments for selected scenarios.
+   - **Efficiency Table**: A summary table (within "Better understand scenario outcomes") showing:
+     - Scenario/Segment Name
+     - Net Income Increase
      - Total Investment Cost
-     - Impact per $
+     - ROI (Impact score)
 
 ## Brainstorming & UX Considerations
 - **Toggle for Premium**: This feature should be gated and only visible/selectable if the "Premium" mode is enabled (or governed by user permissions).
@@ -83,12 +88,12 @@ This object will be stored within the `config` field of a `Visualization` record
     "scenarios": {
       "scenario_id_1": {
         "investment_cost": number,
-        "cost_unit": "total" | "per_farmer" | "per_land_unit",
-        "distribution": "proportionate" | "manual",
-        "manual_allocations": {
-          "segment_id_A": number,
-          "segment_id_B": number
-        }
+        "cost_unit": "total" | "per_farmer" | "per_land_unit" | "per_component",
+        "components": [
+          { "name": string, "cost": number, "unit": string }
+        ],
+        "total_cost_calculated": number,
+        "impact_score": number 
       }
     },
     "metadata": {
@@ -113,11 +118,13 @@ This object will be stored within the `config` field of a `Visualization` record
 - **Real-time Calculation Logic**:
     - Implement the `Impact per $` formula directly in the `AdvancedModellingTool` or a shared hook.
 - **UI Components**:
-    - **Step 5 Integration**: Restore and enhance `ScenarioModelingIncomeDriversAndChart.js` to include the new ROI section.
-    - **Investment Toggle & Form**: An inline section below the scenario form for inputting costs.
+    - **Step 5 Integration**: Extend the existing `ScenarioModelingIncomeDriversAndChart.js`. **Existing charts (Income Breakdown, etc.) are already developed and must be preserved.**
+    - **Investment Toggle & Form**: A new inline section added *below* the existing scenario input fields.
     - **Component Breakdown Table**: An expandable table for granular cost mapping (Scenario Component, Cost Type, Value, Total).
-    - **Impact Charts**: A bar chart visualization showing efficiency (Impact/$) across scenarios.
-    - **Efficiency Table**: A summary table comparing Scenario, Total Gain, Total Cost, and ROI.
+    - **Impact Charts**: 
+        - `ChartScenarioEfficiency`: Bar chart for scenario-level impact.
+        - `ChartImpactBreakdown`: Segment-level breakdown of impact.
+    - **Efficiency Table**: Integrated into the segment outcome table with "ROI (Impact score)".
 - **State management**:
     - Persist the input values in the local `ScenarioModel` and sync them to the backend only on save.
 
