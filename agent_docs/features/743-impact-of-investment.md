@@ -93,7 +93,7 @@ This object will be stored within the `config` field of a `Visualization` record
           { "name": string, "cost": number, "unit": string }
         ],
         "total_cost_calculated": number,
-        "impact_score": number 
+        "impact_score": number
       }
     },
     "metadata": {
@@ -118,10 +118,10 @@ This object will be stored within the `config` field of a `Visualization` record
 - **Real-time Calculation Logic**:
     - Implement the `Impact per $` formula directly in the `AdvancedModellingTool` or a shared hook.
 - **UI Components**:
-    - **Step 5 Integration**: Extend the existing `ScenarioModelingIncomeDriversAndChart.js`. **Existing charts (Income Breakdown, etc.) are already developed and must be preserved.**
+    - **Step 5 Integration**: Restore and extend the existing `ScenarioModelingIncomeDriversAndChart.js`. **Existing charts (Income Breakdown, etc.) are already developed and must be preserved.**
     - **Investment Toggle & Form**: A new inline section added *below* the existing scenario input fields.
     - **Component Breakdown Table**: An expandable table for granular cost mapping (Scenario Component, Cost Type, Value, Total).
-    - **Impact Charts**: 
+    - **Impact Charts**:
         - `ChartScenarioEfficiency`: Bar chart for scenario-level impact.
         - `ChartImpactBreakdown`: Segment-level breakdown of impact.
     - **Efficiency Table**: Integrated into the segment outcome table with "ROI (Impact score)".
