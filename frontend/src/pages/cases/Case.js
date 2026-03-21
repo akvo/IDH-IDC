@@ -161,7 +161,7 @@ const Case = () => {
       s.general.enableEditCase = editAllowed;
       s.general.enableAdvancedTools = true; // Always visible
       s.general.enableDataUpload = editAllowed && isAdvancedUser; // Restricted to advanced editors
-      s.general.enableImpactOfInvestment = true; // Always visible
+      s.general.enableImpactOfInvestment = isAdvancedUser; // Restricted to advanced/internal users
     });
   }, [
     caseId,

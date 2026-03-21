@@ -1,6 +1,6 @@
 import enum
 from db.connection import Base
-from typing import Optional
+from typing import Optional, List, Dict
 from typing_extensions import TypedDict
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, Enum, ForeignKey
@@ -61,6 +61,31 @@ class Visualization(Base):
             "tab": self.tab,
             "config": self.config,
         }
+
+
+class InvestmentComponentSchema(BaseModel):
+    name: str
+    cost: float
+    unit: str
+
+
+class InvestmentScenarioSchema(BaseModel):
+    investment_cost: Optional[float] = None
+    cost_unit: Optional[str] = "total"
+    components: Optional[List[InvestmentComponentSchema]] = []
+    total_cost_calculated: Optional[float] = 0
+    impact_score: Optional[float] = 0
+
+
+class InvestmentMetadataSchema(BaseModel):
+    currency: str = "USD"
+    last_updated: str
+
+
+class InvestmentAnalysisSchema(BaseModel):
+    is_enabled: bool = False
+    scenarios: Dict[str, InvestmentScenarioSchema] = {}
+    metadata: Optional[InvestmentMetadataSchema] = None
 
 
 class VisualizationBase(BaseModel):

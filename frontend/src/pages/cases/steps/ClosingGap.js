@@ -2,7 +2,11 @@ import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
-import { AdvancedModellingTool, StandardScenarioModeling } from "../components";
+import {
+  AdvancedModellingTool,
+  StandardScenarioModeling,
+  ImpactOfInvestmentCharts,
+} from "../components";
 import { isEmpty, isEqual } from "lodash";
 import { api, removeUndefinedObjectValue } from "../../../lib";
 
@@ -177,6 +181,9 @@ const ClosingGap = ({
 
       {/* Phase 1: Restored Standard Scenario Section */}
       <StandardScenarioModeling />
+
+      {/* Phase 2: Impact of Investment Charts */}
+      <ImpactOfInvestmentCharts />
 
       {/* Complete Button */}
       <Col span={24}>

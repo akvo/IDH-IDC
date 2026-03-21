@@ -14,6 +14,7 @@ import { CaseUIState, CaseVisualState } from "../store";
 import { selectProps } from "../../../lib";
 import { SegmentTabsWrapper } from "../layout";
 import ScenarioModelingIncomeDriversAndChart from "./ScenarioModelingIncomeDriversAndChart";
+import ScenarioModelingROIForm from "./ScenarioModelingROIForm";
 import { InfoCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const ScenarioModelingForm = ({
@@ -31,55 +32,94 @@ const ScenarioModelingForm = ({
 
   useEffect(() => {
     const { name, description, percentage } = currentScenarioData;
+    const invAnalysis = scenarioModeling.config.investment_analysis || {};
+    const scenarioInv = invAnalysis.scenarios?.[currentScenarioData.key] || {};
+
     scenarioDetailForm.setFieldsValue({
       name,
       description,
       percentage,
+      is_roi_enabled: invAnalysis.is_enabled || false,
+      investment_cost: scenarioInv.investment_cost || null,
+      cost_unit: scenarioInv.cost_unit || "total",
     });
     setCurrent(currentScenarioData);
-  }, [currentScenarioData, scenarioDetailForm]);
+  }, [
+    currentScenarioData,
+    scenarioDetailForm,
+    scenarioModeling.config.investment_analysis,
+  ]);
 
   const onDeleteScenario = () => {
     setDeleting(true);
     const remainScenarios = scenarioModeling.config.scenarioData.filter(
       (sd) => sd.key !== currentScenarioData.key
     );
-    CaseVisualState.update((s) => ({
-      ...s,
-      scenarioModeling: {
-        ...s.scenarioModeling,
-        config: {
-          ...s.scenarioModeling.config,
-          scenarioData: remainScenarios,
-        },
-      },
-    }));
+    CaseVisualState.update((s) => {
+      s.scenarioModeling.config.scenarioData = remainScenarios;
+
+      if (s.scenarioModeling.config.investment_analysis?.scenarios) {
+        delete s.scenarioModeling.config.investment_analysis.scenarios[
+          currentScenarioData.key
+        ];
+      }
+    });
     setActiveScenario(remainScenarios[0]?.key);
     setCurrent(remainScenarios[0]);
     setDeleting(false);
   };
 
   const onScenarioDetailFormValuesChange = (changedValue) => {
-    CaseVisualState.update((s) => ({
-      ...s,
-      scenarioModeling: {
-        ...s.scenarioModeling,
-        config: {
-          ...s.scenarioModeling.config,
-          scenarioData: s.scenarioModeling.config.scenarioData.map(
-            (scenario) => {
-              if (scenario.key === currentScenarioData.key) {
-                return {
-                  ...scenario,
-                  ...changedValue,
-                };
-              }
-              return scenario;
-            }
-          ),
-        },
-      },
-    }));
+    const isRoiChange = ["is_roi_enabled", "investment_cost", "cost_unit"].some(
+      (key) => Object.keys(changedValue).includes(key)
+    );
+
+    CaseVisualState.update((s) => {
+      const config = s.scenarioModeling.config;
+
+      if (isRoiChange) {
+        if (!config.investment_analysis) {
+          config.investment_analysis = {
+            is_enabled: false,
+            scenarios: {},
+            metadata: {
+              currency: s.currentCase?.currency || "USD",
+              last_updated: new Date().toISOString(),
+            },
+          };
+        }
+
+        const invAnalysis = config.investment_analysis;
+        invAnalysis.metadata.last_updated = new Date().toISOString();
+
+        if (typeof changedValue.is_roi_enabled !== "undefined") {
+          invAnalysis.is_enabled = changedValue.is_roi_enabled;
+        }
+
+        const scenarioKey = currentScenarioData.key;
+        if (!invAnalysis.scenarios[scenarioKey]) {
+          invAnalysis.scenarios[scenarioKey] = {
+            investment_cost: null,
+            cost_unit: "total",
+            components: [],
+          };
+        }
+
+        const scenarioInv = invAnalysis.scenarios[scenarioKey];
+        if (typeof changedValue.investment_cost !== "undefined") {
+          scenarioInv.investment_cost = changedValue.investment_cost;
+        }
+        if (typeof changedValue.cost_unit !== "undefined") {
+          scenarioInv.cost_unit = changedValue.cost_unit;
+        }
+      } else {
+        config.scenarioData.forEach((scenario) => {
+          if (scenario.key === currentScenarioData.key) {
+            Object.assign(scenario, changedValue);
+          }
+        });
+      }
+    });
   };
 
   return (
@@ -164,15 +204,24 @@ const ScenarioModelingForm = ({
               </Form.Item>
             </Col>
           </Row>
-        </Form>
-      </Col>
+          <Row gutter={[24, 10]}>
+            <Col span={24}>
+              <SegmentTabsWrapper>
+                <ScenarioModelingIncomeDriversAndChart
+                  currentScenarioData={current}
+                />
+              </SegmentTabsWrapper>
 
-      <Col span={24}>
-        <SegmentTabsWrapper>
-          <ScenarioModelingIncomeDriversAndChart
-            currentScenarioData={current}
-          />
-        </SegmentTabsWrapper>
+              {/* Phase 2: Impact of Investment Section */}
+              <ScenarioModelingROIForm
+                form={scenarioDetailForm}
+                currentScenarioData={current}
+                enableEditCase={enableEditCase}
+                scenarioModeling={scenarioModeling}
+              />
+            </Col>
+          </Row>
+        </Form>
       </Col>
     </Row>
   );

@@ -3,14 +3,16 @@ import json
 
 import db.crud_visualization as crud_visualization
 import db.crud_case as crud_case
+import db.crud_user as crud_user
 
-from fastapi import APIRouter, Request, Depends, Query
+from fastapi import APIRouter, Request, Depends, Query, HTTPException
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
 from db.connection import get_session
 from models.visualization import VisualizationDict
+from models.user import UserRole, UserType
 from middleware import verify_case_editor, verify_case_viewer
 
 security = HTTPBearer()
@@ -53,6 +55,21 @@ async def create_visualization(
     user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
+
+    # Phase 2: Premium Gating for investment_analysis
+    # Premium = Internal or External Advanced
+    is_premium = user.user_type in [
+        UserType.internal,
+        UserType.external_advanced,
+    ] or user.role in [UserRole.super_admin, UserRole.admin]
+
+    for item in payload:
+        config = item.get("config", {})
+        if "investment_analysis" in config and not is_premium:
+            raise HTTPException(
+                status_code=403,
+                detail="Investment analysis is a premium feature.",
+            )
 
     # Process create or update
     data = crud_visualization.create_or_update_visualization(
