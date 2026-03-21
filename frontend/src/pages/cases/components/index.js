@@ -26,5 +26,6 @@ export { default as StandardScenarioModeling } from "./StandardScenarioModeling"
 export { default as AdvancedModellingTool } from "./AdvancedModellingTool";
 export { default as EquationVisualizer } from "./EquationVisualizer";
 export { default as IncomeGatingAlert } from "./IncomeGatingAlert";
+export { default as ScenarioModelingIncomeDriversAndChart } from "./ScenarioModelingIncomeDriversAndChart";
 
 export const MAX_SEGMENT = 5;

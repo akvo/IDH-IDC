@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
-import { AdvancedModellingTool } from "../components";
+import { AdvancedModellingTool, StandardScenarioModeling } from "../components";
 import { isEmpty, isEqual } from "lodash";
 import { api, removeUndefinedObjectValue } from "../../../lib";
 
@@ -174,6 +174,9 @@ const ClosingGap = ({
           disabled={!enableEditCase || !enableAdvancedTools}
         />
       </Col>
+
+      {/* Phase 1: Restored Standard Scenario Section */}
+      <StandardScenarioModeling />
 
       {/* Complete Button */}
       <Col span={24}>
