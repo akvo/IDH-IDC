@@ -56,10 +56,10 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 - [x] Synchronize top-level investment cost with breakdown items
 
 ### STORY-743-4: Per-Segment ROI (NEXT)
-- [ ] Enable "Per segment" toggle in `ScenarioModelingROIForm.js`
-- [ ] Implement `Tabs` interface to switch between segment-specific costs
-- [ ] Synchronize per-segment state with global `CaseVisualState`
-- [ ] Ensure "Total investment cost" remains read-only when tabs are active
+- [ ] Relocate `ScenarioModelingROIForm.js` inside the segment-specific tabs.
+- [ ] Implement data isolation by `segment_id` (Figma Aligned).
+- [ ] Ensure "Total investment cost" reflects the specific segment's contribution.
+- [ ] Sync the scenario-level total for final aggregate charts.
 
 ### STORY-743-5: ROI Logic & Allocation
 - [ ] Implement `calculate_roi` in `roiCalculations.js` using the defined formula: `(% Increase / Total Cost) * 100`

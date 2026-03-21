@@ -20,10 +20,10 @@ Implement the inline cost toggle, granular breakdown table, and impact visualiza
 > **Scenario-Specific Attachment**: Investment costs and ROI calculations are strictly attached to each **individual scenario**. This allows users to compare the cost-effectiveness of different strategies (e.g., Scenario A vs. Scenario B) within the same case.
 
 ### Key Components
-1. **Investment Cost Input (Inline Section)**:
-   - **Activation Toggle**: "Toggle if you have an estimate of the cost required to implement the scenarios".
-   - **Top-level Summary**: A "Total investment cost" field with a unit selector (Total, Per Farmer, Per Land Unit).
-     - *Note*: This field becomes **read-only and locked** with an icon when detailed components are added.
+20. **Investment Cost Input (Inline Section)**:
+   - **Placement**: Nested **within each Segment Tab** of each scenario modelling view (Figma Aligned).
+   - **Activation Toggle**: "Toggle if you have an estimate of the cost required to implement the scenarios" (Scenario-level).
+   - **Form Interface**: Appears at the bottom of the income driver modeling section for the active segment.
    - **Scenario Component Breakdown**: An expandable section that allows mapping costs to specific intervention areas:
      - **ROI Component**: Dropdown to select from standard options (Training, Capacity Building, etc.).
      - **Unit**: Choice of Total, Per Farmer, or Per Land Unit.
