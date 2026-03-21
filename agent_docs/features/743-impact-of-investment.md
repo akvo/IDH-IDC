@@ -16,6 +16,9 @@ Restore `ScenarioModelingIncomeDriversAndChart.js` to Step 5 to ensure chart-dri
 ### Phase 2: ROI Extension
 Implement the inline cost toggle, granular breakdown table, and impact visualizations (ROI charts).
 
+> [!NOTE]
+> **Scenario-Specific Attachment**: Investment costs and ROI calculations are strictly attached to each **individual scenario**. This allows users to compare the cost-effectiveness of different strategies (e.g., Scenario A vs. Scenario B) within the same case.
+
 ### Key Components
 1. **Investment Cost Input (Inline Section)**:
    - **Activation Toggle**: "Toggle if you have an estimate of the cost required to implement the scenarios".
