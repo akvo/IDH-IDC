@@ -10,22 +10,24 @@
 
 ### Acceptance Criteria
 #### User Acceptance Criteria (UAC)
-- [ ] "Toggle if you have an estimate of the cost required to implement the scenarios" appears below the scenario form.
-- [ ] Enabling the toggle reveals a "Total Cost" field with unit selection.
-- [ ] Clicking the down arrow near "Total Cost" expands a Granular Breakdown section.
-- [ ] Breakdown table allows selecting "Scenario component" and defines "Cost type", "Current Value", and "Total cost" columns.
-- [ ] Real-time "Total Investment" preview updates based on breakdown or global input.
+- [x] "Toggle if you have an estimate of the cost required to implement the scenarios" appears below the scenario form.
+- [x] Enabling the toggle reveals a "**Total investment cost**" field with unit selection.
+- [x] Detailed breakdown section allows selecting "**ROI Component**" and defines "**Unit**", "**Cost**", and "**Total**" columns.
+- [x] "**Total investment cost**" field becomes **read-only and locked** with an icon when detailed components are added.
+- [x] Real-time multipliers (e.g., `x 100 Farmers`) are displayed in the Cost column for clarity.
+- [x] Real-time "**Total**" column updates based on `Cost * Multiplier`.
 
 #### Technical Acceptance Criteria (TAC)
-- [ ] Create `InvestmentCostForm.js` component using Ant Design.
-- [ ] Integrate with `CaseVisualState` (Scenario Modelling store).
-- [ ] Ensure state is per-scenario and per-segment where applicable.
+- [x] Create standalone `ScenarioModelingROIForm.js` component using Ant Design.
+- [x] Integrate with `CaseVisualState` (Scenario Modelling store).
+- [x] Implement robust state synchronization between the detailed breakdown and the summary total.
+- [x] Avoid Immer state mutation errors by using direct state updates.
 
 ### Technical Notes
 - Use `InputNumberThousandFormatter` for currency inputs.
-- Ensure the modal is accessible and follows existing IDH-IDC design patterns.
+- Multipliers derived from `farmers_count` (per farmer) or are static (total).
 
 ### Definition of Done
-- [ ] UI verified on 1280x720.
-- [ ] Form state persists locally when switching scenarios.
-- [ ] No React hook dependency warnings.
+- [x] UI verified on 1280x720.
+- [x] Form state persists locally when switching scenarios.
+- [x] No React hook dependency warnings.

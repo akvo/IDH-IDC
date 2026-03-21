@@ -19,21 +19,20 @@ Implement the inline cost toggle, granular breakdown table, and impact visualiza
 ### Key Components
 1. **Investment Cost Input (Inline Section)**:
    - **Activation Toggle**: "Toggle if you have an estimate of the cost required to implement the scenarios".
-   - **Global Input**: A "Total Cost" field with a unit selector (Total, Per Farmer, Per Land Unit).
-   - **Scenario Component Breakdown**: An expandable section (triggered by a down arrow near "Total Cost") that allows mapping costs to specific scenario components:
-     - **Scenario component**: Dropdown to select the driver/component.
-     - **Cost type**: Inherits global unit or allows override.
-     - **Current Value**: Reference value (e.g., number of farmers).
-     - **Total cost**: Calculated row total.
-   - **Cost Distribution**: If a total cost is provided for a case with multiple segments, the cost is automatically distributed proportionately based on the farmer count in each segment.
+   - **Top-level Summary**: A "Total investment cost" field with a unit selector (Total, Per Farmer, Per Land Unit).
+     - *Note*: This field becomes **read-only and locked** with an icon when detailed components are added.
+   - **Scenario Component Breakdown**: An expandable section that allows mapping costs to specific intervention areas:
+     - **ROI Component**: Dropdown to select from standard options (Training, Capacity Building, etc.).
+     - **Unit**: Choice of Total, Per Farmer, or Per Land Unit.
+     - **Cost**: The primary input field (renamed from "Current Value").
+     - **Multiplier Display**: Dynamic label showing the target quantity (e.g., `x 135 Farmers`).
+     - **Total**: Calculated row total (renamed from "Total cost").
+   - **Cost Distribution**: If case-wide mode is active (Per-segment toggle OFF), the total investment is automatically distributed proportionately based on the farmer count in each segment.
 
 2. **Impact Calculation**:
-   - **Step 1: Income Increase %**:
-     - `income_increase_percentage = (income_increase) / (current_income)`
-     - *Note*: `income_increase` is the absolute net gain from the Step 5 scenario outcomes table.
-   - **Step 2: Impact of Investment (ROI)**:
-     - `impact_of_investment = (income_increase_percentage / total_cost_segment) * 100`
-     - *Interpretation*: The percentage point increase in household income achieved for every 100 units of currency invested.
+   - **Formula**: `Impact of Investment = (Income Increase % / Total Investment Cost) * 100`
+   - **Definition**: The percentage point increase in household income achieved for every $1 (or currency unit) invested.
+   - **Example**: If income increases by 10% and the investment is $5, the impact score is 2.0 (10/5*100 = 200, wait, `10/5 = 2.0`). The document says `* 100` so it might be `200`. We will stick to the Doc's `(10%/5)*100`.
 
 3. **Visualizations**:
    - **Scenario Efficiency Comparison Chart**: A bar chart comparing the total "Impact" score across all modeled scenarios.

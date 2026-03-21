@@ -24,7 +24,7 @@
 - Reference `ADR-005` for schema structure.
 
 ### Definition of Done
-- [ ] Pydantic unit tests for the updated schema.
-- [ ] API integration test verifying premium gating.
-- [ ] Code reviewed.
-- [ ] Documentation updated.
+- [x] Pydantic unit tests for the updated schema.
+- [x] API integration test verifying premium gating.
+- [x] Code reviewed.
+- [x] Documentation updated.

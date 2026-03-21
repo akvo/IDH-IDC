@@ -36,44 +36,48 @@ Improve the "Case Creation" experience by preventing accidental data loss and pr
 # Sprint Plan: Impact of Investment Analysis (#743)
 
 ## Sprint Objective
-Enable premium users to analyze the cost-effectiveness (ROI) of different income-improvement scenarios within Step 5.
+Enable premium users to analyze the cost-effectiveness (ROI) of different income-improvement scenarios within Step 5, supporting both case-wide and segment-specific cost breakdowns.
 
 ## Stories in Scope
-| ID | Title | Priority | Status | Est. Time |
+| ID | Title | Priority | Status | Actual/Est. |
 |----|-------|----------|--------|-----------|
-| STORY-743-0 | Component Restoration (Phase 1) | HIGH | [ ] | 3h |
-| STORY-743-1 | Backend Schema & Permission Gate | HIGH | [ ] | 4h |
-| STORY-743-2 | ROI Input UI & Toggle (Phase 2) | HIGH | [ ] | 6h |
-| STORY-743-3 | ROI Charts & Calculations (Phase 2) | HIGH | [ ] | 10h |
+| STORY-743-0 | Component Restoration (Phase 1) | HIGH | [x] | 2h |
+| STORY-743-1 | Backend Schema & Permission Gate | HIGH | [x] | 3h |
+| STORY-743-2 | ROI Breakdown UI & Multipliers | HIGH | [x] | 4h |
+| STORY-743-4 | Per-Segment ROI Breakdown (Tabs) | HIGH | [ ] | 4h |
+| STORY-743-5 | ROI Logic & Cost Allocation | HIGH | [ ] | 6h |
+| STORY-743-3 | Impact of Investment Charts | MEDIUM | [/] | 6h |
 
 ## Detailed Task Breakdown
-### STORY-743-0: Restoration
-- [ ] Re-integrate `ScenarioModelingIncomeDriversAndChart.js` into `ClosingGap.js`
-- [ ] Verify baseline stability and chart updates
-- [ ] Cleanup or deprecate isolated `AdvancedModellingTool.js` usage if redundant
+### STORY-743-2: ROI Breakdown UI (COMPLETED)
+- [x] Extract ROI form into standalone component
+- [x] Rename "Current Value" -> "Cost" and "Total cost" -> "Total"
+- [x] Implement multipliers (e.g., "x 100 Farmers") for clarity
+- [x] Synchronize top-level investment cost with breakdown items
 
-### STORY-743-1: Backend
-- [ ] Define `InvestmentCost` Pydantic models in `visualization.py`
-- [ ] Implement `is_premium` validation in `visualization` POST route
-- [ ] Backend test: verify 422 for invalid investment JSON
-- [ ] Backend test: verify 403 for non-premium attempts
+### STORY-743-4: Per-Segment ROI (NEXT)
+- [ ] Enable "Per segment" toggle in `ScenarioModelingROIForm.js`
+- [ ] Implement `Tabs` interface to switch between segment-specific costs
+- [ ] Synchronize per-segment state with global `CaseVisualState`
+- [ ] Ensure "Total investment cost" remains read-only when tabs are active
 
-### STORY-743-2: Frontend Input UI
-- [ ] Add "Add Investment" state to `CaseVisualStore`
-- [ ] Implement `InvestmentModal` component for cost entry
-- [ ] Logic: Toggle between Total/Per-Farmer/Per-Land units
-- [ ] UI: Ensure currency formatting follows project standards
+### STORY-743-5: ROI Logic & Allocation
+- [ ] Implement `calculate_roi` in `roiCalculations.js` using the defined formula: `(% Increase / Total Cost) * 100`
+- [ ] Implement automatic cost allocation: split "Total" cost proportionally by farmer count if per-segment is OFF
+- [ ] Integrate land area calculation: use `avg_land_area * farmers` for "Per Land Unit" multipliers
 
-### STORY-743-3: Analytics & Viz
-- [ ] Logic: Proportionate cost distribution across segments
-- [ ] Logic: Net Gain / Total Investment calculation
-- [ ] Component: Impact Comparison Bar Chart
-- [ ] Component: Investment Efficiency Table
+### STORY-743-3: Visualization & Finishing
+- [ ] Finalize `ImpactOfInvestmentCharts.js` data aggregation
+- [ ] Add "Investment Efficiency" column chart to Step 5
+- [ ] Implement "Income vs Cost" comparison visualization
 
 ## Verification Plan
+### Automated Tests
+- Run `yarn lint` and `./dc.sh exec backend pytest tests/test_080_visualization.py`
+- Verify ROI utility logic with Jest unit tests in `roiCalculations.test.js`
+
 ### Manual Verification
-1. Open Step 5 with a premium user.
-2. Model at least two scenarios.
-3. Add different costs to each scenario.
-4. Verify the "Impact Comparison" chart reflects the ROI difference.
-5. Verify costs distribute correctly when adding/removing segments.
+1. Model scenarios in Step 5 and toggle "Add Investment".
+2. Switch between "Case-wide" and "Per segment" modes.
+3. Verify that changing cost in Segment A does not override Segment B.
+4. Verify the "Impact" charts reflect real-time calculation updates.

@@ -41,6 +41,8 @@ This document serves as the master map for all project artifacts, categorized by
 - [Stories: #743-1 Backend Schema](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-1-backend-schema-gate.md)
 - [Stories: #743-2 Investment Input UI](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-2-frontend-input-ui.md)
 - [Stories: #743-3 Impact Charts](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-3-frontend-impact-charts.md)
+- [Stories: #743-4 Per-Segment ROI Breakdown](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-4-per-segment-roi.md)
+- [Stories: #743-5 ROI Logic & Allocation](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-5-roi-calculations.md)
 - [Safety Audits](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/)
 - [Safety Audit: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/safety-audit-issue-744.md)
 - [QA Guides](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/)
