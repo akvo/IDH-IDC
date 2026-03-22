@@ -58,13 +58,17 @@ const ScenarioModelingForm = ({
     const invAnalysis = scenarioModeling.config.investment_analysis || {};
     const scenarioInv = invAnalysis.scenarios?.[currentScenarioData.key] || {};
 
-    let investment_cost = scenarioInv.investment_cost || null;
-    let cost_unit = scenarioInv.cost_unit || "total";
+    let investment_cost = 0;
+    let cost_unit = "total";
 
-    if (activeSegmentId && scenarioInv.segments?.[activeSegmentId]) {
-      const segmentInv = scenarioInv.segments[activeSegmentId];
-      investment_cost = segmentInv.investment_cost || 0;
-      cost_unit = segmentInv.cost_unit || "total";
+    if (activeSegmentId) {
+      const segmentInv = scenarioInv.segments?.[activeSegmentId];
+      investment_cost = segmentInv?.investment_cost || 0;
+      cost_unit = segmentInv?.cost_unit || "total";
+    } else {
+      // Fallback for scenario-level (not typically used in tab view but for safety)
+      investment_cost = scenarioInv.investment_cost || 0;
+      cost_unit = scenarioInv.cost_unit || "total";
     }
 
     scenarioDetailForm.setFieldsValue({

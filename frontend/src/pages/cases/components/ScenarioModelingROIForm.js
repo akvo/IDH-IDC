@@ -94,9 +94,9 @@ const ScenarioModelingROIForm = ({
       scenarioInv.investment_cost = scenarioTotal;
       scenarioInv.cost_unit = "total"; // Force total when components exist
 
-      // Update form
+      // Update form with segment-specific cost
       form?.setFieldsValue({
-        investment_cost: scenarioTotal,
+        investment_cost: segmentTotal,
         cost_unit: "total",
       });
     });
@@ -132,9 +132,9 @@ const ScenarioModelingROIForm = ({
       );
       scenarioInv.investment_cost = scenarioTotal;
 
-      // Update form
+      // Update form with segment-specific cost
       form?.setFieldsValue({
-        investment_cost: scenarioTotal,
+        investment_cost: segmentTotal,
       });
     });
   };
@@ -163,9 +163,9 @@ const ScenarioModelingROIForm = ({
       );
       scenarioInv.investment_cost = scenarioTotal;
 
-      // Update form
+      // Update form with segment-specific cost
       form?.setFieldsValue({
-        investment_cost: scenarioTotal,
+        investment_cost: segmentTotal,
       });
     });
   };
