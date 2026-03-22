@@ -110,9 +110,31 @@ export const calculateScenarioROI = (
   }
 
   const roi = totalIncomeImprovement / totalCost;
+
+  // Calculate component breakdown for charts
+  const componentBreakdown = {};
+  if (investmentData.segments) {
+    Object.keys(investmentData.segments).forEach((segmentId) => {
+      const segInv = investmentData.segments[segmentId];
+      const segment = segments.find((s) => s.id === segmentId);
+      if (!segment || !segInv.components) {
+        return;
+      }
+
+      segInv.components.forEach((comp) => {
+        const name = comp.name || "Other";
+        const multiplier =
+          comp.unit === "per_farmer" ? segment.number_of_farmers || 0 : 1;
+        const compTotal = (comp.cost || 0) * multiplier;
+        componentBreakdown[name] = (componentBreakdown[name] || 0) + compTotal;
+      });
+    });
+  }
+
   return {
     roi,
     totalIncomeImprovement,
     totalCost,
+    componentBreakdown,
   };
 };

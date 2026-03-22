@@ -46,7 +46,8 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-2 | ROI Breakdown UI & Multipliers | HIGH | [x] | 4h |
 | STORY-743-4 | Per-Segment ROI Breakdown (Tabs) | HIGH | [ ] | 4h |
 | STORY-743-5 | ROI Logic & Cost Allocation | HIGH | [ ] | 6h |
-| STORY-743-3 | Impact of Investment Charts | MEDIUM | [/] | 6h |
+| STORY-743-3 | Impact of Investment Charts | MEDIUM | [x] | 6h |
+| STORY-743-6 | ROI Design Alignment (Figma) | HIGH | [x] | 6h |
 
 ## Detailed Task Breakdown
 ### STORY-743-2: ROI Breakdown UI (COMPLETED)
@@ -66,10 +67,16 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 - [ ] Implement automatic cost allocation: split "Total" cost proportionally by farmer count if per-segment is OFF
 - [ ] Integrate land area calculation: use `avg_land_area * farmers` for "Per Land Unit" multipliers
 
-### STORY-743-3: Visualization & Finishing
-- [ ] Finalize `ImpactOfInvestmentCharts.js` data aggregation
-- [ ] Add "Investment Efficiency" column chart to Step 5
-- [ ] Implement "Income vs Cost" comparison visualization
+### STORY-743-3: Visualization & Finishing (COMPLETED)
+- [x] Finalize `ImpactOfInvestmentCharts.js` data aggregation
+- [x] Add "Investment Efficiency" column chart to Step 5
+- [x] Implement "Income vs Cost" comparison visualization
+
+### STORY-743-6: ROI Design Alignment (Figma)
+- [ ] Implement zigzag layout (Chart/Text, Text/Chart) in `ImpactOfInvestmentCharts.js`
+- [ ] Implement "Scenario Cost by component" grouped chart
+- [ ] Integrate Figma-specific descriptive texts and headers
+- [ ] Refine ROI percentage chart to match Figma visual style
 
 ## Verification Plan
 ### Automated Tests

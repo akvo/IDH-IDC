@@ -255,9 +255,21 @@ const StandardScenarioModeling = () => {
       {/* Section 3 */}
       <Col span={24}>
         <Card className="card-section-wrapper">
-          <Space className="step-wrapper" align="center">
+          <Space className="step-wrapper" align="top">
             <div className="number">3.</div>
-            <div className="label">Impact of Investment Analysis</div>
+            <div className="label">
+              Assess the impact of your investment
+              <div className="description">
+                This section allows you to assess the return on investment of
+                each scenario in terms of its contribution to closing the income
+                gap for farmers. It helps you compare the cost-efficiency of
+                different interventions, understand the main cost components
+                involved in implementation, and see how your resources translate
+                into income improvements at farmer and segment level. The focus
+                is on social returns rather than financial returns for the
+                company.
+              </div>
+            </div>
           </Space>
         </Card>
       </Col>

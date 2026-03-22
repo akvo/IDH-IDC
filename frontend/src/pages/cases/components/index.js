@@ -23,7 +23,6 @@ export { default as TwoBinningDriverForm } from "./TwoBinningDriverForm";
 export { default as ExploreChangeToCloseTheGap } from "./ExploreChangeToCloseTheGap";
 export { default as ThreeDriverCalculator } from "./ThreeDriverCalculator";
 export { default as StandardScenarioModeling } from "./StandardScenarioModeling";
-export { default as ImpactOfInvestmentCharts } from "./ImpactOfInvestmentCharts";
 export { default as AdvancedModellingTool } from "./AdvancedModellingTool";
 export { default as EquationVisualizer } from "./EquationVisualizer";
 export { default as IncomeGatingAlert } from "./IncomeGatingAlert";
