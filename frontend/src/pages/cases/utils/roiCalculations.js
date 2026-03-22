@@ -24,6 +24,9 @@ export const calculateScenarioROI = (
   }
 
   const getLandArea = (segment) => {
+    if (segment?.land_size) {
+      return parseFloat(segment.land_size) || 0;
+    }
     if (!segment?.answers) {
       return 0;
     }
@@ -45,7 +48,7 @@ export const calculateScenarioROI = (
   // Iterate over scenario values (which contain segment-specific calculations)
   scenario.scenarioValues?.forEach((sv) => {
     const segmentId = sv.segmentId;
-    const segment = segments.find((s) => s.id === segmentId);
+    const segment = segments.find((s) => s.id == segmentId);
     if (!segment) {
       return;
     }
@@ -66,7 +69,7 @@ export const calculateScenarioROI = (
     // New per-segment logic
     Object.keys(investmentData.segments).forEach((segmentId) => {
       const segInv = investmentData.segments[segmentId];
-      const segment = segments.find((s) => s.id === segmentId);
+      const segment = segments.find((s) => s.id == segmentId);
       if (!segment) {
         return;
       }
@@ -116,15 +119,19 @@ export const calculateScenarioROI = (
   if (investmentData.segments) {
     Object.keys(investmentData.segments).forEach((segmentId) => {
       const segInv = investmentData.segments[segmentId];
-      const segment = segments.find((s) => s.id === segmentId);
+      const segment = segments.find((s) => s.id == segmentId);
       if (!segment || !segInv.components) {
         return;
       }
 
       segInv.components.forEach((comp) => {
         const name = comp.name || "Other";
-        const multiplier =
-          comp.unit === "per_farmer" ? segment.number_of_farmers || 0 : 1;
+        let multiplier = 1;
+        if (comp.unit === "per_farmer") {
+          multiplier = segment.number_of_farmers || 0;
+        } else if (comp.unit === "per_land_unit") {
+          multiplier = (segment.number_of_farmers || 0) * getLandArea(segment);
+        }
         const compTotal = (comp.cost || 0) * multiplier;
         componentBreakdown[name] = (componentBreakdown[name] || 0) + compTotal;
       });

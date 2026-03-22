@@ -81,7 +81,12 @@ const ScenarioModelingROIForm = ({
 
       // Recalculate segment total
       const segmentTotal = newComponents.reduce((acc, item) => {
-        const multiplier = item.unit === "per_farmer" ? farmers : 1;
+        let multiplier = 1;
+        if (item.unit === "per_farmer") {
+          multiplier = farmers;
+        } else if (item.unit === "per_land_unit") {
+          multiplier = farmers * (segment?.land_size || 0);
+        }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
       segmentInv.investment_cost = segmentTotal;
@@ -120,7 +125,12 @@ const ScenarioModelingROIForm = ({
 
       // Recalculate segment total
       const segmentTotal = newComponents.reduce((acc, item) => {
-        const multiplier = item.unit === "per_farmer" ? farmers : 1;
+        let multiplier = 1;
+        if (item.unit === "per_farmer") {
+          multiplier = farmers;
+        } else if (item.unit === "per_land_unit") {
+          multiplier = farmers * (segment?.land_size || 0);
+        }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
       segmentInv.investment_cost = segmentTotal;
@@ -151,7 +161,12 @@ const ScenarioModelingROIForm = ({
 
       // Recalculate segment total
       const segmentTotal = newComponents.reduce((acc, item) => {
-        const multiplier = item.unit === "per_farmer" ? farmers : 1;
+        let multiplier = 1;
+        if (item.unit === "per_farmer") {
+          multiplier = farmers;
+        } else if (item.unit === "per_land_unit") {
+          multiplier = farmers * (segment?.land_size || 0);
+        }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
       segmentInv.investment_cost = segmentTotal;
