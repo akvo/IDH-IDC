@@ -19,7 +19,7 @@ export const calculateScenarioROI = (
   const scenarioKey = scenario.key;
   const investmentData = investmentAnalysis.scenarios?.[scenarioKey];
 
-  if (!investmentData || !investmentData.investment_cost) {
+  if (!investmentData) {
     return null;
   }
 
@@ -53,7 +53,7 @@ export const calculateScenarioROI = (
     const farmerCount = segment.number_of_farmers || 0;
     const baselineIncome = sv.currentSegmentValue?.total_current_income || 0;
     const scenarioIncome =
-      sv.updatedSegmentScenarioValue?.total_feasible_income || 0;
+      sv.updatedSegmentScenarioValue?.total_current_income || 0;
 
     const netIncomeChange = scenarioIncome - baselineIncome;
     totalIncomeImprovement += netIncomeChange * farmerCount;

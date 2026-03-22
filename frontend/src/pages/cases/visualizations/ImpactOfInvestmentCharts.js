@@ -13,8 +13,10 @@ import Chart from "../../../components/chart";
 const { Text } = Typography;
 
 const ImpactOfInvestmentCharts = () => {
-  const { scenarioModeling } = CaseVisualState.useState((s) => s);
-  const { segments, currency } = CurrentCaseState.useState((s) => s);
+  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
+    (s) => s
+  );
+  const { currency } = CurrentCaseState.useState((s) => s);
 
   const investmentAnalysis = scenarioModeling.config.investment_analysis;
 
@@ -28,7 +30,7 @@ const ImpactOfInvestmentCharts = () => {
         const result = calculateScenarioROI(
           scenario,
           investmentAnalysis,
-          segments
+          dashboardData
         );
         return {
           key: scenario.key,
@@ -37,7 +39,7 @@ const ImpactOfInvestmentCharts = () => {
         };
       })
       .filter((d) => d && d.totalCost !== null);
-  }, [scenarioModeling.config.scenarioData, investmentAnalysis, segments]);
+  }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
 
   const componentCostChartData = useMemo(() => {
     // Grouped column chart: X-axis = Component Name, Series = Scenarios
