@@ -90,6 +90,7 @@ const ScenarioModelingROIForm = ({
         return acc + (item.cost || 0) * multiplier;
       }, 0);
       segmentInv.investment_cost = segmentTotal;
+      segmentInv.cost_unit = "total";
 
       // Recalculate scenario total
       const scenarioTotal = Object.values(scenarioInv.segments).reduce(
@@ -134,6 +135,7 @@ const ScenarioModelingROIForm = ({
         return acc + (item.cost || 0) * multiplier;
       }, 0);
       segmentInv.investment_cost = segmentTotal;
+      segmentInv.cost_unit = "total";
 
       // Recalculate scenario total
       const scenarioTotal = Object.values(scenarioInv.segments).reduce(
@@ -170,6 +172,7 @@ const ScenarioModelingROIForm = ({
         return acc + (item.cost || 0) * multiplier;
       }, 0);
       segmentInv.investment_cost = segmentTotal;
+      segmentInv.cost_unit = "total";
 
       // Recalculate scenario total
       const scenarioTotal = Object.values(scenarioInv.segments).reduce(
