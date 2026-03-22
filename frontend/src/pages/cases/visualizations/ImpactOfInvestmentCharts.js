@@ -1,12 +1,11 @@
-import React, { useMemo } from "react";
-import { Row, Col, Typography, Space, Table, Tag, Card } from "antd";
+import React, { useMemo, useState } from "react";
+import { Row, Col, Typography, Space, Table, Card, Select } from "antd";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { calculateScenarioROI } from "../utils/roiCalculations";
 import {
   thousandFormatter,
   Color,
 } from "../../../components/chart/options/common";
-import { RiseOutlined } from "@ant-design/icons";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 
@@ -18,9 +17,11 @@ const ImpactOfInvestmentCharts = () => {
   );
   const { currency } = CurrentCaseState.useState((s) => s);
 
+  const [selectedScenarioKey, setSelectedScenarioKey] = useState("all");
+
   const investmentAnalysis = scenarioModeling.config.investment_analysis;
 
-  const roiData = useMemo(() => {
+  const allScenariosRoiData = useMemo(() => {
     if (!investmentAnalysis?.is_enabled) {
       return [];
     }
@@ -36,10 +37,18 @@ const ImpactOfInvestmentCharts = () => {
           key: scenario.key,
           name: scenario.name,
           ...result,
+          originalScenario: scenario, // Keep for segment-level breakdown
         };
       })
       .filter((d) => d && d.totalCost !== null);
   }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
+
+  const roiData = useMemo(() => {
+    if (selectedScenarioKey === "all") {
+      return allScenariosRoiData;
+    }
+    return allScenariosRoiData.filter((d) => d.key === selectedScenarioKey);
+  }, [allScenariosRoiData, selectedScenarioKey]);
 
   const componentCostChartData = useMemo(() => {
     // Grouped column chart: X-axis = Component Name, Series = Scenarios
@@ -71,11 +80,66 @@ const ImpactOfInvestmentCharts = () => {
     }));
   }, [roiData]);
 
-  if (!investmentAnalysis?.is_enabled || roiData.length === 0) {
+  if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
     return null;
   }
 
   const currencyLabel = currency || "USD";
+
+  const scenarioOptions = [
+    { label: "Compare All Scenarios", value: "all" },
+    ...allScenariosRoiData.map((d) => ({
+      label: d.name || "Unnamed Scenario",
+      value: d.key,
+    })),
+  ];
+
+  const selectedScenarioData =
+    selectedScenarioKey !== "all"
+      ? allScenariosRoiData.find((d) => d.key === selectedScenarioKey)
+      : null;
+
+  // Segment Breakdown Table Data
+  const segmentBreakdownData = selectedScenarioData
+    ? Object.keys(selectedScenarioData.investmentPerSegment || {}).flatMap(
+        (segmentId) => {
+          const segInv =
+            selectedScenarioData.investmentPerSegment[segmentId] || {};
+          const segment = dashboardData.find(
+            (s) => String(s.id) === String(segmentId)
+          );
+          const segmentName = segment?.name || `Segment ${segmentId}`;
+
+          return (segInv.components || []).map((comp, idx) => ({
+            key: `${segmentId}-${comp.name}-${idx}`,
+            segmentName,
+            componentName: comp.name,
+            unit:
+              comp.unit === "total"
+                ? "Total Cost"
+                : comp.unit === "per_farmer"
+                ? "Per Farmer"
+                : "Per Land Unit",
+            cost: comp.cost,
+            multiplier:
+              comp.unit === "per_farmer"
+                ? segment?.number_of_farmers || 0
+                : comp.unit === "per_land_unit"
+                ? (segment?.number_of_farmers || 0) *
+                  (parseFloat(segment?.land_size) || 0)
+                : 1,
+            totalContribution:
+              (comp.cost || 0) *
+              (comp.unit === "per_farmer"
+                ? segment?.number_of_farmers || 0
+                : comp.unit === "per_land_unit"
+                ? (segment?.number_of_farmers || 0) *
+                  (parseFloat(segment?.land_size) || 0)
+                : 1),
+          }));
+        }
+      )
+    : [];
 
   return (
     <Card className="card-visual-wrapper" style={{ border: "none" }}>
@@ -97,7 +161,7 @@ const ImpactOfInvestmentCharts = () => {
             </VisualCardWrapper>
           </Col>
           <Col span={10}>
-            <Space direction="vertical" size={16}>
+            <Space direction="vertical" size={16} style={{ width: "100%" }}>
               <div className="section-title">Scenario Cost by component</div>
               <div className="section-description">
                 The visual on the left shows scenario cost broken down by
@@ -105,6 +169,70 @@ const ImpactOfInvestmentCharts = () => {
                 projects and identify the main cost drivers within each
                 scenario.
               </div>
+              <div style={{ marginTop: 8 }}>
+                <Text
+                  type="secondary"
+                  strong
+                  style={{ display: "block", marginBottom: 8 }}
+                >
+                  View data for:
+                </Text>
+                <Select
+                  value={selectedScenarioKey}
+                  onChange={setSelectedScenarioKey}
+                  options={scenarioOptions}
+                  style={{ width: "100%" }}
+                  placeholder="Select a scenario"
+                />
+              </div>
+
+              {selectedScenarioKey !== "all" &&
+                segmentBreakdownData.length > 0 && (
+                  <div style={{ marginTop: 24 }}>
+                    <Text strong style={{ display: "block", marginBottom: 12 }}>
+                      Segment Breakdown for {selectedScenarioData?.name}
+                    </Text>
+                    <Table
+                      size="small"
+                      pagination={false}
+                      dataSource={segmentBreakdownData}
+                      columns={[
+                        {
+                          title: "Segment",
+                          dataIndex: "segmentName",
+                          key: "segmentName",
+                        },
+                        {
+                          title: "Component",
+                          dataIndex: "componentName",
+                          key: "componentName",
+                        },
+                        {
+                          title: "Applied Cost",
+                          key: "calculated",
+                          align: "right",
+                          render: (_, record) => (
+                            <Space direction="vertical" size={0} align="end">
+                              <Text type="secondary" style={{ fontSize: 11 }}>
+                                {record.unit === "Total Cost"
+                                  ? ""
+                                  : `${thousandFormatter(
+                                      record.cost
+                                    )} x ${thousandFormatter(
+                                      record.multiplier
+                                    )}`}
+                              </Text>
+                              <Text strong>
+                                {currencyLabel}{" "}
+                                {thousandFormatter(record.totalContribution, 2)}
+                              </Text>
+                            </Space>
+                          ),
+                        },
+                      ]}
+                    />
+                  </div>
+                )}
             </Space>
           </Col>
         </Row>
@@ -139,64 +267,7 @@ const ImpactOfInvestmentCharts = () => {
           </Col>
         </Row>
 
-        {/* Summary Table */}
-        <VisualCardWrapper
-          titleId="impact-of-investment-summary"
-          title="Impact of Investment Summary"
-          description="Detailed comparison of investment costs and generated net income improvements across all scenarios."
-        >
-          <Table
-            dataSource={roiData}
-            pagination={false}
-            size="middle"
-            rowKey="key"
-            columns={[
-              {
-                title: "Scenario",
-                dataIndex: "name",
-                key: "name",
-                render: (text) => (
-                  <Text strong>{text || "Unnamed Scenario"}</Text>
-                ),
-              },
-              {
-                title: "Investment Cost",
-                dataIndex: "totalCost",
-                key: "totalCost",
-                align: "right",
-                render: (val) => (
-                  <Space>
-                    <Text type="secondary">{currencyLabel}</Text>
-                    {thousandFormatter(val, 2)}
-                  </Space>
-                ),
-              },
-              {
-                title: "Net Income Improvement",
-                dataIndex: "totalIncomeImprovement",
-                key: "totalIncomeImprovement",
-                align: "right",
-                render: (val) => (
-                  <Space style={{ color: val >= 0 ? "#52c41a" : "#f5222d" }}>
-                    <RiseOutlined />
-                    {thousandFormatter(val, 2)}
-                  </Space>
-                ),
-              },
-              {
-                title: "ROI",
-                dataIndex: "roi",
-                key: "roi",
-                align: "center",
-                render: (val) => (
-                  <Tag color={val >= 1 ? "green" : val > 0 ? "orange" : "red"}>
-                    {(val * 100).toFixed(1)}%
-                  </Tag>
-                ),
-              },
-            ]}
-          />
-        </VisualCardWrapper>
+        {/* Summary Table Hidden for now */}
       </Space>
     </Card>
   );

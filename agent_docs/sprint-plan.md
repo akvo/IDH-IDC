@@ -44,10 +44,11 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-0 | Component Restoration (Phase 1) | HIGH | [x] | 2h |
 | STORY-743-1 | Backend Schema & Permission Gate | HIGH | [x] | 3h |
 | STORY-743-2 | ROI Breakdown UI & Multipliers | HIGH | [x] | 4h |
-| STORY-743-4 | Per-Segment ROI Breakdown (Tabs) | HIGH | [ ] | 4h |
-| STORY-743-5 | ROI Logic & Cost Allocation | HIGH | [ ] | 6h |
+| STORY-743-4 | Per-Segment ROI Breakdown (Tabs) | HIGH | [x] | 4h |
+| STORY-743-5 | ROI Logic & Cost Allocation | HIGH | [x] | 6h |
 | STORY-743-3 | Impact of Investment Charts | MEDIUM | [x] | 6h |
 | STORY-743-6 | ROI Design Alignment (Figma) | HIGH | [x] | 6h |
+| STORY-743-7 | Scenario Selector & Cost Transparency | HIGH | [/] | 4h |
 
 ## Detailed Task Breakdown
 ### STORY-743-2: ROI Breakdown UI (COMPLETED)
@@ -56,27 +57,32 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 - [x] Implement multipliers (e.g., "x 100 Farmers") for clarity
 - [x] Synchronize top-level investment cost with breakdown items
 
-### STORY-743-4: Per-Segment ROI (NEXT)
-- [ ] Relocate `ScenarioModelingROIForm.js` inside the segment-specific tabs.
-- [ ] Implement data isolation by `segment_id` (Figma Aligned).
-- [ ] Ensure "Total investment cost" reflects the specific segment's contribution.
-- [ ] Sync the scenario-level total for final aggregate charts.
+### STORY-743-4: Per-Segment ROI (COMPLETED)
+- [x] Relocate `ScenarioModelingROIForm.js` inside the segment-specific tabs.
+- [x] Implement data isolation by `segment_id` (Figma Aligned).
+- [x] Ensure "Total investment cost" reflects the specific segment's contribution.
+- [x] Sync the scenario-level total for final aggregate charts.
 
-### STORY-743-5: ROI Logic & Allocation
-- [ ] Implement `calculate_roi` in `roiCalculations.js` using the defined formula: `(% Increase / Total Cost) * 100`
-- [ ] Implement automatic cost allocation: split "Total" cost proportionally by farmer count if per-segment is OFF
-- [ ] Integrate land area calculation: use `avg_land_area * farmers` for "Per Land Unit" multipliers
+### STORY-743-5: ROI Logic & Allocation (COMPLETED)
+- [x] Implement `calculate_roi` in `roiCalculations.js` using segment-level summation.
+- [x] Fix double-multiplication bug by prioritizing component aggregation.
+- [x] Integrate land area calculation: use `avg_land_area * farmers` for "Per Land Unit" multipliers.
 
 ### STORY-743-3: Visualization & Finishing (COMPLETED)
 - [x] Finalize `ImpactOfInvestmentCharts.js` data aggregation
 - [x] Add "Investment Efficiency" column chart to Step 5
 - [x] Implement "Income vs Cost" comparison visualization
 
-### STORY-743-6: ROI Design Alignment (Figma)
-- [ ] Implement zigzag layout (Chart/Text, Text/Chart) in `ImpactOfInvestmentCharts.js`
-- [ ] Implement "Scenario Cost by component" grouped chart
-- [ ] Integrate Figma-specific descriptive texts and headers
-- [ ] Refine ROI percentage chart to match Figma visual style
+### STORY-743-6: ROI Design Alignment (COMPLETED)
+- [x] Implement zigzag layout (Chart/Text, Text/Chart) in `ImpactOfInvestmentCharts.js`
+- [x] Implement "Scenario Cost by component" grouped chart
+- [x] Integrate Figma-specific descriptive texts and headers
+- [x] Refine ROI percentage chart to match Figma visual style
+
+### STORY-743-7: Scenario Selector & Cost Transparency (COMPLETED)
+- [ ] Add scenario selector below ROI chart description.
+- [ ] Filter charts in `ImpactOfInvestmentCharts.js` based on selection.
+- [ ] Add "Segment Cost Breakdown" table to pinpoint errors (like the 402k bug).
 
 ## Verification Plan
 ### Automated Tests

@@ -48,8 +48,7 @@ export const calculateScenarioROI = (
   // Iterate over scenario values (which contain segment-specific calculations)
   scenario.scenarioValues?.forEach((sv) => {
     const segmentId = sv.segmentId;
-    // eslint-disable-next-line eqeqeq
-    const segment = segments.find((s) => s.id == segmentId);
+    const segment = segments.find((s) => String(s.id) === String(segmentId));
     if (!segment) {
       return;
     }
@@ -70,8 +69,7 @@ export const calculateScenarioROI = (
     // New per-segment logic
     Object.keys(investmentData.segments).forEach((segmentId) => {
       const segInv = investmentData.segments[segmentId];
-      // eslint-disable-next-line eqeqeq
-      const segment = segments.find((s) => s.id == segmentId);
+      const segment = segments.find((s) => String(s.id) === String(segmentId));
       if (!segment) {
         return;
       }
@@ -121,7 +119,7 @@ export const calculateScenarioROI = (
   if (investmentData.segments) {
     Object.keys(investmentData.segments).forEach((segmentId) => {
       const segInv = investmentData.segments[segmentId];
-      const segment = segments.find((s) => s.id == segmentId);
+      const segment = segments.find((s) => String(s.id) === String(segmentId));
       if (!segment || !segInv.components) {
         return;
       }
@@ -145,5 +143,6 @@ export const calculateScenarioROI = (
     totalIncomeImprovement,
     totalCost,
     componentBreakdown,
+    investmentPerSegment: investmentData.segments,
   };
 };

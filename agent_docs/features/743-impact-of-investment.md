@@ -19,6 +19,9 @@ Implement the inline cost toggle, granular breakdown table, and impact visualiza
 ### Phase 5: ROI Design Alignment (#743)
 Align the "Impact of Investment" visualizations with Section 3 of the Figma design. Includes zigzag layout (Chart/Text, Text/Chart), scenario cost by component breakdown, and refined ROI percentage visualizations.
 
+### Phase 7: Scenario Selector & Cost Transparency (#743) - [x] COMPLETED
+Introduce a scenario selector to allow per-scenario deep dives. Add a segment-level cost breakdown table to ensure transparency and help users verify the accuracy of their cost inputs across different farmer groups.
+
 > [!NOTE]
 > **Scenario-Specific Attachment**: Investment costs and ROI calculations are strictly attached to each **individual scenario**. This allows users to compare the cost-effectiveness of different strategies (e.g., Scenario A vs. Scenario B) within the same case.
 
@@ -36,9 +39,9 @@ Align the "Impact of Investment" visualizations with Section 3 of the Figma desi
    - **Cost Distribution**: If case-wide mode is active (Per-segment toggle OFF), the total investment is automatically distributed proportionately based on the farmer count in each segment.
 
 2. **Impact Calculation**:
-   - **Formula**: `Impact of Investment = (Income Increase % / Total Investment Cost) * 100`
-   - **Definition**: The percentage point increase in household income achieved for every $1 (or currency unit) invested.
-   - **Example**: If income increases by 10% and the investment is $5, the impact score is 2.0 (10/5*100 = 200, wait, `10/5 = 2.0`). The document says `* 100` so it might be `200`. We will stick to the Doc's `(10%/5)*100`.
+   - **Formula**: `Impact of Investment = (Total Net Income Improvement / Total Investment Cost)`
+   - **Definition**: The absolute increase in household income achieved for every $1 (or currency unit) invested.
+   - **Example**: If total income improvement across all farmers is $10,000 and the investment is $5,000, the impact score is 2.0. This means for every $1 invested, farmer income increases by $2.
 
 3. **Visualizations**:
    - **Scenario Efficiency Comparison Chart**: A bar chart comparing the total "Impact" score across all modeled scenarios.
@@ -136,7 +139,8 @@ This object will be stored within the `config` field of a `Visualization` record
     - **Impact Charts**:
         - `ChartScenarioEfficiency`: Bar chart for scenario-level impact.
         - `ChartImpactBreakdown`: Segment-level breakdown of impact.
-    - **Efficiency Table**: Integrated into the segment outcome table with "ROI (Impact score)".
+    - **Segment-Level Breakdown Table**: A detailed table appearing when a single scenario is selected, showing (Cost * Multiplier) for each component per segment to facilitate verification.
+    - **Scenario Selector**: A dropdown menu placed below the chart description to toggle between "Compare All" and specific scenario "Deep-Dives".
 - **State management**:
     - Persist the input values in the local `ScenarioModel` and sync them to the backend only on save.
 
