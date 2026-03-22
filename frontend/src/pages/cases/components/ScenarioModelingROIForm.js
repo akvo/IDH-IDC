@@ -288,6 +288,7 @@ const ScenarioModelingROIForm = ({
                         title: "Scenario component",
                         dataIndex: "name",
                         width: 300,
+                        onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (text, record, index) => (
                           <Select
                             {...selectProps}
@@ -307,6 +308,7 @@ const ScenarioModelingROIForm = ({
                         title: "Cost type",
                         dataIndex: "unit",
                         width: 250,
+                        onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (text, record, index) => (
                           <Select
                             {...selectProps}
@@ -334,6 +336,7 @@ const ScenarioModelingROIForm = ({
                         title: "Cost",
                         dataIndex: "cost",
                         width: 180,
+                        onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (text, record, index) => (
                           <Space direction="vertical" size={2}>
                             <InputNumber
@@ -371,6 +374,7 @@ const ScenarioModelingROIForm = ({
                         title: "Total",
                         key: "total_cost",
                         align: "right",
+                        onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (_, record) => {
                           const multiplier =
                             record.unit === "per_farmer" ? farmers : 1;
@@ -391,6 +395,7 @@ const ScenarioModelingROIForm = ({
                         key: "action",
                         width: 50,
                         align: "center",
+                        onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (_, __, index) => (
                           <Button
                             type="text"
