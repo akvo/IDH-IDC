@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Row,
   Col,
@@ -8,12 +8,11 @@ import {
   Space,
   Button,
   Switch,
-  Divider,
   Typography,
   InputNumber,
   Table,
 } from "antd";
-import { CaseVisualState, CurrentCaseState } from "../store";
+import { CaseVisualState } from "../store";
 import { selectProps, InputNumberThousandFormatter } from "../../../lib";
 import {
   InfoCircleOutlined,
@@ -39,18 +38,43 @@ const ScenarioModelingROIForm = ({
   currentScenarioData,
   enableEditCase,
   scenarioModeling,
+  segment, // Injected by SegmentTabsWrapper
 }) => {
   const [isRoiExpanded, setIsRoiExpanded] = useState(false);
-  const { segments } = CurrentCaseState.useState((s) => s);
-  const totalFarmers = segments.reduce(
-    (acc, s) => acc + (s.number_of_farmers || 0),
-    0
-  );
+  const segmentId = segment?.id;
+  const farmers = segment?.number_of_farmers || 0;
 
   const componentsData =
     scenarioModeling.config.investment_analysis?.scenarios?.[
       currentScenarioData.key
-    ]?.components || [];
+    ]?.segments?.[segmentId]?.components || [];
+
+  // Sync form fields when segment changes
+  useEffect(() => {
+    const scenarioInv =
+      scenarioModeling.config.investment_analysis?.scenarios?.[
+        currentScenarioData.key
+      ];
+    const segmentInv = scenarioInv?.segments?.[segmentId];
+
+    if (segmentInv) {
+      form?.setFieldsValue({
+        investment_cost: segmentInv.investment_cost,
+        cost_unit: "total", // We force total if components exist, otherwise use segment default
+      });
+    } else {
+      // Fallback if segment doesn't exist yet in config
+      form?.setFieldsValue({
+        investment_cost: 0,
+        cost_unit: "total",
+      });
+    }
+  }, [
+    segmentId,
+    currentScenarioData.key,
+    form,
+    scenarioModeling.config.investment_analysis,
+  ]);
 
   const onAddComponent = () => {
     CaseVisualState.update((s) => {
@@ -61,27 +85,45 @@ const ScenarioModelingROIForm = ({
         invAnalysis.scenarios[scenarioKey] = {
           investment_cost: 0,
           cost_unit: "total",
-          components: [],
+          segments: {},
         };
       }
       const scenarioInv = invAnalysis.scenarios[scenarioKey];
+      if (!scenarioInv.segments) {
+        scenarioInv.segments = {};
+      }
+      if (!scenarioInv.segments[segmentId]) {
+        scenarioInv.segments[segmentId] = {
+          investment_cost: 0,
+          components: [],
+        };
+      }
+
+      const segmentInv = scenarioInv.segments[segmentId];
       const newComponents = [
-        ...(scenarioInv.components || []),
+        ...(segmentInv.components || []),
         { name: "", cost: 0, unit: "total", key: Date.now() },
       ];
-      scenarioInv.components = newComponents;
+      segmentInv.components = newComponents;
 
-      // Recalculate total cost
-      const newTotal = newComponents.reduce((acc, item) => {
-        const multiplier = item.unit === "per_farmer" ? totalFarmers : 1;
+      // Recalculate segment total
+      const segmentTotal = newComponents.reduce((acc, item) => {
+        const multiplier = item.unit === "per_farmer" ? farmers : 1;
         return acc + (item.cost || 0) * multiplier;
       }, 0);
-      scenarioInv.investment_cost = newTotal;
+      segmentInv.investment_cost = segmentTotal;
+
+      // Recalculate scenario total
+      const scenarioTotal = Object.values(scenarioInv.segments).reduce(
+        (acc, seg) => acc + (seg.investment_cost || 0),
+        0
+      );
+      scenarioInv.investment_cost = scenarioTotal;
       scenarioInv.cost_unit = "total"; // Force total when components exist
 
       // Update form
       form?.setFieldsValue({
-        investment_cost: newTotal,
+        investment_cost: scenarioTotal,
         cost_unit: "total",
       });
     });
@@ -89,65 +131,68 @@ const ScenarioModelingROIForm = ({
 
   const onComponentChange = (index, field, value) => {
     CaseVisualState.update((s) => {
-      const config = s.scenarioModeling.config;
-      const invAnalysis = config.investment_analysis;
       const scenarioKey = currentScenarioData.key;
-      const scenarioInv = invAnalysis.scenarios[scenarioKey];
+      const scenarioInv =
+        s.scenarioModeling.config.investment_analysis.scenarios[scenarioKey];
+      const segmentInv = scenarioInv.segments[segmentId];
 
-      const newComponents = scenarioInv.components.map((c, i) => {
+      const newComponents = segmentInv.components.map((c, i) => {
         if (i === index) {
           return { ...c, [field]: value };
         }
         return c;
       });
 
-      scenarioInv.components = newComponents;
+      segmentInv.components = newComponents;
 
-      // Recalculate total cost
-      const newTotal = newComponents.reduce((acc, item) => {
-        const multiplier = item.unit === "per_farmer" ? totalFarmers : 1;
+      // Recalculate segment total
+      const segmentTotal = newComponents.reduce((acc, item) => {
+        const multiplier = item.unit === "per_farmer" ? farmers : 1;
         return acc + (item.cost || 0) * multiplier;
       }, 0);
-      scenarioInv.investment_cost = newTotal;
-      scenarioInv.cost_unit = "total"; // Force total when components exist
+      segmentInv.investment_cost = segmentTotal;
+
+      // Recalculate scenario total
+      const scenarioTotal = Object.values(scenarioInv.segments).reduce(
+        (acc, seg) => acc + (seg.investment_cost || 0),
+        0
+      );
+      scenarioInv.investment_cost = scenarioTotal;
 
       // Update form
       form?.setFieldsValue({
-        investment_cost: newTotal,
-        cost_unit: "total",
+        investment_cost: scenarioTotal,
       });
     });
   };
 
   const onDeleteComponent = (index) => {
     CaseVisualState.update((s) => {
-      const config = s.scenarioModeling.config;
-      const invAnalysis = config.investment_analysis;
       const scenarioKey = currentScenarioData.key;
-      const scenarioInv = invAnalysis.scenarios[scenarioKey];
+      const scenarioInv =
+        s.scenarioModeling.config.investment_analysis.scenarios[scenarioKey];
+      const segmentInv = scenarioInv.segments[segmentId];
 
-      const newComponents = scenarioInv.components.filter(
-        (_, i) => i !== index
-      );
+      const newComponents = segmentInv.components.filter((_, i) => i !== index);
+      segmentInv.components = newComponents;
 
-      scenarioInv.components = newComponents;
-
-      // Recalculate total cost
-      const newTotal = newComponents.reduce((acc, item) => {
-        const multiplier = item.unit === "per_farmer" ? totalFarmers : 1;
+      // Recalculate segment total
+      const segmentTotal = newComponents.reduce((acc, item) => {
+        const multiplier = item.unit === "per_farmer" ? farmers : 1;
         return acc + (item.cost || 0) * multiplier;
       }, 0);
-      scenarioInv.investment_cost = newTotal;
+      segmentInv.investment_cost = segmentTotal;
 
-      // Force total unit if components exist, otherwise allow reset
-      if (newComponents.length > 0) {
-        scenarioInv.cost_unit = "total";
-      }
+      // Recalculate scenario total
+      const scenarioTotal = Object.values(scenarioInv.segments).reduce(
+        (acc, seg) => acc + (seg.investment_cost || 0),
+        0
+      );
+      scenarioInv.investment_cost = scenarioTotal;
 
       // Update form
       form?.setFieldsValue({
-        investment_cost: newTotal,
-        ...(newComponents.length > 0 ? { cost_unit: "total" } : {}),
+        investment_cost: scenarioTotal,
       });
     });
   };
@@ -339,7 +384,7 @@ const ScenarioModelingROIForm = ({
                               >
                                 {record.unit === "per_farmer"
                                   ? `x ${InputNumberThousandFormatter.formatter(
-                                      totalFarmers
+                                      farmers
                                     )} Farmers`
                                   : record.unit === "per_land_unit"
                                   ? `x Land Area`
@@ -355,7 +400,7 @@ const ScenarioModelingROIForm = ({
                         align: "right",
                         render: (_, record) => {
                           const multiplier =
-                            record.unit === "per_farmer" ? totalFarmers : 1;
+                            record.unit === "per_farmer" ? farmers : 1;
                           const total = (record.cost || 0) * multiplier;
                           return (
                             <InputNumber

@@ -14,7 +14,8 @@ import {
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
-import { MAX_SEGMENT, DataUploadSegmentForm } from ".";
+import { DataUploadSegmentForm } from ".";
+import { MAX_SEGMENT } from "../constants";
 
 const SegmentConfigurationForm = ({
   uploadResult = {},

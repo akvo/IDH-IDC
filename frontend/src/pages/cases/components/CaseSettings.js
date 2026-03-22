@@ -21,7 +21,7 @@ import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
-import { MAX_SEGMENT } from ".";
+import { MAX_SEGMENT } from "../constants";
 
 const dataUploadFieldPreffix = "data_upload_";
 

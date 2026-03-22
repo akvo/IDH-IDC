@@ -42,24 +42,48 @@ export const calculateScenarioROI = (
     totalIncomeImprovement += netIncomeChange * farmerCount;
   });
 
-  // Calculate Total Cost based on unit
-  let totalCost = investmentData.investment_cost;
-  const totalFarmers = segments.reduce(
-    (acc, s) => acc + (s.number_of_farmers || 0),
-    0
-  );
+  // Calculate Total Cost
+  let totalCost = 0;
 
-  if (investmentData.cost_unit === "per_farmer") {
-    totalCost = investmentData.investment_cost * totalFarmers;
-  } else if (investmentData.cost_unit === "per_land_unit") {
-    // Note: This requires summing land units across focus commodities in all segments
-    // For now, if per_land_unit is selected, we expect the UI to have helped calculate totalCost
-    // Or we stick to the provided investment_cost if it was already entered as a total.
-    // In our UI, investment_cost is the value entered by the user.
+  if (investmentData.segments) {
+    // New per-segment logic
+    Object.keys(investmentData.segments).forEach((segmentId) => {
+      const segInv = investmentData.segments[segmentId];
+      const segment = segments.find((s) => s.id === segmentId);
+      if (!segment) {
+        return;
+      }
+
+      const farmerCount = segment.number_of_farmers || 0;
+      let segTotal = segInv.investment_cost || 0;
+
+      if (segInv.cost_unit === "per_farmer") {
+        segTotal *= farmerCount;
+      } else if (segInv.cost_unit === "per_land_unit") {
+        // Fallback or explicit land area calculation
+        // For now, if no components, we assume the UI helped or we use a default
+      }
+      totalCost += segTotal;
+    });
+  } else {
+    // Legacy/Case-wide logic
+    totalCost = investmentData.investment_cost || 0;
+    const totalFarmers = segments.reduce(
+      (acc, s) => acc + (s.number_of_farmers || 0),
+      0
+    );
+
+    if (investmentData.cost_unit === "per_farmer") {
+      totalCost *= totalFarmers;
+    }
   }
 
   if (totalCost === 0) {
-    return 0;
+    return {
+      roi: 0,
+      totalIncomeImprovement,
+      totalCost,
+    };
   }
 
   const roi = totalIncomeImprovement / totalCost;

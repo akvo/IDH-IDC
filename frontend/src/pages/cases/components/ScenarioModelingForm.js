@@ -17,6 +17,28 @@ import ScenarioModelingIncomeDriversAndChart from "./ScenarioModelingIncomeDrive
 import ScenarioModelingROIForm from "./ScenarioModelingROIForm";
 import { InfoCircleOutlined, DeleteOutlined } from "@ant-design/icons";
 
+const ScenarioModelingTabContent = ({
+  segment,
+  current,
+  scenarioDetailForm,
+  enableEditCase,
+  scenarioModeling,
+}) => (
+  <>
+    <ScenarioModelingIncomeDriversAndChart
+      segment={segment}
+      currentScenarioData={current}
+    />
+    <ScenarioModelingROIForm
+      segment={segment}
+      form={scenarioDetailForm}
+      currentScenarioData={current}
+      enableEditCase={enableEditCase}
+      scenarioModeling={scenarioModeling}
+    />
+  </>
+);
+
 const ScenarioModelingForm = ({
   currentScenarioData,
   showDeleteButton,
@@ -26,6 +48,7 @@ const ScenarioModelingForm = ({
   const [scenarioDetailForm] = Form.useForm();
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
+  const { activeSegmentId } = CaseUIState.useState((s) => s.general);
 
   const [deleting, setDeleting] = useState(false);
   const [current, setCurrent] = useState(currentScenarioData);
@@ -106,11 +129,47 @@ const ScenarioModelingForm = ({
         }
 
         const scenarioInv = invAnalysis.scenarios[scenarioKey];
+
         if (typeof changedValue.investment_cost !== "undefined") {
-          scenarioInv.investment_cost = changedValue.investment_cost;
+          // Update segment-specific cost if active
+          if (activeSegmentId) {
+            if (!scenarioInv.segments) {
+              scenarioInv.segments = {};
+            }
+            if (!scenarioInv.segments[activeSegmentId]) {
+              scenarioInv.segments[activeSegmentId] = {
+                investment_cost: 0,
+                components: [],
+              };
+            }
+            scenarioInv.segments[activeSegmentId].investment_cost =
+              changedValue.investment_cost;
+
+            // Recalculate scenario total
+            scenarioInv.investment_cost = Object.values(
+              scenarioInv.segments
+            ).reduce((acc, seg) => acc + (seg.investment_cost || 0), 0);
+          } else {
+            scenarioInv.investment_cost = changedValue.investment_cost;
+          }
         }
+
         if (typeof changedValue.cost_unit !== "undefined") {
-          scenarioInv.cost_unit = changedValue.cost_unit;
+          if (activeSegmentId) {
+            if (!scenarioInv.segments) {
+              scenarioInv.segments = {};
+            }
+            if (!scenarioInv.segments[activeSegmentId]) {
+              scenarioInv.segments[activeSegmentId] = {
+                investment_cost: 0,
+                components: [],
+              };
+            }
+            scenarioInv.segments[activeSegmentId].cost_unit =
+              changedValue.cost_unit;
+          } else {
+            scenarioInv.cost_unit = changedValue.cost_unit;
+          }
         }
       } else {
         config.scenarioData.forEach((scenario) => {
@@ -207,18 +266,14 @@ const ScenarioModelingForm = ({
           <Row gutter={[24, 10]}>
             <Col span={24}>
               <SegmentTabsWrapper>
-                <ScenarioModelingIncomeDriversAndChart
-                  currentScenarioData={current}
+                <ScenarioModelingTabContent
+                  key="left"
+                  current={current}
+                  scenarioDetailForm={scenarioDetailForm}
+                  enableEditCase={enableEditCase}
+                  scenarioModeling={scenarioModeling}
                 />
               </SegmentTabsWrapper>
-
-              {/* Phase 2: Impact of Investment Section */}
-              <ScenarioModelingROIForm
-                form={scenarioDetailForm}
-                currentScenarioData={current}
-                enableEditCase={enableEditCase}
-                scenarioModeling={scenarioModeling}
-              />
             </Col>
           </Row>
         </Form>
