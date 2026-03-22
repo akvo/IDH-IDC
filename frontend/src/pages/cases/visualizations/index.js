@@ -19,3 +19,4 @@ export { default as ChartNetIncomePerLandUnit } from "./ChartNetIncomePerLandUni
 export { default as ChartTwoDriverHeatmap } from "./ChartTwoDriverHeatmap";
 export { default as ThreeDriverCombinationChart } from "./ThreeDriverCombinationChart";
 export { default as GapClosingPieChart } from "./GapClosingPieChart";
+export { default as ImpactOfInvestmentCharts } from "./ImpactOfInvestmentCharts";

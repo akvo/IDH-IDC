@@ -7,7 +7,7 @@ import {
   Color,
 } from "../../../components/chart/options/common";
 import { RiseOutlined } from "@ant-design/icons";
-import VisualCardWrapper from "./VisualCardWrapper";
+import VisualCardWrapper from "../components/VisualCardWrapper";
 import Chart from "../../../components/chart";
 
 const { Text } = Typography;

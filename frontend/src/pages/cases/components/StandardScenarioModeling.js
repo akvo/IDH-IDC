@@ -7,6 +7,7 @@ import { isEmpty, orderBy } from "lodash";
 import {
   ChartIncomeGapAcrossScenario,
   TableScenarioOutcomes,
+  ImpactOfInvestmentCharts,
 } from "../visualizations";
 
 const MAX_SCENARIO = 3;
@@ -254,8 +255,23 @@ const StandardScenarioModeling = () => {
       {/* Section 3 */}
       <Col span={24}>
         <Card className="card-section-wrapper">
-          <Space className="step-wrapper" align="top">
+          <Space className="step-wrapper" align="center">
             <div className="number">3.</div>
+            <div className="label">Impact of Investment Analysis</div>
+          </Space>
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <ImpactOfInvestmentCharts />
+      </Col>
+      {/* EOL Section 3 */}
+
+      {/* Section 4 */}
+      <Col span={24}>
+        <Card className="card-section-wrapper">
+          <Space className="step-wrapper" align="top">
+            <div className="number">4.</div>
             <div className="label">
               Better understand scenario outcomes for your segments
               <div className="description">

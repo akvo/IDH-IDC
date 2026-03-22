@@ -23,6 +23,23 @@ export const calculateScenarioROI = (
     return null;
   }
 
+  const getLandArea = (segment) => {
+    if (!segment?.answers) {
+      return 0;
+    }
+    // Prioritize Parent Land (ID 2) then children (6 or 7)
+    // Keys are "current-[commodity_id]-[question_id]"
+    const allKeys = Object.keys(segment.answers);
+    const parentKey = allKeys.find((k) => k.endsWith("-2"));
+
+    if (parentKey && parseFloat(segment.answers[parentKey]) > 0) {
+      return parseFloat(segment.answers[parentKey]);
+    }
+
+    const childKey = allKeys.find((k) => k.endsWith("-6") || k.endsWith("-7"));
+    return childKey ? parseFloat(segment.answers[childKey]) || 0 : 0;
+  };
+
   let totalIncomeImprovement = 0;
 
   // Iterate over scenario values (which contain segment-specific calculations)
@@ -55,13 +72,13 @@ export const calculateScenarioROI = (
       }
 
       const farmerCount = segment.number_of_farmers || 0;
+      const landArea = getLandArea(segment);
       let segTotal = segInv.investment_cost || 0;
 
       if (segInv.cost_unit === "per_farmer") {
         segTotal *= farmerCount;
       } else if (segInv.cost_unit === "per_land_unit") {
-        // Fallback or explicit land area calculation
-        // For now, if no components, we assume the UI helped or we use a default
+        segTotal *= segment.number_of_farmers * landArea;
       }
       totalCost += segTotal;
     });
@@ -75,6 +92,12 @@ export const calculateScenarioROI = (
 
     if (investmentData.cost_unit === "per_farmer") {
       totalCost *= totalFarmers;
+    } else if (investmentData.cost_unit === "per_land_unit") {
+      // Aggregate land area * farmers across all segments
+      const totalArea = segments.reduce((acc, s) => {
+        return acc + (s.number_of_farmers || 0) * getLandArea(s);
+      }, 0);
+      totalCost *= totalArea;
     }
   }
 
