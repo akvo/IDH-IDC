@@ -20,7 +20,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented nested ROI form within `SegmentTabsWrapper` to support independent investment analysis per farmer segment.
     - Extracted ROI logic into a standalone `ScenarioModelingROIForm.js` component with isolated state management.
     - Resolved critical initialization error (`MAX_SEGMENT`) by refactoring constants into a dedicated `constants.js` file.
-    - Fixed prop propagation crash (`segment is undefined`) by introducing a `ScenarioModelingTabContent` wrapper in `ScenarioModelingForm.js`.
+    - Fixed prop propagation crash (`segment is undefined`) and state persistence bugs in `ScenarioModelingForm.js`.
     - Verified 100% lint-clean status and aggregate ROI calculation logic in `roiCalculations.js`.
 - **Impact of Investment Architecture (#743)**:
     - Defined a frontend-heavy architecture for the new "Impact of Investment" premium feature to maintain real-time calculation performance.
