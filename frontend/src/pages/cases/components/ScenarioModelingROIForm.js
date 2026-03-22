@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Row,
   Col,
@@ -48,33 +48,6 @@ const ScenarioModelingROIForm = ({
     scenarioModeling.config.investment_analysis?.scenarios?.[
       currentScenarioData.key
     ]?.segments?.[segmentId]?.components || [];
-
-  // Sync form fields when segment changes
-  useEffect(() => {
-    const scenarioInv =
-      scenarioModeling.config.investment_analysis?.scenarios?.[
-        currentScenarioData.key
-      ];
-    const segmentInv = scenarioInv?.segments?.[segmentId];
-
-    if (segmentInv) {
-      form?.setFieldsValue({
-        investment_cost: segmentInv.investment_cost,
-        cost_unit: "total", // We force total if components exist, otherwise use segment default
-      });
-    } else {
-      // Fallback if segment doesn't exist yet in config
-      form?.setFieldsValue({
-        investment_cost: 0,
-        cost_unit: "total",
-      });
-    }
-  }, [
-    segmentId,
-    currentScenarioData.key,
-    form,
-    scenarioModeling.config.investment_analysis,
-  ]);
 
   const onAddComponent = () => {
     CaseVisualState.update((s) => {

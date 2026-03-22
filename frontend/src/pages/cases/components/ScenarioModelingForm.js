@@ -58,19 +58,29 @@ const ScenarioModelingForm = ({
     const invAnalysis = scenarioModeling.config.investment_analysis || {};
     const scenarioInv = invAnalysis.scenarios?.[currentScenarioData.key] || {};
 
+    let investment_cost = scenarioInv.investment_cost || null;
+    let cost_unit = scenarioInv.cost_unit || "total";
+
+    if (activeSegmentId && scenarioInv.segments?.[activeSegmentId]) {
+      const segmentInv = scenarioInv.segments[activeSegmentId];
+      investment_cost = segmentInv.investment_cost || 0;
+      cost_unit = segmentInv.cost_unit || "total";
+    }
+
     scenarioDetailForm.setFieldsValue({
       name,
       description,
       percentage,
       is_roi_enabled: invAnalysis.is_enabled || false,
-      investment_cost: scenarioInv.investment_cost || null,
-      cost_unit: scenarioInv.cost_unit || "total",
+      investment_cost,
+      cost_unit,
     });
     setCurrent(currentScenarioData);
   }, [
     currentScenarioData,
     scenarioDetailForm,
     scenarioModeling.config.investment_analysis,
+    activeSegmentId,
   ]);
 
   const onDeleteScenario = () => {
