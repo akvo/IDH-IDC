@@ -48,6 +48,7 @@ export const calculateScenarioROI = (
   // Iterate over scenario values (which contain segment-specific calculations)
   scenario.scenarioValues?.forEach((sv) => {
     const segmentId = sv.segmentId;
+    // eslint-disable-next-line eqeqeq
     const segment = segments.find((s) => s.id == segmentId);
     if (!segment) {
       return;
@@ -69,6 +70,7 @@ export const calculateScenarioROI = (
     // New per-segment logic
     Object.keys(investmentData.segments).forEach((segmentId) => {
       const segInv = investmentData.segments[segmentId];
+      // eslint-disable-next-line eqeqeq
       const segment = segments.find((s) => s.id == segmentId);
       if (!segment) {
         return;
