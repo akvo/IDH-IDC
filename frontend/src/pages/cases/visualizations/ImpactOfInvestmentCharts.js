@@ -18,7 +18,8 @@ const ImpactOfInvestmentCharts = () => {
   const { scenarioModeling, dashboardData } = CaseVisualState.useState(
     (s) => s
   );
-  const { currency } = CurrentCaseState.useState((s) => s);
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const { currency } = currentCase;
 
   const [selectedScenarioKey, setSelectedScenarioKey] = useState("all");
 
@@ -127,6 +128,9 @@ const ImpactOfInvestmentCharts = () => {
                   ? "Per Farmer"
                   : "Per Land Unit",
               cost: comp.cost,
+              farmers: segment?.number_of_farmers || 0,
+              landArea: getLandArea(segment),
+              unitType: comp.unit,
               multiplier:
                 comp.unit === "per_farmer"
                   ? segment?.number_of_farmers || 0
@@ -155,7 +159,10 @@ const ImpactOfInvestmentCharts = () => {
               segmentName,
               componentName: "Distributed Total",
               unit: "Total Cost",
+              unitType: "total",
               cost: segInv.investment_cost || 0,
+              farmers: segment?.number_of_farmers || 0,
+              landArea: getLandArea(segment),
               multiplier: 1,
               totalContribution: segInv.investment_cost || 0,
               paybackPeriod: metrics.paybackPeriod,
@@ -250,12 +257,22 @@ const ImpactOfInvestmentCharts = () => {
                         align: "right",
                         render: (_, record) => (
                           <Space direction="vertical" size={0} align="end">
-                            <Text type="secondary" style={{ fontSize: 11 }}>
-                              {record.unit === "Total Cost"
-                                ? ""
-                                : `${thousandFormatter(
-                                    record.cost
-                                  )} x ${thousandFormatter(record.multiplier)}`}
+                            <Text type="secondary" style={{ fontSize: 10 }}>
+                              {record.unitType === "per_farmer" ? (
+                                <>
+                                  {thousandFormatter(record.cost)} x{" "}
+                                  {thousandFormatter(record.farmers)} farmers
+                                </>
+                              ) : record.unitType === "per_land_unit" ? (
+                                <>
+                                  {thousandFormatter(record.cost)} x{" "}
+                                  {thousandFormatter(record.farmers)} farmers x{" "}
+                                  {record.landArea}{" "}
+                                  {currentCase?.area_size_unit || "acres"}
+                                </>
+                              ) : (
+                                ""
+                              )}
                             </Text>
                             <Text strong>
                               {currencyLabel}{" "}
