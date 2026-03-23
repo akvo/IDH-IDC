@@ -35,7 +35,8 @@ const ImpactOfInvestmentCharts = () => {
   const [selectedCostScenarioSegments, setSelectedCostScenarioSegments] =
     useState([]);
 
-  const [selectedRoiSegmentId, setSelectedRoiSegmentId] = useState("all");
+  const [selectedRoiScenarioSegments, setSelectedRoiScenarioSegments] =
+    useState([]);
 
   const investmentAnalysis = scenarioModeling.config.investment_analysis;
 
@@ -147,25 +148,60 @@ const ImpactOfInvestmentCharts = () => {
   }, [costRoiData]);
 
   const roiChartRoiData = useMemo(() => {
-    if (selectedRoiSegmentId === "all") {
+    if (selectedRoiScenarioSegments.length === 0) {
       return allScenariosRoiData.map((sc) => ({
         ...sc,
         displayName: sc.name,
+        selectedSegmentId: "all",
       }));
     }
 
-    return allScenariosRoiData
-      .map((d) => {
-        const segMetrics = d.segmentMetrics?.[selectedRoiSegmentId];
-        const segBreakdown =
-          d.segmentComponentBreakdowns?.[selectedRoiSegmentId];
-        if (!segMetrics) {
+    return selectedRoiScenarioSegments
+      .map((selection) => {
+        const [scKey, segId] = selection.split(":::");
+        const scenario = allScenariosRoiData.find(
+          (d) => String(d.key) === String(scKey)
+        );
+
+        if (!scenario) {
           return null;
         }
 
+        const findSegment = currentCase?.segments?.find(
+          (s) => String(s.id) === String(segId)
+        );
+        const segmentName = findSegment?.name || "All Segments";
+
+        // If segId is "all" or specific
+        if (segId === "all") {
+          return {
+            ...scenario,
+            displayName: `${scenario.name} - All Segments`,
+            selectedSegmentId: "all",
+          };
+        }
+
+        const segMetrics = scenario.segmentMetrics?.[segId];
+        const segBreakdown = scenario.segmentComponentBreakdowns?.[segId];
+
+        if (!segMetrics) {
+          return {
+            ...scenario,
+            displayName: `${scenario.name} - ${segmentName}`,
+            selectedSegmentId: segId,
+            roi: 0,
+            totalCost: 0,
+            totalIncomeImprovement: 0,
+            incomeImprovementPercentage: 0,
+            paybackPeriod: 0,
+            componentBreakdown: {},
+          };
+        }
+
         return {
-          ...d,
-          displayName: d.name,
+          ...scenario,
+          displayName: `${scenario.name} - ${segmentName}`,
+          selectedSegmentId: segId,
           roi: segMetrics.roi,
           totalCost: segMetrics.totalCost,
           totalIncomeImprovement: segMetrics.incomeImprovement,
@@ -175,7 +211,7 @@ const ImpactOfInvestmentCharts = () => {
         };
       })
       .filter(Boolean);
-  }, [allScenariosRoiData, selectedRoiSegmentId]);
+  }, [allScenariosRoiData, selectedRoiScenarioSegments, currentCase?.segments]);
 
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
@@ -190,15 +226,6 @@ const ImpactOfInvestmentCharts = () => {
       ],
     }));
   }, [roiChartRoiData]);
-
-  const segmentOptions = useMemo(() => {
-    const defaultOptions = [{ label: "All Segments", value: "all" }];
-    const segments = (currentCase.segments || []).map((s) => ({
-      label: s.name,
-      value: s.id,
-    }));
-    return [...defaultOptions, ...segments];
-  }, [currentCase.segments]);
 
   const scenarioSegmentOptions = useMemo(() => {
     let i = 1;
@@ -484,11 +511,19 @@ const ImpactOfInvestmentCharts = () => {
               </div>
               <Space direction="vertical" size={8} style={{ width: "100%" }}>
                 <Select
-                  value={selectedRoiSegmentId}
-                  onChange={setSelectedRoiSegmentId}
-                  options={segmentOptions}
+                  {...selectProps}
+                  value={selectedRoiScenarioSegments}
+                  onChange={setSelectedRoiScenarioSegments}
+                  options={scenarioSegmentOptions.map((opt) => ({
+                    ...opt,
+                    disabled:
+                      selectedRoiScenarioSegments.length >=
+                        MAX_SCENARIO_SEGMENT &&
+                      !selectedRoiScenarioSegments.includes(opt.value),
+                  }))}
+                  mode="multiple"
                   style={{ width: "100%" }}
-                  placeholder="Select a segment"
+                  placeholder="Select Scenarios and Segments to compare"
                 />
               </Space>
             </Space>

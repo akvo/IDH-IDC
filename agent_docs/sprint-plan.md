@@ -50,6 +50,7 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-6 | ROI Design Alignment (Figma) | HIGH | [x] | 6h |
 | STORY-743-7 | Scenario Selector & Cost Transparency | HIGH | [x] | 4h |
 | STORY-743-9 | Scenario-Segment Multi-Selector | HIGH | [x] | 4h |
+| STORY-743-11 | ROI Scenario-Segment Multi-Selector | HIGH | [x] | 4h |
 | STORY-743-10 | ROI Selection Restriction | LOW | [x] | 1h |
 
 ---
@@ -117,6 +118,11 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 - [x] Strict string casting for scenario keys (fixed numeric lookup bug).
 - [x] Zero-value fallback for segments without investment data (prevents blank state).
 - [x] Verified charts update in real-time with selected combinations.
+
+### STORY-743-11: ROI Scenario-Segment Multi-Selector (COMPLETED)
+- [x] Replace single segment selector with scenario-segment multi-selector.
+- [x] Align with Cost Chart comparison pattern (Max 5 items).
+- [x] Update ROI chart labels to show Scenario - Segment names.
 
 ### STORY-743-10: ROI Selection Restriction (COMPLETED)
 - [x] Implement mutual exclusivity logic for ROI component dropdown.

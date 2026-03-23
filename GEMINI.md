@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Phase 16: ROI Scenario-Segment Multi-Selector (#743) - [COMPLETED]**:
+        - Refined the "Return on Investment" chart to support a multi-selector for Scenario-Segment combinations (Max 5 items).
+        - Unified the interaction pattern with the "Scenario Cost by component" chart.
+        - Implemented robust data filtering with the `::: ` delimiter and zero-value fallbacks.
+        - Synchronized technical and user documentation (Feature Doc, User Story, QA Guide, Safety Audit).
+        - Verified 100% lint-clean status and ROI calculation accuracy.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `agent_docs/`.
     - **ROI Component Selection Restriction (#743) - [COMPLETED]**:
         - Implemented a mutual exclusivity rule for the ROI cost component dropdown in `ScenarioModelingROIForm.js`.
         - Prevented duplicate selection of categories (Training, Financing, etc.) within the same segment.
