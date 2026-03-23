@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Row,
   Col,
@@ -44,10 +44,22 @@ const ScenarioModelingROIForm = ({
   const segmentId = segment?.id;
   const farmers = segment?.number_of_farmers || 0;
 
-  const componentsData =
-    scenarioModeling.config.investment_analysis?.scenarios?.[
-      currentScenarioData.key
-    ]?.segments?.[segmentId]?.components || [];
+  const componentsData = useMemo(
+    () =>
+      scenarioModeling.config.investment_analysis?.scenarios?.[
+        currentScenarioData.key
+      ]?.segments?.[segmentId]?.components || [],
+    [
+      scenarioModeling.config.investment_analysis,
+      currentScenarioData.key,
+      segmentId,
+    ]
+  );
+
+  const selectedNames = useMemo(
+    () => componentsData.map((c) => c.name).filter(Boolean),
+    [componentsData]
+  );
 
   const onAddComponent = () => {
     CaseVisualState.update((s) => {
@@ -317,7 +329,12 @@ const ScenarioModelingROIForm = ({
                             onChange={(value) =>
                               onComponentChange(index, "name", value)
                             }
-                            options={ROI_COMPONENT_OPTIONS}
+                            options={ROI_COMPONENT_OPTIONS.map((opt) => ({
+                              ...opt,
+                              disabled:
+                                selectedNames.includes(opt.value) &&
+                                opt.value !== text,
+                            }))}
                             style={{ width: "100%", borderRadius: "4px" }}
                           />
                         ),

@@ -25,8 +25,10 @@ This document serves as the master map for all project artifacts, categorized by
 - [Feature: #739 Case Save UX & Data Upload Guard](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/739-case-save-ux.md)
 - [Feature: #740 Disable Features Above Target](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/740-disable-features-above-target.md)
 - [Feature: #743 Impact of Investment (Premium)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/743-impact-of-investment.md)
+- [Segment-Level ROI Filtering (#743)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/743-segment-roi-filtering.md)
+- [ROI Selection Restriction (#743)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/743-roi-selection-restriction.md)
 - [Documentation: Visualization Config Schemas](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/visualization-config-schema.md)
-- [Feature: #744 Text Updates & Clarification](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/744-text-updates.md)
+- [Text Updates & UI Clarifications (#744)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/744-text-updates.md)
 
 ## Chronological Records (Audit Trail)
 > [!IMPORTANT]

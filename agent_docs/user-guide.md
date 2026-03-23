@@ -59,6 +59,7 @@ Premium users can evaluate the cost-effectiveness of their strategies by togglin
 The **Scenario Cost by component** chart utilizes a multi-selector to allow side-by-side comparison of up to 5 unique combinations of scenarios and segments.
 - **Default View**: If no specific selection is made, the chart defaults to showing all modelled scenarios for "All Segments."
 - **Deep Dives**: Select specific farmer segments (e.g., "Male", "Smallholder") to see how implementation costs vary across your population.
+- **Unique Selection**: Each cost component (e.g., Training, Financing) can only be selected once per segment. If a category is already in use, it will be disabled in the dropdown for other rows to prevent redundant data entry.
 - **Zero-Value Display**: Segments without explicitly defined investment costs will appear as 0-value entries to maintain visual comparison without data gaps.
 
 ## ROI Performance Metrics
