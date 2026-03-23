@@ -107,12 +107,36 @@ export const calculateScenarioROI = (
   if (totalCost === 0) {
     return {
       roi: 0,
+      impactPercentage: 0,
+      paybackPeriod: null,
+      incomeImprovementPercentage: 0,
       totalIncomeImprovement,
       totalCost,
     };
   }
 
   const roi = totalIncomeImprovement / totalCost;
+
+  // Calculate Aggregate Metrics
+  const totalBaselineIncome = scenario.scenarioValues?.reduce(
+    (acc, sv) =>
+      acc +
+      (sv.currentSegmentValue?.total_current_income || 0) *
+        (segments.find((s) => String(s.id) === String(sv.segmentId))
+          ?.number_of_farmers || 0),
+    0
+  );
+
+  const incomeImprovementPercentage =
+    totalBaselineIncome > 0
+      ? (totalIncomeImprovement / totalBaselineIncome) * 100
+      : 0;
+
+  const impactPercentage =
+    totalCost > 0 ? (incomeImprovementPercentage / totalCost) * 100 : 0;
+
+  const paybackPeriod =
+    totalIncomeImprovement > 0 ? totalCost / totalIncomeImprovement : null;
 
   // Calculate component breakdown for charts
   const componentBreakdown = {};
@@ -138,11 +162,82 @@ export const calculateScenarioROI = (
     });
   }
 
-  return {
+  let investmentPerSegment = investmentData.segments;
+
+  if (!investmentPerSegment && totalCost > 0) {
+    // Distribute case-wide totalCost proportionately across segments
+    const totalFarmers = segments.reduce(
+      (acc, s) => acc + (s.number_of_farmers || 0),
+      0
+    );
+    investmentPerSegment = {};
+    segments.forEach((s) => {
+      const farmerCount = s.number_of_farmers || 0;
+      const ratio = totalFarmers > 0 ? farmerCount / totalFarmers : 0;
+      investmentPerSegment[s.id] = {
+        ...(investmentPerSegment[s.id] || {}),
+        investment_cost:
+          investmentPerSegment[s.id]?.investment_cost || totalCost * ratio,
+        cost_unit: investmentPerSegment[s.id]?.cost_unit || "total",
+        is_distributed: !investmentData.segments,
+      };
+    });
+  }
+
+  // Calculate Segment Metrics
+  const segmentMetrics = {};
+  if (investmentPerSegment) {
+    scenario.scenarioValues?.forEach((sv) => {
+      const segmentId = sv.segmentId;
+      const segment = segments.find((s) => String(s.id) === String(segmentId));
+      const segInv = investmentPerSegment[segmentId];
+      if (!segment || !segInv) {
+        return;
+      }
+
+      const farmerCount = segment.number_of_farmers || 0;
+      const baselineIncome = sv.currentSegmentValue?.total_current_income || 0;
+      const scenarioIncome =
+        sv.updatedSegmentScenarioValue?.total_current_income || 0;
+      const incomeImprovement = (scenarioIncome - baselineIncome) * farmerCount;
+
+      const totalSegCost = (segInv.components || []).reduce(
+        (acc, comp) => {
+          let multiplier = 1;
+          if (comp.unit === "per_farmer") {
+            multiplier = farmerCount;
+          } else if (comp.unit === "per_land_unit") {
+            multiplier = farmerCount * getLandArea(segment);
+          }
+          return acc + (comp.cost || 0) * multiplier;
+        },
+        segInv.cost_unit === "total" ? segInv.investment_cost || 0 : 0
+      );
+
+      segmentMetrics[segmentId] = {
+        incomeImprovement,
+        incomeImprovementPercentage:
+          baselineIncome > 0
+            ? ((scenarioIncome - baselineIncome) / baselineIncome) * 100
+            : 0,
+        paybackPeriod:
+          incomeImprovement > 0 ? totalSegCost / incomeImprovement : null,
+        totalCost: totalSegCost,
+      };
+    });
+  }
+
+  const result = {
     roi,
+    impactPercentage,
+    paybackPeriod,
+    incomeImprovementPercentage,
     totalIncomeImprovement,
     totalCost,
     componentBreakdown,
-    investmentPerSegment: investmentData.segments,
+    investmentPerSegment,
+    segmentMetrics,
   };
+
+  return result;
 };

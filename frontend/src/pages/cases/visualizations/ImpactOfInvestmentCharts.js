@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Row, Col, Typography, Space, Table, Card, Select } from "antd";
+import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { calculateScenarioROI } from "../utils/roiCalculations";
 import {
@@ -37,7 +37,7 @@ const ImpactOfInvestmentCharts = () => {
           key: scenario.key,
           name: scenario.name,
           ...result,
-          originalScenario: scenario, // Keep for segment-level breakdown
+          originalScenario: scenario,
         };
       })
       .filter((d) => d && d.totalCost !== null);
@@ -51,7 +51,6 @@ const ImpactOfInvestmentCharts = () => {
   }, [allScenariosRoiData, selectedScenarioKey]);
 
   const componentCostChartData = useMemo(() => {
-    // Grouped column chart: X-axis = Component Name, Series = Scenarios
     const components = Array.from(
       new Set(roiData.flatMap((d) => Object.keys(d.componentBreakdown || {})))
     ).sort();
@@ -100,7 +99,7 @@ const ImpactOfInvestmentCharts = () => {
       : null;
 
   // Segment Breakdown Table Data
-  const segmentBreakdownData = selectedScenarioData
+  const segmentBreakdownData = selectedScenarioData?.investmentPerSegment
     ? Object.keys(selectedScenarioData.investmentPerSegment || {}).flatMap(
         (segmentId) => {
           const segInv =
@@ -109,34 +108,59 @@ const ImpactOfInvestmentCharts = () => {
             (s) => String(s.id) === String(segmentId)
           );
           const segmentName = segment?.name || `Segment ${segmentId}`;
+          const metrics =
+            selectedScenarioData.segmentMetrics?.[segmentId] || {};
 
-          return (segInv.components || []).map((comp, idx) => ({
-            key: `${segmentId}-${comp.name}-${idx}`,
-            segmentName,
-            componentName: comp.name,
-            unit:
-              comp.unit === "total"
-                ? "Total Cost"
-                : comp.unit === "per_farmer"
-                ? "Per Farmer"
-                : "Per Land Unit",
-            cost: comp.cost,
-            multiplier:
-              comp.unit === "per_farmer"
-                ? segment?.number_of_farmers || 0
-                : comp.unit === "per_land_unit"
-                ? (segment?.number_of_farmers || 0) *
-                  (parseFloat(segment?.land_size) || 0)
-                : 1,
-            totalContribution:
-              (comp.cost || 0) *
-              (comp.unit === "per_farmer"
-                ? segment?.number_of_farmers || 0
-                : comp.unit === "per_land_unit"
-                ? (segment?.number_of_farmers || 0) *
-                  (parseFloat(segment?.land_size) || 0)
-                : 1),
-          }));
+          if ((segInv.components || []).length > 0) {
+            return (segInv.components || []).map((comp, idx) => ({
+              key: `${segmentId}-${comp.name}-${idx}`,
+              segmentId,
+              segmentName,
+              componentName: comp.name,
+              unit:
+                comp.unit === "total"
+                  ? "Total Cost"
+                  : comp.unit === "per_farmer"
+                  ? "Per Farmer"
+                  : "Per Land Unit",
+              cost: comp.cost,
+              multiplier:
+                comp.unit === "per_farmer"
+                  ? segment?.number_of_farmers || 0
+                  : comp.unit === "per_land_unit"
+                  ? (segment?.number_of_farmers || 0) *
+                    (parseFloat(segment?.land_size) || 0)
+                  : 1,
+              totalContribution:
+                (comp.cost || 0) *
+                (comp.unit === "per_farmer"
+                  ? segment?.number_of_farmers || 0
+                  : comp.unit === "per_land_unit"
+                  ? (segment?.number_of_farmers || 0) *
+                    (parseFloat(segment?.land_size) || 0)
+                  : 1),
+              paybackPeriod: idx === 0 ? metrics.paybackPeriod : null,
+              incomeIncrease:
+                idx === 0 ? metrics.incomeImprovementPercentage : null,
+              isFirstRow: idx === 0,
+            }));
+          }
+
+          return [
+            {
+              key: `${segmentId}-total`,
+              segmentId,
+              segmentName,
+              componentName: "Distributed Total",
+              unit: "Total Cost",
+              cost: segInv.investment_cost || 0,
+              multiplier: 1,
+              totalContribution: segInv.investment_cost || 0,
+              paybackPeriod: metrics.paybackPeriod,
+              incomeIncrease: metrics.incomeImprovementPercentage,
+              isFirstRow: true,
+            },
+          ];
         }
       )
     : [];
@@ -201,6 +225,9 @@ const ImpactOfInvestmentCharts = () => {
                           title: "Segment",
                           dataIndex: "segmentName",
                           key: "segmentName",
+                          onCell: (record) => ({
+                            rowSpan: record.isFirstRow ? 32767 : 0, // Simplified rowSpan
+                          }),
                         },
                         {
                           title: "Component",
@@ -228,6 +255,28 @@ const ImpactOfInvestmentCharts = () => {
                               </Text>
                             </Space>
                           ),
+                        },
+                        {
+                          title: "Income Incr. (%)",
+                          dataIndex: "incomeIncrease",
+                          key: "incomeIncrease",
+                          align: "center",
+                          render: (val) =>
+                            typeof val === "number" ? (
+                              <Tag color="cyan">{val.toFixed(1)}%</Tag>
+                            ) : null,
+                        },
+                        {
+                          title: "Payback (Yrs)",
+                          dataIndex: "paybackPeriod",
+                          key: "paybackPeriod",
+                          align: "center",
+                          render: (val) =>
+                            typeof val === "number" ? (
+                              <Tag color="purple">{val.toFixed(1)}</Tag>
+                            ) : val !== null && typeof val !== "undefined" ? (
+                              <Tag color="default">∞</Tag>
+                            ) : null,
                         },
                       ]}
                     />
@@ -266,8 +315,6 @@ const ImpactOfInvestmentCharts = () => {
             </VisualCardWrapper>
           </Col>
         </Row>
-
-        {/* Summary Table Hidden for now */}
       </Space>
     </Card>
   );
