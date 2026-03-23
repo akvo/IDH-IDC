@@ -22,6 +22,7 @@ const ImpactOfInvestmentCharts = () => {
   const { currency } = currentCase;
 
   const [selectedScenarioKey, setSelectedScenarioKey] = useState("all");
+  const [selectedSegmentId, setSelectedSegmentId] = useState("all");
 
   const investmentAnalysis = scenarioModeling.config.investment_analysis;
 
@@ -48,11 +49,35 @@ const ImpactOfInvestmentCharts = () => {
   }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
 
   const roiData = useMemo(() => {
-    if (selectedScenarioKey === "all") {
-      return allScenariosRoiData;
+    const baseData =
+      selectedScenarioKey === "all"
+        ? allScenariosRoiData
+        : allScenariosRoiData.filter((d) => d.key === selectedScenarioKey);
+
+    if (selectedSegmentId === "all") {
+      return baseData;
     }
-    return allScenariosRoiData.filter((d) => d.key === selectedScenarioKey);
-  }, [allScenariosRoiData, selectedScenarioKey]);
+
+    return baseData
+      .map((d) => {
+        const segMetrics = d.segmentMetrics?.[selectedSegmentId];
+        const segBreakdown = d.segmentComponentBreakdowns?.[selectedSegmentId];
+        if (!segMetrics) {
+          return null;
+        }
+
+        return {
+          ...d,
+          roi: segMetrics.roi,
+          totalCost: segMetrics.totalCost,
+          totalIncomeImprovement: segMetrics.incomeImprovement,
+          incomeImprovementPercentage: segMetrics.incomeImprovementPercentage,
+          paybackPeriod: segMetrics.paybackPeriod,
+          componentBreakdown: segBreakdown || {},
+        };
+      })
+      .filter(Boolean);
+  }, [allScenariosRoiData, selectedScenarioKey, selectedSegmentId]);
 
   const componentCostChartData = useMemo(() => {
     const components = Array.from(
@@ -97,6 +122,14 @@ const ImpactOfInvestmentCharts = () => {
     })),
   ];
 
+  const segmentOptions = [
+    { label: "All Segments", value: "all" },
+    ...(dashboardData?.segments || []).map((s) => ({
+      label: s.name || `Segment ${s.id}`,
+      value: String(s.id),
+    })),
+  ];
+
   const selectedScenarioData =
     selectedScenarioKey !== "all"
       ? allScenariosRoiData.find((d) => d.key === selectedScenarioKey)
@@ -108,12 +141,14 @@ const ImpactOfInvestmentCharts = () => {
         (segmentId) => {
           const segInv =
             selectedScenarioData.investmentPerSegment[segmentId] || {};
-          const segment = dashboardData.find(
+          const segment = (dashboardData?.segments || []).find(
             (s) => String(s.id) === String(segmentId)
           );
           const segmentName = segment?.name || `Segment ${segmentId}`;
           const metrics =
             selectedScenarioData.segmentMetrics?.[segmentId] || {};
+          const farmerCount = segment?.number_of_farmers || 0;
+          const segmentLandArea = getLandArea(segment);
 
           if ((segInv.components || []).length > 0) {
             return (segInv.components || []).map((comp, idx) => ({
@@ -128,21 +163,21 @@ const ImpactOfInvestmentCharts = () => {
                   ? "Per Farmer"
                   : "Per Land Unit",
               cost: comp.cost,
-              farmers: segment?.number_of_farmers || 0,
-              landArea: getLandArea(segment),
+              farmers: farmerCount,
+              landArea: segmentLandArea,
               unitType: comp.unit,
               multiplier:
                 comp.unit === "per_farmer"
-                  ? segment?.number_of_farmers || 0
+                  ? farmerCount
                   : comp.unit === "per_land_unit"
-                  ? (segment?.number_of_farmers || 0) * getLandArea(segment)
+                  ? farmerCount * segmentLandArea
                   : 1,
               totalContribution:
                 (comp.cost || 0) *
                 (comp.unit === "per_farmer"
-                  ? segment?.number_of_farmers || 0
+                  ? farmerCount
                   : comp.unit === "per_land_unit"
-                  ? (segment?.number_of_farmers || 0) * getLandArea(segment)
+                  ? farmerCount * segmentLandArea
                   : 1),
               paybackPeriod: idx === 0 ? metrics.paybackPeriod : null,
               incomeIncrease:
@@ -321,6 +356,17 @@ const ImpactOfInvestmentCharts = () => {
                 cost-efficiency, and identify which segments benefit most
                 proportionally from the interventions.
               </div>
+              <Space direction="vertical" size={8} style={{ width: "100%" }}>
+                <Text type="secondary" style={{ fontSize: "12px" }}>
+                  View data for:
+                </Text>
+                <Select
+                  value={selectedSegmentId}
+                  onChange={setSelectedSegmentId}
+                  options={segmentOptions}
+                  style={{ width: "100%", maxWidth: "300px" }}
+                />
+              </Space>
             </Space>
           </Col>
           <Col span={14}>

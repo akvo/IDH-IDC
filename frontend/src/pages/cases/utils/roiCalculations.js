@@ -203,6 +203,7 @@ export const calculateScenarioROI = (
 
   // Calculate Segment Metrics
   const segmentMetrics = {};
+  const segmentComponentBreakdowns = {};
   if (investmentPerSegment) {
     scenario.scenarioValues?.forEach((sv) => {
       const segmentId = sv.segmentId;
@@ -218,6 +219,7 @@ export const calculateScenarioROI = (
         sv.updatedSegmentScenarioValue?.total_current_income || 0;
       const incomeImprovement = (scenarioIncome - baselineIncome) * farmerCount;
 
+      const compBreakdown = {};
       const totalSegCost = (segInv.components || []).reduce(
         (acc, comp) => {
           let multiplier = 1;
@@ -226,11 +228,20 @@ export const calculateScenarioROI = (
           } else if (comp.unit === "per_land_unit") {
             multiplier = farmerCount * getLandArea(segment);
           }
-          return acc + (comp.cost || 0) * multiplier;
+          const compTotal = (comp.cost || 0) * multiplier;
+          const name = comp.name || "Other";
+          compBreakdown[name] = (compBreakdown[name] || 0) + compTotal;
+          return acc + compTotal;
         },
         segInv.cost_unit === "total" ? segInv.investment_cost || 0 : 0
       );
 
+      // Add "Distributed Total" for case-wide inputs
+      if (segInv.cost_unit === "total" && segInv.investment_cost > 0) {
+        compBreakdown["Distributed Total"] = segInv.investment_cost;
+      }
+
+      segmentComponentBreakdowns[segmentId] = compBreakdown;
       segmentMetrics[segmentId] = {
         incomeImprovement,
         incomeImprovementPercentage:
@@ -240,6 +251,7 @@ export const calculateScenarioROI = (
         paybackPeriod:
           incomeImprovement > 0 ? totalSegCost / incomeImprovement : null,
         totalCost: totalSegCost,
+        roi: totalSegCost > 0 ? incomeImprovement / totalSegCost : 0,
       };
     });
   }
@@ -254,6 +266,7 @@ export const calculateScenarioROI = (
     componentBreakdown,
     investmentPerSegment,
     segmentMetrics,
+    segmentComponentBreakdowns,
   };
 
   return result;
