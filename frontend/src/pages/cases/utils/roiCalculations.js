@@ -7,6 +7,26 @@
  *   ( (Scenario Net Income - Baseline Net Income) * Number of Farmers in segment )
  */
 
+export const getLandArea = (segment) => {
+  if (segment?.land_size) {
+    return parseFloat(segment.land_size) || 0;
+  }
+  if (!segment?.answers) {
+    return 0;
+  }
+  // Prioritize Parent Land (ID 2) then children (6 or 7)
+  // Keys are "current-[commodity_id]-[question_id]"
+  const allKeys = Object.keys(segment.answers);
+  const parentKey = allKeys.find((k) => k.endsWith("-2"));
+
+  if (parentKey && parseFloat(segment.answers[parentKey]) > 0) {
+    return parseFloat(segment.answers[parentKey]);
+  }
+
+  const childKey = allKeys.find((k) => k.endsWith("-6") || k.endsWith("-7"));
+  return childKey ? parseFloat(segment.answers[childKey]) || 0 : 0;
+};
+
 export const calculateScenarioROI = (
   scenario,
   investmentAnalysis,
@@ -22,26 +42,6 @@ export const calculateScenarioROI = (
   if (!investmentData) {
     return null;
   }
-
-  const getLandArea = (segment) => {
-    if (segment?.land_size) {
-      return parseFloat(segment.land_size) || 0;
-    }
-    if (!segment?.answers) {
-      return 0;
-    }
-    // Prioritize Parent Land (ID 2) then children (6 or 7)
-    // Keys are "current-[commodity_id]-[question_id]"
-    const allKeys = Object.keys(segment.answers);
-    const parentKey = allKeys.find((k) => k.endsWith("-2"));
-
-    if (parentKey && parseFloat(segment.answers[parentKey]) > 0) {
-      return parseFloat(segment.answers[parentKey]);
-    }
-
-    const childKey = allKeys.find((k) => k.endsWith("-6") || k.endsWith("-7"));
-    return childKey ? parseFloat(segment.answers[childKey]) || 0 : 0;
-  };
 
   let totalIncomeImprovement = 0;
 

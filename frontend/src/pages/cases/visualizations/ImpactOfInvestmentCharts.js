@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { calculateScenarioROI } from "../utils/roiCalculations";
+import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
 import {
   thousandFormatter,
   Color,
@@ -131,16 +131,14 @@ const ImpactOfInvestmentCharts = () => {
                 comp.unit === "per_farmer"
                   ? segment?.number_of_farmers || 0
                   : comp.unit === "per_land_unit"
-                  ? (segment?.number_of_farmers || 0) *
-                    (parseFloat(segment?.land_size) || 0)
+                  ? (segment?.number_of_farmers || 0) * getLandArea(segment)
                   : 1,
               totalContribution:
                 (comp.cost || 0) *
                 (comp.unit === "per_farmer"
                   ? segment?.number_of_farmers || 0
                   : comp.unit === "per_land_unit"
-                  ? (segment?.number_of_farmers || 0) *
-                    (parseFloat(segment?.land_size) || 0)
+                  ? (segment?.number_of_farmers || 0) * getLandArea(segment)
                   : 1),
               paybackPeriod: idx === 0 ? metrics.paybackPeriod : null,
               incomeIncrease:
