@@ -11,6 +11,9 @@ import Chart from "../../../components/chart";
 
 const { Text } = Typography;
 
+// Constant to toggle table visibility
+const SHOW_SEGMENT_BREAKDOWN_TABLE = true;
+
 const ImpactOfInvestmentCharts = () => {
   const { scenarioModeling, dashboardData } = CaseVisualState.useState(
     (s) => s
@@ -143,6 +146,7 @@ const ImpactOfInvestmentCharts = () => {
               incomeIncrease:
                 idx === 0 ? metrics.incomeImprovementPercentage : null,
               isFirstRow: idx === 0,
+              rowCount: (segInv.components || []).length,
             }));
           }
 
@@ -159,6 +163,7 @@ const ImpactOfInvestmentCharts = () => {
               paybackPeriod: metrics.paybackPeriod,
               incomeIncrease: metrics.incomeImprovementPercentage,
               isFirstRow: true,
+              rowCount: 1,
             },
           ];
         }
@@ -209,84 +214,88 @@ const ImpactOfInvestmentCharts = () => {
                   placeholder="Select a scenario"
                 />
               </div>
-
-              {selectedScenarioKey !== "all" &&
-                segmentBreakdownData.length > 0 && (
-                  <div style={{ marginTop: 24 }}>
-                    <Text strong style={{ display: "block", marginBottom: 12 }}>
-                      Segment Breakdown for {selectedScenarioData?.name}
-                    </Text>
-                    <Table
-                      size="small"
-                      pagination={false}
-                      dataSource={segmentBreakdownData}
-                      columns={[
-                        {
-                          title: "Segment",
-                          dataIndex: "segmentName",
-                          key: "segmentName",
-                          onCell: (record) => ({
-                            rowSpan: record.isFirstRow ? 32767 : 0, // Simplified rowSpan
-                          }),
-                        },
-                        {
-                          title: "Component",
-                          dataIndex: "componentName",
-                          key: "componentName",
-                        },
-                        {
-                          title: "Applied Cost",
-                          key: "calculated",
-                          align: "right",
-                          render: (_, record) => (
-                            <Space direction="vertical" size={0} align="end">
-                              <Text type="secondary" style={{ fontSize: 11 }}>
-                                {record.unit === "Total Cost"
-                                  ? ""
-                                  : `${thousandFormatter(
-                                      record.cost
-                                    )} x ${thousandFormatter(
-                                      record.multiplier
-                                    )}`}
-                              </Text>
-                              <Text strong>
-                                {currencyLabel}{" "}
-                                {thousandFormatter(record.totalContribution, 2)}
-                              </Text>
-                            </Space>
-                          ),
-                        },
-                        {
-                          title: "Income Incr. (%)",
-                          dataIndex: "incomeIncrease",
-                          key: "incomeIncrease",
-                          align: "center",
-                          render: (val) =>
-                            typeof val === "number" ? (
-                              <Tag color="cyan">{val.toFixed(1)}%</Tag>
-                            ) : null,
-                        },
-                        {
-                          title: "Payback (Yrs)",
-                          dataIndex: "paybackPeriod",
-                          key: "paybackPeriod",
-                          align: "center",
-                          render: (val) =>
-                            typeof val === "number" ? (
-                              <Tag color="purple">{val.toFixed(1)}</Tag>
-                            ) : val !== null && typeof val !== "undefined" ? (
-                              <Tag color="default">∞</Tag>
-                            ) : null,
-                        },
-                      ]}
-                    />
-                  </div>
-                )}
             </Space>
           </Col>
         </Row>
 
-        {/* Row 2: ROI (Right) + Text (Left) */}
+        {/* Row 2: Segment Breakdown Table (Full Width) */}
+        {SHOW_SEGMENT_BREAKDOWN_TABLE &&
+          selectedScenarioKey !== "all" &&
+          segmentBreakdownData.length > 0 && (
+            <Row>
+              <Col span={24}>
+                <div style={{ marginTop: 24, marginBottom: 48 }}>
+                  <Text strong style={{ display: "block", marginBottom: 12 }}>
+                    Segment Breakdown for {selectedScenarioData?.name}
+                  </Text>
+                  <Table
+                    size="small"
+                    pagination={false}
+                    dataSource={segmentBreakdownData}
+                    columns={[
+                      {
+                        title: "Segment",
+                        dataIndex: "segmentName",
+                        key: "segmentName",
+                        onCell: (record) => ({
+                          rowSpan: record.isFirstRow ? record.rowCount : 0,
+                        }),
+                      },
+                      {
+                        title: "Component",
+                        dataIndex: "componentName",
+                        key: "componentName",
+                      },
+                      {
+                        title: "Applied Cost",
+                        key: "calculated",
+                        align: "right",
+                        render: (_, record) => (
+                          <Space direction="vertical" size={0} align="end">
+                            <Text type="secondary" style={{ fontSize: 11 }}>
+                              {record.unit === "Total Cost"
+                                ? ""
+                                : `${thousandFormatter(
+                                    record.cost
+                                  )} x ${thousandFormatter(record.multiplier)}`}
+                            </Text>
+                            <Text strong>
+                              {currencyLabel}{" "}
+                              {thousandFormatter(record.totalContribution, 2)}
+                            </Text>
+                          </Space>
+                        ),
+                      },
+                      {
+                        title: "Income Incr. (%)",
+                        dataIndex: "incomeIncrease",
+                        key: "incomeIncrease",
+                        align: "center",
+                        render: (val) =>
+                          typeof val === "number" ? (
+                            <Tag color="cyan">{val.toFixed(1)}%</Tag>
+                          ) : null,
+                      },
+                      {
+                        title: "Payback (Yrs)",
+                        dataIndex: "paybackPeriod",
+                        key: "paybackPeriod",
+                        align: "center",
+                        render: (val) =>
+                          typeof val === "number" ? (
+                            <Tag color="purple">{val.toFixed(1)}</Tag>
+                          ) : val !== null && typeof val !== "undefined" ? (
+                            <Tag color="default">∞</Tag>
+                          ) : null,
+                      },
+                    ]}
+                  />
+                </div>
+              </Col>
+            </Row>
+          )}
+
+        {/* Row 3: ROI (Right) + Text (Left) */}
         <Row gutter={[48, 24]} align="top">
           <Col span={10}>
             <Space direction="vertical" size={16}>
