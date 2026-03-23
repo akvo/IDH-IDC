@@ -21,6 +21,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Implemented new business metrics: Payback Period, Income Increase %, and Impact Percentage.
     - Integrated these metrics into the `Segment Breakdown` table in `ImpactOfInvestmentCharts.js`.
     - **Refinement**: Moved the `Segment Breakdown` table to a prominent full-width position and added a `SHOW_SEGMENT_BREAKDOWN_TABLE` visibility constant.
+    - **Refinement**: Enhanced the `Segment Breakdown` table to show a transparent multiplier breakdown (e.g., `cost x farmers x land_area`) for "Per Land Unit" costs.
     - **Refinement**: Fixed `rowSpan` logic for multi-segment data presentation.
     - **Bugfix**: Synchronized land area calculation logic between `roiCalculations.js` and `ImpactOfInvestmentCharts.js` by extracting and sharing a robust `getLandArea` utility that handles both dictionary and array-of-objects answer formats.
     - Verified 100% calculation accuracy against Google Doc reference examples.
