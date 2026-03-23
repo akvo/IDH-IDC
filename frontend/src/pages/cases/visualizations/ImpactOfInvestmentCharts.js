@@ -3,10 +3,7 @@ import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { orderBy } from "lodash";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
-import {
-  thousandFormatter,
-  Color,
-} from "../../../components/chart/options/common";
+import { thousandFormatter } from "../../../components/chart/options/common";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 
@@ -14,6 +11,16 @@ const { Text } = Typography;
 
 // Constant to toggle table visibility
 const SHOW_SEGMENT_BREAKDOWN_TABLE = false;
+
+const scenarioColors = [
+  "#1B625F", // IDH Dark Green
+  "#F9CB21", // IDH Yellow
+  "#70CFAD", // Teal
+  "#FDAE60", // Orange
+  "#9CC2C1", // Light Green
+  "#FFEEB8", // Light Yellow
+  "#87D068", // Alt Green
+];
 
 const ImpactOfInvestmentCharts = () => {
   const { scenarioModeling, dashboardData } = CaseVisualState.useState(
@@ -80,16 +87,6 @@ const ImpactOfInvestmentCharts = () => {
       .filter(Boolean);
   }, [allScenariosRoiData, selectedScenarioKey, selectedSegmentId]);
 
-  const scenarioColors = [
-    "#1B625F", // IDH Dark Green
-    "#F9CB21", // IDH Yellow
-    "#70CFAD", // Teal
-    "#FDAE60", // Orange
-    "#9CC2C1", // Light Green
-    "#FFEEB8", // Light Yellow
-    "#87D068", // Alt Green
-  ];
-
   const componentCostChartData = useMemo(() => {
     const components = Array.from(
       new Set(roiData.flatMap((d) => Object.keys(d.componentBreakdown || {})))
@@ -143,7 +140,6 @@ const ImpactOfInvestmentCharts = () => {
   }
 
   const currencyLabel = currency || "USD";
-
 
   const selectedScenarioData =
     selectedScenarioKey !== "all"
