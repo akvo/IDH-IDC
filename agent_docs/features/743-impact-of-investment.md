@@ -22,6 +22,9 @@ Align the "Impact of Investment" visualizations with Section 3 of the Figma desi
 ### Phase 7: Scenario Selector & Cost Transparency (#743) - [x] COMPLETED
 Introduce a scenario selector to allow per-scenario deep dives. Add a segment-level cost breakdown table to ensure transparency and help users verify the accuracy of their cost inputs across different farmer groups.
 
+### Phase 8: ROI Pseudocode Alignment (#743) - [/] IN PROGRESS
+Finalize the ROI calculation logic and visualizations to match the [IDH Google Doc](https://docs.google.com/document/d/1ZfF4nmGEG4Xtm2rqtY7LnQ7jcT8IEBX6dzKJ48-q72E/edit?tab=t.vv1njewiltfe#heading=h.g6t4peytb1y3). This includes implementing proportional cost distribution for case-wide inputs and adding business-centric metrics (Payback Period, Income Increase %).
+
 > [!NOTE]
 > **Scenario-Specific Attachment**: Investment costs and ROI calculations are strictly attached to each **individual scenario**. This allows users to compare the cost-effectiveness of different strategies (e.g., Scenario A vs. Scenario B) within the same case.
 
@@ -38,10 +41,11 @@ Introduce a scenario selector to allow per-scenario deep dives. Add a segment-le
      - **Total**: Calculated row total (renamed from "Total cost").
    - **Cost Distribution**: If case-wide mode is active (Per-segment toggle OFF), the total investment is automatically distributed proportionately based on the farmer count in each segment.
 
-2. **Impact Calculation**:
-   - **Formula**: `Impact of Investment = (Total Net Income Improvement / Total Investment Cost)`
-   - **Definition**: The absolute increase in household income achieved for every $1 (or currency unit) invested.
-   - **Example**: If total income improvement across all farmers is $10,000 and the investment is $5,000, the impact score is 2.0. This means for every $1 invested, farmer income increases by $2.
+3. **Secondary Performance Metrics**:
+   - **Income Increase (%)**: `(Scenario Income - Baseline Income) / Baseline Income`.
+   - **Impact of Investment (%)**: `(Income Increase % / Total Cost) * 100`.
+   - **Payback Period (Years)**: `Total Cost / Net Income Improvement`. Represents the time required for the investment to be recovered through income gains.
+   - **Impact Investment Ratio**: `Total Net Income Improvement / Total Investment Cost` (Standard ROI).
 
 3. **Visualizations**:
    - **Scenario Efficiency Comparison Chart**: A bar chart comparing the total "Impact" score across all modeled scenarios.

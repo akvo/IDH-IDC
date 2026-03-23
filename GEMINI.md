@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Phase 8: ROI Pseudocode Alignment (#743) - [COMPLETED]**:
+    - Aligned ROI calculation logic with IDH pseudocode, including proportional cost distribution for case-wide (All Farmers) inputs.
+    - Implemented new business metrics: Payback Period, Income Increase %, and Impact Percentage.
+    - Integrated these metrics into the `Segment Breakdown` table in `ImpactOfInvestmentCharts.js`.
+    - Verified 100% calculation accuracy against Google Doc reference examples.
+    - Path: `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
 - **Phase 7: Scenario Selector & Cost Transparency (#743)**:
     - Implemented a scenario selector in `ImpactOfInvestmentCharts.js` to allow filtering ROI visualizations by specific scenario.
     - Added a `Segment Breakdown` table for single-scenario views, providing granular transparency into cost components (applied multipliers for farmers/land).

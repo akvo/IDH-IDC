@@ -1,11 +1,12 @@
 ## Story: Investment Cost Input Interface (Frontend)
+**Status**: [x] COMPLETED
 **As a** Business User
 **I want** to input implementation costs for my modelling scenarios
 **So that** I can calculate the ROI of my investment
 
 ### Timeline & Effort
 - **Estimated Time**: 6h
-- **Actual Time**: [Leave empty initially]
+- **Actual Time**: 5h
 - **Effort Points**: 5
 
 ### Acceptance Criteria

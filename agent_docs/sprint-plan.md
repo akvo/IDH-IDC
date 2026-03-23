@@ -48,7 +48,7 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-5 | ROI Logic & Cost Allocation | HIGH | [x] | 6h |
 | STORY-743-3 | Impact of Investment Charts | MEDIUM | [x] | 6h |
 | STORY-743-6 | ROI Design Alignment (Figma) | HIGH | [x] | 6h |
-| STORY-743-7 | Scenario Selector & Cost Transparency | HIGH | [/] | 4h |
+| STORY-743-7 | Scenario Selector & Cost Transparency | HIGH | [x] | 4h |
 
 ## Detailed Task Breakdown
 ### STORY-743-2: ROI Breakdown UI (COMPLETED)
@@ -80,9 +80,16 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 - [x] Refine ROI percentage chart to match Figma visual style
 
 ### STORY-743-7: Scenario Selector & Cost Transparency (COMPLETED)
-- [ ] Add scenario selector below ROI chart description.
-- [ ] Filter charts in `ImpactOfInvestmentCharts.js` based on selection.
-- [ ] Add "Segment Cost Breakdown" table to pinpoint errors (like the 402k bug).
+- [x] Add scenario selector below ROI chart description.
+- [x] Filter charts in `ImpactOfInvestmentCharts.js` based on selection.
+- [x] Add "Segment Cost Breakdown" table to pinpoint errors (like the 402k bug).
+
+### User Story: STORY-743-8 — ROI Pseudocode Alignment
+
+**Status**: [x] COMPLETED
+- [x] Implement proportional cost distribution for case-wide inputs.
+- [x] Add `Payback Period`, `Income Increase %`, and `Impact %` to utility.
+- [x] Update Segment Breakdown table with new calculation metrics.
 
 ## Verification Plan
 ### Automated Tests
