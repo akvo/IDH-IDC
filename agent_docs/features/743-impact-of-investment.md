@@ -25,8 +25,13 @@ Introduce a scenario selector to allow per-scenario deep dives. Add a segment-le
 ### Phase 8: ROI Pseudocode Alignment (#743) - [x] COMPLETED
 Finalize the ROI calculation logic and visualizations to match the [IDH Google Doc](https://docs.google.com/document/d/1ZfF4nmGEG4Xtm2rqtY7LnQ7jcT8IEBX6dzKJ48-q72E/edit?tab=t.vv1njewiltfe#heading=h.g6t4peytb1y3). This includes implementing proportional cost distribution for case-wide inputs and adding business-centric metrics (Payback Period, Income Increase %).
 
-### Phase 14: Scenario-Segment Multi-Selector (#743) - [/] IN PROGRESS
-Align the "Scenario Cost by component" chart with the "Income gap across scenario" selector pattern. Allow users to select up to 5 specific combinations of Scenario and Segment to compare side-by-side in the cost and ROI charts.
+### Phase 14: Scenario-Segment Multi-Selector (#743) - [x] COMPLETED
+Align the "Scenario Cost by component" chart with the "Income gap across scenario" selector pattern. Allow users to select up to 5 specific combinations of Scenario and Segment to compare side-by-side. 
+
+**Robustness Fixes**:
+- **Delimiter**: Uses `::: ` to combine Scenario and Segment keys, ensuring compatibility with names containing dashes.
+- **Fallbacks**: Implemented zero-value fallbacks for segments without investment data to prevent "No Data" blank states.
+- **Type Safety**: Enforced string-casting for all ID and Key comparisons.
 
 > [!NOTE]
 > **Scenario-Specific Attachment**: Investment costs and ROI calculations are strictly attached to each **individual scenario**. This allows users to compare the cost-effectiveness of different strategies (e.g., Scenario A vs. Scenario B) within the same case.

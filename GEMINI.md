@@ -16,12 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
-    - **Phase 12: Scenario-based ROI Coloring (#743) - [COMPLETED]**:
-        - Shifted coloring strategy from component-based to scenario-based for the "Scenario Cost by component" and "Return on Investment (%)" charts.
-        - Each scenario now maintains a distinct and persistent IDH brand color (Scenario 1 = Dark Green, Scenario 2 = Yellow, etc.) across all Step 5 visualizations.
-        - Fixed a React hook violation ("Rendered more hooks than during previous render") by restructuring hook order to precede early returns.
-        - Verified visual consistency and component stability in the browser with multiple scenarios.
-    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 15: Selector Refinement & Documentation Sync (#743) - [COMPLETED]**:
+        - Isolated multi-selector to "Scenario Cost by component" chart and restored single-select for ROI.
+        - Implemented "show all" default behavior for the cost chart when no selections are made.
+        - Resolved "blank chart" bug via robust `::: ` delimiter and string-casting for numeric/string compatibility.
+        - Implemented zero-value fallback for segments without investment data to prevent "No Data" blank states.
+        - Synchronized all technical and user documentation (Feature Doc, User Guide, UX Spec, and Story #743-9).
+        - Verified 100% lint-clean status and calculation accuracy against Google Doc reference.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `agent_docs/`.
     - **Phase 11: ROI Component Cost Color Refinement (#743) - [COMPLETED]**:
         - Implemented a custom IDH-branded color palette for the "Scenario Cost by component" chart using official brand colors (Dark Green, Yellow, Teal, etc.).
         - Fixed color mapping logic in `ImpactOfInvestmentCharts.js` to use the component index instead of the scenario index, ensuring visual consistency across scenarios.

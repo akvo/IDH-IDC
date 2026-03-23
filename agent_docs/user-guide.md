@@ -51,4 +51,17 @@ When using the "Add segment based on a different variable" option, the UI utiliz
 2.  **Select Variable**: Once the type is selected, the variable dropdown ("Select a variable to segment by:") will populate with relevant columns from your spreadsheet.
 3.  **Configure Segmentation**: For numerical variables, enter the desired number of segments in the right column.
 
-This layout maximizes space efficiency and prevents the confusion of an empty dropdown, ensuring a streamlined data preparation experience.
+# Step 5: Impact of Investment Analysis (Premium)
+
+Premium users can evaluate the cost-effectiveness of their strategies by toggling the "Add Investment" option in Step 5 modeling tabs.
+
+## Comparing Scenarios & Segments
+The **Scenario Cost by component** chart utilizes a multi-selector to allow side-by-side comparison of up to 5 unique combinations of scenarios and segments.
+- **Default View**: If no specific selection is made, the chart defaults to showing all modelled scenarios for "All Segments."
+- **Deep Dives**: Select specific farmer segments (e.g., "Male", "Smallholder") to see how implementation costs vary across your population.
+- **Zero-Value Display**: Segments without explicitly defined investment costs will appear as 0-value entries to maintain visual comparison without data gaps.
+
+## ROI Performance Metrics
+- **Return on Investment (%)**: Measures the percentage point increase in household income for every 100 units of currency invested.
+- **Payback Period (Years)**: The estimated time required for the projected income gains to recover the total implementation cost.
+- **Income Increase (%)**: The net percentage growth in household income compared to the baseline.

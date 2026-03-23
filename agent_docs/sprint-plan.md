@@ -49,7 +49,7 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-3 | Impact of Investment Charts | MEDIUM | [x] | 6h |
 | STORY-743-6 | ROI Design Alignment (Figma) | HIGH | [x] | 6h |
 | STORY-743-7 | Scenario Selector & Cost Transparency | HIGH | [x] | 4h |
-| STORY-743-9 | Scenario-Segment Multi-Selector | HIGH | [/] | 4h |
+| STORY-743-9 | Scenario-Segment Multi-Selector | HIGH | [x] | 4h |
 
 ---
 
@@ -109,7 +109,16 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 - Verify ROI utility logic with Jest unit tests in `roiCalculations.test.js`
 
 ### Manual Verification
-1. Model scenarios in Step 5 and toggle "Add Investment".
-2. Switch between "Case-wide" and "Per segment" modes.
-3. Verify that changing cost in Segment A does not override Segment B.
-4. Verify the "Impact" charts reflect real-time calculation updates.
+### STORY-743-9: Selector Multi-Comparison & Robustness (COMPLETED)
+- [x] Implement multi-select dropdown for "Scenario Cost by component" (Max 5 items).
+- [x] Restore single-select for ROI chart (Segment-level analysis).
+- [x] Robust `::: ` delimiter for key parsing (fixed dashes in scenario names).
+- [x] Strict string casting for scenario keys (fixed numeric lookup bug).
+- [x] Zero-value fallback for segments without investment data (prevents blank state).
+- [x] Verified charts update in real-time with selected combinations.
+
+## Verification Plan
+1.  **Selection Robustness**: Select a scenario with a dash in its name (e.g., "Scenario-1") and verify the chart correctly displays data.
+2.  **Segment Deep Dives**: Select a specific segment (e.g., "Male") and verify it is not blank.
+3.  **Missing Data**: Select a segment without investment and verify the chart shows a 0-bar instead of "No Data."
+4.  **Multi-Comparison**: Select 5 combinations and verify side-by-side rendering in the Cost chart.

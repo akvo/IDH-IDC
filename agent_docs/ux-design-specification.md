@@ -7,11 +7,12 @@ Align the "Impact of Investment" charts with the multi-selection pattern establi
 - **Strategic Decision Maker**: Needs to compare "Scenario A for Smallholders" directly against "Scenario B for Largeholders" to evaluate cost-effectiveness and ROI across diverse interventions.
 
 ## Layout & Components
-1. **The Multi-Selector**:
-   - **Type**: `Ant Design` Select with `mode="multiple"`.
-   - **Placement**: Located in the right-side information column (`Space` container) for both the "Scenario Cost by component" and "ROI" charts.
-   - **Labeling**: The redundant "View data for:" text is removed to save vertical space; the `Placeholder` text will guide the user.
-   - **Options**: `[Scenario Name] - [Segment Name]`.
+1. **The Selectors**:
+   - **Cost Chart**: `Ant Design` Select with `mode="multiple"` for side-by-side comparison of up to 5 Scenario-Segment pairs.
+   - **ROI Chart**: Single-select dropdown to view all modelled scenarios for one specific farmer segment.
+   - **Placement**: Located in the information column for both charts.
+   - **Labeling**: Placeholders guide the user (e.g., "Select Scenarios and Segments to compare").
+   - **Options**: `[Scenario Name] - [Segment Name]` (Cost) or `[Segment Name]` (ROI).
 
 2. **Visual Feedback (Charts)**:
    - **X-Axis Labels**: Should consistently use the `[Scenario Name] - [Segment Name]` format.
