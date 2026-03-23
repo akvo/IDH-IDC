@@ -49,6 +49,18 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-3 | Impact of Investment Charts | MEDIUM | [x] | 6h |
 | STORY-743-6 | ROI Design Alignment (Figma) | HIGH | [x] | 6h |
 | STORY-743-7 | Scenario Selector & Cost Transparency | HIGH | [x] | 4h |
+| STORY-743-9 | Scenario-Segment Multi-Selector | HIGH | [/] | 4h |
+
+---
+
+## Managerial 3-Day Split (Refined Backlog)
+*This split reorganizes the 32-hour epic into three 8-hour blocks for better project tracking.*
+
+| ID | Title | Est. Effort | Status |
+|----|-------|-------------|--------|
+| [STORY-743-A](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-A.md) | ROI Foundation & Backend Integration | 8h | [x] |
+| [STORY-743-B](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-B.md) | Segment-Specific Investment Input | 8h | [x] |
+| [STORY-743-C](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-C.md) | ROI Visualizations & Multi-Comparison | 8h | [x] |
 
 ## Detailed Task Breakdown
 ### STORY-743-2: ROI Breakdown UI (COMPLETED)

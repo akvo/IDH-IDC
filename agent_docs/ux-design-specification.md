@@ -1,44 +1,35 @@
-# UX Specification: External (Regular) User Restrictions
+# UX Design Specification: Step 5 Multi-Selector (#743)
 
 ## Overview
-Standardize the visual experience for restricted users to ensure they understand why certain tools are unavailable or read-only without cluttering the interface.
+Align the "Impact of Investment" charts with the multi-selection pattern established in Step 3/5's "Income gap across scenario" visualization. This enables granular comparison of specific Strategic Scenarios against diverse Farmer Segments.
 
-## 1. Case Setup (Step 1)
-### Data Upload Tab
-- **Requirement**: Hide the "Data Upload" tab entirely.
-- **Visual Pattern**: The `Tabs` component in `CaseForm.js` will render only the "Manual data input" key.
-- **Rationale**: Reduces visual noise and prevents frustration by not showing a tool they cannot use.
+## User Persona
+- **Strategic Decision Maker**: Needs to compare "Scenario A for Smallholders" directly against "Scenario B for Largeholders" to evaluate cost-effectiveness and ROI across diverse interventions.
 
-## 2. Optimization Tool (Step 4)
-### Interaction State
-- **Input Fields**: All `InputNumber` and `Select/TreeSelect` components will use the `disabled` state (Ant Design standard low-opacity background).
-- **Buttons**: "Run the model" and "Clear results" buttons will be disabled and display a `Tooltip` on hover: *"This feature is available for Internal and Advanced users only."*
-- **Visual Logic**: Maintain the current chart display if results exist, ensuring the user can still consume pre-computed data.
+## Layout & Components
+1. **The Multi-Selector**:
+   - **Type**: `Ant Design` Select with `mode="multiple"`.
+   - **Placement**: Located in the right-side information column (`Space` container) for both the "Scenario Cost by component" and "ROI" charts.
+   - **Labeling**: The redundant "View data for:" text is removed to save vertical space; the `Placeholder` text will guide the user.
+   - **Options**: `[Scenario Name] - [Segment Name]`.
 
-## 3. Advanced Modelling Tool (Step 5)
-### Component Gates
-- **Modelling Inputs**: All inputs within scenario modelling tabs will be disabled.
-- **Feasibility Icons**: Hide interactive lock icons to communicate that the entire scenario is "locked" by policy.
-- **Driver Selection**: Disable the primary commodity driver dropdown.
-- **Feedback**: Display a subtle `Alert` (type="info") at the top of the modelling area: *"Mode: View Only. Calculations are based on organization-wide feasible parameters."*
+2. **Visual Feedback (Charts)**:
+   - **X-Axis Labels**: Should consistently use the `[Scenario Name] - [Segment Name]` format.
+   - **Coloring**: Multi-selection bars will use the `scenarioColors` palette based on the order of selection.
+   - **Grouped Bars**: The "Scenario Cost by component" chart remains a grouped bar chart; each group on the X-axis represents a selection pair.
 
-## 4. Backend Error Feedback
-### 403 Forbidden (Case Upload)
-- **Error Message**: *"Access Denied: Your user group does not have permission to upload spreadsheet data. Please contact your administrator."*
-- **Frontend Handling**: `messageApi.error` will display the backend detail string to provide specific context.
+3. **Breakdown Table Integration**:
+   - **Contextual View**: The "Segment Cost Breakdown" table below the charts will visualize the granular multiplier breakdown for the **first selection** in the active list.
+   - **Indicator**: A small header or `Tag` above the table: "Showing detailed breakdown for: [Scenario-Segment Name]".
 
-## 5. Summary Table of Restricted States
+## Error Handling & Limits
+- **Selection Limit**: Max 5 items (consistent with Step 3).
+- **Empty State**: Charts and tables should show a clear placeholder or empty state if no combinations are selected.
+- **Placeholder Text**: "Select combinations of Scenarios and Segments to compare".
 
-| Element | User Type | Visual State |
-|---------|-----------|--------------|
-| Upload Tab | Regular | Hidden |
-| Modeling Inputs | Regular | Disabled |
-| Run Model Button | Regular | Disabled + Tooltip |
-## 6. Data Cleanup Interaction (Discard)
-### User Experience
-- **Action**: When a user clicks "Discard changes" in the `Unsaved Changes` modal.
-- **Visual Pattern**: Show a loading state on the button if the server call exceeds 300ms.
-- **Feedback**:
-    - **Success**: Close the drawer immediately.
-    - **Error**: Show a non-blocking `message.warning`: *"Data discarded locally. Server-side cleanup will be handled automatically."* and close the drawer.
-- **Rationale**: Ensures the user feels their privacy is respected (data is "wiped") without introducing friction if the network fails.
+## Interaction Flow
+1. User enters Step 5.
+2. By default, the first Scenario - First Segment (or "All Segments") is selected.
+3. User adds more combinations from the dropdown.
+4. Charts update in real-time to show side-by-side bars for each combination.
+5. The Breakdown table remains pinned to the first selection but can be updated by re-ordering or changing the selection set.

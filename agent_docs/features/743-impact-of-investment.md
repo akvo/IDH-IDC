@@ -22,8 +22,11 @@ Align the "Impact of Investment" visualizations with Section 3 of the Figma desi
 ### Phase 7: Scenario Selector & Cost Transparency (#743) - [x] COMPLETED
 Introduce a scenario selector to allow per-scenario deep dives. Add a segment-level cost breakdown table to ensure transparency and help users verify the accuracy of their cost inputs across different farmer groups.
 
-### Phase 8: ROI Pseudocode Alignment (#743) - [/] IN PROGRESS
+### Phase 8: ROI Pseudocode Alignment (#743) - [x] COMPLETED
 Finalize the ROI calculation logic and visualizations to match the [IDH Google Doc](https://docs.google.com/document/d/1ZfF4nmGEG4Xtm2rqtY7LnQ7jcT8IEBX6dzKJ48-q72E/edit?tab=t.vv1njewiltfe#heading=h.g6t4peytb1y3). This includes implementing proportional cost distribution for case-wide inputs and adding business-centric metrics (Payback Period, Income Increase %).
+
+### Phase 14: Scenario-Segment Multi-Selector (#743) - [/] IN PROGRESS
+Align the "Scenario Cost by component" chart with the "Income gap across scenario" selector pattern. Allow users to select up to 5 specific combinations of Scenario and Segment to compare side-by-side in the cost and ROI charts.
 
 > [!NOTE]
 > **Scenario-Specific Attachment**: Investment costs and ROI calculations are strictly attached to each **individual scenario**. This allows users to compare the cost-effectiveness of different strategies (e.g., Scenario A vs. Scenario B) within the same case.

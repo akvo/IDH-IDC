@@ -1,13 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
+import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { orderBy } from "lodash";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
 import { thousandFormatter } from "../../../components/chart/options/common";
+import { orderBy } from "lodash";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 
 const { Text } = Typography;
+
+const MAX_SCENARIO_SEGMENT = 5;
 
 // Constant to toggle table visibility
 const SHOW_SEGMENT_BREAKDOWN_TABLE = false;
@@ -29,8 +32,10 @@ const ImpactOfInvestmentCharts = () => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { currency } = currentCase;
 
-  const [selectedScenarioKey, setSelectedScenarioKey] = useState("all");
-  const [selectedSegmentId, setSelectedSegmentId] = useState("all");
+  const [selectedCostScenarioSegments, setSelectedCostScenarioSegments] =
+    useState([]);
+
+  const [selectedRoiSegmentId, setSelectedRoiSegmentId] = useState("all");
 
   const investmentAnalysis = scenarioModeling.config.investment_analysis;
 
@@ -56,26 +61,111 @@ const ImpactOfInvestmentCharts = () => {
       .filter((d) => d && d.totalCost !== null);
   }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
 
-  const roiData = useMemo(() => {
-    const baseData =
-      selectedScenarioKey === "all"
-        ? allScenariosRoiData
-        : allScenariosRoiData.filter((d) => d.key === selectedScenarioKey);
-
-    if (selectedSegmentId === "all") {
-      return baseData;
+  const costRoiData = useMemo(() => {
+    if (selectedCostScenarioSegments.length === 0) {
+      return allScenariosRoiData.map((sc) => ({
+        ...sc,
+        displayName: sc.name,
+        selectedSegmentId: "all",
+      }));
     }
 
-    return baseData
+    return selectedCostScenarioSegments
+      .map((selection) => {
+        const [scKey, segId] = selection.split(":::");
+        const scenario = allScenariosRoiData.find(
+          (d) => String(d.key) === String(scKey)
+        );
+
+        if (!scenario) {
+          return null;
+        }
+
+        const findSegment = currentCase?.segments?.find(
+          (s) => String(s.id) === String(segId)
+        );
+        const segmentName = findSegment?.name || "All Segments";
+
+        // If segId is "all" or specific
+        if (segId === "all") {
+          return {
+            ...scenario,
+            displayName: `${scenario.name} - All Segments`,
+            selectedSegmentId: "all",
+          };
+        }
+
+        const segMetrics = scenario.segmentMetrics?.[segId];
+        const segBreakdown = scenario.segmentComponentBreakdowns?.[segId];
+
+        if (!segMetrics) {
+          return {
+            ...scenario,
+            displayName: `${scenario.name} - ${segmentName}`,
+            selectedSegmentId: segId,
+            roi: 0,
+            totalCost: 0,
+            incomeImprovementPercentage: 0,
+            paybackPeriod: 0,
+            componentBreakdown: {},
+          };
+        }
+
+        return {
+          ...scenario,
+          displayName: `${scenario.name} - ${segmentName}`,
+          selectedSegmentId: segId,
+          roi: segMetrics.roi,
+          totalCost: segMetrics.totalCost,
+          incomeImprovementPercentage: segMetrics.incomeImprovementPercentage,
+          paybackPeriod: segMetrics.paybackPeriod,
+          componentBreakdown: segBreakdown || {},
+        };
+      })
+      .filter(Boolean);
+  }, [
+    allScenariosRoiData,
+    selectedCostScenarioSegments,
+    currentCase?.segments,
+  ]);
+
+  const componentCostChartData = useMemo(() => {
+    const components = Array.from(
+      new Set(
+        costRoiData.flatMap((d) => Object.keys(d.componentBreakdown || {}))
+      )
+    ).sort();
+
+    return components.map((compName) => ({
+      name: compName,
+      data: costRoiData.map((d, idx) => ({
+        name: d.displayName || d.name || `Scenario ${idx + 1}`,
+        value: d.componentBreakdown?.[compName] || 0,
+        color: scenarioColors[idx % scenarioColors.length],
+      })),
+    }));
+  }, [costRoiData]);
+
+  const roiChartRoiData = useMemo(() => {
+    if (selectedRoiSegmentId === "all") {
+      return allScenariosRoiData.map((sc) => ({
+        ...sc,
+        displayName: sc.name,
+      }));
+    }
+
+    return allScenariosRoiData
       .map((d) => {
-        const segMetrics = d.segmentMetrics?.[selectedSegmentId];
-        const segBreakdown = d.segmentComponentBreakdowns?.[selectedSegmentId];
+        const segMetrics = d.segmentMetrics?.[selectedRoiSegmentId];
+        const segBreakdown =
+          d.segmentComponentBreakdowns?.[selectedRoiSegmentId];
         if (!segMetrics) {
           return null;
         }
 
         return {
           ...d,
+          displayName: d.name,
           roi: segMetrics.roi,
           totalCost: segMetrics.totalCost,
           totalIncomeImprovement: segMetrics.incomeImprovement,
@@ -85,26 +175,11 @@ const ImpactOfInvestmentCharts = () => {
         };
       })
       .filter(Boolean);
-  }, [allScenariosRoiData, selectedScenarioKey, selectedSegmentId]);
-
-  const componentCostChartData = useMemo(() => {
-    const components = Array.from(
-      new Set(roiData.flatMap((d) => Object.keys(d.componentBreakdown || {})))
-    ).sort();
-
-    return components.map((compName) => ({
-      name: compName,
-      data: roiData.map((d, idx) => ({
-        name: d.name || `Scenario ${idx + 1}`,
-        value: d.componentBreakdown?.[compName] || 0,
-        color: scenarioColors[idx % scenarioColors.length],
-      })),
-    }));
-  }, [roiData]);
+  }, [allScenariosRoiData, selectedRoiSegmentId]);
 
   const roiChartData = useMemo(() => {
-    return roiData.map((d, index) => ({
-      name: d.name || `Scenario ${index + 1}`,
+    return roiChartRoiData.map((d, index) => ({
+      name: d.displayName || d.name || `Scenario ${index + 1}`,
       order: index,
       data: [
         {
@@ -114,26 +189,40 @@ const ImpactOfInvestmentCharts = () => {
         },
       ],
     }));
-  }, [roiData]);
-
-  const scenarioOptions = [
-    { label: "Compare All Scenarios", value: "all" },
-    ...allScenariosRoiData.map((d) => ({
-      label: d.name || "Unnamed Scenario",
-      value: d.key,
-    })),
-  ];
+  }, [roiChartRoiData]);
 
   const segmentOptions = useMemo(() => {
-    const res = (currentCase.segments || []).map((s) => ({
-      label: s.name || `Segment ${s.id}`,
-      value: String(s.id),
+    const defaultOptions = [{ label: "All Segments", value: "all" }];
+    const segments = (currentCase.segments || []).map((s) => ({
+      label: s.name,
+      value: s.id,
     }));
-    return [
-      { label: "All Segments", value: "all" },
-      ...orderBy(res, ["value"]),
-    ];
+    return [...defaultOptions, ...segments];
   }, [currentCase.segments]);
+
+  const scenarioSegmentOptions = useMemo(() => {
+    let i = 1;
+    const res = orderBy(
+      scenarioModeling.config.scenarioData || [],
+      "key"
+    ).flatMap((sc) => {
+      const allSegmentsOpt = {
+        order: i++,
+        label: `${sc.name} - All Segments`,
+        value: `${sc.key}:::all`,
+      };
+      const segmentSelectOptions = (currentCase.segments || []).map((st) => {
+        const opt = {
+          order: i++,
+          label: `${sc.name} - ${st.name}`,
+          value: `${sc.key}:::${st.id}`,
+        };
+        return opt;
+      });
+      return [allSegmentsOpt, ...segmentSelectOptions];
+    });
+    return res;
+  }, [scenarioModeling.config.scenarioData, currentCase.segments]);
 
   if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
     return null;
@@ -141,23 +230,37 @@ const ImpactOfInvestmentCharts = () => {
 
   const currencyLabel = currency || "USD";
 
-  const selectedScenarioData =
-    selectedScenarioKey !== "all"
-      ? allScenariosRoiData.find((d) => d.key === selectedScenarioKey)
-      : null;
-
   // Segment Breakdown Table Data
-  const segmentBreakdownData = selectedScenarioData?.investmentPerSegment
-    ? Object.keys(selectedScenarioData.investmentPerSegment || {}).flatMap(
-        (segmentId) => {
+  // This table will show the breakdown for the FIRST selected scenario/segment in the multi-select
+  const selectedScenarioForBreakdown = costRoiData[0];
+
+  const segmentBreakdownData =
+    selectedScenarioForBreakdown?.originalScenario?.investmentPerSegment &&
+    selectedScenarioForBreakdown?.selectedSegmentId
+      ? Object.keys(
+          selectedScenarioForBreakdown.originalScenario.investmentPerSegment ||
+            {}
+        ).flatMap((segmentId) => {
+          // Only show breakdown for the specifically selected segment, or all if "all" was selected
+          if (
+            selectedScenarioForBreakdown.selectedSegmentId !== "all" &&
+            segmentId !== selectedScenarioForBreakdown.selectedSegmentId
+          ) {
+            return [];
+          }
+
           const segInv =
-            selectedScenarioData.investmentPerSegment[segmentId] || {};
+            selectedScenarioForBreakdown.originalScenario.investmentPerSegment[
+              segmentId
+            ] || {};
           const segment = (dashboardData?.segments || []).find(
             (s) => String(s.id) === String(segmentId)
           );
           const segmentName = segment?.name || `Segment ${segmentId}`;
           const metrics =
-            selectedScenarioData.segmentMetrics?.[segmentId] || {};
+            selectedScenarioForBreakdown.originalScenario.segmentMetrics?.[
+              segmentId
+            ] || {};
           const farmerCount = segment?.number_of_farmers || 0;
           const segmentLandArea = getLandArea(segment);
 
@@ -217,9 +320,8 @@ const ImpactOfInvestmentCharts = () => {
               rowCount: 1,
             },
           ];
-        }
-      )
-    : [];
+        })
+      : [];
 
   return (
     <Card className="card-visual-wrapper" style={{ border: "none" }}>
@@ -250,19 +352,20 @@ const ImpactOfInvestmentCharts = () => {
                 scenario.
               </div>
               <div style={{ marginTop: 8 }}>
-                <Text
-                  type="secondary"
-                  strong
-                  style={{ display: "block", marginBottom: 8 }}
-                >
-                  View data for:
-                </Text>
                 <Select
-                  value={selectedScenarioKey}
-                  onChange={setSelectedScenarioKey}
-                  options={scenarioOptions}
+                  {...selectProps}
+                  value={selectedCostScenarioSegments}
+                  onChange={setSelectedCostScenarioSegments}
+                  options={scenarioSegmentOptions.map((opt) => ({
+                    ...opt,
+                    disabled:
+                      selectedCostScenarioSegments.length >=
+                        MAX_SCENARIO_SEGMENT &&
+                      !selectedCostScenarioSegments.includes(opt.value),
+                  }))}
+                  mode="multiple"
                   style={{ width: "100%" }}
-                  placeholder="Select a scenario"
+                  placeholder="Select Scenarios and Segments to compare"
                 />
               </div>
             </Space>
@@ -270,14 +373,25 @@ const ImpactOfInvestmentCharts = () => {
         </Row>
 
         {/* Row 2: Segment Breakdown Table (Full Width) */}
-        {SHOW_SEGMENT_BREAKDOWN_TABLE &&
-          selectedScenarioKey !== "all" &&
-          segmentBreakdownData.length > 0 && (
-            <Row>
-              <Col span={24}>
+        {SHOW_SEGMENT_BREAKDOWN_TABLE && costRoiData.length > 0 && (
+          <Row>
+            <Col span={24}>
+              <VisualCardWrapper
+                title={
+                  <Space>
+                    <span>Segment Cost Breakdown</span>
+                    {costRoiData[0] && (
+                      <Tag color="blue" style={{ marginLeft: 8 }}>
+                        Showing: {costRoiData[0].displayName}
+                      </Tag>
+                    )}
+                  </Space>
+                }
+                bordered
+              >
                 <div style={{ marginTop: 24, marginBottom: 48 }}>
                   <Text strong style={{ display: "block", marginBottom: 12 }}>
-                    Segment Breakdown for {selectedScenarioData?.name}
+                    Segment Breakdown for {selectedScenarioForBreakdown?.name}
                   </Text>
                   <Table
                     size="small"
@@ -352,9 +466,10 @@ const ImpactOfInvestmentCharts = () => {
                     ]}
                   />
                 </div>
-              </Col>
-            </Row>
-          )}
+              </VisualCardWrapper>
+            </Col>
+          </Row>
+        )}
 
         {/* Row 3: ROI (Right) + Text (Left) */}
         <Row gutter={[48, 24]} align="top">
@@ -368,15 +483,12 @@ const ImpactOfInvestmentCharts = () => {
                 proportionally from the interventions.
               </div>
               <Space direction="vertical" size={8} style={{ width: "100%" }}>
-                <Text type="secondary" style={{ fontSize: "12px" }}>
-                  View data for:
-                </Text>
                 <Select
-                  value={selectedSegmentId}
-                  onChange={setSelectedSegmentId}
+                  value={selectedRoiSegmentId}
+                  onChange={setSelectedRoiSegmentId}
                   options={segmentOptions}
-                  style={{ width: "100%", maxWidth: "300px" }}
-                  placeholder="Select Segment"
+                  style={{ width: "100%" }}
+                  placeholder="Select a segment"
                 />
               </Space>
             </Space>
