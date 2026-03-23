@@ -12,7 +12,7 @@ import Chart from "../../../components/chart";
 const { Text } = Typography;
 
 // Constant to toggle table visibility
-const SHOW_SEGMENT_BREAKDOWN_TABLE = true;
+const SHOW_SEGMENT_BREAKDOWN_TABLE = false;
 
 const ImpactOfInvestmentCharts = () => {
   const { scenarioModeling, dashboardData } = CaseVisualState.useState(
