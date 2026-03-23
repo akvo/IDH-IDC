@@ -8,22 +8,39 @@
  */
 
 export const getLandArea = (segment) => {
-  if (segment?.land_size) {
-    return parseFloat(segment.land_size) || 0;
-  }
   if (!segment?.answers) {
     return 0;
   }
-  // Prioritize Parent Land (ID 2) then children (6 or 7)
+
+  // Handle Array format (remapped in Case.js for dashboardData)
+  if (Array.isArray(segment.answers)) {
+    const parentAnswer = segment.answers.find(
+      (a) => a.questionId === 2 && a.name === "current"
+    );
+    if (parentAnswer && parseFloat(parentAnswer.value) > 0) {
+      return parseFloat(parentAnswer.value);
+    }
+
+    const childAnswer = segment.answers.find(
+      (a) => (a.questionId === 6 || a.questionId === 7) && a.name === "current"
+    );
+    return childAnswer ? parseFloat(childAnswer.value) || 0 : 0;
+  }
+
+  // Handle Object format (raw data from backend/currentCase)
   // Keys are "current-[commodity_id]-[question_id]"
   const allKeys = Object.keys(segment.answers);
-  const parentKey = allKeys.find((k) => k.endsWith("-2"));
+  const parentKey = allKeys.find(
+    (k) => k.endsWith("-2") && k.startsWith("current-")
+  );
 
   if (parentKey && parseFloat(segment.answers[parentKey]) > 0) {
     return parseFloat(segment.answers[parentKey]);
   }
 
-  const childKey = allKeys.find((k) => k.endsWith("-6") || k.endsWith("-7"));
+  const childKey = allKeys.find(
+    (k) => (k.endsWith("-6") || k.endsWith("-7")) && k.startsWith("current-")
+  );
   return childKey ? parseFloat(segment.answers[childKey]) || 0 : 0;
 };
 
