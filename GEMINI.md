@@ -16,6 +16,17 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Phase 11: ROI Component Cost Color Refinement (#743) - [COMPLETED]**:
+        - Implemented a custom IDH-branded color palette for the "Scenario Cost by component" chart using official brand colors (Dark Green, Yellow, Teal, etc.).
+        - Fixed color mapping logic in `ImpactOfInvestmentCharts.js` to use the component index instead of the scenario index, ensuring visual consistency across scenarios.
+        - Verified that each cost component maintains a distinct and persistent color, improving readability and brand alignment.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 10: ROI UI & Color Refinement (#743) - [COMPLETED]**:
+        - Fixed the **Segment Selector** in `ImpactOfInvestmentCharts.js` to correctly pull all available segments from `currentCase.segments`, resolving the "All Segments" only restriction.
+        - Updated the **ROI Chart Color** to the official IDH brand green (`#1B625F`) for visual consistency with Step 3 "Income gap" charts.
+        - Aligned the segment selector UI with "Scenario Outcomes" by adding a placeholder and refining dropdown ordering.
+        - Verified all refinements in the browser with dark green ROI bars and a fully functional segment dropdown.
+    - Path: `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
 - **Phase 8: ROI Pseudocode Alignment (#743) - [COMPLETED]**:
     - Aligned ROI calculation logic with IDH pseudocode, including proportional cost distribution for case-wide (All Farmers) inputs.
     - Implemented new business metrics: Payback Period, Income Increase %, and Impact Percentage.

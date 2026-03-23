@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { CaseVisualState, CurrentCaseState } from "../store";
+import { orderBy } from "lodash";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
 import {
   thousandFormatter,
@@ -79,17 +80,28 @@ const ImpactOfInvestmentCharts = () => {
       .filter(Boolean);
   }, [allScenariosRoiData, selectedScenarioKey, selectedSegmentId]);
 
+  const componentColors = [
+    "#1B625F", // IDH Dark Green
+    "#F9CB21", // IDH Yellow
+    "#5BDD91", // IDH Medium Green
+    "#FDAE60", // IDH Orange
+    "#9CC2C1", // IDH Light Green
+    "#FFEEB8", // IDH Light Yellow
+    "#70CFAD", // Teal
+    "#87D068", // Alt Green
+  ];
+
   const componentCostChartData = useMemo(() => {
     const components = Array.from(
       new Set(roiData.flatMap((d) => Object.keys(d.componentBreakdown || {})))
     ).sort();
 
-    return components.map((compName) => ({
+    return components.map((compName, cIdx) => ({
       name: compName,
       data: roiData.map((d, idx) => ({
         name: d.name || `Scenario ${idx + 1}`,
         value: d.componentBreakdown?.[compName] || 0,
-        color: Color.color[idx % Color.color.length],
+        color: componentColors[cIdx % componentColors.length],
       })),
     }));
   }, [roiData]);
@@ -102,7 +114,7 @@ const ImpactOfInvestmentCharts = () => {
         {
           name: "ROI (%)",
           value: parseFloat((d.roi * 100).toFixed(2)),
-          color: d.roi >= 1 ? "#52c41a" : d.roi > 0 ? "#faad14" : "#ff4d4f",
+          color: "#1B625F",
         },
       ],
     }));
@@ -122,13 +134,16 @@ const ImpactOfInvestmentCharts = () => {
     })),
   ];
 
-  const segmentOptions = [
-    { label: "All Segments", value: "all" },
-    ...(dashboardData?.segments || []).map((s) => ({
+  const segmentOptions = useMemo(() => {
+    const res = (currentCase.segments || []).map((s) => ({
       label: s.name || `Segment ${s.id}`,
       value: String(s.id),
-    })),
-  ];
+    }));
+    return [
+      { label: "All Segments", value: "all" },
+      ...orderBy(res, ["value"]),
+    ];
+  }, [currentCase.segments]);
 
   const selectedScenarioData =
     selectedScenarioKey !== "all"
@@ -365,6 +380,7 @@ const ImpactOfInvestmentCharts = () => {
                   onChange={setSelectedSegmentId}
                   options={segmentOptions}
                   style={{ width: "100%", maxWidth: "300px" }}
+                  placeholder="Select Segment"
                 />
               </Space>
             </Space>
