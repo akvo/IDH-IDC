@@ -80,14 +80,13 @@ const ImpactOfInvestmentCharts = () => {
       .filter(Boolean);
   }, [allScenariosRoiData, selectedScenarioKey, selectedSegmentId]);
 
-  const componentColors = [
+  const scenarioColors = [
     "#1B625F", // IDH Dark Green
     "#F9CB21", // IDH Yellow
-    "#5BDD91", // IDH Medium Green
-    "#FDAE60", // IDH Orange
-    "#9CC2C1", // IDH Light Green
-    "#FFEEB8", // IDH Light Yellow
     "#70CFAD", // Teal
+    "#FDAE60", // Orange
+    "#9CC2C1", // Light Green
+    "#FFEEB8", // Light Yellow
     "#87D068", // Alt Green
   ];
 
@@ -96,12 +95,12 @@ const ImpactOfInvestmentCharts = () => {
       new Set(roiData.flatMap((d) => Object.keys(d.componentBreakdown || {})))
     ).sort();
 
-    return components.map((compName, cIdx) => ({
+    return components.map((compName) => ({
       name: compName,
       data: roiData.map((d, idx) => ({
         name: d.name || `Scenario ${idx + 1}`,
         value: d.componentBreakdown?.[compName] || 0,
-        color: componentColors[cIdx % componentColors.length],
+        color: scenarioColors[idx % scenarioColors.length],
       })),
     }));
   }, [roiData]);
@@ -114,17 +113,11 @@ const ImpactOfInvestmentCharts = () => {
         {
           name: "ROI (%)",
           value: parseFloat((d.roi * 100).toFixed(2)),
-          color: "#1B625F",
+          color: scenarioColors[index % scenarioColors.length],
         },
       ],
     }));
   }, [roiData]);
-
-  if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
-    return null;
-  }
-
-  const currencyLabel = currency || "USD";
 
   const scenarioOptions = [
     { label: "Compare All Scenarios", value: "all" },
@@ -144,6 +137,13 @@ const ImpactOfInvestmentCharts = () => {
       ...orderBy(res, ["value"]),
     ];
   }, [currentCase.segments]);
+
+  if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
+    return null;
+  }
+
+  const currencyLabel = currency || "USD";
+
 
   const selectedScenarioData =
     selectedScenarioKey !== "all"
