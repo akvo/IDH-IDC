@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
@@ -38,6 +38,14 @@ const ImpactOfInvestmentCharts = () => {
 
   const [selectedRoiScenarioSegments, setSelectedRoiScenarioSegments] =
     useState([]);
+
+  const [showCostLabel, setShowCostLabel] = useState(false);
+  const [showRoiLabel, setShowRoiLabel] = useState(false);
+  const [showTableLabel, setShowTableLabel] = useState(false);
+
+  const costCardRef = useRef(null);
+  const tableCardRef = useRef(null);
+  const roiCardRef = useRef(null);
 
   // Sync from Global activeSegmentId
   useEffect(() => {
@@ -186,7 +194,7 @@ const ImpactOfInvestmentCharts = () => {
       name: compName,
       data: costRoiData.map((d, idx) => ({
         name: d.displayName || d.name || `Scenario ${idx + 1}`,
-        value: d.componentBreakdown?.[compName] || 0,
+        value: parseFloat((d.componentBreakdown?.[compName] || 0).toFixed(2)),
         color: scenarioColors[idx % scenarioColors.length],
       })),
     }));
@@ -264,7 +272,7 @@ const ImpactOfInvestmentCharts = () => {
       order: index,
       data: [
         {
-          name: "ROI (%)",
+          name: d.displayName || d.name || `Scenario ${index + 1}`,
           value: parseFloat((d.roi * 100).toFixed(2)),
           color: scenarioColors[index % scenarioColors.length],
         },
@@ -401,12 +409,20 @@ const ImpactOfInvestmentCharts = () => {
         {/* Row 1: Scenario Cost by component (Left) + Text (Right) */}
         <Row gutter={[48, 24]} align="top">
           <Col span={14}>
-            <VisualCardWrapper title="Scenario Cost by component" bordered>
+            <VisualCardWrapper
+              title="Scenario Cost by component"
+              bordered
+              showLabel={showCostLabel}
+              setShowLabel={setShowCostLabel}
+              exportElementRef={costCardRef}
+              exportFilename="Scenario Cost by component"
+            >
               <Chart
                 wrapper={false}
                 type="COLUMN-BAR"
                 data={componentCostChartData}
                 height={400}
+                showLabel={showCostLabel}
                 extra={{
                   yAxisTitle: currencyLabel,
                   legend: { position: "bottom" },
@@ -460,6 +476,10 @@ const ImpactOfInvestmentCharts = () => {
                   </Space>
                 }
                 bordered
+                showLabel={showTableLabel}
+                setShowLabel={setShowTableLabel}
+                exportElementRef={tableCardRef}
+                exportFilename="Segment Cost Breakdown"
               >
                 <div style={{ marginTop: 24, marginBottom: 48 }}>
                   <Text strong style={{ display: "block", marginBottom: 12 }}>
@@ -574,16 +594,23 @@ const ImpactOfInvestmentCharts = () => {
             </Space>
           </Col>
           <Col span={14}>
-            <VisualCardWrapper title="Return on Investment (%)" bordered>
+            <VisualCardWrapper
+              title="Return on Investment (%)"
+              bordered
+              showLabel={showRoiLabel}
+              setShowLabel={setShowRoiLabel}
+              exportElementRef={roiCardRef}
+              exportFilename="Return on Investment (%)"
+            >
               <Chart
                 wrapper={false}
                 type="COLUMN-BAR"
                 data={roiChartData}
                 percentage={true}
                 height={350}
+                showLabel={showRoiLabel}
                 extra={{
                   yAxisTitle: "ROI (%)",
-                  legend: { hide: true },
                 }}
               />
             </VisualCardWrapper>
