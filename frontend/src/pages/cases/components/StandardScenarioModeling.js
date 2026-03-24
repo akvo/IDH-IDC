@@ -7,6 +7,7 @@ import { isEmpty, orderBy } from "lodash";
 import {
   ChartIncomeGapAcrossScenario,
   TableScenarioOutcomes,
+  ImpactOfInvestmentCharts,
 } from "../visualizations";
 
 const MAX_SCENARIO = 3;
@@ -256,6 +257,33 @@ const StandardScenarioModeling = () => {
         <Card className="card-section-wrapper">
           <Space className="step-wrapper" align="top">
             <div className="number">3.</div>
+            <div className="label">
+              Assess the impact of your investment
+              <div className="description">
+                This section allows you to assess the return on investment of
+                each scenario in terms of its contribution to closing the income
+                gap for farmers. It helps you compare the cost-efficiency of
+                different interventions, understand the main cost components
+                involved in implementation, and see how your resources translate
+                into income improvements at farmer and segment level. The focus
+                is on social returns rather than financial returns for the
+                company.
+              </div>
+            </div>
+          </Space>
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <ImpactOfInvestmentCharts />
+      </Col>
+      {/* EOL Section 3 */}
+
+      {/* Section 4 */}
+      <Col span={24}>
+        <Card className="card-section-wrapper">
+          <Space className="step-wrapper" align="top">
+            <div className="number">4.</div>
             <div className="label">
               Better understand scenario outcomes for your segments
               <div className="description">

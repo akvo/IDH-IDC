@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
-import { MAX_SEGMENT } from ".";
+import { MAX_SEGMENT } from "../constants";
 
 const LEFT_COL_SPAN = 14;
 const RIGHT_COL_SPAN = 10;

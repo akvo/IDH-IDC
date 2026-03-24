@@ -23,7 +23,7 @@ import {
   QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { CaseUIState, CurrentCaseState } from "../store";
-import { MAX_SEGMENT } from ".";
+import { MAX_SEGMENT } from "../constants";
 import { selectProps, api } from "../../../lib";
 
 const LEFT_COL_SPAN = 12;

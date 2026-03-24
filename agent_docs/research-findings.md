@@ -1,36 +1,39 @@
-# Research Findings: Data Upload Cleanup Lifecycle
+# Research Findings: Scenario-Segment Multi-Selector (#743)
 
-## Context
-Uploaded spreadsheets for case creation currently persist indefinitely in `/tmp/idc_case_imports` and as `case_import` records in the database. While the database includes an `expires_at` field, no mechanism exists to enforce it.
+## Objective
+Align the "Scenario Cost by component" and "ROI" charts in Step 5 with the interaction pattern used in "Income gap across scenario" (Step 3/5). This replaces individual Scenario/Segment dropdowns with a single multi-select for specific combinations.
 
-## Findings
+## Requirements Analysis
+1.  **Multi-Selection State**:
+    *   State: `selectedScenarioSegments` (string array).
+    *   Value Format: `${scenarioKey}-${segmentId}` (e.g., `scenario1-2`).
+    *   Default: Initialized with the first valid scenario and segment or a saved state.
+    *   Limit: Maximum 5 selections to maintain chart readability.
 
-### 1. Storage Backend
-- **Location**: `/tmp/idc_case_imports`.
-- **Naming**: `{import_id}.xlsx` where `import_id` is a UUID.
-- **Persistence**: Relies on OS `/tmp` cleanup policies, which vary by environment.
+2.  **Data mapping Refinement**:
+    *   `roiData` must be calculated by iterating over `selectedScenarioSegments`.
+    *   For each selection, find the corresponding `allScenariosRoiData` entry.
+    *   If it's a specific segment, extract `segmentMetrics` and `segmentComponentBreakdowns`.
+    *   If "All Segments" is selected (if we still support it), use the aggregate scenario data.
 
-### 2. Database Record
-- **Model**: `CaseImport`.
-- **Metadata**: Tracks `user_id`, `file_path`, and `expires_at` (default 24h).
-- **Cleanup Status**: No CRUD or background task currently handles deletion.
+3.  **Visual Alignment**:
+    *   **Labels**: X-axis labels should be `[Scenario Name] - [Segment Name]`.
+    *   **Colors**: Use the `scenarioColors` palette based on the selection index.
+    *   **Chart Types**: Continue using `COLUMN-BAR` for cost and standard Bar for ROI.
 
-### 3. Proposed Mitigation Strategies
+4.  **UI Components**:
+    *   Use `Select` from `antd` with `mode="multiple"`.
+    *   Integrate `selectProps` for consistent styling.
+    *   Place the selector prominently in the description column (right side).
 
-#### A. Immediate Cleanup (Active Guard)
-- **Flow**: When user clicks "Discard changes" in `CaseSettings.js` drawer.
-- **Implementation**:
-    - Backend: Add `DELETE /api/v1/case-import/{import_id}` endpoint.
-    - Frontend: Call this endpoint during `onOk` of the "Discard changes" modal if `importId` is present.
-- **Risk**: User might close the browser tab or lose connection before the call completes.
+## Technical Constraints
+*   **Dynamic Components**: The "Scenario Cost by component" chart must continue to handle dynamic sets of components (e.g., Scenario A has "Training", Scenario B has "Input Provision"). The current `useMemo` logic for `componentCostChartData` already supports this by aggregating unique keys.
+*   **Table Interaction**: The "Segment Cost Breakdown" table (Phase 7) should either:
+    *   Show data for the first selection in the list.
+    *   Only show when a single selection is active?
+    *   **Decision**: For now, default to the first selection or show a message if multiple are selected? Actually, the user asked for "combination of segments and scenarios to view AS IN THE OTHER GRAPH". The other graph (Income gap) doesn't have a linked breakdown table. I will keep the table for the first selection or hide it if it becomes confusing.
 
-#### B. Periodic Cleanup (Passive Guard)
-- **Flow**: Background task running every Hour.
-- **Implementation**:
-    - Backend: Fastapi `BackgroundTasks` is not suitable for recurring jobs. Recommend a simple `cleanup_imports.py` script run via `cron` or a dedicated container.
-    - Logic: `DELETE FROM case_import WHERE expires_at < NOW()`. Then delete files at `file_path`.
-- **Risk**: Minor storage overhead for up to 24 hours.
-
-## Recommendations
-1. **Implement Both**: Immediate cleanup for UX responsiveness/security, and Periodic cleanup for robustness (orphaned sessions).
-2. **Safety Audit**: Ensure deletion logic only affects `CaseImport` records not yet associated with a finalized `Case`. (The `case_id` foreign key is nullable and only set on successful save).
+## Next Steps
+- [ ] Transition to Phase 3: Architect (Design state and props).
+- [ ] Transition to Phase 4: Design (Mock UI layout).
+- [ ] Transition to Phase 5: Plan (Create stories).

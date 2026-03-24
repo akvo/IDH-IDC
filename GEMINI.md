@@ -16,6 +16,94 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Phase 17: Proportional ROI Cost Allocation (#743) - [COMPLETED]**:
+        - Replaced ROI "Off/On" toggle with a 3-option Radio group ("No", "Yes, for all farmers", "Yes, per segment").
+        - Implemented proportional cost distribution logic for "All Farmers" mode based on farmer headcount ratio.
+        - **Refinement**: Added a context-aware segment selector (Radio Button group) inline with the "Scenario cost for segment" label.
+        - **Refinement**: Implemented "Scenario cost for all farmers" static label for shared cost mode.
+        - **Refinement**: Synchronized ROI form inputs across segments in "All Farmers" mode using a `useEffect` hook for a consistent view.
+        - **Refinement**: Implemented independent "Show label" and "Export" functionality for each ROI chart and breakdown table.
+        - **Refinement**: Enabled scenario-linked legends for the Return on Investment chart to support multi-scenario comparison.
+        - **Refinement**: Enforced strict 2-decimal precision for all ROI chart labels and values.
+        - Synchronized ROI dashboard segment selectors with application-wide `activeSegmentId` (bidirectional).
+        - Added comprehensive unit tests for proportional ROI calculations.
+        - Verified 100% accuracy and ESLint clean status.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingForm.js`, `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 16: ROI Scenario-Segment Multi-Selector (#743) - [COMPLETED]**:
+        - Refined the "Return on Investment" chart to support a multi-selector for Scenario-Segment combinations (Max 5 items).
+        - Unified the interaction pattern with the "Scenario Cost by component" chart.
+        - Implemented robust data filtering with the `::: ` delimiter and zero-value fallbacks.
+        - Synchronized technical and user documentation (Feature Doc, User Story, QA Guide, Safety Audit).
+        - Verified 100% lint-clean status and ROI calculation accuracy.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `agent_docs/`.
+    - **ROI Component Selection Restriction (#743) - [COMPLETED]**:
+        - Implemented a mutual exclusivity rule for the ROI cost component dropdown in `ScenarioModelingROIForm.js`.
+        - Prevented duplicate selection of categories (Training, Financing, etc.) within the same segment.
+        - Optimized React rendering using `useMemo` for stable `componentsData` and `selectedNames` dependencies.
+        - Updated User Guide and Feature Documentation to reflect the unique selection rule.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `agent_docs/user-guide.md`.
+    - **Phase 15: Selector Refinement & Documentation Sync (#743) - [COMPLETED]**:
+        - Isolated multi-selector to "Scenario Cost by component" chart and restored single-select for ROI.
+        - Implemented "show all" default behavior for the cost chart when no selections are made.
+        - Resolved "blank chart" bug via robust `::: ` delimiter and string-casting for numeric/string compatibility.
+        - Implemented zero-value fallback for segments without investment data to prevent "No Data" blank states.
+        - Synchronized all technical and user documentation (Feature Doc, User Guide, UX Spec, and Story #743-9).
+        - Verified 100% lint-clean status and calculation accuracy against Google Doc reference.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `agent_docs/`.
+    - **Phase 11: ROI Component Cost Color Refinement (#743) - [COMPLETED]**:
+        - Implemented a custom IDH-branded color palette for the "Scenario Cost by component" chart using official brand colors (Dark Green, Yellow, Teal, etc.).
+        - Fixed color mapping logic in `ImpactOfInvestmentCharts.js` to use the component index instead of the scenario index, ensuring visual consistency across scenarios.
+        - Verified that each cost component maintains a distinct and persistent color, improving readability and brand alignment.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 10: ROI UI & Color Refinement (#743) - [COMPLETED]**:
+        - Fixed the **Segment Selector** in `ImpactOfInvestmentCharts.js` to correctly pull all available segments from `currentCase.segments`, resolving the "All Segments" only restriction.
+        - Updated the **ROI Chart Color** to the official IDH brand green (`#1B625F`) for visual consistency with Step 3 "Income gap" charts.
+        - Aligned the segment selector UI with "Scenario Outcomes" by adding a placeholder and refining dropdown ordering.
+        - Verified all refinements in the browser with dark green ROI bars and a fully functional segment dropdown.
+    - Path: `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 8: ROI Pseudocode Alignment (#743) - [COMPLETED]**:
+    - Aligned ROI calculation logic with IDH pseudocode, including proportional cost distribution for case-wide (All Farmers) inputs.
+    - Implemented new business metrics: Payback Period, Income Increase %, and Impact Percentage.
+    - Integrated these metrics into the `Segment Breakdown` table in `ImpactOfInvestmentCharts.js`.
+    - **Refinement**: Moved the `Segment Breakdown` table to a prominent full-width position and added a `SHOW_SEGMENT_BREAKDOWN_TABLE` visibility constant.
+    - **Refinement**: Enhanced the `Segment Breakdown` table to show a transparent multiplier breakdown (e.g., `cost x farmers x land_area`) for "Per Land Unit" costs.
+    - **Refinement**: Implemented a **Segment Selector** for ROI charts, allowing users to filter ROI percentage and cost breakdown by specific farmer segments.
+    - **Refinement**: Fixed `rowSpan` logic for multi-segment data presentation.
+    - **Bugfix**: Synchronized land area calculation logic between `roiCalculations.js` and `ImpactOfInvestmentCharts.js` by extracting and sharing a robust `getLandArea` utility that handles both dictionary and array-of-objects answer formats.
+    - Verified 100% calculation accuracy against Google Doc reference examples.
+    - Path: `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 7: Scenario Selector & Cost Transparency (#743)**:
+    - Implemented a scenario selector in `ImpactOfInvestmentCharts.js` to allow filtering ROI visualizations by specific scenario.
+    - Added a `Segment Breakdown` table for single-scenario views, providing granular transparency into cost components (applied multipliers for farmers/land).
+    - Resolved a critical calculation discrepancy where "Training" costs appeared incorrectly as 402,000 KES; identified origin as Company A (400k) + Company B (2k).
+    - Fixed linting warnings (eqeqeq, unused imports) across `roiCalculations.js` and `ImpactOfInvestmentCharts.js`.
+    - Updated `browserslist` dependency to resolve system alerts.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 4: ROI Visualization (#743)**:
+    - Integrated `ImpactOfInvestmentCharts` as Step 3 in `StandardScenarioModeling.js`.
+    - Implemented ROI and Investment vs. Income Improvement charts.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 5: ROI Design Alignment (#743)**:
+    - Synchronized documentation including Feature Doc, Sprint Plan, and a new User Story (`STORY-743-6`) for Figma parity.
+    - Planned zigzag layout and Scenario Cost by component visualization to match Section 3 of IDC-designs.
+- **Per-Segment ROI Breakdown (#743)**:
+    - Implemented nested ROI form within `SegmentTabsWrapper` to support independent investment analysis per farmer segment.
+    - Extracted ROI logic into a standalone `ScenarioModelingROIForm.js` component with isolated state management.
+    - Resolved critical initialization error (`MAX_SEGMENT`) by refactoring constants into a dedicated `constants.js` file.
+    - Fixed prop propagation crash (`segment is undefined`) and state persistence bugs in `ScenarioModelingForm.js`.
+    - Refined ROI table vertical alignment (align top) to ensure visual consistency with multi-line cells.
+    - Verified 100% lint-clean status and aggregate ROI calculation logic in `roiCalculations.js`.
+- **Impact of Investment Architecture (#743)**:
+    - Defined a frontend-heavy architecture for the new "Impact of Investment" premium feature to maintain real-time calculation performance.
+    - Standardized the JSON schema for storing investment data in the `visualization` table's `config` column.
+    - Created a comprehensive guide for **Visualization Config Schemas** covering Step 4 and Step 5 to ensure strict backward compatibility.
+    - Documented architectural decisions in `ADR-005` and established a regrouped optimistic estimation of 32 hours.
+    - Decomposed the feature into 3 granular User Stories (Backend Schema, Input UI, and Impact Charts) with explicit UAC/TAC.
+    - Updated the Sprint Plan with a detailed task breakdown for the implementation phase.
+- **Mutually Exclusive Segmentation (Feature Planning)**:
+    - Created a comprehensive Feature Document for mutually exclusive segmentation methods (Manual vs. Data Upload).
+    - Proposed a "Re-upload to Unlock" workflow to handle spreadsheet deletions while maintaining data-driven editability in existing cases.
+    - Defined requirements for tab-switch guards, confirmation modals, and read-only UI states to enforce a maximum of 5 segments.
 - **Income Composition & Gap Breakdown Clarifications (#746)**:
     - Expanded descriptions in `ChartNeededIncomeLevel.js` and `ChartHouseholdIncomeComposition.js` to clearly explain proportional allocation of the income gap across existing sources.
     - Standardized description container heights (`minHeight: 150`) across Step 3 visualizations to ensure visual alignment and accommodate expanded text.
