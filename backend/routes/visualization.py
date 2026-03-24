@@ -3,7 +3,6 @@ import json
 
 import db.crud_visualization as crud_visualization
 import db.crud_case as crud_case
-import db.crud_user as crud_user
 
 from fastapi import APIRouter, Request, Depends, Query, HTTPException
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
