@@ -7,6 +7,8 @@ const defaultCaseUIState = {
     enableDataUpload: true,
     enableImpactOfInvestment: true,
     activeSegmentId: null,
+    isRoiExpandedAll: false,
+    isRoiExpandedSegments: {},
   },
   caseButton: {
     loading: false,

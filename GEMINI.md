@@ -22,6 +22,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - **Refinement**: Added a context-aware segment selector (Radio Button group) inline with the "Scenario cost for segment" label.
         - **Refinement**: Implemented "Scenario cost for all farmers" static label for shared cost mode.
         - **Refinement**: Synchronized ROI form inputs across segments in "All Farmers" mode using a `useEffect` hook for a consistent view.
+        - **Refinement**: Implemented mode-specific ROI expansion logic (shared for "All Farmers", per-segment for "Per Segment") with automatic state resets on mode change.
         - Synchronized ROI dashboard segment selectors with application-wide `activeSegmentId` (bidirectional).
         - Added comprehensive unit tests for proportional ROI calculations.
         - Verified 100% accuracy and ESLint clean status.

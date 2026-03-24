@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useMemo, useEffect } from "react";
 import { orderBy } from "lodash";
 import {
   Row,
@@ -48,7 +48,8 @@ const ScenarioModelingROIForm = ({
   segment, // Injected by SegmentTabsWrapper
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { activeSegmentId } = CaseUIState.useState((s) => s.general);
+  const { activeSegmentId, isRoiExpandedAll, isRoiExpandedSegments } =
+    CaseUIState.useState((s) => s.general);
   const scenarioKey = currentScenarioData.key;
   const scenarioInv =
     scenarioModeling.config.investment_analysis?.scenarios?.[scenarioKey] || {};
@@ -60,8 +61,17 @@ const ScenarioModelingROIForm = ({
     return scenarioInv.is_roi_enabled ? "per_segment" : "no";
   }, [scenarioInv.cost_allocation_mode, scenarioInv.is_roi_enabled]);
 
-  const [isRoiExpanded, setIsRoiExpanded] = useState(false);
   const segmentId = segment?.id;
+
+  const isRoiExpanded = useMemo(() => {
+    if (costAllocationMode === "all_farmers") {
+      return isRoiExpandedAll;
+    }
+    if (costAllocationMode === "per_segment") {
+      return !!isRoiExpandedSegments[segmentId];
+    }
+    return false;
+  }, [costAllocationMode, isRoiExpandedAll, isRoiExpandedSegments, segmentId]);
   const farmers = segment?.number_of_farmers || 0;
 
   useEffect(() => {
@@ -264,6 +274,10 @@ const ScenarioModelingROIForm = ({
                   // Reset form is_roi_enabled for shouldUpdate listeners
                   form?.setFieldsValue({ is_roi_enabled: mode !== "no" });
                 });
+                CaseUIState.update((s) => {
+                  s.general.isRoiExpandedAll = false;
+                  s.general.isRoiExpandedSegments = {};
+                });
               }}
             />
           </Form.Item>
@@ -349,7 +363,16 @@ const ScenarioModelingROIForm = ({
             >
               <Row align="middle" gutter={16}>
                 <Col
-                  onClick={() => setIsRoiExpanded(!isRoiExpanded)}
+                  onClick={() => {
+                    CaseUIState.update((s) => {
+                      if (costAllocationMode === "all_farmers") {
+                        s.general.isRoiExpandedAll = !isRoiExpandedAll;
+                      } else if (costAllocationMode === "per_segment") {
+                        s.general.isRoiExpandedSegments[segmentId] =
+                          !isRoiExpandedSegments[segmentId];
+                      }
+                    });
+                  }}
                   style={{
                     cursor: "pointer",
                     fontSize: "14px",
