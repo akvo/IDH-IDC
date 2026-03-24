@@ -58,24 +58,29 @@ const ScenarioModelingForm = ({
     const invAnalysis = scenarioModeling.config.investment_analysis || {};
     const scenarioInv = invAnalysis.scenarios?.[currentScenarioData.key] || {};
 
+    const costAllocationMode =
+      scenarioInv.cost_allocation_mode ||
+      (scenarioInv.is_roi_enabled ? "per_segment" : "no");
+
     let investment_cost = 0;
     let cost_unit = "total";
 
-    if (activeSegmentId) {
+    if (costAllocationMode === "all_farmers") {
+      const allFarmersInv = scenarioInv.all_farmers_config;
+      investment_cost = allFarmersInv?.investment_cost || 0;
+      cost_unit = allFarmersInv?.cost_unit || "total";
+    } else if (activeSegmentId) {
       const segmentInv = scenarioInv.segments?.[activeSegmentId];
       investment_cost = segmentInv?.investment_cost || 0;
       cost_unit = segmentInv?.cost_unit || "total";
-    } else {
-      // Fallback for scenario-level (not typically used in tab view but for safety)
-      investment_cost = scenarioInv.investment_cost || 0;
-      cost_unit = scenarioInv.cost_unit || "total";
     }
 
     scenarioDetailForm.setFieldsValue({
       name,
       description,
       percentage,
-      is_roi_enabled: invAnalysis.is_enabled || false,
+      cost_allocation_mode: costAllocationMode, // NEW
+      is_roi_enabled: costAllocationMode !== "no", // Sync for listeners
       investment_cost,
       cost_unit,
     });
@@ -107,9 +112,12 @@ const ScenarioModelingForm = ({
   };
 
   const onScenarioDetailFormValuesChange = (changedValue) => {
-    const isRoiChange = ["is_roi_enabled", "investment_cost", "cost_unit"].some(
-      (key) => Object.keys(changedValue).includes(key)
-    );
+    const isRoiChange = [
+      "is_roi_enabled",
+      "cost_allocation_mode",
+      "investment_cost",
+      "cost_unit",
+    ].some((key) => Object.keys(changedValue).includes(key));
 
     CaseVisualState.update((s) => {
       const config = s.scenarioModeling.config;
@@ -136,53 +144,53 @@ const ScenarioModelingForm = ({
         const scenarioKey = currentScenarioData.key;
         if (!invAnalysis.scenarios[scenarioKey]) {
           invAnalysis.scenarios[scenarioKey] = {
-            investment_cost: null,
+            investment_cost: 0,
             cost_unit: "total",
-            components: [],
+            segments: {},
           };
         }
 
         const scenarioInv = invAnalysis.scenarios[scenarioKey];
 
-        if (typeof changedValue.investment_cost !== "undefined") {
-          // Update segment-specific cost if active
-          if (activeSegmentId) {
-            if (!scenarioInv.segments) {
-              scenarioInv.segments = {};
-            }
-            if (!scenarioInv.segments[activeSegmentId]) {
-              scenarioInv.segments[activeSegmentId] = {
-                investment_cost: 0,
-                components: [],
-              };
-            }
-            scenarioInv.segments[activeSegmentId].investment_cost =
-              changedValue.investment_cost;
-
-            // Recalculate scenario total
-            scenarioInv.investment_cost = Object.values(
-              scenarioInv.segments
-            ).reduce((acc, seg) => acc + (seg.investment_cost || 0), 0);
-          } else {
-            scenarioInv.investment_cost = changedValue.investment_cost;
-          }
+        if (typeof changedValue.cost_allocation_mode !== "undefined") {
+          scenarioInv.cost_allocation_mode = changedValue.cost_allocation_mode;
+          scenarioInv.is_roi_enabled =
+            changedValue.cost_allocation_mode !== "no";
         }
 
-        if (typeof changedValue.cost_unit !== "undefined") {
-          if (activeSegmentId) {
-            if (!scenarioInv.segments) {
-              scenarioInv.segments = {};
-            }
-            if (!scenarioInv.segments[activeSegmentId]) {
-              scenarioInv.segments[activeSegmentId] = {
-                investment_cost: 0,
-                components: [],
-              };
-            }
-            scenarioInv.segments[activeSegmentId].cost_unit =
-              changedValue.cost_unit;
-          } else {
-            scenarioInv.cost_unit = changedValue.cost_unit;
+        const mode =
+          scenarioInv.cost_allocation_mode ||
+          (scenarioInv.is_roi_enabled ? "per_segment" : "no");
+
+        let target;
+        if (mode === "all_farmers") {
+          if (!scenarioInv.all_farmers_config) {
+            scenarioInv.all_farmers_config = {
+              investment_cost: 0,
+              cost_unit: "total",
+              components: [],
+            };
+          }
+          target = scenarioInv.all_farmers_config;
+        } else if (activeSegmentId) {
+          if (!scenarioInv.segments) {
+            scenarioInv.segments = {};
+          }
+          if (!scenarioInv.segments[activeSegmentId]) {
+            scenarioInv.segments[activeSegmentId] = {
+              investment_cost: 0,
+              components: [],
+            };
+          }
+          target = scenarioInv.segments[activeSegmentId];
+        }
+
+        if (target) {
+          if (typeof changedValue.investment_cost !== "undefined") {
+            target.investment_cost = changedValue.investment_cost;
+          }
+          if (typeof changedValue.cost_unit !== "undefined") {
+            target.cost_unit = changedValue.cost_unit;
           }
         }
       } else {

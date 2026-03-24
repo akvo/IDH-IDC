@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { selectProps } from "../../../lib";
-import { CaseVisualState, CurrentCaseState } from "../store";
+import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import { orderBy } from "lodash";
@@ -29,6 +29,7 @@ const ImpactOfInvestmentCharts = () => {
   const { scenarioModeling, dashboardData } = CaseVisualState.useState(
     (s) => s
   );
+  const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { currency } = currentCase;
 
@@ -37,6 +38,50 @@ const ImpactOfInvestmentCharts = () => {
 
   const [selectedRoiScenarioSegments, setSelectedRoiScenarioSegments] =
     useState([]);
+
+  // Sync from Global activeSegmentId
+  useEffect(() => {
+    if (activeSegmentId && activeSegmentId !== "all") {
+      // For both selectors, ensure at least one scenario is showing this segment
+      // We prioritize the first scenario for default view
+      const activeScKey = scenarioModeling?.config?.scenarioData?.[0]?.key;
+      if (activeScKey) {
+        const val = `${activeScKey}:::${activeSegmentId}`;
+        setSelectedCostScenarioSegments((prev) =>
+          prev.length === 0 ? [val] : prev
+        );
+        setSelectedRoiScenarioSegments((prev) =>
+          prev.length === 0 ? [val] : prev
+        );
+      }
+    }
+  }, [activeSegmentId, scenarioModeling?.config?.scenarioData]);
+
+  const handleCostSelectorChange = (vals) => {
+    setSelectedCostScenarioSegments(vals);
+    if (vals.length > 0) {
+      const lastVal = vals[vals.length - 1];
+      const [, segId] = lastVal.split(":::");
+      if (segId !== "all" && segId !== activeSegmentId) {
+        CaseUIState.update((s) => {
+          s.general.activeSegmentId = segId;
+        });
+      }
+    }
+  };
+
+  const handleRoiSelectorChange = (vals) => {
+    setSelectedRoiScenarioSegments(vals);
+    if (vals.length > 0) {
+      const lastVal = vals[vals.length - 1];
+      const [, segId] = lastVal.split(":::");
+      if (segId !== "all" && segId !== activeSegmentId) {
+        CaseUIState.update((s) => {
+          s.general.activeSegmentId = segId;
+        });
+      }
+    }
+  };
 
   const investmentAnalysis = scenarioModeling.config.investment_analysis;
 
@@ -382,7 +427,7 @@ const ImpactOfInvestmentCharts = () => {
                 <Select
                   {...selectProps}
                   value={selectedCostScenarioSegments}
-                  onChange={setSelectedCostScenarioSegments}
+                  onChange={handleCostSelectorChange}
                   options={scenarioSegmentOptions.map((opt) => ({
                     ...opt,
                     disabled:
@@ -513,7 +558,7 @@ const ImpactOfInvestmentCharts = () => {
                 <Select
                   {...selectProps}
                   value={selectedRoiScenarioSegments}
-                  onChange={setSelectedRoiScenarioSegments}
+                  onChange={handleRoiSelectorChange}
                   options={scenarioSegmentOptions.map((opt) => ({
                     ...opt,
                     disabled:

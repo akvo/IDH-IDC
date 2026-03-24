@@ -29,6 +29,7 @@ This document serves as the master map for all project artifacts, categorized by
 - [ROI Selection Restriction (#743)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/743-roi-selection-restriction.md)
 - [Documentation: Visualization Config Schemas](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/visualization-config-schema.md)
 - [Text Updates & UI Clarifications (#744)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/744-text-updates.md)
+- [Feature: #743 Proportional Scenario Cost Allocation](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/743-proportional-cost-allocation.md)
 
 ## Chronological Records (Audit Trail)
 > [!IMPORTANT]

@@ -7,7 +7,7 @@ import {
   Tooltip,
   Space,
   Button,
-  Switch,
+  Radio,
   Typography,
   InputNumber,
   Table,
@@ -33,6 +33,12 @@ export const ROI_COMPONENT_OPTIONS = [
   { label: "Other", value: "Other" },
 ];
 
+export const COST_ALLOCATION_OPTIONS = [
+  { label: "No", value: "no" },
+  { label: "Yes, for all farmers", value: "all_farmers" },
+  { label: "Yes, per segment", value: "per_segment" },
+];
+
 const ScenarioModelingROIForm = ({
   form,
   currentScenarioData,
@@ -40,21 +46,32 @@ const ScenarioModelingROIForm = ({
   scenarioModeling,
   segment, // Injected by SegmentTabsWrapper
 }) => {
+  const scenarioKey = currentScenarioData.key;
+  const scenarioInv =
+    scenarioModeling.config.investment_analysis?.scenarios?.[scenarioKey] || {};
+
+  const costAllocationMode = useMemo(() => {
+    if (scenarioInv.cost_allocation_mode) {
+      return scenarioInv.cost_allocation_mode;
+    }
+    return scenarioInv.is_roi_enabled ? "per_segment" : "no";
+  }, [scenarioInv.cost_allocation_mode, scenarioInv.is_roi_enabled]);
+
   const [isRoiExpanded, setIsRoiExpanded] = useState(false);
   const segmentId = segment?.id;
   const farmers = segment?.number_of_farmers || 0;
 
-  const componentsData = useMemo(
-    () =>
-      scenarioModeling.config.investment_analysis?.scenarios?.[
-        currentScenarioData.key
-      ]?.segments?.[segmentId]?.components || [],
-    [
-      scenarioModeling.config.investment_analysis,
-      currentScenarioData.key,
-      segmentId,
-    ]
-  );
+  const componentsData = useMemo(() => {
+    if (costAllocationMode === "all_farmers") {
+      return scenarioInv.all_farmers_config?.components || [];
+    }
+    return scenarioInv.segments?.[segmentId]?.components || [];
+  }, [
+    costAllocationMode,
+    scenarioInv.all_farmers_config,
+    scenarioInv.segments,
+    segmentId,
+  ]);
 
   const selectedNames = useMemo(
     () => componentsData.map((c) => c.name).filter(Boolean),
@@ -65,34 +82,43 @@ const ScenarioModelingROIForm = ({
     CaseVisualState.update((s) => {
       const config = s.scenarioModeling.config;
       const invAnalysis = config.investment_analysis;
-      const scenarioKey = currentScenarioData.key;
       if (!invAnalysis.scenarios[scenarioKey]) {
         invAnalysis.scenarios[scenarioKey] = {
-          investment_cost: 0,
-          cost_unit: "total",
+          is_roi_enabled: true,
+          cost_allocation_mode: costAllocationMode,
           segments: {},
         };
       }
-      const scenarioInv = invAnalysis.scenarios[scenarioKey];
-      if (!scenarioInv.segments) {
-        scenarioInv.segments = {};
-      }
-      if (!scenarioInv.segments[segmentId]) {
-        scenarioInv.segments[segmentId] = {
-          investment_cost: 0,
-          components: [],
-        };
+      const sInv = invAnalysis.scenarios[scenarioKey];
+
+      let target;
+      if (costAllocationMode === "all_farmers") {
+        if (!sInv.all_farmers_config) {
+          sInv.all_farmers_config = {
+            investment_cost: 0,
+            cost_unit: "total",
+            components: [],
+          };
+        }
+        target = sInv.all_farmers_config;
+      } else {
+        if (!sInv.segments) {
+          sInv.segments = {};
+        }
+        if (!sInv.segments[segmentId]) {
+          sInv.segments[segmentId] = { investment_cost: 0, components: [] };
+        }
+        target = sInv.segments[segmentId];
       }
 
-      const segmentInv = scenarioInv.segments[segmentId];
       const newComponents = [
-        ...(segmentInv.components || []),
+        ...(target.components || []),
         { name: "", cost: 0, unit: "total", key: Date.now() },
       ];
-      segmentInv.components = newComponents;
+      target.components = newComponents;
 
-      // Recalculate segment total
-      const segmentTotal = newComponents.reduce((acc, item) => {
+      // Recalculate component total
+      const total = newComponents.reduce((acc, item) => {
         let multiplier = 1;
         if (item.unit === "per_farmer") {
           multiplier = farmers;
@@ -101,20 +127,12 @@ const ScenarioModelingROIForm = ({
         }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
-      segmentInv.investment_cost = segmentTotal;
-      segmentInv.cost_unit = "total";
+      target.investment_cost = total;
+      target.cost_unit = "total";
 
-      // Recalculate scenario total
-      const scenarioTotal = Object.values(scenarioInv.segments).reduce(
-        (acc, seg) => acc + (seg.investment_cost || 0),
-        0
-      );
-      scenarioInv.investment_cost = scenarioTotal;
-      scenarioInv.cost_unit = "total"; // Force total when components exist
-
-      // Update form with segment-specific cost
+      // Sync form
       form?.setFieldsValue({
-        investment_cost: segmentTotal,
+        investment_cost: total,
         cost_unit: "total",
       });
     });
@@ -122,22 +140,23 @@ const ScenarioModelingROIForm = ({
 
   const onComponentChange = (index, field, value) => {
     CaseVisualState.update((s) => {
-      const scenarioKey = currentScenarioData.key;
-      const scenarioInv =
+      const sInv =
         s.scenarioModeling.config.investment_analysis.scenarios[scenarioKey];
-      const segmentInv = scenarioInv.segments[segmentId];
+      const target =
+        costAllocationMode === "all_farmers"
+          ? sInv.all_farmers_config
+          : sInv.segments[segmentId];
 
-      const newComponents = segmentInv.components.map((c, i) => {
+      const newComponents = target.components.map((c, i) => {
         if (i === index) {
           return { ...c, [field]: value };
         }
         return c;
       });
 
-      segmentInv.components = newComponents;
+      target.components = newComponents;
 
-      // Recalculate segment total
-      const segmentTotal = newComponents.reduce((acc, item) => {
+      const total = newComponents.reduce((acc, item) => {
         let multiplier = 1;
         if (item.unit === "per_farmer") {
           multiplier = farmers;
@@ -146,35 +165,26 @@ const ScenarioModelingROIForm = ({
         }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
-      segmentInv.investment_cost = segmentTotal;
-      segmentInv.cost_unit = "total";
+      target.investment_cost = total;
+      target.cost_unit = "total";
 
-      // Recalculate scenario total
-      const scenarioTotal = Object.values(scenarioInv.segments).reduce(
-        (acc, seg) => acc + (seg.investment_cost || 0),
-        0
-      );
-      scenarioInv.investment_cost = scenarioTotal;
-
-      // Update form with segment-specific cost
-      form?.setFieldsValue({
-        investment_cost: segmentTotal,
-      });
+      form?.setFieldsValue({ investment_cost: total });
     });
   };
 
   const onDeleteComponent = (index) => {
     CaseVisualState.update((s) => {
-      const scenarioKey = currentScenarioData.key;
-      const scenarioInv =
+      const sInv =
         s.scenarioModeling.config.investment_analysis.scenarios[scenarioKey];
-      const segmentInv = scenarioInv.segments[segmentId];
+      const target =
+        costAllocationMode === "all_farmers"
+          ? sInv.all_farmers_config
+          : sInv.segments[segmentId];
 
-      const newComponents = segmentInv.components.filter((_, i) => i !== index);
-      segmentInv.components = newComponents;
+      const newComponents = target.components.filter((_, i) => i !== index);
+      target.components = newComponents;
 
-      // Recalculate segment total
-      const segmentTotal = newComponents.reduce((acc, item) => {
+      const total = newComponents.reduce((acc, item) => {
         let multiplier = 1;
         if (item.unit === "per_farmer") {
           multiplier = farmers;
@@ -183,20 +193,10 @@ const ScenarioModelingROIForm = ({
         }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
-      segmentInv.investment_cost = segmentTotal;
-      segmentInv.cost_unit = "total";
+      target.investment_cost = total;
+      target.cost_unit = "total";
 
-      // Recalculate scenario total
-      const scenarioTotal = Object.values(scenarioInv.segments).reduce(
-        (acc, seg) => acc + (seg.investment_cost || 0),
-        0
-      );
-      scenarioInv.investment_cost = scenarioTotal;
-
-      // Update form with segment-specific cost
-      form?.setFieldsValue({
-        investment_cost: segmentTotal,
-      });
+      form?.setFieldsValue({ investment_cost: total });
     });
   };
 
@@ -213,21 +213,31 @@ const ScenarioModelingROIForm = ({
       >
         <Col flex="auto">
           <Text strong>
-            Toggle if you have an estimate of the cost required to implement the
-            scenarios.
+            Do you have an estimate of the cost required to implement the
+            scenarios?
           </Text>
         </Col>
         <Col>
-          <Form.Item
-            name="is_roi_enabled"
-            valuePropName="checked"
-            noStyle
-            className="roi-toggle-item"
-          >
-            <Switch
+          <Form.Item name="cost_allocation_mode" noStyle>
+            <Radio.Group
               disabled={!enableEditCase}
-              checkedChildren="On"
-              unCheckedChildren="Off"
+              optionType="button"
+              buttonStyle="solid"
+              options={COST_ALLOCATION_OPTIONS}
+              onChange={(e) => {
+                const mode = e.target.value;
+                CaseVisualState.update((s) => {
+                  const sInv =
+                    s.scenarioModeling.config.investment_analysis.scenarios[
+                      scenarioKey
+                    ];
+                  sInv.cost_allocation_mode = mode;
+                  sInv.is_roi_enabled = mode !== "no";
+
+                  // Reset form is_roi_enabled for shouldUpdate listeners
+                  form?.setFieldsValue({ is_roi_enabled: mode !== "no" });
+                });
+              }}
             />
           </Form.Item>
         </Col>
@@ -236,11 +246,14 @@ const ScenarioModelingROIForm = ({
       <Form.Item
         noStyle
         shouldUpdate={(prevValues, currentValues) =>
-          prevValues.is_roi_enabled !== currentValues.is_roi_enabled
+          prevValues.cost_allocation_mode !== currentValues.cost_allocation_mode
         }
       >
         {({ getFieldValue }) =>
-          getFieldValue("is_roi_enabled") ? (
+          getFieldValue("cost_allocation_mode") !== "no" &&
+          // Fallback for cases where mode is not yet set but is_roi_enabled is true
+          (getFieldValue("cost_allocation_mode") !== undefined ||
+            getFieldValue("is_roi_enabled")) ? (
             <div
               className="card-lib-wrapper"
               style={{
