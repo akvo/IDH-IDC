@@ -349,7 +349,7 @@ const ScenarioModelingROIForm = ({
         {({ getFieldValue }) =>
           getFieldValue("cost_allocation_mode") !== "no" &&
           // Fallback for cases where mode is not yet set but is_roi_enabled is true
-          (getFieldValue("cost_allocation_mode") !== undefined ||
+          (typeof getFieldValue("cost_allocation_mode") !== "undefined" ||
             getFieldValue("is_roi_enabled")) ? (
             <div
               className="card-lib-wrapper"
