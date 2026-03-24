@@ -55,6 +55,15 @@ When using the "Add segment based on a different variable" option, the UI utiliz
 
 Premium users can evaluate the cost-effectiveness of their strategies by toggling the "Add Investment" option in Step 5 modeling tabs.
 
+## Cost Allocation Modes (All Farmers vs. Per Segment)
+Users can now choose how to input implementation costs:
+- **"Yes, for all farmers"**: Input a single total cost for the entire scenario. The system automatically allocates this cost proportionally to each segment based on their farmer count ratios. Your inputs are shared and persisted across all segment views.
+- **"Yes, per segment"**: Provide granular, independent cost data for each farmer segment. Inputs are isolated per segment, and a dedicated segment selector appears in the ROI form to navigate between them.
+- **Expansion Persistence**: If you expand the cost breakdown table, the view state is remembered:
+    - In "All Farmers" mode, the expansion is shared (consistent view).
+    - In "Per Segment" mode, expansion is remembered individually per segment.
+    - Switching costing modes automatically collapses all ROI sections for a clean state transition.
+
 ## Comparing Scenarios & Segments
 The **Scenario Cost by component** and **Return on Investment** charts utilize a multi-selector to allow side-by-side comparison of up to 5 unique combinations of scenarios and segments.
 - **Default View**: If no specific selection is made, the chart defaults to showing all modelled scenarios for "All Segments."

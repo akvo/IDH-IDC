@@ -36,17 +36,10 @@ This document serves as the master map for all project artifacts, categorized by
 > These are versioned or issue-specific records that preserve the project's history and decision-making process.
 
 - [ADRs (Architecture Decision Records)](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/adrs/)
-- [User Stories](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/)
-- [Stories: #739 Case Save UX Refinement](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739.md)
-- [Stories: #739 Data Upload Cleanup](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-739-cleanup.md)
-- [Stories: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-744-text-updates.md)
-- [Stories: #743-0 Component Restoration](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-0-component-restoration.md)
-- [Stories: #743-1 Backend Schema](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-1-backend-schema-gate.md)
-- [Stories: #743-2 Investment Input UI](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-2-frontend-input-ui.md)
-- [Stories: #743-3 Impact Charts](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-3-frontend-impact-charts.md)
-- [Stories: #743-4 Per-Segment ROI Breakdown](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-4-per-segment-roi.md)
-- [Stories: #743-5 ROI Logic & Allocation](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/stories/STORY-743-5-roi-calculations.md)
-- [Safety Audits](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/)
+- [x] Stories: #743-13 ROI Mode Selector
+- [x] Stories: #743-14 Proportional ROI Calculations
+- [x] Stories: #743-15 Segment Selector Sync
+- [x] Safety Audits
 - [Safety Audit: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/safety-audits/safety-audit-issue-744.md)
 - [QA Guides](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/)
 - [QA Guide: #744 Text Updates](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/qa/qa-guide-issue-744.md)

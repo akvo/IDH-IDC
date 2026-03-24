@@ -15,10 +15,14 @@ As a user, I want to choose whether my scenario costs apply to all farmers or sp
     - `is_roi_enabled` is `true`.
 5.  **Persistence**: The selected mode is saved in `visualization.config.scenarioModeling.config.investment_analysis.scenarios[scenarioKey].cost_allocation_mode`.
 
-## Technical Acceptance Criteria (TAC)
-1. Update `ScenarioModelingROIForm.js` to render `Radio.Group`.
-2. Update state update logic to handle `all_farmers_config` in the store.
-3. Ensure backward compatibility: if `cost_allocation_mode` is missing, default to `per_segment` if `is_roi_enabled` is true, otherwise `no`.
+22. **Expansion Persistence**: 
+    - Shared expansion state for "All Farmers" mode.
+    - Per-segment expansion state for "Per Segment" mode.
+    - Automatic reset (collapse) on costing mode change.
+
+---
+
+[STORY-743-13] [COMPLETED]
 
 ---
 
@@ -32,9 +36,11 @@ As a system, I want to proportionally distribute total scenario costs across seg
 2.  **Visualization Integration**: ROI charts and Cost breakdowns reflect these proportional values.
 3.  **Multiplier Consistency**: "Per Farmer" units in "All Farmers" mode correctly use the segment-specific farmer count for the final allocation.
 
-## Technical Acceptance Criteria (TAC)
-1. Update `roiCalculations.js` -> `calculateScenarioROI` to implement the proportional distribution logic.
-2. Add unit tests in `roiCalculations.test.js` covering both modes and all unit types (total, per farmer, per land).
+37. Add unit tests in `roiCalculations.test.js` covering both modes and all unit types (total, per farmer, per land).
+
+---
+
+[STORY-743-14] [COMPLETED]
 
 ---
 
@@ -47,6 +53,9 @@ As a user, I want the ROI chart segment selector to stay in sync with my main ca
 1.  **Bidirectional Sync**: Changing the segment in the ROI chart dropdown updates the active tab in Step 3.
 2.  **Bidirectional Sync**: Changing the active tab in Step 3 updates the ROI chart's selected segment.
 
-## Technical Acceptance Criteria (TAC)
-1. Update `ImpactOfInvestmentCharts.js` to link the local segment selection state with the global `activeSegmentId` (or equivalent in `CaseVisualState`).
-2. Ensure the Cost Chart (multi-select) also reflects the current segment if applicable.
+51. Update `ImpactOfInvestmentCharts.js` to link the local segment selection state with the global `activeSegmentId` (or equivalent in `CaseVisualState`).
+52. Ensure the Cost Chart (multi-select) also reflects the current segment if applicable.
+
+---
+
+[STORY-743-15] [COMPLETED]

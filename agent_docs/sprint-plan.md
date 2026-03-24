@@ -135,3 +135,18 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 2.  **Segment Deep Dives**: Select a specific segment (e.g., "Male") and verify it is not blank.
 3.  **Missing Data**: Select a segment without investment and verify the chart shows a 0-bar instead of "No Data."
 4.  **Multi-Comparison**: Select 5 combinations and verify side-by-side rendering in the Cost chart.
+
+### STORY-743-13: ROI Cost Allocation Mode Selector (COMPLETED)
+- [x] Replaced "ROI Off/On" toggle with "No", "Yes, all farmers", "Yes, per segment" radio group.
+- [x] Implemented mode-specific ROI expansion logic (shared for "All", isolated for "Segment").
+- [x] Implemented automatic expansion state resets on mode change.
+
+### STORY-743-14: Proportional ROI Calculations (COMPLETED)
+- [x] Implemented proportional cost distribution in `roiCalculations.js` based on farmer count ratio.
+- [x] Supported all unit types (Total, Per Farmer, Per Land) in proportional mode.
+- [x] Verified 100% calculation accuracy with Jest unit tests.
+
+### STORY-743-15: Segment Selector Synchronization (COMPLETED)
+- [x] Synchronized ROI dashboard segment selectors with application-wide `activeSegmentId`.
+- [x] Implemented bidirectional sync between top-level tabs and ROI visualizations.
+- [x] Linked the single-select ROI chart to the active segment for deep-dive analysis.

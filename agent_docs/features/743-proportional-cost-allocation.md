@@ -25,19 +25,26 @@ Companies often have cost information attached to a whole scenario rather than g
 
 ### 3. "Per Segment" Behavior
 - **Input Isolation**: Cost inputs are unique to each segment.
-- **Navigational Behavior**: Switching segments clears or updates the input fields to reflect the data for the newly selected segment.
-- **Context Display**: A segment label is displayed next to the cost input to clarify which segment is being edited.
+- **Navigational Behavior**: Switching segments via the ROI segment selector updates the input fields to reflect the data for the newly selected segment.
+- **Context Display**: The label "Scenario cost for segment" is displayed on the left, with a **Radio Button** segment selector aligned to the right.
 
-### 4. UI Synchronization
+### 4. Expansion State Persistence & Reset
+- **Mode: "All Farmers"**: The expanded/collapsed state of the cost breakdown is shared across all segments for a consistent experience.
+- **Mode: "Per Segment"**: The expansion state is unique to each segment (remembered independently).
+- **Mode Change**: Switching between "No", "Yes, all farmers", and "Yes, per segment" automatically resets all expansion states to **false** (collapsed).
+
+### 5. UI Synchronization
 - **Linked Selectors**: The top-level segment tabs and the ROI-specific segment selector (implemented in Phase 16) must be synchronized. Changing one should update the other to ensure the user always knows which segment's data they are looking at.
 
 ## Acceptance Criteria
-- [ ] Users can toggle between "All Farmers" and "Per Segment" modes.
-- [ ] In "All Farmers" mode, entering a total cost of $10,000 correctly calculates $7,000 for a segment with 70% of farmers and $3,000 for a segment with 30%.
-- [ ] In "All Farmers" mode, the input value persists when switching segments.
-- [ ] In "Per Segment" mode, inputs are isolated and reset correctly when switching.
-- [ ] The ROI segment selector stays in sync with the main case segment tabs.
-- [ ] All charts (ROI %, Investment vs Income) reflect the proportional allocation.
+- [x] Users can toggle between "No", "Yes, for all farmers" and "Yes, per segment" modes.
+- [x] In "All Farmers" mode, entering a total cost of $10,000 correctly calculates $7,000 for a segment with 70% of farmers and $3,000 for a segment with 30%.
+- [x] In "All Farmers" mode, the input value persists when switching segments.
+- [x] In "Per Segment" mode, inputs are isolated correctly when switching.
+- [x] The ROI segment selector (Radio Group) stays in sync with the main case segment tabs.
+- [x] Expansion state persists correctly (shared in "All" mode, unique in "Segment" mode).
+- [x] Expansion state resets on costing mode change.
+- [x] All charts (ROI %, Investment vs Income) reflect the proportional allocation.
 
 ## Technical Notes
 - **Frontend State**: Need a new flag `costAllocationMode` (e.g., `'all'` | `'segment'`) in the visualization config.
