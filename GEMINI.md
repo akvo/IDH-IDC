@@ -19,6 +19,9 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - **Phase 17: Proportional ROI Cost Allocation (#743) - [COMPLETED]**:
         - Replaced ROI "Off/On" toggle with a 3-option Radio group ("No", "Yes, for all farmers", "Yes, per segment").
         - Implemented proportional cost distribution logic for "All Farmers" mode based on farmer headcount ratio.
+        - **Refinement**: Added a context-aware segment selector (Radio Button group) inline with the "Scenario cost for segment" label.
+        - **Refinement**: Implemented "Scenario cost for all farmers" static label for shared cost mode.
+        - **Refinement**: Synchronized ROI form inputs across segments in "All Farmers" mode using a `useEffect` hook for a consistent view.
         - Synchronized ROI dashboard segment selectors with application-wide `activeSegmentId` (bidirectional).
         - Added comprehensive unit tests for proportional ROI calculations.
         - Verified 100% accuracy and ESLint clean status.

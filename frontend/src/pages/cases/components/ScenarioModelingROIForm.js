@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { orderBy } from "lodash";
 import {
   Row,
   Col,
@@ -12,7 +13,7 @@ import {
   InputNumber,
   Table,
 } from "antd";
-import { CaseVisualState } from "../store";
+import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { selectProps, InputNumberThousandFormatter } from "../../../lib";
 import {
   InfoCircleOutlined,
@@ -46,6 +47,8 @@ const ScenarioModelingROIForm = ({
   scenarioModeling,
   segment, // Injected by SegmentTabsWrapper
 }) => {
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const scenarioKey = currentScenarioData.key;
   const scenarioInv =
     scenarioModeling.config.investment_analysis?.scenarios?.[scenarioKey] || {};
@@ -60,6 +63,30 @@ const ScenarioModelingROIForm = ({
   const [isRoiExpanded, setIsRoiExpanded] = useState(false);
   const segmentId = segment?.id;
   const farmers = segment?.number_of_farmers || 0;
+
+  useEffect(() => {
+    if (
+      costAllocationMode === "all_farmers" &&
+      scenarioInv.all_farmers_config
+    ) {
+      form?.setFieldsValue({
+        investment_cost: scenarioInv.all_farmers_config.investment_cost,
+        cost_unit: scenarioInv.all_farmers_config.cost_unit || "total",
+      });
+    } else if (costAllocationMode === "per_segment" && segmentId) {
+      const segConfig = scenarioInv.segments?.[segmentId];
+      form?.setFieldsValue({
+        investment_cost: segConfig?.investment_cost || 0,
+        cost_unit: segConfig?.cost_unit || "total",
+      });
+    }
+  }, [
+    costAllocationMode,
+    segmentId,
+    scenarioInv.all_farmers_config,
+    scenarioInv.segments,
+    form,
+  ]);
 
   const componentsData = useMemo(() => {
     if (costAllocationMode === "all_farmers") {
@@ -212,10 +239,10 @@ const ScenarioModelingROIForm = ({
         }}
       >
         <Col flex="auto">
-          <Text strong>
+          <Typography.Text strong>
             Do you have an estimate of the cost required to implement the
             scenarios?
-          </Text>
+          </Typography.Text>
         </Col>
         <Col>
           <Form.Item name="cost_allocation_mode" noStyle>
@@ -242,6 +269,62 @@ const ScenarioModelingROIForm = ({
           </Form.Item>
         </Col>
       </Row>
+
+      {(costAllocationMode === "per_segment" ||
+        costAllocationMode === "all_farmers") && (
+        <Row
+          align="middle"
+          justify="space-between"
+          style={{
+            padding: "20px 0",
+            borderTop: "1px solid #f0f0f0",
+          }}
+        >
+          <Col span={24}>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              {costAllocationMode === "all_farmers" ? (
+                <Typography.Text strong>
+                  Scenario cost for all farmers
+                </Typography.Text>
+              ) : (
+                <Row
+                  align="middle"
+                  justify="space-between"
+                  style={{ width: "100%" }}
+                >
+                  <Col>
+                    <Typography.Text strong>
+                      Scenario cost for segment
+                    </Typography.Text>
+                  </Col>
+                  <Col>
+                    <Radio.Group
+                      className="roi-segment-selector"
+                      value={activeSegmentId}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        CaseUIState.update((s) => {
+                          s.general.activeSegmentId = val;
+                        });
+                      }}
+                    >
+                      {orderBy(currentCase.segments, ["id"]).map((seg) => (
+                        <Radio.Button
+                          key={seg.id}
+                          value={seg.id}
+                          style={{ fontWeight: "normal" }}
+                        >
+                          {seg.name}
+                        </Radio.Button>
+                      ))}
+                    </Radio.Group>
+                  </Col>
+                </Row>
+              )}
+            </Space>
+          </Col>
+        </Row>
+      )}
 
       <Form.Item
         noStyle
