@@ -47,6 +47,30 @@ const ImpactOfInvestmentCharts = () => {
   const tableCardRef = useRef(null);
   const roiCardRef = useRef(null);
 
+  const investmentAnalysis = scenarioModeling.config.investment_analysis;
+
+  const allScenariosRoiData = useMemo(() => {
+    if (!investmentAnalysis?.is_enabled) {
+      return [];
+    }
+
+    return (scenarioModeling.config.scenarioData || [])
+      .map((scenario) => {
+        const result = calculateScenarioROI(
+          scenario,
+          investmentAnalysis,
+          dashboardData
+        );
+        return {
+          key: scenario.key,
+          name: scenario.name,
+          ...result,
+          originalScenario: scenario,
+        };
+      })
+      .filter((d) => d && d.totalCost !== null);
+  }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
+
   // Sync from Global activeSegmentId
   useEffect(() => {
     if (activeSegmentId && activeSegmentId !== "all") {
@@ -55,15 +79,29 @@ const ImpactOfInvestmentCharts = () => {
       const activeScKey = scenarioModeling?.config?.scenarioData?.[0]?.key;
       if (activeScKey) {
         const val = `${activeScKey}:::${activeSegmentId}`;
-        setSelectedCostScenarioSegments((prev) =>
-          prev.length === 0 ? [val] : prev
+
+        // Only auto-populate if we have "saved value" (non-zero cost) for this combination
+        const scenario = allScenariosRoiData.find(
+          (d) => String(d.key) === String(activeScKey)
         );
-        setSelectedRoiScenarioSegments((prev) =>
-          prev.length === 0 ? [val] : prev
-        );
+        const hasData =
+          scenario?.segmentMetrics?.[activeSegmentId]?.totalCost > 0;
+
+        if (hasData) {
+          setSelectedCostScenarioSegments((prev) =>
+            prev.length === 0 ? [val] : prev
+          );
+          setSelectedRoiScenarioSegments((prev) =>
+            prev.length === 0 ? [val] : prev
+          );
+        }
       }
     }
-  }, [activeSegmentId, scenarioModeling?.config?.scenarioData]);
+  }, [
+    activeSegmentId,
+    scenarioModeling?.config?.scenarioData,
+    allScenariosRoiData,
+  ]);
 
   const handleCostSelectorChange = (vals) => {
     setSelectedCostScenarioSegments(vals);
@@ -90,30 +128,6 @@ const ImpactOfInvestmentCharts = () => {
       }
     }
   };
-
-  const investmentAnalysis = scenarioModeling.config.investment_analysis;
-
-  const allScenariosRoiData = useMemo(() => {
-    if (!investmentAnalysis?.is_enabled) {
-      return [];
-    }
-
-    return (scenarioModeling.config.scenarioData || [])
-      .map((scenario) => {
-        const result = calculateScenarioROI(
-          scenario,
-          investmentAnalysis,
-          dashboardData
-        );
-        return {
-          key: scenario.key,
-          name: scenario.name,
-          ...result,
-          originalScenario: scenario,
-        };
-      })
-      .filter((d) => d && d.totalCost !== null);
-  }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
 
   const costRoiData = useMemo(() => {
     if (selectedCostScenarioSegments.length === 0) {

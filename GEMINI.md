@@ -19,6 +19,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - **ROI Chart Visibility Fix (#743) - [COMPLETED]**:
         - Fixed the top-level `is_enabled` flag synchronization in `ScenarioModelingForm.js` to ensure ROI charts are visible when `cost_allocation_mode` changes.
         - Corrected `dashboardData` usage in `ImpactOfInvestmentCharts.js` by treating it as an array of segments, fixing potential logic errors in the breakdown table.
+        - Refined the ROI selector synchronization in `ImpactOfInvestmentCharts.js` to start empty when no investment data exists for the current segment, while still allowing auto-population for segments with saved data.
         - Verified the fix in both "All Farmers" and "Per Segment" modes via browser testing.
     - Path: `frontend/src/pages/cases/components/ScenarioModelingForm.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
     - **Phase 17: Proportional ROI Cost Allocation (#743) - [COMPLETED]**:
