@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Step 5 Explanation Box & Layout Refinement (#749) - [COMPLETED]**:
+        - Implemented a "What is next?" info box in Step 5 (Closing the Gap) to guide users towards scenario modeling.
+        - Created a dedicated `WhatIsNextInfoBox` component with a responsive two-column layout and IDC-branded styling.
+        - Refined layout consistency by adjusting gutters in `AdvancedModellingTool.js` and removing redundant `!important` flags in `steps.scss`.
+        - Verified the implementation in the browser with a subtle border and shadow for enhanced component highlighting.
+    - Path: `frontend/src/pages/cases/components/WhatIsNextInfoBox.js`, `frontend/src/pages/cases/components/WhatIsNextInfoBox.scss`, `frontend/src/pages/cases/steps/ClosingGap.js`, `frontend/src/pages/cases/components/AdvancedModellingTool.js`.
     - **ROI Chart Visibility Fix (#743) - [COMPLETED]**:
         - Fixed the top-level `is_enabled` flag synchronization in `ScenarioModelingForm.js` to ensure ROI charts are visible when `cost_allocation_mode` changes.
         - Corrected `dashboardData` usage in `ImpactOfInvestmentCharts.js` by treating it as an array of segments, fixing potential logic errors in the breakdown table.

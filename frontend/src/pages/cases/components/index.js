@@ -28,3 +28,4 @@ export { default as EquationVisualizer } from "./EquationVisualizer";
 export { default as IncomeGatingAlert } from "./IncomeGatingAlert";
 export { default as ScenarioModelingIncomeDriversAndChart } from "./ScenarioModelingIncomeDriversAndChart";
 export { default as ScenarioModelingROIForm } from "./ScenarioModelingROIForm";
+export { default as WhatIsNextInfoBox } from "./WhatIsNextInfoBox";
