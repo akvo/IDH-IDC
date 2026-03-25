@@ -333,7 +333,7 @@ const ImpactOfInvestmentCharts = () => {
             selectedScenarioForBreakdown.originalScenario.investmentPerSegment[
               segmentId
             ] || {};
-          const segment = (dashboardData?.segments || []).find(
+          const segment = (dashboardData || []).find(
             (s) => String(s.id) === String(segmentId)
           );
           const segmentName = segment?.name || `Segment ${segmentId}`;

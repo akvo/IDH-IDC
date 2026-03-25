@@ -141,6 +141,10 @@ const ScenarioModelingForm = ({
           invAnalysis.is_enabled = changedValue.is_roi_enabled;
         }
 
+        if (typeof changedValue.cost_allocation_mode !== "undefined") {
+          invAnalysis.is_enabled = changedValue.cost_allocation_mode !== "no";
+        }
+
         const scenarioKey = currentScenarioData.key;
         if (!invAnalysis.scenarios[scenarioKey]) {
           invAnalysis.scenarios[scenarioKey] = {
