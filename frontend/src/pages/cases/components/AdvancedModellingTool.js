@@ -1183,7 +1183,7 @@ const AdvancedModellingTool = ({ disabled }) => {
   };
 
   return (
-    <Row className="advanced-modelling-tool-container" gutter={[24, 24]}>
+    <Row className="advanced-modelling-tool-container" gutter={[0, 24]}>
       {/* Header Section */}
       <Col span={24}>
         <Card className="card-section-wrapper">
