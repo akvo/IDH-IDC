@@ -112,7 +112,10 @@ export const calculateScenarioROI = (
           );
         }
         const compTotal = (comp.cost || 0) * multiplier;
-        const name = comp.name || "Other";
+        const name =
+          (comp.name === "Other" && comp.otherName
+            ? comp.otherName
+            : comp.name) || "Other";
         componentBreakdown[name] = (componentBreakdown[name] || 0) + compTotal;
         return acc + compTotal;
       }, 0);
@@ -180,7 +183,10 @@ export const calculateScenarioROI = (
 
       // Component Breakdown
       (segInv.components || []).forEach((comp) => {
-        const name = comp.name || "Other";
+        const name =
+          (comp.name === "Other" && comp.otherName
+            ? comp.otherName
+            : comp.name) || "Other";
         let multiplier = 1;
         if (comp.unit === "per_farmer") {
           multiplier = farmerCount;
@@ -281,7 +287,10 @@ export const calculateScenarioROI = (
           multiplier = farmerCount * getLandArea(segment);
         }
         const compTotal = (comp.cost || 0) * multiplier;
-        const name = comp.name || "Other";
+        const name =
+          (comp.name === "Other" && comp.otherName
+            ? comp.otherName
+            : comp.name) || "Other";
         compBreakdown[name] = (compBreakdown[name] || 0) + compTotal;
         return acc + compTotal;
       },

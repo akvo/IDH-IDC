@@ -9,6 +9,7 @@ Improve the "Case Creation" experience by preventing accidental data loss and pr
 | STORY-739 | Case Save UX Refinement | HIGH | [x] | 1.5h |
 | STORY-739-C | Data Upload Cleanup | HIGH | [x] | 2.5h |
 | STORY-740 | Feature Gating for High Income | HIGH | [x] | 2h |
+| STORY-744 | Text Updates & UI Clarifications | MEDIUM | [x] | 2h |
 
 ## Technical Approach
 - **Frontend**:
@@ -52,6 +53,8 @@ Enable premium users to analyze the cost-effectiveness (ROI) of different income
 | STORY-743-9 | Scenario-Segment Multi-Selector | HIGH | [x] | 4h |
 | STORY-743-11 | ROI Scenario-Segment Multi-Selector | HIGH | [x] | 4h |
 | STORY-743-10 | ROI Selection Restriction | LOW | [x] | 1h |
+| STORY-743-ROI-Other | Custom "Other" ROI Components | HIGH | [x] | 2.5h / 4h |
+| STORY-743-ROI-Tweak | ROI Cost Input Refinements | MEDIUM | [x] | 0.5h |
 
 ---
 

@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Custom ROI "Other" Components (#753) - [COMPLETED]**:
+        - Relaxed ROI component uniqueness selection to allow multiple "Other" entries within the same segment.
+        - Implemented Ant Design `Input` for custom component naming with a 30-character limit and real-time `showCount` indicator.
+        - Converted ROI breakdown table column widths to percentage-based (35% / 20% / 20% / 20% / 5%) for improved responsiveness across devices.
+        - Updated `roiCalculations.js` to utilize custom `otherName` values for accurate chart labeling and cost aggregation.
+        - Verified implementation with `yarn lint` and updated user documentation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/utils/roiCalculations.js`, `agent_docs/user-guide.md`, `agent_docs/stories/STORY-743-ROI-Other-Custom-Names.md`.
     - **ROI Cost Input Box Tweaks (#751) - [COMPLETED]**:
         - Implemented dynamic unit multiplier label (e.g., "x 3,000 Farmers") for the primary "Total Cost" input in `ScenarioModelingROIForm.js`.
         - Shifted the "Total" column alignment from right to left in the investment breakdown table for improved visual flow.
