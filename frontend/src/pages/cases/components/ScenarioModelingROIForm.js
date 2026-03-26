@@ -11,6 +11,7 @@ import {
   Radio,
   Typography,
   InputNumber,
+  Input,
   Table,
 } from "antd";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
@@ -111,7 +112,10 @@ const ScenarioModelingROIForm = ({
   ]);
 
   const selectedNames = useMemo(
-    () => componentsData.map((c) => c.name).filter(Boolean),
+    () =>
+      componentsData
+        .map((c) => c.name)
+        .filter((name) => name && name !== "Other"),
     [componentsData]
   );
 
@@ -150,7 +154,7 @@ const ScenarioModelingROIForm = ({
 
       const newComponents = [
         ...(target.components || []),
-        { name: "", cost: 0, unit: "total", key: Date.now() },
+        { name: "", otherName: "", cost: 0, unit: "total", key: Date.now() },
       ];
       target.components = newComponents;
 
@@ -472,32 +476,53 @@ const ScenarioModelingROIForm = ({
                       {
                         title: "Scenario component",
                         dataIndex: "name",
-                        width: 300,
+                        width: "35%",
                         onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (text, record, index) => (
-                          <Select
-                            {...selectProps}
-                            showSearch
-                            disabled={!enableEditCase}
-                            value={text}
-                            placeholder="Select"
-                            onChange={(value) =>
-                              onComponentChange(index, "name", value)
-                            }
-                            options={ROI_COMPONENT_OPTIONS.map((opt) => ({
-                              ...opt,
-                              disabled:
-                                selectedNames.includes(opt.value) &&
-                                opt.value !== text,
-                            }))}
-                            style={{ width: "100%", borderRadius: "4px" }}
-                          />
+                          <Space direction="vertical" style={{ width: "100%" }}>
+                            <Select
+                              {...selectProps}
+                              showSearch
+                              disabled={!enableEditCase}
+                              value={text}
+                              placeholder="Select"
+                              onChange={(value) =>
+                                onComponentChange(index, "name", value)
+                              }
+                              options={ROI_COMPONENT_OPTIONS.map((opt) => ({
+                                ...opt,
+                                disabled:
+                                  selectedNames.includes(opt.value) &&
+                                  opt.value !== text,
+                              }))}
+                              style={{ width: "100%", borderRadius: "4px" }}
+                            />
+                            {text === "Other" && (
+                              <Form.Item style={{ marginBottom: 0 }}>
+                                <Input
+                                  placeholder="Specify other component..."
+                                  maxLength={30}
+                                  showCount
+                                  disabled={!enableEditCase}
+                                  value={record.otherName || ""}
+                                  onChange={(e) =>
+                                    onComponentChange(
+                                      index,
+                                      "otherName",
+                                      e.target.value
+                                    )
+                                  }
+                                  style={{ marginTop: "4px" }}
+                                />
+                              </Form.Item>
+                            )}
+                          </Space>
                         ),
                       },
                       {
                         title: "Cost type",
                         dataIndex: "unit",
-                        width: 250,
+                        width: "20%",
                         onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (text, record, index) => (
                           <Select
@@ -525,7 +550,7 @@ const ScenarioModelingROIForm = ({
                       {
                         title: "Cost",
                         dataIndex: "cost",
-                        width: 180,
+                        width: "20%",
                         onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (text, record, index) => (
                           <Space direction="vertical" size={2}>
@@ -564,6 +589,7 @@ const ScenarioModelingROIForm = ({
                         title: "Total",
                         key: "total_cost",
                         align: "left",
+                        width: "20%",
                         onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (_, record) => {
                           const multiplier =
@@ -583,7 +609,7 @@ const ScenarioModelingROIForm = ({
                       {
                         title: "",
                         key: "action",
-                        width: 50,
+                        width: "5%",
                         align: "center",
                         onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (_, __, index) => (

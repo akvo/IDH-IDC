@@ -68,7 +68,9 @@ Users can now choose how to input implementation costs:
 The **Scenario Cost by component** and **Return on Investment** charts utilize a multi-selector to allow side-by-side comparison of up to 5 unique combinations of scenarios and segments.
 - **Default View**: If no specific selection is made, the chart defaults to showing all modelled scenarios for "All Segments."
 - **Deep Dives**: Select specific farmer segments (e.g., "Male", "Smallholder") to see how implementation costs vary across your population.
-- **Unique Selection**: Each cost component (e.g., Training, Financing) can only be selected once per segment. If a category is already in use, it will be disabled in the dropdown for other rows to prevent redundant data entry.
+- **Unique Selection**: Predefined cost components (e.g., Training, Financing) can only be selected once per segment to prevent redundant data entry.
+- **Multiple "Other" Components**: You can select the **"Other"** component multiple times within the same segment. This allows you to include various interventions (e.g., "Land rights assistance" and "Market provision") as independent cost drivers.
+- **Custom Naming**: When "Other" is selected, a text input appears allowing you to specify a custom name (up to 30 characters). These names are used to label the segments in ROI charts and breakdowns.
 - **Zero-Value Display**: Segments without explicitly defined investment costs will appear as 0-value entries to maintain visual comparison without data gaps.
 
 ## ROI Performance Metrics
