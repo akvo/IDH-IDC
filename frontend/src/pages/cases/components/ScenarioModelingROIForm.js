@@ -361,7 +361,7 @@ const ScenarioModelingROIForm = ({
                 borderRadius: "8px",
               }}
             >
-              <Row align="middle" gutter={16}>
+              <Row align="top" gutter={16}>
                 <Col
                   onClick={() => {
                     CaseUIState.update((s) => {
@@ -410,18 +410,54 @@ const ScenarioModelingROIForm = ({
                   </Form.Item>
                 </Col>
                 <Col span={4}>
-                  <Form.Item name="investment_cost" noStyle>
-                    <InputNumber
-                      disabled={!enableEditCase || componentsData.length > 0}
-                      style={{ width: "100%", borderRadius: "4px" }}
-                      placeholder="0"
-                      min={0}
-                      {...InputNumberThousandFormatter}
-                      suffix={
-                        componentsData.length > 0 ? <LockOutlined /> : null
+                  <Space
+                    direction="vertical"
+                    size={2}
+                    style={{ width: "100%" }}
+                  >
+                    <Form.Item name="investment_cost" noStyle>
+                      <InputNumber
+                        disabled={!enableEditCase || componentsData.length > 0}
+                        style={{ width: "100%", borderRadius: "4px" }}
+                        placeholder="0"
+                        min={0}
+                        {...InputNumberThousandFormatter}
+                        suffix={
+                          componentsData.length > 0 ? <LockOutlined /> : null
+                        }
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      noStyle
+                      shouldUpdate={(prevValues, currentValues) =>
+                        prevValues.cost_unit !== currentValues.cost_unit
                       }
-                    />
-                  </Form.Item>
+                    >
+                      {({ getFieldValue }) => {
+                        const unit = getFieldValue("cost_unit");
+                        if (unit === "total") {
+                          return null;
+                        }
+                        return (
+                          <div
+                            style={{
+                              fontSize: "12px",
+                              color: "rgba(0,0,0,0.45)",
+                              paddingLeft: "4px",
+                            }}
+                          >
+                            {unit === "per_farmer"
+                              ? `x ${InputNumberThousandFormatter.formatter(
+                                  farmers
+                                )} Farmers`
+                              : unit === "per_land_unit"
+                              ? `x Land Area`
+                              : ""}
+                          </div>
+                        );
+                      }}
+                    </Form.Item>
+                  </Space>
                 </Col>
               </Row>
 
@@ -527,7 +563,7 @@ const ScenarioModelingROIForm = ({
                       {
                         title: "Total",
                         key: "total_cost",
-                        align: "right",
+                        align: "left",
                         onCell: () => ({ style: { verticalAlign: "top" } }),
                         render: (_, record) => {
                           const multiplier =
