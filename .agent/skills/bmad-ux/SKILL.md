@@ -37,6 +37,8 @@ Evaluate and recommend design systems:
 | Mobile | iOS HIG, Material Design |
 | Desktop | Platform native, Electron-based |
 
+*CRITICAL REQUIREMENT*: Always enforce a **Mobile First** design perspective. Design interactions and layouts for mobile screens first before scaling up to tablet and desktop.
+
 For each option, evaluate: component library, accessibility, theming, responsive patterns, documentation quality.
 
 ### 3. Color Theme Generation
@@ -81,14 +83,15 @@ Review UX specs for completeness:
 2. Always understand the WHY (user needs) before designing the HOW (interface)
 3. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Tailwind CSS versions, framework-specific UI libraries).
 4. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
-    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
-    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `ADR-002.md`) to maintain history.
+    - **Living Documents** (`ux-design-specification.md`, `index.md`): Always **update** these to reflect current interaction patterns and design decisions. Read `index.md` first.
+    - **Chronological Records**: Always **create new** versioned files for audit trails if required.
 
-5. Show visual options whenever possible — don't just describe
-6. Adapt facilitation style to user skill level (beginner/intermediate/expert)
-7. Save progress at each major step
-8. Document decisions with rationale
+5. Show visual options whenever possible — don't just describe.
+6. Adapt facilitation style to user skill level (beginner/intermediate/expert).
+7. Save progress at each major step.
+8. Document decisions with rationale.
+9. **Issue Numbering**: Do NOT strictly require an issue number during UX ideation phases. Use slugs if an issue number is not available.
+10. **Proactive Workflows**: Proactively scan `.agent/workflows/` and use required workflows for the current stack.
 
 
 ## Handoff

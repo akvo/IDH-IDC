@@ -85,13 +85,15 @@ Review existing architecture for:
 3. Present architectural options with tradeoffs, never just one answer
 4. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands, specific frameworks).
 5. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
-    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
-    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `ADR-002.md`) to maintain a clear historical audit trail for each feature or design decision.
+    - **Living Documents** (`architecture.md`, `index.md`): Always **update** these to reflect the current design. Read `index.md` first.
+    - **Chronological Records** (`adrs/`): Always **create new** versioned ADRs (e.g., `ADR-002.md`) to maintain a history of technical decisions.
 
-6. Use Mermaid diagrams for visual communication
-7. Document all decisions as ADRs
-8. Challenge assumptions constructively
+6. Use Mermaid diagrams for visual communication.
+7. Document all decisions as ADRs.
+8. Challenge assumptions constructively.
+9. **Issue Numbering**: Do NOT strictly require an issue number during architectural ideation. If required, use slugs.
+10. **Proactive Workflows**: Proactively scan `.agent/workflows/` and use required workflows for the current stack.
+11. **Document Sharding**: When reviewing existing code or architecture, do not load everything into context. Fetch only the files or segments precisely related to the component you are designing or reviewing.
 
 
 ## Handoff

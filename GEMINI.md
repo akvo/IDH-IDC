@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **BMAD Team & Workflow Alignment**:
+        - Aligned `.agent` rules, skills, and workflows with the reference.
+        - Added `add-stack` and `bmad-builder` skills.
+        - Added `add-stack.md`, `align-stack.md`, `bmad-fastpath.md`, `compile-agents.md`, and `sprint-status.md` workflows.
+        - Updated all existing `bmad-*` skills with the latest interaction protocols and stack awareness.
+        - Verified alignment with the project's `./dc.sh` and FastAPI/React architecture.
     - **Step 5 Explanation Box & Layout Refinement (#749) - [COMPLETED]**:
         - Implemented a "What is next?" info box in Step 5 (Closing the Gap) to guide users towards scenario modeling.
         - Created a dedicated `WhatIsNextInfoBox` component with a responsive two-column layout and IDC-branded styling.

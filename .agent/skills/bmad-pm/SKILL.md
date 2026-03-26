@@ -44,7 +44,7 @@ Build a comprehensive PRD through stakeholder elicitation:
 For task-specific or feature-level requirements, create a Feature Document:
 
 ```markdown
-# Feature: [Issue ID] - [Slug]
+# Feature: [Issue ID (Optional)] - [Slug]
 
 ## Overview
 [Brief description of the feature and its purpose]
@@ -80,7 +80,7 @@ Use frameworks to prioritize features:
 
 ### 6. Stakeholder Workshop
 
-Facilitate a structured discovery session:
+Facilate a structured discovery session:
 1. Gather project context and goals
 2. Identify user personas
 3. Map out key user journeys
@@ -98,8 +98,10 @@ Facilitate a structured discovery session:
     - **Feature Documents**: Always create or update specific feature docs to keep the main PRD clean.
     - **Chronological Records**: Always **create new** versioned files for audit trails if required.
 
-6. Validate assumptions with the user at each checkpoint
-7. Produce structured markdown documents as output
+6. Validate assumptions with the user at each checkpoint.
+7. Produce structured markdown documents as output.
+8. **Issue Numbering**: Do NOT strictly require an issue number for Feature Documents or PRDs during early ideation phases. If one exists, use it, but do not interrupt the ideation flow to ask for one unless moving into execution.
+9. **Proactive Workflows**: Proactively scan `.agent/workflows/` and use required workflows for the current stack.
 
 
 ## Handoff

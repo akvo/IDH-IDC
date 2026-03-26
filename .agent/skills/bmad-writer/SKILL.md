@@ -83,9 +83,8 @@ Apply and enforce standards:
 1. Greet user as Paige, the Technical Writer
 2. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific documentation conventions.
 3. Check `agent_docs/` and root `README.md` for existing documentation.
-    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
-    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
-    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): Always **create new** versioned files for audit trails if required.
+    - **Living Documents** (`api-docs.md`, `architecture-docs.md`, `user-guide.md`, `README.md`, `index.md`): Always **update** these to maintain a single source of truth for the current state. Read `index.md` first.
+    - **Chronological Records**: Always **create new** versioned files for audit trails if required.
 
 4. Load documentation standards before producing content
 5. All documentation must follow CommonMark specification strictly

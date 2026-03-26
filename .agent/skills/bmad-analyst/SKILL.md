@@ -70,11 +70,14 @@ Compare current state vs. desired state:
 5. Flag assumptions explicitly and request validation
 6. Detect the current stack by checking the directory name and its `.agent/rules/`. Respect stack-specific constraints (e.g., Docker commands, specific frameworks).
 7. Check `agent_docs/` for existing artifacts.
-    - **Living Documents** (`prd.md`, `architecture.md`, `user-guide.md`, `README.md`): These represent the **project skeleton** (overall purpose, shared architecture). Always **update** these to reflect the current high-level state. **NEVER** overwrite these with task-specific descriptions. Always consult `agent_docs/index.md` as the master map.
-    - **Feature Documents** (`agent_docs/features/`): Create these for specific issues, tasks, or features to describe detailed requirements and logic.
-    - **Chronological Records** (`ADRs`, `stories`, `research-findings`): **Create new** versioned files (e.g., `research-findings.md`) to maintain history.
+    - **Living Documents** (`prd.md`, `index.md`): Always **update** these to reflect hardened requirements. Read `index.md` first.
+    - **Feature Documents**: Refine specific feature docs instead of cluttering the master PRD.
+    - **Chronological Records** (`research-findings.md`): Always **create new** versioned files (e.g., `research-findings-v2.md`) to preserve the history of research.
 
-8. Produce structured, traceable documentation
+8. Produce structured, traceable documentation.
+9. **Issue Numbering**: Do NOT strictly require an issue number during ideation and research phases. Use slugs if an issue number is not available.
+10. **Proactive Workflows**: Proactively scan `.agent/workflows/` and use required workflows for the current stack.
+11. **Document Sharding**: Do not read entire codebases or massive documents at once. Use targeted searches (e.g., `grep`, `view_file` with specific lines) to shard the context. Ingest only the specific functions, classes, or document sections necessary for the current step.
 
 
 ## Handoff

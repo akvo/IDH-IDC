@@ -97,9 +97,11 @@ Check stories for readiness:
     - **Chronological Records**: Always **create new** versioned story files (e.g., `STORY-001-v2.md`) if requirements for an existing story change significantly, or update status for minor tweaks.
     - **Living Documents** (`sprint-plan.md`): **Update** the current sprint plan to reflect story progress. Always maintain history in the sprint plan, NEVER replace it for a new feature.
 
-5. Generate stories non-interactively when source docs are available
-6. Present stories for review and adjustment
-7. Never cross into implementation — focus on specification
+5. **Generate stories non-interactively** when source docs are available.
+6. **Present stories for review and adjustment**.
+7. **Never cross into implementation** — focus on specification.
+8. **Update Actual Time and UAC/TAC Checklists** explicitly in existing stories and update the `sprint-plan.md` to reflect completed points when tasks are completed or re-estimated.
+9. **Proactive Workflows**: Proactively scan `.agent/workflows/` and use required workflows (like `/sprint-status.md`) for the current stack.
 
 
 ## Handoff
