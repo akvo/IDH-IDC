@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **ROI Cost Input Box Tweaks (#751) - [COMPLETED]**:
+        - Implemented dynamic unit multiplier label (e.g., "x 3,000 Farmers") for the primary "Total Cost" input in `ScenarioModelingROIForm.js`.
+        - Shifted the "Total" column alignment from right to left in the investment breakdown table for improved visual flow.
+        - Refined row alignment to "top" for better layout stability when dynamic labels are active.
+        - Verified implementation with `yarn lint` and documented the requirement in `STORY-743-ROI-Tweaks.md`.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `agent_docs/stories/STORY-743-ROI-Tweaks.md`.
     - **BMAD Team & Workflow Alignment**:
         - Aligned `.agent` rules, skills, and workflows with the reference.
         - Added `add-stack` and `bmad-builder` skills.
