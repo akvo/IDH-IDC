@@ -2,4 +2,6 @@
 .DS_Store
 .env
 
-frontend/.env
+frontend/.env.agent
+agent_docs
+.agent
