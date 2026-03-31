@@ -312,7 +312,11 @@ const ImpactOfInvestmentCharts = () => {
       legend: {
         show: true,
         top: 0,
-        data: costRoiData.map((d) => d.displayName),
+        icon: "circle",
+        data: costRoiData.map((d, scIdx) => ({
+          name: d.displayName,
+          itemStyle: { color: scenarioColors[scIdx % scenarioColors.length] },
+        })),
       },
       grid: { left: "3%", right: "4%", bottom: "10%", containLabel: true },
       xAxis: {
