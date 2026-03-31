@@ -117,7 +117,7 @@ export const calculateScenarioROI = (
       (d) => String(d.id) === String(segmentId)
     );
 
-    if (!segment || !baselineSegment) {
+    if (!segment) {
       return;
     }
 
@@ -126,7 +126,7 @@ export const calculateScenarioROI = (
     // Use pre-calculated values if available, otherwise compute on the fly
     const baselineIncome =
       sv.currentSegmentValue?.total_current_income ||
-      baselineSegment.total_current_income ||
+      baselineSegment?.total_current_income ||
       0;
 
     let scenarioIncome = sv.updatedSegmentScenarioValue?.total_current_income;

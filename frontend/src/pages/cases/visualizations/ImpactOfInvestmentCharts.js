@@ -280,6 +280,10 @@ const ImpactOfInvestmentCharts = () => {
           label: {
             show: showCostLabel,
             position: "top",
+            padding: [3, 5],
+            backgroundColor: "rgba(0,0,0,0.3)",
+            color: "#fff",
+            borderRadius: 2,
             formatter: (v) => formatNumberToString(v.value),
           },
           itemStyle: { color: scColor },
@@ -292,6 +296,10 @@ const ImpactOfInvestmentCharts = () => {
           label: {
             show: showCostLabel,
             position: "top",
+            padding: [3, 5],
+            backgroundColor: "rgba(0,0,0,0.3)",
+            color: "#fff",
+            borderRadius: 2,
             formatter: (v) => formatNumberToString(v.value),
           },
           itemStyle: {
@@ -425,6 +433,60 @@ const ImpactOfInvestmentCharts = () => {
       order: index,
     }));
   }, [roiChartRoiData]);
+
+  const roiChartOptions = useMemo(() => {
+    return {
+      tooltip: {
+        trigger: "item",
+        formatter: (params) => {
+          return `${params.marker} ${params.name}: ${params.value}%`;
+        },
+      },
+      legend: {
+        show: true,
+        top: 0,
+        icon: "circle",
+        data: roiChartData.map((d) => d.name),
+      },
+      grid: {
+        top: 60,
+        bottom: 40,
+        left: 60,
+        right: 40,
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: ["ROI"],
+        axisLabel: { show: false }, // Hide X-axis label "ROI"
+      },
+      yAxis: {
+        type: "value",
+        name: "ROI (%)",
+        axisLabel: {
+          formatter: "{value}%",
+        },
+      },
+      series: roiChartData.map((d) => ({
+        name: d.name,
+        type: "bar",
+        barMaxWidth: 50,
+        emphasis: { focus: "series" },
+        itemStyle: { color: d.color },
+        data: [d.value],
+        label: {
+          show: showRoiLabel,
+          position: "top",
+          padding: [3, 5],
+          backgroundColor: "rgba(0,0,0,0.3)",
+          color: "#fff",
+          borderRadius: 2,
+          formatter: "{c}%",
+        },
+      })),
+    };
+  }, [roiChartData, showRoiLabel]);
+
   const scenarioSegmentOptions = useMemo(() => {
     return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
       return (currentCase?.segments || []).map((seg) => ({
@@ -730,18 +792,9 @@ const ImpactOfInvestmentCharts = () => {
               <Chart
                 wrapper={false}
                 type="BAR"
-                data={roiChartData}
-                percentage={true}
+                override={roiChartOptions}
                 height={350}
                 showLabel={showRoiLabel}
-                extra={{
-                  yAxisTitle: "ROI (%)",
-                  yAxis: {
-                    axisLabel: {
-                      formatter: "{value}%",
-                    },
-                  },
-                }}
               />
             </VisualCardWrapper>
           </Col>

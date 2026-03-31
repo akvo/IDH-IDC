@@ -20,6 +20,7 @@ const Bar = ({
   extra = {},
   horizontal = false,
   grid = {},
+  showLabel = true,
 }) => {
   if (isEmpty(data) || !data) {
     return NoData;
@@ -108,7 +109,7 @@ const Bar = ({
         label: {
           colorBy: "data",
           position: horizontal ? "insideLeft" : "top",
-          show: true,
+          show: showLabel,
           padding: 5,
           backgroundColor: "rgba(0,0,0,.3)",
           ...TextStyle,
