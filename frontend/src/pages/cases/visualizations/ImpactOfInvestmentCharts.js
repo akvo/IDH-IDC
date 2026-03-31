@@ -32,9 +32,10 @@ const ImpactOfInvestmentCharts = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { currency } = currentCase;
+  const currencyLabel = currency || "USD";
 
-  const [selectedCostScenarioSegments, setSelectedCostScenarioSegments] =
-    useState([]);
+  const [selectedCostScenarioSegment, setSelectedCostScenarioSegment] =
+    useState(null);
 
   const [selectedRoiScenarioSegments, setSelectedRoiScenarioSegments] =
     useState([]);
@@ -71,9 +72,18 @@ const ImpactOfInvestmentCharts = () => {
       .filter((d) => d && d.totalCost !== null);
   }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
 
-  // Sync from Global activeSegmentId
   useEffect(() => {
-    if (activeSegmentId && activeSegmentId !== "all") {
+    if (activeSegmentId === "all" && currentCase?.segments?.length > 0) {
+      const firstSegId = currentCase.segments[0].id;
+      if (firstSegId) {
+        CaseUIState.update((s) => {
+          s.general.activeSegmentId = firstSegId;
+        });
+      }
+      return;
+    }
+
+    if (activeSegmentId) {
       // For both selectors, ensure at least one scenario is showing this segment
       // We prioritize the first scenario for default view
       const activeScKey = scenarioModeling?.config?.scenarioData?.[0]?.key;
@@ -88,9 +98,7 @@ const ImpactOfInvestmentCharts = () => {
           scenario?.segmentMetrics?.[activeSegmentId]?.totalCost > 0;
 
         if (hasData) {
-          setSelectedCostScenarioSegments((prev) =>
-            prev.length === 0 ? [val] : prev
-          );
+          setSelectedCostScenarioSegment((prev) => (prev ? prev : val));
           setSelectedRoiScenarioSegments((prev) =>
             prev.length === 0 ? [val] : prev
           );
@@ -101,13 +109,13 @@ const ImpactOfInvestmentCharts = () => {
     activeSegmentId,
     scenarioModeling?.config?.scenarioData,
     allScenariosRoiData,
+    currentCase?.segments,
   ]);
 
-  const handleCostSelectorChange = (vals) => {
-    setSelectedCostScenarioSegments(vals);
-    if (vals.length > 0) {
-      const lastVal = vals[vals.length - 1];
-      const [, segId] = lastVal.split(":::");
+  const handleCostSelectorChange = (val) => {
+    setSelectedCostScenarioSegment(val);
+    if (val) {
+      const [, segId] = val.split(":::");
       if (segId !== "all" && segId !== activeSegmentId) {
         CaseUIState.update((s) => {
           s.general.activeSegmentId = segId;
@@ -130,89 +138,163 @@ const ImpactOfInvestmentCharts = () => {
   };
 
   const costRoiData = useMemo(() => {
-    if (selectedCostScenarioSegments.length === 0) {
-      return allScenariosRoiData.map((sc) => ({
-        ...sc,
-        displayName: sc.name,
-        selectedSegmentId: "all",
-      }));
+    if (!selectedCostScenarioSegment) {
+      const firstSc = allScenariosRoiData[0];
+      if (firstSc) {
+        return [
+          {
+            ...firstSc,
+            displayName: firstSc.name,
+            selectedSegmentId: "all",
+            totalCost: firstSc.totalCost,
+            componentBreakdown:
+              firstSc.segmentComponentBreakdowns?.["all"] || {},
+          },
+        ];
+      }
+      return [];
     }
 
-    return selectedCostScenarioSegments
-      .map((selection) => {
-        const [scKey, segId] = selection.split(":::");
-        const scenario = allScenariosRoiData.find(
-          (d) => String(d.key) === String(scKey)
-        );
+    const selection = selectedCostScenarioSegment;
+    const [scKey, segId] = selection.split(":::");
+    const scenario = allScenariosRoiData.find(
+      (d) => String(d.key) === String(scKey)
+    );
 
-        if (!scenario) {
-          return null;
-        }
+    if (!scenario) {
+      return [];
+    }
 
-        const findSegment = currentCase?.segments?.find(
-          (s) => String(s.id) === String(segId)
-        );
-        const segmentName = findSegment?.name || "All Segments";
+    const findSegment = currentCase?.segments?.find(
+      (s) => String(s.id) === String(segId)
+    );
+    const segmentName = findSegment?.name || "All Segments";
 
-        // If segId is "all" or specific
-        if (segId === "all") {
-          return {
-            ...scenario,
-            displayName: `${scenario.name} - All Segments`,
-            selectedSegmentId: "all",
-          };
-        }
+    const segMetrics =
+      segId === "all" ? scenario : scenario.segmentMetrics?.[segId];
+    const segBreakdown =
+      segId === "all"
+        ? scenario.segmentComponentBreakdowns?.["all"]
+        : scenario.segmentComponentBreakdowns?.[segId];
 
-        const segMetrics = scenario.segmentMetrics?.[segId];
-        const segBreakdown = scenario.segmentComponentBreakdowns?.[segId];
-
-        if (!segMetrics) {
-          return {
-            ...scenario,
-            displayName: `${scenario.name} - ${segmentName}`,
-            selectedSegmentId: segId,
-            roi: 0,
-            totalCost: 0,
-            incomeImprovementPercentage: 0,
-            paybackPeriod: 0,
-            componentBreakdown: {},
-          };
-        }
-
-        return {
+    if (!segMetrics) {
+      return [
+        {
           ...scenario,
           displayName: `${scenario.name} - ${segmentName}`,
           selectedSegmentId: segId,
-          roi: segMetrics.roi,
-          totalCost: segMetrics.totalCost,
-          incomeImprovementPercentage: segMetrics.incomeImprovementPercentage,
-          paybackPeriod: segMetrics.paybackPeriod,
-          componentBreakdown: segBreakdown || {},
-        };
-      })
-      .filter(Boolean);
-  }, [
-    allScenariosRoiData,
-    selectedCostScenarioSegments,
-    currentCase?.segments,
-  ]);
+          roi: 0,
+          totalCost: 0,
+          incomeImprovementPercentage: 0,
+          paybackPeriod: 0,
+          componentBreakdown: {},
+        },
+      ];
+    }
 
-  const componentCostChartData = useMemo(() => {
-    const components = Array.from(
-      new Set(
-        costRoiData.flatMap((d) => Object.keys(d.componentBreakdown || {}))
-      )
-    ).sort();
+    return [
+      {
+        ...scenario,
+        displayName: `${scenario.name} - ${segmentName}`,
+        selectedSegmentId: segId,
+        roi: segMetrics.roi,
+        totalCost: segMetrics.totalCost,
+        incomeImprovementPercentage: segMetrics.incomeImprovementPercentage,
+        paybackPeriod: segMetrics.paybackPeriod,
+        componentBreakdown: segBreakdown || {},
+      },
+    ];
+  }, [allScenariosRoiData, selectedCostScenarioSegment, currentCase?.segments]);
 
-    return components.map((compName) => ({
-      name: compName,
-      data: costRoiData.map((d, idx) => ({
-        name: d.displayName || d.name || `Scenario ${idx + 1}`,
-        value: parseFloat((d.componentBreakdown?.[compName] || 0).toFixed(2)),
-        color: scenarioColors[idx % scenarioColors.length],
-      })),
+  const componentCostWaterfallData = useMemo(() => {
+    const selected = costRoiData[0];
+    if (!selected || !selected.componentBreakdown) {
+      return {};
+    }
+
+    const breakdown = selected.componentBreakdown;
+    const components = Object.keys(breakdown).map((name) => ({
+      name,
+      value: breakdown[name] || 0,
     }));
-  }, [costRoiData]);
+
+    if (components.length === 0) {
+      return {};
+    }
+
+    // Prepare labels
+    const labels = [...components.map((c) => c.name), "Total Cost"];
+
+    // Waterfall calculation
+    const placeholderData = [];
+    const actualData = [];
+    const totalData = [];
+
+    let currentSum = 0;
+    for (let i = 0; i < components.length; i++) {
+      placeholderData.push(currentSum);
+      actualData.push(components[i].value);
+      totalData.push("-");
+      currentSum += components[i].value;
+    }
+
+    // Final Total Bar
+    placeholderData.push(0);
+    actualData.push("-");
+    totalData.push(currentSum);
+
+    return {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        formatter: (params) => {
+          const tar = params[1].value !== "-" ? params[1] : params[2];
+          return `${tar.name}<br/>${
+            tar.seriesName
+          }: ${currencyLabel} ${thousandFormatter(tar.value, 2)}`;
+        },
+      },
+      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      xAxis: {
+        type: "category",
+        splitLine: { show: false },
+        data: labels,
+        axisLabel: { interval: 0, rotate: 15 },
+      },
+      yAxis: {
+        type: "value",
+        name: currencyLabel,
+      },
+      series: [
+        {
+          name: "Placeholder",
+          type: "bar",
+          stack: "Total",
+          itemStyle: { borderColor: "transparent", color: "transparent" },
+          emphasis: {
+            itemStyle: { borderColor: "transparent", color: "transparent" },
+          },
+          data: placeholderData,
+        },
+        {
+          name: "Cost",
+          type: "bar",
+          stack: "Total",
+          label: { show: showCostLabel, position: "top" },
+          itemStyle: { color: "#1B625F" }, // IDH Brand Green
+          data: actualData,
+        },
+        {
+          name: "Total",
+          type: "bar",
+          stack: "Total",
+          label: { show: showCostLabel, position: "top" },
+          itemStyle: { color: "#F9CB21" }, // IDH Brand Yellow for emphasis
+          data: totalData,
+        },
+      ],
+    };
+  }, [costRoiData, currencyLabel, showCostLabel]);
 
   const roiChartRoiData = useMemo(() => {
     if (selectedRoiScenarioSegments.length === 0) {
@@ -293,36 +375,18 @@ const ImpactOfInvestmentCharts = () => {
       ],
     }));
   }, [roiChartRoiData]);
-
   const scenarioSegmentOptions = useMemo(() => {
-    let i = 1;
-    const res = orderBy(
-      scenarioModeling.config.scenarioData || [],
-      "key"
-    ).flatMap((sc) => {
-      const allSegmentsOpt = {
-        order: i++,
-        label: `${sc.name} - All Segments`,
-        value: `${sc.key}:::all`,
-      };
-      const segmentSelectOptions = (currentCase.segments || []).map((st) => {
-        const opt = {
-          order: i++,
-          label: `${sc.name} - ${st.name}`,
-          value: `${sc.key}:::${st.id}`,
-        };
-        return opt;
-      });
-      return [allSegmentsOpt, ...segmentSelectOptions];
+    return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
+      return (currentCase?.segments || []).map((seg) => ({
+        label: `${scenario.name} - ${seg.name}`,
+        value: `${scenario.key}:::${seg.id}`,
+      }));
     });
-    return res;
-  }, [scenarioModeling.config.scenarioData, currentCase.segments]);
+  }, [allScenariosRoiData, currentCase?.segments]);
 
   if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
     return null;
   }
-
-  const currencyLabel = currency || "USD";
 
   // Segment Breakdown Table Data
   // This table will show the breakdown for the FIRST selected scenario/segment in the multi-select
@@ -433,14 +497,10 @@ const ImpactOfInvestmentCharts = () => {
             >
               <Chart
                 wrapper={false}
-                type="COLUMN-BAR"
-                data={componentCostChartData}
+                type="BAR"
+                override={componentCostWaterfallData}
                 height={400}
                 showLabel={showCostLabel}
-                extra={{
-                  yAxisTitle: currencyLabel,
-                  legend: { position: "bottom" },
-                }}
               />
             </VisualCardWrapper>
           </Col>
@@ -456,18 +516,11 @@ const ImpactOfInvestmentCharts = () => {
               <div style={{ marginTop: 8 }}>
                 <Select
                   {...selectProps}
-                  value={selectedCostScenarioSegments}
+                  value={selectedCostScenarioSegment}
                   onChange={handleCostSelectorChange}
-                  options={scenarioSegmentOptions.map((opt) => ({
-                    ...opt,
-                    disabled:
-                      selectedCostScenarioSegments.length >=
-                        MAX_SCENARIO_SEGMENT &&
-                      !selectedCostScenarioSegments.includes(opt.value),
-                  }))}
-                  mode="multiple"
+                  options={scenarioSegmentOptions}
                   style={{ width: "100%" }}
-                  placeholder="Select Scenarios and Segments to compare"
+                  placeholder="Select Scenario and Segment"
                 />
               </div>
             </Space>
