@@ -7,7 +7,6 @@
  *   ( (Scenario Net Income - Baseline Net Income) * Number of Farmers in segment )
  */
 import { isEmpty } from "lodash";
-import { flatten } from "../../../lib";
 
 export const getLandArea = (segment) => {
   if (!segment?.answers) {
@@ -62,19 +61,8 @@ export const calculateIncomeFromDrivers = (
 
   const answers = segment.answers;
 
-  // 1. Flatten all questions for easier lookup
-  const flattenedQuestionGroups = (questionGroups || []).flatMap((group) => {
-    const questions = group ? flatten(group.questions) : [];
-    return questions.map((q) => ({
-      ...q,
-      commodity_id: group.commodity_id,
-      case_commodity_id: group.id,
-    }));
-  });
-
-  // 3. Identification of aggregator questions (following the logic of ScenarioModelingIncomeDriversAndChart)
-
-  // 4. Calculate Total Current Income (Sum of top-level aggregators)
+  // Identification of aggregator questions (following the logic of ScenarioModelingIncomeDriversAndChart)
+  // Calculate Total Current Income (Sum of top-level aggregators)
   // We use the same 'current-[qs]' key pattern as the UI component
   // totalIncomeQuestions is an array of strings like "101-1"
   const totalCurrentIncomeAnswer = (totalIncomeQuestions || [])
