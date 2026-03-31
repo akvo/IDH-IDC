@@ -20,7 +20,7 @@ const SegmentTabsWrapper = ({
   const segmentTabItems = useMemo(() => {
     return orderBy(currentCase.segments, ["id"]).map((segment) => ({
       label: segment.name,
-      key: segment.id,
+      key: String(segment.id),
       children:
         childrenCount === 1
           ? React.Children.map(children, (child) =>
@@ -81,9 +81,13 @@ const SegmentTabsWrapper = ({
                 items={segmentTabItems}
                 tabBarGutter={5}
                 activeKey={
-                  activeSegmentId
-                    ? activeSegmentId
-                    : currentCase?.segments?.[0]?.id
+                  currentCase?.segments?.length > 0
+                    ? currentCase.segments.some(
+                        (s) => String(s.id) === String(activeSegmentId)
+                      )
+                      ? String(activeSegmentId)
+                      : String(currentCase.segments[0].id)
+                    : null
                 }
                 onChange={(val) => {
                   CaseUIState.update((s) => ({

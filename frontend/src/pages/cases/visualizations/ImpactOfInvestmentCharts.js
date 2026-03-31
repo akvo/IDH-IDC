@@ -3,7 +3,10 @@ import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
-import { thousandFormatter } from "../../../components/chart/options/common";
+import {
+  thousandFormatter,
+  formatNumberToString,
+} from "../../../components/chart/options/common";
 import { orderBy } from "lodash";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
@@ -26,12 +29,17 @@ const scenarioColors = [
 ];
 
 const ImpactOfInvestmentCharts = () => {
-  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
-    (s) => s
-  );
+  const {
+    scenarioModeling,
+    dashboardData,
+    questionGroups,
+    totalIncomeQuestions,
+  } = CaseVisualState.useState((s) => s);
+
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { currency } = currentCase;
+  const currencyLabel = currency || "USD";
 
   const [selectedCostScenarioSegments, setSelectedCostScenarioSegments] =
     useState([]);
@@ -59,7 +67,11 @@ const ImpactOfInvestmentCharts = () => {
         const result = calculateScenarioROI(
           scenario,
           investmentAnalysis,
-          dashboardData
+          currentCase.segments || [], // All segments for headcount
+          dashboardData,
+          currentCase,
+          questionGroups,
+          totalIncomeQuestions
         );
         return {
           key: scenario.key,
@@ -69,11 +81,27 @@ const ImpactOfInvestmentCharts = () => {
         };
       })
       .filter((d) => d && d.totalCost !== null);
-  }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
+  }, [
+    scenarioModeling.config.scenarioData,
+    investmentAnalysis,
+    dashboardData,
+    currentCase,
+    questionGroups,
+    totalIncomeQuestions,
+  ]);
 
-  // Sync from Global activeSegmentId
   useEffect(() => {
-    if (activeSegmentId && activeSegmentId !== "all") {
+    if (activeSegmentId === "all" && currentCase?.segments?.length > 0) {
+      const firstSegId = currentCase.segments[0].id;
+      if (firstSegId) {
+        CaseUIState.update((s) => {
+          s.general.activeSegmentId = firstSegId;
+        });
+      }
+      return;
+    }
+
+    if (activeSegmentId) {
       // For both selectors, ensure at least one scenario is showing this segment
       // We prioritize the first scenario for default view
       const activeScKey = scenarioModeling?.config?.scenarioData?.[0]?.key;
@@ -101,6 +129,7 @@ const ImpactOfInvestmentCharts = () => {
     activeSegmentId,
     scenarioModeling?.config?.scenarioData,
     allScenariosRoiData,
+    currentCase?.segments,
   ]);
 
   const handleCostSelectorChange = (vals) => {
@@ -135,6 +164,8 @@ const ImpactOfInvestmentCharts = () => {
         ...sc,
         displayName: sc.name,
         selectedSegmentId: "all",
+        totalCost: sc.totalCost,
+        componentBreakdown: sc.segmentComponentBreakdowns?.["all"] || {},
       }));
     }
 
@@ -154,17 +185,12 @@ const ImpactOfInvestmentCharts = () => {
         );
         const segmentName = findSegment?.name || "All Segments";
 
-        // If segId is "all" or specific
-        if (segId === "all") {
-          return {
-            ...scenario,
-            displayName: `${scenario.name} - All Segments`,
-            selectedSegmentId: "all",
-          };
-        }
-
-        const segMetrics = scenario.segmentMetrics?.[segId];
-        const segBreakdown = scenario.segmentComponentBreakdowns?.[segId];
+        const segMetrics =
+          segId === "all" ? scenario : scenario.segmentMetrics?.[segId];
+        const segBreakdown =
+          segId === "all"
+            ? scenario.segmentComponentBreakdowns?.["all"]
+            : scenario.segmentComponentBreakdowns?.[segId];
 
         if (!segMetrics) {
           return {
@@ -197,22 +223,141 @@ const ImpactOfInvestmentCharts = () => {
     currentCase?.segments,
   ]);
 
-  const componentCostChartData = useMemo(() => {
-    const components = Array.from(
+  const componentCostWaterfallData = useMemo(() => {
+    if (costRoiData.length === 0) {
+      return {};
+    }
+
+    // Identify all unique component names across all selected scenarios
+    const allCompNames = Array.from(
       new Set(
         costRoiData.flatMap((d) => Object.keys(d.componentBreakdown || {}))
       )
     ).sort();
 
-    return components.map((compName) => ({
-      name: compName,
-      data: costRoiData.map((d, idx) => ({
-        name: d.displayName || d.name || `Scenario ${idx + 1}`,
-        value: parseFloat((d.componentBreakdown?.[compName] || 0).toFixed(2)),
-        color: scenarioColors[idx % scenarioColors.length],
-      })),
-    }));
-  }, [costRoiData]);
+    const labels = [...allCompNames, "Total Cost"];
+    const series = [];
+
+    costRoiData.forEach((d, scIdx) => {
+      const breakdown = d.componentBreakdown || {};
+      const placeholderData = [];
+      const actualData = [];
+      const totalData = [];
+
+      let currentSum = 0;
+      allCompNames.forEach((name) => {
+        const val = breakdown[name] || 0;
+        placeholderData.push(currentSum);
+        actualData.push(val);
+        totalData.push("-");
+        currentSum += val;
+      });
+
+      // Final Total Bar
+      placeholderData.push(0);
+      actualData.push("-");
+      totalData.push(currentSum);
+
+      const scColor = scenarioColors[scIdx % scenarioColors.length];
+
+      series.push(
+        {
+          name: d.displayName,
+          type: "bar",
+          stack: `sc-${scIdx}`,
+          itemStyle: { borderColor: "transparent", color: "transparent" },
+          emphasis: {
+            itemStyle: { borderColor: "transparent", color: "transparent" },
+          },
+          tooltip: { show: false },
+          data: placeholderData,
+          legendHoverLink: false,
+        },
+        {
+          name: d.displayName,
+          type: "bar",
+          stack: `sc-${scIdx}`,
+          label: {
+            show: showCostLabel,
+            position: "top",
+            padding: [3, 5],
+            backgroundColor: "rgba(0,0,0,0.3)",
+            color: "#fff",
+            borderRadius: 2,
+            formatter: (v) => formatNumberToString(v.value),
+          },
+          itemStyle: { color: scColor },
+          data: actualData,
+        },
+        {
+          name: d.displayName,
+          type: "bar",
+          stack: `sc-${scIdx}`,
+          label: {
+            show: showCostLabel,
+            position: "top",
+            padding: [3, 5],
+            backgroundColor: "rgba(0,0,0,0.3)",
+            color: "#fff",
+            borderRadius: 2,
+            formatter: (v) => formatNumberToString(v.value),
+          },
+          itemStyle: {
+            color: scColor,
+            opacity: 0.8,
+            borderType: "dashed",
+            borderColor: "#333",
+            borderWidth: 1,
+          },
+          data: totalData,
+        }
+      );
+    });
+
+    return {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        formatter: (params) => {
+          let res = `${params[0].name}`;
+          // Filter out placeholders and empty values
+          const visibleParams = params.filter(
+            (p) => p.value !== "-" && p.color !== "transparent"
+          );
+          visibleParams.forEach((p) => {
+            res += `<br/>${p.marker} ${
+              p.seriesName
+            }: ${currencyLabel} ${thousandFormatter(p.value, 2)}`;
+          });
+          return res;
+        },
+      },
+      legend: {
+        show: true,
+        top: 0,
+        icon: "circle",
+        data: costRoiData.map((d, scIdx) => ({
+          name: d.displayName,
+          itemStyle: { color: scenarioColors[scIdx % scenarioColors.length] },
+        })),
+      },
+      grid: { left: "3%", right: "4%", bottom: "10%", containLabel: true },
+      xAxis: {
+        type: "category",
+        splitLine: { show: false },
+        data: labels,
+        axisLabel: { interval: 0, rotate: 0 },
+      },
+      yAxis: {
+        type: "value",
+        name: currencyLabel,
+        axisLabel: {
+          formatter: (value) => formatNumberToString(value),
+        },
+      },
+      series: series,
+    };
+  }, [costRoiData, currencyLabel, showCostLabel]);
 
   const roiChartRoiData = useMemo(() => {
     if (selectedRoiScenarioSegments.length === 0) {
@@ -283,46 +428,77 @@ const ImpactOfInvestmentCharts = () => {
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
       name: d.displayName || d.name || `Scenario ${index + 1}`,
+      value: parseFloat((d.roi * 100).toFixed(2)),
+      color: scenarioColors[index % scenarioColors.length],
       order: index,
-      data: [
-        {
-          name: d.displayName || d.name || `Scenario ${index + 1}`,
-          value: parseFloat((d.roi * 100).toFixed(2)),
-          color: scenarioColors[index % scenarioColors.length],
-        },
-      ],
     }));
   }, [roiChartRoiData]);
 
+  const roiChartOptions = useMemo(() => {
+    return {
+      tooltip: {
+        trigger: "item",
+        formatter: (params) => {
+          return `${params.marker} ${params.name}: ${params.value}%`;
+        },
+      },
+      legend: {
+        show: true,
+        top: 0,
+        icon: "circle",
+        data: roiChartData.map((d) => d.name),
+      },
+      grid: {
+        top: 60,
+        bottom: 40,
+        left: 60,
+        right: 40,
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: ["ROI"],
+        axisLabel: { show: false }, // Hide X-axis label "ROI"
+      },
+      yAxis: {
+        type: "value",
+        name: "ROI (%)",
+        axisLabel: {
+          formatter: "{value}%",
+        },
+      },
+      series: roiChartData.map((d) => ({
+        name: d.name,
+        type: "bar",
+        barMaxWidth: 50,
+        emphasis: { focus: "series" },
+        itemStyle: { color: d.color },
+        data: [d.value],
+        label: {
+          show: showRoiLabel,
+          position: "top",
+          padding: [3, 5],
+          backgroundColor: "rgba(0,0,0,0.3)",
+          color: "#fff",
+          borderRadius: 2,
+          formatter: "{c}%",
+        },
+      })),
+    };
+  }, [roiChartData, showRoiLabel]);
+
   const scenarioSegmentOptions = useMemo(() => {
-    let i = 1;
-    const res = orderBy(
-      scenarioModeling.config.scenarioData || [],
-      "key"
-    ).flatMap((sc) => {
-      const allSegmentsOpt = {
-        order: i++,
-        label: `${sc.name} - All Segments`,
-        value: `${sc.key}:::all`,
-      };
-      const segmentSelectOptions = (currentCase.segments || []).map((st) => {
-        const opt = {
-          order: i++,
-          label: `${sc.name} - ${st.name}`,
-          value: `${sc.key}:::${st.id}`,
-        };
-        return opt;
-      });
-      return [allSegmentsOpt, ...segmentSelectOptions];
+    return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
+      return (currentCase?.segments || []).map((seg) => ({
+        label: `${scenario.name} - ${seg.name}`,
+        value: `${scenario.key}:::${seg.id}`,
+      }));
     });
-    return res;
-  }, [scenarioModeling.config.scenarioData, currentCase.segments]);
+  }, [allScenariosRoiData, currentCase?.segments]);
 
   if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
     return null;
   }
-
-  const currencyLabel = currency || "USD";
 
   // Segment Breakdown Table Data
   // This table will show the breakdown for the FIRST selected scenario/segment in the multi-select
@@ -433,14 +609,10 @@ const ImpactOfInvestmentCharts = () => {
             >
               <Chart
                 wrapper={false}
-                type="COLUMN-BAR"
-                data={componentCostChartData}
+                type="BAR"
+                override={componentCostWaterfallData}
                 height={400}
                 showLabel={showCostLabel}
-                extra={{
-                  yAxisTitle: currencyLabel,
-                  legend: { position: "bottom" },
-                }}
               />
             </VisualCardWrapper>
           </Col>
@@ -456,6 +628,7 @@ const ImpactOfInvestmentCharts = () => {
               <div style={{ marginTop: 8 }}>
                 <Select
                   {...selectProps}
+                  mode="multiple"
                   value={selectedCostScenarioSegments}
                   onChange={handleCostSelectorChange}
                   options={scenarioSegmentOptions.map((opt) => ({
@@ -465,7 +638,7 @@ const ImpactOfInvestmentCharts = () => {
                         MAX_SCENARIO_SEGMENT &&
                       !selectedCostScenarioSegments.includes(opt.value),
                   }))}
-                  mode="multiple"
+                  maxTagCount="responsive"
                   style={{ width: "100%" }}
                   placeholder="Select Scenarios and Segments to compare"
                 />
@@ -618,14 +791,10 @@ const ImpactOfInvestmentCharts = () => {
             >
               <Chart
                 wrapper={false}
-                type="COLUMN-BAR"
-                data={roiChartData}
-                percentage={true}
+                type="BAR"
+                override={roiChartOptions}
                 height={350}
                 showLabel={showRoiLabel}
-                extra={{
-                  yAxisTitle: "ROI (%)",
-                }}
               />
             </VisualCardWrapper>
           </Col>

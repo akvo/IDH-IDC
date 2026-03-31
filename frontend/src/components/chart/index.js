@@ -44,7 +44,15 @@ export const generateOptions = (
     case "PIE":
       return Pie({ data, percentage, chartTitle, extra, horizontal, grid });
     default:
-      return Bar({ data, percentage, chartTitle, extra, horizontal, grid });
+      return Bar({
+        data,
+        percentage,
+        chartTitle,
+        extra,
+        horizontal,
+        grid,
+        showLabel,
+      });
   }
 };
 

@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **ROI Multi-Scenario & Calculation Fix (#755) - [COMPLETED]**:
+        - Implemented a multi-selector in Step 5 for side-by-side waterfall comparison of up to 5 scenario-segment combinations.
+        - Centralized ROI and Income aggregation logic in `roiCalculations.js`, decoupling it from UI component mounting state.
+        - Updated the ROI chart to a robust `BAR` component with clear circular legend icons and fixed percentage Y-axis scaling.
+        - Ensured charts and breakdown tables accurately reflect scenario results even when calculation drawers are closed.
+        - Verified 100% logic accuracy and cleaned all linting/formatting warnings.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/utils/__tests__/roiCalculations.test.js`.
+
     - **ROI Farmer Multiplier Fix (#743, #753) - [COMPLETED]**:
         - Implemented case-wide `totalFarmers` calculation for ROI inputs when using "Yes, for all farmers" mode.
         - Updated UI multiplier labels to correctly display total headcount (e.g., "x 1,055 Farmers").
