@@ -1,4 +1,4 @@
-const { calculateScenarioROI, getLandArea } = require("../roiCalculations");
+const { calculateScenarioROI } = require("../roiCalculations");
 
 describe("ROI Calculation Utility (Pseudocode Alignment)", () => {
   const segments = [

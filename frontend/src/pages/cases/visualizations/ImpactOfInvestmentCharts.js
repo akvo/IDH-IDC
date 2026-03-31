@@ -29,9 +29,13 @@ const scenarioColors = [
 ];
 
 const ImpactOfInvestmentCharts = () => {
-  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
-    (s) => s
-  );
+  const {
+    scenarioModeling,
+    dashboardData,
+    questionGroups,
+    totalIncomeQuestions,
+  } = CaseVisualState.useState((s) => s);
+
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { currency } = currentCase;
@@ -63,7 +67,11 @@ const ImpactOfInvestmentCharts = () => {
         const result = calculateScenarioROI(
           scenario,
           investmentAnalysis,
-          dashboardData
+          currentCase.segments || [], // All segments for headcount
+          dashboardData,
+          currentCase,
+          questionGroups,
+          totalIncomeQuestions
         );
         return {
           key: scenario.key,
@@ -73,7 +81,14 @@ const ImpactOfInvestmentCharts = () => {
         };
       })
       .filter((d) => d && d.totalCost !== null);
-  }, [scenarioModeling.config.scenarioData, investmentAnalysis, dashboardData]);
+  }, [
+    scenarioModeling.config.scenarioData,
+    investmentAnalysis,
+    dashboardData,
+    currentCase,
+    questionGroups,
+    totalIncomeQuestions,
+  ]);
 
   useEffect(() => {
     if (activeSegmentId === "all" && currentCase?.segments?.length > 0) {
@@ -323,7 +338,7 @@ const ImpactOfInvestmentCharts = () => {
         type: "category",
         splitLine: { show: false },
         data: labels,
-        axisLabel: { interval: 0, rotate: 15 },
+        axisLabel: { interval: 0, rotate: 0 },
       },
       yAxis: {
         type: "value",
@@ -405,14 +420,9 @@ const ImpactOfInvestmentCharts = () => {
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
       name: d.displayName || d.name || `Scenario ${index + 1}`,
+      value: parseFloat((d.roi * 100).toFixed(2)),
+      color: scenarioColors[index % scenarioColors.length],
       order: index,
-      data: [
-        {
-          name: d.displayName || d.name || `Scenario ${index + 1}`,
-          value: parseFloat((d.roi * 100).toFixed(2)),
-          color: scenarioColors[index % scenarioColors.length],
-        },
-      ],
     }));
   }, [roiChartRoiData]);
   const scenarioSegmentOptions = useMemo(() => {
@@ -719,13 +729,18 @@ const ImpactOfInvestmentCharts = () => {
             >
               <Chart
                 wrapper={false}
-                type="COLUMN-BAR"
+                type="BAR"
                 data={roiChartData}
                 percentage={true}
                 height={350}
                 showLabel={showRoiLabel}
                 extra={{
                   yAxisTitle: "ROI (%)",
+                  yAxis: {
+                    axisLabel: {
+                      formatter: "{value}%",
+                    },
+                  },
                 }}
               />
             </VisualCardWrapper>

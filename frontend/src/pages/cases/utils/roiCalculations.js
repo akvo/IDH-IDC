@@ -6,6 +6,8 @@
  * Total Net Income improvement = Sum over all segments:
  *   ( (Scenario Net Income - Baseline Net Income) * Number of Farmers in segment )
  */
+import { isEmpty } from "lodash";
+import { flatten } from "../../../lib";
 
 export const getLandArea = (segment) => {
   if (!segment?.answers) {
@@ -44,10 +46,55 @@ export const getLandArea = (segment) => {
   return childKey ? parseFloat(segment.answers[childKey]) || 0 : 0;
 };
 
+/**
+ * Recalculates whole segment income based on driver answers (Object format)
+ * This logic is extracted from ScenarioModelingIncomeDriversAndChart.js
+ */
+export const calculateIncomeFromDrivers = (
+  segment,
+  currentCase,
+  questionGroups,
+  totalIncomeQuestions
+) => {
+  if (!segment || !segment.answers || isEmpty(segment.answers)) {
+    return 0;
+  }
+
+  const answers = segment.answers;
+
+  // 1. Flatten all questions for easier lookup
+  const flattenedQuestionGroups = (questionGroups || []).flatMap((group) => {
+    const questions = group ? flatten(group.questions) : [];
+    return questions.map((q) => ({
+      ...q,
+      commodity_id: group.commodity_id,
+      case_commodity_id: group.id,
+    }));
+  });
+
+  // 3. Identification of aggregator questions (following the logic of ScenarioModelingIncomeDriversAndChart)
+
+  // 4. Calculate Total Current Income (Sum of top-level aggregators)
+  // We use the same 'current-[qs]' key pattern as the UI component
+  // totalIncomeQuestions is an array of strings like "101-1"
+  const totalCurrentIncomeAnswer = (totalIncomeQuestions || [])
+    .map((qs) => {
+      const val = answers[`current-${qs}`];
+      return typeof val !== "undefined" ? parseFloat(val) : 0;
+    })
+    .reduce((acc, a) => acc + a, 0);
+
+  return totalCurrentIncomeAnswer;
+};
+
 export const calculateScenarioROI = (
   scenario,
   investmentAnalysis,
-  segments = []
+  segments = [],
+  dashboardData = [],
+  currentCase = null,
+  questionGroups = [],
+  totalIncomeQuestions = []
 ) => {
   if (!scenario || !investmentAnalysis?.is_enabled) {
     return null;
@@ -78,14 +125,38 @@ export const calculateScenarioROI = (
   scenario.scenarioValues?.forEach((sv) => {
     const segmentId = sv.segmentId;
     const segment = segments.find((s) => String(s.id) === String(segmentId));
-    if (!segment) {
+    const baselineSegment = dashboardData.find(
+      (d) => String(d.id) === String(segmentId)
+    );
+
+    if (!segment || !baselineSegment) {
       return;
     }
 
     const farmerCount = segment.number_of_farmers || 0;
-    const baselineIncome = sv.currentSegmentValue?.total_current_income || 0;
-    const scenarioIncome =
-      sv.updatedSegmentScenarioValue?.total_current_income || 0;
+
+    // Use pre-calculated values if available, otherwise compute on the fly
+    const baselineIncome =
+      sv.currentSegmentValue?.total_current_income ||
+      baselineSegment.total_current_income ||
+      0;
+
+    let scenarioIncome = sv.updatedSegmentScenarioValue?.total_current_income;
+
+    // IF scenarioIncome is missing (drawer not opened), calculate it from drivers
+    if (typeof scenarioIncome === "undefined" && sv.updatedSegment) {
+      scenarioIncome = calculateIncomeFromDrivers(
+        sv.updatedSegment,
+        currentCase,
+        questionGroups,
+        totalIncomeQuestions
+      );
+    }
+
+    // Final fallback to baseline if still undefined
+    if (typeof scenarioIncome === "undefined") {
+      scenarioIncome = baselineIncome;
+    }
 
     const netIncomeChange = scenarioIncome - baselineIncome;
     totalIncomeImprovement += netIncomeChange * farmerCount;
@@ -257,14 +328,19 @@ export const calculateScenarioROI = (
   const roi = totalIncomeImprovement / totalCost;
 
   // Calculate Aggregate Metrics
-  const totalBaselineIncome = scenario.scenarioValues?.reduce(
-    (acc, sv) =>
-      acc +
-      (sv.currentSegmentValue?.total_current_income || 0) *
-        (segments.find((s) => String(s.id) === String(sv.segmentId))
-          ?.number_of_farmers || 0),
-    0
-  );
+  const totalBaselineIncome = scenario.scenarioValues?.reduce((acc, sv) => {
+    const baselineSegment = dashboardData.find(
+      (d) => String(d.id) === String(sv.segmentId)
+    );
+    const farmerCount =
+      segments.find((s) => String(s.id) === String(sv.segmentId))
+        ?.number_of_farmers || 0;
+    const baselineIncome =
+      sv.currentSegmentValue?.total_current_income ||
+      baselineSegment?.total_current_income ||
+      0;
+    return acc + baselineIncome * farmerCount;
+  }, 0);
 
   const incomeImprovementPercentage =
     totalBaselineIncome > 0
@@ -284,15 +360,36 @@ export const calculateScenarioROI = (
   scenario.scenarioValues?.forEach((sv) => {
     const segmentId = sv.segmentId;
     const segment = segments.find((s) => String(s.id) === String(segmentId));
+    const baselineSegment = dashboardData.find(
+      (d) => String(d.id) === String(segmentId)
+    );
     const segInv = investmentPerSegment[segmentId];
     if (!segment || !segInv) {
       return;
     }
 
     const farmerCount = segment.number_of_farmers || 0;
-    const baselineIncome = sv.currentSegmentValue?.total_current_income || 0;
-    const scenarioIncome =
-      sv.updatedSegmentScenarioValue?.total_current_income || 0;
+
+    const baselineIncome =
+      sv.currentSegmentValue?.total_current_income ||
+      baselineSegment?.total_current_income ||
+      0;
+
+    let scenarioIncome = sv.updatedSegmentScenarioValue?.total_current_income;
+
+    if (typeof scenarioIncome === "undefined" && sv.updatedSegment) {
+      scenarioIncome = calculateIncomeFromDrivers(
+        sv.updatedSegment,
+        currentCase,
+        questionGroups,
+        totalIncomeQuestions
+      );
+    }
+
+    if (typeof scenarioIncome === "undefined") {
+      scenarioIncome = baselineIncome;
+    }
+
     const incomeImprovement = (scenarioIncome - baselineIncome) * farmerCount;
 
     const compBreakdown = {};
