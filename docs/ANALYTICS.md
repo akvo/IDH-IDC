@@ -7,14 +7,14 @@ The IDC platform uses **Matomo Cloud** for privacy-conscious usage analytics, fo
 ## 1. Implementation Overview
 # Analytics Architecture
 
-IDC uses **Matomo Cloud** as its primary analytics platform to track system usage while ensuring GDPR compliance and data privacy.
+IDC currently utilizes a **Dual-Tracker Strategy** during a managed transition phase. This ensures continuous usage data as we migrate to centralized IDH infrastructure.
 
-## Current Implementation: Matomo Cloud
+## 1. Primary Implementation: Matomo Cloud
 
-The system is integrated with **Matomo Cloud** via a global `_paq` script and custom React hooks.
+The system is integrated with **Matomo Cloud** as the primary tracking engine.
 
 ### Site ID Mapping
-The tracker dynamically assigns a Site ID based on the environment to ensure data isolation:
+The tracker dynamically assigns a Site ID based on the environment:
 
 | Environment | Pattern | Site ID | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -22,27 +22,26 @@ The tracker dynamically assigns a Site ID based on the environment to ensure dat
 | **Staging** | `idc-test` or `staging` | `2` | QA and verification |
 | **Local / Dev** | `localhost` | `1` | Developer testing |
 
-### Implementation Details
-- **Script**: The core tracker script is located in `frontend/public/index.html`.
-- **Page Views**: Managed via `src/hooks/MatomoPageView.js`.
-- **Custom Events**: Tracked via `src/hooks/MatomoCaseStepAnalytics.js` and direct `window._paq.push` calls for modeling actions (e.g., ROI export).
+### Technical Integration
+- **Global Script**: Initialized in `frontend/public/index.html`.
+- **Event Hook**: Leverages `window._paq` for event-based tracking (Login, Modeling, Export).
 
 ---
 
-## [LEGACY] Piwik Pro Retirement
+## 2. Legacy Support: Piwik Pro
 
-The system previously used **Piwik Pro**. This integration is legacy and is being phased out.
+**Piwik Pro** remains active as a secondary tracker to maintain historical consistency during the transition.
 
-- **Status**: Redundant initialization and imports have been removed from `index.js`.
-- **Next Step**: Remove Piwik Pro dependencies from `package.json` once verification is complete.
+- **Initialization**: Managed in `frontend/src/index.js` via `@piwikpro/react-piwik-pro`.
+- **Status**: LEGACY (to be decommissioned once Matomo verification is 100% complete).
 
 ---
 
-## GDPR & Privacy
+## 3. GDPR & Privacy
 
-1. **IP Anonymization**: IP addresses are masked (2 bytes) by default in the Matomo Cloud dashboard.
+1. **IP Anonymization**: IP addresses are masked (2 bytes) by default in both Matomo and Piwik dashboards.
 2. **Do Not Track**: We respect the browser's "Do Not Track" (DNT) header.
-3. **Data Residency**: Data is stored on EU-based Matomo Cloud servers.
+3. **Data Residency**: Data is stored on EU-based servers.
 
 ---
 
