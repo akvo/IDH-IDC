@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect } from "react";
 import { orderBy } from "lodash";
+import { getLandArea } from "../utils/roiCalculations";
 import {
   Row,
   Col,
@@ -88,6 +89,23 @@ const ScenarioModelingROIForm = ({
     }
     return segment?.number_of_farmers || 0;
   }, [costAllocationMode, totalFarmers, segment?.number_of_farmers]);
+
+  const totalLandArea = useMemo(() => {
+    return (currentCase.segments || []).reduce(
+      (acc, s) => acc + (s.number_of_farmers || 0) * getLandArea(s),
+      0
+    );
+  }, [currentCase.segments]);
+
+  const displayLandMultiplier = useMemo(() => {
+    if (costAllocationMode === "all_farmers") {
+      // In "All Farmers" mode, the form configures the collective investment
+      // for the entire case. Therefore, the multiplier must be the total area.
+      return totalLandArea;
+    }
+    // In "Per Segment" mode, the form configures only the active segment's investment.
+    return (segment?.number_of_farmers || 0) * getLandArea(segment);
+  }, [costAllocationMode, totalLandArea, segment]);
 
   useEffect(() => {
     if (
@@ -178,7 +196,7 @@ const ScenarioModelingROIForm = ({
         if (item.unit === "per_farmer") {
           multiplier = displayFarmers;
         } else if (item.unit === "per_land_unit") {
-          multiplier = displayFarmers * (segment?.land_size || 0);
+          multiplier = displayLandMultiplier;
         }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
@@ -216,7 +234,7 @@ const ScenarioModelingROIForm = ({
         if (item.unit === "per_farmer") {
           multiplier = displayFarmers;
         } else if (item.unit === "per_land_unit") {
-          multiplier = displayFarmers * (segment?.land_size || 0);
+          multiplier = displayLandMultiplier;
         }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
@@ -244,7 +262,7 @@ const ScenarioModelingROIForm = ({
         if (item.unit === "per_farmer") {
           multiplier = displayFarmers;
         } else if (item.unit === "per_land_unit") {
-          multiplier = displayFarmers * (segment?.land_size || 0);
+          multiplier = displayLandMultiplier;
         }
         return acc + (item.cost || 0) * multiplier;
       }, 0);
@@ -469,7 +487,9 @@ const ScenarioModelingROIForm = ({
                                   displayFarmers
                                 )} Farmers`
                               : unit === "per_land_unit"
-                              ? `x Land Area`
+                              ? `x ${InputNumberThousandFormatter.formatter(
+                                  displayLandMultiplier.toFixed(2)
+                                )} Total Land Area`
                               : ""}
                           </div>
                         );
@@ -592,7 +612,9 @@ const ScenarioModelingROIForm = ({
                                       displayFarmers
                                     )} Farmers`
                                   : record.unit === "per_land_unit"
-                                  ? `x Land Area`
+                                  ? `x ${InputNumberThousandFormatter.formatter(
+                                      displayLandMultiplier.toFixed(2)
+                                    )} Total Land Area`
                                   : ""}
                               </div>
                             )}
@@ -610,8 +632,7 @@ const ScenarioModelingROIForm = ({
                           if (record.unit === "per_farmer") {
                             multiplier = displayFarmers;
                           } else if (record.unit === "per_land_unit") {
-                            multiplier =
-                              displayFarmers * (segment?.land_size || 0);
+                            multiplier = displayLandMultiplier;
                           }
 
                           const total = (record.cost || 0) * multiplier;

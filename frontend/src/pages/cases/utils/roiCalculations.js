@@ -132,32 +132,50 @@ export const calculateScenarioROI = (
       }
     }
 
-    // Distribute to segments
+    // Distribute to segments based on Pseudocode rules
     segments.forEach((s) => {
       const farmerCount = s.number_of_farmers || 0;
+      const landArea = getLandArea(s);
       const ratio = totalFarmers > 0 ? farmerCount / totalFarmers : 0;
+
+      const segmentComponents = components.map((comp) => {
+        let compTotal = 0;
+        if (comp.unit === "per_farmer") {
+          compTotal = (comp.cost || 0) * farmerCount;
+        } else if (comp.unit === "per_land_unit") {
+          compTotal = (comp.cost || 0) * farmerCount * landArea;
+        } else {
+          // total
+          const totalCompCost = comp.cost || 0;
+          compTotal = totalCompCost * ratio;
+        }
+        return {
+          ...comp,
+          cost: compTotal,
+          unit: "total",
+        };
+      });
+
+      let segmentInvestmentCost = segmentComponents.reduce(
+        (acc, c) => acc + c.cost,
+        0
+      );
+
+      if (segmentInvestmentCost === 0 && allFarmersConfig.investment_cost) {
+        const unitCost = allFarmersConfig.investment_cost || 0;
+        if (allFarmersConfig.cost_unit === "per_farmer") {
+          segmentInvestmentCost = unitCost * farmerCount;
+        } else if (allFarmersConfig.cost_unit === "per_land_unit") {
+          segmentInvestmentCost = unitCost * farmerCount * landArea;
+        } else {
+          segmentInvestmentCost = unitCost * ratio;
+        }
+      }
+
       investmentPerSegment[s.id] = {
-        investment_cost: totalCost * ratio,
+        investment_cost: segmentInvestmentCost,
         cost_unit: "total",
-        components: components.map((comp) => {
-          // For components, we also distribute their total cost share
-          let multiplier = 1;
-          if (comp.unit === "per_farmer") {
-            multiplier = totalFarmers;
-          } else if (comp.unit === "per_land_unit") {
-            multiplier = segments.reduce(
-              (sum, seg) =>
-                sum + (seg.number_of_farmers || 0) * getLandArea(seg),
-              0
-            );
-          }
-          const scenarioCompTotal = (comp.cost || 0) * multiplier;
-          return {
-            ...comp,
-            cost: scenarioCompTotal * ratio,
-            unit: "total",
-          };
-        }),
+        components: segmentComponents,
       };
     });
   } else if (investmentData.segments) {

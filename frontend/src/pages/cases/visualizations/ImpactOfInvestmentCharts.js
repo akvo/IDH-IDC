@@ -3,7 +3,10 @@ import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
 import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
-import { thousandFormatter } from "../../../components/chart/options/common";
+import {
+  thousandFormatter,
+  formatNumberToString,
+} from "../../../components/chart/options/common";
 import { orderBy } from "lodash";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
@@ -264,6 +267,9 @@ const ImpactOfInvestmentCharts = () => {
       yAxis: {
         type: "value",
         name: currencyLabel,
+        axisLabel: {
+          formatter: (value) => formatNumberToString(value),
+        },
       },
       series: [
         {
