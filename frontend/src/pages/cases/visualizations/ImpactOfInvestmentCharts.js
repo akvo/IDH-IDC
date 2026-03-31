@@ -37,8 +37,8 @@ const ImpactOfInvestmentCharts = () => {
   const { currency } = currentCase;
   const currencyLabel = currency || "USD";
 
-  const [selectedCostScenarioSegment, setSelectedCostScenarioSegment] =
-    useState(null);
+  const [selectedCostScenarioSegments, setSelectedCostScenarioSegments] =
+    useState([]);
 
   const [selectedRoiScenarioSegments, setSelectedRoiScenarioSegments] =
     useState([]);
@@ -101,7 +101,9 @@ const ImpactOfInvestmentCharts = () => {
           scenario?.segmentMetrics?.[activeSegmentId]?.totalCost > 0;
 
         if (hasData) {
-          setSelectedCostScenarioSegment((prev) => (prev ? prev : val));
+          setSelectedCostScenarioSegments((prev) =>
+            prev.length === 0 ? [val] : prev
+          );
           setSelectedRoiScenarioSegments((prev) =>
             prev.length === 0 ? [val] : prev
           );
@@ -115,10 +117,11 @@ const ImpactOfInvestmentCharts = () => {
     currentCase?.segments,
   ]);
 
-  const handleCostSelectorChange = (val) => {
-    setSelectedCostScenarioSegment(val);
-    if (val) {
-      const [, segId] = val.split(":::");
+  const handleCostSelectorChange = (vals) => {
+    setSelectedCostScenarioSegments(vals);
+    if (vals.length > 0) {
+      const lastVal = vals[vals.length - 1];
+      const [, segId] = lastVal.split(":::");
       if (segId !== "all" && segId !== activeSegmentId) {
         CaseUIState.update((s) => {
           s.general.activeSegmentId = segId;
@@ -141,123 +144,177 @@ const ImpactOfInvestmentCharts = () => {
   };
 
   const costRoiData = useMemo(() => {
-    if (!selectedCostScenarioSegment) {
-      const firstSc = allScenariosRoiData[0];
-      if (firstSc) {
-        return [
-          {
-            ...firstSc,
-            displayName: firstSc.name,
-            selectedSegmentId: "all",
-            totalCost: firstSc.totalCost,
-            componentBreakdown:
-              firstSc.segmentComponentBreakdowns?.["all"] || {},
-          },
-        ];
-      }
-      return [];
+    if (selectedCostScenarioSegments.length === 0) {
+      return allScenariosRoiData.map((sc) => ({
+        ...sc,
+        displayName: sc.name,
+        selectedSegmentId: "all",
+        totalCost: sc.totalCost,
+        componentBreakdown: sc.segmentComponentBreakdowns?.["all"] || {},
+      }));
     }
 
-    const selection = selectedCostScenarioSegment;
-    const [scKey, segId] = selection.split(":::");
-    const scenario = allScenariosRoiData.find(
-      (d) => String(d.key) === String(scKey)
-    );
+    return selectedCostScenarioSegments
+      .map((selection) => {
+        const [scKey, segId] = selection.split(":::");
+        const scenario = allScenariosRoiData.find(
+          (d) => String(d.key) === String(scKey)
+        );
 
-    if (!scenario) {
-      return [];
-    }
+        if (!scenario) {
+          return null;
+        }
 
-    const findSegment = currentCase?.segments?.find(
-      (s) => String(s.id) === String(segId)
-    );
-    const segmentName = findSegment?.name || "All Segments";
+        const findSegment = currentCase?.segments?.find(
+          (s) => String(s.id) === String(segId)
+        );
+        const segmentName = findSegment?.name || "All Segments";
 
-    const segMetrics =
-      segId === "all" ? scenario : scenario.segmentMetrics?.[segId];
-    const segBreakdown =
-      segId === "all"
-        ? scenario.segmentComponentBreakdowns?.["all"]
-        : scenario.segmentComponentBreakdowns?.[segId];
+        const segMetrics =
+          segId === "all" ? scenario : scenario.segmentMetrics?.[segId];
+        const segBreakdown =
+          segId === "all"
+            ? scenario.segmentComponentBreakdowns?.["all"]
+            : scenario.segmentComponentBreakdowns?.[segId];
 
-    if (!segMetrics) {
-      return [
-        {
+        if (!segMetrics) {
+          return {
+            ...scenario,
+            displayName: `${scenario.name} - ${segmentName}`,
+            selectedSegmentId: segId,
+            roi: 0,
+            totalCost: 0,
+            incomeImprovementPercentage: 0,
+            paybackPeriod: 0,
+            componentBreakdown: {},
+          };
+        }
+
+        return {
           ...scenario,
           displayName: `${scenario.name} - ${segmentName}`,
           selectedSegmentId: segId,
-          roi: 0,
-          totalCost: 0,
-          incomeImprovementPercentage: 0,
-          paybackPeriod: 0,
-          componentBreakdown: {},
-        },
-      ];
-    }
-
-    return [
-      {
-        ...scenario,
-        displayName: `${scenario.name} - ${segmentName}`,
-        selectedSegmentId: segId,
-        roi: segMetrics.roi,
-        totalCost: segMetrics.totalCost,
-        incomeImprovementPercentage: segMetrics.incomeImprovementPercentage,
-        paybackPeriod: segMetrics.paybackPeriod,
-        componentBreakdown: segBreakdown || {},
-      },
-    ];
-  }, [allScenariosRoiData, selectedCostScenarioSegment, currentCase?.segments]);
+          roi: segMetrics.roi,
+          totalCost: segMetrics.totalCost,
+          incomeImprovementPercentage: segMetrics.incomeImprovementPercentage,
+          paybackPeriod: segMetrics.paybackPeriod,
+          componentBreakdown: segBreakdown || {},
+        };
+      })
+      .filter(Boolean);
+  }, [
+    allScenariosRoiData,
+    selectedCostScenarioSegments,
+    currentCase?.segments,
+  ]);
 
   const componentCostWaterfallData = useMemo(() => {
-    const selected = costRoiData[0];
-    if (!selected || !selected.componentBreakdown) {
+    if (costRoiData.length === 0) {
       return {};
     }
 
-    const breakdown = selected.componentBreakdown;
-    const components = Object.keys(breakdown).map((name) => ({
-      name,
-      value: breakdown[name] || 0,
-    }));
+    // Identify all unique component names across all selected scenarios
+    const allCompNames = Array.from(
+      new Set(
+        costRoiData.flatMap((d) => Object.keys(d.componentBreakdown || {}))
+      )
+    ).sort();
 
-    if (components.length === 0) {
-      return {};
-    }
+    const labels = [...allCompNames, "Total Cost"];
+    const series = [];
 
-    // Prepare labels
-    const labels = [...components.map((c) => c.name), "Total Cost"];
+    costRoiData.forEach((d, scIdx) => {
+      const breakdown = d.componentBreakdown || {};
+      const placeholderData = [];
+      const actualData = [];
+      const totalData = [];
 
-    // Waterfall calculation
-    const placeholderData = [];
-    const actualData = [];
-    const totalData = [];
+      let currentSum = 0;
+      allCompNames.forEach((name) => {
+        const val = breakdown[name] || 0;
+        placeholderData.push(currentSum);
+        actualData.push(val);
+        totalData.push("-");
+        currentSum += val;
+      });
 
-    let currentSum = 0;
-    for (let i = 0; i < components.length; i++) {
-      placeholderData.push(currentSum);
-      actualData.push(components[i].value);
-      totalData.push("-");
-      currentSum += components[i].value;
-    }
+      // Final Total Bar
+      placeholderData.push(0);
+      actualData.push("-");
+      totalData.push(currentSum);
 
-    // Final Total Bar
-    placeholderData.push(0);
-    actualData.push("-");
-    totalData.push(currentSum);
+      const scColor = scenarioColors[scIdx % scenarioColors.length];
+
+      series.push(
+        {
+          name: d.displayName,
+          type: "bar",
+          stack: `sc-${scIdx}`,
+          itemStyle: { borderColor: "transparent", color: "transparent" },
+          emphasis: {
+            itemStyle: { borderColor: "transparent", color: "transparent" },
+          },
+          tooltip: { show: false },
+          data: placeholderData,
+          legendHoverLink: false,
+        },
+        {
+          name: d.displayName,
+          type: "bar",
+          stack: `sc-${scIdx}`,
+          label: {
+            show: showCostLabel,
+            position: "top",
+            formatter: (v) => formatNumberToString(v.value),
+          },
+          itemStyle: { color: scColor },
+          data: actualData,
+        },
+        {
+          name: d.displayName,
+          type: "bar",
+          stack: `sc-${scIdx}`,
+          label: {
+            show: showCostLabel,
+            position: "top",
+            formatter: (v) => formatNumberToString(v.value),
+          },
+          itemStyle: {
+            color: scColor,
+            opacity: 0.8,
+            borderType: "dashed",
+            borderColor: "#333",
+            borderWidth: 1,
+          },
+          data: totalData,
+        }
+      );
+    });
 
     return {
       tooltip: {
         trigger: "axis",
         axisPointer: { type: "shadow" },
         formatter: (params) => {
-          const tar = params[1].value !== "-" ? params[1] : params[2];
-          return `${tar.name}<br/>${
-            tar.seriesName
-          }: ${currencyLabel} ${thousandFormatter(tar.value, 2)}`;
+          let res = `${params[0].name}`;
+          // Filter out placeholders and empty values
+          const visibleParams = params.filter(
+            (p) => p.value !== "-" && p.color !== "transparent"
+          );
+          visibleParams.forEach((p) => {
+            res += `<br/>${p.marker} ${
+              p.seriesName
+            }: ${currencyLabel} ${thousandFormatter(p.value, 2)}`;
+          });
+          return res;
         },
       },
-      grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+      legend: {
+        show: true,
+        top: 0,
+        data: costRoiData.map((d) => d.displayName),
+      },
+      grid: { left: "3%", right: "4%", bottom: "10%", containLabel: true },
       xAxis: {
         type: "category",
         splitLine: { show: false },
@@ -271,34 +328,7 @@ const ImpactOfInvestmentCharts = () => {
           formatter: (value) => formatNumberToString(value),
         },
       },
-      series: [
-        {
-          name: "Placeholder",
-          type: "bar",
-          stack: "Total",
-          itemStyle: { borderColor: "transparent", color: "transparent" },
-          emphasis: {
-            itemStyle: { borderColor: "transparent", color: "transparent" },
-          },
-          data: placeholderData,
-        },
-        {
-          name: "Cost",
-          type: "bar",
-          stack: "Total",
-          label: { show: showCostLabel, position: "top" },
-          itemStyle: { color: "#1B625F" }, // IDH Brand Green
-          data: actualData,
-        },
-        {
-          name: "Total",
-          type: "bar",
-          stack: "Total",
-          label: { show: showCostLabel, position: "top" },
-          itemStyle: { color: "#F9CB21" }, // IDH Brand Yellow for emphasis
-          data: totalData,
-        },
-      ],
+      series: series,
     };
   }, [costRoiData, currencyLabel, showCostLabel]);
 
@@ -522,11 +552,19 @@ const ImpactOfInvestmentCharts = () => {
               <div style={{ marginTop: 8 }}>
                 <Select
                   {...selectProps}
-                  value={selectedCostScenarioSegment}
+                  mode="multiple"
+                  value={selectedCostScenarioSegments}
                   onChange={handleCostSelectorChange}
-                  options={scenarioSegmentOptions}
+                  options={scenarioSegmentOptions.map((opt) => ({
+                    ...opt,
+                    disabled:
+                      selectedCostScenarioSegments.length >=
+                        MAX_SCENARIO_SEGMENT &&
+                      !selectedCostScenarioSegments.includes(opt.value),
+                  }))}
+                  maxTagCount="responsive"
                   style={{ width: "100%" }}
-                  placeholder="Select Scenario and Segment"
+                  placeholder="Select Scenarios and Segments to compare"
                 />
               </div>
             </Space>
