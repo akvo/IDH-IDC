@@ -5,16 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ConfigProvider } from "antd";
-import PiwikPro from "@piwikpro/react-piwik-pro";
-
-// PIWIK
-const origin = window?.location?.origin;
-const ID =
-  origin?.includes("test") || origin?.includes("localhost")
-    ? "418c8745-6f9d-4e93-946c-ef65731f366d"
-    : "9d53ab3a-14de-4429-85e9-4afa6f570013";
-PiwikPro.initialize(ID, "https://akvo.piwik.pro");
-// EOL PIWIK
+// Analytics initialization is now managed via global _paq in index.html and custom Matomo hooks.
 
 const container = document.getElementById("root");
 const root = createRoot(container);

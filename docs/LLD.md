@@ -50,6 +50,10 @@ graph TD
 
 The IDC database comprises 30+ tables, organized into functional clusters managed via **SQLAlchemy**.
 
+### 1. Analytics
+*   **Matomo Cloud**: Primary usage tracking implemented via global `_paq` and React hooks.
+*   **Legacy Piwik Pro**: Decommissioned; Redundant initialization removed from `index.js`.
+
 ### A. Core Modeling Cluster
 These entities manage the primary modeling lifecycle (Steps 1-5).
 

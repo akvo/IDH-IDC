@@ -7,52 +7,42 @@ The IDC platform uses **Matomo Cloud** for privacy-conscious usage analytics, fo
 ## 1. Implementation Overview
 # Analytics Architecture
 
-IDC uses a dual-tenant analytics strategy to track system usage while ensuring GDPR compliance and data privacy.
+IDC uses **Matomo Cloud** as its primary analytics platform to track system usage while ensuring GDPR compliance and data privacy.
 
-## Current Implementation: Piwik Pro
+## Current Implementation: Matomo Cloud
 
-The system is currently integrated with **Piwik Pro** for usage tracking.
+The system is integrated with **Matomo Cloud** via a global `_paq` script and custom React hooks.
 
 ### Site ID Mapping
-The frontend dynamically selects the Piwik Pro Site ID based on the environment's origin:
+The tracker dynamically assigns a Site ID based on the environment to ensure data isolation:
 
-| Environment | Pattern | Site ID (UUID) |
-| :--- | :--- | :--- |
-| **Production** | `idc.idhsustainability.com` | `9d53ab3a-14de-4429-85e9-4afa6f570013` |
-| **Staging / Local** | `test` or `localhost` | `418c8745-6f9d-4e93-946c-ef65731f366d` |
+| Environment | Pattern | Site ID | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Production** | `idc.idhsustainability.com` | `3` | Live user tracking |
+| **Staging** | `idc-test` or `staging` | `2` | QA and verification |
+| **Local / Dev** | `localhost` | `1` | Developer testing |
 
-### Entry Point
-Implementation is located in `frontend/src/index.js` using the `@piwikpro/react-piwik-pro` library.
+### Implementation Details
+- **Script**: The core tracker script is located in `frontend/public/index.html`.
+- **Page Views**: Managed via `src/hooks/MatomoPageView.js`.
+- **Custom Events**: Tracked via `src/hooks/MatomoCaseStepAnalytics.js` and direct `window._paq.push` calls for modeling actions (e.g., ROI export).
 
 ---
 
-## [PLANNED] Matomo Migration
+## [LEGACY] Piwik Pro Retirement
 
-There is a planned migration to **Matomo Cloud** to unify tracking under IDH's centralized infrastructure.
+The system previously used **Piwik Pro**. This integration is legacy and is being phased out.
 
-### Proposed Architecture
-
-| Environment | Site ID | Purpose |
-| :--- | :--- | :--- |
-| **Production** | `3` | Live user tracking |
-| **Staging** | `2` | QA and verification |
-| **Local / Dev** | `1` | Developer testing |
-
-### Implementation Details (Proposal)
-*   **Library**: `react-piwik-pro` (Matomo compatible) or a custom breadcrumb wrapper.
-*   **Target URL**: `https://akvo.matomo.cloud`
-*   **Event Tracking**: Standardized `_paq` calls for:
-    *   `Case Overview` -> `Create new case`
-    *   `Standard Modelling` -> `Adjust Driver`
-    *   `Advanced Modelling` -> `Compare Scenarios`
+- **Status**: Redundant initialization and imports have been removed from `index.js`.
+- **Next Step**: Remove Piwik Pro dependencies from `package.json` once verification is complete.
 
 ---
 
 ## GDPR & Privacy
 
-1. **Anonymization**: IP addresses are masked (2 bytes) by default in the analytics dashboard.
+1. **IP Anonymization**: IP addresses are masked (2 bytes) by default in the Matomo Cloud dashboard.
 2. **Do Not Track**: We respect the browser's "Do Not Track" (DNT) header.
-3. **Data Residency**: Data is stored on EU-based servers (Piwik Pro / Matomo Cloud).
+3. **Data Residency**: Data is stored on EU-based Matomo Cloud servers.
 
 ---
 
