@@ -272,6 +272,8 @@ const ImpactOfInvestmentCharts = () => {
           tooltip: { show: false },
           data: placeholderData,
           legendHoverLink: false,
+          barWidth: 35,
+          barGap: "30%",
         },
         {
           name: d.displayName,
@@ -288,6 +290,8 @@ const ImpactOfInvestmentCharts = () => {
           },
           itemStyle: { color: scColor },
           data: actualData,
+          barWidth: 35,
+          barGap: "30%",
         },
         {
           name: d.displayName,
@@ -310,6 +314,8 @@ const ImpactOfInvestmentCharts = () => {
             borderWidth: 1,
           },
           data: totalData,
+          barWidth: 35,
+          barGap: "30%",
         }
       );
     });
@@ -470,7 +476,7 @@ const ImpactOfInvestmentCharts = () => {
       series: roiChartData.map((d) => ({
         name: d.name,
         type: "bar",
-        barMaxWidth: 50,
+        barWidth: 45,
         emphasis: { focus: "series" },
         itemStyle: { color: d.color },
         data: [d.value],
