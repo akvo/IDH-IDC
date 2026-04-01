@@ -238,6 +238,8 @@ const ImpactOfInvestmentCharts = () => {
     const labels = [...allCompNames, "Total Cost"];
     const series = [];
 
+    const dynamicBarWidth = Math.max(15, 35 - (costRoiData.length - 1) * 5);
+
     costRoiData.forEach((d, scIdx) => {
       const breakdown = d.componentBreakdown || {};
       const placeholderData = [];
@@ -272,7 +274,7 @@ const ImpactOfInvestmentCharts = () => {
           tooltip: { show: false },
           data: placeholderData,
           legendHoverLink: false,
-          barWidth: 35,
+          barWidth: dynamicBarWidth,
           barGap: "30%",
         },
         {
@@ -290,7 +292,7 @@ const ImpactOfInvestmentCharts = () => {
           },
           itemStyle: { color: scColor },
           data: actualData,
-          barWidth: 35,
+          barWidth: dynamicBarWidth,
           barGap: "30%",
         },
         {
@@ -314,7 +316,7 @@ const ImpactOfInvestmentCharts = () => {
             borderWidth: 1,
           },
           data: totalData,
-          barWidth: 35,
+          barWidth: dynamicBarWidth,
           barGap: "30%",
         }
       );
@@ -441,6 +443,11 @@ const ImpactOfInvestmentCharts = () => {
   }, [roiChartRoiData]);
 
   const roiChartOptions = useMemo(() => {
+    const dynamicRoiBarWidth = Math.max(
+      20,
+      45 - (roiChartRoiData.length - 1) * 6
+    );
+
     return {
       tooltip: {
         trigger: "item",
@@ -476,7 +483,7 @@ const ImpactOfInvestmentCharts = () => {
       series: roiChartData.map((d) => ({
         name: d.name,
         type: "bar",
-        barWidth: 45,
+        barWidth: dynamicRoiBarWidth,
         emphasis: { focus: "series" },
         itemStyle: { color: d.color },
         data: [d.value],
@@ -491,7 +498,7 @@ const ImpactOfInvestmentCharts = () => {
         },
       })),
     };
-  }, [roiChartData, showRoiLabel]);
+  }, [roiChartData, roiChartRoiData, showRoiLabel]);
 
   const scenarioSegmentOptions = useMemo(() => {
     return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
