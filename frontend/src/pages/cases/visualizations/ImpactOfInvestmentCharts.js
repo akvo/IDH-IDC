@@ -256,7 +256,7 @@ const ImpactOfInvestmentCharts = () => {
       // Final Total Bar
       placeholderData.push(0);
       actualData.push("-");
-      totalData.push(currentSum);
+      totalData.push(d.totalCost || 0);
 
       const scColor = scenarioColors[scIdx % scenarioColors.length];
 
