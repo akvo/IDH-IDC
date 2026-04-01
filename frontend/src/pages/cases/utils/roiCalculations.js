@@ -301,7 +301,6 @@ export const calculateScenarioROI = (
   if (totalCost === 0) {
     return {
       roi: 0,
-      impactPercentage: 0,
       paybackPeriod: null,
       incomeImprovementPercentage: 0,
       totalIncomeImprovement,
@@ -333,9 +332,7 @@ export const calculateScenarioROI = (
       ? (totalIncomeImprovement / totalBaselineIncome) * 100
       : 0;
 
-  const roi = totalCost > 0 ? incomeImprovementPercentage / totalCost : 0;
-
-  const impactPercentage =
+  const roi =
     totalCost > 0 ? (incomeImprovementPercentage / totalCost) * 100 : 0;
 
   const paybackPeriod =
@@ -422,13 +419,15 @@ export const calculateScenarioROI = (
       paybackPeriod:
         incomeImprovement > 0 ? totalSegCost / incomeImprovement : null,
       totalCost: totalSegCost,
-      roi: totalSegCost > 0 ? incomeImprovementPercentage / totalSegCost : 0,
+      roi:
+        totalSegCost > 0
+          ? (incomeImprovementPercentage / totalSegCost) * 100
+          : 0,
     };
   });
 
   const result = {
     roi,
-    impactPercentage,
     paybackPeriod,
     incomeImprovementPercentage,
     totalIncomeImprovement,
