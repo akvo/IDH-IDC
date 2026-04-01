@@ -576,7 +576,7 @@ const ImpactOfInvestmentCharts = () => {
               key: `${segmentId}-total`,
               segmentId,
               segmentName,
-              componentName: "Distributed Total",
+              componentName: "Total Cost",
               unit: "Total Cost",
               unitType: "total",
               cost: segInv.investment_cost || 0,

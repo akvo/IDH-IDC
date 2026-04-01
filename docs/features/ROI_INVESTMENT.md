@@ -29,7 +29,7 @@ Segment_Cost = Total_Investment * (Segment_Farmers / Case_Total_Farmers)
 The ROI visualizations include:
 *   **Return on Investment (%) Chart**: A bar chart showing the calculated ROI for up to 5 scenario-segment combinations.
 *   **Scenario Cost by Component Chart**: A stacked bar chart showing the breakdown of investment costs (e.g., Training, Financing).
-*   **Segment Breakdown Table**: A detailed transparency table showing how cost multipliers (per farmer, per land unit) are applied to arrive at the final cost.
+*   **Segment Breakdown Table**: A detailed transparency table showing how cost multipliers (per farmer, per land unit) are applied to arrive at the final cost, alongside **Income Increase %** and **Payback Period** results.
 
 ### Multi-Selector Refinement
 The ROI chart supports a **Multi-Selector** allowing users to pick up to 5 specific `Scenario ::: Segment` combinations for side-by-side comparison. If no selection is made, the chart defaults to "All Segments" for all active scenarios.

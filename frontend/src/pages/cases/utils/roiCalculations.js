@@ -402,11 +402,6 @@ export const calculateScenarioROI = (
         ? totalSegCostFromComponents
         : segInv.investment_cost || 0;
 
-    // Add dummy component if no components but cost exists (for charts)
-    if (totalSegCostFromComponents === 0 && totalSegCost > 0) {
-      compBreakdown["Scenario Cost"] = totalSegCost;
-    }
-
     segmentComponentBreakdowns[segmentId] = compBreakdown;
     const incomeImprovementPercentage =
       baselineIncome > 0
