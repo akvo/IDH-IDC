@@ -80,7 +80,7 @@ const ImpactOfInvestmentCharts = () => {
           originalScenario: scenario,
         };
       })
-      .filter((d) => d && d.totalCost !== null);
+      .filter((d) => d && typeof d.roi === "number");
   }, [
     scenarioModeling.config.scenarioData,
     investmentAnalysis,
@@ -428,7 +428,7 @@ const ImpactOfInvestmentCharts = () => {
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
       name: d.displayName || d.name || `Scenario ${index + 1}`,
-      value: parseFloat((d.roi * 100).toFixed(2)),
+      value: parseFloat((d.roi || 0).toFixed(4)),
       color: scenarioColors[index % scenarioColors.length],
       order: index,
     }));
@@ -439,7 +439,7 @@ const ImpactOfInvestmentCharts = () => {
       tooltip: {
         trigger: "item",
         formatter: (params) => {
-          return `${params.marker} ${params.name}: ${params.value}%`;
+          return `${params.marker} ${params.name}: ${params.value}`;
         },
       },
       legend: {
@@ -481,7 +481,7 @@ const ImpactOfInvestmentCharts = () => {
           backgroundColor: "rgba(0,0,0,0.3)",
           color: "#fff",
           borderRadius: 2,
-          formatter: "{c}%",
+          formatter: "{c}",
         },
       })),
     };
@@ -756,10 +756,15 @@ const ImpactOfInvestmentCharts = () => {
             <Space direction="vertical" size={16}>
               <div className="section-title">Return on Investment</div>
               <div className="section-description">
-                The graphs on the right show the return on investment of your
-                scenarios. They allow you to compare the scale of impact,
-                cost-efficiency, and identify which segments benefit most
-                proportionally from the interventions.
+                The graph on the right shows the social impact of your scenarios
+                in relation to their cost. Impact is calculated as the increase
+                in income (%) divided by the cost of the scenario. In simple
+                terms, it shows by how much incomes improve for every unit of
+                currency invested.
+                <br />
+                <br />
+                It helps you assess the scale of impact, cost efficiency, and
+                which segments benefit most from the interventions.
               </div>
               <Space direction="vertical" size={8} style={{ width: "100%" }}>
                 <Select

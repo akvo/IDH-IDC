@@ -313,8 +313,6 @@ export const calculateScenarioROI = (
     };
   }
 
-  const roi = totalIncomeImprovement / totalCost;
-
   // Calculate Aggregate Metrics
   const totalBaselineIncome = scenario.scenarioValues?.reduce((acc, sv) => {
     const baselineSegment = dashboardData.find(
@@ -334,6 +332,8 @@ export const calculateScenarioROI = (
     totalBaselineIncome > 0
       ? (totalIncomeImprovement / totalBaselineIncome) * 100
       : 0;
+
+  const roi = totalCost > 0 ? incomeImprovementPercentage / totalCost : 0;
 
   const impactPercentage =
     totalCost > 0 ? (incomeImprovementPercentage / totalCost) * 100 : 0;
@@ -411,16 +411,18 @@ export const calculateScenarioROI = (
     }
 
     segmentComponentBreakdowns[segmentId] = compBreakdown;
+    const incomeImprovementPercentage =
+      baselineIncome > 0
+        ? ((scenarioIncome - baselineIncome) / baselineIncome) * 100
+        : 0;
+
     segmentMetrics[segmentId] = {
       incomeImprovement,
-      incomeImprovementPercentage:
-        baselineIncome > 0
-          ? ((scenarioIncome - baselineIncome) / baselineIncome) * 100
-          : 0,
+      incomeImprovementPercentage,
       paybackPeriod:
         incomeImprovement > 0 ? totalSegCost / incomeImprovement : null,
       totalCost: totalSegCost,
-      roi: totalSegCost > 0 ? incomeImprovement / totalSegCost : 0,
+      roi: totalSegCost > 0 ? incomeImprovementPercentage / totalSegCost : 0,
     };
   });
 
