@@ -150,7 +150,9 @@ const Login = () => {
             <div className="page-title-container">
               <Typography.Title>
                 Income Driver <br />
-                <span style={{ color: "#47d985" }}>Calculator</span>
+                <span style={{ color: "#47d985", fontSize: "2.5rem" }}>
+                  Calculator
+                </span>
               </Typography.Title>
               {!isResetPassword && (
                 <Typography.Title level={3}>

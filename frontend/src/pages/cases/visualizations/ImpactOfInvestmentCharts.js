@@ -80,7 +80,7 @@ const ImpactOfInvestmentCharts = () => {
           originalScenario: scenario,
         };
       })
-      .filter((d) => d && d.totalCost !== null);
+      .filter((d) => d && typeof d.roi === "number");
   }, [
     scenarioModeling.config.scenarioData,
     investmentAnalysis,
@@ -238,6 +238,8 @@ const ImpactOfInvestmentCharts = () => {
     const labels = [...allCompNames, "Total Cost"];
     const series = [];
 
+    const dynamicBarWidth = Math.max(15, 35 - (costRoiData.length - 1) * 5);
+
     costRoiData.forEach((d, scIdx) => {
       const breakdown = d.componentBreakdown || {};
       const placeholderData = [];
@@ -256,7 +258,7 @@ const ImpactOfInvestmentCharts = () => {
       // Final Total Bar
       placeholderData.push(0);
       actualData.push("-");
-      totalData.push(currentSum);
+      totalData.push(d.totalCost || 0);
 
       const scColor = scenarioColors[scIdx % scenarioColors.length];
 
@@ -272,6 +274,8 @@ const ImpactOfInvestmentCharts = () => {
           tooltip: { show: false },
           data: placeholderData,
           legendHoverLink: false,
+          barWidth: dynamicBarWidth,
+          barGap: "30%",
         },
         {
           name: d.displayName,
@@ -288,6 +292,8 @@ const ImpactOfInvestmentCharts = () => {
           },
           itemStyle: { color: scColor },
           data: actualData,
+          barWidth: dynamicBarWidth,
+          barGap: "30%",
         },
         {
           name: d.displayName,
@@ -310,6 +316,8 @@ const ImpactOfInvestmentCharts = () => {
             borderWidth: 1,
           },
           data: totalData,
+          barWidth: dynamicBarWidth,
+          barGap: "30%",
         }
       );
     });
@@ -428,18 +436,23 @@ const ImpactOfInvestmentCharts = () => {
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
       name: d.displayName || d.name || `Scenario ${index + 1}`,
-      value: parseFloat((d.roi * 100).toFixed(2)),
+      value: parseFloat((d.roi || 0).toFixed(4)),
       color: scenarioColors[index % scenarioColors.length],
       order: index,
     }));
   }, [roiChartRoiData]);
 
   const roiChartOptions = useMemo(() => {
+    const dynamicRoiBarWidth = Math.max(
+      20,
+      45 - (roiChartRoiData.length - 1) * 6
+    );
+
     return {
       tooltip: {
         trigger: "item",
         formatter: (params) => {
-          return `${params.marker} ${params.name}: ${params.value}%`;
+          return `${params.marker} ${params.name}: ${params.value}`;
         },
       },
       legend: {
@@ -470,7 +483,7 @@ const ImpactOfInvestmentCharts = () => {
       series: roiChartData.map((d) => ({
         name: d.name,
         type: "bar",
-        barMaxWidth: 50,
+        barWidth: dynamicRoiBarWidth,
         emphasis: { focus: "series" },
         itemStyle: { color: d.color },
         data: [d.value],
@@ -481,11 +494,11 @@ const ImpactOfInvestmentCharts = () => {
           backgroundColor: "rgba(0,0,0,0.3)",
           color: "#fff",
           borderRadius: 2,
-          formatter: "{c}%",
+          formatter: "{c}",
         },
       })),
     };
-  }, [roiChartData, showRoiLabel]);
+  }, [roiChartData, roiChartRoiData, showRoiLabel]);
 
   const scenarioSegmentOptions = useMemo(() => {
     return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
@@ -576,7 +589,7 @@ const ImpactOfInvestmentCharts = () => {
               key: `${segmentId}-total`,
               segmentId,
               segmentName,
-              componentName: "Distributed Total",
+              componentName: "Total Cost",
               unit: "Total Cost",
               unitType: "total",
               cost: segInv.investment_cost || 0,
@@ -756,10 +769,15 @@ const ImpactOfInvestmentCharts = () => {
             <Space direction="vertical" size={16}>
               <div className="section-title">Return on Investment</div>
               <div className="section-description">
-                The graphs on the right show the return on investment of your
-                scenarios. They allow you to compare the scale of impact,
-                cost-efficiency, and identify which segments benefit most
-                proportionally from the interventions.
+                The graph on the right shows the social impact of your scenarios
+                in relation to their cost. Impact is calculated as the increase
+                in income (%) divided by the cost of the scenario. In simple
+                terms, it shows by how much incomes improve for every unit of
+                currency invested.
+                <br />
+                <br />
+                It helps you assess the scale of impact, cost efficiency, and
+                which segments benefit most from the interventions.
               </div>
               <Space direction="vertical" size={8} style={{ width: "100%" }}>
                 <Select

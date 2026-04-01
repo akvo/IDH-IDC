@@ -87,12 +87,17 @@ describe("ROI Calculation Utility (Pseudocode Alignment)", () => {
     const result = calculateScenarioROI(scenario, investmentAnalysis, segments);
 
     // totalImprovement = (200 * 70) + (100 * 30) = 14000 + 3000 = 17,000
-    // totalBaseline = (1000 * 70) + (1000 * 30) = 70000 + 30000 = 100,000
-    // incomeIncreasePercentage = 17,000 / 100,000 * 100 = 17%
-    // Impact = (17% / 10,000) * 100 = 0.17
+    // totalBaseline = (1000 * 70) + (1000 * 30) = 100,000
+    // incomeImprovementPercentage = 17,000 / 100,000 * 100 = 17%
+    // New ROI = (17% / 10,000) * 100 = 0.17
     expect(result.totalIncomeImprovement).toBe(17000);
     expect(result.incomeImprovementPercentage).toBe(17);
     expect(result.totalCost).toBe(10000);
-    expect(result.impactPercentage).toBeCloseTo(0.17, 5);
+    expect(result.roi).toBeCloseTo(0.17, 6);
+
+    // Segment 1 ROI = (20% / 7000) * 100 = 0.285714
+    expect(result.segmentMetrics[1].roi).toBeCloseTo((20 / 7000) * 100, 6);
+    // Segment 2 ROI = (10% / 3000) * 100 = 0.333333
+    expect(result.segmentMetrics[2].roi).toBeCloseTo((10 / 3000) * 100, 6);
   });
 });

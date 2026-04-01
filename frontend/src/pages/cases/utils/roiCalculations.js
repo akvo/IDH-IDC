@@ -301,7 +301,6 @@ export const calculateScenarioROI = (
   if (totalCost === 0) {
     return {
       roi: 0,
-      impactPercentage: 0,
       paybackPeriod: null,
       incomeImprovementPercentage: 0,
       totalIncomeImprovement,
@@ -312,8 +311,6 @@ export const calculateScenarioROI = (
       segmentComponentBreakdowns: {},
     };
   }
-
-  const roi = totalIncomeImprovement / totalCost;
 
   // Calculate Aggregate Metrics
   const totalBaselineIncome = scenario.scenarioValues?.reduce((acc, sv) => {
@@ -335,7 +332,7 @@ export const calculateScenarioROI = (
       ? (totalIncomeImprovement / totalBaselineIncome) * 100
       : 0;
 
-  const impactPercentage =
+  const roi =
     totalCost > 0 ? (incomeImprovementPercentage / totalCost) * 100 : 0;
 
   const paybackPeriod =
@@ -405,28 +402,27 @@ export const calculateScenarioROI = (
         ? totalSegCostFromComponents
         : segInv.investment_cost || 0;
 
-    // Add dummy component if no components but cost exists (for charts)
-    if (totalSegCostFromComponents === 0 && totalSegCost > 0) {
-      compBreakdown["Scenario Cost"] = totalSegCost;
-    }
-
     segmentComponentBreakdowns[segmentId] = compBreakdown;
+    const incomeImprovementPercentage =
+      baselineIncome > 0
+        ? ((scenarioIncome - baselineIncome) / baselineIncome) * 100
+        : 0;
+
     segmentMetrics[segmentId] = {
       incomeImprovement,
-      incomeImprovementPercentage:
-        baselineIncome > 0
-          ? ((scenarioIncome - baselineIncome) / baselineIncome) * 100
-          : 0,
+      incomeImprovementPercentage,
       paybackPeriod:
         incomeImprovement > 0 ? totalSegCost / incomeImprovement : null,
       totalCost: totalSegCost,
-      roi: totalSegCost > 0 ? incomeImprovement / totalSegCost : 0,
+      roi:
+        totalSegCost > 0
+          ? (incomeImprovementPercentage / totalSegCost) * 100
+          : 0,
     };
   });
 
   const result = {
     roi,
-    impactPercentage,
     paybackPeriod,
     incomeImprovementPercentage,
     totalIncomeImprovement,

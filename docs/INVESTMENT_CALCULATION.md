@@ -38,7 +38,12 @@ Cost is defined independently for each segment.
 - `income_increase` = `scenario_net_income - baseline_net_income`
 - `income_increase_percentage` = `income_increase / baseline_net_income * 100`
 
-### 2.2 Impact of Investment
-`impact_of_investment = income_increase_percentage / total_cost_segment * 100`
+### 2.2 Return on Investment (ROI)
+The ROI is defined as the social impact relative to the investment cost.
+`roi_percentage = (income_increase_percentage / total_cost_segment) * 100`
 
-**Note**: All input values and results should adhere to strict 2-decimal precision for visual consistency.
+### 2.3 Payback Period
+The payback period represents how long it takes to recover the investment cost through the absolute income increase.
+`payback_period = total_cost_segment / (income_increase * segment_farmers)`
+
+**Note**: All input values and results should adhere to 2-decimal precision for visual consistency.
