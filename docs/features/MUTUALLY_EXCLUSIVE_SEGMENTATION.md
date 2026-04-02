@@ -83,12 +83,28 @@ No database schema changes are required for the "Low-Effort" implementation.
 
 ## 📊 Example Scenarios
 
-### Scenario 1: Switching from Manual to Upload
-1. User defines 3 segments in "Manual data input".
-2. User clicks "Data upload" tab.
-3. System shows: "Switching to Data Upload will clear your manual segments. Continue?"
-4. User clicks "Confirm".
-5. Manual segments are cleared; Upload tab becomes active.
+### Scenario 1: Manual to Upload Switch
+1.  **State**: User has defined 4 segments manually in the "Manual data input" tab.
+2.  **Action**: User clicks the "Data upload" tab.
+3.  **System Response**: A `Modal.confirm` appears: *"Switching to Data Upload will clear your manual segments to ensure the 5-segment limit is respected. Do you want to continue?"*
+4.  **Confirmation**: User clicks "Confirm".
+5.  **Result**: Manual segments are cleared from form state. The "Data upload" tab becomes active and empty.
+
+### Scenario 2: Upload to Manual Switch
+1.  **State**: User has successfully uploaded a file and generated 5 segments.
+2.  **Action**: User clicks the "Manual data input" tab.
+3.  **System Response**: A `Modal.confirm` appears: *"Switching to Manual Data Input will detach your uploaded data. You will need to define segments manually. Do you want to continue?"*
+4.  **Confirmation**: User clicks "Confirm".
+5.  **Result**: `import_id` is cleared from form state. The "Manual data input" tab becomes active and allows "Add Segment" actions.
+
+### Scenario 3: Guarded / Read-Only View
+1.  **State**: User opens an existing case that was created via Data Upload (`import_id` is present).
+2.  **Action**: User navigates to the "Manual data input" tab to see the segment list.
+3.  **System Response**:
+    - An `Alert` (Info) is displayed at the top: *"These segments were generated via Data Upload. To modify the segmentation, please return to the Data Upload tab."*
+    - The "Add Segment" button is **disabled**.
+    - The "Delete" icons on individual segment rows are **disabled** or hidden.
+4.  **Result**: Data integrity is maintained by forcing the user back to the original source for modifications.
 
 ---
 
