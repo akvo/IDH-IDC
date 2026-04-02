@@ -51,14 +51,26 @@ No database schema changes are required for the "Low-Effort" implementation.
 
 ## 🔧 Implementation Details
 
-### Phase 1: Frontend Guards & State Logic
-- [ ] **Tab Interception**: Update `CaseForm.js` to use `Modal.confirm` on `onTabChange`.
-- [ ] **State Reset**: Clear the relevant form fields (`segments` vs `import_id`) upon confirmed switch.
-- [ ] **Read-Only Implementation**: Add `Alert` components to `SegmentForm.js` and `SegmentConfigurationForm.js` to explain restricted states.
-- [ ] **Button Disabling**: Disable "Add Segment" and "Delete" buttons in `SegmentForm` if `import_id` exists.
+### Optimized 8-Hour Roadmap
+To achieve mutual exclusivity with minimal backend modification, the following sub-steps will be implemented:
 
-### Phase 2: Backend Consistency
-- [ ] **CRUD Alignment**: Update the backend case update handler to ensure any existing `CaseImport` links are removed if a case is saved with `import_id = null`.
+| Phase | Task | Effort | Source / Strategy |
+| :--- | :--- | :--- | :--- |
+| **1. Tab Interception** | Implement `handleTabChange` with `Modal.confirm` in `CaseForm.js`. | 1.5h | Guard the Manual ↔ Upload switch. |
+| **2. State Management** | Logic to clear `import_id` or `segments[]` on confirmed switch. | 1.0h | Reset form state for the "competing" source. |
+| **3. UI Source Guards** | Add `Alert` and disable `Add Segment` buttons in the Manual tab. | 1.5h | High-level protection for upload-based cases. |
+| **4. Re-upload guidance**| Implement "Unlock" prompt in `DataUploadSegmentForm` for new sessions. | 2.0h | Handle cases where `import_id` exists but the file is not in memory. |
+| **5. Backend Clear** | Update the Case update service/router to clear import links. | 1.0h | Ensure manual saves detach previous imports. |
+| **6. Verification** | QA of switch paths (Manual to Upload, Upload to Manual). | 1.0h | Final testing and rule compliance check. |
+
+---
+
+### Technical Sub-tasks
+- [ ] **Tab Interception**: Update `CaseForm.js` to use `Modal.confirm` on `onTabChange`.
+- [ ] **State Reset**: Clear relevant form fields (`segments` vs `import_id`) upon confirmed switch.
+- [ ] **Read-Only Implementation**: Add `Alert` components to restricted views.
+- [ ] **Button Disabling**: Disable "Add Segment" and "Delete" icons in `SegmentForm` if `import_id` exists.
+- [ ] **CRUD Alignment**: Backend update to ensure `CaseImport` records are decoupled if `import_id` is null.
 
 ---
 
