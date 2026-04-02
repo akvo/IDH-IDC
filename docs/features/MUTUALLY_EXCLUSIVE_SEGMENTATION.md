@@ -51,7 +51,7 @@ No database schema changes are required for the "Low-Effort" implementation.
 
 ## 🔧 Implementation Details
 
-### Optimized 8-Hour Roadmap
+### Optimized Roadmap
 To achieve mutual exclusivity with minimal backend modification, the following sub-steps will be implemented:
 
 | Phase | Task | Effort | Source / Strategy |
