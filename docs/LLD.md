@@ -64,7 +64,7 @@ These entities manage the primary modeling lifecycle (Steps 1-5).
 | **SegmentAnswer** | Storage for Current/Feasible values mapped to Question IDs. |
 | **Visualization** | JSON configuration for Step 5 dashboards (ROI, Outcome charts). |
 | **CaseCommodity** | Junction table for cases with diversified/multiple commodities. |
-| **CaseImport** | Metadata for uploaded Excel templates. |
+| **CaseImport** | Metadata for uploaded Excel templates; presence determines source (`import_id != null` => Upload). |
 
 ### B. Reference & Calculation Data
 Stateless masters used for calculation engine defaults.
@@ -112,6 +112,7 @@ The backend generates a `config.min.js` file at runtime (`core/config.py`). This
 - **Local State**: `useState` for UI-only toggles.
 - **Shared State**: Proprietary hooks for Case/Segment synchronization across modelling steps.
 - **Persistence**: Temporary data held in memory; persistent state synced to Backend on "Save Case".
+- **Segmentation Mutual Exclusivity**: Segmentation is restricted to a single source (Manual OR Upload). The `CaseForm.js` component enforces this via confirmation guards and destructive state clearing during tab switches.
 
 ### Service Layer
 Located in `frontend/src/lib/`, the network layer abstracts Axios calls into dedicated service functions. No direct Axios usage is allowed inside components.
@@ -130,6 +131,22 @@ Located in `frontend/src/lib/`, the network layer abstracts Axios calls into ded
 | Manage All Users | ✅ | ❌ | ❌ |
 | Access ROI Charts | ✅ | ✅ | ✅ |
 | Export Data | ✅ | ✅ | ✅ |
+
+---
+
+## 6. Feature Specifications
+
+To maintain a clean architectural blueprint, detailed feature logic is documented in standalone specification files.
+
+| Feature Area | Key Specification Document | Coverage |
+| :--- | :--- | :--- |
+| **Segmentation** | [MUTUALLY_EXCLUSIVE_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/MUTUALLY_EXCLUSIVE_SEGMENTATION.md) | Source-of-truth guards, Tab switches. |
+| **ROI Analysis** | [ROI_INVESTMENT.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/ROI_INVESTMENT.md) | Calculations, Multipliers, ROI Charts. |
+| **Modelling Tools** | [ADVANCED_MODELLING.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/ADVANCED_MODELLING.md) | Sensitivity Analysis, Step 5 Logic. |
+| **Income Analysis** | [INCOME_GAP_ANALYSIS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/INCOME_GAP_ANALYSIS.md) | Gap Allocation, Composition Charts. |
+| **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
+| **Permissions** | [PERMISSIONS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
+| **Case UX** | [CASE_MANAGEMENT_UX.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/CASE_MANAGEMENT_UX.md) | Save Guards, Cleanup scripts. |
 
 ---
 
