@@ -45,44 +45,11 @@ export const getLandArea = (segment) => {
   return childKey ? parseFloat(segment.answers[childKey]) || 0 : 0;
 };
 
-/**
- * Recalculates whole segment income based on driver answers (Object format)
- * This logic is extracted from ScenarioModelingIncomeDriversAndChart.js
- */
-export const calculateIncomeFromDrivers = (
-  segment,
-  currentCase,
-  questionGroups,
-  totalIncomeQuestions
-) => {
-  if (!segment || !segment.answers || isEmpty(segment.answers)) {
-    return 0;
-  }
-
-  const answers = segment.answers;
-
-  // Identification of aggregator questions (following the logic of ScenarioModelingIncomeDriversAndChart)
-  // Calculate Total Current Income (Sum of top-level aggregators)
-  // We use the same 'current-[qs]' key pattern as the UI component
-  // totalIncomeQuestions is an array of strings like "101-1"
-  const totalCurrentIncomeAnswer = (totalIncomeQuestions || [])
-    .map((qs) => {
-      const val = answers[`current-${qs}`];
-      return typeof val !== "undefined" ? parseFloat(val) : 0;
-    })
-    .reduce((acc, a) => acc + a, 0);
-
-  return totalCurrentIncomeAnswer;
-};
-
 export const calculateScenarioROI = (
   scenario,
   investmentAnalysis,
   segments = [],
-  dashboardData = [],
-  currentCase = null,
-  questionGroups = [],
-  totalIncomeQuestions = []
+  dashboardData = []
 ) => {
   if (!scenario || !investmentAnalysis?.is_enabled) {
     return null;
@@ -123,28 +90,10 @@ export const calculateScenarioROI = (
 
     const farmerCount = segment.number_of_farmers || 0;
 
-    // Use pre-calculated values if available, otherwise compute on the fly
-    const baselineIncome =
-      sv.currentSegmentValue?.total_current_income ||
-      baselineSegment?.total_current_income ||
-      0;
-
-    let scenarioIncome = sv.updatedSegmentScenarioValue?.total_current_income;
-
-    // IF scenarioIncome is missing (drawer not opened), calculate it from drivers
-    if (typeof scenarioIncome === "undefined" && sv.updatedSegment) {
-      scenarioIncome = calculateIncomeFromDrivers(
-        sv.updatedSegment,
-        currentCase,
-        questionGroups,
-        totalIncomeQuestions
-      );
-    }
-
-    // Final fallback to baseline if still undefined
-    if (typeof scenarioIncome === "undefined") {
-      scenarioIncome = baselineIncome;
-    }
+    // Use pre-calculated values (Single Source of Truth)
+    const baselineIncome = baselineSegment?.total_current_income || 0;
+    const scenarioIncome =
+      sv.updatedSegmentScenarioValue?.total_current_income ?? baselineIncome;
 
     const netIncomeChange = scenarioIncome - baselineIncome;
     totalIncomeImprovement += netIncomeChange * farmerCount;
@@ -354,25 +303,9 @@ export const calculateScenarioROI = (
 
     const farmerCount = segment.number_of_farmers || 0;
 
-    const baselineIncome =
-      sv.currentSegmentValue?.total_current_income ||
-      baselineSegment?.total_current_income ||
-      0;
-
-    let scenarioIncome = sv.updatedSegmentScenarioValue?.total_current_income;
-
-    if (typeof scenarioIncome === "undefined" && sv.updatedSegment) {
-      scenarioIncome = calculateIncomeFromDrivers(
-        sv.updatedSegment,
-        currentCase,
-        questionGroups,
-        totalIncomeQuestions
-      );
-    }
-
-    if (typeof scenarioIncome === "undefined") {
-      scenarioIncome = baselineIncome;
-    }
+    const baselineIncome = baselineSegment?.total_current_income || 0;
+    const scenarioIncome =
+      sv.updatedSegmentScenarioValue?.total_current_income ?? baselineIncome;
 
     const incomeImprovement = (scenarioIncome - baselineIncome) * farmerCount;
 

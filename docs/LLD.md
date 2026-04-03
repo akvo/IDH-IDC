@@ -111,6 +111,7 @@ The backend generates a `config.min.js` file at runtime (`core/config.py`). This
 ### State Management
 - **Local State**: `useState` for UI-only toggles.
 - **Shared State**: Proprietary hooks for Case/Segment synchronization across modelling steps.
+- **Single Source of Truth (SSOT)**: Establishing `dashboardData` (Baseline) and `scenarioOutcomeDataSource` (Scenario) as global state targets. The `useScenarioCalculations` hook centralizes all income scenario math, ensuring consistency between Step 4 modeling and Step 5 ROI charts.
 - **Persistence**: Temporary data held in memory; persistent state synced to Backend on "Save Case".
 - **Segmentation Mutual Exclusivity**: Segmentation is restricted to a single source (Manual OR Upload). The `CaseForm.js` component enforces this via confirmation guards and destructive state clearing during tab switches.
 

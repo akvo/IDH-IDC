@@ -68,10 +68,7 @@ const ImpactOfInvestmentCharts = () => {
           scenario,
           investmentAnalysis,
           currentCase.segments || [], // All segments for headcount
-          dashboardData,
-          currentCase,
-          questionGroups,
-          totalIncomeQuestions
+          dashboardData
         );
         return {
           key: scenario.key,
@@ -85,9 +82,7 @@ const ImpactOfInvestmentCharts = () => {
     scenarioModeling.config.scenarioData,
     investmentAnalysis,
     dashboardData,
-    currentCase,
-    questionGroups,
-    totalIncomeQuestions,
+    currentCase.segments,
   ]);
 
   useEffect(() => {
@@ -436,7 +431,7 @@ const ImpactOfInvestmentCharts = () => {
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
       name: d.displayName || d.name || `Scenario ${index + 1}`,
-      value: parseFloat((d.roi || 0).toFixed(6)),
+      value: parseFloat((d.roi || 0).toFixed(8)),
       color: scenarioColors[index % scenarioColors.length],
       order: index,
     }));

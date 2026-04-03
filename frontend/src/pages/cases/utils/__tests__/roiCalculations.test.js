@@ -50,7 +50,17 @@ describe("ROI Calculation Utility (Spreadsheet Benchmark #757)", () => {
       },
     };
 
-    const result = calculateScenarioROI(scenario, investmentAnalysis, segments);
+    const dashboardData = scenario.scenarioValues.map((sv) => ({
+      id: sv.segmentId,
+      total_current_income: sv.currentSegmentValue.total_current_income,
+    }));
+
+    const result = calculateScenarioROI(
+      scenario,
+      investmentAnalysis,
+      segments,
+      dashboardData
+    );
 
     // Benchmarks from Spreadsheet Table 1
     // Company A: ROI 0.00005448
@@ -78,7 +88,17 @@ describe("ROI Calculation Utility (Spreadsheet Benchmark #757)", () => {
       },
     };
 
-    const result = calculateScenarioROI(scenario, investmentAnalysis, segments);
+    const dashboardData = scenario.scenarioValues.map((sv) => ({
+      id: sv.segmentId,
+      total_current_income: sv.currentSegmentValue.total_current_income,
+    }));
+
+    const result = calculateScenarioROI(
+      scenario,
+      investmentAnalysis,
+      segments,
+      dashboardData
+    );
 
     // Total Farmers = 200 + 305 + 190 + 360 = 1,055
     // Company A Cost = (200 / 1055) * 35700 = 6,767.7725

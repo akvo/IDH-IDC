@@ -23,6 +23,7 @@ import { isEmpty, orderBy } from "lodash";
 import { customFormula } from "../../lib/formula";
 import { adminRole } from "../../store/static";
 import { handleQuestionType } from "./utils";
+import useScenarioCalculations from "./hooks/useScenarioCalculations";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const masterCommodityCategories = window.master?.commodity_categories || [];
@@ -97,6 +98,7 @@ const Case = () => {
     CaseVisualState.useState((s) => s);
 
   const userState = UserState.useState((s) => s);
+  useScenarioCalculations();
 
   const updateStepIncomeTargetState = (key, value) => {
     CaseUIState.update((s) => {

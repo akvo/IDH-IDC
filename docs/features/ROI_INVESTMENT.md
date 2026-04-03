@@ -47,6 +47,8 @@ The inline ROI segment selector (Radio Group) is bidirectionally synchronized wi
 ---
 
 ## 5. Technical Implementation References
-*   **Calculations**: `frontend/src/pages/cases/utils/roiCalculations.js`
+*   **State Hook**: `frontend/src/pages/cases/hooks/useScenarioCalculations.js` (SSOT recalculation)
+*   **Logical Utility**: `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`
+*   **ROI Calculations**: `frontend/src/pages/cases/utils/roiCalculations.js`
 *   **Visualization**: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`
 *   **Form Logic**: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`
