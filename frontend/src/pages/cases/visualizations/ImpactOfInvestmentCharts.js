@@ -436,7 +436,7 @@ const ImpactOfInvestmentCharts = () => {
   const roiChartData = useMemo(() => {
     return roiChartRoiData.map((d, index) => ({
       name: d.displayName || d.name || `Scenario ${index + 1}`,
-      value: parseFloat((d.roi || 0).toFixed(4)),
+      value: parseFloat((d.roi || 0).toFixed(6)),
       color: scenarioColors[index % scenarioColors.length],
       order: index,
     }));
@@ -475,9 +475,9 @@ const ImpactOfInvestmentCharts = () => {
       },
       yAxis: {
         type: "value",
-        name: "ROI (%)",
+        name: "ROI",
         axisLabel: {
-          formatter: "{value}%",
+          formatter: "{value}",
         },
       },
       series: roiChartData.map((d) => ({
@@ -800,12 +800,12 @@ const ImpactOfInvestmentCharts = () => {
           </Col>
           <Col span={14}>
             <VisualCardWrapper
-              title="Return on Investment (%)"
+              title="Return on Investment"
               bordered
               showLabel={showRoiLabel}
               setShowLabel={setShowRoiLabel}
               exportElementRef={roiCardRef}
-              exportFilename="Return on Investment (%)"
+              exportFilename="Return on Investment"
             >
               <Chart
                 wrapper={false}

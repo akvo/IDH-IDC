@@ -1,64 +1,50 @@
 const { calculateScenarioROI } = require("../roiCalculations");
 
-describe("ROI Calculation Utility (Pseudocode Alignment)", () => {
+describe("ROI Calculation Utility (Spreadsheet Benchmark #757)", () => {
   const segments = [
-    {
-      id: 1,
-      number_of_farmers: 70,
-      answers: { "current-1-2": 10 }, // 10 Ha land size for Segment A
-    },
-    {
-      id: 2,
-      number_of_farmers: 30,
-      answers: { "current-1-2": 5 }, // 5 Ha land size for Segment B
-    },
+    { id: "A", name: "Company A", number_of_farmers: 200, answers: {} },
+    { id: "B", name: "Company B", number_of_farmers: 305, answers: {} },
+    { id: "F", name: "Female", number_of_farmers: 190, answers: {} },
+    { id: "M", name: "Male", number_of_farmers: 360, answers: {} },
   ];
 
   const scenario = {
     key: "scenario1",
     scenarioValues: [
       {
-        segmentId: 1,
-        currentSegmentValue: { total_current_income: 1000 },
-        updatedSegmentScenarioValue: { total_current_income: 1200 }, // +200 per farmer
+        segmentId: "A",
+        currentSegmentValue: { total_current_income: 274857.2 },
+        updatedSegmentScenarioValue: { total_current_income: 276804.0 }, // Delta 1946.8
       },
       {
-        segmentId: 2,
-        currentSegmentValue: { total_current_income: 1000 },
-        updatedSegmentScenarioValue: { total_current_income: 1100 }, // +100 per farmer
+        segmentId: "B",
+        currentSegmentValue: { total_current_income: 264328.2 },
+        updatedSegmentScenarioValue: { total_current_income: 265561.0 }, // Delta 1232.8
+      },
+      {
+        segmentId: "F",
+        currentSegmentValue: { total_current_income: 273732.2 },
+        updatedSegmentScenarioValue: { total_current_income: 274808.0 }, // Delta 1075.8
+      },
+      {
+        segmentId: "M",
+        currentSegmentValue: { total_current_income: 266432.5 },
+        updatedSegmentScenarioValue: { total_current_income: 267519.0 }, // Delta 1086.5
       },
     ],
   };
 
-  test("All Farmers - Total Cost (distributed by farmer ratio)", () => {
+  test("Direct Cost Benchmark (Table 1 from Spreadsheet)", () => {
     const investmentAnalysis = {
       is_enabled: true,
       scenarios: {
         scenario1: {
-          cost_allocation_mode: "all_farmers",
-          all_farmers_config: { investment_cost: 10000, cost_unit: "total" },
-        },
-      },
-    };
-
-    const result = calculateScenarioROI(scenario, investmentAnalysis, segments);
-
-    // Segment 1 (70/100) should get 7,000
-    // Segment 2 (30/100) should get 3,000
-    expect(result.investmentPerSegment[1].investment_cost).toBe(7000);
-    expect(result.investmentPerSegment[2].investment_cost).toBe(3000);
-    expect(result.totalCost).toBe(10000);
-  });
-
-  test("All Farmers - Per Land Unit (direct area-based calculation)", () => {
-    const investmentAnalysis = {
-      is_enabled: true,
-      scenarios: {
-        scenario1: {
-          cost_allocation_mode: "all_farmers",
-          all_farmers_config: {
-            investment_cost: 10,
-            cost_unit: "per_land_unit",
+          cost_allocation_mode: "per_segment",
+          segments: {
+            A: { investment_cost: 13000, cost_unit: "total" },
+            B: { investment_cost: 6500, cost_unit: "total" },
+            F: { investment_cost: 7200, cost_unit: "total" },
+            M: { investment_cost: 9000, cost_unit: "total" },
           },
         },
       },
@@ -66,38 +52,58 @@ describe("ROI Calculation Utility (Pseudocode Alignment)", () => {
 
     const result = calculateScenarioROI(scenario, investmentAnalysis, segments);
 
-    // Segment A Area = 70 * 10 = 700 units. Cost = 700 * 10 = 7,000
-    // Segment B Area = 30 * 5 = 150 units. Cost = 150 * 10 = 1,500
-    expect(result.investmentPerSegment[1].investment_cost).toBe(7000);
-    expect(result.investmentPerSegment[2].investment_cost).toBe(1500);
-    expect(result.totalCost).toBe(8500);
+    // Benchmarks from Spreadsheet Table 1
+    // Company A: ROI 0.00005448
+    // Company B: ROI 0.00007175
+    // Female: ROI 0.00005458
+    // Male: ROI 0.00004531
+
+    expect(result.segmentMetrics["A"].roi).toBeCloseTo(0.00005448, 8);
+    expect(result.segmentMetrics["B"].roi).toBeCloseTo(0.00007175, 8);
+    expect(result.segmentMetrics["F"].roi).toBeCloseTo(0.00005458, 8);
+    expect(result.segmentMetrics["M"].roi).toBeCloseTo(0.00004531, 8);
   });
 
-  test("Impact of Investment (ROI) calculation formula", () => {
+  test("Proportional Cost Benchmark (Table 2 from Spreadsheet)", () => {
     const investmentAnalysis = {
       is_enabled: true,
       scenarios: {
         scenario1: {
           cost_allocation_mode: "all_farmers",
-          all_farmers_config: { investment_cost: 10000, cost_unit: "total" },
+          all_farmers_config: {
+            investment_cost: 35700,
+            cost_unit: "total",
+          },
         },
       },
     };
 
     const result = calculateScenarioROI(scenario, investmentAnalysis, segments);
 
-    // totalImprovement = (200 * 70) + (100 * 30) = 14000 + 3000 = 17,000
-    // totalBaseline = (1000 * 70) + (1000 * 30) = 100,000
-    // incomeImprovementPercentage = 17,000 / 100,000 * 100 = 17%
-    // New ROI = (17% / 10,000) * 100 = 0.17
-    expect(result.totalIncomeImprovement).toBe(17000);
-    expect(result.incomeImprovementPercentage).toBe(17);
-    expect(result.totalCost).toBe(10000);
-    expect(result.roi).toBeCloseTo(0.17, 6);
+    // Total Farmers = 200 + 305 + 190 + 360 = 1,055
+    // Company A Cost = (200 / 1055) * 35700 = 6,767.7725
+    // Company B Cost = (305 / 1055) * 35700 = 10,320.8530
+    // Female Cost = (190 / 1055) * 35700 = 6,429.3838
+    // Male Cost = (360 / 1055) * 35700 = 12,181.9905
 
-    // Segment 1 ROI = (20% / 7000) * 100 = 0.285714
-    expect(result.segmentMetrics[1].roi).toBeCloseTo((20 / 7000) * 100, 6);
-    // Segment 2 ROI = (10% / 3000) * 100 = 0.333333
-    expect(result.segmentMetrics[2].roi).toBeCloseTo((10 / 3000) * 100, 6);
+    expect(result.investmentPerSegment["A"].investment_cost).toBeCloseTo(
+      6767.77,
+      2
+    );
+    expect(result.investmentPerSegment["B"].investment_cost).toBeCloseTo(
+      10320.85,
+      2
+    );
+
+    // ROI Benchmarks from Spreadsheet Table 2
+    // Company A: 0.000104657
+    // Company B: 0.000045189
+    // Female: 0.000061127
+    // Male: 0.000033475
+
+    expect(result.segmentMetrics["A"].roi).toBeCloseTo(0.000104657, 9);
+    expect(result.segmentMetrics["B"].roi).toBeCloseTo(0.000045189, 9);
+    expect(result.segmentMetrics["F"].roi).toBeCloseTo(0.000061127, 9);
+    expect(result.segmentMetrics["M"].roi).toBeCloseTo(0.000033475, 9);
   });
 });
