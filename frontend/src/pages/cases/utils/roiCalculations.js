@@ -6,7 +6,6 @@
  * Total Net Income improvement = Sum over all segments:
  *   ( (Scenario Net Income - Baseline Net Income) * Number of Farmers in segment )
  */
-import { isEmpty } from "lodash";
 
 export const getLandArea = (segment) => {
   if (!segment?.answers) {

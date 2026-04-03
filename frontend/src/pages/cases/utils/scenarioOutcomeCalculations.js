@@ -36,8 +36,7 @@ export const outcomeIndicator = [
 export const calculateOutcomeData = (
   scenarioData = [],
   dashboardData = [],
-  questionGroups = [],
-  totalIncomeQuestions = []
+  questionGroups = []
 ) => {
   const allQuestions = uniqBy(
     questionGroups.flatMap((qg) => flatten(qg.questions)),
@@ -46,7 +45,7 @@ export const calculateOutcomeData = (
 
   const allScenarioOutcomes = dashboardData.map((currentDashboardData) => {
     const data = outcomeIndicator.map((ind) => {
-      let res = { id: ind.key, title: ind.name };
+      const res = { id: ind.key, title: ind.name };
 
       // 1. Number of Farmers
       if (ind.key === "number_of_farmers") {
@@ -75,8 +74,7 @@ export const calculateOutcomeData = (
           const scenarioDriverValues = scenarioSegment?.selectedDrivers
             ?.filter((d) => d.value)
             ?.map((driver) => {
-              const [, scenarioKey, segmentIdFromField, index] =
-                driver.field.split("-");
+              const [, , , index] = driver.field.split("-");
               const fieldKey = `${sd.key}-${scenarioSegment.segmentId}-${index}`;
               const absoluteField = `absolute-${fieldKey}`;
               const percentageField = `percentage-${fieldKey}`;

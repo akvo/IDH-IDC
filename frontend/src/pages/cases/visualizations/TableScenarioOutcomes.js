@@ -1,43 +1,10 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useRef } from "react";
 import { Table, Select, Row, Col, Space } from "antd";
 import { VisualCardWrapper } from "../components";
 import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { flatten } from "../../../lib";
-import { uniqBy, isEmpty, orderBy } from "lodash";
+import { orderBy } from "lodash";
 import { CheckCircleTwoTone, CloseCircleTwoTone } from "@ant-design/icons";
-import { thousandFormatter } from "../../../components/chart/options/common";
-
-const outcomeIndicator = [
-  {
-    key: "number_of_farmers",
-    name: "How many farmers are in this segment?",
-  },
-  {
-    key: "income_driver",
-    name: "What income drivers have changed?",
-  },
-  {
-    key: "income_gap",
-    name: "How big is the income gap?",
-  },
-  {
-    key: "income_target_reached",
-    name: "Is the income target reached?",
-  },
-  {
-    key: "income_increase",
-    name: "What is the income increase?",
-  },
-  {
-    key: "income_increase_percentage",
-    name: "What is the % income increase?",
-  },
-  {
-    key: "monetary_value_income_gap",
-    name: "What is the monetary value of the income gap?",
-  },
-];
 
 const incomeTargetIcon = {
   reached: (
@@ -55,8 +22,7 @@ const TableScenarioOutcomes = ({
   summaryScenarioOutcomeDataSource = [],
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { scenarioModeling, questionGroups, dashboardData } =
-    CaseVisualState.useState((s) => s);
+  const { scenarioModeling } = CaseVisualState.useState((s) => s);
   const { scenarioData, scenarioOutcomeDataSource } = scenarioModeling.config;
 
   const [selectedSegment, setSelectedSegment] = useState(null);
