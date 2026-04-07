@@ -37,7 +37,9 @@ def list_courses(
                         "id": course_data.get("courseId"),
                         "title": course_data.get("title"),
                         "chapterCount": len(course_data.get("chapters", [])),
-                        "description": f"Learn about {course_data.get('title')}.",
+                        "description": (
+                            f"Learn about {course_data.get('title')}."
+                        ),
                     }
                 )
     return courses
@@ -86,13 +88,18 @@ def sync_progress(
     if not course_id:
         raise HTTPException(status_code=400, detail="courseId is required")
 
+    existing_course_progress = current_progress.get(course_id, {})
+    new_completed_status = payload.get("completed", False)
+
+    # Don't downgrade completed status if it was already true
+    if existing_course_progress.get("completed"):
+        new_completed_status = True
+
     current_progress[course_id] = {
         "lastChapterId": payload.get("chapterId"),
-        "score": payload.get("score"),
-        "completed": payload.get("completed", False),
-        "timestamp": payload.get(
-            "timestamp"
-        ),  # Frontend can provide this or we use now
+        "score": payload.get("score", existing_course_progress.get("score")),
+        "completed": new_completed_status,
+        "timestamp": payload.get("timestamp"),
     }
 
     with open(progress_path, "w") as f:

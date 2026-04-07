@@ -78,6 +78,24 @@ const CoursePlayer = () => {
     fetchCourse();
   }, [courseId]);
 
+  // Sync progress as soon as course/chapter is loaded (mark as In Progress)
+  useEffect(() => {
+    if (course && course.chapters && course.chapters[currentChapterIndex]) {
+      const initialSync = async () => {
+        try {
+          await AcademyService.syncProgress({
+            courseId,
+            chapterId: course.chapters[currentChapterIndex].id,
+            completed: false, // Mark as started but not yet completed
+          });
+        } catch (err) {
+          console.error("Initial progress sync failed:", err);
+        }
+      };
+      initialSync();
+    }
+  }, [course, currentChapterIndex, courseId]);
+
   const onChapterSelect = ({ key }) => {
     setCurrentChapterIndex(parseInt(key));
     setShowQuiz(false);
