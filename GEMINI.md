@@ -16,6 +16,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **IDC Academy LMS Implementation (#759) - [COMPLETED]**:
+        - Transformed the IDC Academy from a Proof-of-Concept to a production-ready module with granular progress tracking.
+        - Implemented a structured backend schema in `academy.py` supporting `completed_chapters`, `quiz_scores`, and `is_completed`.
+        - Added a backward-compatibility layer and automated JSON normalization for legacy progress data in `1.json`.
+        - Refactored the frontend `CoursePlayer` to dynamically calculate progress percentages and handle nested module states.
+        - Modularized the assessment experience by extracting `QuizTimer` as a standalone component in `components/`.
+        - Overhauled the UI/UX with minimalist branded elevation for Library cards and a premium, results-oriented Quiz Card with circular metrics and trophy visuals.
+        - Verified 100% lint-clean status (`yarn lint` and `flake8`) and validated the instructionally sound learning loop.
+    - Path: `backend/routes/academy.py`, `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/AcademyLibrary.js`, `frontend/src/pages/academy/components/QuizTimer.js`.
     - **ROI Multi-Scenario & Calculation Fix (#755) - [COMPLETED]**:
         - Implemented a multi-selector in Step 5 for side-by-side waterfall comparison of up to 5 scenario-segment combinations.
         - Centralized ROI and Income aggregation logic in `roiCalculations.js`, decoupling it from UI component mounting state.
