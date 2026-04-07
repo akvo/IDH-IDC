@@ -64,17 +64,19 @@ const AcademyLibrary = () => {
               extra={
                 <Tag
                   color={
-                    progress[course.id]?.status === "completed"
+                    progress[course.id]?.is_completed
                       ? "success"
-                      : progress[course.id]?.status === "in-progress"
+                      : progress[course.id]?.current_chapter_id ||
+                        progress[course.id]?.completed_chapters?.length > 0
                       ? "processing"
                       : "default"
                   }
                   style={{ borderRadius: "10px", padding: "0 12px" }}
                 >
-                  {progress[course.id]?.status === "completed"
+                  {progress[course.id]?.is_completed
                     ? "Completed"
-                    : progress[course.id]?.status === "in-progress"
+                    : progress[course.id]?.current_chapter_id ||
+                      progress[course.id]?.completed_chapters?.length > 0
                     ? "In Progress"
                     : "Available"}
                 </Tag>
@@ -89,9 +91,10 @@ const AcademyLibrary = () => {
                     navigate(`${routePath.idc.academy}/${course.id}`)
                   }
                 >
-                  {progress[course.id]?.status === "completed"
+                  {progress[course.id]?.is_completed
                     ? "Review Course"
-                    : progress[course.id]?.status === "in-progress"
+                    : progress[course.id]?.current_chapter_id ||
+                      progress[course.id]?.completed_chapters?.length > 0
                     ? "Continue Learning"
                     : "Start Course"}
                 </Button>,

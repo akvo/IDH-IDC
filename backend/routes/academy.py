@@ -62,14 +62,28 @@ def get_progress(
     with open(progress_path, "r") as f:
         data = json.load(f)
 
-        # Inject status for backward compatibility with older records
+        # Backward compatibility / Data normalization
+        normalized = {}
         for course_id, p in data.items():
-            if "status" not in p:
-                p["status"] = (
-                    "completed" if p.get("completed") else "in-progress"
-                )
+            # If it's the old flat structure (missing course_id), migrate to new schema
+            if "course_id" not in p:
+                normalized[course_id] = {
+                    "course_id": course_id,
+                    "current_chapter_id": p.get("lastChapterId"),
+                    "completed_chapters": (
+                        [p.get("lastChapterId")] if p.get("completed") else []
+                    ),
+                    "quiz_scores": (
+                        {p.get("lastChapterId"): p.get("score")}
+                        if p.get("score") is not None
+                        else {}
+                    ),
+                    "is_completed": p.get("completed", False),
+                }
+            else:
+                normalized[course_id] = p
 
-        return data
+        return normalized
 
 
 @academy_route.post("/progress")
@@ -92,25 +106,18 @@ def sync_progress(
         with open(progress_path, "r") as f:
             current_progress = json.load(f)
 
-    # Update progress for this specific course
-    course_id = payload.get("courseId")
+    # Update progress for this specific course using the new schema
+    course_id = payload.get("course_id")
     if not course_id:
-        raise HTTPException(status_code=400, detail="courseId is required")
+        raise HTTPException(status_code=400, detail="course_id is required")
 
-    existing_course_progress = current_progress.get(course_id, {})
-    new_completed_status = payload.get("completed", False)
-
-    # Don't downgrade completed status if it was already true
-    if existing_course_progress.get("completed"):
-        new_completed_status = True
-
-    status = "completed" if new_completed_status else "in-progress"
-
+    # Build the record based on the payload
     current_progress[course_id] = {
-        "lastChapterId": payload.get("chapterId"),
-        "score": payload.get("score", existing_course_progress.get("score")),
-        "completed": new_completed_status,
-        "status": status,
+        "course_id": course_id,
+        "current_chapter_id": payload.get("current_chapter_id"),
+        "completed_chapters": payload.get("completed_chapters", []),
+        "quiz_scores": payload.get("quiz_scores", {}),
+        "is_completed": payload.get("is_completed", False),
         "timestamp": payload.get("timestamp"),
     }
 

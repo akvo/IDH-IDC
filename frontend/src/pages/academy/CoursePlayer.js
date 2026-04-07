@@ -59,23 +59,28 @@ const CoursePlayer = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
+  const [progress, setProgress] = useState(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const initData = async () => {
       try {
-        const data = await AcademyService.getCourse(courseId);
-        setCourse(data);
+        const [courseData, progressData] = await Promise.all([
+          AcademyService.getCourse(courseId),
+          AcademyService.getProgress(),
+        ]);
+        setCourse(courseData);
+        setProgress(progressData[courseId] || null);
       } catch (error) {
-        console.error("Error fetching course:", error);
+        console.error("Error fetching course data:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchCourse();
+    initData();
   }, [courseId]);
 
   // Sync progress as soon as course/chapter is loaded (mark as In Progress)
@@ -83,11 +88,15 @@ const CoursePlayer = () => {
     if (course && course.chapters && course.chapters[currentChapterIndex]) {
       const initialSync = async () => {
         try {
-          await AcademyService.syncProgress({
-            courseId,
-            chapterId: course.chapters[currentChapterIndex].id,
-            completed: false, // Mark as started but not yet completed
-          });
+          const payload = {
+            course_id: courseId,
+            current_chapter_id: course.chapters[currentChapterIndex].id,
+            completed_chapters: progress?.completed_chapters || [],
+            quiz_scores: progress?.quiz_scores || {},
+            is_completed: progress?.is_completed || false,
+          };
+          const res = await AcademyService.syncProgress(payload);
+          setProgress(res.progress);
         } catch (err) {
           console.error("Initial progress sync failed:", err);
         }
@@ -105,14 +114,31 @@ const CoursePlayer = () => {
 
   const handleQuizComplete = async (obj) => {
     setQuizResult(obj);
+    const chapterId = course.chapters[currentChapterIndex].id;
+
+    // Update local state first for immediate UI feedback
+    const updatedCompletedChapters = Array.from(
+      new Set([...(progress?.completed_chapters || []), chapterId])
+    );
+    const updatedQuizScores = {
+      ...(progress?.quiz_scores || {}),
+      [chapterId]: Math.round(
+        (obj.numberOfCorrectAnswers / obj.numberOfQuestions) * 100
+      ),
+    };
+    const isCompletedNow =
+      updatedCompletedChapters.length === course.chapters.length;
+
     try {
-      await AcademyService.syncProgress({
-        courseId,
-        chapterId: course.chapters[currentChapterIndex].id,
-        score: obj.numberOfCorrectAnswers,
-        totalQuestions: obj.numberOfQuestions,
-        completed: true,
-      });
+      const payload = {
+        course_id: courseId,
+        current_chapter_id: chapterId,
+        completed_chapters: updatedCompletedChapters,
+        quiz_scores: updatedQuizScores,
+        is_completed: isCompletedNow,
+      };
+      const res = await AcademyService.syncProgress(payload);
+      setProgress(res.progress);
     } catch (error) {
       console.error("Error syncing progress:", error);
     }
@@ -144,7 +170,7 @@ const CoursePlayer = () => {
 
   const currentChapter = course.chapters[currentChapterIndex];
   const progressPercent = Math.round(
-    ((currentChapterIndex + 1) / course.chapters.length) * 100
+    ((progress?.completed_chapters?.length || 0) / course.chapters.length) * 100
   );
 
   return (
