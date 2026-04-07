@@ -63,22 +63,65 @@ Courses are stored as JSON files with the following structure:
 
 ---
 
-## 📡 API Reference
+### 📦 API Data Contracts
 
-### Course Materials
-- **Method**: `GET`
-- **Path**: `/api/v1/academy/courses`
-- **Response**: `200 OK` (List of course metadata for the library)
+#### 1. Course List Metadata (`GET /api/v1/academy/courses`)
+Returns a list of available courses for the "Academy" landing page.
+```json
+[
+  {
+    "id": "intro-to-idh",
+    "title": "Introduction to IDH IDC",
+    "thumbnail": "/assets/academy/thumbnails/intro.png",
+    "description": "Unlock the core concepts of the Income Driver Calculator.",
+    "chapterCount": 5,
+    "estimatedTime": "45 min"
+  }
+]
+```
 
-- **Method**: `GET`
-- **Path**: `/assets/academy/courses/{id}.json`
-- **Response**: `200 OK` (Detailed course structure)
+#### 2. Full Course Structure (`GET /assets/academy/courses/{id}.json`)
+The complete course data consumed by the `CoursePlayer`.
+```json
+{
+  "courseId": "intro-to-idh",
+  "title": "Introduction to IDH IDC",
+  "chapters": [
+    {
+      "id": "chapter-1",
+      "title": "Understanding the Income Gap",
+      "content": "## Markdown Content Extracted from PDF...",
+      "quiz": {
+        "quizTitle": "Chapter 1 Quiz",
+        "questions": [
+          {
+            "question": "What is the primary goal of IDC?",
+            "questionType": "text",
+            "answers": ["Reduce poverty", "Raise farmer income", "Increase yield"],
+            "correctAnswer": "2",
+            "messageForCorrectAnswer": "Correct!",
+            "messageForIncorrectAnswer": "Please try again."
+          }
+        ]
+      }
+    }
+  ]
+}
+```
 
-### Sync Progress
-- **Method**: `POST`
-- **Path**: `/api/v1/academy/progress`
-- **Request Body**: `{ "course_id": "str", "chapter_id": "str", "score": int }`
-- **Response**: `200 OK`
+#### 3. Progress Sync (`POST /api/v1/academy/progress`)
+The request body to synchronize user state.
+```json
+{
+  "course_id": "intro-to-idh",
+  "current_chapter_id": "chapter-2",
+  "completed_chapters": ["chapter-1"],
+  "quiz_scores": {
+    "chapter-1": 100
+  },
+  "is_completed": false
+}
+```
 
 ---
 
