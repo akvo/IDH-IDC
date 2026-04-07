@@ -15,6 +15,8 @@ import { FooterDisclaimer } from "../income-driver-calculator/components";
 import PizzaDiagram from "./PizzaDiagram";
 import LivingIncomeSteps from "./LivingIncomeSteps";
 import { useWindowDimensions } from "../../hooks";
+import { YOUTUBE_VIDEOS } from "../../constants/videos";
+import { YouTubePlayer } from "../../components/utils";
 
 const showWatchVideoBtn = false;
 
@@ -152,6 +154,12 @@ const Home = () => {
 
       {/* Toolkit towards better income */}
       <Row id="toward-better-income-section" className="toolkit-wrapper">
+        <Col span={24} className="youtube-embed-col">
+          <YouTubePlayer
+            videoId={YOUTUBE_VIDEOS.HOME_TRAILER.id}
+            title={YOUTUBE_VIDEOS.HOME_TRAILER.title}
+          />
+        </Col>
         <Col span={24} className="toolkit-header-wrapper">
           <Row align="top" justify="space-between" gutter={[20, 20]}>
             <Col span={{ xs: 24, sm: 24, md: 24, lg: 18 }}>
