@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Col, Row, Typography, Button, Spin, Tag, Badge } from "antd";
-import { BookOutlined, RightOutlined } from "@ant-design/icons";
+import { BookOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { routePath } from "../../components/route";
 import AcademyService from "./AcademyService";
@@ -64,11 +64,19 @@ const AcademyLibrary = () => {
               extra={
                 <Tag
                   color={
-                    progress[course.id]?.completed ? "success" : "processing"
+                    progress[course.id]?.completed
+                      ? "success"
+                      : progress[course.id]
+                      ? "processing"
+                      : "default"
                   }
                   style={{ borderRadius: "10px", padding: "0 12px" }}
                 >
-                  {progress[course.id]?.completed ? "Completed" : "Available"}
+                  {progress[course.id]?.completed
+                    ? "Completed"
+                    : progress[course.id]
+                    ? "In Progress"
+                    : "Available"}
                 </Tag>
               }
               actions={[
@@ -77,7 +85,6 @@ const AcademyLibrary = () => {
                   type="primary"
                   block
                   className="course-action-btn"
-                  icon={<RightOutlined />}
                   onClick={() =>
                     navigate(`${routePath.idc.academy}/${course.id}`)
                   }
