@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import { routePath } from "../../../components/route";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { useWindowDimensions } from "../../../hooks";
+import { YOUTUBE_VIDEOS } from "../../../constants/videos";
+import { YouTubePlayer } from "../../../components/utils";
 
 const showSeeDemoButton = false;
 
@@ -26,6 +28,10 @@ const GetStarted = () => {
         align="top"
         justify="space-between"
       >
+        <YouTubePlayer
+          videoId={YOUTUBE_VIDEOS.IDC_PRECURSOR.id}
+          title={YOUTUBE_VIDEOS.IDC_PRECURSOR.title}
+        />
         <Col span={isMobile ? 24 : 16}>
           <h2>
             What is the current income of the farming households?

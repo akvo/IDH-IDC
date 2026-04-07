@@ -5,6 +5,9 @@ import { Collapse } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { IDCSubMenu } from "../cases/components";
 import { showIDCSubMenu } from "../../components/route";
+import { Row, Col } from "antd";
+import { YOUTUBE_VIDEOS } from "../../constants/videos";
+import { YouTubePlayer } from "../../components/utils";
 
 const faqContents = [
   {
@@ -185,6 +188,23 @@ const FAQ = ({ showPageTitle = true, showPageFooter = true }) => {
             }
           />
         ))}
+        <div className="guides-tutorials-wrapper">
+          <h2 className="section-title">Guides & Tutorials</h2>
+          <Row gutter={[24, 24]}>
+            <Col xs={24} md={12}>
+              <YouTubePlayer
+                videoId={YOUTUBE_VIDEOS.IDC_USER_MANUAL_1_3.id}
+                title={YOUTUBE_VIDEOS.IDC_USER_MANUAL_1_3.title}
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <YouTubePlayer
+                videoId={YOUTUBE_VIDEOS.IDC_USER_MANUAL_4_5.id}
+                title={YOUTUBE_VIDEOS.IDC_USER_MANUAL_4_5.title}
+              />
+            </Col>
+          </Row>
+        </div>
       </div>
 
       {showPageFooter ? <PageFooter isLandingPage={false} /> : ""}
