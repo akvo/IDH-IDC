@@ -1,0 +1,67 @@
+@import "../../variables.scss";
+
+.academy-library-container {
+  padding: 40px;
+  background-color: #f9fbfb;
+  min-height: calc(100vh - 64px);
+
+  .library-header {
+    margin-bottom: 40px;
+    text-align: center;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+
+    h1 {
+      font-family: "RocGrotesk", sans-serif;
+      color: #1b625f;
+      font-weight: 700;
+      font-size: 36px;
+    }
+  }
+
+  .course-card-premium {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(1, 98, 95, 0.08);
+    box-shadow: 0 4px 15px rgba(1, 98, 95, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(1, 98, 95, 0.12);
+      border-color: rgba(1, 98, 95, 0.2);
+    }
+
+    .ant-card-cover {
+      background: #eaf2f2;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1b625f;
+      font-size: 48px;
+    }
+
+    .ant-card-body {
+      padding: 24px;
+    }
+
+    .ant-card-meta-title {
+      font-family: "RocGrotesk", sans-serif;
+      font-weight: 700;
+      color: #1b625f;
+      font-size: 18px;
+    }
+
+    .ant-card-actions {
+      background: transparent;
+      border-top: 1px solid #f0f0f0;
+
+      li {
+        margin: 12px 0;
+      }
+    }
+  }
+}

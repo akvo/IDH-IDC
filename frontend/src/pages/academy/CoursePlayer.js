@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Layout,
   Menu,
@@ -6,7 +6,6 @@ import {
   Button,
   Progress,
   Modal,
-  Result,
   Spin,
   Divider,
 } from "antd";
@@ -15,14 +14,15 @@ import {
   QuestionCircleOutlined,
   LeftOutlined,
   RightOutlined,
-  CheckCircleFilled,
-  MessageOutlined,
   ClockCircleOutlined,
+  ArrowLeftOutlined,
 } from "@ant-design/icons";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import Quiz from "react-quiz-component";
+import { routePath } from "../../components/route";
 import AcademyService from "./AcademyService";
+import "./CoursePlayer.scss";
 
 const { Content, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -46,19 +46,7 @@ const QuizTimer = ({ initialMinutes, onTimeUp }) => {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: "80px",
-        right: "24px",
-        zIndex: 1000,
-        background: "#fff",
-        padding: "8px 16px",
-        borderRadius: "20px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-        border: "2px solid #1B625F",
-      }}
-    >
+    <div className="quiz-timer-floating">
       <ClockCircleOutlined style={{ color: "#1B625F", marginRight: "8px" }} />
       <Text strong style={{ color: "#1B625F" }}>
         {formatTime(secondsLeft)}
@@ -94,12 +82,11 @@ const CoursePlayer = () => {
     setCurrentChapterIndex(parseInt(key));
     setShowQuiz(false);
     setQuizResult(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleQuizComplete = async (obj) => {
     setQuizResult(obj);
-
-    // Sync progress to backend
     try {
       await AcademyService.syncProgress({
         courseId,
@@ -124,8 +111,15 @@ const CoursePlayer = () => {
 
   if (loading || !course) {
     return (
-      <div style={{ textAlign: "center", padding: "100px" }}>
-        <Spin size="large" />
+      <div
+        style={{
+          height: "80vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading Course Knowledge..." />
       </div>
     );
   }
@@ -136,29 +130,30 @@ const CoursePlayer = () => {
   );
 
   return (
-    <Layout style={{ minHeight: "calc(100vh - 64px)", background: "#fff" }}>
+    <Layout className="course-player-container">
       <Sider
-        width={300}
-        style={{ background: "#f9f9f9", borderRight: "1px solid #f0f0f0" }}
+        width={320}
+        className="player-sider"
         breakpoint="lg"
         collapsedWidth="0"
       >
-        <div style={{ padding: "16px", background: "#1B625F", color: "#fff" }}>
-          <Title level={4} style={{ color: "#fff", marginBottom: 0 }}>
+        <div className="sider-header">
+          <Text className="progress-label">COURSE PROGRESS</Text>
+          <Title level={4} className="course-title">
             {course.title}
           </Title>
           <Progress
             percent={progressPercent}
             strokeColor="#fff"
+            trailColor="rgba(255,255,255,0.2)"
             size="small"
-            style={{ marginTop: "12px" }}
           />
         </div>
         <Menu
           mode="inline"
+          className="chapter-menu"
           selectedKeys={[currentChapterIndex.toString()]}
           onClick={onChapterSelect}
-          style={{ height: "100%", borderRight: 0, background: "transparent" }}
           items={course.chapters.map((ch, idx) => ({
             key: idx.toString(),
             icon: <BookOutlined />,
@@ -167,15 +162,20 @@ const CoursePlayer = () => {
         />
       </Sider>
 
-      <Content style={{ padding: "0 24px 24px", position: "relative" }}>
-        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "32px 0" }}>
-          {!showQuiz ? (
-            <div className="reading-mode animate-fade-in">
+      <Content className="player-content">
+        <div className="breadcrumb-nav">
+          <Link to={routePath.idc.academy} className="back-link">
+            <ArrowLeftOutlined style={{ marginRight: "8px" }} />
+            Back to Library
+          </Link>
+        </div>
+
+        {!showQuiz ? (
+          <div className="reading-mode animate-fade-in">
+            <div className="reading-card">
               <Title level={2}>{currentChapter.title}</Title>
               <Divider />
-              <div
-                style={{ fontSize: "16px", lineHeight: "1.8", color: "#444" }}
-              >
+              <div className="markdown-body">
                 {currentChapter.content ? (
                   <ReactMarkdown>{currentChapter.content}</ReactMarkdown>
                 ) : (
@@ -185,100 +185,119 @@ const CoursePlayer = () => {
                   </Paragraph>
                 )}
               </div>
+            </div>
 
-              <div
+            <div className="module-footer">
+              <div className="footer-info">
+                <div className="icon-wrap">
+                  <QuestionCircleOutlined />
+                </div>
+                <div>
+                  <Title
+                    level={4}
+                    style={{ marginBottom: 0, color: "#1B625F" }}
+                  >
+                    Module Assessment
+                  </Title>
+                  <Text type="secondary">
+                    5 Questions • {currentChapter.quiz?.timerInMinutes || 5} Min
+                  </Text>
+                </div>
+              </div>
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => setShowQuiz(true)}
                 style={{
-                  marginTop: "48px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  background: "#f0f5f5",
-                  padding: "24px",
-                  borderRadius: "12px",
+                  backgroundColor: "#1B625F",
+                  borderColor: "#1B625F",
+                  height: "56px",
+                  padding: "0 40px",
+                  borderRadius: "28px",
+                  fontWeight: 600,
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <QuestionCircleOutlined
-                    style={{
-                      fontSize: "32px",
-                      marginRight: "16px",
-                      color: "#1B625F",
-                    }}
-                  />
-                  <div>
-                    <Title level={4} style={{ marginBottom: 0 }}>
-                      Module Knowledge Check
-                    </Title>
-                    <Text type="secondary">
-                      Validate your understanding of this section.
-                    </Text>
-                  </div>
-                </div>
+                Start Knowledge Check
+              </Button>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginTop: "40px",
+              }}
+            >
+              <Button
+                disabled={currentChapterIndex === 0}
+                icon={<LeftOutlined />}
+                onClick={() => setCurrentChapterIndex(currentChapterIndex - 1)}
+              >
+                Previous Module
+              </Button>
+              <Button
+                disabled={currentChapterIndex === course.chapters.length - 1}
+                onClick={() => setCurrentChapterIndex(currentChapterIndex + 1)}
+              >
+                Next Module <RightOutlined />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="quiz-mode animate-fade-in">
+            <Button
+              icon={<LeftOutlined />}
+              onClick={() => setShowQuiz(false)}
+              className="back-btn-quiz"
+              style={{ marginBottom: "24px", borderRadius: "8px" }}
+            >
+              Back to Module Content
+            </Button>
+
+            <QuizTimer
+              initialMinutes={currentChapter.quiz?.timerInMinutes || 5}
+              onTimeUp={handleTimeUp}
+            />
+
+            <div className="quiz-container-premium">
+              <Quiz
+                quiz={currentChapter.quiz}
+                shuffle={true}
+                onComplete={handleQuizComplete}
+                showDefaultResult={true}
+              />
+            </div>
+
+            {quizResult && (
+              <div style={{ marginTop: "48px", textAlign: "center" }}>
                 <Button
                   type="primary"
                   size="large"
-                  onClick={() => setShowQuiz(true)}
-                  style={{ backgroundColor: "#1B625F", borderColor: "#1B625F" }}
+                  style={{
+                    backgroundColor: "#1B625F",
+                    height: "56px",
+                    borderRadius: "28px",
+                    padding: "0 60px",
+                  }}
+                  onClick={() => {
+                    if (currentChapterIndex < course.chapters.length - 1) {
+                      setCurrentChapterIndex(currentChapterIndex + 1);
+                      setShowQuiz(false);
+                      setQuizResult(null);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    } else {
+                      navigate(routePath.idc.academy);
+                    }
+                  }}
                 >
-                  Start Assessment
+                  {currentChapterIndex < course.chapters.length - 1
+                    ? "Next Module"
+                    : "Complete Course"}
                 </Button>
               </div>
-            </div>
-          ) : (
-            <div className="quiz-mode animate-fade-in">
-              <Button
-                icon={<LeftOutlined />}
-                onClick={() => setShowQuiz(false)}
-                style={{ marginBottom: "24px" }}
-              >
-                Back to Reading
-              </Button>
-
-              <QuizTimer
-                initialMinutes={currentChapter.quiz.timerInMinutes}
-                onTimeUp={handleTimeUp}
-              />
-
-              <div
-                style={{
-                  background: "#fff",
-                  padding: "24px",
-                  borderRadius: "16px",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                }}
-              >
-                <Quiz
-                  quiz={currentChapter.quiz}
-                  shuffle={true}
-                  onComplete={handleQuizComplete}
-                  showDefaultResult={true}
-                />
-              </div>
-
-              {quizResult && (
-                <div style={{ marginTop: "32px", textAlign: "center" }}>
-                  <Button
-                    type="primary"
-                    size="large"
-                    style={{ backgroundColor: "#1B625F" }}
-                    onClick={() => {
-                      if (currentChapterIndex < course.chapters.length - 1) {
-                        setCurrentChapterIndex(currentChapterIndex + 1);
-                        setShowQuiz(false);
-                        setQuizResult(null);
-                      } else {
-                        navigate("/academy");
-                      }
-                    }}
-                  >
-                    {currentChapterIndex < course.chapters.length - 1
-                      ? "Next Module"
-                      : "Finish Course"}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </Content>
     </Layout>
   );

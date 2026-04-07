@@ -4,8 +4,9 @@ import { BookOutlined, RightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { routePath } from "../../components/route";
 import AcademyService from "./AcademyService";
+import "./AcademyLibrary.scss";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 
 const AcademyLibrary = () => {
   const [courses, setCourses] = useState([]);
@@ -31,51 +32,33 @@ const AcademyLibrary = () => {
     fetchData();
   }, []);
 
-  const getProgressPercentage = (courseId) => {
-    const p = progress[courseId];
-    if (!p) {
-      return 0;
-    }
-    // Assuming binary progress (Start/Done) for PoC, or can be chapter-based
-    return p.completed ? 100 : 50;
-  };
-
   if (loading) {
     return (
-      <div style={{ textAlign: "center", padding: "50px" }}>
+      <div style={{ textAlign: "center", padding: "100px" }}>
         <Spin size="large" tip="Loading Academy..." />
       </div>
     );
   }
 
   return (
-    <div className="academy-library" style={{ padding: "24px" }}>
-      <div
-        style={{
-          marginBottom: "32px",
-          borderBottom: "1px solid #f0f0f0",
-          paddingBottom: "16px",
-        }}
-      >
-        <Title level={2} style={{ color: "#1B625F" }}>
-          IDC Academy
-        </Title>
-        <Text type="secondary">
-          Master the tools and methodology of the Income Driver Calculator.
-        </Text>
+    <div className="academy-library-container">
+      <div className="library-header">
+        <Title>IDC Academy</Title>
+        <Paragraph type="secondary" style={{ fontSize: "16px" }}>
+          Master the tools and methodology of the Income Driver Calculator. Our
+          modules provide structured training on benchmarks, data
+          contextualization, and advanced modelling.
+        </Paragraph>
       </div>
 
-      <Row gutter={[24, 24]}>
+      <Row gutter={[32, 32]}>
         {courses.map((course) => (
           <Col xs={24} sm={12} lg={8} key={course.id}>
             <Card
-              hoverable
-              title={
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <BookOutlined
-                    style={{ marginRight: "8px", color: "#1B625F" }}
-                  />
-                  <span>{course.title}</span>
+              className="course-card-premium"
+              cover={
+                <div className="card-cover-icon">
+                  <BookOutlined />
                 </div>
               }
               extra={
@@ -83,8 +66,9 @@ const AcademyLibrary = () => {
                   color={
                     progress[course.id]?.completed ? "success" : "processing"
                   }
+                  style={{ borderRadius: "10px", padding: "0 12px" }}
                 >
-                  {progress[course.id]?.completed ? "Completed" : "In Progress"}
+                  {progress[course.id]?.completed ? "Completed" : "Available"}
                 </Tag>
               }
               actions={[
@@ -95,26 +79,48 @@ const AcademyLibrary = () => {
                   onClick={() =>
                     navigate(`${routePath.idc.academy}/${course.id}`)
                   }
-                  style={{ backgroundColor: "#1B625F", borderColor: "#1B625F" }}
+                  style={{
+                    backgroundColor: "#1B625F",
+                    borderColor: "#1B625F",
+                    height: "44px",
+                    borderRadius: "22px",
+                    padding: "0 24px",
+                    fontWeight: 600,
+                  }}
                 >
-                  {progress[course.id] ? "Continue" : "Start Learning"}
+                  {progress[course.id] ? "Continue Learning" : "Start Course"}
                 </Button>,
               ]}
             >
-              <div style={{ minHeight: "80px" }}>
-                <Text type="secondary">
-                  {course.description ||
-                    "Learn about contextualising benchmarks and income drivers."}
-                </Text>
-              </div>
-              <div style={{ marginTop: "16px" }}>
-                <Badge
-                  status={
-                    progress[course.id]?.completed ? "success" : "processing"
-                  }
-                  text={`${course.chapterCount || 1} Modules`}
-                />
-              </div>
+              <Card.Meta
+                title={course.title}
+                description={
+                  <div style={{ minHeight: "100px" }}>
+                    <Paragraph
+                      type="secondary"
+                      ellipsis={{ rows: 3 }}
+                      style={{ marginBottom: "16px" }}
+                    >
+                      {course.description ||
+                        "Explore how living income benchmarks are calculated and adjusted for local contexts."}
+                    </Paragraph>
+                    <div style={{ position: "absolute", bottom: "84px" }}>
+                      <Badge
+                        status={
+                          progress[course.id]?.completed
+                            ? "success"
+                            : "processing"
+                        }
+                        text={
+                          <Text strong style={{ color: "#1B625F" }}>
+                            {course.chapterCount || 1} Modules
+                          </Text>
+                        }
+                      />
+                    </div>
+                  </div>
+                }
+              />
             </Card>
           </Col>
         ))}
