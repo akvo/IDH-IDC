@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Layout,
   Menu,
@@ -8,52 +8,27 @@ import {
   Modal,
   Spin,
   Divider,
+  Card,
+  Result,
 } from "antd";
 import {
   BookOutlined,
   QuestionCircleOutlined,
   LeftOutlined,
   RightOutlined,
-  ClockCircleOutlined,
   ArrowLeftOutlined,
+  TrophyOutlined,
 } from "@ant-design/icons";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import Quiz from "react-quiz-component";
 import { routePath } from "../../components/route";
 import AcademyService from "./AcademyService";
+import QuizTimer from "./components/QuizTimer";
 import "./CoursePlayer.scss";
 
 const { Content, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
-
-const QuizTimer = ({ initialMinutes, onTimeUp }) => {
-  const [secondsLeft, setSecondsLeft] = useState(initialMinutes * 60);
-
-  useEffect(() => {
-    if (secondsLeft <= 0) {
-      onTimeUp();
-      return;
-    }
-    const timer = setInterval(() => setSecondsLeft((prev) => prev - 1), 1000);
-    return () => clearInterval(timer);
-  }, [secondsLeft, onTimeUp]);
-
-  const formatTime = (s) => {
-    const m = Math.floor(s / 60);
-    const rs = s % 60;
-    return `${m}:${rs < 10 ? "0" : ""}${rs}`;
-  };
-
-  return (
-    <div className="quiz-timer-floating">
-      <ClockCircleOutlined style={{ color: "#1B625F", marginRight: "8px" }} />
-      <Text strong style={{ color: "#1B625F" }}>
-        {formatTime(secondsLeft)}
-      </Text>
-    </div>
-  );
-};
 
 const CoursePlayer = () => {
   const { courseId } = useParams();
@@ -64,6 +39,7 @@ const CoursePlayer = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const syncOccurredRef = useRef(false);
 
   useEffect(() => {
     const initData = async () => {
@@ -85,7 +61,12 @@ const CoursePlayer = () => {
 
   // Sync progress as soon as course/chapter is loaded (mark as In Progress)
   useEffect(() => {
-    if (course && course.chapters && course.chapters[currentChapterIndex]) {
+    if (
+      course &&
+      course.chapters &&
+      course.chapters[currentChapterIndex] &&
+      !syncOccurredRef.current
+    ) {
       const initialSync = async () => {
         try {
           const payload = {
@@ -97,13 +78,21 @@ const CoursePlayer = () => {
           };
           const res = await AcademyService.syncProgress(payload);
           setProgress(res.progress);
+          syncOccurredRef.current = true;
         } catch (err) {
           console.error("Initial progress sync failed:", err);
         }
       };
       initialSync();
     }
-  }, [course, currentChapterIndex, courseId]);
+  }, [
+    course,
+    currentChapterIndex,
+    courseId,
+    progress?.completed_chapters,
+    progress?.quiz_scores,
+    progress?.is_completed,
+  ]);
 
   const onChapterSelect = ({ key }) => {
     setCurrentChapterIndex(parseInt(key));
@@ -308,38 +297,78 @@ const CoursePlayer = () => {
                 quiz={currentChapter.quiz}
                 shuffle={true}
                 onComplete={handleQuizComplete}
-                showDefaultResult={true}
+                showDefaultResult={false}
               />
-            </div>
 
-            {quizResult && (
-              <div style={{ marginTop: "48px", textAlign: "center" }}>
-                <Button
-                  type="primary"
-                  size="large"
-                  style={{
-                    backgroundColor: "#1B625F",
-                    height: "56px",
-                    borderRadius: "28px",
-                    padding: "0 60px",
-                  }}
-                  onClick={() => {
-                    if (currentChapterIndex < course.chapters.length - 1) {
-                      setCurrentChapterIndex(currentChapterIndex + 1);
-                      setShowQuiz(false);
-                      setQuizResult(null);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    } else {
-                      navigate(routePath.idc.academy);
+              {quizResult && (
+                <Card className="quiz-result-card animate-scale-in">
+                  <Result
+                    icon={<TrophyOutlined style={{ color: "#FFD700" }} />}
+                    title={
+                      <Title level={2} style={{ color: "#1B625F" }}>
+                        Assessment Complete!
+                      </Title>
                     }
-                  }}
-                >
-                  {currentChapterIndex < course.chapters.length - 1
-                    ? "Next Module"
-                    : "Complete Course"}
-                </Button>
-              </div>
-            )}
+                    subTitle={
+                      <div className="result-stats">
+                        <Text strong size="large">
+                          You scored {quizResult.numberOfCorrectAnswers} out of{" "}
+                          {quizResult.numberOfQuestions}
+                        </Text>
+                        <br />
+                        <Progress
+                          percent={Math.round(
+                            (quizResult.numberOfCorrectAnswers /
+                              quizResult.numberOfQuestions) *
+                              100
+                          )}
+                          strokeColor="#1B625F"
+                          type="circle"
+                          style={{ marginTop: "24px" }}
+                        />
+                      </div>
+                    }
+                    extra={[
+                      <Button
+                        type="primary"
+                        key="next"
+                        size="large"
+                        className="btn-next-module"
+                        onClick={() => {
+                          if (
+                            currentChapterIndex <
+                            course.chapters.length - 1
+                          ) {
+                            setCurrentChapterIndex(currentChapterIndex + 1);
+                            setShowQuiz(false);
+                            setQuizResult(null);
+                            syncOccurredRef.current = false;
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          } else {
+                            navigate(routePath.idc.academy);
+                          }
+                        }}
+                      >
+                        {currentChapterIndex < course.chapters.length - 1
+                          ? "Proceed to Next Module"
+                          : "Finish Academy Course"}
+                      </Button>,
+                      <Button
+                        key="retry"
+                        onClick={() => {
+                          setQuizResult(null);
+                          setShowQuiz(false);
+                          setTimeout(() => setShowQuiz(true), 100);
+                        }}
+                        style={{ marginTop: "12px" }}
+                      >
+                        Retry Assessment
+                      </Button>,
+                    ]}
+                  />
+                </Card>
+              )}
+            </div>
           </div>
         )}
       </Content>
