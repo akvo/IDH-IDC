@@ -57,3 +57,4 @@ export { default as NewCpiForm } from "./NewCpiForm";
 export { default as OtherToolsAndResources } from "./other-tools-and-resources/OtherToolsAndResources";
 export { default as Blocker } from "./blocker/Blocker";
 export { default as ScrollToHash } from "./ScrollToHash";
+export { default as YouTubePlayer } from "./YouTubePlayer";

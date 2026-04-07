@@ -16,6 +16,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
+        - Created a reusable `YouTubePlayer` component in `src/components/utils/` to centralize 16:9 aspect ratio and desktop width capping (680px).
+        - Centralized YouTube metadata in `src/constants/videos.js` for easier platform-wide scaling.
+        - Refactored `Home.js` and `GetStarted.js` to use the new component, eliminating code duplication.
+        - Expanded the FAQ page with a "Guides & Tutorials" section featuring two user manual videos in a responsive grid.
+        - Implemented global `video.scss` for persistent design language across different tool sections.
+        - Verified 100% lint-clean status and responsive layout across all breakpoints.
+    - Path: `frontend/src/components/utils/YouTubePlayer.js`, `frontend/src/constants/videos.js`, `frontend/src/pages/faq/faq.js`, `frontend/src/pages/home/Home.js`.
+
     - **IDC Academy LMS Implementation (#759) - [COMPLETED]**:
         - Transformed the IDC Academy from a Proof-of-Concept to a production-ready module with granular progress tracking.
         - Implemented a structured backend schema in `academy.py` supporting `completed_chapters`, `quiz_scores`, and `is_completed`.
