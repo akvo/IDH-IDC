@@ -64,17 +64,17 @@ const AcademyLibrary = () => {
               extra={
                 <Tag
                   color={
-                    progress[course.id]?.completed
+                    progress[course.id]?.status === "completed"
                       ? "success"
-                      : progress[course.id]
+                      : progress[course.id]?.status === "in-progress"
                       ? "processing"
                       : "default"
                   }
                   style={{ borderRadius: "10px", padding: "0 12px" }}
                 >
-                  {progress[course.id]?.completed
+                  {progress[course.id]?.status === "completed"
                     ? "Completed"
-                    : progress[course.id]
+                    : progress[course.id]?.status === "in-progress"
                     ? "In Progress"
                     : "Available"}
                 </Tag>
@@ -89,7 +89,11 @@ const AcademyLibrary = () => {
                     navigate(`${routePath.idc.academy}/${course.id}`)
                   }
                 >
-                  {progress[course.id] ? "Continue Learning" : "Start Course"}
+                  {progress[course.id]?.status === "completed"
+                    ? "Review Course"
+                    : progress[course.id]?.status === "in-progress"
+                    ? "Continue Learning"
+                    : "Start Course"}
                 </Button>,
               ]}
             >

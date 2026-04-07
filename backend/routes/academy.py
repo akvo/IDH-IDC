@@ -95,10 +95,13 @@ def sync_progress(
     if existing_course_progress.get("completed"):
         new_completed_status = True
 
+    status = "completed" if new_completed_status else "in-progress"
+
     current_progress[course_id] = {
         "lastChapterId": payload.get("chapterId"),
         "score": payload.get("score", existing_course_progress.get("score")),
         "completed": new_completed_status,
+        "status": status,
         "timestamp": payload.get("timestamp"),
     }
 
