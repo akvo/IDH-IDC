@@ -97,7 +97,8 @@ The complete course data consumed by the `CoursePlayer`.
       "quiz": {
         "quizTitle": "Chapter 1 Quiz",
         "quizSynopsis": "Identify the core goals of the IDC mission.",
-        "nrOfQuestions": "1",
+        "nrOfQuestions": "5",
+        "timerInMinutes": 5,
         "questions": [
           {
             "question": "What is the primary goal of IDC?",
@@ -108,6 +109,17 @@ The complete course data consumed by the `CoursePlayer`.
             "messageForCorrectAnswer": "Correct!",
             "messageForIncorrectAnswer": "Please try again.",
             "explanation": "IDC's primary mission is to close the living income gap by directly raising farmer income through targeted interventions.",
+            "point": "20"
+          },
+          {
+            "question": "Which of these is a key income driver?",
+            "questionType": "text",
+            "answerSelectionType": "single",
+            "answers": ["Weather", "Market Price", "Social Media", "Office Space"],
+            "correctAnswer": "2",
+            "messageForCorrectAnswer": "Correct!",
+            "messageForIncorrectAnswer": "Please review driver concepts.",
+            "explanation": "Market Price is a direct driver of farmer income.",
             "point": "20"
           }
         ]

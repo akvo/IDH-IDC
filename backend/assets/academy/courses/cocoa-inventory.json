@@ -1,0 +1,370 @@
+{
+    "courseId": "cocoa-inventory",
+    "title": "Cocoa Inventory",
+    "chapters": [
+        {
+            "id": "cocoa-inventory-ch1",
+            "title": "Methodology of the Inventory",
+            "content": "Methodology of the Inventory\n\u2022 We have used data provided by different organisations to calculate the weighted average,\nmedian and minimum and maximum for several indicators. In the future we will also collect\ninformation on the standard deviation.\n\u2022 These indicators were developed based on the Cocoa Household Income Study approach\n(CHIS)\n\u2022 The procedures that have been performed to establish this data compilation did not\nconstitute an audit or other assurance engagement of the data that was delivered\n\u2022 Consequently, this data overview does not express any assurance as to the reliability of the\ndata provided by the organisations.\n\u2022 We only include survey and Farmer Field Book data. We removed datapoints when they were\nbased on model calculations or expert knowledge or assumptions\n\u2022 We include the total number of observations per indicator that the calculation was based on.\n\u2022 The number of observations vary per indicator; we calculated the weighted average per\nindicator based on the total number of observations for that indicator.\n\u2022 The weighted average was calculated by 1) multiplying the indicator value with the number of\nobservations for each dataset, 2) adding up the derived values for all datasets and then 3)\ndividing that total value by the total number of observations for all datasets combined.\n\u2022 As we do not have the total population from which the provided data was sampled, we\ncannot conclude that the information provided is representative for the total population.\n\u2022 One dataset already contained weighted averages to make the data more representative for\nthe entire population. We used this data in the calculations in the same way as the other\ndatasets.\n\u2022 Exchange rates: All figures are in USD: Either we used the figures in USD as indicated by the\ndataset, or we converted the Local Currency Unit to USD by using the average exchange rate\nof the 1st and last day of the respective cocoa season (1 October / 30 September).\n\u2022 Sometimes the recall period was slightly different than the official previous cocoa season,\nwe assumed that farmers answered for the specific previous cocoa season\n\u2022 Sometimes the number of observations contains a figure behind the dot, this is because\norganisations indicated that the indicator value was available for a certain proportion of the\ntotal sample; we calculated the total number of observations based on this\n\u2022 If the labour time spent on cocoa production activities was recorded in hours, we assumed 8\nhours per working day.",
+            "quiz": {
+                "quizTitle": "Knowledge Check",
+                "quizSynopsis": "Validate your understanding of this chapter.",
+                "nrOfQuestions": "5",
+                "timerInMinutes": 5,
+                "questions": [
+                    {
+                        "question": "What is the primary focus of this section?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Collection",
+                            "Strategic Planning",
+                            "Income Analysis",
+                            "Other"
+                        ],
+                        "correctAnswer": "3",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Incorrect.",
+                        "explanation": "This chapter focuses on analyzing income drivers.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "Which indicator is most critical for living income calculation?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Household Size",
+                            "Market Price",
+                            "Yield per Hectare",
+                            "All of the above"
+                        ],
+                        "correctAnswer": "4",
+                        "messageForCorrectAnswer": "Exactly!",
+                        "messageForIncorrectAnswer": "Consider all variables.",
+                        "explanation": "Living income depends on a combination of household expenses and income sources.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "True",
+                            "False"
+                        ],
+                        "correctAnswer": "1",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "False.",
+                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "How are living income benchmarks contextualised?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Annual global index",
+                            "Inflation adjustment",
+                            "Local survey data",
+                            "None"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Please review benchmarking.",
+                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Storage",
+                            "User Training",
+                            "Market Intelligence",
+                            "Reporting"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Success!",
+                        "messageForIncorrectAnswer": "Not quite.",
+                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "point": "20"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "cocoa-inventory-ch2",
+            "title": "Data Protection",
+            "content": "Data Protection\nThe Cocoa Income Inventory (CII) does not contain any personal data. It is built on indicator\nvalues shared by participating organizations, ensuring full compliance with GDPR and related\ndata protection regulations. Anonymization and aggregation safeguards confidentiality while\nallowing for meaningful sector-wide insights.\nSource Living Income Benchmark figures:\nC\u00f4te d' Ivoire\n1) Ivorian Center for Socio Economic Research, CIRES (2018) Living Income Report: Rural Cote\nD\u2019Ivoire, Cocoa growing areas. Living Income Community of Practice. 2) Anker, R., & Anker, M. (2022)\nLiving Income Benchmark, June 2022 Update. Cote D\u2019Ivoire, Rural CocoaGrowing Areas. The Living\nIncome Community of Practice & Anker Research Institute. 3) Medinaceli, A., Andersen, L.E.,\nDelajara, M., Anker, R., Anker, M., (2024) Living Income Update Report, Rural Cocoa Growing Areas,\nC\u00f4te D\u2019Ivoire, 2024. Anker Research Institute.\nGhana:\n1) Smith, S. & Sarpong, D. (2018) Living Income Report: Rural Ghana, Cocoa growing areas of\nAshanti, Central, Eastern and Western Regions. Living Income Community of Practice. 2) Anker, M. &\nAnker, R. (2022) Living Income Benchmark, June 2022 Update: Rural Ghana. Living Income\nCommunity Practice & Anker Research Institute. 3) Medinaceli, A., Andersen, L.E., Delajara, M.,\nAnker, R., Anker, M., (2024) Living Income Update Report, Rural Cocoa Growing Areas, Ghana, 2024.\nAnker Research Institute.\nIdeas for future further development of the Cocoa Income Inventory\nShow the data for the following groups:\n- Men and women\n- Owners, sharecroppers, tenants\n- Program/Project participants and non-participants\n- Households in direct and indirect supply chain",
+            "quiz": {
+                "quizTitle": "Knowledge Check",
+                "quizSynopsis": "Validate your understanding of this chapter.",
+                "nrOfQuestions": "5",
+                "timerInMinutes": 5,
+                "questions": [
+                    {
+                        "question": "What is the primary focus of this section?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Collection",
+                            "Strategic Planning",
+                            "Income Analysis",
+                            "Other"
+                        ],
+                        "correctAnswer": "3",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Incorrect.",
+                        "explanation": "This chapter focuses on analyzing income drivers.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "Which indicator is most critical for living income calculation?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Household Size",
+                            "Market Price",
+                            "Yield per Hectare",
+                            "All of the above"
+                        ],
+                        "correctAnswer": "4",
+                        "messageForCorrectAnswer": "Exactly!",
+                        "messageForIncorrectAnswer": "Consider all variables.",
+                        "explanation": "Living income depends on a combination of household expenses and income sources.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "True",
+                            "False"
+                        ],
+                        "correctAnswer": "1",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "False.",
+                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "How are living income benchmarks contextualised?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Annual global index",
+                            "Inflation adjustment",
+                            "Local survey data",
+                            "None"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Please review benchmarking.",
+                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Storage",
+                            "User Training",
+                            "Market Intelligence",
+                            "Reporting"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Success!",
+                        "messageForIncorrectAnswer": "Not quite.",
+                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "point": "20"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "cocoa-inventory-ch3",
+            "title": "Citation",
+            "content": "Citation\nIDH, VOICE Network, WUR, 2025. Cocoa Income Inventory - Release February 2025.\nAuthors: Yuca Waarts (WUR), Antonie Fountain (Voice Network), Pavithra Ram (IDH), Valerie\nJanssen (WUR), Olivia Azhari (WUR), 2025.",
+            "quiz": {
+                "quizTitle": "Knowledge Check",
+                "quizSynopsis": "Validate your understanding of this chapter.",
+                "nrOfQuestions": "5",
+                "timerInMinutes": 5,
+                "questions": [
+                    {
+                        "question": "What is the primary focus of this section?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Collection",
+                            "Strategic Planning",
+                            "Income Analysis",
+                            "Other"
+                        ],
+                        "correctAnswer": "3",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Incorrect.",
+                        "explanation": "This chapter focuses on analyzing income drivers.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "Which indicator is most critical for living income calculation?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Household Size",
+                            "Market Price",
+                            "Yield per Hectare",
+                            "All of the above"
+                        ],
+                        "correctAnswer": "4",
+                        "messageForCorrectAnswer": "Exactly!",
+                        "messageForIncorrectAnswer": "Consider all variables.",
+                        "explanation": "Living income depends on a combination of household expenses and income sources.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "True",
+                            "False"
+                        ],
+                        "correctAnswer": "1",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "False.",
+                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "How are living income benchmarks contextualised?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Annual global index",
+                            "Inflation adjustment",
+                            "Local survey data",
+                            "None"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Please review benchmarking.",
+                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Storage",
+                            "User Training",
+                            "Market Intelligence",
+                            "Reporting"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Success!",
+                        "messageForIncorrectAnswer": "Not quite.",
+                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "point": "20"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "cocoa-inventory-ch4",
+            "title": "Contact information",
+            "content": "Contact information\nOrganisation Name Email address\nIDH Pavithra Ram ram@idhtrade.org\nVoice Network Antonie Fountain antonie@voicenetwork.cc\nWUR Valerie Janssen valerie1.janssen@wur.nl\nAgrilogic Yuca Waarts yuca@agri-logic.nl\nWe encourage the use of this data in other publications, provided proper references are\ngiven. Published under Creative Commons License Attribution-ShareAlike 4.0 International",
+            "quiz": {
+                "quizTitle": "Knowledge Check",
+                "quizSynopsis": "Validate your understanding of this chapter.",
+                "nrOfQuestions": "5",
+                "timerInMinutes": 5,
+                "questions": [
+                    {
+                        "question": "What is the primary focus of this section?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Collection",
+                            "Strategic Planning",
+                            "Income Analysis",
+                            "Other"
+                        ],
+                        "correctAnswer": "3",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Incorrect.",
+                        "explanation": "This chapter focuses on analyzing income drivers.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "Which indicator is most critical for living income calculation?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Household Size",
+                            "Market Price",
+                            "Yield per Hectare",
+                            "All of the above"
+                        ],
+                        "correctAnswer": "4",
+                        "messageForCorrectAnswer": "Exactly!",
+                        "messageForIncorrectAnswer": "Consider all variables.",
+                        "explanation": "Living income depends on a combination of household expenses and income sources.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "True",
+                            "False"
+                        ],
+                        "correctAnswer": "1",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "False.",
+                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "How are living income benchmarks contextualised?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Annual global index",
+                            "Inflation adjustment",
+                            "Local survey data",
+                            "None"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Please review benchmarking.",
+                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
+                        "point": "20"
+                    },
+                    {
+                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Storage",
+                            "User Training",
+                            "Market Intelligence",
+                            "Reporting"
+                        ],
+                        "correctAnswer": "2",
+                        "messageForCorrectAnswer": "Success!",
+                        "messageForIncorrectAnswer": "Not quite.",
+                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "point": "20"
+                    }
+                ]
+            }
+        }
+    ]
+}
