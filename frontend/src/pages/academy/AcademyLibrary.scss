@@ -23,15 +23,14 @@
   .course-card-premium {
     border-radius: 20px;
     overflow: hidden;
-    border: 1px solid rgba(1, 98, 95, 0.08);
-    box-shadow: 0 4px 15px rgba(1, 98, 95, 0.05);
-    transition: all 0.3s ease;
+    border: 1px solid rgba(1, 98, 95, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease;
     height: 100%;
 
     &:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(1, 98, 95, 0.12);
-      border-color: rgba(1, 98, 95, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: rgba(1, 98, 95, 0.3);
     }
 
     .ant-card-cover {
@@ -85,7 +84,6 @@
 
       &:hover {
         background-color: #144d4a !important;
-        transform: scale(1.02);
       }
     }
   }
