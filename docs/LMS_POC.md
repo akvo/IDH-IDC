@@ -61,6 +61,9 @@ Courses are stored as JSON files with the following structure:
 - [ ] Create `GET/POST /api/academy/progress` endpoints.
 - [ ] Update `user_progress` storage (Local JSON for PoC).
 
+### 📂 Code Organization (Current Implementation)
+- **Modularity**: All Academy/LMS related files are grouped into dedicated `academy` or `lms` folders in both the **frontend** and **backend** to ensure a clean separation from the core IDC logic.
+
 ---
 
 ### 📦 API Data Contracts
@@ -138,6 +141,5 @@ The request body to synchronize user state.
 ---
 
 ## 🔮 Future Enhancements
-- **Code Organization**: Group all Academy/LMS related files into dedicated `academy` or `lms` folders in both the **frontend** and **backend** for better modularity.
 - **Improved UI**: Transition from simple Markdown to a more interactive component-based content renderer.
 - **Database Integration**: Migrate from JSON files to PostgreSQL for progress and course storage.
