@@ -93,14 +93,18 @@ The complete course data consumed by the `CoursePlayer`.
       "content": "## Markdown Content Extracted from PDF...",
       "quiz": {
         "quizTitle": "Chapter 1 Quiz",
+        "quizSynopsis": "Identify the core goals of the IDC mission.",
+        "nrOfQuestions": "1",
         "questions": [
           {
             "question": "What is the primary goal of IDC?",
             "questionType": "text",
+            "answerSelectionType": "single",
             "answers": ["Reduce poverty", "Raise farmer income", "Increase yield"],
             "correctAnswer": "2",
             "messageForCorrectAnswer": "Correct!",
-            "messageForIncorrectAnswer": "Please try again."
+            "messageForIncorrectAnswer": "Please try again.",
+            "point": "20"
           }
         ]
       }
