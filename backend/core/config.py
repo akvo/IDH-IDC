@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI, Request, Response
 from middleware import decode_token
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from routes.user import user_route
 from routes.tag import tag_route
@@ -152,6 +153,8 @@ app.include_router(procurement_process_route)
 app.include_router(pl_cat_router_v2)
 app.include_router(pl_practice_router_v2)
 app.include_router(academy_route)
+
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 
 @app.get("/", tags=["Dev"])
