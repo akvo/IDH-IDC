@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Col, Row, Typography, Button, Spin, Tag, Badge } from "antd";
 import { BookOutlined, RightOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { routePath } from "../../components/route";
 import AcademyService from "./AcademyService";
 
 const { Title, Text } = Typography;
@@ -91,7 +92,9 @@ const AcademyLibrary = () => {
                   key="start-btn"
                   type="primary"
                   icon={<RightOutlined />}
-                  onClick={() => navigate(`/academy/${course.id}`)}
+                  onClick={() =>
+                    navigate(`${routePath.idc.academy}/${course.id}`)
+                  }
                   style={{ backgroundColor: "#1B625F", borderColor: "#1B625F" }}
                 >
                   {progress[course.id] ? "Continue" : "Start Learning"}
