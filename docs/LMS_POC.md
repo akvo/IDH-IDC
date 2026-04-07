@@ -134,3 +134,10 @@ The request body to synchronize user state.
 - [ ] Verify `react-quiz-component` compatibility with current React version.
 - [ ] Ensure PDF parsing handles multi-column layouts.
 - [ ] Audit role-based access for the transformer endpoint.
+
+---
+
+## 🔮 Future Enhancements
+- **Code Organization**: Group all Academy/LMS related files into dedicated `academy` or `lms` folders in both the **frontend** and **backend** for better modularity.
+- **Improved UI**: Transition from simple Markdown to a more interactive component-based content renderer.
+- **Database Integration**: Migrate from JSON files to PostgreSQL for progress and course storage.
