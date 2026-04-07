@@ -75,7 +75,7 @@ Returns a list of available courses for the "Academy" landing page.
     "thumbnail": "/assets/academy/thumbnails/intro.png",
     "description": "Unlock the core concepts of the Income Driver Calculator.",
     "chapterCount": 5,
-    "estimatedTime": "45 min"
+    "estimatedTime": 45
   }
 ]
 ```
@@ -104,6 +104,7 @@ The complete course data consumed by the `CoursePlayer`.
             "correctAnswer": "2",
             "messageForCorrectAnswer": "Correct!",
             "messageForIncorrectAnswer": "Please try again.",
+            "explanation": "IDC's primary mission is to close the living income gap by directly raising farmer income through targeted interventions.",
             "point": "20"
           }
         ]
