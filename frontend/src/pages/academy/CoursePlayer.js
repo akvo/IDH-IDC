@@ -177,7 +177,7 @@ const CoursePlayer = () => {
                 style={{ fontSize: "16px", lineHeight: "1.8", color: "#444" }}
               >
                 {currentChapter.content ? (
-                  <ReactMarkdown children={currentChapter.content} />
+                  <ReactMarkdown>{currentChapter.content}</ReactMarkdown>
                 ) : (
                   <Paragraph type="secondary" italic>
                     No detailed content available for this chapter. Please
