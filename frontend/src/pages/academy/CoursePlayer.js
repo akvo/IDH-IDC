@@ -144,8 +144,8 @@ const CoursePlayer = () => {
           </Title>
           <Progress
             percent={progressPercent}
-            strokeColor="#fff"
-            trailColor="rgba(255,255,255,0.2)"
+            strokeColor="#1B625F"
+            trailColor="rgba(27, 98, 95, 0.1)"
             size="small"
           />
         </div>

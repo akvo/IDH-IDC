@@ -10,24 +10,25 @@
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.02);
 
     .sider-header {
-      padding: 24px 20px;
-      background-color: #1b625f;
-      color: #fff;
-      border-bottom: 4px solid rgba(255, 255, 255, 0.1);
+      padding: 32px 20px;
+      background-color: transparent;
+      border-bottom: 1px solid #eef2f2;
 
       .course-title {
-        color: #fff;
+        color: #1b625f;
         font-family: "RocGrotesk", sans-serif;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         line-height: 1.2;
       }
 
       .progress-label {
-        font-size: 12px;
-        opacity: 0.8;
+        font-size: 11px;
+        color: #888;
+        letter-spacing: 0.05em;
         display: block;
         margin-bottom: 4px;
+        font-weight: 600;
       }
     }
 
