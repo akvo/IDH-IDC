@@ -6,7 +6,7 @@ const AcademyService = {
    */
   getCourses: async () => {
     try {
-      const response = await api.get("v1/academy/courses");
+      const response = await api.get("academy/courses");
       return response.data;
     } catch (error) {
       console.error("Error fetching courses:", error);
@@ -20,7 +20,7 @@ const AcademyService = {
   getCourse: async (courseId) => {
     try {
       // In PoC, we fetch directly from the assets hosted by the backend
-      const response = await axios.get(
+      const response = await api.get(
         `/assets/academy/courses/${courseId}.json`
       );
       return response.data;
@@ -35,7 +35,7 @@ const AcademyService = {
    */
   getProgress: async () => {
     try {
-      const response = await api.get("v1/academy/progress");
+      const response = await api.get("academy/progress");
       return response.data;
     } catch (error) {
       console.error("Error fetching progress:", error);
@@ -49,7 +49,7 @@ const AcademyService = {
    */
   syncProgress: async (progress) => {
     try {
-      const response = await api.post("v1/academy/progress", progress);
+      const response = await api.post("academy/progress", progress);
       return response.data;
     } catch (error) {
       console.error("Error syncing progress:", error);
