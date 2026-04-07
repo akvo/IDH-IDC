@@ -75,18 +75,12 @@ const AcademyLibrary = () => {
                 <Button
                   key="start-btn"
                   type="primary"
+                  block
+                  className="course-action-btn"
                   icon={<RightOutlined />}
                   onClick={() =>
                     navigate(`${routePath.idc.academy}/${course.id}`)
                   }
-                  style={{
-                    backgroundColor: "#1B625F",
-                    borderColor: "#1B625F",
-                    height: "44px",
-                    borderRadius: "22px",
-                    padding: "0 24px",
-                    fontWeight: 600,
-                  }}
                 >
                   {progress[course.id] ? "Continue Learning" : "Start Course"}
                 </Button>,
