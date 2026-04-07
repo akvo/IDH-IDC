@@ -176,7 +176,14 @@ const CoursePlayer = () => {
               <div
                 style={{ fontSize: "16px", lineHeight: "1.8", color: "#444" }}
               >
-                <ReactMarkdown>{currentChapter.content}</ReactMarkdown>
+                {currentChapter.content ? (
+                  <ReactMarkdown children={currentChapter.content} />
+                ) : (
+                  <Paragraph type="secondary" italic>
+                    No detailed content available for this chapter. Please
+                    proceed to the assessment.
+                  </Paragraph>
+                )}
               </div>
 
               <div
