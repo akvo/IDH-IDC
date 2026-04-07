@@ -60,7 +60,16 @@ def get_progress(
         return {}
 
     with open(progress_path, "r") as f:
-        return json.load(f)
+        data = json.load(f)
+
+        # Inject status for backward compatibility with older records
+        for course_id, p in data.items():
+            if "status" not in p:
+                p["status"] = (
+                    "completed" if p.get("completed") else "in-progress"
+                )
+
+        return data
 
 
 @academy_route.post("/progress")
