@@ -24,12 +24,12 @@
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid rgba(1, 98, 95, 0.12);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: border-color 0.3s ease;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
     height: 100%;
 
     &:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
       border-color: rgba(1, 98, 95, 0.3);
     }
 
