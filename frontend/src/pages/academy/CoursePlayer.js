@@ -303,7 +303,11 @@ const CoursePlayer = () => {
               {quizResult && (
                 <Card className="quiz-result-card animate-scale-in">
                   <Result
-                    icon={<TrophyOutlined style={{ color: "#FFD700" }} />}
+                    icon={
+                      <TrophyOutlined
+                        style={{ color: "#FFD700", fontSize: "4rem" }}
+                      />
+                    }
                     title={
                       <Title level={2} style={{ color: "#1B625F" }}>
                         Assessment Complete!
