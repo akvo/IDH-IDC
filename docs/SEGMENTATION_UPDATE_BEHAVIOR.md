@@ -40,9 +40,13 @@ graph TD
     F -->|Yes| H[Disable Save Button + Tooltip]
     F -->|No| I[Enable Save Button]
 
-    G --> J[User Navigates to Manual Tab]
-    J --> K[User Deletes Segment]
+    G --> J[User Resolves Overflow]
+    J -->|Update Mode| K[Navigate to Manual Tab & Delete]
+    J -->|Create Mode| L[Delete directly in Data Upload Tab]
+
     K --> F
+    L --> L2[State Updated]
+    L2 --> F
 ```
 
 ---
@@ -108,6 +112,14 @@ graph TD
 - **Status**: Any Mode.
 - **Action**: User selects a variable with 15 categories.
 - **System Action**: Warning appears. Generation is blocked.
+### Scenario 5: Create Mode - Direct Deletion (Data Upload Tab)
+- **Status**: Create Mode (New Case).
+- **Tab**: Data Upload.
+- **Action**: User uploads a file and selects a variable that generates 7 segments.
+- **Result**: **Overflow Alert Banner** appears. 7 segments are visible in the "Data Upload" preview list.
+- **Correction**: User clicks the **Delete icon** (garbage can) directly in the "Data Upload" preview row for 2 unwanted segments.
+- **Outcome**: Count becomes 5. **Overflow Alert** disappears. Save enabled.
+- **Note**: This differs from **Update Mode**, where saved segments (with IDs) are protected and must be deleted from the "Manual Data Input" tab to ensure intentional data removal.
 
 ---
 
