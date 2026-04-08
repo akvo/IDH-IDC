@@ -16,8 +16,10 @@ Previously, farming segments were often lost when updating case details. This fe
 
 ## 🐛 Current Bug Situation
 
-### 1. Data Loss During Case Update
-Currently, when a user edits an existing case and switches to the **Data Upload** tab, any previously saved segments are unconditionally cleared from the state. If the user then uploads a file and selects a variable, the new segments **overwrite** the saved ones, leading to permanent data loss upon saving.
+### 1. Invisible State Clearing & Backend Accumulation
+Currently, when a user edits an existing case and switches to the **Data Upload** tab, any previously saved segments are unconditionally cleared from the **frontend state** (UI). However, when the user selects a new variable and saves the case, the backend **appends** the new segments to the existing ones. 
+
+**Resulting Bug**: If a user has 3 existing segments and adds 4 more via Data Upload, they end up with **7 segments in total** after updating. This results in an invalid state (> 5 segments) that is hidden from the user during the editing process but visible (and broken) after the update is complete.
 
 ### 2. Unvalidated Segment Overflow
 The tool currently lacks strict enforcement of the **MAX_SEGMENT = 5** limit during the segmentation update flow. This allows users to:
