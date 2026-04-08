@@ -1,120 +1,120 @@
-# Segmentation – Case Detail Update Behavior — Implementation Specification
+# Segmentation – Case Detail Update Behavior — Implementation Specification (APPROVED)
 
 ## 📊 Overview
 
 ### Purpose
-Previously, farming segments were often lost when updating case details, especially when switching between the "Manual Data Input" and "Data Upload" tabs. This feature ensures that all segments (both manually defined and data-driven) are preserved during the update flow unless explicitly deleted. It also enforces a strict 5-segment limit. If adding new segments via Data Upload exceeds this limit, the user must manually decide which segments to keep and which to delete before they can save.
+Previously, farming segments were often lost when updating case details. This feature ensures that segments are preserved during the update flow unless explicitly deleted. It also enforces a strict 5-segment limit with a "safe and stable" UX that differentiates between creating a new case and updating an existing one.
 
-### Key Principle
-**User-Centric Curation**: Users have full control over their segmentation. The system provides the data but stays out of the way of the final decision on which segments are preserved.
-
-### User Experience
-When a user updates a case, they can switch tabs without data loss. If they have 3 existing segments and use "Data Upload" to generate 4 more, the total becomes 7. The system will alert the user that they are over the limit and block the "Save" button. The user must then go to the "Manual Data Input" tab and manually delete segments until they are back to 5 or fewer.
+### Key Principle: Stability & Persistence
+> [!IMPORTANT]
+> **Condition-Based Persistence (The "Stability" Rule)**: 
+> - **Update Mode (Existing Case)**: Saved data is strictly protected. Previously saved segments (with database IDs) are **never** auto-deleted. New segments from Data Upload are **appended** to existing segments.
+> - **Create Mode (New Case)**: Standard ephemeral behavior is maintained, but with a **Switching Guard**. Switching tabs will prompt the user and replace the segment state to ensure data source consistency.
+> - **Strict 5-Segment Limit (FE & BE)**: Both Frontend and Backend must enforce a maximum of 5 segments. The Backend returns a 400 error if exceeded, and the Frontend provides a persistent overflow alert and blocks saving until resolved.
 
 ---
 
 ## 🎯 Design Principles
-- **State Preservation**: The `segments` array in the form state should be treated as the source of truth, initialized from the database and only modified by additive or explicitly subtractive actions.
-- **Manual Resolution**: Avoid automated "overwriting" or "merging" logic that might delete valuable user data. Force a manual decision instead.
-- **Strict Validation**: Prevent "accidental" overflows by blocking saves that exceed the segment limit at both the UI and API layers.
+- **Targeted Protection**: Only segments with a database `id` are protected from auto-deletion.
+- **Tab Guarding (Create)**: Prevent mixing manual and upload sources in new cases by prompting users when switching.
+- **Visual Stability**: Use `SegmentOverflowAlert` banners and real-time uniqueness validation to guide users.
 
 ---
 
 ## 📐 Architecture Design
 
-### Data Flow / Logic Flow
+### Logic Flow (Update vs Create)
 ```mermaid
 graph TD
-    A[Open Case Update Drawer] --> B[Initialize Form with Saved Segments]
-    B --> C[User Switches Tabs]
-    C --> D{Tab: Data Upload?}
-    D -->|Yes| E[Upload/Analyze File]
-    E --> F[Preview New Segments]
-    F --> G[Merge New Segments into State]
-    G --> H{Total Segments > 5?}
-    H -->|Yes| I[Show Overflow Warning & Disable Save]
-    H -->|No| J[Enable Save]
-    D -->|No| K[Manual Edit/Delete Segments]
-    K --> L{Total Segments <= 5?}
-    L -->|Yes| M[Enable Save]
-    L -->|No| I
-    M --> N[Save Case]
-    N --> O[Commit to DB]
-```
+    A[Case Drawer Open] --> B{Existing Case ID?}
+    B -->|Yes| C[Update Mode: Protected State]
+    B -->|No| D[Create Mode: Flexible State]
 
-### Database Schema / Data Structure
-- No changes to the database schema are required.
-- The `CaseBase` Pydantic model will be updated to include a validator for the `segments` field.
+    C --> E[Data Upload Appends to segments]
+    D --> E2[Switching Tab prompts & replaces segments]
+
+    E --> F{Total > 5?}
+    E2 --> F
+
+    F -->|Yes| G[Show SegmentOverflowAlert Banner]
+    F -->|Yes| H[Disable Save Button + Tooltip]
+    F -->|No| I[Enable Save Button]
+
+    G --> J[User Navigates to Manual Tab]
+    J --> K[User Deletes Segment]
+    K --> F
+```
 
 ---
 
 ## ✅ Acceptance Criteria
 
 ### User Acceptance Criteria (User AC)
-- [ ] Previously saved segments are preserved when switching between "Manual Data Input" and "Data Upload" tabs.
-- [ ] Creating segments via the Data Upload flow **appends** to the existing segment list rather than wiping it.
-- [ ] Users see a "Maximum 5 segments allowed" warning if the combined total (Existing + New) exceeds 5.
-- [ ] The "Save case" button is disabled as long as the segment count is > 5.
-- [ ] Users must navigate to the "Manual Data Input" tab to delete unwanted segments.
+- [ ] **Preservation (Update)**: Saved segments (with IDs) are preserved during tab switching and variable changes.
+- [ ] **Tab Guarding (Create)**: Switching between Manual and Upload tabs in a new case triggers a `Modal.confirm` if segments exist, asking to replace/reset the state.
+- [ ] **Overflow Alert**: A prominent banner appears if segment count > 5, detailing the current count and required action.
+- [ ] **Categorical Guard**: In Data Upload, selecting a variable with > 5 categories shows a warning before generating segments.
+- [ ] **Uniqueness**: Frontend highlights segments with duplicate names and blocks saving.
 
 ### Technical Acceptance Criteria (Tech AC)
-- [ ] Backend `POST /case` and `PUT /case/{id}` return `400 Bad Request` if `segments.length > 5`.
-- [ ] Frontend `CaseSettings.js` disables the "Save case" button and shows a specific tooltip if `segments.length > 5`.
-- [ ] `SegmentConfigurationForm.js` logic updated to **append** segments to the existing `segments` array instead of overwriting.
-- [ ] Pydantic `CaseBase` model uses `max_items=5` for the `segments` field.
+- [ ] Backend `POST /case` and `PUT /case/{id}` return `400` if `segments.length > 5`.
+- [ ] Pydantic `CaseBase` model enforces `max_items=5` for `segments`.
+- [ ] `CaseForm.js` implements `Modal.confirm` on `onTabChange` for new cases.
+- [ ] `SegmentConfigurationForm.js` logic updated to `concat` segments in Update mode.
 
 ---
 
 ## 🔧 Implementation Details
 
-### Phase 1: Frontend State Append & Preservation
-- [ ] Modify `CaseForm.js` -> `resetDataUploadForm` to preserve segments that have an `id`.
-- [ ] Update `SegmentConfigurationForm.js` fetch preview logic to **append** results to existing `segments` instead of `form.setFieldsValue({ segments })`.
-- [ ] Ensure `onRemove` in `CaseForm` only clears the `import_id` and data-upload-specific fields, retaining saved segments.
+### Phase 1: Frontend Context Logic
+- [ ] Modify `CaseForm.js`: Detect `currentCase.id` to set the `isUpdateMode` flag.
+- [ ] **Tab Guard (Create)**: In `onTabChange`, if `!isUpdateMode` and segments are dirty, show `Modal.confirm` to clear the context before switching.
+- [ ] Update `resetDataUploadForm`:
+    - In Update mode: Only clear segments without an `id`.
+    - In Create mode: Clear all.
 
-### Phase 2: Multi-Level Validation
-- [ ] Update `backend/models/case.py` to add Pydantic validation for segment count.
-- [ ] Update `backend/routes/case.py` to add explicit logic checks in create/update endpoints.
-- [ ] Enhance `CaseSettings.js` with a hard block in `onFinish` if validation is bypassed by the UI state.
-- [ ] Update `CaseSettings.js` `isSaveDisabled` logic to react to the combined segment count.
+### Phase 2: UX Stability Components
+- [ ] **SegmentOverflowAlert**: Dedicated alert component displayed at the top of the form when count > 5.
+- [ ] **Categorical Guard**: Warning message in the variable dropdown if the category count is > 5.
+- [ ] **Duplicate Validator**: Visual highlighting for duplicate segment names.
 
 ---
 
-## 📡 API Reference
+## 📡 Example Scenarios
 
-### Create/Update Case
-- **Method**: `POST /case` | `PUT /case/{id}`
-- **Path**: `/api/v1/case`
-- **Response**: 
-  - `200 OK`: Success
-  - `400 Bad Request`: "Failed to save: Total number of segments cannot exceed 5."
+### Scenario 1: Standard Update (Append)
+- **Status**: Update Mode (Existing Case).
+- **Current State**: 2 saved segments (ID: 101, 102).
+- **Action**: User switches to "Data Upload" and generates 2 new segments (Draft A, Draft B).
+- **Result**: State contains 4 segments (2 Saved + 2 Draft). Save enabled.
+
+### Scenario 2: Update with Overflow (Manual Resolution)
+- **Status**: Update Mode (Existing Case).
+- **Current State**: 4 saved segments.
+- **Action**: User switches to "Data Upload" and generates 3 new segments.
+- **Result**: 7 segments total. **Overflow Alert Banner** appears.
+- **Manual Action**: User navigates to "Manual" tab and deletes 2 saved segments.
+- **Outcome**: Save enabled once count is 5.
+
+### Scenario 3: Create Mode (Switching Guard)
+- **Status**: Create Mode (New Case).
+- **Current State**: 3 draft segments in "Manual" tab.
+- **Action**: User clicks "Data Upload" tab.
+- **System Action**: Modal appears: "Switching to Data Upload will clear your manual segments. Proceed?".
+- **User Action**: Clicks "OK".
+- **Result**: Manual segments are cleared, tab switches to Upload.
+
+### Scenario 4: Categorical Variable Safety Guard
+- **Status**: Any Mode.
+- **Action**: User selects a variable with 15 categories.
+- **System Action**: Warning appears. Generation is blocked.
 
 ---
 
 ## ✅ Implementation Checklist
-- [ ] Unit tests for backend segment count validation.
-- [ ] Manual verification of tab-switching persistence.
-- [ ] UI verification: Append 3 new segments to 3 existing ones -> verify block.
-- [ ] UI verification: Delete segments until 5 -> verify save enabled.
-- [ ] Documentation updated in `agent_docs/sprint-plan.md`.
-
----
-
-## 📊 Example Scenarios
-
-### Scenario 1: Appending Segments
-- **Input**: User has 3 saved segments.
-- **Action**: Switches to "Data Upload", uploads a file that returns 4 segments.
-- **Result**: State now contains 7 segments (3 old, 4 new).
-- **Outcome**: "Save" button is disabled. A warning tells the user to delete 2 segments.
-
-### Scenario 2: Over-segmentation Resolution
-- **Input**: User has 7 segments (overflow).
-- **Action**: User goes to "Manual Data Input" tab and deletes 2 segments.
-- **Outcome**: Count becomes 5. "Save" button is enabled.
-
----
-
-## 🔮 Future Enhancements
-- **Auto-Merging**: Intelligent suggestion for merging overlapping numerical segments.
-- **Conflict Highlighting**: Highlight if a new data-driven segment name conflicts with an existing one.
+- [ ] Tab Switch Guard (Create Mode) verified.
+- [ ] Segment retention (Update Mode) verified.
+- [ ] Overflow banner displays correctly.
+- [ ] Save button disabled at > 5.
+- [ ] Duplicate name validation working.
+- [ ] Backend 400 error caught and handled.

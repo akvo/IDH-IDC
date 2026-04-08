@@ -1,6 +1,11 @@
-# Mutually Exclusive Segmentation — Implementation Specification
+# [DRAFT/DEPRECATED] Mutually Exclusive Segmentation — Implementation Specification
 
-## 📊 Overview
+> [!CAUTION]
+> **This document is DEPRECATED.**
+> It has been renewed and replaced by **[docs/SEGMENTATION_UPDATE_BEHAVIOR.md](/docs/SEGMENTATION_UPDATE_BEHAVIOR.md)**.
+> Please refer to the new document for the approved logic regarding "Create Mode" vs "Update Mode" and the 5-segment limit stability features.
+
+## 📊 Overview (Preserved for History)
 
 ### Purpose
 The Income Driver Calculator (IDC) currently allows segments created through manual input and data upload to coexist. This leads to configuration conflicts, UI clutter (exceeding the 5-segment limit), and confusion regarding the source of truth for farmer data. This feature enforces a strict "One Source" rule for segmentation.
