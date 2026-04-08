@@ -48,8 +48,22 @@ const CoursePlayer = () => {
           AcademyService.getCourse(courseId),
           AcademyService.getProgress(),
         ]);
+
+        const userProgress = progressData[courseId] || null;
         setCourse(courseData);
-        setProgress(progressData[courseId] || null);
+        setProgress(userProgress);
+
+        // Course Resumption Logic: Navigate to the last active chapter
+        if (userProgress && userProgress.current_chapter_id) {
+          const resumeIndex = courseData.chapters.findIndex(
+            (ch) => ch.id === userProgress.current_chapter_id
+          );
+          if (resumeIndex !== -1) {
+            setCurrentChapterIndex(resumeIndex);
+            // Pre-emptively mark sync as occurred for the resumed chapter
+            syncOccurredRef.current = true;
+          }
+        }
       } catch (error) {
         console.error("Error fetching course data:", error);
       } finally {
@@ -98,6 +112,7 @@ const CoursePlayer = () => {
     setCurrentChapterIndex(parseInt(key));
     setShowQuiz(false);
     setQuizResult(null);
+    syncOccurredRef.current = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -264,13 +279,19 @@ const CoursePlayer = () => {
               <Button
                 disabled={currentChapterIndex === 0}
                 icon={<LeftOutlined />}
-                onClick={() => setCurrentChapterIndex(currentChapterIndex - 1)}
+                onClick={() => {
+                  setCurrentChapterIndex(currentChapterIndex - 1);
+                  syncOccurredRef.current = false;
+                }}
               >
                 Previous Module
               </Button>
               <Button
                 disabled={currentChapterIndex === course.chapters.length - 1}
-                onClick={() => setCurrentChapterIndex(currentChapterIndex + 1)}
+                onClick={() => {
+                  setCurrentChapterIndex(currentChapterIndex + 1);
+                  syncOccurredRef.current = false;
+                }}
               >
                 Next Module <RightOutlined />
               </Button>

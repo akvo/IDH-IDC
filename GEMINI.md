@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Course Resumption & Active Chapter Tracking (#763) - [COMPLETED]**:
+        - Implemented "Course Resumption" in `CoursePlayer.js` to automatically navigate users to their last active/completed chapter.
+        - Refined progress sync logic to track the "Active" chapter on every navigation (Menu, Next/Prev buttons, and Quiz completion).
+        - Optimized `useEffect` and `syncOccurredRef` to ensure seamless state preservation without redundant backend calls.
+        - Verified 100% lint-clean status (`yarn lint`) and consistent state management across the player.
+    - Path: `frontend/src/pages/academy/CoursePlayer.js`.
+
     - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
         - Created a reusable `YouTubePlayer` component in `src/components/utils/` to centralize 16:9 aspect ratio and desktop width capping (680px).
         - Centralized YouTube metadata in `src/constants/videos.js` for easier platform-wide scaling.
