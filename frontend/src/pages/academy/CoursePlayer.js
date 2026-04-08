@@ -8,8 +8,6 @@ import {
   Modal,
   Spin,
   Divider,
-  Card,
-  Result,
 } from "antd";
 import {
   BookOutlined,
@@ -17,7 +15,6 @@ import {
   LeftOutlined,
   RightOutlined,
   ArrowLeftOutlined,
-  TrophyOutlined,
 } from "@ant-design/icons";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -25,6 +22,7 @@ import Quiz from "react-quiz-component";
 import { routePath } from "../../components/route";
 import AcademyService from "./AcademyService";
 import QuizTimer from "./components/QuizTimer";
+import QuizResult from "./components/QuizResult";
 import "./CoursePlayer.scss";
 
 const { Content, Sider } = Layout;
@@ -321,78 +319,29 @@ const CoursePlayer = () => {
                 showDefaultResult={false}
               />
 
-              {quizResult && (
-                <Card className="quiz-result-card animate-scale-in">
-                  <Result
-                    icon={
-                      <TrophyOutlined
-                        style={{ color: "#FFD700", fontSize: "4rem" }}
-                      />
-                    }
-                    title={
-                      <Title level={2} style={{ color: "#1B625F" }}>
-                        Assessment Complete!
-                      </Title>
-                    }
-                    subTitle={
-                      <div className="result-stats">
-                        <Text strong size="large">
-                          You scored {quizResult.numberOfCorrectAnswers} out of{" "}
-                          {quizResult.numberOfQuestions}
-                        </Text>
-                        <br />
-                        <Progress
-                          percent={Math.round(
-                            (quizResult.numberOfCorrectAnswers /
-                              quizResult.numberOfQuestions) *
-                              100
-                          )}
-                          strokeColor="#1B625F"
-                          type="circle"
-                          style={{ marginTop: "24px" }}
-                        />
-                      </div>
-                    }
-                    extra={[
-                      <Button
-                        type="primary"
-                        key="next"
-                        size="large"
-                        className="btn-next-module"
-                        onClick={() => {
-                          if (
-                            currentChapterIndex <
-                            course.chapters.length - 1
-                          ) {
-                            setCurrentChapterIndex(currentChapterIndex + 1);
-                            setShowQuiz(false);
-                            setQuizResult(null);
-                            syncOccurredRef.current = false;
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          } else {
-                            navigate(routePath.idc.academy);
-                          }
-                        }}
-                      >
-                        {currentChapterIndex < course.chapters.length - 1
-                          ? "Proceed to Next Module"
-                          : "Finish Academy Course"}
-                      </Button>,
-                      <Button
-                        key="retry"
-                        onClick={() => {
-                          setQuizResult(null);
-                          setShowQuiz(false);
-                          setTimeout(() => setShowQuiz(true), 100);
-                        }}
-                        style={{ marginTop: "12px" }}
-                      >
-                        Retry Assessment
-                      </Button>,
-                    ]}
-                  />
-                </Card>
-              )}
+              <QuizResult
+                quizResult={quizResult}
+                quiz={currentChapter.quiz}
+                isLastChapter={
+                  currentChapterIndex === course.chapters.length - 1
+                }
+                onRetry={() => {
+                  setQuizResult(null);
+                  setShowQuiz(false);
+                  setTimeout(() => setShowQuiz(true), 100);
+                }}
+                onNext={() => {
+                  if (currentChapterIndex < course.chapters.length - 1) {
+                    setCurrentChapterIndex(currentChapterIndex + 1);
+                    setShowQuiz(false);
+                    setQuizResult(null);
+                    syncOccurredRef.current = false;
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  } else {
+                    navigate(routePath.idc.academy);
+                  }
+                }}
+              />
             </div>
           </div>
         )}

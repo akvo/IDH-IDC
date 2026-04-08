@@ -156,7 +156,8 @@
       border: 1px solid #f0f0f0;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 
-      .quiz-result-card {
+      .quiz-result-card,
+      .quiz-summary-card {
         margin-top: 24px;
         border-radius: 20px;
         box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
@@ -178,6 +179,85 @@
           &:hover {
             background-color: #144d4a;
             border-color: #144d4a;
+          }
+        }
+      }
+
+      .quiz-summary-card {
+        padding: 12px;
+
+        .summary-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+
+        .summary-list {
+          .summary-item {
+            .question-header {
+              display: flex;
+              align-items: flex-start;
+              margin-bottom: 12px;
+
+              .status-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                margin-right: 12px;
+                margin-top: 6px;
+                flex-shrink: 0;
+
+                &.correct {
+                  background-color: #52c41a;
+                  box-shadow: 0 0 0 4px rgba(82, 196, 26, 0.1);
+                }
+
+                &.incorrect {
+                  background-color: #ff4d4f;
+                  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.1);
+                }
+              }
+
+              .question-text {
+                font-size: 16px;
+                color: #262626;
+              }
+            }
+
+            .answer-comparison {
+              padding-left: 24px;
+              margin-bottom: 16px;
+
+              .answer-row {
+                margin-bottom: 4px;
+                font-size: 14px;
+              }
+
+              .txt-correct {
+                color: #52c41a;
+                font-weight: 600;
+              }
+
+              .txt-incorrect {
+                color: #ff4d4f;
+                font-weight: 600;
+              }
+            }
+
+            .explanation-box {
+              margin-left: 24px;
+              padding: 16px;
+              background-color: #f9fbfb;
+              border-radius: 12px;
+              border-left: 4px solid #1b625f;
+
+              .explanation-text {
+                color: #595959;
+                margin-bottom: 0;
+                font-size: 14px;
+              }
+            }
           }
         }
       }

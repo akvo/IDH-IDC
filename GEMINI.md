@@ -16,6 +16,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+    - **Quiz Summary & Assessment Review (#759) - [COMPLETED]**:
+        - Implemented a detailed "Review Answers" summary page in `CoursePlayer.js`.
+        - Mapped user inputs to quiz metadata to show status (Correct/Incorrect), user answer, and the correct answer.
+        - Integrated detailed "EXPLANATION" blocks for each question to enhance the learning loop.
+        - Added styling in `CoursePlayer.scss` with branded status indicators and highlighted feedback boxes.
+        - **Refactor**: Extracted result and summary logic into a standalone `QuizResult.js` component to improve maintainability.
+        - Verified 100% lint-clean status (`yarn lint`) and consistent state management.
+    - Path: `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/components/QuizResult.js`.
+
     - **Course Resumption & Active Chapter Tracking (#763) - [COMPLETED]**:
         - Implemented "Course Resumption" in `CoursePlayer.js` to automatically navigate users to their last active/completed chapter.
         - Refined progress sync logic to track the "Active" chapter on every navigation (Menu, Next/Prev buttons, and Quiz completion).
