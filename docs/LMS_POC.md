@@ -12,7 +12,9 @@ The Learning Management System (LMS) PoC aims to provide a minimal, secure envir
 - **Login**: Users authenticate via the existing IDC login.
 - **Library**: Users browse available courses in the "Academy" section.
 - **Chapter Layout**: Users first enter **Reading Mode** (Markdown-rendered content).
+- **Course Resumption**: When a user continues learning, they are automatically navigated to the **last completed/active chapter**.
 - **Quiz**: A "Test Your Knowledge" button at the bottom of the reading material triggers the `react-quiz-component` for that chapter.
+- **Quiz Summary**: After completing a quiz, a **summary page** is displayed, allowing users to review their answers and see detailed explanations.
 - **Persistence**: Progress is stored as **JSON files on the backend**. Completion of a quiz unlocks the next chapter.
 
 ---
