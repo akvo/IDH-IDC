@@ -1,4 +1,4 @@
-# Segmentation – Case Detail Update Behavior — Implementation Specification (APPROVED)
+# Segmentation – Case Detail Update Behavior — Implementation Specification
 
 ## 📊 Overview
 
@@ -7,10 +7,26 @@ Previously, farming segments were often lost when updating case details. This fe
 
 ### Key Principle: Stability & Persistence
 > [!IMPORTANT]
-> **Condition-Based Persistence (The "Stability" Rule)**: 
+> **Condition-Based Persistence (The "Stability" Rule)**:
 > - **Update Mode (Existing Case)**: Saved data is strictly protected. Previously saved segments (with database IDs) are **never** auto-deleted. New segments from Data Upload are **appended** to existing segments.
 > - **Create Mode (New Case)**: Standard ephemeral behavior is maintained, but with a **Switching Guard**. Switching tabs will prompt the user and replace the segment state to ensure data source consistency.
 > - **Strict 5-Segment Limit (FE & BE)**: Both Frontend and Backend must enforce a maximum of 5 segments. The Backend returns a 400 error if exceeded, and the Frontend provides a persistent overflow alert and blocks saving until resolved.
+
+---
+
+## 🐛 Current Bug Situation
+
+### 1. Data Loss During Case Update
+Currently, when a user edits an existing case and switches to the **Data Upload** tab, any previously saved segments are unconditionally cleared from the state. If the user then uploads a file and selects a variable, the new segments **overwrite** the saved ones, leading to permanent data loss upon saving.
+
+### 2. Unvalidated Segment Overflow
+The tool currently lacks strict enforcement of the **MAX_SEGMENT = 5** limit during the segmentation update flow. This allows users to:
+- Generate > 5 segments via data upload.
+- End up with a mix of manual and uploaded segments that exceed the UI's layout capacity.
+- Attempt to save cases with invalid segment counts, leading to unhandled backend errors.
+
+### 3. Workflow Inconsistency
+There is no distinction between "Draft" state (New Case) and "Protected" state (Existing Case), which leads to a confusing UX where users are unsure if switching tabs will result in data loss or state merging.
 
 ---
 
