@@ -21,14 +21,16 @@ Currently, when a user edits an existing case and switches to the **Data Upload*
 
 **Resulting Bug**: If a user has 3 existing segments and adds 4 more via Data Upload, they end up with **7 segments in total** after updating. This results in an invalid state (> 5 segments) that is hidden from the user during the editing process but visible (and broken) after the update is complete.
 
-### 2. Unvalidated Segment Overflow
-The tool currently lacks strict enforcement of the **MAX_SEGMENT = 5** limit during the segmentation update flow. This allows users to:
-- Generate > 5 segments via data upload.
-- End up with a mix of manual and uploaded segments that exceed the UI's layout capacity.
-- Attempt to save cases with invalid segment counts, leading to unhandled backend errors.
+### 2. Disconnected Segment Overflow
+Because the frontend currently "hides" saved segments during the Data Upload flow, users are unaware that new entries will be **appended** to existing ones. This lack of visual transparency leads to:
+- Users inadvertently generating > 5 segments (e.g. 3 saved + 4 new).
+- Post-save UI breakage where the additional segments exceed the overflow capacity.
+- Silent backend failures or inconsistent data states that are only discovered AFTER the save operation.
 
-### 3. Workflow Inconsistency
-There is no distinction between "Draft" state (New Case) and "Protected" state (Existing Case), which leads to a confusing UX where users are unsure if switching tabs will result in data loss or state merging.
+### 3. Lack of UI Transparency (Workflow Conflict)
+The current UI treats "Create" and "Update" flows with identical ephemeral logic. This creates a misleading experience:
+- In **Update Mode**, users see a blank slate when switching to Data Upload, incorrectly assuming their saved segments will be replaced (when they will actually be merged).
+- This "Shared Logic" prevent the user from making intentional decisions about which specific segments to keep or delete during a complex update.
 
 ---
 
