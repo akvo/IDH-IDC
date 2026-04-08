@@ -35,6 +35,18 @@ graph TD
 
 ---
 
+## ✅ Acceptance Criteria
+
+### User Acceptance Criteria (User AC)
+- [ ] [Requirement 1 from the user's perspective, e.g., "User can see a confirmation message after submission."]
+- [ ] [Requirement 2 from the user's perspective]
+
+### Technical Acceptance Criteria (Tech AC)
+- [ ] [Requirement 1 from a technical perspective, e.g., "API response time is under 200ms."]
+- [ ] [Requirement 2 from a technical perspective]
+
+---
+
 ## 🔧 Implementation Details
 
 ### Phase 1: [Phase Name]
