@@ -13,9 +13,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from typing import Optional, List
+from typing import Optional, List, Annotated
 from typing_extensions import TypedDict
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from models.case_commodity import (
     CaseCommodity,
     SimplifiedCaseCommodityDict,
@@ -459,7 +459,9 @@ class CaseBase(BaseModel):
     tags: Optional[List[int]] = None
     company: Optional[int] = None
     status: Optional[int] = None
-    segments: Optional[List[CaseSettingSegmentPayload]] = None
+    segments: Optional[
+        Annotated[List[CaseSettingSegmentPayload], Field(max_length=5)]
+    ] = None
     import_id: Optional[str] = None
 
 

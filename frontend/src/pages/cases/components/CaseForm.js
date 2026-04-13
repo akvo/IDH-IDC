@@ -17,7 +17,9 @@ import {
   Button,
   Upload,
   message,
+  Modal,
 } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import {
   countryOptions,
   focusCommodityOptions,
@@ -30,6 +32,7 @@ import { AreaUnitFields, SegmentForm, SegmentConfigurationForm } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
+import { MAX_SEGMENT } from "../constants";
 import { uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
 import {
@@ -171,6 +174,23 @@ const SecondaryForm = ({
   );
 };
 
+const SegmentOverflowAlert = ({ segments = [] }) => {
+  const segmentCount = segments?.length || 0;
+  if (segmentCount <= MAX_SEGMENT) {
+    return null;
+  }
+  return (
+    <Alert
+      message={`You have defined ${segmentCount} segments. The maximum allowed is ${MAX_SEGMENT}. Please remove ${
+        segmentCount - MAX_SEGMENT
+      } segment(s) to save your changes.`}
+      type="error"
+      showIcon
+      style={{ marginBottom: 16 }}
+    />
+  );
+};
+
 const CaseForm = ({
   deletedSegmentIds = [],
   updateCurrentCase = () => {},
@@ -187,6 +207,11 @@ const CaseForm = ({
 
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadResult, setUploadResult] = useState(null);
+  const isUpdateMode = !!currentCase?.id;
+
+  const segments = Form.useWatch("segments", form);
+  const importId = Form.useWatch("import_id", form);
+
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [uploadErrorText, setUploadErrorText] = useState("");
@@ -195,6 +220,12 @@ const CaseForm = ({
   const resetDataUploadForm = () => {
     setUploadResult(null);
     setFileList([]);
+
+    // In update mode, preserve segments with IDs
+    const existingSegments = isUpdateMode
+      ? segments?.filter((s) => s?.id) || []
+      : [];
+
     form.setFieldsValue({
       import_id: null,
       // reset variable type
@@ -202,10 +233,33 @@ const CaseForm = ({
       // reset segmentation variable when variable type changes
       [`${dataUploadFieldPreffix}segmentation_variable`]: null,
       // reset segments
-      segments: [{ name: null }],
+      segments:
+        existingSegments.length > 0 ? existingSegments : [{ name: null }],
       // reset number of segments
       [`${dataUploadFieldPreffix}number_of_segments`]: null,
     });
+  };
+
+  const handleTabChange = (key) => {
+    // Only guard if NOT in update mode and there is existing data
+    const hasData = (segments?.length > 0 && segments[0]?.name) || !!importId;
+
+    if (!isUpdateMode && hasData) {
+      Modal.confirm({
+        title: "Switch segmentation method?",
+        icon: <ExclamationCircleOutlined />,
+        content:
+          "Switching tabs will clear your current segmentation progress. Do you want to continue?",
+        okText: "Yes, switch and clear",
+        cancelText: "Cancel",
+        onOk: () => {
+          resetDataUploadForm();
+          onTabChange(key);
+        },
+      });
+    } else {
+      onTabChange(key);
+    }
   };
 
   const uploadProps = {
@@ -653,7 +707,7 @@ const CaseForm = ({
       <Col span={24}>
         {contextHolder}
         <Tabs
-          onChange={onTabChange}
+          onChange={handleTabChange}
           items={[
             {
               key: "manual",
@@ -666,6 +720,7 @@ const CaseForm = ({
                     className="case-setting-child-card-wrapper"
                     size="small"
                   >
+                    <SegmentOverflowAlert segments={segments} />
                     <SegmentForm
                       deletedSegmentIds={deletedSegmentIds}
                       setDeletedSegmentIds={setDeletedSegmentIds}
@@ -731,6 +786,7 @@ const CaseForm = ({
                     </Col>
                     {uploadResult && (
                       <Col span={24}>
+                        <SegmentOverflowAlert segments={segments} />
                         <SegmentConfigurationForm
                           dataUploadFieldPreffix={dataUploadFieldPreffix}
                           uploadResult={uploadResult}
