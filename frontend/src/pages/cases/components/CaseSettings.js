@@ -768,6 +768,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           setDeletedSegmentIds={setDeletedSegmentIds}
           dataUploadFieldPreffix={dataUploadFieldPreffix}
           onTabChange={(key) => setActiveTab(key)}
+          activeTab={activeTab}
         />
         <div className="case-form-button-wrapper">
           <Button onClick={handleCancelWithGuard} className="button-cancel">

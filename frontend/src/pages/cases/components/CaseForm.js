@@ -197,6 +197,7 @@ const CaseForm = ({
   setDeletedSegmentIds = () => {},
   dataUploadFieldPreffix = "",
   onTabChange = () => {},
+  activeTab = "manual",
 }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
@@ -252,6 +253,9 @@ const CaseForm = ({
           "Switching tabs will clear your current segmentation progress. Do you want to continue?",
         okText: "Yes, switch and clear",
         cancelText: "Cancel",
+        okButtonProps: {
+          style: { backgroundColor: "#01625F", borderColor: "#01625F" },
+        },
         onOk: () => {
           resetDataUploadForm();
           onTabChange(key);
@@ -707,6 +711,7 @@ const CaseForm = ({
       <Col span={24}>
         {contextHolder}
         <Tabs
+          activeKey={activeTab}
           onChange={handleTabChange}
           items={[
             {
