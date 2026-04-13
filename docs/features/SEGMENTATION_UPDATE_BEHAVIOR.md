@@ -17,7 +17,7 @@ Previously, farming segments were often lost when updating case details. This fe
 ## 🐛 Current Bug Situation
 
 ### 1. Invisible State Clearing & Backend Accumulation
-Currently, when a user edits an existing case and switches to the **Data Upload** tab, any previously saved segments are unconditionally cleared from the **frontend state** (UI). However, when the user selects a new variable and saves the case, the backend **appends** the new segments to the existing ones. 
+Currently, when a user edits an existing case and switches to the **Data Upload** tab, any previously saved segments are unconditionally cleared from the **frontend state** (UI). However, when the user selects a new variable and saves the case, the backend **appends** the new segments to the existing ones.
 
 **Resulting Bug**: If a user has 3 existing segments and adds 4 more via Data Upload, they end up with **7 segments in total** after updating. This results in an invalid state (> 5 segments) that is hidden from the user during the editing process but visible (and broken) after the update is complete.
 
@@ -132,6 +132,7 @@ graph TD
 - **Status**: Any Mode.
 - **Action**: User selects a variable with 15 categories.
 - **System Action**: Warning appears. Generation is blocked.
+-
 ### Scenario 5: Create Mode - Direct Deletion (Data Upload Tab)
 - **Status**: Create Mode (New Case).
 - **Tab**: Data Upload.
@@ -141,6 +142,15 @@ graph TD
 - **Outcome**: Count becomes 5. **Overflow Alert** disappears. Save enabled.
 - **Note**: This differs from **Update Mode**, where saved segments (with IDs) are protected and must be deleted from the "Manual Data Input" tab to ensure intentional data removal.
 
+### Scenario 6: Delete-before-Upload Enforcement
+- **Status**: Update Mode (Existing Case).
+- **Condition**: User has 5 segments saved.
+- **Action**: User navigates to "Data upload" tab.
+- **System Action**:
+    - A prominent warning alert is displayed: *"You have reached the maximum of 5 segments. Please delete existing segments to upload a new data template."*
+    - The **Upload Zone (Dragger)** is hidden or disabled.
+- **User Action**: User must go back to "Manual" tab, delete at least one segment, then return to Upload.
+
 ---
 
 ## ✅ Implementation Checklist
@@ -148,5 +158,6 @@ graph TD
 - [ ] Segment retention (Update Mode) verified.
 - [ ] Overflow banner displays correctly.
 - [ ] Save button disabled at > 5.
+- [ ] Delete-before-Upload block enforced in Update Mode.
 - [ ] Duplicate name validation working.
 - [ ] Backend 400 error caught and handled.

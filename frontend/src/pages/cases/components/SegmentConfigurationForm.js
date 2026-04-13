@@ -97,13 +97,14 @@ const SegmentConfigurationForm = ({
 
           setSegmentationPreviews({ ...res.data, segments });
 
-          // In update mode, preserve segments with IDs
-          const existingSegments = isUpdateMode
-            ? segmentFields?.filter((s) => s?.id) || []
+          // In update mode, preserve segments with IDs from the official store
+          // instead of the potentially volatile form state
+          const savedSegments = isUpdateMode
+            ? currentCase?.segments?.filter((s) => s?.id) || []
             : [];
 
-          // Combine existing segments with new preview segments
-          const combinedSegments = [...existingSegments, ...segments];
+          // Combine saved segments with new preview segments
+          const combinedSegments = [...savedSegments, ...segments];
 
           // set segment values to form initialValue here
           form.setFieldsValue({ segments: combinedSegments });
@@ -132,8 +133,6 @@ const SegmentConfigurationForm = ({
     numberOfSegments,
     uploadResult?.import_id,
     isUpdateMode,
-    segmentFields,
-    loadingPreview,
   ]);
 
   const prevManualCountRef = useRef(0);
@@ -247,7 +246,7 @@ const SegmentConfigurationForm = ({
         const recalculatedSegments = res?.data?.segments || [];
 
         // 2. Merge logic: Update only the relevant segments in the main list
-        const mergedSegments = segmentFields.map((existingSegment) => {
+        const mergedSegments = (segmentFields || []).map((existingSegment) => {
           const existingSegVar =
             existingSegment.segmentation_variable || segmentationVariable;
 

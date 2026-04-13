@@ -213,6 +213,8 @@ const CaseForm = ({
   const segments = Form.useWatch("segments", form);
   const importId = Form.useWatch("import_id", form);
 
+  const isAtMaxSegments = (segments?.length || 0) >= MAX_SEGMENT;
+
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [uploadErrorText, setUploadErrorText] = useState("");
@@ -754,13 +756,29 @@ const CaseForm = ({
                         Download the template, enter your data, run the
                         validation in Excel, and upload the validated file here.
                       </p>
+                      {isUpdateMode && isAtMaxSegments && (
+                        <Alert
+                          message={
+                            <span>
+                              You have reached the maximum of 5 segments. Please{" "}
+                              <b>delete</b> existing segments from the{" "}
+                              <b>&quot;Manual data input&quot;</b> tab before
+                              uploading a new data template.
+                            </span>
+                          }
+                          type="warning"
+                          showIcon
+                          style={{ marginBottom: "16px" }}
+                        />
+                      )}
                       <Dragger
                         {...uploadProps}
                         style={{
                           marginBottom: "24px",
                           display:
-                            uploadProps.fileList &&
-                            uploadProps.fileList.length > 0
+                            (isUpdateMode && isAtMaxSegments) ||
+                            (uploadProps.fileList &&
+                              uploadProps.fileList.length > 0)
                               ? "none"
                               : "block",
                         }}
@@ -797,6 +815,7 @@ const CaseForm = ({
                           uploadResult={uploadResult}
                           deletedSegmentIds={deletedSegmentIds}
                           setDeletedSegmentIds={setDeletedSegmentIds}
+                          currentCase={currentCase}
                         />
                       </Col>
                     )}

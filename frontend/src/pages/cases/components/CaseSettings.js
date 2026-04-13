@@ -48,7 +48,9 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
   const isUploadMissing = activeTab === "upload" && !importId;
   const isSaveDisabled =
-    !enableEditCase || segmentFields?.length > MAX_SEGMENT || isUploadMissing;
+    !enableEditCase ||
+    (segmentFields?.length || 0) > MAX_SEGMENT ||
+    isUploadMissing;
 
   const handleCancelWithGuard = useCallback(() => {
     const isDirty =
@@ -769,6 +771,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           dataUploadFieldPreffix={dataUploadFieldPreffix}
           onTabChange={(key) => setActiveTab(key)}
           activeTab={activeTab}
+          currentCase={currentCase}
         />
         <div className="case-form-button-wrapper">
           <Button onClick={handleCancelWithGuard} className="button-cancel">
