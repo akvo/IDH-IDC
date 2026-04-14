@@ -22,7 +22,7 @@ import {
   CloseOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
-import { CaseUIState, CurrentCaseState } from "../store";
+import { CaseUIState } from "../store";
 import { MAX_SEGMENT } from "../constants";
 import { selectProps, api } from "../../../lib";
 
@@ -245,7 +245,6 @@ const SegmentGenerator = ({
 };
 
 const DataUploadSegmentForm = ({
-  deletedSegmentIds = [],
   setDeletedSegmentIds = () => {},
   handleOnChangeFieldValue = (/* currentSegment, value */) => {},
   segmentFieldsLoading = {},
@@ -254,7 +253,6 @@ const DataUploadSegmentForm = ({
   segmentationPreviews = null,
 }) => {
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
-  const currentCase = CurrentCaseState.useState((s) => s);
 
   const form = Form.useFormInstance();
   const segmentFields = Form.useWatch("segments", form);
@@ -311,17 +309,14 @@ const DataUploadSegmentForm = ({
       setLayoutSequence((prev) => prev.filter((id) => id !== layoutId));
     }
 
-    // add delete segment into deletedSegmentIds state
-    const deletedIdsLength = deletedSegmentIds.length;
-    const segmentIndex = field.name;
-    const findCurrentSegment =
-      currentCase?.segments?.[segmentIndex + deletedIdsLength]; // adding length of deleted ids to get the correct segments
-    if (findCurrentSegment?.id) {
-      setDeletedSegmentIds((prev) => [
-        ...new Set([...prev, findCurrentSegment.id]),
-      ]);
+    // Retrieve the segment ID directly from the form values for robust deletion
+    const segmentsValue = form.getFieldValue("segments") || [];
+    const targetSegment = segmentsValue[field.name];
+
+    if (targetSegment?.id) {
+      setDeletedSegmentIds((prev) => [...new Set([...prev, targetSegment.id])]);
     }
-    remove(segmentIndex);
+    remove(field.name);
   };
 
   const variableType = Form.useWatch(

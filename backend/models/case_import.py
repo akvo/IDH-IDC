@@ -51,7 +51,7 @@ class GenerateSegmentValuesRequest(BaseModel):
     case_id: int
     import_id: str
     segmentation_variable: str
-    segments: List[SegmentDefinition]
+    segments: List[SegmentDefinition] = Field(..., max_length=5)
 
 
 class SegmentationSegment(BaseModel):
@@ -90,7 +90,7 @@ class SegmentationRecalculateRequest(BaseModel):
     import_id: str
     segmentation_variable: str
     variable_type: Literal["numerical", "categorical"]
-    segments: List[SegmentValueInput]
+    segments: List[SegmentValueInput] = Field(..., max_length=5)
     strategy: Optional[Literal["equal_frequency", "equal_interval"]] = Field(
         "equal_frequency",
         description="Strategy for numerical segmentation",

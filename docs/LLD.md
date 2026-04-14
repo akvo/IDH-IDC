@@ -151,5 +151,19 @@ To maintain a clean architectural blueprint, detailed feature logic is documente
 
 ---
 
+## 7. Architecture Decision Records (ADRs)
+
+### ADR-006: Strict 5-Segment Limit Enforcement
+- **Status**: Accepted
+- **Context**: Users were able to bypass the 5-segment limit during the "Update Case" flow by appending new data-upload segments to existing manual segments, leading to invalid states (> 5 segments).
+- **Decision**:
+    1.  **Global Model Enforcement**: Applied `max_length=5` to the `segments` field in Pydantic models (`CaseBase`, `CaseImport` requests). This ensures strict validation at the API entry point.
+    2.  **UX Hardening (Delete-before-Upload)**: In Update Mode, the "Data Upload" tab is blocked if 5 segments are already present. Users must delete segments in the "Manual" tab before uploading new data.
+    3.  **Persistence Transparency**: Integration tests verify that `422 Unprocessable Entity` is returned for any overflow attempts.
+- **Alternatives Considered**: Proportional merging or automatic deletion of old segments. Both were rejected to preserve user data integrity.
+- **Consequences**: Users must perform an intentional "Delete" action before switching data sources in Update Mode.
+
+---
+
 > [!IMPORTANT]
 > **Data Privacy Check**: No PII (Personally Identifiable Information) beyond User Table (Email/Name) is stored. Individual farmer data is aggregated into segments before being saved to the database.
