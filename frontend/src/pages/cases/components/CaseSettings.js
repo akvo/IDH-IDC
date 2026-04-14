@@ -46,11 +46,17 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [activeTab, setActiveTab] = useState("manual");
   const importId = Form.useWatch("import_id", form);
 
-  const isUploadMissing = activeTab === "upload" && !importId;
+  const hasSegments = useMemo(() => {
+    return (
+      segmentFields?.some((s) =>
+        typeof s === "string" ? s.trim() !== "" : !!s?.name?.trim()
+      ) || false
+    );
+  }, [segmentFields]);
+
+  const isUploadMissing = activeTab === "upload" && !importId && !hasSegments;
   const isSaveDisabled =
-    !enableEditCase ||
-    (segmentFields?.length || 0) > MAX_SEGMENT ||
-    isUploadMissing;
+    !enableEditCase || (segmentFields?.length || 0) > MAX_SEGMENT || isUploadMissing;
 
   const handleCancelWithGuard = useCallback(() => {
     const isDirty =
@@ -778,7 +784,7 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
             Cancel
           </Button>
           {isUploadMissing ? (
-            <Tooltip title="Please upload a data template, or switch to 'Manual data input' and define at least one segment to save this case.">
+            <Tooltip title="Please upload a data template, or switch to 'Manual data input' to define segments to save this case.">
               <span className="cursor-not-allowed">
                 <Button
                   loading={isSaving}
