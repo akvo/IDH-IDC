@@ -100,7 +100,9 @@ const SegmentConfigurationForm = ({
           // In update mode, preserve segments with IDs from the official store
           // instead of the potentially volatile form state
           const savedSegments = isUpdateMode
-            ? currentCase?.segments?.filter((s) => s?.id) || []
+            ? currentCase?.segments?.filter(
+                (s) => s?.id && !deletedSegmentIds?.includes(s.id)
+              ) || []
             : [];
 
           // Combine saved segments with new preview segments

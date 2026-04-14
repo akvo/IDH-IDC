@@ -175,15 +175,16 @@ const SecondaryForm = ({
 };
 
 const SegmentOverflowAlert = ({ segments = [] }) => {
-  const count = segments?.length || 0;
-  if (count <= MAX_SEGMENT) {
+  const segmentCount = segments?.length || 0;
+  if (segmentCount <= MAX_SEGMENT) {
     return null;
   }
   return (
     <Alert
-      message={`You have reached the maximum of 5 segments. Current count: ${count}.`}
+      message={`You have defined ${segmentCount} segments. The maximum allowed is ${MAX_SEGMENT}. Please remove ${
+        segmentCount - MAX_SEGMENT
+      } segment(s) to save your changes.`}
       type="error"
-      showIcon
       style={{
         marginBottom: "16px",
         display: "flex",
@@ -758,7 +759,7 @@ const CaseForm = ({
                         Download the template, enter your data, run the
                         validation in Excel, and upload the validated file here.
                       </p>
-                      {isUpdateMode && isAtMaxSegments && (
+                      {isUpdateMode && isAtMaxSegments && !uploadResult && (
                         <Alert
                           message={
                             <span>
@@ -769,7 +770,6 @@ const CaseForm = ({
                             </span>
                           }
                           type="warning"
-                          showIcon
                           style={{
                             marginBottom: "16px",
                             display: "flex",
