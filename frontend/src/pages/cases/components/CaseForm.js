@@ -175,18 +175,20 @@ const SecondaryForm = ({
 };
 
 const SegmentOverflowAlert = ({ segments = [] }) => {
-  const segmentCount = segments?.length || 0;
-  if (segmentCount <= MAX_SEGMENT) {
+  const count = segments?.length || 0;
+  if (count <= MAX_SEGMENT) {
     return null;
   }
   return (
     <Alert
-      message={`You have defined ${segmentCount} segments. The maximum allowed is ${MAX_SEGMENT}. Please remove ${
-        segmentCount - MAX_SEGMENT
-      } segment(s) to save your changes.`}
+      message={`You have reached the maximum of 5 segments. Current count: ${count}.`}
       type="error"
       showIcon
-      style={{ marginBottom: 16 }}
+      style={{
+        marginBottom: "16px",
+        display: "flex",
+        alignItems: "flex-start",
+      }}
     />
   );
 };
@@ -768,7 +770,11 @@ const CaseForm = ({
                           }
                           type="warning"
                           showIcon
-                          style={{ marginBottom: "16px" }}
+                          style={{
+                            marginBottom: "16px",
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
                         />
                       )}
                       <Dragger
