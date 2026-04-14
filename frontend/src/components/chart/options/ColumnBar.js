@@ -103,7 +103,7 @@ const ColumnBar = ({
             if (percentage) {
               return `${s.value}%`;
             }
-            return thousandFormatter(s.value);
+            return formatNumberToString(s.value);
           },
         },
         color: values?.[0]?.color || Color.color[ki],
