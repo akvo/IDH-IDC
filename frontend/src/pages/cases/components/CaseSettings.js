@@ -56,7 +56,9 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
   const isUploadMissing = activeTab === "upload" && !importId && !hasSegments;
   const isSaveDisabled =
-    !enableEditCase || (segmentFields?.length || 0) > MAX_SEGMENT || isUploadMissing;
+    !enableEditCase ||
+    (segmentFields?.length || 0) > MAX_SEGMENT ||
+    isUploadMissing;
 
   const handleCancelWithGuard = useCallback(() => {
     const isDirty =
