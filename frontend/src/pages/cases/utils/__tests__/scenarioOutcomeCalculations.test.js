@@ -1,4 +1,4 @@
-import { calculateOutcomeData } from "../scenarioOutcomeCalculations";
+const { calculateOutcomeData } = require("../scenarioOutcomeCalculations");
 
 const questionGroups = [
   {

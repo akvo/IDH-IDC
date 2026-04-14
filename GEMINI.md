@@ -26,6 +26,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Formalized architectural decisions in `LLD.md` (ADR-006) and synchronized technical specifications.
     - Path: `backend/models/case.py`, `backend/models/case_import.py`, `frontend/src/pages/cases/components/CaseSettings.js`, `frontend/src/pages/cases/components/CaseForm.js`, `backend/tests/test_1006_segment_limit.py`.
 
+    - **Scenario Outcomes Driver Display Fix (#765) - [COMPLETED]**:
+        - Fixed broken state key lookup in `scenarioOutcomeCalculations.js` by correcting `sd.segmentId` to `scenarioSegment.segmentId`.
+        - Implemented label fallback for "Diversified Income" drivers to prevent `undefined` display in the Outcomes table.
+        - Ensured consistent percentage formatting for all income drivers in Step 4.
+    - Path: `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`.
+
     - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
 
 

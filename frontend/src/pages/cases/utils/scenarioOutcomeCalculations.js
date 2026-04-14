@@ -117,7 +117,7 @@ export const calculateOutcomeData = (
                 // Only use percentage if it was explicitly provided in allNewValues
                 const hasPercentage =
                   typeof scenarioSegment?.allNewValues?.[
-                    `percentage-${sd.key}-${sd.segmentId}-${sdv.index}`
+                    `percentage-${sd.key}-${scenarioSegment.segmentId}-${sdv.index}`
                   ] !== "undefined";
 
                 if (hasPercentage) {
@@ -131,9 +131,9 @@ export const calculateOutcomeData = (
                 }
 
                 const text =
-                  sdv.questionType !== "diversified"
-                    ? sdv.questionText
-                    : "Diversified Income";
+                  sdv.questionType === "diversified" || !sdv.questionText
+                    ? "Diversified Income"
+                    : sdv.questionText;
                 return `${text}#(${percentChange})`;
               })
               .join("|");
