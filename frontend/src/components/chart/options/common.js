@@ -38,13 +38,13 @@ export const formatNumberToString = (number) => {
   const sign = num < 0 ? "-" : "";
 
   if (absNum < 1e3) {
-    return sign + thousandFormatter(absNum, 1);
+    return sign + thousandFormatter(absNum, 2);
   } else if (absNum < 1e6) {
-    return sign + (absNum / 1e3).toFixed(1) + "K";
+    return sign + (absNum / 1e3).toFixed(2) + "K";
   } else if (absNum < 1e9) {
-    return sign + (absNum / 1e6).toFixed(1) + "M";
+    return sign + (absNum / 1e6).toFixed(2) + "M";
   }
-  return sign + (absNum / 1e9).toFixed(1) + "B";
+  return sign + (absNum / 1e9).toFixed(2) + "B";
 };
 
 export const popupFormatter = (params) => {

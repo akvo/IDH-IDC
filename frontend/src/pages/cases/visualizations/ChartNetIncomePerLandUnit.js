@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState } from "react";
 import { Card, Row, Col, Space } from "antd";
-import { SegmentSelector, VisualCardWrapper } from "../components";
+import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 import { CaseVisualState, CurrentCaseState } from "../store";
 
@@ -15,7 +15,7 @@ const ChartNetIncomePerLandUnit = () => {
   const { dashboardData, questionGroups, incomeDataDrivers } =
     CaseVisualState.useState((s) => s);
 
-  const [selectedSegment, setSelectedSegment] = useState(null);
+  const [showLabel, setShowLabel] = useState(false);
 
   const focusCommodity = useMemo(() => {
     return questionGroups?.find((qg) => qg.case_commodity_type === "focus");
@@ -25,13 +25,6 @@ const ChartNetIncomePerLandUnit = () => {
     const primaryCaseCommodityID = currentCase?.case_commodities?.find(
       (cc) => cc?.commodity_type === "focus"
     )?.id;
-
-    const currentDashboardData =
-      dashboardData.find((d) => d.id === selectedSegment) || dashboardData?.[0];
-
-    const primaryAnswers = currentDashboardData?.answers?.filter(
-      (a) => a.caseCommodityId === primaryCaseCommodityID
-    );
 
     const focusCommodityGroup = incomeDataDrivers?.find(
       (d) => d.type === "primary"
@@ -45,33 +38,41 @@ const ChartNetIncomePerLandUnit = () => {
       qidMap = { totalIncome: 1, land: 40 };
     }
 
-    const totalIncomeAnswers = primaryAnswers?.filter(
-      (a) => (a.questionId || a?.question?.id) === qidMap.totalIncome
-    );
-    const landAnswers = primaryAnswers?.filter(
-      (a) => (a.questionId || a?.question?.id) === qidMap.land
-    );
+    return dashboardData.map((d) => {
+      const primaryAnswers = d?.answers?.filter(
+        (a) => a.caseCommodityId === primaryCaseCommodityID
+      );
 
-    // psudocode
-    // for values in (current, feasible):
-    //   net_income_land_unit = primary-1/primary-2
+      const totalIncomeAnswers = primaryAnswers?.filter(
+        (a) => (a.questionId || a?.question?.id) === qidMap.totalIncome
+      );
+      const landAnswers = primaryAnswers?.filter(
+        (a) => (a.questionId || a?.question?.id) === qidMap.land
+      );
 
-    const data = ["current", "feasible"].map((it) => {
-      const totalIncome = totalIncomeAnswers?.find(
-        (val) => val.name === it
-      )?.value;
-      const land = landAnswers?.find((val) => val.name === it)?.value || 0;
-      const netIncomeLandUnit = land ? totalIncome / land : 0;
+      const rowData = ["current", "feasible"].map((it) => {
+        const totalIncome = totalIncomeAnswers?.find(
+          (val) => val.name === it
+        )?.value;
+        const land = landAnswers?.find((val) => val.name === it)?.value || 0;
+        const netIncomeLandUnit = land ? totalIncome / land : 0;
+
+        const label = it.charAt(0).toUpperCase() + it.slice(1);
+        return {
+          name: label,
+          title: label,
+          value: parseFloat(netIncomeLandUnit.toFixed(2)),
+          currency: currentCase?.currency,
+          color: colors[it],
+        };
+      });
 
       return {
-        name: it,
-        value: netIncomeLandUnit,
-        currency: currentCase?.currency,
-        color: colors[it],
+        name: d.name,
+        data: rowData,
       };
     });
-    return data;
-  }, [currentCase, dashboardData, selectedSegment, incomeDataDrivers]);
+  }, [currentCase, dashboardData, incomeDataDrivers]);
 
   return (
     <Card className="card-visual-wrapper">
@@ -80,22 +81,19 @@ const ChartNetIncomePerLandUnit = () => {
           <VisualCardWrapper
             title="Change Indicators"
             bordered
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
             exportFilename="Farm Economic Efficiency"
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
-                <SegmentSelector
-                  selectedSegment={selectedSegment}
-                  setSelectedSegment={setSelectedSegment}
-                />
-              </Col>
-              <Col span={24}>
                 <Chart
                   wrapper={false}
-                  type="BAR"
+                  type="COLUMN-BAR"
                   loading={!chartData.length}
                   data={chartData}
+                  showLabel={showLabel}
                   extra={{ axisTitle: { y: `${currentCase?.currency}` } }}
                 />
               </Col>
