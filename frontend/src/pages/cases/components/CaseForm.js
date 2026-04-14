@@ -17,7 +17,9 @@ import {
   Button,
   Upload,
   message,
+  Modal,
 } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import {
   countryOptions,
   focusCommodityOptions,
@@ -30,6 +32,7 @@ import { AreaUnitFields, SegmentForm, SegmentConfigurationForm } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
+import { MAX_SEGMENT } from "../constants";
 import { uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
 import {
@@ -171,12 +174,33 @@ const SecondaryForm = ({
   );
 };
 
+const SegmentOverflowAlert = ({ segments = [] }) => {
+  const segmentCount = segments?.length || 0;
+  if (segmentCount <= MAX_SEGMENT) {
+    return null;
+  }
+  return (
+    <Alert
+      message={`You have defined ${segmentCount} segments. The maximum allowed is ${MAX_SEGMENT}. Please remove ${
+        segmentCount - MAX_SEGMENT
+      } segment(s) to save your changes.`}
+      type="error"
+      style={{
+        marginBottom: "16px",
+        display: "flex",
+        alignItems: "flex-start",
+      }}
+    />
+  );
+};
+
 const CaseForm = ({
   deletedSegmentIds = [],
   updateCurrentCase = () => {},
   setDeletedSegmentIds = () => {},
   dataUploadFieldPreffix = "",
   onTabChange = () => {},
+  activeTab = "manual",
 }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
@@ -187,6 +211,13 @@ const CaseForm = ({
 
   const [messageApi, contextHolder] = message.useMessage();
   const [uploadResult, setUploadResult] = useState(null);
+  const isUpdateMode = !!currentCase?.id;
+
+  const segments = Form.useWatch("segments", form);
+  const importId = Form.useWatch("import_id", form);
+
+  const isAtMaxSegments = (segments?.length || 0) >= MAX_SEGMENT;
+
   const [uploading, setUploading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const [uploadErrorText, setUploadErrorText] = useState("");
@@ -195,6 +226,12 @@ const CaseForm = ({
   const resetDataUploadForm = () => {
     setUploadResult(null);
     setFileList([]);
+
+    // In update mode, preserve segments with IDs
+    const existingSegments = isUpdateMode
+      ? segments?.filter((s) => s?.id) || []
+      : [];
+
     form.setFieldsValue({
       import_id: null,
       // reset variable type
@@ -202,10 +239,36 @@ const CaseForm = ({
       // reset segmentation variable when variable type changes
       [`${dataUploadFieldPreffix}segmentation_variable`]: null,
       // reset segments
-      segments: [{ name: null }],
+      segments:
+        existingSegments.length > 0 ? existingSegments : [{ name: null }],
       // reset number of segments
       [`${dataUploadFieldPreffix}number_of_segments`]: null,
     });
+  };
+
+  const handleTabChange = (key) => {
+    // Only guard if NOT in update mode and there is existing data
+    const hasData = (segments?.length > 0 && segments[0]?.name) || !!importId;
+
+    if (!isUpdateMode && hasData) {
+      Modal.confirm({
+        title: "Switch segmentation method?",
+        icon: <ExclamationCircleOutlined />,
+        content:
+          "Switching tabs will clear your current segmentation progress. Do you want to continue?",
+        okText: "Yes, switch and clear",
+        cancelText: "Cancel",
+        okButtonProps: {
+          style: { backgroundColor: "#01625F", borderColor: "#01625F" },
+        },
+        onOk: () => {
+          resetDataUploadForm();
+          onTabChange(key);
+        },
+      });
+    } else {
+      onTabChange(key);
+    }
   };
 
   const uploadProps = {
@@ -653,7 +716,8 @@ const CaseForm = ({
       <Col span={24}>
         {contextHolder}
         <Tabs
-          onChange={onTabChange}
+          activeKey={activeTab}
+          onChange={handleTabChange}
           items={[
             {
               key: "manual",
@@ -666,6 +730,7 @@ const CaseForm = ({
                     className="case-setting-child-card-wrapper"
                     size="small"
                   >
+                    <SegmentOverflowAlert segments={segments} />
                     <SegmentForm
                       deletedSegmentIds={deletedSegmentIds}
                       setDeletedSegmentIds={setDeletedSegmentIds}
@@ -694,13 +759,32 @@ const CaseForm = ({
                         Download the template, enter your data, run the
                         validation in Excel, and upload the validated file here.
                       </p>
+                      {isUpdateMode && isAtMaxSegments && !uploadResult && (
+                        <Alert
+                          message={
+                            <span>
+                              You have reached the maximum of 5 segments. Please{" "}
+                              <b>delete</b> existing segments from the{" "}
+                              <b>&quot;Manual data input&quot;</b> tab before
+                              uploading a new data template.
+                            </span>
+                          }
+                          type="warning"
+                          style={{
+                            marginBottom: "16px",
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        />
+                      )}
                       <Dragger
                         {...uploadProps}
                         style={{
                           marginBottom: "24px",
                           display:
-                            uploadProps.fileList &&
-                            uploadProps.fileList.length > 0
+                            (isUpdateMode && isAtMaxSegments) ||
+                            (uploadProps.fileList &&
+                              uploadProps.fileList.length > 0)
                               ? "none"
                               : "block",
                         }}
@@ -731,11 +815,13 @@ const CaseForm = ({
                     </Col>
                     {uploadResult && (
                       <Col span={24}>
+                        <SegmentOverflowAlert segments={segments} />
                         <SegmentConfigurationForm
                           dataUploadFieldPreffix={dataUploadFieldPreffix}
                           uploadResult={uploadResult}
                           deletedSegmentIds={deletedSegmentIds}
                           setDeletedSegmentIds={setDeletedSegmentIds}
+                          currentCase={currentCase}
                         />
                       </Col>
                     )}

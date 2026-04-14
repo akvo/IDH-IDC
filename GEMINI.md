@@ -16,14 +16,18 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
-- **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
-        - Created a reusable `YouTubePlayer` component in `src/components/utils/` to centralize 16:9 aspect ratio and desktop width capping (680px).
-        - Centralized YouTube metadata in `src/constants/videos.js` for easier platform-wide scaling.
-        - Refactored `Home.js` and `GetStarted.js` to use the new component, eliminating code duplication.
-        - Expanded the FAQ page with a "Guides & Tutorials" section featuring two user manual videos in a responsive grid.
-        - Implemented global `video.scss` for persistent design language across different tool sections.
-        - Verified 100% lint-clean status and responsive layout across all breakpoints.
-    - Path: `frontend/src/components/utils/YouTubePlayer.js`, `frontend/src/constants/videos.js`, `frontend/src/pages/faq/faq.js`, `frontend/src/pages/home/Home.js`.
+- **Global Segment Limit Enforcement (#763) - [COMPLETED]**:
+        - Implemented strict 5-segment limit validation globally via Pydantic (`max_length=5`) in `CaseBase` and `CaseImport` models.
+        - Developed a reactive "Delete-before-Upload" UX pattern in `CaseForm.js` that blocks file uploads when a case is at segment capacity.
+        - Refined "Save case" button logic in `CaseSettings.js` to allow metadata updates (Description, etc.) without fresh uploads if segments already exist.
+        - Resolved a persistence conflict in `SegmentConfigurationForm.js` by filtering `deletedSegmentIds` during the Data Upload preview flow.
+        - Standardized Alert icons across the platform to align to `flex-start` for consistent multi-line layout aesthetics.
+        - Implemented comprehensive backend integration tests in `test_1006_segment_limit.py`, achieving full coverage for overflow scenarios.
+        - Formalized architectural decisions in `LLD.md` (ADR-006) and synchronized technical specifications.
+    - Path: `backend/models/case.py`, `backend/models/case_import.py`, `frontend/src/pages/cases/components/CaseSettings.js`, `frontend/src/pages/cases/components/CaseForm.js`, `backend/tests/test_1006_segment_limit.py`.
+
+    - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
+
 
     - **ROI Multi-Scenario & Calculation Fix (#755) - [COMPLETED]**:
         - Implemented a multi-selector in Step 5 for side-by-side waterfall comparison of up to 5 scenario-segment combinations.

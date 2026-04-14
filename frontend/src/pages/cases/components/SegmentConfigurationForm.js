@@ -16,6 +16,7 @@ import { selectProps } from "../../../lib";
 import { api } from "../../../lib";
 import { DataUploadSegmentForm } from ".";
 import { MAX_SEGMENT } from "../constants";
+import { CurrentCaseState } from "../store";
 
 const SegmentConfigurationForm = ({
   uploadResult = {},
@@ -54,6 +55,9 @@ const SegmentConfigurationForm = ({
     return dataColumns[variableType].map((col) => ({ label: col, value: col }));
   }, [uploadResult, variableType]);
 
+  const currentCase = CurrentCaseState.useState((s) => s);
+  const isUpdateMode = !!currentCase?.id;
+
   const lastFetchRef = useRef(null);
 
   useEffect(() => {
@@ -90,9 +94,22 @@ const SegmentConfigurationForm = ({
           if (variableType === "numerical") {
             segments = segments.map((s) => ({ ...s, name: null }));
           }
+
           setSegmentationPreviews({ ...res.data, segments });
+
+          // In update mode, preserve segments with IDs from the official store
+          // instead of the potentially volatile form state
+          const savedSegments = isUpdateMode
+            ? currentCase?.segments?.filter(
+                (s) => s?.id && !deletedSegmentIds?.includes(s.id)
+              ) || []
+            : [];
+
+          // Combine saved segments with new preview segments
+          const combinedSegments = [...savedSegments, ...segments];
+
           // set segment values to form initialValue here
-          form.setFieldsValue({ segments });
+          form.setFieldsValue({ segments: combinedSegments });
         })
         .catch((e) => {
           console.error("Error fetching segmentation preview:", e);
@@ -104,21 +121,20 @@ const SegmentConfigurationForm = ({
               ? detail.map((d) => d.msg || JSON.stringify(d)).join(", ")
               : typeof detail === "object" && detail !== null
               ? JSON.stringify(detail)
-              : e?.message ||
-                "An error occurred while fetching the segmentation preview.";
+              : "Failed to fetch segmentation preview.";
           setErrorPreview(errorMessage);
         })
         .finally(() => {
           setLoadingPreview(false);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    form,
     variableType,
     segmentationVariable,
     numberOfSegments,
-    uploadResult.import_id,
-    loadingPreview,
+    uploadResult?.import_id,
+    isUpdateMode,
   ]);
 
   const prevManualCountRef = useRef(0);
@@ -232,7 +248,7 @@ const SegmentConfigurationForm = ({
         const recalculatedSegments = res?.data?.segments || [];
 
         // 2. Merge logic: Update only the relevant segments in the main list
-        const mergedSegments = segmentFields.map((existingSegment) => {
+        const mergedSegments = (segmentFields || []).map((existingSegment) => {
           const existingSegVar =
             existingSegment.segmentation_variable || segmentationVariable;
 
@@ -408,19 +424,39 @@ const SegmentConfigurationForm = ({
           </Col>
           <Col span={24}>
             <Form.Item
+              label={
+                <Space>
+                  Segmentation Variable
+                  <Tooltip title="Select the spreadsheet column to segment your data by.">
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </Space>
+              }
               name={`${dataUploadFieldPreffix}segmentation_variable`}
-              label="Select a variable to segment by:"
-              required
-              style={{ marginBottom: 0 }}
+              rules={[
+                {
+                  required: true,
+                  message: "Choose segmentation variable",
+                },
+              ]}
+              extra={
+                variableType === "categorical" &&
+                segmentationPreviews?.segments?.length > MAX_SEGMENT && (
+                  <div style={{ marginTop: 8 }}>
+                    <Alert
+                      message={`The selected variable has ${segmentationPreviews.segments.length} unique values, which exceeds the limit of ${MAX_SEGMENT}.`}
+                      type="warning"
+                      showIcon
+                      style={{ fontSize: "12px" }}
+                    />
+                  </div>
+                )
+              }
             >
               <Select
-                {...selectProps}
-                placeholder={
-                  variableType
-                    ? "Select segmentation variable"
-                    : "Select a variable type first"
-                }
+                placeholder="Select segmentation variable"
                 options={segmentationVariableDropdownValue}
+                {...selectProps}
                 disabled={!variableType}
               />
             </Form.Item>
