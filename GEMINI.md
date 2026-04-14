@@ -16,6 +16,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Multi-Segment View for Change Indicators (#768) - [COMPLETED]**:
+        - Refactored `ChartFarmEconomicEfficiency.js`, `ChartRevenueToCostRatio.js`, and `ChartNetIncomePerLandUnit.js` to display all farmer segments simultaneously in a grouped bar chart format.
+        - Removed the individual `SegmentSelector` component from these visualizations to simplify the user experience and encourage cross-segment comparison.
+        - Implemented a "Show labels" toggle for each chart, allowing users to view data values directly on the bars.
+        - Standardized numerical formatting to use 2 decimal places and the "10K" format (e.g., `12.50K`) for improved readability.
+        - Updated the `ColumnBar` component to support `formatNumberToString` in series labels and refined the shared `formatNumberToString` utility for higher precision.
+        - Verified the implementation with a clean frontend linting pass.
+    - Path: `frontend/src/pages/cases/visualizations/ChartFarmEconomicEfficiency.js`, `frontend/src/pages/cases/visualizations/ChartRevenueToCostRatio.js`, `frontend/src/pages/cases/visualizations/ChartNetIncomePerLandUnit.js`, `frontend/src/components/chart/options/common.js`, `frontend/src/components/chart/options/ColumnBar.js`.
+
 - **Global Segment Limit Enforcement (#763) - [COMPLETED]**:
         - Implemented strict 5-segment limit validation globally via Pydantic (`max_length=5`) in `CaseBase` and `CaseImport` models.
         - Developed a reactive "Delete-before-Upload" UX pattern in `CaseForm.js` that blocks file uploads when a case is at segment capacity.
