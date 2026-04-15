@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Step 5 Chart Inconsistency & Stability Fix (#774) - [COMPLETED]**:
+        - Resolved a bug in Step 5 where chart baseline values fluctuated incorrectly when navigating between segment tabs.
+        - Refactored `backwardScenarioData` in `ScenarioModelingIncomeDriversAndChart.js` to correctly resolve segment-specific baseline data during synchronization.
+        - Implemented `lodash.isEqual` guards for all global state updates within the modeling component to prevent infinite render loops.
+        - Corrected a syntactic bug in the `orderBy`/`map` structure for scenario data updates.
+        - Verified the implementation with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingIncomeDriversAndChart.js`.
 - **Step 5 Circular Render Fix (#772) - [COMPLETED]**:
         - Resolved widespread infinite render loops on the "Closing the Gap" page caused by recursive store updates.
         - Implemented deep equality guards using `lodash.isEqual` in `useScenarioCalculations` and `StandardScenarioModeling`.
