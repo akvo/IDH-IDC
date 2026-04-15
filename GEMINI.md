@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **ROI Input Box Guidance & Default Expansion (#776) - [COMPLETED]**:
+        - Refactored `ScenarioModelingROIForm.js` and `case_ui.js` to ensure the ROI component modeling section is expanded by default when cost allocation is enabled.
+        - Implemented an instructional info box in Step 5 to guide users on net cost inputs (fixed/variable costs vs. potential revenue).
+        - Migrated ROI info box styles from inline JSX to a dedicated `ScenarioModelingROIForm.scss` file for better maintainability.
+        - Standardized info box text to black for improved contrast and IDC brand alignment.
+        - Refined toggle handlers to ensure robust expansion/collapse behavior across segment switches and mode changes.
+        - Verified the implementation with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/components/ScenarioModelingROIForm.scss`, `frontend/src/pages/cases/store/case_ui.js`.
 - **Step 5 Chart Inconsistency & Stability Fix (#774) - [COMPLETED]**:
         - Resolved a bug in Step 5 where chart baseline values fluctuated incorrectly when navigating between segment tabs.
         - Refactored `backwardScenarioData` in `ScenarioModelingIncomeDriversAndChart.js` to correctly resolve segment-specific baseline data during synchronization.
