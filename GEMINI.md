@@ -16,6 +16,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Clustered ROI Graph by Scenario & Persistent Segment Colors (#770) - [COMPLETED]**:
+        - Refactored the Step 5 "Return on Investment" chart from a flat list to a clustered bar chart grouped by Scenario on the X-axis.
+        - Implemented persistent segment color-coding by mapping segments to global case indices, ensuring "Segment A" always maintains the same color across all comparisons.
+        - Sorted segments within each cluster based on their defined order in the case (e.g., Segment 1, then Segment 2) for a predictable visual flow.
+        - Restored and refined the `dynamicRoiBarWidth` calculation to ensure optimal bar spacing as the number of scenario-segment comparisons changes.
+        - Simplified the data mapping logic using a dedicated matrix-style series construction and removed unused chart configuration imports.
+        - Verified the implementation with a clean `yarn lint` pass and logical matrix verification.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
 - **Multi-Segment View for Change Indicators (#768) - [COMPLETED]**:
         - Refactored `ChartFarmEconomicEfficiency.js`, `ChartRevenueToCostRatio.js`, and `ChartNetIncomePerLandUnit.js` to display all farmer segments simultaneously in a grouped bar chart format.
         - Removed the individual `SegmentSelector` component from these visualizations to simplify the user experience and encourage cross-segment comparison.
