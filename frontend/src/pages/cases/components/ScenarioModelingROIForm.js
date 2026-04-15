@@ -67,10 +67,10 @@ const ScenarioModelingROIForm = ({
 
   const isRoiExpanded = useMemo(() => {
     if (costAllocationMode === "all_farmers") {
-      return isRoiExpandedAll;
+      return isRoiExpandedAll !== false;
     }
     if (costAllocationMode === "per_segment") {
-      return !!isRoiExpandedSegments[segmentId];
+      return isRoiExpandedSegments[segmentId] !== false;
     }
     return false;
   }, [costAllocationMode, isRoiExpandedAll, isRoiExpandedSegments, segmentId]);
@@ -311,7 +311,7 @@ const ScenarioModelingROIForm = ({
                   form?.setFieldsValue({ is_roi_enabled: mode !== "no" });
                 });
                 CaseUIState.update((s) => {
-                  s.general.isRoiExpandedAll = false;
+                  s.general.isRoiExpandedAll = true;
                   s.general.isRoiExpandedSegments = {};
                 });
               }}
@@ -402,10 +402,10 @@ const ScenarioModelingROIForm = ({
                   onClick={() => {
                     CaseUIState.update((s) => {
                       if (costAllocationMode === "all_farmers") {
-                        s.general.isRoiExpandedAll = !isRoiExpandedAll;
+                        s.general.isRoiExpandedAll = !isRoiExpanded;
                       } else if (costAllocationMode === "per_segment") {
                         s.general.isRoiExpandedSegments[segmentId] =
-                          !isRoiExpandedSegments[segmentId];
+                          !isRoiExpanded;
                       }
                     });
                   }}
