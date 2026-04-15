@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { CaseVisualState } from "../store";
+import { isEqual } from "lodash";
 import { calculateOutcomeData } from "../utils/scenarioOutcomeCalculations";
 
 const useScenarioCalculations = () => {
@@ -25,11 +26,21 @@ const useScenarioCalculations = () => {
       totalIncomeQuestions
     );
 
-    // Update the global state
-    CaseVisualState.update((s) => {
-      s.scenarioModeling.config.scenarioOutcomeDataSource = allScenarioOutcomes;
-    });
-  }, [scenarioData, dashboardData, questionGroups, totalIncomeQuestions]);
+    // Update the global state only if data has changed
+    const prevOutcomes = scenarioModeling.config.scenarioOutcomeDataSource;
+    if (!isEqual(prevOutcomes, allScenarioOutcomes)) {
+      CaseVisualState.update((s) => {
+        s.scenarioModeling.config.scenarioOutcomeDataSource =
+          allScenarioOutcomes;
+      });
+    }
+  }, [
+    scenarioData,
+    dashboardData,
+    questionGroups,
+    totalIncomeQuestions,
+    scenarioModeling.config.scenarioOutcomeDataSource,
+  ]);
 };
 
 export default useScenarioCalculations;

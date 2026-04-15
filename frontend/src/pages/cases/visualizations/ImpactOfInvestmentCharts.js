@@ -29,9 +29,8 @@ const scenarioColors = [
 ];
 
 const ImpactOfInvestmentCharts = () => {
-  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
-    (s) => s
-  );
+  const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
 
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
