@@ -12,8 +12,9 @@ The Learning Management System (LMS) PoC aims to provide a minimal, secure envir
 - **Login**: Users authenticate via the existing IDC login.
 - **Library**: Users browse available courses in the "Academy" section.
 - **Chapter Layout**: Users first enter **Reading Mode** (Markdown-rendered content).
-- **Course Resumption**: When a user continues learning, they are automatically navigated to the **last completed/active chapter**.
-- **Quiz**: A "Test Your Knowledge" button at the bottom of the reading material triggers the `react-quiz-component` for that chapter.
+- **Course Resumption**: When a user continues learning, they are automatically navigated to the **last completed/active chapter and section**.
+- **Hierarchical Layout**: Chapters can contain multiple **Subcontent Sections**, allowing for a step-by-step reading experience before the final assessment.
+- **Quiz**: A "Test Your Knowledge" button at the bottom of the reading material (or the last section) triggers the `react-quiz-component` for that chapter.
 - **Quiz Summary**: After completing a quiz, a **summary page** is displayed, allowing users to review their answers and see detailed explanations.
 - **Persistence**: Progress is stored as **JSON files on the backend**. Completion of a quiz unlocks the next chapter.
 
@@ -39,9 +40,15 @@ graph TD
 ### Data Structure
 Courses are stored as JSON files with the following structure:
 - `courseId`: string
+- `courseId`: string
 - `chapters`: Array
     - `id`: string
-    - `content`: string (Markdown/Text)
+    - `title`: string
+    - `content`: string (Markdown/Text - optional if sections provided)
+    - `sections`: Array (Optional)
+        - `id`: string
+        - `title`: string
+        - `content`: string (Markdown/Text)
     - `quiz`: Object (react-quiz-component schema)
 
 ---
@@ -60,8 +67,14 @@ Courses are stored as JSON files with the following structure:
 - [ ] Create a basic parser to identify "Questions" and "Answers".
 
 ### Phase 3: Progress Sync
-- [ ] Create `GET/POST /api/academy/progress` endpoints.
-- [ ] Update `user_progress` storage (Local JSON for PoC).
+- [x] Create `GET/POST /api/academy/progress` endpoints.
+- [x] Update `user_progress` storage (Local JSON for PoC).
+
+### Phase 4: Subcontent & Nested Navigation
+- [ ] Refactor `CoursePlayer.js` to support nested `sections` within chapters.
+- [ ] Upgrade Sidebar to use Ant Design `SubMenu` for hierarchical chapters.
+- [ ] Implement `currentSectionIndex` state and navigation logic.
+- [ ] Update Progress Sync to store and resume from `current_section_index`.
 
 ### 📂 Code Organization (Current Implementation)
 - **Modularity**: All Academy/LMS related files are grouped into dedicated `academy` or `lms` folders in both the **frontend** and **backend** to ensure a clean separation from the core IDC logic.
@@ -137,6 +150,7 @@ The request body to synchronize user state.
 {
   "course_id": "intro-to-idh",
   "current_chapter_id": "chapter-2",
+  "current_section_index": 1,
   "completed_chapters": ["chapter-1"],
   "quiz_scores": {
     "chapter-1": 100
