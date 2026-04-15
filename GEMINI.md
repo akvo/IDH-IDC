@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Step 5 Circular Render Fix (#772) - [COMPLETED]**:
+        - Resolved widespread infinite render loops on the "Closing the Gap" page caused by recursive store updates.
+        - Implemented deep equality guards using `lodash.isEqual` in `useScenarioCalculations` and `StandardScenarioModeling`.
+        - Optimized state selectors in `ImpactOfInvestmentCharts` and modelling components to ensure components only re-render when their specific subset of data changes.
+        - Verified all changes with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/hooks/useScenarioCalculations.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
 - **Clustered ROI Graph by Scenario & Persistent Segment Colors (#770) - [COMPLETED]**:
         - Refactored the Step 5 "Return on Investment" chart from a flat list to a clustered bar chart grouped by Scenario on the X-axis.
         - Implemented persistent segment color-coding by mapping segments to global case indices, ensuring "Segment A" always maintains the same color across all comparisons.
