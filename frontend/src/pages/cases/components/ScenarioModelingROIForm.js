@@ -25,6 +25,7 @@ import {
   CaretUpOutlined,
   LockOutlined,
 } from "@ant-design/icons";
+import "./ScenarioModelingROIForm.scss";
 
 const { Text } = Typography;
 
@@ -319,20 +320,12 @@ const ScenarioModelingROIForm = ({
           </Form.Item>
         </Col>
       </Row>
+
       {(costAllocationMode === "per_segment" ||
         costAllocationMode === "all_farmers") && (
         <>
-          <div
-            style={{
-              background: "#eaf2f2",
-              borderRadius: "12px",
-              padding: "20px",
-              marginTop: "20px",
-              border: "1px solid rgba(27, 98, 95, 0.1)",
-              lineHeight: "1.5",
-            }}
-          >
-            <Text style={{ color: "#26605f" }}>
+          <div className="roi-instruction-box">
+            <Text>
               Please input the net cost of implementing the scenario, taking
               into account all fixed and variable cost as well as the potential
               revenue created (e.g, farmer payments for trainings). You can
@@ -348,49 +341,49 @@ const ScenarioModelingROIForm = ({
               borderTop: "1px solid #f0f0f0",
             }}
           >
-          <Col span={24}>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              {costAllocationMode === "all_farmers" ? (
-                <Typography.Text strong>
-                  Scenario cost for all farmers
-                </Typography.Text>
-              ) : (
-                <Row
-                  align="middle"
-                  justify="space-between"
-                  style={{ width: "100%" }}
-                >
-                  <Col>
-                    <Typography.Text strong>
-                      Scenario cost for segment
-                    </Typography.Text>
-                  </Col>
-                  <Col>
-                    <Radio.Group
-                      className="roi-segment-selector"
-                      value={activeSegmentId}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        CaseUIState.update((s) => {
-                          s.general.activeSegmentId = val;
-                        });
-                      }}
-                    >
-                      {orderBy(currentCase.segments, ["id"]).map((seg) => (
-                        <Radio.Button
-                          key={seg.id}
-                          value={seg.id}
-                          style={{ fontWeight: "normal" }}
-                        >
-                          {seg.name}
-                        </Radio.Button>
-                      ))}
-                    </Radio.Group>
-                  </Col>
-                </Row>
-              )}
-            </Space>
-          </Col>
+            <Col span={24}>
+              <Space direction="vertical" style={{ width: "100%" }}>
+                {costAllocationMode === "all_farmers" ? (
+                  <Typography.Text strong>
+                    Scenario cost for all farmers
+                  </Typography.Text>
+                ) : (
+                  <Row
+                    align="middle"
+                    justify="space-between"
+                    style={{ width: "100%" }}
+                  >
+                    <Col>
+                      <Typography.Text strong>
+                        Scenario cost for segment
+                      </Typography.Text>
+                    </Col>
+                    <Col>
+                      <Radio.Group
+                        className="roi-segment-selector"
+                        value={activeSegmentId}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          CaseUIState.update((s) => {
+                            s.general.activeSegmentId = val;
+                          });
+                        }}
+                      >
+                        {orderBy(currentCase.segments, ["id"]).map((seg) => (
+                          <Radio.Button
+                            key={seg.id}
+                            value={seg.id}
+                            style={{ fontWeight: "normal" }}
+                          >
+                            {seg.name}
+                          </Radio.Button>
+                        ))}
+                      </Radio.Group>
+                    </Col>
+                  </Row>
+                )}
+              </Space>
+            </Col>
           </Row>
         </>
       )}
