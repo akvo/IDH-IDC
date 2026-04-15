@@ -3,7 +3,7 @@ import { Row, Col, Card, Space, Button, Tabs, Popconfirm } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
-import { isEmpty, orderBy } from "lodash";
+import { isEmpty, orderBy, isEqual } from "lodash";
 import {
   ChartIncomeGapAcrossScenario,
   TableScenarioOutcomes,
@@ -15,9 +15,8 @@ const deleteButtonPosition = "tab-item";
 
 const StandardScenarioModeling = () => {
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
-    (s) => s
-  );
+  const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
 
   const [activeScenario, setActiveScenario] = useState(
     orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key || null
@@ -49,50 +48,58 @@ const StandardScenarioModeling = () => {
   // handle initial scenario data for all segments (run only once)
   // and when dashboard data updated
   useEffect(() => {
-    CaseVisualState.update((s) => ({
-      ...s,
-      scenarioModeling: {
-        ...s.scenarioModeling,
-        case: currentCase.id,
-        config: {
-          ...s.scenarioModeling.config,
-          scenarioData: orderBy(
-            s.scenarioModeling.config.scenarioData.map((scenario) => {
-              if (isEmpty(scenario?.scenarioValues)) {
-                return {
-                  ...scenario,
-                  scenarioValues: dashboardData.map((d) => {
-                    return {
-                      name: d.name,
-                      segmentId: d.id,
-                      selectedDrivers: [],
-                      allNewValues: {},
-                      currentSegmentValue: d,
-                      updatedSegmentScenarioValue: d,
-                      updatedSegment: {},
-                    };
-                  }),
-                };
-              }
-              // add currentSegmentValue
+    if (isEmpty(dashboardData)) {
+      return;
+    }
+
+    const nextScenarioData = orderBy(
+      scenarioModeling.config.scenarioData.map((scenario) => {
+        if (isEmpty(scenario?.scenarioValues)) {
+          return {
+            ...scenario,
+            scenarioValues: dashboardData.map((d) => {
               return {
-                ...scenario,
-                scenarioValues: scenario?.scenarioValues?.map((sv) => {
-                  const findDashboardData = dashboardData.find(
-                    (d) => d.id === sv.segmentId
-                  );
-                  return {
-                    ...sv,
-                    currentSegmentValue: findDashboardData || {},
-                  };
-                }),
+                name: d.name,
+                segmentId: d.id,
+                selectedDrivers: [],
+                allNewValues: {},
+                currentSegmentValue: d,
+                updatedSegmentScenarioValue: d,
+                updatedSegment: {},
               };
             }),
-            "key"
-          ),
+          };
+        }
+        // add currentSegmentValue
+        return {
+          ...scenario,
+          scenarioValues: scenario?.scenarioValues?.map((sv) => {
+            const findDashboardData = dashboardData.find(
+              (d) => d.id === sv.segmentId
+            );
+            return {
+              ...sv,
+              currentSegmentValue: findDashboardData || {},
+            };
+          }),
+        };
+      }),
+      "key"
+    );
+
+    if (!isEqual(scenarioModeling.config.scenarioData, nextScenarioData)) {
+      CaseVisualState.update((s) => ({
+        ...s,
+        scenarioModeling: {
+          ...s.scenarioModeling,
+          case: currentCase.id,
+          config: {
+            ...s.scenarioModeling.config,
+            scenarioData: nextScenarioData,
+          },
         },
-      },
-    }));
+      }));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboardData]);
 

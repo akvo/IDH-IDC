@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState } from "react";
 import { Card, Row, Col, Space } from "antd";
-import { SegmentSelector, VisualCardWrapper } from "../components";
+import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 import { CaseVisualState, CurrentCaseState } from "../store";
 
@@ -18,19 +18,12 @@ const ChartFarmEconomicEfficiency = () => {
     (s) => s
   );
 
-  const [selectedSegment, setSelectedSegment] = useState(null);
+  const [showLabel, setShowLabel] = useState(false);
 
   const chartData = useMemo(() => {
     const primaryCaseCommodityID = currentCase?.case_commodities?.find(
       (cc) => cc?.commodity_type === "focus"
     )?.id;
-
-    const currentDashboardData =
-      dashboardData.find((d) => d.id === selectedSegment) || dashboardData?.[0];
-
-    const primaryAnswers = currentDashboardData?.answers?.filter(
-      (a) => a.caseCommodityId === primaryCaseCommodityID
-    );
 
     const focusCommodityGroup = incomeDataDrivers?.find(
       (d) => d.type === "primary"
@@ -46,39 +39,49 @@ const ChartFarmEconomicEfficiency = () => {
       qidMap = { volume: 3, cop: 26, land: 2 };
     }
 
-    const costAnswers = primaryAnswers?.filter(
-      (a) => (a.questionId || a?.question?.id) === qidMap.cop
-    );
-    const landAnswers = primaryAnswers?.filter(
-      (a) => (a.questionId || a?.question?.id) === qidMap.land
-    );
-    const volumeAnswers = primaryAnswers?.filter(
-      (a) => (a.questionId || a?.question?.id) === qidMap.volume
-    );
+    return dashboardData.map((d) => {
+      const primaryAnswers = d?.answers?.filter(
+        (a) => a.caseCommodityId === primaryCaseCommodityID
+      );
 
-    const data = ["current", "feasible"].map((it) => {
-      const cost = costAnswers?.find((val) => val.name === it)?.value || 0;
-      const land = landAnswers?.find((val) => val.name === it)?.value || 0;
-      const volume = volumeAnswers?.find((val) => val.name === it)?.value || 0;
+      const costAnswers = primaryAnswers?.filter(
+        (a) => (a.questionId || a?.question?.id) === qidMap.cop
+      );
+      const landAnswers = primaryAnswers?.filter(
+        (a) => (a.questionId || a?.question?.id) === qidMap.land
+      );
+      const volumeAnswers = primaryAnswers?.filter(
+        (a) => (a.questionId || a?.question?.id) === qidMap.volume
+      );
 
-      // for values in (current, feasible)
-      //   total_cost = primary-5 * primary-2
-      //   total_volume = primary-3 * primary-2
-      //   farm_economic_efficiency = total_cost/primary_1
+      const rowData = ["current", "feasible"].map((it) => {
+        const cost = costAnswers?.find((val) => val.name === it)?.value || 0;
+        const land = landAnswers?.find((val) => val.name === it)?.value || 0;
+        const volume =
+          volumeAnswers?.find((val) => val.name === it)?.value || 0;
 
-      const totalCost = cost * land;
-      const totalVolume = volume * land;
-      const farmEconomicEfficiency = totalVolume ? totalCost / totalVolume : 0;
+        const totalCost = cost * land;
+        const totalVolume = volume * land;
+        const farmEconomicEfficiency = totalVolume
+          ? totalCost / totalVolume
+          : 0;
+
+        const label = it.charAt(0).toUpperCase() + it.slice(1);
+        return {
+          name: label,
+          title: label,
+          value: parseFloat(farmEconomicEfficiency.toFixed(2)),
+          currency: currentCase?.currency,
+          color: colors[it],
+        };
+      });
 
       return {
-        name: it,
-        value: farmEconomicEfficiency,
-        currency: currentCase?.currency,
-        color: colors[it],
+        name: d.name,
+        data: rowData,
       };
     });
-    return data;
-  }, [currentCase, dashboardData, selectedSegment, incomeDataDrivers]);
+  }, [currentCase, dashboardData, incomeDataDrivers]);
 
   return (
     <Card className="card-visual-wrapper">
@@ -87,22 +90,19 @@ const ChartFarmEconomicEfficiency = () => {
           <VisualCardWrapper
             title="Change Indicators"
             bordered
+            showLabel={showLabel}
+            setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
             exportFilename="Farm Economic Efficiency"
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
-                <SegmentSelector
-                  selectedSegment={selectedSegment}
-                  setSelectedSegment={setSelectedSegment}
-                />
-              </Col>
-              <Col span={24}>
                 <Chart
                   wrapper={false}
-                  type="BAR"
+                  type="COLUMN-BAR"
                   loading={!chartData.length}
                   data={chartData}
+                  showLabel={showLabel}
                   extra={{ axisTitle: { y: `${currentCase?.currency}` } }}
                 />
               </Col>

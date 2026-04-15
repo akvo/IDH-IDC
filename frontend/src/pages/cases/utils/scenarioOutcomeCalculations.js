@@ -38,9 +38,12 @@ export const calculateOutcomeData = (
   dashboardData = [],
   questionGroups = []
 ) => {
-  const allQuestions = uniqBy(
-    questionGroups.flatMap((qg) => flatten(qg.questions)),
-    "id"
+  const allQuestions = questionGroups.flatMap((qg) =>
+    flatten(qg.questions || []).map((q) => ({
+      ...q,
+      groupId: qg.id,
+      commodityName: qg.commodity_name || qg.groupName || qg.title,
+    }))
   );
 
   const allScenarioOutcomes = dashboardData.map((currentDashboardData) => {
@@ -79,22 +82,32 @@ export const calculateOutcomeData = (
               const absoluteField = `absolute-${fieldKey}`;
               const percentageField = `percentage-${fieldKey}`;
 
-              const [, questionId] = driver.value.split("-");
+              const [groupId, questionId] = driver.value.split("-");
+              const isDiversified =
+                questionId === "diversified" || driver.value === "diversified";
 
-              const findQuestion = allQuestions.find(
-                (q) => q.id === parseInt(questionId)
-              );
+              const findQuestion = isDiversified
+                ? null
+                : allQuestions.find(
+                    (q) =>
+                      String(q.id) === String(questionId) &&
+                      String(q.groupId) === String(groupId)
+                  );
+
               const currentValue =
                 scenarioSegment?.currentSegmentValue?.answers?.find(
                   (a) =>
                     a.name === "current" &&
-                    a.questionId === parseInt(questionId)
+                    String(a.questionId) === String(questionId)
                 )?.value;
 
               return {
-                questionId: findQuestion?.id,
+                questionId: driver.value, // Use full groupId-qid to ensure uniqueness
                 questionText: findQuestion?.text,
-                questionType: findQuestion?.question_type,
+                questionType: isDiversified
+                  ? "diversified"
+                  : findQuestion?.question_type,
+                commodityName: findQuestion?.commodityName,
                 absolute: scenarioSegment?.allNewValues?.[absoluteField] || 0,
                 percentage:
                   scenarioSegment?.allNewValues?.[percentageField] || 0,
@@ -117,7 +130,7 @@ export const calculateOutcomeData = (
                 // Only use percentage if it was explicitly provided in allNewValues
                 const hasPercentage =
                   typeof scenarioSegment?.allNewValues?.[
-                    `percentage-${sd.key}-${sd.segmentId}-${sdv.index}`
+                    `percentage-${sd.key}-${scenarioSegment.segmentId}-${sdv.index}`
                   ] !== "undefined";
 
                 if (hasPercentage) {
@@ -130,10 +143,13 @@ export const calculateOutcomeData = (
                     ).toFixed(2) + "%";
                 }
 
+                const commodityPrefix = sdv.commodityName
+                  ? `${sdv.commodityName}: `
+                  : "";
                 const text =
-                  sdv.questionType !== "diversified"
-                    ? sdv.questionText
-                    : "Diversified Income";
+                  sdv.questionType === "diversified" || !sdv.questionText
+                    ? "Diversified Income"
+                    : `${commodityPrefix}${sdv.questionText}`;
                 return `${text}#(${percentChange})`;
               })
               .join("|");

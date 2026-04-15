@@ -16,16 +16,32 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
-    - **Quiz Summary & Assessment Review (#759) - [COMPLETED]**:
-        - Implemented a detailed "Review Answers" summary page in `CoursePlayer.js`.
-        - Mapped user inputs to quiz metadata to show status (Correct/Incorrect), user answer, and the correct answer.
-        - Integrated detailed "EXPLANATION" blocks for each question to enhance the learning loop.
-        - Added styling in `CoursePlayer.scss` with branded status indicators and highlighted feedback boxes.
-        - **Refactor**: Extracted result and summary logic into a standalone `QuizResult.js` component to improve maintainability.
-        - Verified 100% lint-clean status (`yarn lint`) and consistent state management.
-    - Path: `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/components/QuizResult.js`.
+    - **Step 5 Circular Render Fix (#772) - [COMPLETED]**:
+        - Resolved widespread infinite render loops on the "Closing the Gap" page caused by recursive store updates.
+        - Implemented deep equality guards using `lodash.isEqual` in `useScenarioCalculations` and `StandardScenarioModeling`.
+        - Optimized state selectors in `ImpactOfInvestmentCharts` and modelling components to ensure components only re-render when their specific subset of data changes.
+        - Verified all changes with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/hooks/useScenarioCalculations.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
 
-    - **Global Segment Limit Enforcement (#763) - [COMPLETED]**:
+- **Clustered ROI Graph by Scenario & Persistent Segment Colors (#770) - [COMPLETED]**:
+        - Refactored the Step 5 "Return on Investment" chart from a flat list to a clustered bar chart grouped by Scenario on the X-axis.
+        - Implemented persistent segment color-coding by mapping segments to global case indices, ensuring "Segment A" always maintains the same color across all comparisons.
+        - Sorted segments within each cluster based on their defined order in the case (e.g., Segment 1, then Segment 2) for a predictable visual flow.
+        - Restored and refined the `dynamicRoiBarWidth` calculation to ensure optimal bar spacing as the number of scenario-segment comparisons changes.
+        - Simplified the data mapping logic using a dedicated matrix-style series construction and removed unused chart configuration imports.
+        - Verified the implementation with a clean `yarn lint` pass and logical matrix verification.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
+- **Multi-Segment View for Change Indicators (#768) - [COMPLETED]**:
+        - Refactored `ChartFarmEconomicEfficiency.js`, `ChartRevenueToCostRatio.js`, and `ChartNetIncomePerLandUnit.js` to display all farmer segments simultaneously in a grouped bar chart format.
+        - Removed the individual `SegmentSelector` component from these visualizations to simplify the user experience and encourage cross-segment comparison.
+        - Implemented a "Show labels" toggle for each chart, allowing users to view data values directly on the bars.
+        - Standardized numerical formatting to use 2 decimal places and the "10K" format (e.g., `12.50K`) for improved readability.
+        - Updated the `ColumnBar` component to support `formatNumberToString` in series labels and refined the shared `formatNumberToString` utility for higher precision.
+        - Verified the implementation with a clean frontend linting pass.
+    - Path: `frontend/src/pages/cases/visualizations/ChartFarmEconomicEfficiency.js`, `frontend/src/pages/cases/visualizations/ChartRevenueToCostRatio.js`, `frontend/src/pages/cases/visualizations/ChartNetIncomePerLandUnit.js`, `frontend/src/components/chart/options/common.js`, `frontend/src/components/chart/options/ColumnBar.js`.
+
+- **Global Segment Limit Enforcement (#763) - [COMPLETED]**:
         - Implemented strict 5-segment limit validation globally via Pydantic (`max_length=5`) in `CaseBase` and `CaseImport` models.
         - Developed a reactive "Delete-before-Upload" UX pattern in `CaseForm.js` that blocks file uploads when a case is at segment capacity.
         - Refined "Save case" button logic in `CaseSettings.js` to allow metadata updates (Description, etc.) without fresh uploads if segments already exist.
@@ -41,6 +57,21 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Optimized `useEffect` and `syncOccurredRef` to ensure seamless state preservation without redundant backend calls.
         - Verified 100% lint-clean status (`yarn lint`) and consistent state management across the player.
     - Path: `frontend/src/pages/academy/CoursePlayer.js`.
+
+    - **Scenario Outcomes Driver Display Fix (#765) - [COMPLETED]**:
+        - Fixed broken state key lookup in `scenarioOutcomeCalculations.js` by correcting `sd.segmentId` to `scenarioSegment.segmentId`.
+        - Implemented label fallback for "Diversified Income" drivers to prevent `undefined` display in the Outcomes table.
+        - Ensured consistent percentage formatting for all income drivers in Step 4.
+    - Path: `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`.
+
+    - **Quiz Summary & Assessment Review (#759) - [COMPLETED]**:
+        - Implemented a detailed "Review Answers" summary page in `CoursePlayer.js`.
+        - Mapped user inputs to quiz metadata to show status (Correct/Incorrect), user answer, and the correct answer.
+        - Integrated detailed "EXPLANATION" blocks for each question to enhance the learning loop.
+        - Added styling in `CoursePlayer.scss` with branded status indicators and highlighted feedback boxes.
+        - **Refactor**: Extracted result and summary logic into a standalone `QuizResult.js` component to improve maintainability.
+        - Verified 100% lint-clean status (`yarn lint`) and consistent state management.
+    - Path: `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/components/QuizResult.js`.
 
     - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
         - Created a reusable `YouTubePlayer` component in `src/components/utils/` to centralize 16:9 aspect ratio and desktop width capping (680px).

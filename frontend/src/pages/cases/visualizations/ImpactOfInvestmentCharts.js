@@ -29,9 +29,8 @@ const scenarioColors = [
 ];
 
 const ImpactOfInvestmentCharts = () => {
-  const { scenarioModeling, dashboardData } = CaseVisualState.useState(
-    (s) => s
-  );
+  const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
+  const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
 
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -425,33 +424,100 @@ const ImpactOfInvestmentCharts = () => {
       .filter(Boolean);
   }, [allScenariosRoiData, selectedRoiScenarioSegments, currentCase?.segments]);
 
-  const roiChartData = useMemo(() => {
-    return roiChartRoiData.map((d, index) => ({
-      name: d.displayName || d.name || `Scenario ${index + 1}`,
-      value: parseFloat((d.roi || 0).toFixed(8)),
-      color: scenarioColors[index % scenarioColors.length],
-      order: index,
-    }));
-  }, [roiChartRoiData]);
-
   const roiChartOptions = useMemo(() => {
-    const dynamicRoiBarWidth = Math.max(
-      20,
-      45 - (roiChartRoiData.length - 1) * 6
+    // Identify all unique scenarios selected (maintain selection order)
+    const uniqueScenarioKeys = Array.from(
+      new Set(roiChartRoiData.map((d) => String(d.key)))
     );
+    const scenarioNames = uniqueScenarioKeys.map((key) => {
+      const found = roiChartRoiData.find((d) => String(d.key) === key);
+      return found?.name || "Unknown Scenario";
+    });
+
+    const dynamicRoiBarWidth = Math.max(
+      15,
+      40 - (roiChartRoiData.length - 1) * 5
+    );
+
+    // Identify all unique segment IDs selected and sort them by case order
+    const uniqueSegmentIds = Array.from(
+      new Set(roiChartRoiData.map((d) => String(d.selectedSegmentId)))
+    ).sort((a, b) => {
+      if (a === "all") {
+        return -1;
+      }
+      if (b === "all") {
+        return 1;
+      }
+      const idxA = (currentCase?.segments || []).findIndex(
+        (s) => String(s.id) === a
+      );
+      const idxB = (currentCase?.segments || []).findIndex(
+        (s) => String(s.id) === b
+      );
+      return idxA - idxB;
+    });
+
+    // Build series data (one series per segment)
+    const series = uniqueSegmentIds.map((segId) => {
+      const globalSegIdx = (currentCase?.segments || []).findIndex(
+        (s) => String(s.id) === segId
+      );
+      // Persistent color index: "all" gets 0, segments get global index + 1
+      const colorIdx = segId === "all" ? 0 : globalSegIdx + 1;
+
+      const findSegment = currentCase?.segments?.find(
+        (s) => String(s.id) === segId
+      );
+      const segmentName =
+        findSegment?.name || (segId === "all" ? "All Segments" : "Segment");
+
+      const data = uniqueScenarioKeys.map((scKey) => {
+        const found = roiChartRoiData.find(
+          (d) =>
+            String(d.key) === scKey && String(d.selectedSegmentId) === segId
+        );
+        return found ? parseFloat((found.roi || 0).toFixed(8)) : 0;
+      });
+
+      return {
+        name: segmentName,
+        type: "bar",
+        barWidth: dynamicRoiBarWidth,
+        emphasis: { focus: "series" },
+        itemStyle: { color: scenarioColors[colorIdx % scenarioColors.length] },
+        data: data,
+        label: {
+          show: showRoiLabel,
+          position: "top",
+          padding: [3, 5],
+          backgroundColor: "rgba(0,0,0,0.3)",
+          color: "#fff",
+          borderRadius: 2,
+          formatter: "{c}",
+        },
+      };
+    });
 
     return {
       tooltip: {
-        trigger: "item",
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
         formatter: (params) => {
-          return `${params.marker} ${params.name}: ${params.value}`;
+          let res = `${params[0].name}`;
+          params.forEach((p) => {
+            if (p.value > 0) {
+              res += `<br/>${p.marker} ${p.seriesName}: ${p.value}`;
+            }
+          });
+          return res;
         },
       },
       legend: {
         show: true,
         top: 0,
         icon: "circle",
-        data: roiChartData.map((d) => d.name),
+        data: series.map((s) => s.name),
       },
       grid: {
         top: 60,
@@ -462,8 +528,7 @@ const ImpactOfInvestmentCharts = () => {
       },
       xAxis: {
         type: "category",
-        data: ["ROI"],
-        axisLabel: { show: false }, // Hide X-axis label "ROI"
+        data: scenarioNames,
       },
       yAxis: {
         type: "value",
@@ -472,25 +537,9 @@ const ImpactOfInvestmentCharts = () => {
           formatter: "{value}",
         },
       },
-      series: roiChartData.map((d) => ({
-        name: d.name,
-        type: "bar",
-        barWidth: dynamicRoiBarWidth,
-        emphasis: { focus: "series" },
-        itemStyle: { color: d.color },
-        data: [d.value],
-        label: {
-          show: showRoiLabel,
-          position: "top",
-          padding: [3, 5],
-          backgroundColor: "rgba(0,0,0,0.3)",
-          color: "#fff",
-          borderRadius: 2,
-          formatter: "{c}",
-        },
-      })),
+      series: series,
     };
-  }, [roiChartData, roiChartRoiData, showRoiLabel]);
+  }, [roiChartRoiData, showRoiLabel, currentCase?.segments]);
 
   const scenarioSegmentOptions = useMemo(() => {
     return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {

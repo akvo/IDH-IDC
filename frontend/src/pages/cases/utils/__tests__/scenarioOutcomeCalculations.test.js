@@ -1,4 +1,4 @@
-import { calculateOutcomeData } from "../scenarioOutcomeCalculations";
+const { calculateOutcomeData } = require("../scenarioOutcomeCalculations");
 
 const questionGroups = [
   {
@@ -85,5 +85,78 @@ describe("Scenario Outcome Calculations (TDD)", () => {
     const drivers = outcome.find((o) => o.id === "income_driver");
     // aggregator#(15.66%)
     expect(drivers["scenario-1"]).toBe("aggregator#(15.66%)");
+  });
+
+  it("handles multi-crop drivers with the same question ID and prefixes labels", () => {
+    const multiCropGroups = [
+      {
+        id: "m1",
+        commodity_name: "Maize",
+        questions: [{ id: 100, text: "Volume", question_type: "input" }],
+      },
+      {
+        id: "c2",
+        commodity_name: "Cocoa",
+        questions: [{ id: 100, text: "Volume", question_type: "input" }],
+      },
+    ];
+    const multiCropScenario = [
+      {
+        key: 1,
+        name: "Scenario 1",
+        scenarioValues: [
+          {
+            segmentId: 1,
+            currentSegmentValue: {
+              answers: [{ name: "current", questionId: 100, value: 1000 }],
+            },
+            selectedDrivers: [
+              { field: "driver-1-1-0", value: "m1-100" },
+              { field: "driver-1-1-1", value: "c2-100" },
+            ],
+            allNewValues: {
+              "percentage-1-1-0": 10,
+              "percentage-1-1-1": 20,
+            },
+          },
+        ],
+      },
+    ];
+
+    const result = calculateOutcomeData(
+      multiCropScenario,
+      dashboardData,
+      multiCropGroups
+    );
+    const outcome = result.find((r) => r.segmentId === 1).scenarioOutcome;
+    const drivers = outcome.find((o) => o.id === "income_driver");
+
+    // Maize: Volume#(10.00%)|Cocoa: Volume#(20.00%)
+    expect(drivers["scenario-1"]).toContain("Maize: Volume#(10.00%)");
+    expect(drivers["scenario-1"]).toContain("Cocoa: Volume#(20.00%)");
+  });
+
+  it("handles diversified income drivers correctly", () => {
+    const diversifiedScenario = [
+      {
+        key: 1,
+        name: "Scenario 1",
+        scenarioValues: [
+          {
+            segmentId: 1,
+            selectedDrivers: [{ field: "driver-1-1-0", value: "diversified" }],
+            allNewValues: {
+              "percentage-1-1-0": 5,
+            },
+          },
+        ],
+      },
+    ];
+
+    const result = calculateOutcomeData(diversifiedScenario, dashboardData, []);
+    const outcome = result.find((r) => r.segmentId === 1).scenarioOutcome;
+    const drivers = outcome.find((o) => o.id === "income_driver");
+
+    expect(drivers["scenario-1"]).toBe("Diversified Income#(5.00%)");
   });
 });
