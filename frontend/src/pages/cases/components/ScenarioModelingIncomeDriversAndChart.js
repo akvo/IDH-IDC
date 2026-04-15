@@ -7,7 +7,7 @@ import {
   getFunctionDefaultValue,
 } from "../../../lib";
 import { thousandFormatter } from "../../../components/chart/options/common";
-import { isEmpty, orderBy, uniq, uniqBy } from "lodash";
+import { isEmpty, orderBy, uniq, uniqBy, isEqual } from "lodash";
 import { customFormula } from "../../../lib/formula";
 import { ChartSegmentsIncomeGapScenarioModeling } from "../visualizations";
 import AllDriverTreeSelector from "./AllDriverTreeSelector";
@@ -162,6 +162,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
     totalIncomeQuestions,
     dashboardData,
     globalSectionTotalValues,
+    scenarioModeling,
   } = CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
   const [refreshBackward, setRefreshBackward] = useState(true);
@@ -270,8 +271,17 @@ const ScenarioModelingIncomeDriversAndChart = ({
     }
     const backwardScenarioValues = currentScenarioData?.scenarioValues?.map(
       (sv) => {
+        const actualSegment =
+          currentCase?.segments?.find((s) => s.id === sv.segmentId) || segment;
+        const actualDashboardData =
+          dashboardData.find((d) => d.id === sv.segmentId) ||
+          currentDashboardData;
+
         if (isEmpty(sv.allNewValues)) {
-          return sv;
+          return {
+            ...sv,
+            currentSegmentValue: actualDashboardData,
+          };
         }
         const fieldNameTmp = `${currentScenarioData.key}-${sv.segmentId}`;
         // check if it is old value
@@ -346,14 +356,14 @@ const ScenarioModelingIncomeDriversAndChart = ({
             };
           });
 
-          const updatedSegmentAnswers = isEmpty(segment?.answers)
+          const updatedSegmentAnswers = isEmpty(actualSegment?.answers)
             ? {}
             : {
-                ...segment.answers,
+                ...actualSegment.answers,
                 ...updatedCurrentValues,
               };
           updatedSegment = {
-            ...segment,
+            ...actualSegment,
             answers: { ...updatedSegmentAnswers },
           };
           // EOL BACKWARD
@@ -415,16 +425,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
               });
           }
 
-          const updatedSegmentAnswers = isEmpty(segment?.answers)
+          const updatedSegmentAnswers = isEmpty(actualSegment?.answers)
             ? {}
             : {
-                ...segment.answers,
+                ...actualSegment.answers,
                 ...(updatedSegment?.answers || {}),
                 ...updatedCurrentValues,
               };
 
           updatedSegment = {
-            ...segment,
+            ...actualSegment,
             ...updatedSegment,
             answers: updatedSegmentAnswers,
           };
@@ -521,11 +531,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
               : totalIncomeQuestions;
 
           const totalCurrentIncomeAnswer = backwardTotalIncomeQuestions
-            .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
+            .map((qs) => actualSegment?.answers?.[`current-${qs}`] || 0)
             .filter((a) => a)
             .reduce((acc, a) => acc + a, 0);
           const totalFeasibleIncomeAnswer = totalIncomeQuestions
-            .map((qs) => segment?.answers?.[`feasible-${qs}`] || 0)
+            .map((qs) => actualSegment?.answers?.[`feasible-${qs}`] || 0)
             .filter((a) => a)
             .reduce((acc, a) => acc + a, 0);
 
@@ -604,7 +614,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
         return {
           ...sv,
           allNewValues: backwardValues,
-          currentSegmentValue: currentDashboardData,
+          currentSegmentValue: actualDashboardData,
           updatedSegment,
           updatedSegmentScenarioValue,
         };
@@ -615,28 +625,32 @@ const ScenarioModelingIncomeDriversAndChart = ({
       scenarioValues: orderBy(backwardScenarioValues, "segmentId"),
     };
 
-    // update state value
-    CaseVisualState.update((s) => ({
-      ...s,
-      scenarioModeling: {
-        ...s.scenarioModeling,
-        config: {
-          ...s.scenarioModeling.config,
-          scenarioData: orderBy(
-            s.scenarioModeling.config.scenarioData.map((scenario) => {
-              if (scenario.key === bacwardRes.key) {
-                return {
-                  ...scenario,
-                  scenarioValues: orderBy(backwardScenarioValues, "segmentId"),
-                };
-              }
-              return scenario;
-            }),
-            "key"
-          ),
+    const nextScenarioData = orderBy(
+      scenarioModeling?.config?.scenarioData?.map((scenario) => {
+        if (scenario.key === bacwardRes.key) {
+          return {
+            ...scenario,
+            scenarioValues: orderBy(backwardScenarioValues, "segmentId"),
+          };
+        }
+        return scenario;
+      }),
+      "key"
+    );
+
+    if (!isEqual(scenarioModeling?.config?.scenarioData, nextScenarioData)) {
+      // update state value
+      CaseVisualState.update((s) => ({
+        ...s,
+        scenarioModeling: {
+          ...s.scenarioModeling,
+          config: {
+            ...s.scenarioModeling.config,
+            scenarioData: nextScenarioData,
+          },
         },
-      },
-    }));
+      }));
+    }
     // EOL Update scenario modeling global state
 
     setRefreshBackward(false);
@@ -648,10 +662,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
     globalSectionTotalValues,
     costQuestions,
     currentCase.case_commodities,
+    currentCase.segments,
     flattenedQuestionGroups,
     totalCommodityQuestions,
     totalIncomeQuestions,
-    currentDashboardData,
+    dashboardData,
     refreshBackward,
   ]);
 
@@ -1003,37 +1018,42 @@ const ScenarioModelingIncomeDriversAndChart = ({
       };
     }
 
-    // update state value
-    CaseVisualState.update((s) => ({
-      ...s,
-      scenarioModeling: {
-        ...s.scenarioModeling,
-        config: {
-          ...s.scenarioModeling.config,
-          scenarioData: orderBy(
-            s.scenarioModeling.config.scenarioData.map((scenario) => {
-              if (scenario.key === backwardScenarioData.key) {
-                return {
-                  ...scenario,
-                  scenarioValues: orderBy(
-                    [
-                      ...scenario.scenarioValues.filter(
-                        (item) => item.segmentId !== segment.id
-                      ),
-                      {
-                        ...updatedScenarioValue,
-                      },
-                    ],
-                    "segmentId"
-                  ),
-                };
-              }
-              return scenario;
-            }, "key")
-          ),
+    const nextScenarioData = orderBy(
+      scenarioModeling.config.scenarioData.map((scenario) => {
+        if (scenario.key === backwardScenarioData.key) {
+          return {
+            ...scenario,
+            scenarioValues: orderBy(
+              [
+                ...scenario.scenarioValues.filter(
+                  (item) => item.segmentId !== segment.id
+                ),
+                {
+                  ...updatedScenarioValue,
+                },
+              ],
+              "segmentId"
+            ),
+          };
+        }
+        return scenario;
+      }),
+      "key"
+    );
+
+    if (!isEqual(scenarioModeling.config.scenarioData, nextScenarioData)) {
+      // update state value
+      CaseVisualState.update((s) => ({
+        ...s,
+        scenarioModeling: {
+          ...s.scenarioModeling,
+          config: {
+            ...s.scenarioModeling.config,
+            scenarioData: nextScenarioData,
+          },
         },
-      },
-    }));
+      }));
+    }
     // EOL Update scenario modeling global state
   };
 
