@@ -319,17 +319,35 @@ const ScenarioModelingROIForm = ({
           </Form.Item>
         </Col>
       </Row>
-
       {(costAllocationMode === "per_segment" ||
         costAllocationMode === "all_farmers") && (
-        <Row
-          align="middle"
-          justify="space-between"
-          style={{
-            padding: "20px 0",
-            borderTop: "1px solid #f0f0f0",
-          }}
-        >
+        <>
+          <div
+            style={{
+              background: "#eaf2f2",
+              borderRadius: "12px",
+              padding: "20px",
+              marginTop: "20px",
+              border: "1px solid rgba(27, 98, 95, 0.1)",
+              lineHeight: "1.5",
+            }}
+          >
+            <Text style={{ color: "#26605f" }}>
+              Please input the net cost of implementing the scenario, taking
+              into account all fixed and variable cost as well as the potential
+              revenue created (e.g, farmer payments for trainings). You can
+              either input the total cost of the scenario as a whole, or break
+              it down by component.
+            </Text>
+          </div>
+          <Row
+            align="middle"
+            justify="space-between"
+            style={{
+              padding: "20px 0",
+              borderTop: "1px solid #f0f0f0",
+            }}
+          >
           <Col span={24}>
             <Space direction="vertical" style={{ width: "100%" }}>
               {costAllocationMode === "all_farmers" ? (
@@ -373,7 +391,8 @@ const ScenarioModelingROIForm = ({
               )}
             </Space>
           </Col>
-        </Row>
+          </Row>
+        </>
       )}
 
       <Form.Item
