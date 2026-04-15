@@ -25,6 +25,7 @@ import {
   CaretUpOutlined,
   LockOutlined,
 } from "@ant-design/icons";
+import "./ScenarioModelingROIForm.scss";
 
 const { Text } = Typography;
 
@@ -67,10 +68,10 @@ const ScenarioModelingROIForm = ({
 
   const isRoiExpanded = useMemo(() => {
     if (costAllocationMode === "all_farmers") {
-      return isRoiExpandedAll;
+      return isRoiExpandedAll !== false;
     }
     if (costAllocationMode === "per_segment") {
-      return !!isRoiExpandedSegments[segmentId];
+      return isRoiExpandedSegments[segmentId] !== false;
     }
     return false;
   }, [costAllocationMode, isRoiExpandedAll, isRoiExpandedSegments, segmentId]);
@@ -311,7 +312,7 @@ const ScenarioModelingROIForm = ({
                   form?.setFieldsValue({ is_roi_enabled: mode !== "no" });
                 });
                 CaseUIState.update((s) => {
-                  s.general.isRoiExpandedAll = false;
+                  s.general.isRoiExpandedAll = true;
                   s.general.isRoiExpandedSegments = {};
                 });
               }}
@@ -322,58 +323,69 @@ const ScenarioModelingROIForm = ({
 
       {(costAllocationMode === "per_segment" ||
         costAllocationMode === "all_farmers") && (
-        <Row
-          align="middle"
-          justify="space-between"
-          style={{
-            padding: "20px 0",
-            borderTop: "1px solid #f0f0f0",
-          }}
-        >
-          <Col span={24}>
-            <Space direction="vertical" style={{ width: "100%" }}>
-              {costAllocationMode === "all_farmers" ? (
-                <Typography.Text strong>
-                  Scenario cost for all farmers
-                </Typography.Text>
-              ) : (
-                <Row
-                  align="middle"
-                  justify="space-between"
-                  style={{ width: "100%" }}
-                >
-                  <Col>
-                    <Typography.Text strong>
-                      Scenario cost for segment
-                    </Typography.Text>
-                  </Col>
-                  <Col>
-                    <Radio.Group
-                      className="roi-segment-selector"
-                      value={activeSegmentId}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        CaseUIState.update((s) => {
-                          s.general.activeSegmentId = val;
-                        });
-                      }}
-                    >
-                      {orderBy(currentCase.segments, ["id"]).map((seg) => (
-                        <Radio.Button
-                          key={seg.id}
-                          value={seg.id}
-                          style={{ fontWeight: "normal" }}
-                        >
-                          {seg.name}
-                        </Radio.Button>
-                      ))}
-                    </Radio.Group>
-                  </Col>
-                </Row>
-              )}
-            </Space>
-          </Col>
-        </Row>
+        <>
+          <div className="roi-instruction-box">
+            <Text>
+              Please input the net cost of implementing the scenario, taking
+              into account all fixed and variable cost as well as the potential
+              revenue created (e.g, farmer payments for trainings). You can
+              either input the total cost of the scenario as a whole, or break
+              it down by component.
+            </Text>
+          </div>
+          <Row
+            align="middle"
+            justify="space-between"
+            style={{
+              padding: "20px 0",
+              borderTop: "1px solid #f0f0f0",
+            }}
+          >
+            <Col span={24}>
+              <Space direction="vertical" style={{ width: "100%" }}>
+                {costAllocationMode === "all_farmers" ? (
+                  <Typography.Text strong>
+                    Scenario cost for all farmers
+                  </Typography.Text>
+                ) : (
+                  <Row
+                    align="middle"
+                    justify="space-between"
+                    style={{ width: "100%" }}
+                  >
+                    <Col>
+                      <Typography.Text strong>
+                        Scenario cost for segment
+                      </Typography.Text>
+                    </Col>
+                    <Col>
+                      <Radio.Group
+                        className="roi-segment-selector"
+                        value={activeSegmentId}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          CaseUIState.update((s) => {
+                            s.general.activeSegmentId = val;
+                          });
+                        }}
+                      >
+                        {orderBy(currentCase.segments, ["id"]).map((seg) => (
+                          <Radio.Button
+                            key={seg.id}
+                            value={seg.id}
+                            style={{ fontWeight: "normal" }}
+                          >
+                            {seg.name}
+                          </Radio.Button>
+                        ))}
+                      </Radio.Group>
+                    </Col>
+                  </Row>
+                )}
+              </Space>
+            </Col>
+          </Row>
+        </>
       )}
 
       <Form.Item
@@ -402,10 +414,10 @@ const ScenarioModelingROIForm = ({
                   onClick={() => {
                     CaseUIState.update((s) => {
                       if (costAllocationMode === "all_farmers") {
-                        s.general.isRoiExpandedAll = !isRoiExpandedAll;
+                        s.general.isRoiExpandedAll = !isRoiExpanded;
                       } else if (costAllocationMode === "per_segment") {
                         s.general.isRoiExpandedSegments[segmentId] =
-                          !isRoiExpandedSegments[segmentId];
+                          !isRoiExpanded;
                       }
                     });
                   }}
