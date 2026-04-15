@@ -202,6 +202,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
       });
   }, [incomeDataDrivers]);
 
+  const flattenAllQuestions = useMemo(() => {
+    return questionGroups.flatMap((group) => {
+      const questions = !group ? [] : flatten(group.questions);
+      return questions.map((q) => ({
+        case_commodity: group.id,
+        ...q,
+      }));
+    });
+  }, [questionGroups]);
+
   const calculateChildrenValues = (question, fieldKey, values) => {
     const childrenQuestions = flattenIncomeDataDriversQuestions.filter(
       (q) => q.parent === question?.parent
@@ -229,11 +239,15 @@ const ScenarioModelingIncomeDriversAndChart = ({
     } else {
       const fieldKey = `${fieldName}-${caseCommodityId}`;
 
-      const question = flattenIncomeDataDriversQuestions.find(
-        (q) => q.id === parseInt(questionId)
+      const question = flattenAllQuestions.find(
+        (q) =>
+          q.id === parseInt(questionId) &&
+          q.case_commodity === parseInt(caseCommodityId)
       );
-      const parentQuestion = flattenIncomeDataDriversQuestions.find(
-        (q) => q.id === question?.parent
+      const parentQuestion = flattenAllQuestions.find(
+        (q) =>
+          q.id === question?.parent &&
+          q.case_commodity === parseInt(caseCommodityId)
       );
 
       const allChildrensValues = calculateChildrenValues(
@@ -531,11 +545,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
               : totalIncomeQuestions;
 
           const totalCurrentIncomeAnswer = backwardTotalIncomeQuestions
-            .map((qs) => actualSegment?.answers?.[`current-${qs}`] || 0)
+            .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
             .filter((a) => a)
             .reduce((acc, a) => acc + a, 0);
           const totalFeasibleIncomeAnswer = totalIncomeQuestions
-            .map((qs) => actualSegment?.answers?.[`feasible-${qs}`] || 0)
+            .map((qs) => segment?.answers?.[`feasible-${qs}`] || 0)
             .filter((a) => a)
             .reduce((acc, a) => acc + a, 0);
 
@@ -1093,7 +1107,7 @@ const ScenarioModelingIncomeDriversAndChart = ({
       ) || {};
     const newTotalIncome =
       findScenario?.updatedSegmentScenarioValue?.total_current_income || 0;
-    return Math.round(newTotalIncome);
+    return newTotalIncome;
   }, [segment?.id, backwardScenarioData?.scenarioValues]);
 
   return (
