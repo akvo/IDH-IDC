@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Card,
   Collapse,
@@ -29,9 +29,17 @@ const { Title } = Typography;
 
 const ExploreChangeToCloseTheGap = ({ disabled }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const heatmapRef = useRef(null);
 
   const handleDownload = () => {
     console.info("Download clicked - Placeholder for export functionality");
+  };
+
+  const handleClearHeatmap = (e) => {
+    e.stopPropagation();
+    if (heatmapRef.current) {
+      heatmapRef.current.handleOnClear();
+    }
   };
 
   return (
@@ -123,16 +131,33 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
           </Panel>
           <Panel
             header={
-              <Space align="center">
-                <span>Two driver heatmap</span>
-                <Tooltip title="Understand the combined impact of two drivers.">
-                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
-                </Tooltip>
-              </Space>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                }}
+              >
+                <Space align="center">
+                  <span>Two driver heatmap</span>
+                  <Tooltip title="Understand the combined impact of two drivers.">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                  </Tooltip>
+                </Space>
+                <Button
+                  className="button-ghost header-action-btn"
+                  onClick={handleClearHeatmap}
+                  size="small"
+                >
+                  Clear
+                </Button>
+              </div>
             }
             key="2"
           >
             <TwoDriverHeatmap
+              ref={heatmapRef}
               selectedSegment={selectedSegment}
               hideCard={true}
             />
