@@ -231,6 +231,16 @@ const AssessImpactMitigationStrategies = ({
         </Card>
       </Col>
       <Col span={24}>
+        <p style={{ margin: 0, padding: 0 }}>
+          Use this section to explore the minimum change needed in each
+          (combination of) drivers in order to close the living income gap.
+          Start with a single driver. Use the percentage values in the
+          &apos;maximum feasible change&apos; column to understand where the
+          most potential for change is, then carry those drivers with higher
+          potential to the next sections: two- and three-driver heatmap.
+        </p>
+      </Col>
+      <Col span={24}>
         <ExploreChangeToCloseTheGap
           disabled={!enableEditCase || !enableAdvancedTools}
         />
