@@ -110,14 +110,25 @@
     .ant-collapse-content-box {
       padding: 24px !important; // Slightly reduced padding for better density
     }
+
+    .explore-panel-header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding-right: 8px;
+    }
   }
 
   .modelling-goal-reminder {
     color: #1b625f;
-    font-weight: 600;
+    font-weight: 500;
     font-style: italic;
-    margin-bottom: 20px;
     font-size: 14px;
+    margin: 0;
+    width: 100%;
+    text-align: right;
+    padding-right: 12px;
   }
 }
 

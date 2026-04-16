@@ -20,6 +20,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Added a descriptive paragraph to the "Assess Impact of Mitigation Strategies" page (Step 4) to guide users on using the single, two, and three-driver exploration tools.
         - Clarified the workflow: starting with a single driver to identify high-potential drivers based on the 'maximum feasible change' column before proceeding to multi-driver heatmaps.
         - **Refinement**: Implemented a dynamic reminder text ("Modelling for [X]% gap closure (as set above)") at the top of each exploration tool (Single, Two, Three driver) to ensure transparency regarding the selected modelling goal.
+        - **Refactor**: Created a reusable `ModellingGoalReminder` component and moved it into the `Collapse` panel headers for continuous visibility across all Step 4 tools.
         - **Refinement**: Integrated `CaseVisualState` access and implemented a default fallback of **0%** for the gap closure percentage if not explicitly set.
         - Verified the implementation with a clean `yarn lint` pass (prior to environment sync issue).
     - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.js`, `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.scss`.
