@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Card, Space, Tag } from "antd";
+import { Card, Space } from "antd";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { IncomeGatingAlert } from "./index";
@@ -34,12 +34,6 @@ const BACKGROUND_COLORS = {
   group: "#FFFFFF",
 };
 
-const COLUMN_WIDTHS = {
-  group: 100,
-  default: 18.75,
-  feasibility: 25,
-};
-
 const COLUMNS = [
   { key: "driver", label: "Driver" },
   { key: "neededValue", label: "Needed value" },
@@ -67,66 +61,54 @@ const COLUMNS = [
 //   },
 // ];
 
-// Helper function to generate card grid styles
-const generateCardGridStyle = ({
+// Helper function to generate cell styles
+const generateCellStyle = ({
   header = false,
   columnKey = null,
-  type = null,
-  isLastRow = false,
-  isFirstCol = false,
   isLastCol = false,
+  type = null,
 }) => {
-  const backgroundColor = BACKGROUND_COLORS[type] || BACKGROUND_COLORS.default;
-  const width =
-    columnKey === "feasibility"
-      ? COLUMN_WIDTHS.feasibility
-      : columnKey === "group"
-      ? COLUMN_WIDTHS.group
-      : COLUMN_WIDTHS.default;
-
   return {
-    width: `${width}%`,
-    textAlign: header ? "center" : "left",
-    backgroundColor,
-    padding: "12px 16px",
-    borderBottomLeftRadius: isLastRow && isFirstCol ? "20px" : 0,
-    borderBottomRightRadius: isLastRow && isLastCol ? "20px" : 0,
-    fontWeight: columnKey === "group" ? 500 : "normal",
+    textAlign: header || columnKey !== "driver" ? "center" : "left",
+    padding: "16px",
+    fontWeight:
+      columnKey === "group" || (columnKey === "driver" && !header) ? 700 : 400,
+    borderRight: isLastCol ? "none" : "1px solid #f0f0f0", // Vertical dividers
+    display: "flex",
+    alignItems: "center",
+    justifyContent: header || columnKey !== "driver" ? "center" : "flex-start",
+    minHeight: "48px",
+    backgroundColor: header
+      ? "#fafafa"
+      : type
+      ? BACKGROUND_COLORS[type]
+      : "transparent",
   };
 };
 
 // Render tag component for change columns
 const ChangeTag = ({ value, type }) => {
-  if (typeof value === "undefined" || value === null) {
+  if (typeof value === "undefined" || value === null || value === 0) {
     return null;
   }
 
   const Icon = value > 0 ? ArrowUpOutlined : ArrowDownOutlined;
 
   return (
-    <Tag
-      icon={
-        value === 0 ? (
-          ""
-        ) : (
-          <Icon style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }} />
-        )
-      }
-      color={TAG_COLORS[type]}
-      bordered={false}
+    <div
+      className={`change-pill pill-${type}`}
       style={{
-        borderRadius: "16px",
-        padding: "2px 8px 2px 6px",
+        backgroundColor: TAG_COLORS[type],
+        color: TAG_FONT_COLORS[type],
       }}
     >
-      <span style={{ fontSize: "12px", color: TAG_FONT_COLORS[type] }}>
-        {thousandFormatter(value, 2)}%
-      </span>
-    </Tag>
+      <Icon className="pill-arrow" />
+      <span>{thousandFormatter(Math.abs(value), 2)}%</span>
+    </div>
   );
 };
 
-const SingleDriverChange = ({ selectedSegment }) => {
+const SingleDriverChange = ({ selectedSegment, hideCard = false }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { dashboardData, questionGroups, sensitivityAnalysis } =
     CaseVisualState.useState((s) => s);
@@ -459,6 +441,116 @@ const SingleDriverChange = ({ selectedSegment }) => {
     []
   );
 
+  const tableHeader = useMemo(
+    () =>
+      COLUMNS.map((col, colIndex) => (
+        <div
+          key={col.key}
+          style={generateCellStyle({
+            header: true,
+            columnKey: col.key,
+            isLastCol: colIndex === COLUMNS.length - 1,
+          })}
+          className="grid-table-header"
+        >
+          {col.label}
+        </div>
+      )),
+    []
+  );
+
+  const tableBody = useMemo(() => {
+    if (isAboveTarget) {
+      return null;
+    }
+
+    return tableData?.flatMap((d, groupIndex) => {
+      const groupName =
+        d.group === "diversified"
+          ? "Other Diversified"
+          : `${upperFirst(d.group)}`;
+
+      const groupRow = (
+        <div
+          key={`group-${groupIndex}`}
+          style={generateCellStyle({
+            columnKey: "group",
+            isLastCol: true,
+          })}
+          className="grid-table-row group-header-row"
+        >
+          {groupName}
+        </div>
+      );
+
+      const rows = d?.rowData?.map((row, rowIndex) => {
+        return COLUMNS.map((col, colIndex) => {
+          const isLastCol = colIndex === COLUMNS.length - 1;
+          const cellClass = `cell-${row.type}`; // Color entire row by status
+          const cellValue = row[col.key];
+          const showTag = changeColumns.has(col.key);
+
+          return (
+            <div
+              key={`row-${groupIndex}-${rowIndex}-${col.key}`}
+              className={`grid-table-cell ${cellClass}`}
+              style={generateCellStyle({
+                columnKey: col.key,
+                isLastCol,
+                type: row.type,
+              })}
+            >
+              <Space>
+                <div>{cellValue}</div>
+                {showTag && (
+                  <ChangeTag value={row[`${col.key}Percent`]} type={row.type} />
+                )}
+              </Space>
+            </div>
+          );
+        });
+      });
+
+      return [groupRow, ...rows];
+    });
+  }, [tableData, isAboveTarget, changeColumns]);
+
+  const content = (
+    <div className="driver-change-table-container">
+      {!hideCard && (
+        <Space direction="vertical" style={{ marginBottom: "16px" }}>
+          <b>Single driver change</b>
+          <div className="description">
+            The table below shows the minimum change needed in each driver,
+            while keeping all others at their current levels, to close the
+            income gap.
+          </div>
+        </Space>
+      )}
+      {hideCard && (
+        <p style={{ marginBottom: "20px" }}>
+          The table below shows the minimum change needed in each driver, while
+          keeping all others at their current levels, to close the income gap.
+        </p>
+      )}
+
+      {isAboveTarget ? (
+        <IncomeGatingAlert
+          style={{ margin: hideCard ? "0 0 20px 0" : "20px" }}
+        />
+      ) : (
+        <div className="driver-change-grid-table">
+          {tableHeader}
+          {tableBody}
+        </div>
+      )}
+    </div>
+  );
+
+  if (hideCard) {
+    return content;
+  }
+
   return (
     <Card
       className="card-content-wrapper card-with-gray-header-wrapper"
@@ -475,76 +567,7 @@ const SingleDriverChange = ({ selectedSegment }) => {
         </Space>
       }
     >
-      {isAboveTarget ? (
-        <IncomeGatingAlert style={{ margin: "20px" }} />
-      ) : (
-        COLUMNS.map((col) => (
-          <Card.Grid
-            style={generateCardGridStyle({ header: true, columnKey: col.key })}
-            key={col.key}
-            hoverable={false}
-          >
-            {col.label}
-          </Card.Grid>
-        ))
-      )}
-
-      {!isAboveTarget &&
-        tableData?.flatMap((d, groupIndex) => {
-          const groupName =
-            d.group === "diversified"
-              ? "Other Diversified"
-              : `${upperFirst(d.group)}`;
-
-          const groupCardGrid = (
-            <Card.Grid
-              key={`group-${groupIndex}`}
-              style={generateCardGridStyle({
-                columnKey: "group",
-                type: "group",
-              })}
-              hoverable={false}
-            >
-              <div>{groupName}</div>
-            </Card.Grid>
-          );
-
-          const rowCardGrids = d?.rowData?.flatMap((row, rowIndex) => {
-            const isLastRow = groupIndex === tableData?.length - 1;
-            return COLUMNS.map((col, colIndex) => {
-              const isFirstCol = colIndex === 0;
-              const isLastCol = colIndex === COLUMNS.length - 1;
-              const cellValue = row[col.key];
-              const showTag = changeColumns.has(col.key);
-
-              return (
-                <Card.Grid
-                  key={`row-${groupIndex}-${rowIndex}-${col.key}`}
-                  style={generateCardGridStyle({
-                    columnKey: col.key,
-                    type: row.type,
-                    isLastRow,
-                    isFirstCol,
-                    isLastCol,
-                  })}
-                  hoverable={false}
-                >
-                  <Space>
-                    <div>{cellValue}</div>
-                    {showTag && (
-                      <ChangeTag
-                        value={row[`${col.key}Percent`]}
-                        type={row.type}
-                      />
-                    )}
-                  </Space>
-                </Card.Grid>
-              );
-            });
-          });
-
-          return [groupCardGrid, ...rowCardGrids];
-        })}
+      {content}
     </Card>
   );
 };

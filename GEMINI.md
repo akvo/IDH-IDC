@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Step 4 Exploration UI Refinement & Unified Export (#779) - [COMPLETED]**:
+        - Integrated a unified, collapsible container for Step 4 exploration tools (Single, Two, and Three driver analysis) using branded teal backgrounds and custom expand/collapse icons.
+        - Refactored `TwoDriverHeatmap.js` using `React.forwardRef` to support centralized "Clear" functionality from the section header.
+        - Implemented a robust "Download" export system for the entire exploration card with a 500ms render-delay to ensure chart stability.
+        - Enforced clean exports by implementing an automated filtering logic that excludes interactive UI elements (buttons, selectors, tooltips) from the PNG.
+        - Optimized visualization layouts: refactored `ThreeDriverCombinationChart.js` with CSS Grid for perfect label alignment and standardized padding across Step 4 charts.
+        - Verified the implementation with a clean `yarn lint` pass and manual export validation.
+    - Path: `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.js`, `frontend/src/pages/cases/components/TwoDriverHeatmap.js`, `frontend/src/pages/cases/visualizations/ThreeDriverCombinationChart.js`, `frontend/src/pages/cases/visualizations/GapClosingPieChart.js`.
 - **ROI Input Box Guidance & Default Expansion (#776) - [COMPLETED]**:
         - Refactored `ScenarioModelingROIForm.js` and `case_ui.js` to ensure the ROI component modeling section is expanded by default when cost allocation is enabled.
         - Implemented an instructional info box in Step 5 to guide users on net cost inputs (fixed/variable costs vs. potential revenue).
