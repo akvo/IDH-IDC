@@ -266,6 +266,10 @@ const TwoDriverHeatmap = React.forwardRef(
       <Row gutter={[20, 20]}>
         <Col span={24}>
           <p>
+            The heatmap below shows the income reached at any two combinations
+            of x and y, within your selected ranges.
+          </p>
+          <p>
             Closing the income gap often requires adjusting more than one
             driver. Select two drivers to explore how different combinations
             within your chosen ranges affect the outcome. The tool uses current
