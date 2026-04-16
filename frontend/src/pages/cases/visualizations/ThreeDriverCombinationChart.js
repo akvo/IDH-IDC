@@ -46,51 +46,52 @@ const ThreeDriverCombinationChart = ({
       <Space direction="vertical" size={24} style={{ width: "100%" }}>
         {combinations.map((row, rowIdx) => (
           <div key={rowIdx} className="combination-card">
-            <div className="card-header">
-              <span className="label">If {yAxisDriver.name} is:</span>
-              <span
-                className={`value ${
+            {/* If Section */}
+            <div className="row-label">If {yAxisDriver.name} is:</div>
+            <div className="value-pill-if">
+              <div
+                className={`value-blob ${
                   row.isYFeasible ? "feasible" : "not-feasible"
                 }`}
               >
                 {thousandFormatter(row.yValue, 2)} {yAxisDriver.unitName}
-              </span>
-            </div>
-            <div className="card-body">
-              <div className="combination-flex-wrapper">
-                <div className="side-labels">
-                  <div className="side-label-item">
-                    And {xAxisDriver.name} is:
-                  </div>
-                  <div className="side-label-item">
-                    Then {thirdDriver.name} has to be:
-                  </div>
-                </div>
-                <div className="value-columns-flex">
-                  {row.cols.map((col, colIdx) => (
-                    <div key={colIdx} className="value-column">
-                      <div
-                        className={`value-box x-value ${
-                          col.isXFeasible ? "feasible" : "not-feasible"
-                        }`}
-                      >
-                        {thousandFormatter(col.xValue, 2)}
-                        {/* Disable unit name for now, not looking good in small screen */}
-                        {/* {xAxisDriver.unitName} */}
-                      </div>
-                      <div
-                        className={`value-box third-value ${
-                          col.isThirdFeasible ? "feasible" : "not-feasible"
-                        }`}
-                      >
-                        {thousandFormatter(col.thirdValue, 2)}
-                        {/* Disable unit name for now, not looking good in small screen */}
-                        {/* {thirdDriver.unitName} */}
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
+            </div>
+
+            {/* And Section */}
+            <div className="row-label indented-label">
+              And {xAxisDriver.name} is:
+            </div>
+            <div className="values-wrapper">
+              {row.cols.map((col, colIdx) => (
+                <div key={`x-${colIdx}`} className="grid-tag">
+                  <div
+                    className={`value-blob ${
+                      col.isXFeasible ? "feasible" : "not-feasible"
+                    }`}
+                  >
+                    {thousandFormatter(col.xValue, 2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Then Section */}
+            <div className="row-label indented-label">
+              Then {thirdDriver.name} has to be:
+            </div>
+            <div className="values-wrapper">
+              {row.cols.map((col, colIdx) => (
+                <div key={`third-${colIdx}`} className="grid-tag">
+                  <div
+                    className={`value-blob ${
+                      col.isThirdFeasible ? "feasible" : "not-feasible"
+                    }`}
+                  >
+                    {thousandFormatter(col.thirdValue, 2)}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ))}

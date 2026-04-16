@@ -190,13 +190,20 @@ const ThreeDriverCalculator = ({
       )}
 
       {thirdDriver && xAxisDriver && yAxisDriver && (
-        <Col span={24} className="combination-section">
+        <Col
+          span={24}
+          className="combination-section"
+          style={{ textAlign: "center" }}
+        >
           <Space direction="vertical" size={24} style={{ width: "100%" }}>
-            <Space direction="vertical" size={16}>
+            <Space direction="vertical" size={16} style={{ width: "100%" }}>
               <h3 className="title combination-title">
                 What combination of drivers close to income gap?
               </h3>
-              <p className="combination-description">
+              <p
+                className="combination-description"
+                style={{ maxWidth: "800px", margin: "0 auto" }}
+              >
                 The tables below show the <b>{thirdDriver}</b> needed to close
                 the living income gap for different combinations of{" "}
                 <b>{xAxisDriver || "[X]"}</b> and <b>{yAxisDriver || "[Y]"}</b>.

@@ -200,3 +200,100 @@
 .cell-danger {
   background-color: #ffd0d3 !important;
 }
+
+// Three Driver Combination Chart - High Fidelity Card Grid
+.three-driver-combination-chart {
+  .combination-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+    display: grid;
+    // 1 label column + 5 value columns
+    grid-template-columns: 240px repeat(5, 1fr);
+    grid-gap: 16px 8px;
+    align-items: center;
+
+    .row-label {
+      grid-column: 1;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .indented-label {
+      text-align: right;
+      padding-right: 12px;
+    }
+
+    .value-pill-if {
+      grid-column: 6; // Far right
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .values-wrapper {
+      grid-column: 2 / span 5;
+      background-color: #f8f8f8;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-gap: 8px;
+      padding: 12px;
+      border-radius: 12px;
+      align-items: center;
+    }
+
+    // Individual tags in cells
+    .grid-tag {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+  }
+
+  .value-blob {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 250px;
+
+    &.feasible {
+      background-color: #95deaf; // Vibrant Green as in image
+      color: #000;
+    }
+    &.not-feasible {
+      background-color: #f2994a; // Vibrant Orange as in image
+      color: #000;
+    }
+  }
+
+  .chart-legend {
+    margin-top: 16px;
+    padding: 16px;
+    background-color: #fafafa;
+    border-radius: 8px;
+    text-align: center;
+
+    .legend-pips {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      &.feasible {
+        background-color: #95deaf;
+      }
+      &.not-feasible {
+        background-color: #f2994a;
+      }
+    }
+  }
+}
