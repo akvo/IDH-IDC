@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   Card,
   Collapse,
@@ -14,6 +14,7 @@ import {
   DownloadOutlined,
   RightOutlined,
 } from "@ant-design/icons";
+import { toPng } from "html-to-image";
 import {
   SegmentSelector,
   SingleDriverChange,
@@ -21,6 +22,7 @@ import {
   AdjustIncomeTarget,
   ThreeDriverCalculator,
 } from "../components";
+import { CurrentCaseState } from "../store";
 
 import "./ExploreChangeToCloseTheGap.scss";
 
@@ -28,11 +30,72 @@ const { Panel } = Collapse;
 const { Title } = Typography;
 
 const ExploreChangeToCloseTheGap = ({ disabled }) => {
+  const currentCase = CurrentCaseState.useState((s) => s);
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
   const heatmapRef = useRef(null);
+  const exportRef = useRef(null);
+
+  const activeSegmentName = useMemo(() => {
+    return (
+      currentCase?.segments?.find((s) => s.id === selectedSegment)?.name ||
+      "All Segments"
+    );
+  }, [currentCase?.segments, selectedSegment]);
 
   const handleDownload = () => {
-    console.info("Download clicked - Placeholder for export functionality");
+    if (!exportRef.current) {
+      return;
+    }
+
+    setIsExporting(true);
+
+    // Apply temporary padding for the export capture
+    exportRef.current.style.padding = "20px";
+
+    // Add a small delay to ensure charts are fully rendered before capture
+    setTimeout(() => {
+      toPng(exportRef.current, {
+        filter: (node) => {
+          const exclusionClasses = [
+            "download-btn-header",
+            "header-action-btn",
+            "ant-btn",
+            "ant-select",
+            "info-tooltip",
+          ];
+          return !exclusionClasses.some(
+            (classname) =>
+              node.classList?.contains(classname) ||
+              node.closest?.(`.${classname}`)
+          );
+        },
+        cacheBust: false,
+        backgroundColor: "#fff",
+        style: {
+          padding: 32,
+          width: "100%",
+        },
+      })
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.download = `Explore changes to close the gap - ${activeSegmentName}.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err) => {
+          console.error("Error while downloading content", err);
+        })
+        .finally(() => {
+          // Reset padding and status
+          if (exportRef.current) {
+            exportRef.current.style.padding = "0px";
+          }
+          setTimeout(() => {
+            setIsExporting(false);
+          }, 100);
+        });
+    }, 500);
   };
 
   const handleClearHeatmap = (e) => {
@@ -43,7 +106,7 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
   };
 
   return (
-    <div className="explore-grouped-tools-container">
+    <div className="explore-grouped-tools-container" ref={exportRef}>
       <Card className="card-content-wrapper explore-grouped-tools-card">
         {/* Unified Selection Block from Image */}
         <div className="unified-selection-block">
@@ -96,6 +159,7 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
             icon={<DownloadOutlined />}
             onClick={handleDownload}
             type="text"
+            loading={isExporting}
           >
             Download
           </Button>
