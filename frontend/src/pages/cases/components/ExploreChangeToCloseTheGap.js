@@ -22,7 +22,7 @@ import {
   AdjustIncomeTarget,
   ThreeDriverCalculator,
 } from "../components";
-import { CurrentCaseState } from "../store";
+import { CurrentCaseState, CaseVisualState } from "../store";
 
 import "./ExploreChangeToCloseTheGap.scss";
 
@@ -42,6 +42,16 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
       "All Segments"
     );
   }, [currentCase?.segments, selectedSegment]);
+
+  const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
+
+  const gapClosurePercentage = useMemo(() => {
+    const val =
+      sensitivityAnalysis?.config?.[
+        `${selectedSegment}_closing-gap-percentage_adjusted-target`
+      ];
+    return val !== undefined ? val : 0;
+  }, [sensitivityAnalysis?.config, selectedSegment]);
 
   const handleDownload = () => {
     if (!exportRef.current) {
@@ -188,6 +198,9 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
             }
             key="1"
           >
+            <div className="modelling-goal-reminder">
+              Modelling for {gapClosurePercentage}% gap closure (as set above)
+            </div>
             <SingleDriverChange
               selectedSegment={selectedSegment}
               hideCard={true}
@@ -220,6 +233,9 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
             }
             key="2"
           >
+            <div className="modelling-goal-reminder">
+              Modelling for {gapClosurePercentage}% gap closure (as set above)
+            </div>
             <TwoDriverHeatmap
               ref={heatmapRef}
               selectedSegment={selectedSegment}
@@ -237,6 +253,9 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
             }
             key="3"
           >
+            <div className="modelling-goal-reminder">
+              Modelling for {gapClosurePercentage}% gap closure (as set above)
+            </div>
             <ThreeDriverCalculator
               selectedSegment={selectedSegment}
               disabled={disabled}
