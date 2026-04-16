@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Row, Col, Card } from "antd";
+import {
+  Card,
+  Collapse,
+  Tooltip,
+  Space,
+  Button,
+  Row,
+  Col,
+  Typography,
+} from "antd";
+import { InfoCircleOutlined, DownloadOutlined } from "@ant-design/icons";
 import {
   SegmentSelector,
   SingleDriverChange,
@@ -8,62 +18,144 @@ import {
   ThreeDriverCalculator,
 } from "../components";
 
+import "./ExploreChangeToCloseTheGap.scss";
+
+const { Panel } = Collapse;
+const { Title } = Typography;
+
 const ExploreChangeToCloseTheGap = ({ disabled }) => {
   const [selectedSegment, setSelectedSegment] = useState(null);
 
+  const handleDownload = () => {
+    console.info("Download clicked - Placeholder for export functionality");
+  };
+
   return (
-    <Row gutter={[24, 24]}>
-      <Col span={24}>
-        <Card className="card-content-wrapper select-the-goal-container">
-          <Row gutter={[20, 20]} align="bottom">
-            <Col span={24}>
-              <Row gutter={[20, 20]}>
-                <Col span={16}>
-                  <h4>Select the segment for which you want to explore.</h4>
+    <div className="explore-grouped-tools-container">
+      <Card className="card-content-wrapper explore-grouped-tools-card">
+        {/* Unified Selection Block from Image */}
+        <div className="unified-selection-block">
+          <Row gutter={[48, 24]} align="bottom">
+            <Col xs={24} lg={16}>
+              <Space direction="vertical" size={24} style={{ width: "100%" }}>
+                {/* Segment Selection */}
+                <div className="segment-selection-area">
+                  <div className="selection-label-small">
+                    Select the segment for which you want to explore.
+                  </div>
                   <SegmentSelector
                     selectedSegment={selectedSegment}
                     setSelectedSegment={setSelectedSegment}
+                    disabled={disabled}
                   />
-                </Col>
-              </Row>
+                </div>
+
+                {/* Goal Selection Title and Instructions */}
+                <div className="goal-selection-area">
+                  <Title level={4} className="goal-selection-title">
+                    Select the Goal:
+                  </Title>
+                  <p className="goal-instruction-text">
+                    Closing the income gap may not be fully achievable within
+                    your feasible levels. Choose the percentage of the gap you
+                    would like to close and test different scenarios. The newly
+                    chosen target will be applied to all the calculations within
+                    the explore section.
+                  </p>
+                </div>
+              </Space>
             </Col>
-            <Col span={18}>
-              <h3>Select the Goal:</h3>
-              <p>
-                Closing the income gap may not be fully achievable within your
-                feasible levels. Choose the percentage of the gap you would like
-                to close and test different scenarios. The newly chosen target
-                will be applied to all the calculations within the explore
-                section of this step.
-              </p>
-            </Col>
-            <Col span={6}>
-              <AdjustIncomeTarget
-                selectedSegment={selectedSegment}
-                inlineView={true}
-                onlyClosingGap={true}
-                disabled={disabled}
-              />
+
+            <Col xs={24} lg={8}>
+              <div className="right-adjustment-column">
+                <AdjustIncomeTarget
+                  selectedSegment={selectedSegment}
+                  inlineView={true}
+                  onlyClosingGap={true}
+                  disabled={disabled}
+                />
+              </div>
             </Col>
           </Row>
-        </Card>
-      </Col>
 
-      <Col span={24}>
-        <SingleDriverChange selectedSegment={selectedSegment} />
-      </Col>
+          {/* Download Button (Positioned top-right of block if needed, or kept here) */}
+          <Button
+            className="download-btn-header"
+            icon={<DownloadOutlined />}
+            onClick={handleDownload}
+            type="text"
+          >
+            Download
+          </Button>
+        </div>
 
-      <Col span={24}>
-        <TwoDriverHeatmap selectedSegment={selectedSegment} />
-      </Col>
-
-      <Col span={24}>
-        <ThreeDriverCalculator
-          selectedSegment={selectedSegment}
-          disabled={disabled}
-        />
-      </Col>
-    </Row>
+        <Collapse
+          defaultActiveKey={["1", "2", "3"]}
+          expandIconPosition="start"
+          className="explore-tools-collapse"
+          ghost
+        >
+          <Panel
+            header={
+              <Space
+                style={{ width: "100%", justifyContent: "space-between" }}
+                align="center"
+              >
+                <span>Single driver change</span>
+                <Tooltip title="See how individual drivers impact the income gap.">
+                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                </Tooltip>
+              </Space>
+            }
+            key="1"
+          >
+            <SingleDriverChange
+              selectedSegment={selectedSegment}
+              hideCard={true}
+            />
+          </Panel>
+          <Panel
+            header={
+              <Space
+                style={{ width: "100%", justifyContent: "space-between" }}
+                align="center"
+              >
+                <span>Two driver heatmap</span>
+                <Tooltip title="Understand the combined impact of two drivers.">
+                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                </Tooltip>
+              </Space>
+            }
+            key="2"
+          >
+            <TwoDriverHeatmap
+              selectedSegment={selectedSegment}
+              hideCard={true}
+            />
+          </Panel>
+          <Panel
+            header={
+              <Space
+                style={{ width: "100%", justifyContent: "space-between" }}
+                align="center"
+              >
+                <span>Three driver calculator</span>
+                <Tooltip title="Calculate outcomes across multiple driver scenarios.">
+                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                </Tooltip>
+              </Space>
+            }
+            key="3"
+          >
+            <ThreeDriverCalculator
+              selectedSegment={selectedSegment}
+              disabled={disabled}
+              hideCard={true}
+            />
+          </Panel>
+        </Collapse>
+      </Card>
+    </div>
   );
 };
 

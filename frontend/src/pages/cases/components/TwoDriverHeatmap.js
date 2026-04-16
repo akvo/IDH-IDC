@@ -6,7 +6,7 @@ import { map, groupBy, isEmpty } from "lodash";
 import { ChartTwoDriverHeatmap } from "../visualizations";
 import { commodities } from "../../../store/static";
 
-const TwoDriverHeatmap = ({ selectedSegment }) => {
+const TwoDriverHeatmap = ({ selectedSegment, hideCard = false }) => {
   const [form] = Form.useForm();
 
   const [driverPair, setDriverPair] = useState({});
@@ -259,6 +259,91 @@ const TwoDriverHeatmap = ({ selectedSegment }) => {
     );
   };
 
+  const content = (
+    <Row gutter={[20, 20]}>
+      {!hideCard && (
+        <Col span={24}>
+          <p>
+            Closing the income gap often requires adjusting more than one
+            driver. Select two drivers to explore how different combinations
+            within your chosen ranges affect the outcome. The tool uses current
+            and feasible levels by default, but you can adjust these to test any
+            combination.
+          </p>
+        </Col>
+      )}
+
+      {hideCard && (
+        <Col span={24}>
+          <Row gutter={[16, 16]} align="middle">
+            <Col span={18}>
+              <p>
+                Closing the income gap often requires adjusting more than one
+                driver. Select two drivers to explore how different combinations
+                within your chosen ranges affect the outcome. The tool uses
+                current and feasible levels by default, but you can adjust these
+                to test any combination.
+              </p>
+            </Col>
+            <Col span={6} align="end">
+              <Button
+                className="button-ghost"
+                onClick={handleOnClear}
+                style={{ marginBottom: "12px" }}
+              >
+                Clear
+              </Button>
+            </Col>
+          </Row>
+        </Col>
+      )}
+
+      {/* BINNING FORM */}
+      <Col span={24}>
+        <Form
+          name="sensitivity-analysis"
+          layout="vertical"
+          form={form}
+          onValuesChange={onSensitivityAnalysisValuesChange}
+          initialValues={sensitivityAnalysis?.config || {}}
+        >
+          {dashboardData.map((segment, key) => (
+            <TwoBinningDriverForm
+              key={key}
+              selectedSegment={selectedSegment}
+              segment={segment}
+              dataSource={dataSource}
+              selected={
+                binningValues.find((b) => b.id === segment.id)?.selected
+              }
+              hidden={selectedSegment !== segment.id}
+              setBinningDriverOptions={setBinningDriverOptions}
+              showBinningDriverField={false}
+            />
+          ))}
+        </Form>
+      </Col>
+
+      {/* HEATMAP */}
+      <Col span={24}>
+        {dashboardData.map((segment) =>
+          selectedSegment === segment.id ? (
+            <ChartTwoDriverHeatmap
+              key={segment.id}
+              segment={segment}
+              data={sensitivityAnalysis.config}
+              origin={dataSource}
+            />
+          ) : null
+        )}
+      </Col>
+    </Row>
+  );
+
+  if (hideCard) {
+    return content;
+  }
+
   return (
     <Card
       className="card-content-wrapper card-with-gray-header-wrapper"
@@ -287,57 +372,7 @@ const TwoDriverHeatmap = ({ selectedSegment }) => {
         </Row>
       }
     >
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <p>
-            Closing the income gap often requires adjusting more than one
-            driver. Select two drivers to explore how different combinations
-            within your chosen ranges affect the outcome. The tool uses current
-            and feasible levels by default, but you can adjust these to test any
-            combination.
-          </p>
-        </Col>
-
-        {/* BINNING FORM */}
-        <Col span={24}>
-          <Form
-            name="sensitivity-analysis"
-            layout="vertical"
-            form={form}
-            onValuesChange={onSensitivityAnalysisValuesChange}
-            initialValues={sensitivityAnalysis?.config || {}}
-          >
-            {dashboardData.map((segment, key) => (
-              <TwoBinningDriverForm
-                key={key}
-                selectedSegment={selectedSegment}
-                segment={segment}
-                dataSource={dataSource}
-                selected={
-                  binningValues.find((b) => b.id === segment.id)?.selected
-                }
-                hidden={selectedSegment !== segment.id}
-                setBinningDriverOptions={setBinningDriverOptions}
-                showBinningDriverField={false}
-              />
-            ))}
-          </Form>
-        </Col>
-
-        {/* HEATMAP */}
-        <Col span={24}>
-          {dashboardData.map((segment) =>
-            selectedSegment === segment.id ? (
-              <ChartTwoDriverHeatmap
-                key={segment.id}
-                segment={segment}
-                data={sensitivityAnalysis.config}
-                origin={dataSource}
-              />
-            ) : null
-          )}
-        </Col>
-      </Row>
+      {content}
     </Card>
   );
 };

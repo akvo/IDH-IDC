@@ -1,0 +1,202 @@
+.explore-grouped-tools-card {
+  .ant-card-body {
+    padding: 0 !important;
+  }
+
+  // Unified Selection Block from Image
+  .unified-selection-block {
+    background-color: #eaf2f2; // Light teal background as in the image
+    padding: 32px;
+    border-radius: 20px 20px 0 0;
+    position: relative; // For positioning the download button if needed
+
+    .selection-label-small {
+      color: rgba(0, 0, 0, 0.65);
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .goal-selection-title {
+      color: #1b625f !important; // Branded teal for the section title
+      font-weight: 700 !important;
+      margin: 0 0 12px 0 !important;
+      font-size: 20px !important;
+    }
+
+    .goal-instruction-text {
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 15px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .right-adjustment-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end; // Aligns the input block to the right side
+      text-align: right;
+
+      .adjust-income-target-inline-wrapper {
+        max-width: 320px;
+        width: 100%;
+
+        .input-label {
+          font-weight: 500;
+          color: rgba(0, 0, 0, 0.85);
+          margin-bottom: 8px;
+          text-align: left;
+        }
+
+        .ant-input-number {
+          width: 100% !important;
+          height: 48px !important;
+          border-radius: 8px !important;
+          font-size: 16px;
+          .ant-input-number-input {
+            height: 100% !important;
+          }
+        }
+
+        .new-target-text {
+          margin-top: 12px;
+          color: rgba(0, 0, 0, 0.45);
+          font-size: 14px;
+          b {
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 700;
+          }
+        }
+      }
+    }
+
+    .download-btn-header {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      color: #1b625f;
+      font-weight: 500;
+      &:hover {
+        background-color: rgba(27, 98, 95, 0.05);
+      }
+    }
+  }
+
+  .explore-tools-collapse {
+    border-top: 1px solid #f0f0f0;
+    .ant-collapse-item {
+      border-bottom: 2px solid #f0f0f0;
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .ant-collapse-header {
+      padding: 16px 32px !important;
+      align-items: center !important;
+      flex-direction: row-reverse;
+      .ant-collapse-header-text {
+        font-weight: 700;
+        font-size: 16px;
+        color: #1b625f;
+      }
+    }
+
+    .ant-collapse-content-box {
+      padding: 24px !important; // Slightly reduced padding for better density
+    }
+  }
+}
+
+.transparent-card {
+  background: transparent !important;
+  .ant-card-body {
+    padding: 0 !important;
+    overflow: hidden !important; // Clearfix for floating Card.Grid items
+  }
+}
+
+// Driver Change Grid Table
+.driver-change-grid-table {
+  display: grid;
+  // 18.75% * 4 + 25% = 100%
+  grid-template-columns: 18.75% 18.75% 18.75% 18.75% 25%;
+  width: 100%;
+  border: 1px solid #f0f0f0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .grid-table-header {
+    background-color: #fafafa;
+    border-bottom: 2px solid #f0f0f0;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .group-header-row {
+    grid-column: 1 / span 5;
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #f0f0f0;
+    padding-left: 24px !important;
+    justify-content: flex-start !important;
+    font-weight: 700;
+  }
+
+  .grid-table-cell {
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+// Status-based Row Backgrounds (from BACKGROUND_COLORS)
+.cell-success {
+  background-color: #ddf8e9 !important; // success: "#DDF8E9"
+}
+.cell-warning {
+  background-color: #fff4d1 !important; // warning: "#FFF4D1"
+}
+.cell-danger {
+  background-color: #ffd0d3 !important; // danger: "#FFD0D3"
+}
+
+// Percentage Bubbles / Pills - Using colors from TAG_COLORS and TAG_FONT_COLORS
+.change-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 100px;
+  font-weight: 600;
+  line-height: 1;
+
+  span {
+    font-size: 13px !important;
+  }
+
+  &.pill-success {
+    background-color: #b4dccf; // TAG_COLORS.success
+    color: #01625f; // TAG_FONT_COLORS.success
+  }
+  &.pill-warning {
+    background-color: #ffe8ac; // TAG_COLORS.warning
+    color: #000; // TAG_FONT_COLORS.warning
+  }
+  &.pill-danger {
+    background-color: #fea8af; // TAG_COLORS.danger
+    color: #ff010e; // TAG_FONT_COLORS.danger
+  }
+
+  .pill-arrow {
+    font-size: 10px;
+  }
+}
+
+// Optional: Status-based Cell Backgrounds (from BACKGROUND_COLORS)
+.cell-success {
+  background-color: #ddf8e9 !important;
+}
+.cell-warning {
+  background-color: #fff4d1 !important;
+}
+.cell-danger {
+  background-color: #ffd0d3 !important;
+}
