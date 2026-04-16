@@ -29,6 +29,12 @@ import "./ExploreChangeToCloseTheGap.scss";
 const { Panel } = Collapse;
 const { Title } = Typography;
 
+const ModellingGoalReminder = ({ percentage }) => (
+  <div className="modelling-goal-reminder">
+    Modelling for {percentage}% gap closure (as set above)
+  </div>
+);
+
 const ExploreChangeToCloseTheGap = ({ disabled }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const [selectedSegment, setSelectedSegment] = useState(null);
@@ -50,7 +56,7 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
       sensitivityAnalysis?.config?.[
         `${selectedSegment}_closing-gap-percentage_adjusted-target`
       ];
-    return val !== undefined ? val : 0;
+    return typeof val !== "undefined" ? val : 0;
   }, [sensitivityAnalysis?.config, selectedSegment]);
 
   const handleDownload = () => {
@@ -189,18 +195,18 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
         >
           <Panel
             header={
-              <Space align="center">
-                <span>Single driver change</span>
-                <Tooltip title="See how individual drivers impact the income gap.">
-                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
-                </Tooltip>
-              </Space>
+              <div className="explore-panel-header-content">
+                <Space align="center">
+                  <span>Single driver change</span>
+                  <Tooltip title="See how individual drivers impact the income gap.">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                  </Tooltip>
+                </Space>
+                <ModellingGoalReminder percentage={gapClosurePercentage} />
+              </div>
             }
             key="1"
           >
-            <div className="modelling-goal-reminder">
-              Modelling for {gapClosurePercentage}% gap closure (as set above)
-            </div>
             <SingleDriverChange
               selectedSegment={selectedSegment}
               hideCard={true}
@@ -208,20 +214,14 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
           </Panel>
           <Panel
             header={
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: "100%",
-                }}
-              >
+              <div className="explore-panel-header-content">
                 <Space align="center">
                   <span>Two driver heatmap</span>
                   <Tooltip title="Understand the combined impact of two drivers.">
                     <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
                   </Tooltip>
                 </Space>
+                <ModellingGoalReminder percentage={gapClosurePercentage} />
                 <Button
                   className="button-ghost header-action-btn"
                   onClick={handleClearHeatmap}
@@ -233,9 +233,6 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
             }
             key="2"
           >
-            <div className="modelling-goal-reminder">
-              Modelling for {gapClosurePercentage}% gap closure (as set above)
-            </div>
             <TwoDriverHeatmap
               ref={heatmapRef}
               selectedSegment={selectedSegment}
@@ -244,18 +241,18 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
           </Panel>
           <Panel
             header={
-              <Space align="center">
-                <span>Three driver calculator</span>
-                <Tooltip title="Calculate outcomes across multiple driver scenarios.">
-                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
-                </Tooltip>
-              </Space>
+              <div className="explore-panel-header-content">
+                <Space align="center">
+                  <span>Three driver calculator</span>
+                  <Tooltip title="Calculate outcomes across multiple driver scenarios.">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                  </Tooltip>
+                </Space>
+                <ModellingGoalReminder percentage={gapClosurePercentage} />
+              </div>
             }
             key="3"
           >
-            <div className="modelling-goal-reminder">
-              Modelling for {gapClosurePercentage}% gap closure (as set above)
-            </div>
             <ThreeDriverCalculator
               selectedSegment={selectedSegment}
               disabled={disabled}
