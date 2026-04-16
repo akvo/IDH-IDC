@@ -9,7 +9,11 @@ import {
   Col,
   Typography,
 } from "antd";
-import { InfoCircleOutlined, DownloadOutlined } from "@ant-design/icons";
+import {
+  InfoCircleOutlined,
+  DownloadOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
 import {
   SegmentSelector,
   SingleDriverChange,
@@ -92,15 +96,18 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
         <Collapse
           defaultActiveKey={["1", "2", "3"]}
           expandIconPosition="start"
+          expandIcon={({ isActive }) => (
+            <RightOutlined
+              rotate={isActive ? 90 : 0}
+              style={{ fontSize: "14px", color: "#1B625F" }}
+            />
+          )}
           className="explore-tools-collapse"
           ghost
         >
           <Panel
             header={
-              <Space
-                style={{ width: "100%", justifyContent: "space-between" }}
-                align="center"
-              >
+              <Space align="center">
                 <span>Single driver change</span>
                 <Tooltip title="See how individual drivers impact the income gap.">
                   <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
@@ -116,10 +123,7 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
           </Panel>
           <Panel
             header={
-              <Space
-                style={{ width: "100%", justifyContent: "space-between" }}
-                align="center"
-              >
+              <Space align="center">
                 <span>Two driver heatmap</span>
                 <Tooltip title="Understand the combined impact of two drivers.">
                   <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
@@ -135,10 +139,7 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
           </Panel>
           <Panel
             header={
-              <Space
-                style={{ width: "100%", justifyContent: "space-between" }}
-                align="center"
-              >
+              <Space align="center">
                 <span>Three driver calculator</span>
                 <Tooltip title="Calculate outcomes across multiple driver scenarios.">
                   <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />

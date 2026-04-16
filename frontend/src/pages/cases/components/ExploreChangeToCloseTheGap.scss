@@ -1,4 +1,8 @@
+@import "../../../variables.scss";
+
 .explore-grouped-tools-card {
+  border: 1px #d7d7d7 solid !important;
+
   .ant-card-body {
     padding: 0 !important;
   }
@@ -11,7 +15,7 @@
     position: relative; // For positioning the download button if needed
 
     .selection-label-small {
-      color: rgba(0, 0, 0, 0.65);
+      color: #000;
       margin-bottom: 12px;
       font-size: 14px;
     }
@@ -49,7 +53,6 @@
 
         .ant-input-number {
           width: 100% !important;
-          height: 48px !important;
           border-radius: 8px !important;
           font-size: 16px;
           .ant-input-number-input {
@@ -59,7 +62,7 @@
 
         .new-target-text {
           margin-top: 12px;
-          color: rgba(0, 0, 0, 0.45);
+          color: rgba(0, 0, 0, 0.5);
           font-size: 14px;
           b {
             color: rgba(0, 0, 0, 0.85);
@@ -73,8 +76,10 @@
       position: absolute;
       top: 16px;
       right: 16px;
-      color: #1b625f;
+      color: $primary-color;
       font-weight: 500;
+      border: 1px $primary-color solid;
+      border-radius: 20px;
       &:hover {
         background-color: rgba(27, 98, 95, 0.05);
       }
@@ -82,18 +87,19 @@
   }
 
   .explore-tools-collapse {
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid #d7d7d7;
     .ant-collapse-item {
-      border-bottom: 2px solid #f0f0f0;
       &:last-child {
         border-bottom: none;
       }
     }
 
     .ant-collapse-header {
-      padding: 16px 32px !important;
+      padding: 20px 32px !important;
       align-items: center !important;
-      flex-direction: row-reverse;
+      background-color: #eaf2f2; // Light teal background as in the selection block
+      border-bottom: 1px solid #d7d7d7;
+
       .ant-collapse-header-text {
         font-weight: 700;
         font-size: 16px;
