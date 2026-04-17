@@ -16,6 +16,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Data Upload Template Tweaks (#783) - [COMPLETED]**:
+        - Updated the Excel data upload template (`data_upload_template.xlsm`) to address user feedback regarding wording and validation clarity.
+        - Optimized the project `.gitignore` to explicitly exclude agent-specific directories (`.agent/`, `agent_docs/`) while preserving core assets.
+    - Path: `backend/assets/templates/data_upload_template.xlsm`, `.gitignore`.
+
 - **Step 4 Income Driver Exploration Descriptions (#781) - [COMPLETED]**:
         - Added a descriptive paragraph to the "Assess Impact of Mitigation Strategies" page (Step 4) to guide users on using the single, two, and three-driver exploration tools.
         - Clarified the workflow: starting with a single driver to identify high-potential drivers based on the 'maximum feasible change' column before proceeding to multi-driver heatmaps.
