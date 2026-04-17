@@ -16,6 +16,20 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Step 5 Disable Fill-in Values when Above Target (#789) - [COMPLETED]**:
+        - Refactored `AdvancedModellingTool.js` to dynamically compute `isAboveTarget` using `segment.total_current_income` against `incomeTarget`.
+        - Added conditional logic to render the `IncomeGatingAlert` in place of the input modelling panels when a farmer segment reaches its target.
+        - Preserved the visibility of the "Fill in values for your scenarios" header, instructional text, and the segment selector.
+        - Implemented `useMemo` hooks with safe fallback evaluation.
+        - Verified proper handling of `sensitivityAnalysis` adjusted targets.
+    - Path: `frontend/src/pages/cases/components/AdvancedModellingTool.js`
+
+- **Compare Income Gap Table Multiplier (#787) - [COMPLETED]**:
+        - Fixed the "Compare Income Gap" table in Step 3 to accurately calculate and display the total segment income gap by multiplying the per-farmer gap by the number of farmers in that segment.
+        - Updated table dimensions and column title from "Segment" to "Segment name" for improved clarity.
+    - Path: `frontend/src/pages/cases/visualizations/CompareIncomeGap.js`.
+
+
 - **Data Upload Template Tweaks (#783) - [COMPLETED]**:
         - Updated the Excel data upload template (`data_upload_template.xlsm`) to address user feedback regarding wording and validation clarity.
         - Optimized the project `.gitignore` to explicitly exclude agent-specific directories (`.agent/`, `agent_docs/`) while preserving core assets.
