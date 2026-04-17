@@ -7,3 +7,5 @@ agent_docs
 .agent
 
 backend/assets/academy/progress/
+.agent/
+agent_docs/
