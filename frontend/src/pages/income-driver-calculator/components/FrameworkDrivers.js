@@ -17,7 +17,7 @@ const items = [
   {
     key: "1",
     label: "Land",
-    children: <p>The size of the land used to grow the crops.</p>,
+    children: <p>The size of the land used to grow the commodities.</p>,
   },
   {
     key: "2",
@@ -44,7 +44,7 @@ const items = [
     label: "Cost of Production",
     children: (
       <p>
-        The costs of production for producing the primary Crop which covers all
+        The costs of production for producing the primary commodity which covers all
         can cover several types of costs, such as costs for labour, inputs or
         equipment.
       </p>
@@ -56,7 +56,7 @@ const items = [
     children: (
       <p>
         The majority of farmer households also earn an income from other sources
-        than the primary commodity. This can be income from other crops,
+        than the primary commodity. This can be income from other commodities,
         livestock, income earned from off-farm labour or non-farm non labour
         sources (e.g. remittances, government transfers).
       </p>
@@ -142,7 +142,7 @@ const FrameworkDrivers = () => {
             <div className="driver-calculation-stroke">
               <Space direction="vertical" align="center">
                 <DriverCalculationStroke />
-                <div className="driver-label">Primary Crop</div>
+                <div className="driver-label">Primary Commodity</div>
               </Space>
             </div>
           </div>

@@ -241,7 +241,7 @@ export const removeUndefinedObjectValue = (obj) => {
 };
 
 export const diversifiedIncomeTooltipText =
-  "The majority of farmer households also earn an income from other sources than the primary commodity. This can be income from other crops, livestock, income earned from off-farm labour or non-farm non labour sources (e.g. remittances, government transfers).";
+  "The majority of farmer households also earn an income from other sources than the primary commodity. This can be income from other commodities, livestock, income earned from off-farm labour or non-farm non labour sources (e.g. remittances, government transfers).";
 
 export const Step = ({
   number,

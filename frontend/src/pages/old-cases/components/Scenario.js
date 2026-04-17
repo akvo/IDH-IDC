@@ -1207,8 +1207,8 @@ const Scenario = ({
                       <br />
                       <br />
                       Please note that modelling cost of production is only
-                      possible for the primary crop. If you would like to
-                      capture changes in in CoP for secondary and tertiary crops
+                      possible for the primary commodity. If you would like to
+                      capture changes in in CoP for secondary and tertiary commodities
                       then that needs to be accounted for in the changes you
                       model under Diversified Income.
                       <br />

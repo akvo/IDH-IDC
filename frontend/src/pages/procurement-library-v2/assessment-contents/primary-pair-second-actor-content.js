@@ -27,8 +27,8 @@ const primary_farmer = {
             title: "Challenges",
             list: [
               "Farmers/smallholders often have the least power in a value chain, meaning their income and ability to operate is vulnerable to all cost pressures downstream",
-              "Smallholder farmers often lack the capital and long-term financial stability to implement actions that could results in lower costs and reduced crop volatility",
-              "Smallholder farmers may lack knowledge of technologies and processes that could positively impact their crops",
+              "Smallholder farmers often lack the capital and long-term financial stability to implement actions that could results in lower costs and reduced commodity volatility",
+              "Smallholder farmers may lack knowledge of technologies and processes that could positively impact their commodities",
             ],
           },
           {

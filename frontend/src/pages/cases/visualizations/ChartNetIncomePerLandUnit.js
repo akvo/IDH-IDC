@@ -103,11 +103,11 @@ const ChartNetIncomePerLandUnit = () => {
         <Col span={10}>
           <Space direction="vertical">
             <div className="section-title">
-              Focus crop net income per{" "}
+              Primary commodity net income per{" "}
               {focusCommodity?.area_size_unit || "land unit"}
             </div>
             <div className="section-description">
-              This metric captures the profit earned from the crop per unit of
+              This metric captures the profit earned from the commodity per unit of
               land and is calculated by dividing net income by the cultivated
               area. It reflects how well farmers translate land into financial
               returns and is influenced by yields, input use, soil health and

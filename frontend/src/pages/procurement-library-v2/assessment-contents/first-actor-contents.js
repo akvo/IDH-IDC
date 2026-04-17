@@ -15,7 +15,7 @@ const farmer = {
       {
         list: [
           {
-            text: "Smallholders and farmers may not actually know or understand which products or where their crops are finally used across the world",
+            text: "Smallholders and farmers may not actually know or understand which products or where their commodities are finally used across the world",
           },
           {
             text: "Smallholders and farmers are often driven by immediate need of cash flow. Their risk is far greater than the risk of any other downstream value chain actor",
