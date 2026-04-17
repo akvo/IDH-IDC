@@ -56,7 +56,7 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
       sensitivityAnalysis?.config?.[
         `${selectedSegment}_closing-gap-percentage_adjusted-target`
       ];
-    return typeof val !== "undefined" ? val : 0;
+    return typeof val === "undefined" || val === null ? 100 : val;
   }, [sensitivityAnalysis?.config, selectedSegment]);
 
   const handleDownload = () => {
