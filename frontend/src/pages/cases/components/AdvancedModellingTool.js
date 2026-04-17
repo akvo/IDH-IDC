@@ -26,6 +26,7 @@ import SegmentSelector from "./SegmentSelector";
 import { commodities } from "../../../store/static";
 import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg";
 import { isEqual } from "lodash";
+import IncomeGatingAlert from "./IncomeGatingAlert";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -67,9 +68,8 @@ const InputRow = ({
 };
 
 const AdvancedModellingTool = ({ disabled }) => {
-  const { dashboardData, incomeDataDrivers } = CaseVisualState.useState(
-    (s) => s
-  );
+  const { dashboardData, incomeDataDrivers, sensitivityAnalysis } =
+    CaseVisualState.useState((s) => s);
   const currentCase = CurrentCaseState.useState((s) => s);
 
   // Initialize state from global store if available
@@ -88,6 +88,23 @@ const AdvancedModellingTool = ({ disabled }) => {
     }
     return dashboardData?.find((d) => d.id === selectedSegmentId) || {};
   }, [dashboardData, selectedSegmentId]);
+
+  const adjustedIncometarget = useMemo(() => {
+    const adjustedTarget =
+      sensitivityAnalysis?.config?.[
+        `${selectedSegmentId || segment?.id}_adjusted-target`
+      ] || 0;
+    return adjustedTarget;
+  }, [sensitivityAnalysis?.config, selectedSegmentId, segment?.id]);
+
+  const incomeTarget = useMemo(() => {
+    const currentTarget = segment?.target || 0;
+    return adjustedIncometarget ? adjustedIncometarget : currentTarget;
+  }, [segment?.target, adjustedIncometarget]);
+
+  const isAboveTarget = useMemo(() => {
+    return (segment?.total_current_income || 0) >= (incomeTarget || 0);
+  }, [segment?.total_current_income, incomeTarget]);
 
   // Helper to get initial data for the current segment
   const getInitialSegmentData = () => {
@@ -1213,217 +1230,223 @@ const AdvancedModellingTool = ({ disabled }) => {
       </Col>
 
       <Col span={24}>
-        <Row gutter={[24, 24]} align="stretch">
-          {/* Left Panel */}
-          <Col span={10}>
-            <Space
-              direction="vertical"
-              size="large"
-              className="panel-space left-panel"
-            >
-              <div>
-                <Text className="driver-select-label">
-                  Select the driver you want to model:
-                </Text>
-                <Select
-                  value={selectedDriver}
-                  onChange={(val) => {
-                    setSelectedDriver(val);
-                    setCalculationResults({
-                      current: {
-                        value: null,
-                        change: 0,
-                        cost: 0,
-                        profit: 0,
-                        isTargetMet: false,
-                        state: "normal",
-                        message: null,
-                      },
-                      feasible: {
-                        value: null,
-                        change: 0,
-                        cost: 0,
-                        profit: 0,
-                        isTargetMet: false,
-                        state: "normal",
-                        message: null,
-                      },
-                      model: {
-                        value: null,
-                        change: 0,
-                        cost: 0,
-                        profit: 0,
-                        isTargetMet: false,
-                        state: "normal",
-                        message: null,
-                      },
-                    });
-                  }}
-                  options={selectOptions}
-                  {...selectProps}
-                  disabled={disabled}
-                />
-              </div>
-
-              <Tabs
-                activeKey={activeScenario}
-                onChange={setActiveScenario}
-                type="card"
-                centered
-                className="scenario-tabs-custom"
-                items={["current", "feasible", "model"].map((key) => ({
-                  key,
-                  label: key.charAt(0).toUpperCase() + key.slice(1),
-                  children: renderModellingInputs(key),
-                  disabled: disabled && key === "model", // Optionally keep current/feasible viewable?
-                }))}
-              />
-            </Space>
-          </Col>
-
-          {/* Right Panel */}
-          <Col span={14}>
-            <Space
-              direction="vertical"
-              size="middle"
-              className="panel-space right-panel"
-            >
-              <Card bordered={false} className="visualizer-card">
-                <EquationVisualizer
-                  selectedDriver={selectedDriver}
-                  labels={driverLabels}
-                  category={commodityCategory}
-                  secondaryLabel={secondaryGroup?.commodity_name}
-                  tertiaryLabel={tertiaryGroup?.commodity_name}
-                />
-              </Card>
-
-              <Card bordered={false} className="breakdown-card">
-                <div className="breakdown-header">
-                  <Title level={3} className="breakdown-title">
-                    Price breakdown
-                  </Title>
-                  <div className="breakdown-icon-wrapper">
-                    <img
-                      src={PriceWhite}
-                      alt="Price"
-                      className="breakdown-icon"
-                    />
-                  </div>
+        {isAboveTarget ? (
+          <IncomeGatingAlert style={{ marginTop: "12px" }} />
+        ) : (
+          <Row gutter={[24, 24]} align="stretch">
+            {/* Left Panel */}
+            <Col span={10}>
+              <Space
+                direction="vertical"
+                size="large"
+                className="panel-space left-panel"
+              >
+                <div>
+                  <Text className="driver-select-label">
+                    Select the driver you want to model:
+                  </Text>
+                  <Select
+                    value={selectedDriver}
+                    onChange={(val) => {
+                      setSelectedDriver(val);
+                      setCalculationResults({
+                        current: {
+                          value: null,
+                          change: 0,
+                          cost: 0,
+                          profit: 0,
+                          isTargetMet: false,
+                          state: "normal",
+                          message: null,
+                        },
+                        feasible: {
+                          value: null,
+                          change: 0,
+                          cost: 0,
+                          profit: 0,
+                          isTargetMet: false,
+                          state: "normal",
+                          message: null,
+                        },
+                        model: {
+                          value: null,
+                          change: 0,
+                          cost: 0,
+                          profit: 0,
+                          isTargetMet: false,
+                          state: "normal",
+                          message: null,
+                        },
+                      });
+                    }}
+                    options={selectOptions}
+                    {...selectProps}
+                    disabled={disabled}
+                  />
                 </div>
 
-                <div>
-                  <Text className="breakdown-description">
-                    The bar below breaks down the price for the selected
-                    scenario. Orange shows how much of the price covers
-                    production costs. Green shows how much profit farmers earn{" "}
-                    {selectedDriver === "price" || selectedDriver === "cop"
-                      ? `per ${
-                          driverUnits.price?.split(" / ")[1] || "unit"
-                        } of ${
-                          commodities.find(
-                            (c) => c.id === focusCommodityGroup?.commodity_id
-                          )?.name || "commodity"
-                        }`
-                      : "for the selected driver"}
-                    .
-                  </Text>
+                <Tabs
+                  activeKey={activeScenario}
+                  onChange={setActiveScenario}
+                  type="card"
+                  centered
+                  className="scenario-tabs-custom"
+                  items={["current", "feasible", "model"].map((key) => ({
+                    key,
+                    label: key.charAt(0).toUpperCase() + key.slice(1),
+                    children: renderModellingInputs(key),
+                    disabled: disabled && key === "model", // Optionally keep current/feasible viewable?
+                  }))}
+                />
+              </Space>
+            </Col>
 
-                  <div className="breakdown-chart-wrapper">
-                    <div className="price-total-display">
-                      <Text strong>
-                        Price:{" "}
-                        {calculationResults[activeScenario]?.value !== null
-                          ? thousandFormatter(
-                              calculationResults[activeScenario].cost +
-                                calculationResults[activeScenario].profit,
-                              2
-                            ) +
-                            " " +
-                            currentCase?.currency
-                          : "-"}
-                      </Text>
+            {/* Right Panel */}
+            <Col span={14}>
+              <Space
+                direction="vertical"
+                size="middle"
+                className="panel-space right-panel"
+              >
+                <Card bordered={false} className="visualizer-card">
+                  <EquationVisualizer
+                    selectedDriver={selectedDriver}
+                    labels={driverLabels}
+                    category={commodityCategory}
+                    secondaryLabel={secondaryGroup?.commodity_name}
+                    tertiaryLabel={tertiaryGroup?.commodity_name}
+                  />
+                </Card>
+
+                <Card bordered={false} className="breakdown-card">
+                  <div className="breakdown-header">
+                    <Title level={3} className="breakdown-title">
+                      Price breakdown
+                    </Title>
+                    <div className="breakdown-icon-wrapper">
+                      <img
+                        src={PriceWhite}
+                        alt="Price"
+                        className="breakdown-icon"
+                      />
                     </div>
+                  </div>
 
-                    {/* Real Bar Chart Logic */}
-                    {calculationResults[activeScenario]?.value !== null ? (
-                      (() => {
-                        const scenarioResult =
-                          calculationResults[activeScenario];
+                  <div>
+                    <Text className="breakdown-description">
+                      The bar below breaks down the price for the selected
+                      scenario. Orange shows how much of the price covers
+                      production costs. Green shows how much profit farmers earn{" "}
+                      {selectedDriver === "price" || selectedDriver === "cop"
+                        ? `per ${
+                            driverUnits.price?.split(" / ")[1] || "unit"
+                          } of ${
+                            commodities.find(
+                              (c) => c.id === focusCommodityGroup?.commodity_id
+                            )?.name || "commodity"
+                          }`
+                        : "for the selected driver"}
+                      .
+                    </Text>
 
-                        // Impossible warning
-                        if (scenarioResult.state === "impossible") {
-                          const driverLabel =
-                            driverLabels[selectedDriver] || selectedDriver;
-                          return (
-                            <div className="impossible-breakdown-warning">
-                              <Alert
-                                message={`Farmers would need a negative ${driverLabel} in order to hit the income target. This is not possible and the price breakdown is unavailable.`}
-                                type="warning"
-                                className="impossible-alert"
-                              />
-                            </div>
-                          );
-                        }
-
-                        // Use raw values for calculation but ensure breakdown logic
-                        // If target is met, we might want to show the scenario breakdown instead of theoretical
-                        // because theoretical breakdown for negative prices doesn't make sense visually.
-                        const displayCost =
-                          scenarioResult.cost < 0 ? 0 : scenarioResult.cost;
-                        const displayProfit =
-                          scenarioResult.profit < 0 ? 0 : scenarioResult.profit;
-
-                        const total =
-                          Math.abs(displayCost) + Math.abs(displayProfit);
-                        const costPerc =
-                          total !== 0 ? (displayCost / total) * 100 : 0;
-                        const profitPerc = 100 - costPerc;
-
-                        // cost_percentage = cost/price*100
-                        // profit_percentage = profit/price*100
-                        // Note: total is the price here.
-                        return (
-                          <div className="bar-row">
-                            <div
-                              className="bar-segment cost"
-                              style={{ width: `${costPerc}%` }}
-                            >
-                              <span className="segment-value">
-                                {thousandFormatter(costPerc, 2)}%
-                              </span>
-                            </div>
-                            <div
-                              className="bar-segment profit"
-                              style={{ width: `${profitPerc}%` }}
-                            >
-                              <span className="segment-value">
-                                {thousandFormatter(profitPerc, 2)}%
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })()
-                    ) : (
-                      <div className="empty-bar-placeholder">
-                        <Text type="secondary">
-                          Click Calculate to see the breakdown
+                    <div className="breakdown-chart-wrapper">
+                      <div className="price-total-display">
+                        <Text strong>
+                          Price:{" "}
+                          {calculationResults[activeScenario]?.value !== null
+                            ? thousandFormatter(
+                                calculationResults[activeScenario].cost +
+                                  calculationResults[activeScenario].profit,
+                                2
+                              ) +
+                              " " +
+                              currentCase?.currency
+                            : "-"}
                         </Text>
                       </div>
-                    )}
-                    {calculationResults[activeScenario]?.state !==
-                      "impossible" && (
-                      <div className="bar-labels-row">
-                        <Text className="label-text">Cost</Text>
-                        <Text className="label-text">Profit</Text>
-                      </div>
-                    )}
+
+                      {/* Real Bar Chart Logic */}
+                      {calculationResults[activeScenario]?.value !== null ? (
+                        (() => {
+                          const scenarioResult =
+                            calculationResults[activeScenario];
+
+                          // Impossible warning
+                          if (scenarioResult.state === "impossible") {
+                            const driverLabel =
+                              driverLabels[selectedDriver] || selectedDriver;
+                            return (
+                              <div className="impossible-breakdown-warning">
+                                <Alert
+                                  message={`Farmers would need a negative ${driverLabel} in order to hit the income target. This is not possible and the price breakdown is unavailable.`}
+                                  type="warning"
+                                  className="impossible-alert"
+                                />
+                              </div>
+                            );
+                          }
+
+                          // Use raw values for calculation but ensure breakdown logic
+                          // If target is met, we might want to show the scenario breakdown instead of theoretical
+                          // because theoretical breakdown for negative prices doesn't make sense visually.
+                          const displayCost =
+                            scenarioResult.cost < 0 ? 0 : scenarioResult.cost;
+                          const displayProfit =
+                            scenarioResult.profit < 0
+                              ? 0
+                              : scenarioResult.profit;
+
+                          const total =
+                            Math.abs(displayCost) + Math.abs(displayProfit);
+                          const costPerc =
+                            total !== 0 ? (displayCost / total) * 100 : 0;
+                          const profitPerc = 100 - costPerc;
+
+                          // cost_percentage = cost/price*100
+                          // profit_percentage = profit/price*100
+                          // Note: total is the price here.
+                          return (
+                            <div className="bar-row">
+                              <div
+                                className="bar-segment cost"
+                                style={{ width: `${costPerc}%` }}
+                              >
+                                <span className="segment-value">
+                                  {thousandFormatter(costPerc, 2)}%
+                                </span>
+                              </div>
+                              <div
+                                className="bar-segment profit"
+                                style={{ width: `${profitPerc}%` }}
+                              >
+                                <span className="segment-value">
+                                  {thousandFormatter(profitPerc, 2)}%
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <div className="empty-bar-placeholder">
+                          <Text type="secondary">
+                            Click Calculate to see the breakdown
+                          </Text>
+                        </div>
+                      )}
+                      {calculationResults[activeScenario]?.state !==
+                        "impossible" && (
+                        <div className="bar-labels-row">
+                          <Text className="label-text">Cost</Text>
+                          <Text className="label-text">Profit</Text>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </Card>
-            </Space>
-          </Col>
-        </Row>
+                </Card>
+              </Space>
+            </Col>
+          </Row>
+        )}
       </Col>
     </Row>
   );
