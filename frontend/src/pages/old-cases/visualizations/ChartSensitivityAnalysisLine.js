@@ -220,7 +220,7 @@ const getOptions = ({
 const lineChartTooltipText = (
   <>
     We calculate what value for the Y-axis driver should be to reach the income
-    target. For any commodities in the crop category, we use the formula:
+    target. For any commodities in the commodity category, we use the formula:
     &apos;Income target = (Area x Volume x Price) - (Area x CoP) + diversified
     income&apos;. For any commodities in the aquaculture category, we use the
     formula: &apos;Income target = (Area x Volume x Price) - (Area x Volume x

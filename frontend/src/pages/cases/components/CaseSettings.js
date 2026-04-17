@@ -726,9 +726,9 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       if (isRemovingSecondary && isRemovingTertiary) {
         cropType = "secondary and tertiary crops";
       } else if (isRemovingSecondary) {
-        cropType = "secondary crop";
+        cropType = "secondary commodity";
       } else {
-        cropType = "tertiary crop";
+        cropType = "tertiary commodity";
       }
 
       Modal.confirm({

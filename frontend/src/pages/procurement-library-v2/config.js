@@ -452,7 +452,7 @@ export const SOURCING_STRATEGY_CYCLE_TABS = [
                 <CheckIconItem text="Selecting a Sustainability Certification" />
               </li>
               <li>
-                <CheckIconItem text="Smallholder Crop Production" />
+                <CheckIconItem text="Smallholder Commodity Production" />
               </li>
               <li>
                 <CheckIconItem text="Regenerative Agriculture" />

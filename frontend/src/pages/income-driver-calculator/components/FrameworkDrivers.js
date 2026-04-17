@@ -44,9 +44,9 @@ const items = [
     label: "Cost of Production",
     children: (
       <p>
-        The costs of production for producing the primary Crop which covers all
-        can cover several types of costs, such as costs for labour, inputs or
-        equipment.
+        The costs of production for producing the primary commodity which covers
+        all can cover several types of costs, such as costs for labour, inputs
+        or equipment.
       </p>
     ),
   },
@@ -142,7 +142,7 @@ const FrameworkDrivers = () => {
             <div className="driver-calculation-stroke">
               <Space direction="vertical" align="center">
                 <DriverCalculationStroke />
-                <div className="driver-label">Primary Crop</div>
+                <div className="driver-label">Primary Commodity</div>
               </Space>
             </div>
           </div>
