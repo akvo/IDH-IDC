@@ -83,7 +83,7 @@ const IDCBenefits = () => {
     },
     {
       icon: Benefit2,
-      label: "Customisable by farmer segment, crop and context",
+      label: "Customisable by farmer segment, commodity and context",
     },
     {
       icon: Benefit3,

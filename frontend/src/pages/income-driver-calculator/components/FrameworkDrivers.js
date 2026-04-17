@@ -17,7 +17,7 @@ const items = [
   {
     key: "1",
     label: "Land",
-    children: <p>The size of the land used to grow the commodities.</p>,
+    children: <p>The size of the land used to grow the crops.</p>,
   },
   {
     key: "2",
@@ -56,7 +56,7 @@ const items = [
     children: (
       <p>
         The majority of farmer households also earn an income from other sources
-        than the primary commodity. This can be income from other commodities,
+        than the primary commodity. This can be income from other crops,
         livestock, income earned from off-farm labour or non-farm non labour
         sources (e.g. remittances, government transfers).
       </p>
