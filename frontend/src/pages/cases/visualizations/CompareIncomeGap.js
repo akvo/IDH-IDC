@@ -10,7 +10,7 @@ const CompareIncomeGap = () => {
   const columns = useMemo(() => {
     return [
       {
-        title: "Segment",
+        title: "Segment name",
         dataIndex: "name",
         key: "name",
         width: "30%",
@@ -19,7 +19,7 @@ const CompareIncomeGap = () => {
         title: "Number of farmers",
         dataIndex: "number_of_farmers",
         key: "number_of_farmers",
-        width: "15%",
+        width: "18%",
         align: "center",
       },
       {
@@ -41,18 +41,19 @@ const CompareIncomeGap = () => {
 
   const dataSource = useMemo(() => {
     const res = dashboardData.map((d) => {
+      const numberOfFarmers = d.number_of_farmers || 0;
       const currentIncomeGap =
         d.target - d.total_current_income < 0
           ? 0
-          : d.target - d.total_current_income;
+          : (d.target - d.total_current_income) * numberOfFarmers;
       const feasibleIncomeGap =
         d.target - d.total_feasible_income < 0
           ? 0
-          : d.target - d.total_feasible_income;
+          : (d.target - d.total_feasible_income) * numberOfFarmers;
       return {
         id: d.id,
         name: d.name,
-        number_of_farmers: d.number_of_farmers || 0,
+        number_of_farmers: numberOfFarmers,
         current_income_gap: thousandFormatter(currentIncomeGap, 2),
         feasible_income_gap: thousandFormatter(feasibleIncomeGap, 2),
       };
