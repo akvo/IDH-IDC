@@ -44,9 +44,9 @@ const items = [
     label: "Cost of Production",
     children: (
       <p>
-        The costs of production for producing the primary commodity which covers all
-        can cover several types of costs, such as costs for labour, inputs or
-        equipment.
+        The costs of production for producing the primary commodity which covers
+        all can cover several types of costs, such as costs for labour, inputs
+        or equipment.
       </p>
     ),
   },
