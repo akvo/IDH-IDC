@@ -32,7 +32,7 @@ The segmentation configuration interface has been refined to guide users through
 3.  **Specify Count**: For numerical variables, the user then defines the number of segments (max 5).
 
 ### Layout & Wording Updates (#744)
-*   **Labels**: Updated to "Download required data template" and "Upload your validated data template" to emphasize the IDH standardized format.
+*   **Labels**: Updated to "Download required data template (ZIP)" and "Upload your validated data template" to emphasize the IDH standardized format.
 *   **Tooltips**: Inlined help tooltips ("?") provide non-intrusive guidance on "Variable type" vs "Segmentation" definitions.
 *   **Responsive Grid**: The layout uses a robust two-column Ant Design grid to prevent overflow on 1280x720 screens.
 
