@@ -16,6 +16,12 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **ZIP Template Download (#791) - [COMPLETED]**:
+        - Updated template download functionality to serve `data_upload_template.zip` instead of `.xlsm`.
+        - Modified backend `case_import.py` to use `application/zip` media type and point to the ZIP asset.
+        - Updated frontend `CaseForm.js` logic and button label to match the new format.
+    - Path: `backend/routes/case_import.py`, `frontend/src/pages/cases/components/CaseForm.js`.
+
 - **Step 5 Disable Fill-in Values when Above Target (#789) - [COMPLETED]**:
         - Refactored `AdvancedModellingTool.js` to dynamically compute `isAboveTarget` using `segment.total_current_income` against `incomeTarget`.
         - Added conditional logic to render the `IncomeGatingAlert` in place of the input modelling panels when a farmer segment reaches its target.

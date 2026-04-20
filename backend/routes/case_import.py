@@ -58,7 +58,7 @@ ROUTE_TAG_NAME = ["Case Spreadsheet Upload"]
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 TEMPLATE_DIR = BASE_DIR / "assets" / "templates"
-TEMPLATE_NAME = "data_upload_template.xlsm"
+TEMPLATE_NAME = "data_upload_template.zip"
 
 
 @case_import_route.post(
@@ -242,7 +242,7 @@ def download_upload_template():
     return FileResponse(
         path=file_path,
         filename=TEMPLATE_NAME,
-        media_type="application/vnd.ms-excel.sheet.macroEnabled.12",
+        media_type="application/zip",
     )
 
 
