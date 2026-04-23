@@ -65,7 +65,8 @@ def get_progress(
         # Backward compatibility / Data normalization
         normalized = {}
         for course_id, p in data.items():
-            # If it's the old flat structure (missing course_id), migrate to new schema
+            # If it's the old flat structure (missing course_id),
+            # migrate to new schema
             if "course_id" not in p:
                 normalized[course_id] = {
                     "course_id": course_id,
@@ -115,6 +116,7 @@ def sync_progress(
     current_progress[course_id] = {
         "course_id": course_id,
         "current_chapter_id": payload.get("current_chapter_id"),
+        "current_section_index": payload.get("current_section_index", 0),
         "completed_chapters": payload.get("completed_chapters", []),
         "quiz_scores": payload.get("quiz_scores", {}),
         "is_completed": payload.get("is_completed", False),

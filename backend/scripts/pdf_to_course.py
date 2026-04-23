@@ -38,7 +38,12 @@ class PDFToCourseTransformer:
 
         # Final optimized pattern for IDC documents
         chapter_pattern = re.compile(
-            r"^((?:Chapter|Section|Scenario)\s+\d+[:.]?.*|.*?\?$|^Methodology of.*|^Data Protection.*|^Citation.*|^Contact information.*)",
+            r"^((?:Chapter|Section|Scenario)\s+\d+[:.]?.*|"
+            r".*?\?$|"
+            r"^Methodology of.*|"
+            r"^Data Protection.*|"
+            r"^Citation.*|"
+            r"^Contact information.*)",
             re.MULTILINE,
         )
 
@@ -68,14 +73,67 @@ class PDFToCourseTransformer:
             title = matches[i].group(0).strip()
             content = self.raw_text[start:end].strip()
 
-            self.chapters.append(
+            sections = self.split_sections(content)
+
+            chapter = {
+                "id": f"{self.filename}-ch{i+1}",
+                "title": title,
+            }
+
+            if sections:
+                chapter["sections"] = sections
+            else:
+                chapter["content"] = content
+
+            chapter["quiz"] = self.generate_quiz(content)
+            self.chapters.append(chapter)
+
+    def split_sections(self, content: str) -> list:
+        """
+        Identify sub-sections within a chapter's content.
+        Heuristics:
+        - Lines starting with 1.1, 1.2, etc.
+        - Lines starting with A., B., etc.
+        - Lines starting with "Section:" or "Sub-topic:"
+        """
+        # Split into lines to evaluate headings
+        lines = content.split("\n")
+        if not lines:
+            return []
+
+        # Heuristic for sub-headings: e.g., "1.1 Introduction", "A. Methodology"
+        # We require at least 3 alphabetic characters to avoid picking up formulas
+        section_pattern = re.compile(
+            r"^(\d+\.\d+\s+[a-zA-Z]{3,}.*|[A-Z]\.\s+[a-zA-Z]{3,}.*|Section[:\s].*)",
+            re.MULTILINE,
+        )
+        matches = list(section_pattern.finditer(content))
+
+        if not matches or len(matches) < 2:
+            # If only 0 or 1 section found, keep it as flat content
+            return []
+
+        sections = []
+        for i in range(len(matches)):
+            start = matches[i].start()
+            end = (
+                matches[i + 1].start()
+                if i + 1 < len(matches)
+                else len(content)
+            )
+
+            title = matches[i].group(0).strip()
+            sec_content = content[start:end].strip()
+
+            sections.append(
                 {
-                    "id": f"{self.filename}-ch{i+1}",
+                    "id": f"sec-{i+1}",
                     "title": title,
-                    "content": content,
-                    "quiz": self.generate_quiz(content),
+                    "content": sec_content,
                 }
             )
+
+        return sections
 
     def generate_quiz(self, content: str) -> Dict:
         """
@@ -143,7 +201,10 @@ class PDFToCourseTransformer:
                     "correctAnswer": "2",
                     "messageForCorrectAnswer": "Correct!",
                     "messageForIncorrectAnswer": "Please review benchmarking.",
-                    "explanation": "Benchmarks are adjusted for national inflation and living standards.",
+                    "explanation": (
+                        "Benchmarks are adjusted for national inflation "
+                        "and living standards."
+                    ),
                     "point": "20",
                 },
                 {
@@ -159,7 +220,10 @@ class PDFToCourseTransformer:
                     "correctAnswer": "2",
                     "messageForCorrectAnswer": "Success!",
                     "messageForIncorrectAnswer": "Not quite.",
-                    "explanation": "The Academy provides structured learning for IDC users.",
+                    "explanation": (
+                        "The Academy provides structured learning for "
+                        "IDC users."
+                    ),
                     "point": "20",
                 },
             ],
