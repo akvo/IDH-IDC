@@ -4,8 +4,8 @@
     "chapters": [
         {
             "id": "benchmarks-guide-ch1",
-            "title": "Why do benchmarks need to be contextualised?",
-            "content": "Why do benchmarks need to be contextualised?\nBenchmark values are subject to annual fluctuations, influenced by dynamic factors such as\nprevailing economic conditions, national inflation rates, and shifts in living standards. Living\nincomes, which are calculated on a per-household basis, are also dependent on the typical\nhousehold composition. Contextualization ensures that these benchmarks not only remain up to\ndate but are specifically tailored to reflect the unique circumstances of your data.",
+            "title": "An explanation of how we contextualise the Living",
+            "content": "## An explanation of how we contextualise the Living",
             "quiz": {
                 "quizTitle": "Knowledge Check",
                 "quizSynopsis": "Validate your understanding of this chapter.",
@@ -25,69 +25,7 @@
                         "correctAnswer": "3",
                         "messageForCorrectAnswer": "Correct!",
                         "messageForIncorrectAnswer": "Incorrect.",
-                        "explanation": "This chapter focuses on analyzing income drivers.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "Which indicator is most critical for living income calculation?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Household Size",
-                            "Market Price",
-                            "Yield per Hectare",
-                            "All of the above"
-                        ],
-                        "correctAnswer": "4",
-                        "messageForCorrectAnswer": "Exactly!",
-                        "messageForIncorrectAnswer": "Consider all variables.",
-                        "explanation": "Living income depends on a combination of household expenses and income sources.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "True",
-                            "False"
-                        ],
-                        "correctAnswer": "1",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "False.",
-                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "How are living income benchmarks contextualised?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Annual global index",
-                            "Inflation adjustment",
-                            "Local survey data",
-                            "None"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "Please review benchmarking.",
-                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Data Storage",
-                            "User Training",
-                            "Market Intelligence",
-                            "Reporting"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Success!",
-                        "messageForIncorrectAnswer": "Not quite.",
-                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "explanation": "This focuses on analyzing income drivers.",
                         "point": "20"
                     }
                 ]
@@ -95,8 +33,8 @@
         },
         {
             "id": "benchmarks-guide-ch2",
-            "title": "How to contextualise Living Income Benchmarks?",
-            "content": "How to contextualise Living Income Benchmarks?\nWhen working with benchmarks, one of multiple scenarios might occur:",
+            "title": "Income Benchmarks in the IDC",
+            "content": "## Income Benchmarks in the IDC",
             "quiz": {
                 "quizTitle": "Knowledge Check",
                 "quizSynopsis": "Validate your understanding of this chapter.",
@@ -116,69 +54,7 @@
                         "correctAnswer": "3",
                         "messageForCorrectAnswer": "Correct!",
                         "messageForIncorrectAnswer": "Incorrect.",
-                        "explanation": "This chapter focuses on analyzing income drivers.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "Which indicator is most critical for living income calculation?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Household Size",
-                            "Market Price",
-                            "Yield per Hectare",
-                            "All of the above"
-                        ],
-                        "correctAnswer": "4",
-                        "messageForCorrectAnswer": "Exactly!",
-                        "messageForIncorrectAnswer": "Consider all variables.",
-                        "explanation": "Living income depends on a combination of household expenses and income sources.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "True",
-                            "False"
-                        ],
-                        "correctAnswer": "1",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "False.",
-                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "How are living income benchmarks contextualised?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Annual global index",
-                            "Inflation adjustment",
-                            "Local survey data",
-                            "None"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "Please review benchmarking.",
-                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Data Storage",
-                            "User Training",
-                            "Market Intelligence",
-                            "Reporting"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Success!",
-                        "messageForIncorrectAnswer": "Not quite.",
-                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "explanation": "This focuses on analyzing income drivers.",
                         "point": "20"
                     }
                 ]
@@ -186,6 +62,64 @@
         },
         {
             "id": "benchmarks-guide-ch3",
+            "title": "# Why do benchmarks need to be contextualised?",
+            "content": "### Why do benchmarks need to be contextualised?\nBenchmark values are subject to annual fluctuations, influenced by dynamic factors such as\nprevailing economic conditions, national inflation rates, and shifts in living standards. Living\nincomes, which are calculated on a per-household basis, are also dependent on the typical\nhousehold composition. Contextualization ensures that these benchmarks not only remain up to\ndate but are specifically tailored to reflect the unique circumstances of your data.",
+            "quiz": {
+                "quizTitle": "Knowledge Check",
+                "quizSynopsis": "Validate your understanding of this chapter.",
+                "nrOfQuestions": "5",
+                "timerInMinutes": 5,
+                "questions": [
+                    {
+                        "question": "What is the primary focus of this section?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Collection",
+                            "Strategic Planning",
+                            "Income Analysis",
+                            "Other"
+                        ],
+                        "correctAnswer": "3",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Incorrect.",
+                        "explanation": "This focuses on analyzing income drivers.",
+                        "point": "20"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "benchmarks-guide-ch4",
+            "title": "# How to contextualise Living Income Benchmarks?",
+            "content": "### How to contextualise Living Income Benchmarks?\nWhen working with benchmarks, one of multiple scenarios might occur:",
+            "quiz": {
+                "quizTitle": "Knowledge Check",
+                "quizSynopsis": "Validate your understanding of this chapter.",
+                "nrOfQuestions": "5",
+                "timerInMinutes": 5,
+                "questions": [
+                    {
+                        "question": "What is the primary focus of this section?",
+                        "questionType": "text",
+                        "answerSelectionType": "single",
+                        "answers": [
+                            "Data Collection",
+                            "Strategic Planning",
+                            "Income Analysis",
+                            "Other"
+                        ],
+                        "correctAnswer": "3",
+                        "messageForCorrectAnswer": "Correct!",
+                        "messageForIncorrectAnswer": "Incorrect.",
+                        "explanation": "This focuses on analyzing income drivers.",
+                        "point": "20"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "benchmarks-guide-ch5",
             "title": "Scenario 1: Benchmarks are directly available",
             "content": "Scenario 1: Benchmarks are directly available\nIf your data comes from the same year as the benchmark and your average household composition\nmatches the one provided, the benchmark does not require contextualisation and can be used\ndirectly. The amount corresponds to the benchmark value for a household for a year.\nIt is possible to change the currency of the benchmarks directly in the tool, which uses the latest\ndata from the World Bank.",
             "quiz": {
@@ -207,78 +141,16 @@
                         "correctAnswer": "3",
                         "messageForCorrectAnswer": "Correct!",
                         "messageForIncorrectAnswer": "Incorrect.",
-                        "explanation": "This chapter focuses on analyzing income drivers.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "Which indicator is most critical for living income calculation?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Household Size",
-                            "Market Price",
-                            "Yield per Hectare",
-                            "All of the above"
-                        ],
-                        "correctAnswer": "4",
-                        "messageForCorrectAnswer": "Exactly!",
-                        "messageForIncorrectAnswer": "Consider all variables.",
-                        "explanation": "Living income depends on a combination of household expenses and income sources.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "True",
-                            "False"
-                        ],
-                        "correctAnswer": "1",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "False.",
-                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "How are living income benchmarks contextualised?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Annual global index",
-                            "Inflation adjustment",
-                            "Local survey data",
-                            "None"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "Please review benchmarking.",
-                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Data Storage",
-                            "User Training",
-                            "Market Intelligence",
-                            "Reporting"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Success!",
-                        "messageForIncorrectAnswer": "Not quite.",
-                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "explanation": "This focuses on analyzing income drivers.",
                         "point": "20"
                     }
                 ]
             }
         },
         {
-            "id": "benchmarks-guide-ch4",
+            "id": "benchmarks-guide-ch6",
             "title": "Scenario 2: Correct benchmark year but different household composition",
-            "content": "Scenario 2: Correct benchmark year but different household composition\nAlongside the benchmarks you can find the family size and composition for which they were\ncalculated. The default size represents a typical family from the specific region or country selected,\nbut it is possible that it does not match your data. If this is the case, you will have to adjust the\nbenchmark for a different household size, which is done with the help of equivalence scales.\nEquivalence scales assign a value to households, which is proportional to their needs and based on\nthe household composition. The scale takes the size of the household and the age of its members\n(whether they are adults or children) into account. The OECD modified scale assigns a value of 1 to\nthe household head, 0.5 to each additional adult member and 0.3 to each child.\nExample:\nSuppose you are interested in contextualising the benchmark of rural Burkina Faso, which is\n1,284,072.00 CFA for 2024. The household composition for this benchmark is a family of 5.5\nmembers, composed of 2 adults and 3.5 children. The original adult equivalent, based on\nOECD modified scale is 2.55 (1 + 0.5 + 3.5*0.3 = 2.55).\nYour data also comes from 2024 but the average family composition is 6 members, with 2\nchildren and four adults. The adjusted adult equivalent, based on OECD modified scale is\n2.7 (1 + 0.5 + 4*0.3 = 2.7).\nTo modify the benchmark to fit your household composition, you first need to divide it by the\noriginal adult equivalent and then multiply by the adjusted adult equivalent that matches your\ndata.\nExample:\nIn the case of Burkina Faso, we divide the benchmark by 2.55 and then multiply by 2.7.\n1,284,072.00\n* 2.7 = 1,359,605.65\n2.55",
+            "content": "Scenario 2: Correct benchmark year but different household composition\nAlongside the benchmarks you can find the family size and composition for which they were\ncalculated. The default size represents a typical family from the specific region or country selected,\nbut it is possible that it does not match your data. If this is the case, you will have to adjust the\nbenchmark for a different household size, which is done with the help of equivalence scales.\nEquivalence scales assign a value to households, which is proportional to their needs and based on\nthe household composition. The scale takes the size of the household and the age of its members\n(whether they are adults or children) into account. The OECD modified scale assigns a value of 1 to\nthe household head, 0.5 to each additional adult member and 0.3 to each child.\nExample:\nSuppose you are interested in contextualising the benchmark of rural Burkina Faso, which is\n1,284,072.00 CFA for 2024. The household composition for this benchmark is a family of 5.5\nmembers, composed of 2 adults and 3.5 children. The original adult equivalent, based on\n$OECD modified scale is **2.55** (1 + 0.5 + 3.5*0.3 = 2.55).$\nYour data also comes from 2024 but the average family composition is 6 members, with 2\nchildren and four adults. The adjusted adult equivalent, based on OECD modified scale is\n$**2.7** (1 + 0.5 + 4*0.3 = 2.7).$\n\n\n![Graph/Illustration](/assets/academy/courses/benchmarks-guide/images/p2_graph.png)\n\nTo modify the benchmark to fit your household composition, you first need to divide it by the\noriginal adult equivalent and then multiply by the adjusted adult equivalent that matches your\ndata.\nExample:\nIn the case of Burkina Faso, we divide the benchmark by 2.55 and then multiply by 2.7.\n$$\n1,284,072.00\n$$\n### * 2.7 = 1,359,605.65\n$$\n2.55\n$$",
             "quiz": {
                 "quizTitle": "Knowledge Check",
                 "quizSynopsis": "Validate your understanding of this chapter.",
@@ -298,78 +170,37 @@
                         "correctAnswer": "3",
                         "messageForCorrectAnswer": "Correct!",
                         "messageForIncorrectAnswer": "Incorrect.",
-                        "explanation": "This chapter focuses on analyzing income drivers.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "Which indicator is most critical for living income calculation?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Household Size",
-                            "Market Price",
-                            "Yield per Hectare",
-                            "All of the above"
-                        ],
-                        "correctAnswer": "4",
-                        "messageForCorrectAnswer": "Exactly!",
-                        "messageForIncorrectAnswer": "Consider all variables.",
-                        "explanation": "Living income depends on a combination of household expenses and income sources.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "True",
-                            "False"
-                        ],
-                        "correctAnswer": "1",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "False.",
-                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "How are living income benchmarks contextualised?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Annual global index",
-                            "Inflation adjustment",
-                            "Local survey data",
-                            "None"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "Please review benchmarking.",
-                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Data Storage",
-                            "User Training",
-                            "Market Intelligence",
-                            "Reporting"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Success!",
-                        "messageForIncorrectAnswer": "Not quite.",
-                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "explanation": "This focuses on analyzing income drivers.",
                         "point": "20"
                     }
                 ]
             }
         },
         {
-            "id": "benchmarks-guide-ch5",
+            "id": "benchmarks-guide-ch7",
             "title": "Scenario 3: Correct household composition, but incorrect benchmark year",
-            "content": "Scenario 3: Correct household composition, but incorrect benchmark year\nWe always aim to have the latest benchmark values in the year. However, we only do this once other\ndata sources needed, such as exchange rates and consumer price indices, are also accessible for\nthat particular year. Once available, we update everything at the same time in the system. However\nthis makes it possible that you may need a benchmark for a year, when benchmarks have not yet\nbeen published or updated. In this scenario, we use the Consumer Price Index (CPI) obtained from\nthe IMF or Trading Economics website to adjust the benchmark. Firstly, the inflation rate is\ncalculated:\n\ud835\udc36\ud835\udc43\ud835\udc3c \ud835\udc53\ud835\udc5c\ud835\udc5f \ud835\udc51\ud835\udc52\ud835\udc60\ud835\udc56\ud835\udc5f\ud835\udc52\ud835\udc51 \ud835\udc66\ud835\udc52\ud835\udc4e\ud835\udc5f \u2212 \ud835\udc36\ud835\udc43\ud835\udc3c \ud835\udc53\ud835\udc5c\ud835\udc5f \ud835\udc4f\ud835\udc52\ud835\udc5b\ud835\udc50\u210e\ud835\udc5a\ud835\udc4e\ud835\udc5f\ud835\udc58 \ud835\udc66\ud835\udc52\ud835\udc4e\ud835\udc5f\n\ud835\udc36\ud835\udc43\ud835\udc3c \ud835\udc53\ud835\udc5c\ud835\udc5f \ud835\udc4f\ud835\udc52\ud835\udc5b\ud835\udc50\u210e\ud835\udc5a\ud835\udc4e\ud835\udc5f\ud835\udc58 \ud835\udc66\ud835\udc52\ud835\udc4e\ud835\udc5f\nThe inflation rate is then used to adjust the benchmark value:\n\ud835\udc42\ud835\udc5f\ud835\udc56\ud835\udc54\ud835\udc56\ud835\udc5b\ud835\udc4e\ud835\udc59 \ud835\udc4f\ud835\udc52\ud835\udc5b\ud835\udc50\u210e\ud835\udc5a\ud835\udc4e\ud835\udc5f\ud835\udc58 \ud835\udc63\ud835\udc4e\ud835\udc59\ud835\udc62\ud835\udc52 * (1 + \ud835\udc3c\ud835\udc5b\ud835\udc53\ud835\udc59\ud835\udc4e\ud835\udc61\ud835\udc56\ud835\udc5c\ud835\udc5b \ud835\udc45\ud835\udc4e\ud835\udc61\ud835\udc52)\nExample:\nYour data, collected in 2025, comes from rural Cameroon and the latest available\nbenchmark is for the year 2024. To adjust the value, you will need (1) the benchmark value =\n2,284,272.00 CFA, (2) CPI for Cameroon for 2024 = 112.23 and (3) the CPI for Cameroon for\n2025 = 114.50.\n114.50 \u2212 112.23\n\ud835\udc3c\ud835\udc5b\ud835\udc53\ud835\udc59\ud835\udc4e\ud835\udc61\ud835\udc56\ud835\udc5c\ud835\udc5b \ud835\udc5f\ud835\udc4e\ud835\udc61\ud835\udc52 = = 0.0202\n112.23\nThe inflation rate is then used to contextualise the benchmark accordingly:\n2 284 272.00 * (1 + 0.0202) = 2 330 414.29\nThe new benchmark value for Cameroon for 2025, which accounts for inflation is\n2,330,414.29 CFA.\nThese calculations happen automatically in the tool for every year, for which we have updated CPI\ndata. If there is no available CPI data for your selected year in the tool, you will see a warning\nmessage. It is still possible to input CPI data manually and we have also provided a link to the\nTrading Economics website.",
+            "sections": [
+                {
+                    "id": "sec-1",
+                    "title": "Original benchmark value * (1 + Inflation Rate)",
+                    "content": "###  Original benchmark value * (1 + Inflation Rate)\nYour data, collected in 2025, comes from rural Cameroon and the latest available\nbenchmark is for the year 2024. To adjust the value, you will need (1) the benchmark value =\n$$\n2,284,272.00 CFA, (2) CPI for Cameroon for 2024 = 112.23 and (3) the CPI for Cameroon for\n$$\n$$\n2025 = 114.50.\n$$\n$$\n114.50 \u2212 112.23\n$$"
+                },
+                {
+                    "id": "sec-2",
+                    "title": "Inflation rate =",
+                    "content": "###   Inflation rate ="
+                },
+                {
+                    "id": "sec-3",
+                    "title": "=0.0202",
+                    "content": "###  =0.0202 \n$$\n112.23\n$$\nThe inflation rate is then used to contextualise the benchmark accordingly:"
+                },
+                {
+                    "id": "sec-4",
+                    "title": "2 284 272.00 * (1 + 0.0202)= 2 330 414.29",
+                    "content": "###  2 284 272.00 * (1 + 0.0202)= 2 330 414.29\nThe new benchmark value for Cameroon for 2025, which accounts for inflation is\n2,330,414.29 CFA.\nThese calculations happen automatically in the tool for every year, for which we have updated CPI\ndata. If there is no available CPI data for your selected year in the tool, you will see a warning\nmessage. It is still possible to input CPI data manually and we have also provided a link to the\nTrading Economics website."
+                }
+            ],
             "quiz": {
                 "quizTitle": "Knowledge Check",
                 "quizSynopsis": "Validate your understanding of this chapter.",
@@ -389,69 +220,7 @@
                         "correctAnswer": "3",
                         "messageForCorrectAnswer": "Correct!",
                         "messageForIncorrectAnswer": "Incorrect.",
-                        "explanation": "This chapter focuses on analyzing income drivers.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "Which indicator is most critical for living income calculation?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Household Size",
-                            "Market Price",
-                            "Yield per Hectare",
-                            "All of the above"
-                        ],
-                        "correctAnswer": "4",
-                        "messageForCorrectAnswer": "Exactly!",
-                        "messageForIncorrectAnswer": "Consider all variables.",
-                        "explanation": "Living income depends on a combination of household expenses and income sources.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "True or False: The IDC tool supports multi-scenario comparison.",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "True",
-                            "False"
-                        ],
-                        "correctAnswer": "1",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "False.",
-                        "explanation": "IDC allows side-by-side comparison of up to 5 scenarios.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "How are living income benchmarks contextualised?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Annual global index",
-                            "Inflation adjustment",
-                            "Local survey data",
-                            "None"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Correct!",
-                        "messageForIncorrectAnswer": "Please review benchmarking.",
-                        "explanation": "Benchmarks are adjusted for national inflation and living standards.",
-                        "point": "20"
-                    },
-                    {
-                        "question": "What role does the 'Academy' play in the IDC ecosystem?",
-                        "questionType": "text",
-                        "answerSelectionType": "single",
-                        "answers": [
-                            "Data Storage",
-                            "User Training",
-                            "Market Intelligence",
-                            "Reporting"
-                        ],
-                        "correctAnswer": "2",
-                        "messageForCorrectAnswer": "Success!",
-                        "messageForIncorrectAnswer": "Not quite.",
-                        "explanation": "The Academy provides structured learning for IDC users.",
+                        "explanation": "This focuses on analyzing income drivers.",
                         "point": "20"
                     }
                 ]
