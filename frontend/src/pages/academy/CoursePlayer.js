@@ -8,6 +8,8 @@ import {
   Modal,
   Spin,
   Divider,
+  Alert,
+  Tooltip,
 } from "antd";
 import {
   BookOutlined,
@@ -34,6 +36,7 @@ const CoursePlayer = () => {
   const [course, setCourse] = useState(null);
   const [progress, setProgress] = useState(null);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizResult, setQuizResult] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +61,9 @@ const CoursePlayer = () => {
           );
           if (resumeIndex !== -1) {
             setCurrentChapterIndex(resumeIndex);
+            if (userProgress.current_section_index !== undefined) {
+              setCurrentSectionIndex(userProgress.current_section_index);
+            }
             // Pre-emptively mark sync as occurred for the resumed chapter
             syncOccurredRef.current = true;
           }
@@ -84,6 +90,7 @@ const CoursePlayer = () => {
           const payload = {
             course_id: courseId,
             current_chapter_id: course.chapters[currentChapterIndex].id,
+            current_section_index: currentSectionIndex,
             completed_chapters: progress?.completed_chapters || [],
             quiz_scores: progress?.quiz_scores || {},
             is_completed: progress?.is_completed || false,
@@ -100,6 +107,7 @@ const CoursePlayer = () => {
   }, [
     course,
     currentChapterIndex,
+    currentSectionIndex,
     courseId,
     progress?.completed_chapters,
     progress?.quiz_scores,
@@ -107,7 +115,11 @@ const CoursePlayer = () => {
   ]);
 
   const onChapterSelect = ({ key }) => {
-    setCurrentChapterIndex(parseInt(key));
+    // Key format: "chapterIndex-sectionIndex" or just "chapterIndex"
+    const [chIdx, secIdx] = key.split("-").map((v) => parseInt(v));
+
+    setCurrentChapterIndex(chIdx);
+    setCurrentSectionIndex(secIdx || 0);
     setShowQuiz(false);
     setQuizResult(null);
     syncOccurredRef.current = false;
@@ -135,6 +147,7 @@ const CoursePlayer = () => {
       const payload = {
         course_id: courseId,
         current_chapter_id: chapterId,
+        current_section_index: currentSectionIndex,
         completed_chapters: updatedCompletedChapters,
         quiz_scores: updatedQuizScores,
         is_completed: isCompletedNow,
@@ -175,6 +188,14 @@ const CoursePlayer = () => {
     ((progress?.completed_chapters?.length || 0) / course.chapters.length) * 100
   );
 
+  const isChapterCompleted = progress?.completed_chapters?.includes(
+    currentChapter.id
+  );
+  const isLastSection =
+    !currentChapter.sections ||
+    currentSectionIndex === currentChapter.sections.length - 1;
+  const isQuizLocked = currentChapter.sections && !isLastSection;
+
   return (
     <Layout className="course-player-container">
       <Sider
@@ -198,13 +219,32 @@ const CoursePlayer = () => {
         <Menu
           mode="inline"
           className="chapter-menu"
-          selectedKeys={[currentChapterIndex.toString()]}
+          selectedKeys={[
+            `${currentChapterIndex}${
+              course.chapters[currentChapterIndex].sections
+                ? `-${currentSectionIndex}`
+                : ""
+            }`,
+          ]}
           onClick={onChapterSelect}
-          items={course.chapters.map((ch, idx) => ({
-            key: idx.toString(),
-            icon: <BookOutlined />,
-            label: ch.title,
-          }))}
+          items={course.chapters.map((ch, idx) => {
+            if (ch.sections && ch.sections.length > 0) {
+              return {
+                key: idx.toString(),
+                icon: <BookOutlined />,
+                label: ch.title,
+                children: ch.sections.map((sec, secIdx) => ({
+                  key: `${idx}-${secIdx}`,
+                  label: sec.title,
+                })),
+              };
+            }
+            return {
+              key: idx.toString(),
+              icon: <BookOutlined />,
+              label: ch.title,
+            };
+          })}
         />
       </Sider>
 
@@ -219,15 +259,22 @@ const CoursePlayer = () => {
         {!showQuiz ? (
           <div className="reading-mode animate-fade-in">
             <div className="reading-card">
-              <Title level={2}>{currentChapter.title}</Title>
+              <Title level={2}>
+                {currentChapter.sections
+                  ? currentChapter.sections[currentSectionIndex].title
+                  : currentChapter.title}
+              </Title>
               <Divider />
               <div className="markdown-body">
-                {currentChapter.content ? (
+                {currentChapter.sections ? (
+                  <ReactMarkdown>
+                    {currentChapter.sections[currentSectionIndex].content}
+                  </ReactMarkdown>
+                ) : currentChapter.content ? (
                   <ReactMarkdown>{currentChapter.content}</ReactMarkdown>
                 ) : (
                   <Paragraph type="secondary" italic>
-                    No detailed content available for this chapter. Please
-                    proceed to the assessment.
+                    No detailed content available for this module.
                   </Paragraph>
                 )}
               </div>
@@ -246,25 +293,47 @@ const CoursePlayer = () => {
                     Module Assessment
                   </Title>
                   <Text type="secondary">
-                    5 Questions • {currentChapter.quiz?.timerInMinutes || 5} Min
+                    {currentChapter.quiz?.questions?.length || 5} Questions •{" "}
+                    {currentChapter.quiz?.timerInMinutes || 5} Min
                   </Text>
                 </div>
               </div>
-              <Button
-                type="primary"
-                size="large"
-                onClick={() => setShowQuiz(true)}
+              <div
                 style={{
-                  backgroundColor: "#1B625F",
-                  borderColor: "#1B625F",
-                  height: "56px",
-                  padding: "0 40px",
-                  borderRadius: "28px",
-                  fontWeight: 600,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  gap: "8px",
                 }}
               >
-                Start Knowledge Check
-              </Button>
+                {isQuizLocked && (
+                  <Alert
+                    message="Complete all sections to unlock the quiz"
+                    type="info"
+                    showIcon
+                    style={{ borderRadius: "8px", padding: "4px 12px" }}
+                  />
+                )}
+                <Button
+                  type="primary"
+                  size="large"
+                  disabled={isQuizLocked}
+                  onClick={() => setShowQuiz(true)}
+                  style={{
+                    backgroundColor: "#1B625F",
+                    borderColor: "#1B625F",
+                    height: "56px",
+                    padding: "0 40px",
+                    borderRadius: "28px",
+                    fontWeight: 600,
+                    opacity: isQuizLocked ? 0.5 : 1,
+                  }}
+                >
+                  {isChapterCompleted
+                    ? "Review Assessment"
+                    : "Start Knowledge Check"}
+                </Button>
+              </div>
             </div>
 
             <div
@@ -275,24 +344,60 @@ const CoursePlayer = () => {
               }}
             >
               <Button
-                disabled={currentChapterIndex === 0}
+                disabled={
+                  currentChapterIndex === 0 && currentSectionIndex === 0
+                }
                 icon={<LeftOutlined />}
                 onClick={() => {
-                  setCurrentChapterIndex(currentChapterIndex - 1);
+                  if (currentSectionIndex > 0) {
+                    setCurrentSectionIndex(currentSectionIndex - 1);
+                  } else {
+                    const prevChIdx = currentChapterIndex - 1;
+                    const prevCh = course.chapters[prevChIdx];
+                    setCurrentChapterIndex(prevChIdx);
+                    setCurrentSectionIndex(
+                      prevCh.sections ? prevCh.sections.length - 1 : 0
+                    );
+                  }
                   syncOccurredRef.current = false;
+                  window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
               >
-                Previous Module
+                Previous
               </Button>
-              <Button
-                disabled={currentChapterIndex === course.chapters.length - 1}
-                onClick={() => {
-                  setCurrentChapterIndex(currentChapterIndex + 1);
-                  syncOccurredRef.current = false;
-                }}
+              <Tooltip
+                title={
+                  isLastSection && !isChapterCompleted
+                    ? "Complete the Knowledge Check to proceed to the next chapter"
+                    : ""
+                }
               >
-                Next Module <RightOutlined />
-              </Button>
+                <Button
+                  disabled={
+                    currentChapterIndex === course.chapters.length - 1 &&
+                    isLastSection
+                  }
+                  onClick={() => {
+                    if (
+                      currentChapter.sections &&
+                      currentSectionIndex < currentChapter.sections.length - 1
+                    ) {
+                      setCurrentSectionIndex(currentSectionIndex + 1);
+                    } else if (!isChapterCompleted) {
+                      // If chapter not completed, jump to quiz instead of next chapter
+                      setShowQuiz(true);
+                    } else {
+                      // Only allow next chapter if quiz is completed
+                      setCurrentChapterIndex(currentChapterIndex + 1);
+                      setCurrentSectionIndex(0);
+                    }
+                    syncOccurredRef.current = false;
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  Next <RightOutlined />
+                </Button>
+              </Tooltip>
             </div>
           </div>
         ) : (
