@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Academy Hierarchical Subcontent (#759/765) - [COMPLETED]**:
+        - Refactored `CoursePlayer.js` and `CoursePlayer.scss` to support nested `sections` within chapters.
+        - Implemented a hierarchical sidebar using Ant Design `SubMenu` with custom indentation and active state highlighting.
+        - Enhanced the progress synchronization system to store and resume from `current_section_index`.
+        - Updated navigation logic to cycle through sections before enabling module assessments.
+        - Verified backward compatibility with single-content chapters and legacy progress data.
+    - Path: `backend/routes/academy.py`, `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/CoursePlayer.scss`.
+
 - **ZIP Template Download (#791) - [COMPLETED]**:
         - Updated template download functionality to serve `data_upload_template.zip` instead of `.xlsm`.
         - Modified backend `case_import.py` to use `application/zip` media type and point to the ZIP asset.

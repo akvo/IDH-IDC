@@ -71,10 +71,10 @@ Courses are stored as JSON files with the following structure:
 - [x] Update `user_progress` storage (Local JSON for PoC).
 
 ### Phase 4: Subcontent & Nested Navigation
-- [ ] Refactor `CoursePlayer.js` to support nested `sections` within chapters.
-- [ ] Upgrade Sidebar to use Ant Design `SubMenu` for hierarchical chapters.
-- [ ] Implement `currentSectionIndex` state and navigation logic.
-- [ ] Update Progress Sync to store and resume from `current_section_index`.
+- [x] Refactor `CoursePlayer.js` to support nested `sections` within chapters.
+- [x] Upgrade Sidebar to use Ant Design `SubMenu` for hierarchical chapters.
+- [x] Implement `currentSectionIndex` state and navigation logic.
+- [x] Update Progress Sync to store and resume from `current_section_index`.
 
 ### 📂 Code Organization (Current Implementation)
 - **Modularity**: All Academy/LMS related files are grouped into dedicated `academy` or `lms` folders in both the **frontend** and **backend** to ensure a clean separation from the core IDC logic.

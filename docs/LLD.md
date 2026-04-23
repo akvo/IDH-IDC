@@ -82,11 +82,17 @@ Multi-tenant security and permission management.
 
 | Entity | Description |
 | :--- | :--- |
-| **User** | System users with dynamic `user_type` and `role`. |
-| **Organisation** | Top-level tenant (e.g., IDH, Partner Org). |
-| **Company** | Specific subsidiary or business unit under an organization. |
-| **UserCaseAccess** | Pivot table defining granular Editor/Viewer rights per Case. |
 | **BusinessUnit** | Optional grouping for internal staff management. |
+| **UserCaseAccess** | Pivot table defining granular Editor/Viewer rights per Case. |
+
+### D. Academy LMS Cluster
+Manages user learning progress and course content structure.
+
+| Entity | Description |
+| :--- | :--- |
+| **Course** | Hierarchical JSON container for chapters, sections, and quizzes. |
+| **UserProgress** | Tracking entity for `completed_chapters`, `quiz_scores`, and `active_navigation`. |
+| **PDFTransformer** | Automated script for converting documentation into hierarchical JSON courses. |
 
 ---
 
@@ -147,6 +153,7 @@ To maintain a clean architectural blueprint, detailed feature logic is documente
 | **Income Analysis** | [INCOME_GAP_ANALYSIS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/INCOME_GAP_ANALYSIS.md) | Gap Allocation, Composition Charts. |
 | **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
 | **Permissions** | [PERMISSIONS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
+| **Academy LMS** | [LMS_POC.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/LMS_POC.md) | Hierarchical courses, progress gating, PDF transformation. |
 | **Case UX** | [CASE_MANAGEMENT_UX.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/CASE_MANAGEMENT_UX.md) | Save Guards, Cleanup scripts. |
 
 ---
