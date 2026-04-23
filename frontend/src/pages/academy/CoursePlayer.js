@@ -61,7 +61,7 @@ const CoursePlayer = () => {
           );
           if (resumeIndex !== -1) {
             setCurrentChapterIndex(resumeIndex);
-            if (userProgress.current_section_index !== undefined) {
+            if (typeof userProgress.current_section_index !== "undefined") {
               setCurrentSectionIndex(userProgress.current_section_index);
             }
             // Pre-emptively mark sync as occurred for the resumed chapter
