@@ -12,7 +12,7 @@ COURSE_DIR = "assets/academy/courses/"
 # Asset path for images (absolute within container)
 ASSET_IMG_DIR = "/app/assets/academy/courses/"
 # Public base URL for the backend static assets
-PUBLIC_ASSET_BASE = "/assets/academy/courses"
+PUBLIC_ASSET_BASE = "/api/assets/academy/courses"
 
 
 class PDFToCourseTransformer:
