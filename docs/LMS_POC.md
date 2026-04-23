@@ -169,5 +169,6 @@ The request body to synchronize user state.
 ---
 
 ## 🔮 Future Enhancements
+- **Better PDF Converter**: Integrate a more robust PDF parsing engine (e.g., Mathpix, AWS Textract, or a more advanced OCR-based library) to improve extraction accuracy for complex multi-column layouts and exotic mathematical notations beyond the current `pdfplumber` heuristics.
 - **Improved UI**: Transition from simple Markdown to a more interactive component-based content renderer.
 - **Database Integration**: Migrate from JSON files to PostgreSQL for progress and course storage.
