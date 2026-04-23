@@ -444,8 +444,8 @@ const Welcome = () => {
                 Explore cases on the map and gain quick insights
               </div>
               <div className="description">
-                A case on the IDC tool is defined as the use case of a focus
-                crop and year for which you would like to do the income gap
+                A case on the IDC tool is defined as the use case of a primary
+                commodity and year for which you would like to do the income gap
                 analysis.
                 <br />
                 Click on a country to view completed cases. Below the map,

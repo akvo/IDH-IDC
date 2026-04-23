@@ -134,7 +134,7 @@ const GapClosingPieChart = ({
       tooltipText="This graph shows how effective the selected third driver is in helping close the income gap."
     >
       <Row gutter={[40, 20]} align="middle">
-        <Col xs={24} md={12}>
+        <Col xs={24} md={12} style={{ padding: "32px 0 32px 32px" }}>
           <p>
             This graph shows how effective the selected third driver is in
             helping close the income gap. It does this by counting how many
@@ -150,7 +150,14 @@ const GapClosingPieChart = ({
             drivers instead.
           </p>
         </Col>
-        <Col xs={24} md={12} style={{ borderLeft: "1px solid #e2e4e9" }}>
+        <Col
+          xs={24}
+          md={12}
+          style={{
+            padding: "32px 32px 32px 0",
+            borderLeft: "1px solid #e2e4e9",
+          }}
+        >
           <Chart
             wrapper={false}
             type="PIE"

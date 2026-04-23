@@ -16,7 +16,63 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
-    - **Step 5 Circular Render Fix (#772) - [COMPLETED]**:
+- **ZIP Template Download (#791) - [COMPLETED]**:
+        - Updated template download functionality to serve `data_upload_template.zip` instead of `.xlsm`.
+        - Modified backend `case_import.py` to use `application/zip` media type and point to the ZIP asset.
+        - Updated frontend `CaseForm.js` logic and button label to match the new format.
+    - Path: `backend/routes/case_import.py`, `frontend/src/pages/cases/components/CaseForm.js`.
+
+- **Step 5 Disable Fill-in Values when Above Target (#789) - [COMPLETED]**:
+        - Refactored `AdvancedModellingTool.js` to dynamically compute `isAboveTarget` using `segment.total_current_income` against `incomeTarget`.
+        - Added conditional logic to render the `IncomeGatingAlert` in place of the input modelling panels when a farmer segment reaches its target.
+        - Preserved the visibility of the "Fill in values for your scenarios" header, instructional text, and the segment selector.
+        - Implemented `useMemo` hooks with safe fallback evaluation.
+        - Verified proper handling of `sensitivityAnalysis` adjusted targets.
+    - Path: `frontend/src/pages/cases/components/AdvancedModellingTool.js`
+
+- **Compare Income Gap Table Multiplier (#787) - [COMPLETED]**:
+        - Fixed the "Compare Income Gap" table in Step 3 to accurately calculate and display the total segment income gap by multiplying the per-farmer gap by the number of farmers in that segment.
+        - Updated table dimensions and column title from "Segment" to "Segment name" for improved clarity.
+    - Path: `frontend/src/pages/cases/visualizations/CompareIncomeGap.js`.
+
+
+- **Data Upload Template Tweaks (#783) - [COMPLETED]**:
+        - Updated the Excel data upload template (`data_upload_template.xlsm`) to address user feedback regarding wording and validation clarity.
+        - Optimized the project `.gitignore` to explicitly exclude agent-specific directories (`.agent/`, `agent_docs/`) while preserving core assets.
+    - Path: `backend/assets/templates/data_upload_template.xlsm`, `.gitignore`.
+
+- **Step 4 Income Driver Exploration Descriptions (#781) - [COMPLETED]**:
+        - Added a descriptive paragraph to the "Assess Impact of Mitigation Strategies" page (Step 4) to guide users on using the single, two, and three-driver exploration tools.
+        - Clarified the workflow: starting with a single driver to identify high-potential drivers based on the 'maximum feasible change' column before proceeding to multi-driver heatmaps.
+        - **Refinement**: Implemented a dynamic reminder text ("Modelling for [X]% gap closure (as set above)") at the top of each exploration tool (Single, Two, Three driver) to ensure transparency regarding the selected modelling goal.
+        - **Refactor**: Created a reusable `ModellingGoalReminder` component and moved it into the `Collapse` panel headers for continuous visibility across all Step 4 tools.
+        - **Refinement**: Integrated `CaseVisualState` access and implemented a default fallback of **0%** for the gap closure percentage if not explicitly set.
+        - Verified the implementation with a clean `yarn lint` pass (prior to environment sync issue).
+    - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.js`, `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.scss`.
+- **Step 4 Exploration UI Refinement & Unified Export (#779) - [COMPLETED]**:
+        - Integrated a unified, collapsible container for Step 4 exploration tools (Single, Two, and Three driver analysis) using branded teal backgrounds and custom expand/collapse icons.
+        - Refactored `TwoDriverHeatmap.js` using `React.forwardRef` to support centralized "Clear" functionality from the section header.
+        - Implemented a robust "Download" export system for the entire exploration card with a 500ms render-delay to ensure chart stability.
+        - Enforced clean exports by implementing an automated filtering logic that excludes interactive UI elements (buttons, selectors, tooltips) from the PNG.
+        - Optimized visualization layouts: refactored `ThreeDriverCombinationChart.js` with CSS Grid for perfect label alignment and standardized padding across Step 4 charts.
+        - Verified the implementation with a clean `yarn lint` pass and manual export validation.
+    - Path: `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.js`, `frontend/src/pages/cases/components/TwoDriverHeatmap.js`, `frontend/src/pages/cases/visualizations/ThreeDriverCombinationChart.js`, `frontend/src/pages/cases/visualizations/GapClosingPieChart.js`.
+- **ROI Input Box Guidance & Default Expansion (#776) - [COMPLETED]**:
+        - Refactored `ScenarioModelingROIForm.js` and `case_ui.js` to ensure the ROI component modeling section is expanded by default when cost allocation is enabled.
+        - Implemented an instructional info box in Step 5 to guide users on net cost inputs (fixed/variable costs vs. potential revenue).
+        - Migrated ROI info box styles from inline JSX to a dedicated `ScenarioModelingROIForm.scss` file for better maintainability.
+        - Standardized info box text to black for improved contrast and IDC brand alignment.
+        - Refined toggle handlers to ensure robust expansion/collapse behavior across segment switches and mode changes.
+        - Verified the implementation with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/components/ScenarioModelingROIForm.scss`, `frontend/src/pages/cases/store/case_ui.js`.
+- **Step 5 Chart Inconsistency & Stability Fix (#774) - [COMPLETED]**:
+        - Resolved a bug in Step 5 where chart baseline values fluctuated incorrectly when navigating between segment tabs.
+        - Refactored `backwardScenarioData` in `ScenarioModelingIncomeDriversAndChart.js` to correctly resolve segment-specific baseline data during synchronization.
+        - Implemented `lodash.isEqual` guards for all global state updates within the modeling component to prevent infinite render loops.
+        - Corrected a syntactic bug in the `orderBy`/`map` structure for scenario data updates.
+        - Verified the implementation with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingIncomeDriversAndChart.js`.
+- **Step 5 Circular Render Fix (#772) - [COMPLETED]**:
         - Resolved widespread infinite render loops on the "Closing the Gap" page caused by recursive store updates.
         - Implemented deep equality guards using `lodash.isEqual` in `useScenarioCalculations` and `StandardScenarioModeling`.
         - Optimized state selectors in `ImpactOfInvestmentCharts` and modelling components to ensure components only re-render when their specific subset of data changes.

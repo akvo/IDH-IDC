@@ -1,0 +1,14 @@
+@import "../../../variables.scss";
+
+.roi-instruction-box {
+  background-color: #eaf2f2;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  border: 1px solid rgba(1, 98, 95, 0.1);
+  line-height: 1.5;
+
+  .ant-typography {
+    color: #000 !important;
+  }
+}

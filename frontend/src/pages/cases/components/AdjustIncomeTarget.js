@@ -22,6 +22,7 @@ const AdjustIncomeTarget = ({
   buttonView = false,
   onlyClosingGap = false,
   inlineView = false,
+  layout = "default", // default, horizontal
   disabled = false,
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
@@ -190,6 +191,42 @@ const AdjustIncomeTarget = ({
   };
 
   const renderView = () => {
+    if (layout === "horizontal") {
+      const qtype = calculationType;
+      return (
+        <Space size={12} className="adjust-income-target-horizontal-wrapper">
+          <div className="input-label" style={{ whiteSpace: "nowrap" }}>
+            The income gap to be closed by:
+          </div>
+          <InputNumber
+            style={{
+              width: 100,
+              borderRadius: 8,
+              height: 32,
+              display: "flex",
+              alignItems: "center",
+            }}
+            addonAfter="%"
+            {...InputNumberThousandFormatter}
+            controls={false}
+            onChange={(value) => onAdjustTarget(value, qtype)}
+            value={
+              adjustedValues?.[
+                `${selectedSegment}_closing-gap-percentage_adjusted-target`
+              ]
+            }
+            disabled={disabled}
+          />
+          <div className="new-target-text" style={{ whiteSpace: "nowrap" }}>
+            New target:{" "}
+            <b>
+              {adjustedIncomeTarget.value} {currentCase?.currency || "LCU"}
+            </b>
+          </div>
+        </Space>
+      );
+    }
+
     if (inlineView) {
       const qtype = calculationType;
       return (

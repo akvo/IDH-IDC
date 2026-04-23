@@ -248,7 +248,7 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
               Explore income levels for different commodities
             </div>
             <div className="section-description">
-              This graph shows the current net income levels for your focus
+              This graph shows the current net income levels for your primary
               commodity, any secondary or tertiary commodities, next to
               diversified income within different segments. Use it to compare
               income levels across sources and segments.

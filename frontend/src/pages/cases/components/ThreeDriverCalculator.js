@@ -11,7 +11,11 @@ import {
 } from "../visualizations";
 import { yAxisFormula } from "../../../lib/formula";
 
-const ThreeDriverCalculator = ({ selectedSegment, disabled = false }) => {
+const ThreeDriverCalculator = ({
+  selectedSegment,
+  disabled = false,
+  hideCard = false,
+}) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
   const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
@@ -147,6 +151,86 @@ const ThreeDriverCalculator = ({ selectedSegment, disabled = false }) => {
     return dataSource.find((d) => d.name === yAxisDriver);
   }, [dataSource, yAxisDriver]);
 
+  const content = (
+    <Row gutter={[20, 20]}>
+      <Col span={24}>
+        <p>
+          If exploring combinations of two drivers still does not produce a
+          feasible path to closing the income gap, consider adding a third
+          driver. The tool will use the first two selected drivers and their
+          combinations, then calculate the value the third driver would need to
+          reach in order to close the gap.
+        </p>
+      </Col>
+
+      <Col span={24} className="driver-selection-wrapper">
+        <Space direction="vertical">
+          <span>Select the third driver to calculate:</span>
+          <Select
+            className="driver-select"
+            {...selectProps}
+            options={options}
+            value={thirdDriver}
+            onChange={handleThirdDriverChange}
+            placeholder="Select driver"
+            disabled={!selectedSegment || disabled}
+          />
+        </Space>
+      </Col>
+
+      {thirdDriver && xAxisDriver && yAxisDriver && (
+        <Col span={24}>
+          <GapClosingPieChart
+            selectedSegment={selectedSegment}
+            thirdDriver={selectedThirdDriver}
+            xAxisDriver={xAxisDetails}
+            yAxisDriver={yAxisDetails}
+          />
+        </Col>
+      )}
+
+      {thirdDriver && xAxisDriver && yAxisDriver && (
+        <Col
+          span={24}
+          className="combination-section"
+          style={{ textAlign: "center" }}
+        >
+          <Space direction="vertical" size={24} style={{ width: "100%" }}>
+            <Space direction="vertical" size={16} style={{ width: "100%" }}>
+              <h3 className="title combination-title">
+                What combination of drivers close to income gap?
+              </h3>
+              <p
+                className="combination-description"
+                style={{ maxWidth: "800px", margin: "0 auto" }}
+              >
+                The tables below show the <b>{thirdDriver}</b> needed to close
+                the living income gap for different combinations of{" "}
+                <b>{xAxisDriver || "[X]"}</b> and <b>{yAxisDriver || "[Y]"}</b>.
+                The values for <b>{xAxisDriver || "[X]"}</b> and{" "}
+                <b>{yAxisDriver || "[Y]"}</b> are taken from the ranges defined
+                above. The table focuses on combinations that are most likely to
+                reach the income target while staying within feasible levels for
+                the selected drivers.
+              </p>
+            </Space>
+
+            <ThreeDriverCombinationChart
+              selectedSegment={selectedSegment}
+              thirdDriver={selectedThirdDriver}
+              xAxisDriver={xAxisDetails}
+              yAxisDriver={yAxisDetails}
+            />
+          </Space>
+        </Col>
+      )}
+    </Row>
+  );
+
+  if (hideCard) {
+    return content;
+  }
+
   return (
     <Card
       className="card-content-wrapper card-with-gray-header-wrapper three-driver-calculator-wrapper"
@@ -165,73 +249,7 @@ const ThreeDriverCalculator = ({ selectedSegment, disabled = false }) => {
         </Row>
       }
     >
-      <Row gutter={[20, 20]}>
-        <Col span={24}>
-          <p>
-            If exploring combinations of two drivers still does not produce a
-            feasible path to closing the income gap, consider adding a third
-            driver. The tool will use the first two selected drivers and their
-            combinations, then calculate the value the third driver would need
-            to reach in order to close the gap.
-          </p>
-        </Col>
-
-        <Col span={24} className="driver-selection-wrapper">
-          <Space direction="vertical">
-            <span>Select the third driver to calculate:</span>
-            <Select
-              className="driver-select"
-              {...selectProps}
-              options={options}
-              value={thirdDriver}
-              onChange={handleThirdDriverChange}
-              placeholder="Select driver"
-              disabled={!selectedSegment || disabled}
-            />
-          </Space>
-        </Col>
-
-        {thirdDriver && xAxisDriver && yAxisDriver && (
-          <Col span={24}>
-            <GapClosingPieChart
-              selectedSegment={selectedSegment}
-              thirdDriver={selectedThirdDriver}
-              xAxisDriver={xAxisDetails}
-              yAxisDriver={yAxisDetails}
-            />
-          </Col>
-        )}
-
-        {thirdDriver && xAxisDriver && yAxisDriver && (
-          <Col span={24} className="combination-section">
-            <Space direction="vertical" size={24} style={{ width: "100%" }}>
-              <Space direction="vertical" size={16}>
-                <h3 className="title combination-title">
-                  What combination of drivers close to income gap?
-                </h3>
-                <p className="combination-description">
-                  The tables below show the <b>{thirdDriver}</b> needed to close
-                  the living income gap for different combinations of{" "}
-                  <b>{xAxisDriver || "[X]"}</b> and{" "}
-                  <b>{yAxisDriver || "[Y]"}</b>. The values for{" "}
-                  <b>{xAxisDriver || "[X]"}</b> and{" "}
-                  <b>{yAxisDriver || "[Y]"}</b> are taken from the ranges
-                  defined above. The table focuses on combinations that are most
-                  likely to reach the income target while staying within
-                  feasible levels for the selected drivers.
-                </p>
-              </Space>
-
-              <ThreeDriverCombinationChart
-                selectedSegment={selectedSegment}
-                thirdDriver={selectedThirdDriver}
-                xAxisDriver={xAxisDetails}
-                yAxisDriver={yAxisDetails}
-              />
-            </Space>
-          </Col>
-        )}
-      </Row>
+      {content}
     </Card>
   );
 };

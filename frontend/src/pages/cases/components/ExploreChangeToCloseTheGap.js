@@ -1,5 +1,20 @@
-import React, { useState } from "react";
-import { Row, Col, Card } from "antd";
+import React, { useState, useRef, useMemo } from "react";
+import {
+  Card,
+  Collapse,
+  Tooltip,
+  Space,
+  Button,
+  Row,
+  Col,
+  Typography,
+} from "antd";
+import {
+  InfoCircleOutlined,
+  DownloadOutlined,
+  RightOutlined,
+} from "@ant-design/icons";
+import { toPng } from "html-to-image";
 import {
   SegmentSelector,
   SingleDriverChange,
@@ -7,63 +22,246 @@ import {
   AdjustIncomeTarget,
   ThreeDriverCalculator,
 } from "../components";
+import { CurrentCaseState, CaseVisualState } from "../store";
+
+import "./ExploreChangeToCloseTheGap.scss";
+
+const { Panel } = Collapse;
+const { Title } = Typography;
+
+const ModellingGoalReminder = ({ percentage }) => (
+  <div className="modelling-goal-reminder">
+    Modelling for {percentage}% gap closure (as set above)
+  </div>
+);
 
 const ExploreChangeToCloseTheGap = ({ disabled }) => {
+  const currentCase = CurrentCaseState.useState((s) => s);
   const [selectedSegment, setSelectedSegment] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const heatmapRef = useRef(null);
+  const exportRef = useRef(null);
+
+  const activeSegmentName = useMemo(() => {
+    return (
+      currentCase?.segments?.find((s) => s.id === selectedSegment)?.name ||
+      "All Segments"
+    );
+  }, [currentCase?.segments, selectedSegment]);
+
+  const { sensitivityAnalysis } = CaseVisualState.useState((s) => s);
+
+  const gapClosurePercentage = useMemo(() => {
+    const val =
+      sensitivityAnalysis?.config?.[
+        `${selectedSegment}_closing-gap-percentage_adjusted-target`
+      ];
+    return typeof val === "undefined" || val === null ? 100 : val;
+  }, [sensitivityAnalysis?.config, selectedSegment]);
+
+  const handleDownload = () => {
+    if (!exportRef.current) {
+      return;
+    }
+
+    setIsExporting(true);
+
+    // Apply temporary padding for the export capture
+    exportRef.current.style.padding = "20px";
+
+    // Add a small delay to ensure charts are fully rendered before capture
+    setTimeout(() => {
+      toPng(exportRef.current, {
+        filter: (node) => {
+          const exclusionClasses = [
+            "download-btn-header",
+            "header-action-btn",
+            "ant-btn",
+            "ant-select",
+            "info-tooltip",
+          ];
+          return !exclusionClasses.some(
+            (classname) =>
+              node.classList?.contains(classname) ||
+              node.closest?.(`.${classname}`)
+          );
+        },
+        cacheBust: false,
+        backgroundColor: "#fff",
+        style: {
+          padding: 32,
+          width: "100%",
+        },
+      })
+        .then((dataUrl) => {
+          const link = document.createElement("a");
+          link.download = `Explore changes to close the gap - ${activeSegmentName}.png`;
+          link.href = dataUrl;
+          link.click();
+        })
+        .catch((err) => {
+          console.error("Error while downloading content", err);
+        })
+        .finally(() => {
+          // Reset padding and status
+          if (exportRef.current) {
+            exportRef.current.style.padding = "0px";
+          }
+          setTimeout(() => {
+            setIsExporting(false);
+          }, 100);
+        });
+    }, 500);
+  };
+
+  const handleClearHeatmap = (e) => {
+    e.stopPropagation();
+    if (heatmapRef.current) {
+      heatmapRef.current.handleOnClear();
+    }
+  };
 
   return (
-    <Row gutter={[24, 24]}>
-      <Col span={24}>
-        <Card className="card-content-wrapper select-the-goal-container">
-          <Row gutter={[20, 20]} align="bottom">
-            <Col span={24}>
-              <Row gutter={[20, 20]}>
-                <Col span={16}>
-                  <h4>Select the segment for which you want to explore.</h4>
+    <div className="explore-grouped-tools-container" ref={exportRef}>
+      <Card className="card-content-wrapper explore-grouped-tools-card">
+        {/* Unified Selection Block from Image */}
+        <div className="unified-selection-block">
+          <Row gutter={[48, 24]} align="bottom">
+            <Col xs={24} lg={16}>
+              <Space direction="vertical" size={24} style={{ width: "100%" }}>
+                {/* Segment Selection */}
+                <div className="segment-selection-area">
+                  <div className="selection-label-small">
+                    Select the segment for which you want to explore.
+                  </div>
                   <SegmentSelector
                     selectedSegment={selectedSegment}
                     setSelectedSegment={setSelectedSegment}
+                    disabled={disabled}
                   />
-                </Col>
-              </Row>
+                </div>
+
+                {/* Goal Selection Title and Instructions */}
+                <div className="goal-selection-area">
+                  <Title level={4} className="goal-selection-title">
+                    Select the Goal:
+                  </Title>
+                  <p className="goal-instruction-text">
+                    Closing the income gap may not be fully achievable within
+                    your feasible levels. Choose the percentage of the gap you
+                    would like to close and test different scenarios. The newly
+                    chosen target will be applied to all the calculations within
+                    the explore section.
+                  </p>
+                </div>
+              </Space>
             </Col>
-            <Col span={18}>
-              <h3>Select the Goal:</h3>
-              <p>
-                Closing the income gap may not be fully achievable within your
-                feasible levels. Choose the percentage of the gap you would like
-                to close and test different scenarios. The newly chosen target
-                will be applied to all the calculations within the explore
-                section of this step.
-              </p>
-            </Col>
-            <Col span={6}>
-              <AdjustIncomeTarget
-                selectedSegment={selectedSegment}
-                inlineView={true}
-                onlyClosingGap={true}
-                disabled={disabled}
-              />
+
+            <Col xs={24} lg={8}>
+              <div className="right-adjustment-column">
+                <AdjustIncomeTarget
+                  selectedSegment={selectedSegment}
+                  inlineView={true}
+                  onlyClosingGap={true}
+                  disabled={disabled}
+                />
+              </div>
             </Col>
           </Row>
-        </Card>
-      </Col>
 
-      <Col span={24}>
-        <SingleDriverChange selectedSegment={selectedSegment} />
-      </Col>
+          {/* Download Button (Positioned top-right of block if needed, or kept here) */}
+          <Button
+            className="download-btn-header"
+            icon={<DownloadOutlined />}
+            onClick={handleDownload}
+            type="text"
+            loading={isExporting}
+          >
+            Download
+          </Button>
+        </div>
 
-      <Col span={24}>
-        <TwoDriverHeatmap selectedSegment={selectedSegment} />
-      </Col>
-
-      <Col span={24}>
-        <ThreeDriverCalculator
-          selectedSegment={selectedSegment}
-          disabled={disabled}
-        />
-      </Col>
-    </Row>
+        <Collapse
+          defaultActiveKey={["1", "2", "3"]}
+          expandIconPosition="start"
+          expandIcon={({ isActive }) => (
+            <RightOutlined
+              rotate={isActive ? 90 : 0}
+              style={{ fontSize: "14px", color: "#1B625F" }}
+            />
+          )}
+          className="explore-tools-collapse"
+          ghost
+        >
+          <Panel
+            header={
+              <div className="explore-panel-header-content">
+                <Space align="center">
+                  <span>Single driver change</span>
+                  <Tooltip title="See how individual drivers impact the income gap.">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                  </Tooltip>
+                </Space>
+                <ModellingGoalReminder percentage={gapClosurePercentage} />
+              </div>
+            }
+            key="1"
+          >
+            <SingleDriverChange
+              selectedSegment={selectedSegment}
+              hideCard={true}
+            />
+          </Panel>
+          <Panel
+            header={
+              <div className="explore-panel-header-content">
+                <Space align="center">
+                  <span>Two driver heatmap</span>
+                  <Tooltip title="Understand the combined impact of two drivers.">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                  </Tooltip>
+                </Space>
+                <ModellingGoalReminder percentage={gapClosurePercentage} />
+                <Button
+                  className="button-ghost header-action-btn"
+                  onClick={handleClearHeatmap}
+                  size="small"
+                >
+                  Clear
+                </Button>
+              </div>
+            }
+            key="2"
+          >
+            <TwoDriverHeatmap
+              ref={heatmapRef}
+              selectedSegment={selectedSegment}
+              hideCard={true}
+            />
+          </Panel>
+          <Panel
+            header={
+              <div className="explore-panel-header-content">
+                <Space align="center">
+                  <span>Three driver calculator</span>
+                  <Tooltip title="Calculate outcomes across multiple driver scenarios.">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,0.45)" }} />
+                  </Tooltip>
+                </Space>
+                <ModellingGoalReminder percentage={gapClosurePercentage} />
+              </div>
+            }
+            key="3"
+          >
+            <ThreeDriverCalculator
+              selectedSegment={selectedSegment}
+              disabled={disabled}
+              hideCard={true}
+            />
+          </Panel>
+        </Collapse>
+      </Card>
+    </div>
   );
 };
 

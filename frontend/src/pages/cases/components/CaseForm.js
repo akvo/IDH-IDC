@@ -459,7 +459,7 @@ const CaseForm = ({
     setDownloading(true);
     api
       .download("/case-import/download-template", {
-        filename: "data_upload_template.xlsm",
+        filename: "data_upload_template.zip",
       })
       .catch((error) => {
         console.error("Download template error:", error);
@@ -838,7 +838,7 @@ const CaseForm = ({
                 disabled={downloading}
                 loading={downloading}
               >
-                <DownloadOutlined /> Download required data template
+                <DownloadOutlined /> Download required data template (ZIP)
               </Button>
             ) : null
           }
