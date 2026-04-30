@@ -324,7 +324,7 @@ const EnterIncomeData = ({
                     <br />
                     If you used the data upload function, the feasible values
                     represent top-performing farmers in your dataset. They are
-                    based on the 90th quantile of each driver.
+                    based on the 80th quantile of each driver.
                   </>
                 }
               >
