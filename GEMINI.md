@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Feasible Value Quantile Update (#793) - [COMPLETED]**:
+        - Updated the "feasible value" calculation from the 90th quantile to the 80th quantile to better represent achievable improvements.
+        - Modified backend `case_import_process_confirmed_segmentation.py` to use `values.quantile(0.8)`.
+        - Updated frontend `EnterIncomeData.js` tooltip text to reflect the 80th quantile calculation.
+        - Synchronized feature documentation in `CASE_MANAGEMENT_UX.md`.
+    - Path: `backend/utils/case_import_process_confirmed_segmentation.py`, `frontend/src/pages/cases/steps/EnterIncomeData.js`, `docs/features/CASE_MANAGEMENT_UX.md`.
+
 - **ZIP Template Download (#791) - [COMPLETED]**:
         - Updated template download functionality to serve `data_upload_template.zip` instead of `.xlsm`.
         - Modified backend `case_import.py` to use `application/zip` media type and point to the ZIP asset.
