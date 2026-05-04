@@ -4,14 +4,15 @@ This document describes the high-fidelity modeling tools and visualization confi
 
 ---
 
-## 1. Advanced Modelling Tool (Step 5)
+## 1. Advanced Modelling Tool (Step 4)
 
 The Advanced Modelling Tool provides a granular interaction model for simulating changes across multiple drivers: Price, Volume, Land, CoP, and Diversified Income.
 
 ### Core Modelling Logic
-*   **Target Selection**: The tool now strictly uses the **Baseline Target** (Step 1) as the default source for "Closing the Gap", rather than adjusted targets from Step 4.
-*   **Result Persistence**: Calculations are performed in the frontend and persisted as a structured `config` JSON for each segment within the `visualization` table.
-*   **"What is Next?" Guidance**: Step 5 includes a `WhatIsNextInfoBox` component to guide users through the modeling results towards final scenario comparison.
+*   **Location**: Moved from Step 5 to Step 4 to allow earlier impact testing.
+*   **Target Selection**: The tool now strictly uses the **Baseline Target** (Step 1) as the default source for "Closing the Gap", rather than adjusted targets from multi-driver heatmaps.
+*   **Result Persistence**: Calculations are performed in the frontend and persisted as a structured `config` JSON for each segment within the `visualization` table (using the `scenario_modeling` tab row).
+*   **"What is Next?" Guidance**: Step 5 continues to include a `WhatIsNextInfoBox` component to guide users through the modeling results towards final scenario comparison.
 
 ---
 
@@ -33,14 +34,14 @@ The `config` column in the `visualization` table stores transient and persistent
 | Tab / Tool | Source | Key Pattern | Description |
 | :--- | :--- | :--- | :--- |
 | **Sensitivity Analysis** | Step 4 | `{id}_x-axis-driver` | Selected driver for the X-axis chart. |
-| **Advanced Modelling**| Step 5 | `advancedModeling` | Nested state tree for all driver values and locked fields. |
+| **Advanced Modelling**| Step 4 | `advancedModeling` | Nested state tree for all driver values and locked fields. |
 | **Scenario Modelling**| Step 5 | `scenarioData` | Array of standard scenario objects (Percentage-based). |
 | **Impact Analysis** | Step 5 | `investment_analysis`| **[Premium]** Costs, ROI metrics, and allocation modes. |
 
 ---
 
 ## 4. Technical Reference
-*   **Modelling Logic**: `frontend/src/pages/cases/components/AdvancedModellingTool.js`
+*   **Modelling Logic**: `frontend/src/pages/cases/components/AdvancedModellingTool.js` (Used in Step 4)
 *   **Gating Component**: `frontend/src/pages/cases/components/IncomeGatingAlert.js`
 *   **Schema Schema**: `docs/features/ADVANCED_MODELLING.md` (See section 3).
 

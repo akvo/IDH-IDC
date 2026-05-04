@@ -1591,14 +1591,17 @@
     border: 1px solid #f0f0f0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     flex: 1; // Allow Visualizer to grow
-    min-height: 220px;
+    min-height: 200px;
+    @media (max-width: 1366px) {
+      min-height: 160px;
+    }
     display: flex;
     flex-direction: column;
 
     .ant-card-body {
       background: #fff;
       border-radius: 12px;
-      padding: 24px 20px; // Increased padding
+      padding: 12px 16px !important;
       overflow: hidden;
       flex: 1;
       display: flex;
@@ -1747,8 +1750,8 @@
     justify-content: center; // Always center the equation
     width: 100%;
     overflow: hidden; // Scaling handles fit, hide overflow
-    padding: 20px 0;
-    min-height: 242px;
+    padding: 4px 0;
+    min-height: 140px;
 
     /* Custom scrollbar for better UX */
     &::-webkit-scrollbar {
@@ -1770,7 +1773,7 @@
       display: flex;
       align-items: center;
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 8px;
       white-space: nowrap;
       width: max-content; // Important for JS scaling calculation
       transition: transform 0.3s ease;
@@ -1781,7 +1784,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 0 8px;
+      margin: 0 4px;
       vertical-align: middle;
 
       &.has-tooltip {
@@ -1789,30 +1792,30 @@
       }
 
       .icon-circle {
-        width: 40px;
-        height: 40px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #fff;
-        font-size: 20px;
-        margin-bottom: 6px;
+        font-size: 22px;
+        margin-bottom: 4px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
 
         img {
-          width: 24px;
-          height: 24px;
+          width: 26px;
+          height: 26px;
           object-fit: contain;
         }
       }
 
       .icon-label {
         background: #ebf2f2;
-        padding: 2px 8px;
+        padding: 1px 6px;
         border-radius: 12px;
-        font-size: 11px;
+        font-size: 13px;
         color: #005a5b;
         font-weight: bold;
         white-space: nowrap;
@@ -1820,12 +1823,12 @@
     }
 
     .row-separator {
-      font-size: 14px; // Reduced to match icon-14
-      padding: 0 4px;
+      font-size: 18px; // Reduced to match icon-14
+      padding: 0 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 40px;
+      height: 48px;
       color: #00565b; // Match primary color for operators
     }
 
@@ -1834,7 +1837,7 @@
       align-items: center;
       border: 1px dashed #d9d9d9;
       border-radius: 20px;
-      padding: 4px 12px;
+      padding: 2px 8px;
       width: fit-content;
       margin: 0 auto;
     }
@@ -1845,7 +1848,7 @@
       justify-content: center;
       border: 1px dashed #d9d9d9;
       border-radius: 20px;
-      padding: 8px;
+      padding: 4px;
       width: fit-content;
       margin: 0 auto;
 
@@ -1861,21 +1864,21 @@
     }
 
     .fraction-line {
-      height: 2px;
+      height: 3px;
       background: #00565b;
       width: 100%;
       min-width: 60px;
       margin: 4px 0;
 
       &.large-margin {
-        margin: 12px 0;
+        margin: 8px 0;
       }
     }
 
     .equals-operator {
-      font-size: 28px; // Reduced from 40px for better proportion
+      font-size: 32px; // Reduced from 40px for better proportion
       font-weight: bold;
-      margin: 0 20px;
+      margin: 0 12px;
       color: #00565b;
     }
 
@@ -1888,7 +1891,7 @@
     }
 
     .text-number-large {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
       color: #00565b;
       padding: 0 10px;
@@ -1905,40 +1908,40 @@
 
     // Responsive scaling for 1366px and below (covers 1280x720)
     @media (max-width: 1366px) {
-      padding: 10px 0;
-      min-height: 180px;
+      padding: 8px 0;
+      min-height: 160px;
 
       .icon-box-container {
         margin: 0 4px;
 
         .icon-circle {
-          width: 32px;
-          height: 32px;
-          font-size: 16px;
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
           margin-bottom: 4px;
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 
           img {
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
           }
         }
 
         .icon-label {
-          font-size: 10px;
+          font-size: 11px;
           padding: 1px 6px;
           border-radius: 10px;
         }
       }
 
       .row-separator {
-        font-size: 14px;
+        font-size: 16px;
         padding: 0 2px;
-        height: 32px;
+        height: 40px;
       }
 
       .expanded-income-container {
-        padding: 4px 8px;
+        padding: 2px 8px;
         border-radius: 16px;
       }
 

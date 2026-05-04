@@ -1204,7 +1204,7 @@ const AdvancedModellingTool = ({ disabled }) => {
       {/* Header Section */}
       <Col span={24}>
         <Card className="card-section-wrapper">
-          Fill in values for your scenarios
+          Model driver changes to close the income gap
         </Card>
       </Col>
 
