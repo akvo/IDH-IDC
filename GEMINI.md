@@ -18,7 +18,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 ## Recent Changes
 - **ROI Chart Refinement (#795) - [COMPLETED]**:
         - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
-        - Implemented bold total value labels at the end of each bar.
+        - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
         - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
         - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
         - Ensured visualizations respect the natural configuration order of scenarios and segments.
