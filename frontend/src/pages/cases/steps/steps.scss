@@ -1747,8 +1747,8 @@
     justify-content: center; // Always center the equation
     width: 100%;
     overflow: hidden; // Scaling handles fit, hide overflow
-    padding: 20px 0;
-    min-height: 242px;
+    padding: 10px 0;
+    min-height: 160px;
 
     /* Custom scrollbar for better UX */
     &::-webkit-scrollbar {
@@ -1781,7 +1781,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 0 8px;
+      margin: 0 4px;
       vertical-align: middle;
 
       &.has-tooltip {
@@ -1789,28 +1789,28 @@
       }
 
       .icon-circle {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #fff;
-        font-size: 20px;
-        margin-bottom: 6px;
+        font-size: 18px;
+        margin-bottom: 4px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
 
         img {
-          width: 24px;
-          height: 24px;
+          width: 20px;
+          height: 20px;
           object-fit: contain;
         }
       }
 
       .icon-label {
         background: #ebf2f2;
-        padding: 2px 8px;
+        padding: 1px 6px;
         border-radius: 12px;
         font-size: 11px;
         color: #005a5b;
@@ -1868,14 +1868,14 @@
       margin: 4px 0;
 
       &.large-margin {
-        margin: 12px 0;
+        margin: 8px 0;
       }
     }
 
     .equals-operator {
       font-size: 28px; // Reduced from 40px for better proportion
       font-weight: bold;
-      margin: 0 20px;
+      margin: 0 12px;
       color: #00565b;
     }
 
