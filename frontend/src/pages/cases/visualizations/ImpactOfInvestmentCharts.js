@@ -277,6 +277,14 @@ const ImpactOfInvestmentCharts = () => {
         stack: "total",
         barWidth: 35,
         itemStyle: { color: color },
+        label: {
+          show: showCostLabel,
+          position: "inside",
+          formatter: (params) =>
+            params.value > 0 ? formatNumberToString(params.value) : "",
+          color: "#fff",
+          fontSize: 10,
+        },
         data: data,
       });
     });
