@@ -284,6 +284,9 @@ const ImpactOfInvestmentCharts = () => {
             params.value > 0 ? formatNumberToString(params.value) : "",
           color: "#fff",
           fontSize: 10,
+          backgroundColor: "rgba(0,0,0,0.3)",
+          padding: [2, 4],
+          borderRadius: 2,
         },
         data: data,
       });
@@ -303,8 +306,11 @@ const ImpactOfInvestmentCharts = () => {
           return total > 0 ? formatNumberToString(total) : "";
         },
         fontWeight: "bold",
-        color: "#333",
-        fontSize: 13,
+        color: "#fff",
+        fontSize: 12,
+        backgroundColor: "rgba(0,0,0,0.5)",
+        padding: [3, 5],
+        borderRadius: 2,
       },
       tooltip: { show: false },
       data: new Array(categories.length).fill(0),
