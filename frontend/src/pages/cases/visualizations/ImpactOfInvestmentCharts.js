@@ -36,11 +36,6 @@ const componentColors = {
 };
 
 const extendedPalette = [
-  "#1B625F", // Dark Green
-  "#F9CB21", // Yellow
-  "#FDAE60", // Orange
-  "#70CFAD", // Teal
-  "#9CC2C1", // Light Green
   "#4475B4", // Blue
   "#F36C42", // Coral
   "#A242B5", // Purple
@@ -48,6 +43,11 @@ const extendedPalette = [
   "#73ADD1", // Sky Blue
   "#D73027", // Red
   "#AAD9E8", // Pale Blue
+  "#87D068", // Alt Green
+  "#FFEEB8", // Light Yellow
+  "#43C6AC", // Mint
+  "#191654", // Deep Navy
+  "#F1615D", // Soft Red
 ];
 
 const getComponentColor = (name, index) => {
