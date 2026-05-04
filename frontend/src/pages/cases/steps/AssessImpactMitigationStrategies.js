@@ -16,6 +16,7 @@ import {
   OptimizeIncomeTarget,
   // SensitivityAnalysis,
   ExploreChangeToCloseTheGap,
+  AdvancedModellingTool,
 } from "../components";
 import { isEqual, isEmpty } from "lodash";
 import { api } from "../../../lib";
@@ -35,8 +36,12 @@ const AssessImpactMitigationStrategies = ({
 }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
-  const { sensitivityAnalysis, prevSensitivityAnalysis } =
-    CaseVisualState.useState((s) => s);
+  const {
+    sensitivityAnalysis,
+    prevSensitivityAnalysis,
+    scenarioModeling,
+    prevScenarioModeling,
+  } = CaseVisualState.useState((s) => s);
   const { enableEditCase, enableAdvancedTools } = CaseUIState.useState(
     (s) => s.general
   );
@@ -60,18 +65,28 @@ const AssessImpactMitigationStrategies = ({
       }
 
       upateCaseButtonState({ loading: true });
-      const payloads = [sensitivityAnalysis];
-      // sensitivity analysis
-      const isBinningDataUpdated = !isEqual(
+      const payloads = [sensitivityAnalysis, scenarioModeling];
+      // check if any data updated
+      const isSensitivityUpdated = !isEqual(
         removeUndefinedObjectValue(prevSensitivityAnalysis?.config),
         removeUndefinedObjectValue(sensitivityAnalysis?.config)
       );
+      const isScenarioUpdated = !isEqual(
+        removeUndefinedObjectValue(prevScenarioModeling?.config),
+        removeUndefinedObjectValue(scenarioModeling?.config)
+      );
+
+      const isDataUpdated = isSensitivityUpdated || isScenarioUpdated;
+
       // save only when the payloads is provided
-      if (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) {
+      if (
+        (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) ||
+        (!isEmpty(payloads?.[1]?.config) && payloads?.[1]?.case)
+      ) {
         // Save
         api
           .sendCompressedData(
-            `visualization?updated=${isBinningDataUpdated}`,
+            `visualization?updated=${isDataUpdated}`,
             payloads
           )
           .then(() => {
@@ -79,6 +94,9 @@ const AssessImpactMitigationStrategies = ({
               ...s,
               prevSensitivityAnalysis: {
                 ...sensitivityAnalysis,
+              },
+              prevScenarioModeling: {
+                ...scenarioModeling,
               },
             }));
             messageApi.open({
@@ -128,6 +146,8 @@ const AssessImpactMitigationStrategies = ({
       navigate,
       prevSensitivityAnalysis,
       sensitivityAnalysis,
+      prevScenarioModeling,
+      scenarioModeling,
     ]
   );
 
@@ -246,6 +266,14 @@ const AssessImpactMitigationStrategies = ({
         />
       </Col>
       {/* EOL NEW - Explore: How do income drivers need to change to close the gap? */}
+
+      {/* NEW - Advanced Modelling: Test individual driver changes */}
+      <Col span={24}>
+        <AdvancedModellingTool
+          disabled={!enableEditCase || !enableAdvancedTools}
+        />
+      </Col>
+      {/* EOL NEW - Advanced Modelling: Test individual driver changes */}
 
       {/* #2 Sensitivity Analysis */}
       {/* <Col span={24}>
