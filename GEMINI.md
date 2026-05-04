@@ -16,6 +16,15 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Advanced Modelling Tool Migration & Optimization (#799) - [COMPLETED]**:
+        - Relocated the `AdvancedModellingTool` from Step 5 (Closing the Gap) to Step 4 (Assess Impact of Mitigation Strategies) to support earlier driver exploration.
+        - Updated `handleSaveVisualization` in Step 4 to ensure both `sensitivityAnalysis` and `scenarioModeling` are persisted to the backend simultaneously.
+        - Optimized the UI by aggressively reducing white space in the `EquationVisualizer` and parent containers for a more compact, professional look.
+        - Implemented **proportional responsive scaling** using CSS media queries (targeting `1366px` and below) to maintain equation legibility across all screen sizes.
+        - Refined the section header to "Model driver changes to close the income gap" to better align with the Step 4 context.
+        - Verified all changes with frontend linting, manual browser verification, and data persistence checks.
+    - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/steps/steps.scss`, `docs/features/ADVANCED_MODELLING.md`.
+
 - **Needed Income Level Bar Chart (#797) - [COMPLETED]**:
         - Converted the "Needed Income Level" visualization from a Pie Chart to a Bar Chart for improved legibility and comparison.
         - Implemented permanent bar labels with standardized `10K` string formatting (`formatNumberToString`).
