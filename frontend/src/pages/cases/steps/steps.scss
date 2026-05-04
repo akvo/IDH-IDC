@@ -1591,14 +1591,14 @@
     border: 1px solid #f0f0f0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     flex: 1; // Allow Visualizer to grow
-    min-height: 160px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
 
     .ant-card-body {
       background: #fff;
       border-radius: 12px;
-      padding: 12px 16px;
+      padding: 12px 16px !important;
       overflow: hidden;
       flex: 1;
       display: flex;
@@ -1789,21 +1789,21 @@
       }
 
       .icon-circle {
-        width: 36px;
-        height: 36px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #fff;
-        font-size: 18px;
+        font-size: 22px;
         margin-bottom: 4px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
 
         img {
-          width: 20px;
-          height: 20px;
+          width: 26px;
+          height: 26px;
           object-fit: contain;
         }
       }
@@ -1812,7 +1812,7 @@
         background: #ebf2f2;
         padding: 1px 6px;
         border-radius: 12px;
-        font-size: 11px;
+        font-size: 13px;
         color: #005a5b;
         font-weight: bold;
         white-space: nowrap;
@@ -1820,12 +1820,12 @@
     }
 
     .row-separator {
-      font-size: 14px; // Reduced to match icon-14
+      font-size: 18px; // Reduced to match icon-14
       padding: 0 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 40px;
+      height: 48px;
       color: #00565b; // Match primary color for operators
     }
 
@@ -1861,7 +1861,7 @@
     }
 
     .fraction-line {
-      height: 2px;
+      height: 3px;
       background: #00565b;
       width: 100%;
       min-width: 60px;
@@ -1873,7 +1873,7 @@
     }
 
     .equals-operator {
-      font-size: 28px; // Reduced from 40px for better proportion
+      font-size: 32px; // Reduced from 40px for better proportion
       font-weight: bold;
       margin: 0 12px;
       color: #00565b;
@@ -1888,7 +1888,7 @@
     }
 
     .text-number-large {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
       color: #00565b;
       padding: 0 10px;
