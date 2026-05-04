@@ -28,6 +28,14 @@ const scenarioColors = [
   "#87D068", // Alt Green
 ];
 
+const componentColors = {
+  Training: "#1B625F", // IDH Dark Green
+  "Capacity building": "#F9CB21", // IDH Yellow
+  "Input provision": "#FDAE60", // Orange
+  Financing: "#70CFAD", // Teal
+  Other: "#9CC2C1", // Light Green
+};
+
 const ImpactOfInvestmentCharts = () => {
   const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
@@ -214,7 +222,7 @@ const ImpactOfInvestmentCharts = () => {
     currentCase?.segments,
   ]);
 
-  const componentCostWaterfallData = useMemo(() => {
+  const componentCostStackedBarData = useMemo(() => {
     if (costRoiData.length === 0) {
       return {};
     }
@@ -226,91 +234,45 @@ const ImpactOfInvestmentCharts = () => {
       )
     ).sort();
 
-    const labels = [...allCompNames, "Total Cost"];
+    const categories = costRoiData.map((d) => d.displayName);
     const series = [];
 
-    const dynamicBarWidth = Math.max(15, 35 - (costRoiData.length - 1) * 5);
-
-    costRoiData.forEach((d, scIdx) => {
-      const breakdown = d.componentBreakdown || {};
-      const placeholderData = [];
-      const actualData = [];
-      const totalData = [];
-
-      let currentSum = 0;
-      allCompNames.forEach((name) => {
-        const val = breakdown[name] || 0;
-        placeholderData.push(currentSum);
-        actualData.push(val);
-        totalData.push("-");
-        currentSum += val;
-      });
-
-      // Final Total Bar
-      placeholderData.push(0);
-      actualData.push("-");
-      totalData.push(d.totalCost || 0);
-
-      const scColor = scenarioColors[scIdx % scenarioColors.length];
-
-      series.push(
-        {
-          name: d.displayName,
-          type: "bar",
-          stack: `sc-${scIdx}`,
-          itemStyle: { borderColor: "transparent", color: "transparent" },
-          emphasis: {
-            itemStyle: { borderColor: "transparent", color: "transparent" },
-          },
-          tooltip: { show: false },
-          data: placeholderData,
-          legendHoverLink: false,
-          barWidth: dynamicBarWidth,
-          barGap: "30%",
-        },
-        {
-          name: d.displayName,
-          type: "bar",
-          stack: `sc-${scIdx}`,
-          label: {
-            show: showCostLabel,
-            position: "top",
-            padding: [3, 5],
-            backgroundColor: "rgba(0,0,0,0.3)",
-            color: "#fff",
-            borderRadius: 2,
-            formatter: (v) => formatNumberToString(v.value),
-          },
-          itemStyle: { color: scColor },
-          data: actualData,
-          barWidth: dynamicBarWidth,
-          barGap: "30%",
-        },
-        {
-          name: d.displayName,
-          type: "bar",
-          stack: `sc-${scIdx}`,
-          label: {
-            show: showCostLabel,
-            position: "top",
-            padding: [3, 5],
-            backgroundColor: "rgba(0,0,0,0.3)",
-            color: "#fff",
-            borderRadius: 2,
-            formatter: (v) => formatNumberToString(v.value),
-          },
-          itemStyle: {
-            color: scColor,
-            opacity: 0.8,
-            borderType: "dashed",
-            borderColor: "#333",
-            borderWidth: 1,
-          },
-          data: totalData,
-          barWidth: dynamicBarWidth,
-          barGap: "30%",
-        }
+    // 1. Create a series for each component
+    allCompNames.forEach((compName) => {
+      const data = costRoiData.map(
+        (d) => d.componentBreakdown?.[compName] || 0
       );
+      const color = componentColors[compName] || "#9CC2C1";
+
+      series.push({
+        name: compName,
+        type: "bar",
+        stack: "total",
+        barWidth: 35,
+        itemStyle: { color: color },
+        data: data,
+      });
+    });
+
+    // 2. Add a transparent series for the "Total" label at the end of the bar
+    series.push({
+      name: "Total",
+      type: "bar",
+      stack: "total",
+      itemStyle: { color: "transparent" },
+      label: {
+        show: true,
+        position: "right",
+        formatter: (params) => {
+          const total = costRoiData[params.dataIndex]?.totalCost || 0;
+          return total > 0 ? formatNumberToString(total) : "";
+        },
+        fontWeight: "bold",
+        color: "#333",
+        fontSize: 13,
+      },
+      tooltip: { show: false },
+      data: new Array(categories.length).fill(0),
     });
 
     return {
@@ -318,16 +280,26 @@ const ImpactOfInvestmentCharts = () => {
         trigger: "axis",
         axisPointer: { type: "shadow" },
         formatter: (params) => {
-          let res = `${params[0].name}`;
-          // Filter out placeholders and empty values
-          const visibleParams = params.filter(
-            (p) => p.value !== "-" && p.color !== "transparent"
-          );
-          visibleParams.forEach((p) => {
-            res += `<br/>${p.marker} ${
-              p.seriesName
-            }: ${currencyLabel} ${thousandFormatter(p.value, 2)}`;
+          const dataIndex = params[0].dataIndex;
+          const d = costRoiData[dataIndex];
+          let res = `<div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px;">${d.displayName}</div>`;
+
+          params.forEach((p) => {
+            if (p.value > 0 && p.seriesName !== "Total") {
+              res += `<div style="display:flex;justify-content:space-between;gap:24px;">
+                <span>${p.marker} ${p.seriesName}</span>
+                <span style="font-weight:bold;">${currencyLabel} ${thousandFormatter(
+                p.value,
+                2
+              )}</span>
+              </div>`;
+            }
           });
+
+          res += `<div style="display:flex;justify-content:space-between;gap:24px;margin-top:8px;border-top:1px solid #eee;padding-top:4px;font-weight:bold;">
+            <span>Total Cost</span>
+            <span>${currencyLabel} ${thousandFormatter(d.totalCost, 2)}</span>
+          </div>`;
           return res;
         },
       },
@@ -335,28 +307,35 @@ const ImpactOfInvestmentCharts = () => {
         show: true,
         top: 0,
         icon: "circle",
-        data: costRoiData.map((d, scIdx) => ({
-          name: d.displayName,
-          itemStyle: { color: scenarioColors[scIdx % scenarioColors.length] },
-        })),
+        data: allCompNames,
       },
-      grid: { left: "3%", right: "4%", bottom: "10%", containLabel: true },
+      grid: {
+        left: "3%",
+        right: "12%", // Extra space for total labels
+        bottom: "10%",
+        top: "15%",
+        containLabel: true,
+      },
       xAxis: {
-        type: "category",
-        splitLine: { show: false },
-        data: labels,
-        axisLabel: { interval: 0, rotate: 0 },
-      },
-      yAxis: {
         type: "value",
         name: currencyLabel,
+        splitLine: { show: true, lineStyle: { type: "dashed" } },
         axisLabel: {
           formatter: (value) => formatNumberToString(value),
         },
       },
+      yAxis: {
+        type: "category",
+        data: categories,
+        axisLabel: {
+          interval: 0,
+          fontWeight: "bold",
+          color: "#555",
+        },
+      },
       series: series,
     };
-  }, [costRoiData, currencyLabel, showCostLabel]);
+  }, [costRoiData, currencyLabel]);
 
   const roiChartRoiData = useMemo(() => {
     if (selectedRoiScenarioSegments.length === 0) {
@@ -664,7 +643,7 @@ const ImpactOfInvestmentCharts = () => {
               <Chart
                 wrapper={false}
                 type="BAR"
-                override={componentCostWaterfallData}
+                override={componentCostStackedBarData}
                 height={400}
                 showLabel={showCostLabel}
               />
