@@ -131,6 +131,15 @@ const ImpactOfInvestmentCharts = () => {
     currentCase?.segments,
   ]);
 
+  const scenarioSegmentOptions = useMemo(() => {
+    return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
+      return (currentCase?.segments || []).map((seg) => ({
+        label: `${scenario.name} - ${seg.name}`,
+        value: `${scenario.key}:::${seg.id}`,
+      }));
+    });
+  }, [allScenariosRoiData, currentCase?.segments]);
+
   const handleCostSelectorChange = (vals) => {
     setSelectedCostScenarioSegments(vals);
     if (vals.length > 0) {
@@ -158,17 +167,12 @@ const ImpactOfInvestmentCharts = () => {
   };
 
   const costRoiData = useMemo(() => {
-    if (selectedCostScenarioSegments.length === 0) {
-      return allScenariosRoiData.map((sc) => ({
-        ...sc,
-        displayName: sc.name,
-        selectedSegmentId: "all",
-        totalCost: sc.totalCost,
-        componentBreakdown: sc.componentBreakdown || {},
-      }));
-    }
+    const selections =
+      selectedCostScenarioSegments.length > 0
+        ? selectedCostScenarioSegments
+        : scenarioSegmentOptions.map((opt) => opt.value);
 
-    return selectedCostScenarioSegments
+    return selections
       .map((selection) => {
         const [scKey, segId] = selection.split(":::");
         const scenario = allScenariosRoiData.find(
@@ -188,7 +192,7 @@ const ImpactOfInvestmentCharts = () => {
           segId === "all" ? scenario : scenario.segmentMetrics?.[segId];
         const segBreakdown =
           segId === "all"
-            ? scenario.segmentComponentBreakdowns?.["all"]
+            ? scenario.componentBreakdown
             : scenario.segmentComponentBreakdowns?.[segId];
 
         if (!segMetrics) {
@@ -220,6 +224,7 @@ const ImpactOfInvestmentCharts = () => {
     allScenariosRoiData,
     selectedCostScenarioSegments,
     currentCase?.segments,
+    scenarioSegmentOptions,
   ]);
 
   const componentCostStackedBarData = useMemo(() => {
@@ -338,15 +343,12 @@ const ImpactOfInvestmentCharts = () => {
   }, [costRoiData, currencyLabel]);
 
   const roiChartRoiData = useMemo(() => {
-    if (selectedRoiScenarioSegments.length === 0) {
-      return allScenariosRoiData.map((sc) => ({
-        ...sc,
-        displayName: sc.name,
-        selectedSegmentId: "all",
-      }));
-    }
+    const selections =
+      selectedRoiScenarioSegments.length > 0
+        ? selectedRoiScenarioSegments
+        : scenarioSegmentOptions.map((opt) => opt.value);
 
-    return selectedRoiScenarioSegments
+    return selections
       .map((selection) => {
         const [scKey, segId] = selection.split(":::");
         const scenario = allScenariosRoiData.find(
@@ -401,7 +403,12 @@ const ImpactOfInvestmentCharts = () => {
         };
       })
       .filter(Boolean);
-  }, [allScenariosRoiData, selectedRoiScenarioSegments, currentCase?.segments]);
+  }, [
+    allScenariosRoiData,
+    selectedRoiScenarioSegments,
+    currentCase?.segments,
+    scenarioSegmentOptions,
+  ]);
 
   const roiChartOptions = useMemo(() => {
     // Identify all unique scenarios selected (maintain selection order)
@@ -519,15 +526,6 @@ const ImpactOfInvestmentCharts = () => {
       series: series,
     };
   }, [roiChartRoiData, showRoiLabel, currentCase?.segments]);
-
-  const scenarioSegmentOptions = useMemo(() => {
-    return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
-      return (currentCase?.segments || []).map((seg) => ({
-        label: `${scenario.name} - ${seg.name}`,
-        value: `${scenario.key}:::${seg.id}`,
-      }));
-    });
-  }, [allScenariosRoiData, currentCase?.segments]);
 
   if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
     return null;
