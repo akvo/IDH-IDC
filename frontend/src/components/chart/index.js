@@ -113,6 +113,7 @@ const Chart = ({
         callbacks.onClick(e);
       }
     },
+    ...(callbacks?.onEvents || {}),
   };
   let chartOptions = {
     option,

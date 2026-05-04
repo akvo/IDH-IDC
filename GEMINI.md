@@ -37,10 +37,11 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 
         - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
         - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
+        - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
         - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
         - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
         - Ensured visualizations respect the natural configuration order of scenarios and segments.
-    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `frontend/src/components/chart/index.js`.
 
 - **Feasible Value Quantile Update (#793) - [COMPLETED]**:
         - Updated the "feasible value" calculation from the 90th quantile to the 80th quantile to better represent achievable improvements.

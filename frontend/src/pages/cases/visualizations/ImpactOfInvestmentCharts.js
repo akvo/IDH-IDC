@@ -77,6 +77,12 @@ const ImpactOfInvestmentCharts = () => {
   const [showRoiLabel, setShowRoiLabel] = useState(false);
   const [showTableLabel, setShowTableLabel] = useState(false);
 
+  const [costLegendVisible, setCostLegendVisible] = useState({});
+
+  const handleLegendSelectChanged = (params) => {
+    setCostLegendVisible(params.selected);
+  };
+
   const costCardRef = useRef(null);
   const tableCardRef = useRef(null);
   const roiCardRef = useRef(null);
@@ -302,8 +308,23 @@ const ImpactOfInvestmentCharts = () => {
         show: showCostLabel,
         position: "right",
         formatter: (params) => {
-          const total = costRoiData[params.dataIndex]?.totalCost || 0;
-          return total > 0 ? formatNumberToString(total) : "";
+          const d = costRoiData[params.dataIndex];
+          if (!d) {
+            return "";
+          }
+
+          // Calculate filtered total based on visible legend items
+          let filteredTotal = 0;
+          Object.entries(d.componentBreakdown || {}).forEach(([name, val]) => {
+            // ECharts legend selection: if name is not in object, it's visible.
+            // If it is in object, visibility is determined by boolean value.
+            const isVisible = costLegendVisible[name] !== false;
+            if (isVisible) {
+              filteredTotal += val;
+            }
+          });
+
+          return filteredTotal > 0 ? formatNumberToString(filteredTotal) : "";
         },
         fontWeight: "bold",
         color: "#fff",
@@ -337,9 +358,18 @@ const ImpactOfInvestmentCharts = () => {
             }
           });
 
+          // Calculate filtered total for tooltip
+          let filteredTotal = 0;
+          Object.entries(d.componentBreakdown || {}).forEach(([name, val]) => {
+            const isVisible = costLegendVisible[name] !== false;
+            if (isVisible) {
+              filteredTotal += val;
+            }
+          });
+
           res += `<div style="display:flex;justify-content:space-between;gap:24px;margin-top:8px;border-top:1px solid #eee;padding-top:4px;font-weight:bold;">
             <span>Total Cost</span>
-            <span>${currencyLabel} ${thousandFormatter(d.totalCost, 2)}</span>
+            <span>${currencyLabel} ${thousandFormatter(filteredTotal, 2)}</span>
           </div>`;
           return res;
         },
@@ -349,6 +379,7 @@ const ImpactOfInvestmentCharts = () => {
         top: 0,
         icon: "circle",
         data: allCompNames,
+        selected: costLegendVisible,
       },
       grid: {
         left: "3%",
@@ -376,7 +407,7 @@ const ImpactOfInvestmentCharts = () => {
       },
       series: series,
     };
-  }, [costRoiData, currencyLabel, showCostLabel]);
+  }, [costRoiData, currencyLabel, showCostLabel, costLegendVisible]);
 
   const roiChartRoiData = useMemo(() => {
     const selections =
@@ -680,6 +711,11 @@ const ImpactOfInvestmentCharts = () => {
                 override={componentCostStackedBarData}
                 height={400}
                 showLabel={showCostLabel}
+                callbacks={{
+                  onEvents: {
+                    legendselectchanged: handleLegendSelectChanged,
+                  },
+                }}
               />
             </VisualCardWrapper>
           </Col>
