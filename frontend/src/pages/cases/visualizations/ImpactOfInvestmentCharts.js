@@ -35,6 +35,29 @@ const componentColors = {
   Other: "#9CC2C1", // Light Green
 };
 
+const extendedPalette = [
+  "#1B625F", // Dark Green
+  "#F9CB21", // Yellow
+  "#FDAE60", // Orange
+  "#70CFAD", // Teal
+  "#9CC2C1", // Light Green
+  "#4475B4", // Blue
+  "#F36C42", // Coral
+  "#A242B5", // Purple
+  "#CDCF70", // Olive
+  "#73ADD1", // Sky Blue
+  "#D73027", // Red
+  "#AAD9E8", // Pale Blue
+];
+
+const getComponentColor = (name, index) => {
+  if (componentColors[name]) {
+    return componentColors[name];
+  }
+  // Deterministic fallback for custom "Other" components
+  return extendedPalette[index % extendedPalette.length];
+};
+
 const ImpactOfInvestmentCharts = () => {
   const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
@@ -242,11 +265,11 @@ const ImpactOfInvestmentCharts = () => {
     const series = [];
 
     // 1. Create a series for each component
-    allCompNames.forEach((compName) => {
+    allCompNames.forEach((compName, idx) => {
       const data = costRoiData.map(
         (d) => d.componentBreakdown?.[compName] || 0
       );
-      const color = componentColors[compName] || "#9CC2C1";
+      const color = getComponentColor(compName, idx);
 
       series.push({
         name: compName,
