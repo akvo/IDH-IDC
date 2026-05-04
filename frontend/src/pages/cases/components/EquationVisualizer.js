@@ -64,7 +64,7 @@ const EquationVisualizer = ({
   // Function to calculate and set scale
   const updateScale = () => {
     if (containerRef.current && contentRef.current) {
-      const containerWidth = containerRef.current.offsetWidth - 40; // padding
+      const containerWidth = containerRef.current.offsetWidth - 16; // padding
       const contentWidth = contentRef.current.scrollWidth;
 
       if (contentWidth > containerWidth) {
