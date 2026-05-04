@@ -28,9 +28,11 @@ This document describes the analytical logic used to break down the "Income Gap"
 
 ## 🔧 Implementation Details
 
-### 1. Income Composition & Gap Breakdown Clarifications (#746)
+### 1. Income Composition & Gap Breakdown Clarifications (#746, #797)
 - **Descriptions**: Expanded descriptions in `ChartNeededIncomeLevel.js` and `ChartHouseholdIncomeComposition.js` clarify that the gap is shared across existing sources.
 - **Layout**: Standardized card heights (`minHeight: 150`) ensure visual alignment when gating alerts or long descriptions are present.
+- **Visualization Update (#797)**: `ChartNeededIncomeLevel.js` converted from Pie Chart to Bar Chart for improved legibility. Added "Show label" toggle support and custom premium tooltip with currency formatting.
+
 
 ### 2. Step 5 Guidance: "What is Next?" Info Box (#749)
 - **Component**: `WhatIsNextInfoBox.js`
