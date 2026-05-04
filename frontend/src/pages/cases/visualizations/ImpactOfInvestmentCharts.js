@@ -164,7 +164,7 @@ const ImpactOfInvestmentCharts = () => {
         displayName: sc.name,
         selectedSegmentId: "all",
         totalCost: sc.totalCost,
-        componentBreakdown: sc.segmentComponentBreakdowns?.["all"] || {},
+        componentBreakdown: sc.componentBreakdown || {},
       }));
     }
 
