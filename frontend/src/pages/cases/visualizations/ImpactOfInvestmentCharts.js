@@ -288,7 +288,7 @@ const ImpactOfInvestmentCharts = () => {
       stack: "total",
       itemStyle: { color: "transparent" },
       label: {
-        show: true,
+        show: showCostLabel,
         position: "right",
         formatter: (params) => {
           const total = costRoiData[params.dataIndex]?.totalCost || 0;
@@ -362,7 +362,7 @@ const ImpactOfInvestmentCharts = () => {
       },
       series: series,
     };
-  }, [costRoiData, currencyLabel]);
+  }, [costRoiData, currencyLabel, showCostLabel]);
 
   const roiChartRoiData = useMemo(() => {
     const selections =
