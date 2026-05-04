@@ -7,7 +7,6 @@ import {
   thousandFormatter,
   formatNumberToString,
 } from "../../../components/chart/options/common";
-import { orderBy } from "lodash";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 
@@ -132,7 +131,7 @@ const ImpactOfInvestmentCharts = () => {
   ]);
 
   const scenarioSegmentOptions = useMemo(() => {
-    return orderBy(allScenariosRoiData, ["name"]).flatMap((scenario) => {
+    return allScenariosRoiData.flatMap((scenario) => {
       return (currentCase?.segments || []).map((seg) => ({
         label: `${scenario.name} - ${seg.name}`,
         value: `${scenario.key}:::${seg.id}`,
