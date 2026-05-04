@@ -16,7 +16,16 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Needed Income Level Bar Chart (#797) - [COMPLETED]**:
+        - Converted the "Needed Income Level" visualization from a Pie Chart to a Bar Chart for improved legibility and comparison.
+        - Implemented permanent bar labels with standardized `10K` string formatting (`formatNumberToString`).
+        - Added semi-transparent background boxes (`rgba(0,0,0,0.4)`) with white text and rounded corners to labels for enhanced contrast.
+        - Labeled the Y-axis with the current case currency.
+        - Updated feature documentation in `INCOME_GAP_ANALYSIS.md`.
+    - Path: `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`, `docs/features/INCOME_GAP_ANALYSIS.md`.
+
 - **ROI Chart Refinement (#795) - [COMPLETED]**:
+
         - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
         - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
         - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
