@@ -36,18 +36,18 @@ const componentColors = {
 };
 
 const extendedPalette = [
-  "#4475B4", // Blue
-  "#F36C42", // Coral
-  "#A242B5", // Purple
-  "#CDCF70", // Olive
-  "#73ADD1", // Sky Blue
-  "#D73027", // Red
-  "#AAD9E8", // Pale Blue
-  "#87D068", // Alt Green
-  "#FFEEB8", // Light Yellow
-  "#43C6AC", // Mint
-  "#191654", // Deep Navy
-  "#F1615D", // Soft Red
+  "#2A7A77", // Lighter IDH Green
+  "#FFD74D", // Brighter IDH Yellow
+  "#8EE4C4", // Lighter IDH Teal
+  "#FFBF80", // Lighter IDH Orange
+  "#A7C8C7", // Lighter IDH Light Green
+  "#0F4A47", // Darker IDH Green
+  "#C7A21A", // Darker IDH Yellow
+  "#56B996", // Darker IDH Teal
+  "#D18E4D", // Darker IDH Orange
+  "#7B9F9E", // Darker IDH Light Green
+  "#3DA5A0", // Medium IDH Green
+  "#EBC01E", // Medium IDH Yellow
 ];
 
 const getComponentColor = (name, index) => {
