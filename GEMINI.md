@@ -33,7 +33,6 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Updated `handleSaveVisualization` in Step 4 to ensure both `sensitivityAnalysis` and `scenarioModeling` are persisted to the backend simultaneously.
         - Optimized the UI by aggressively reducing white space in the `EquationVisualizer` and parent containers for a more compact, professional look.
         - Implemented **proportional responsive scaling** using CSS media queries (targeting `1366px` and below) to maintain equation legibility across all screen sizes.
-        - **ROI Discoverability**: Implemented conditional empty states and robust handling of mixed data states (component breakdown vs. direct total cost) in Step 5.
         - Refined the section header to "Model driver changes to close the income gap" to better align with the Step 4 context.
         - Verified all changes with frontend linting, manual browser verification, and data persistence checks.
     - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/steps/steps.scss`, `docs/features/ADVANCED_MODELLING.md`.
@@ -51,6 +50,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
         - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
         - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
+        - **ROI Robustness**: Implemented conditional empty states and robust handling of mixed data states (component breakdown vs. direct total cost) to ensure continuous visualization in Step 5.
         - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
         - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
         - Ensured visualizations respect the natural configuration order of scenarios and segments.
