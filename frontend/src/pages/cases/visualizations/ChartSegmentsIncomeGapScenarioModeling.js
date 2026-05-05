@@ -28,15 +28,34 @@ const generateChartData = (data, current = false) => {
     const incomeTarget = d?.currentSegmentValue?.target || 0;
     const currentTotalIncome =
       d?.currentSegmentValue?.total_current_income || 0;
-
     const newTotalIncome =
       d?.updatedSegmentScenarioValue?.total_current_income || 0;
-    const additionalValue = newTotalIncome
-      ? newTotalIncome - currentTotalIncome
-      : 0;
 
-    let gapValue = incomeTarget - newTotalIncome;
-    gapValue = gapValue < 0 ? 0 : gapValue;
+    const isIncrease = newTotalIncome >= currentTotalIncome;
+
+    // Floor values at 0 for visualization consistency
+    const safeCurrentIncome = Math.max(0, currentTotalIncome);
+    const safeNewIncome = Math.max(0, newTotalIncome);
+
+    let baseValue = 0;
+    let changeValue = 0;
+    let gapValue = 0;
+    let changeLabel = "";
+    let changeColor = "";
+
+    if (isIncrease) {
+      baseValue = safeCurrentIncome;
+      changeValue = safeNewIncome - safeCurrentIncome;
+      gapValue = Math.max(0, incomeTarget - safeNewIncome);
+      changeLabel = "Additional income\nwhen income drivers\nare changed";
+      changeColor = "#49D985"; // Light Green
+    } else {
+      baseValue = safeNewIncome;
+      changeValue = safeCurrentIncome - safeNewIncome;
+      gapValue = Math.max(0, incomeTarget - safeCurrentIncome);
+      changeLabel = "Income decrease\nwhen income drivers\nare changed";
+      changeColor = "#FF4D4F"; // Red
+    }
 
     return {
       name: current ? d.name : `${d.scenarioName}-${d.name}`,
@@ -45,17 +64,17 @@ const generateChartData = (data, current = false) => {
         {
           name: "Current total\nhousehold income",
           title: "Current total\nhousehold income",
-          value: Math.round(currentTotalIncome),
-          total: Math.round(currentTotalIncome),
+          value: Math.round(baseValue),
+          total: Math.round(baseValue),
           color: "#1B625F",
           order: 1,
         },
         {
-          name: "Additional income\nwhen income drivers\nare changed",
-          title: "Additional income\nwhen income drivers\nare changed",
-          value: Math.round(additionalValue),
-          total: Math.round(additionalValue),
-          color: "#49D985",
+          name: changeLabel,
+          title: changeLabel,
+          value: Math.round(changeValue),
+          total: Math.round(changeValue),
+          color: changeColor,
           order: 2,
         },
         {

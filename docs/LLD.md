@@ -141,13 +141,13 @@ To maintain a clean architectural blueprint, detailed feature logic is documente
 
 | Feature Area | Key Specification Document | Coverage |
 | :--- | :--- | :--- |
-| **Segmentation** | [MUTUALLY_EXCLUSIVE_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/MUTUALLY_EXCLUSIVE_SEGMENTATION.md) | Source-of-truth guards, Tab switches. |
-| **ROI Analysis** | [ROI_INVESTMENT.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/ROI_INVESTMENT.md) | Calculations, Multipliers, ROI Charts. |
-| **Modelling Tools** | [ADVANCED_MODELLING.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/ADVANCED_MODELLING.md) | Sensitivity Analysis, Advanced Modelling (Step 4). |
-| **Income Analysis** | [INCOME_GAP_ANALYSIS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/INCOME_GAP_ANALYSIS.md) | Gap Allocation, Composition Charts. |
-| **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
-| **Permissions** | [PERMISSIONS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
-| **Case UX** | [CASE_MANAGEMENT_UX.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/CASE_MANAGEMENT_UX.md) | Save Guards, Cleanup scripts. |
+| **Segmentation** | [MUTUALLY_EXCLUSIVE_SEGMENTATION.md](features/MUTUALLY_EXCLUSIVE_SEGMENTATION.md) | Source-of-truth guards, Tab switches. |
+| **ROI Analysis** | [ROI_INVESTMENT.md](features/ROI_INVESTMENT.md) | Calculations, Multipliers, ROI Charts. |
+| **Modelling Tools** | [ADVANCED_MODELLING.md](features/ADVANCED_MODELLING.md) | Sensitivity Analysis, Advanced Modelling (Step 4). |
+| **Income Analysis** | [INCOME_GAP_ANALYSIS.md](features/INCOME_GAP_ANALYSIS.md) / [INCOME_GAP_CHART_REFINEMENT.md](INCOME_GAP_CHART_REFINEMENT.md) | Gap Allocation, Composition Charts, Non-monotonic changes. |
+| **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
+| **Permissions** | [PERMISSIONS.md](features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
+| **Case UX** | [CASE_MANAGEMENT_UX.md](features/CASE_MANAGEMENT_UX.md) | Save Guards, Cleanup scripts. |
 
 ---
 

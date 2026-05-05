@@ -1,5 +1,15 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
+import {
+  Row,
+  Col,
+  Typography,
+  Space,
+  Table,
+  Card,
+  Select,
+  Tag,
+  Empty,
+} from "antd";
 import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
@@ -261,21 +271,40 @@ const ImpactOfInvestmentCharts = () => {
     }
 
     // Identify all unique component names across all selected scenarios
-    const allCompNames = Array.from(
-      new Set(
-        costRoiData.flatMap((d) => Object.keys(d.componentBreakdown || {}))
-      )
-    ).sort();
+    const allCompNamesSet = new Set();
+    costRoiData.forEach((d) => {
+      const componentNames = Object.keys(d.componentBreakdown || {});
+      if (componentNames.length > 0) {
+        componentNames.forEach((name) => allCompNamesSet.add(name));
+      } else if (d.totalCost > 0) {
+        // If no components but has total cost, add a virtual "Total Cost" component
+        allCompNamesSet.add("Total Cost");
+      }
+    });
+
+    const allCompNames = Array.from(allCompNamesSet).sort();
 
     const categories = costRoiData.map((d) => d.displayName);
     const series = [];
 
     // 1. Create a series for each component
     allCompNames.forEach((compName, idx) => {
-      const data = costRoiData.map(
-        (d) => d.componentBreakdown?.[compName] || 0
-      );
-      const color = getComponentColor(compName, idx);
+      const data = costRoiData.map((d) => {
+        const breakdown = d.componentBreakdown || {};
+        // Use component value if it exists
+        if (typeof breakdown[compName] !== "undefined") {
+          return breakdown[compName];
+        }
+        // Fallback: If this is the "Total Cost" virtual component and no other components exist
+        if (compName === "Total Cost" && Object.keys(breakdown).length === 0) {
+          return d.totalCost || 0;
+        }
+        return 0;
+      });
+      const color =
+        compName === "Total Cost"
+          ? "#0F4A47"
+          : getComponentColor(compName, idx);
 
       series.push({
         name: compName,
@@ -315,14 +344,23 @@ const ImpactOfInvestmentCharts = () => {
 
           // Calculate filtered total based on visible legend items
           let filteredTotal = 0;
-          Object.entries(d.componentBreakdown || {}).forEach(([name, val]) => {
-            // ECharts legend selection: if name is not in object, it's visible.
-            // If it is in object, visibility is determined by boolean value.
-            const isVisible = costLegendVisible[name] !== false;
+          const breakdown = d.componentBreakdown || {};
+          const compNames = Object.keys(breakdown);
+
+          if (compNames.length > 0) {
+            compNames.forEach((name) => {
+              const isVisible = costLegendVisible[name] !== false;
+              if (isVisible) {
+                filteredTotal += breakdown[name];
+              }
+            });
+          } else {
+            // Fallback for direct total cost input
+            const isVisible = costLegendVisible["Total Cost"] !== false;
             if (isVisible) {
-              filteredTotal += val;
+              filteredTotal = d.totalCost || 0;
             }
-          });
+          }
 
           return filteredTotal > 0 ? formatNumberToString(filteredTotal) : "";
         },
@@ -360,12 +398,23 @@ const ImpactOfInvestmentCharts = () => {
 
           // Calculate filtered total for tooltip
           let filteredTotal = 0;
-          Object.entries(d.componentBreakdown || {}).forEach(([name, val]) => {
-            const isVisible = costLegendVisible[name] !== false;
+          const breakdown = d.componentBreakdown || {};
+          const compNames = Object.keys(breakdown);
+
+          if (compNames.length > 0) {
+            compNames.forEach((name) => {
+              const isVisible = costLegendVisible[name] !== false;
+              if (isVisible) {
+                filteredTotal += breakdown[name];
+              }
+            });
+          } else {
+            // Fallback for direct total cost input
+            const isVisible = costLegendVisible["Total Cost"] !== false;
             if (isVisible) {
-              filteredTotal += val;
+              filteredTotal = d.totalCost || 0;
             }
-          });
+          }
 
           res += `<div style="display:flex;justify-content:space-between;gap:24px;margin-top:8px;border-top:1px solid #eee;padding-top:4px;font-weight:bold;">
             <span>Total Cost</span>
@@ -594,8 +643,51 @@ const ImpactOfInvestmentCharts = () => {
     };
   }, [roiChartRoiData, showRoiLabel, currentCase?.segments]);
 
-  if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
-    return null;
+  if (!investmentAnalysis?.is_enabled) {
+    return (
+      <Card className="card-visual-wrapper" style={{ border: "none" }}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <Space direction="vertical">
+              <Typography.Text strong style={{ color: "#26605f" }}>
+                Investment analysis is currently hidden.
+              </Typography.Text>
+              <Typography.Text type="secondary">
+                To assess the return on investment of your scenarios, please
+                select &quot;Yes&quot; for the question{" "}
+                <b>
+                  &quot;Do you have an estimate of the cost required to
+                  implement the scenarios?&quot;
+                </b>{" "}
+                in the modeling section above.
+              </Typography.Text>
+            </Space>
+          }
+        />
+      </Card>
+    );
+  }
+
+  if (allScenariosRoiData.length === 0) {
+    return (
+      <Card className="card-visual-wrapper" style={{ border: "none" }}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <Space direction="vertical">
+              <Typography.Text strong style={{ color: "#26605f" }}>
+                No investment data found for the current scenarios.
+              </Typography.Text>
+              <Typography.Text type="secondary">
+                Please add investment costs in Step 1 (Scenario Modeling) above
+                to see the ROI analysis.
+              </Typography.Text>
+            </Space>
+          }
+        />
+      </Card>
+    );
   }
 
   // Segment Breakdown Table Data

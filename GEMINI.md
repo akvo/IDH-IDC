@@ -16,6 +16,18 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Income Gap Chart Refinement (#801) - [COMPLETED]**:
+    - Refactored `ChartSegmentsIncomeGapScenarioModeling.js` to dynamically handle both income increases and decreases in the scenario modeling chart.
+    - Implemented a dual-stacking logic:
+        - **Increase**: Stacks *Current Income (Dark Green) → Additional Income (Light Green) → Gap (Yellow)*.
+        - **Decrease**: Stacks *New Income (Dark Green) → Income Decrease (Red) → Gap (Yellow)*.
+    - Utilized IDC brand colors: `#49D985` (Green) for growth and `#FF4D4F` (Red) for losses.
+    - Dynamically updated legend labels based on the scenario outcome ("Additional income..." vs "Income decrease...").
+    - Enforced 0-flooring for baseline segments to ensure visual stability in extreme loss scenarios.
+    - Verified implementation through a comprehensive end-to-end browser walkthrough and frontend test suite.
+    - Sanitized project documentation by removing absolute file paths and aligning the LLD.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_REFINEMENT.md`, `agent_docs/qa/qa-guide-issue-801.md`.
+
 - **Advanced Modelling Tool Migration & Optimization (#799) - [COMPLETED]**:
         - Relocated the `AdvancedModellingTool` from Step 5 (Closing the Gap) to Step 4 (Assess Impact of Mitigation Strategies) to support earlier driver exploration.
         - Updated `handleSaveVisualization` in Step 4 to ensure both `sensitivityAnalysis` and `scenarioModeling` are persisted to the backend simultaneously.
@@ -38,6 +50,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
         - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
         - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
+        - **ROI Robustness**: Implemented conditional empty states and robust handling of mixed data states (component breakdown vs. direct total cost) to ensure continuous visualization in Step 5.
+        - **Visual Polish**: Suppressed zero-value labels to reduce clutter and synchronized total end-of-bar labels with direct cost inputs for full data visibility.
         - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
         - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
         - Ensured visualizations respect the natural configuration order of scenarios and segments.
