@@ -1,5 +1,15 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { Row, Col, Typography, Space, Table, Card, Select, Tag } from "antd";
+import {
+  Row,
+  Col,
+  Typography,
+  Space,
+  Table,
+  Card,
+  Select,
+  Tag,
+  Empty,
+} from "antd";
 import { selectProps } from "../../../lib";
 import { CaseVisualState, CurrentCaseState, CaseUIState } from "../store";
 import { calculateScenarioROI, getLandArea } from "../utils/roiCalculations";
@@ -594,8 +604,51 @@ const ImpactOfInvestmentCharts = () => {
     };
   }, [roiChartRoiData, showRoiLabel, currentCase?.segments]);
 
-  if (!investmentAnalysis?.is_enabled || allScenariosRoiData.length === 0) {
-    return null;
+  if (!investmentAnalysis?.is_enabled) {
+    return (
+      <Card className="card-visual-wrapper" style={{ border: "none" }}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <Space direction="vertical">
+              <Typography.Text strong style={{ color: "#26605f" }}>
+                Investment analysis is currently hidden.
+              </Typography.Text>
+              <Typography.Text type="secondary">
+                To assess the return on investment of your scenarios, please
+                select &quot;Yes&quot; for the question{" "}
+                <b>
+                  &quot;Do you have an estimate of the cost required to
+                  implement the scenarios?&quot;
+                </b>{" "}
+                in the modeling section above.
+              </Typography.Text>
+            </Space>
+          }
+        />
+      </Card>
+    );
+  }
+
+  if (allScenariosRoiData.length === 0) {
+    return (
+      <Card className="card-visual-wrapper" style={{ border: "none" }}>
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={
+            <Space direction="vertical">
+              <Typography.Text strong style={{ color: "#26605f" }}>
+                No investment data found for the current scenarios.
+              </Typography.Text>
+              <Typography.Text type="secondary">
+                Please add investment costs in Step 1 (Scenario Modeling) above
+                to see the ROI analysis.
+              </Typography.Text>
+            </Space>
+          }
+        />
+      </Card>
+    );
   }
 
   // Segment Breakdown Table Data
