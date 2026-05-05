@@ -51,6 +51,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
         - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
         - **ROI Robustness**: Implemented conditional empty states and robust handling of mixed data states (component breakdown vs. direct total cost) to ensure continuous visualization in Step 5.
+        - **Visual Polish**: Suppressed zero-value labels to reduce clutter and synchronized total end-of-bar labels with direct cost inputs for full data visibility.
         - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
         - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
         - Ensured visualizations respect the natural configuration order of scenarios and segments.
