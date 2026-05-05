@@ -16,6 +16,18 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Income Gap Chart Refinement (#801) - [COMPLETED]**:
+    - Refactored `ChartSegmentsIncomeGapScenarioModeling.js` to dynamically handle both income increases and decreases in the scenario modeling chart.
+    - Implemented a dual-stacking logic:
+        - **Increase**: Stacks *Current Income (Dark Green) → Additional Income (Light Green) → Gap (Yellow)*.
+        - **Decrease**: Stacks *New Income (Dark Green) → Income Decrease (Red) → Gap (Yellow)*.
+    - Utilized IDC brand colors: `#49D985` (Green) for growth and `#FF4D4F` (Red) for losses.
+    - Dynamically updated legend labels based on the scenario outcome ("Additional income..." vs "Income decrease...").
+    - Enforced 0-flooring for baseline segments to ensure visual stability in extreme loss scenarios.
+    - Verified implementation through a comprehensive end-to-end browser walkthrough and frontend test suite.
+    - Sanitized project documentation by removing absolute file paths and aligning the LLD.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_REFINEMENT.md`, `agent_docs/qa/qa-guide-issue-801.md`.
+
 - **Advanced Modelling Tool Migration & Optimization (#799) - [COMPLETED]**:
         - Relocated the `AdvancedModellingTool` from Step 5 (Closing the Gap) to Step 4 (Assess Impact of Mitigation Strategies) to support earlier driver exploration.
         - Updated `handleSaveVisualization` in Step 4 to ensure both `sensitivityAnalysis` and `scenarioModeling` are persisted to the backend simultaneously.
