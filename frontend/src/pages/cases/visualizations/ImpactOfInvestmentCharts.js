@@ -303,7 +303,7 @@ const ImpactOfInvestmentCharts = () => {
       });
       const color =
         compName === "Total Cost"
-          ? "#1B625F"
+          ? "#374151"
           : getComponentColor(compName, idx);
 
       series.push({
