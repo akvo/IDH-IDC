@@ -280,7 +280,69 @@ const ImpactOfInvestmentCharts = () => {
     const categories = costRoiData.map((d) => d.displayName);
     const series = [];
 
-    // 1. Create a series for each component
+    // Fallback: If there are NO components but there IS a totalCost,
+    // we show it as a single "Total Cost" bar.
+    if (allCompNames.length === 0) {
+      const data = costRoiData.map((d) => d.totalCost || 0);
+      series.push({
+        name: "Total Cost",
+        type: "bar",
+        stack: "total",
+        barWidth: 35,
+        itemStyle: { color: "#1B625F" }, // IDH Dark Green
+        label: {
+          show: showCostLabel,
+          position: "right",
+          formatter: (params) =>
+            params.value > 0 ? formatNumberToString(params.value) : "",
+          fontWeight: "bold",
+          color: "#fff",
+          backgroundColor: "rgba(0,0,0,0.5)",
+          padding: [4, 7],
+        },
+        data: data,
+      });
+
+      return {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: { type: "shadow" },
+          formatter: (params) => {
+            const d = costRoiData[params[0].dataIndex];
+            return `<div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px;">${
+              d.displayName
+            }</div>
+                    <div style="display:flex;justify-content:space-between;gap:24px;">
+                      <span>${params[0].marker} Total Cost</span>
+                      <span style="font-weight:bold;">${currencyLabel} ${thousandFormatter(
+              d.totalCost,
+              2
+            )}</span>
+                    </div>`;
+          },
+        },
+        grid: {
+          left: "3%",
+          right: "12%",
+          bottom: "10%",
+          top: "15%",
+          containLabel: true,
+        },
+        xAxis: {
+          type: "value",
+          name: currencyLabel,
+          axisLabel: { formatter: (value) => formatNumberToString(value) },
+        },
+        yAxis: {
+          type: "category",
+          data: categories,
+          axisLabel: { fontWeight: "bold", color: "#555" },
+        },
+        series: series,
+      };
+    }
+
+    // 1. Create a series for each component (Original logic for breakdown)
     allCompNames.forEach((compName, idx) => {
       const data = costRoiData.map(
         (d) => d.componentBreakdown?.[compName] || 0
