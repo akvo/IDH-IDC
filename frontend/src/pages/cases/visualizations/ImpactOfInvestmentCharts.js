@@ -344,14 +344,23 @@ const ImpactOfInvestmentCharts = () => {
 
           // Calculate filtered total based on visible legend items
           let filteredTotal = 0;
-          Object.entries(d.componentBreakdown || {}).forEach(([name, val]) => {
-            // ECharts legend selection: if name is not in object, it's visible.
-            // If it is in object, visibility is determined by boolean value.
-            const isVisible = costLegendVisible[name] !== false;
+          const breakdown = d.componentBreakdown || {};
+          const compNames = Object.keys(breakdown);
+
+          if (compNames.length > 0) {
+            compNames.forEach((name) => {
+              const isVisible = costLegendVisible[name] !== false;
+              if (isVisible) {
+                filteredTotal += breakdown[name];
+              }
+            });
+          } else {
+            // Fallback for direct total cost input
+            const isVisible = costLegendVisible["Total Cost"] !== false;
             if (isVisible) {
-              filteredTotal += val;
+              filteredTotal = d.totalCost || 0;
             }
-          });
+          }
 
           return filteredTotal > 0 ? formatNumberToString(filteredTotal) : "";
         },
@@ -389,12 +398,23 @@ const ImpactOfInvestmentCharts = () => {
 
           // Calculate filtered total for tooltip
           let filteredTotal = 0;
-          Object.entries(d.componentBreakdown || {}).forEach(([name, val]) => {
-            const isVisible = costLegendVisible[name] !== false;
+          const breakdown = d.componentBreakdown || {};
+          const compNames = Object.keys(breakdown);
+
+          if (compNames.length > 0) {
+            compNames.forEach((name) => {
+              const isVisible = costLegendVisible[name] !== false;
+              if (isVisible) {
+                filteredTotal += breakdown[name];
+              }
+            });
+          } else {
+            // Fallback for direct total cost input
+            const isVisible = costLegendVisible["Total Cost"] !== false;
             if (isVisible) {
-              filteredTotal += val;
+              filteredTotal = d.totalCost || 0;
             }
-          });
+          }
 
           res += `<div style="display:flex;justify-content:space-between;gap:24px;margin-top:8px;border-top:1px solid #eee;padding-top:4px;font-weight:bold;">
             <span>Total Cost</span>
