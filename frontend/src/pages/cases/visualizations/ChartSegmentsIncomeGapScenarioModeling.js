@@ -31,31 +31,16 @@ const generateChartData = (data, current = false) => {
     const newTotalIncome =
       d?.updatedSegmentScenarioValue?.total_current_income || 0;
 
-    const isIncrease = newTotalIncome >= currentTotalIncome;
-
     // Floor values at 0 for visualization consistency
     const safeCurrentIncome = Math.max(0, currentTotalIncome);
     const safeNewIncome = Math.max(0, newTotalIncome);
 
-    let baseValue = 0;
-    let changeValue = 0;
-    let gapValue = 0;
-    let changeLabel = "";
-    let changeColor = "";
+    const baseValue = safeCurrentIncome;
+    const changeValue = Math.max(0, safeNewIncome - safeCurrentIncome);
+    const gapValue = Math.max(0, incomeTarget - safeNewIncome);
 
-    if (isIncrease) {
-      baseValue = safeCurrentIncome;
-      changeValue = safeNewIncome - safeCurrentIncome;
-      gapValue = Math.max(0, incomeTarget - safeNewIncome);
-      changeLabel = "Additional income\nwhen income drivers\nare changed";
-      changeColor = "#49D985"; // Light Green
-    } else {
-      baseValue = safeNewIncome;
-      changeValue = safeCurrentIncome - safeNewIncome;
-      gapValue = Math.max(0, incomeTarget - safeCurrentIncome);
-      changeLabel = "Income decrease\nwhen income drivers\nare changed";
-      changeColor = "#FF4D4F"; // Red
-    }
+    const changeLabel = "Additional income\nwhen income drivers\nare changed";
+    const changeColor = "#49D985"; // Light Green
 
     return {
       name: current ? d.name : `${d.scenarioName}-${d.name}`,
