@@ -7,6 +7,10 @@ import {
 } from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
 import Chart from "../../../components/chart";
+import {
+  thousandFormatter,
+  formatNumberToString,
+} from "../../../components/chart/options/common";
 import { sumBy, upperFirst } from "lodash";
 
 const colors = {
@@ -118,6 +122,82 @@ const ChartNeededIncomeLevel = () => {
     currentCase?.case_commodities,
   ]);
 
+  const chartOptions = useMemo(() => {
+    if (!chartData || chartData.length === 0) {
+      return {};
+    }
+
+    const categories = chartData.map((d) => d.name);
+    const seriesData = chartData.map((d) => ({
+      name: d.name,
+      value: d.value,
+      itemStyle: { color: d.color },
+    }));
+
+    const currencyLabel = currentCase?.currency || "USD";
+
+    return {
+      tooltip: {
+        trigger: "axis",
+        axisPointer: { type: "shadow" },
+        formatter: (params) => {
+          const p = params[0];
+          return `<div style="font-weight:bold;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px;">${
+            p.name
+          }</div>
+                  <div style="display:flex;justify-content:space-between;gap:24px;">
+                    <span>${p.marker} Additional Needed</span>
+                    <span style="font-weight:bold;">${currencyLabel} ${thousandFormatter(
+            p.value,
+            2
+          )}</span>
+                  </div>`;
+        },
+      },
+      grid: {
+        left: "3%",
+        right: "4%",
+        bottom: "10%",
+        top: "10%",
+        containLabel: true,
+      },
+      xAxis: {
+        type: "category",
+        data: categories,
+        axisLabel: {
+          interval: 0,
+          fontWeight: "bold",
+          color: "#555",
+        },
+      },
+      yAxis: {
+        type: "value",
+        name: currencyLabel,
+        axisLabel: {
+          formatter: (value) => formatNumberToString(value),
+        },
+      },
+      series: [
+        {
+          data: seriesData,
+          type: "bar",
+          barMaxWidth: 50,
+          label: {
+            show: true,
+            position: "top",
+            formatter: (params) => formatNumberToString(params.value),
+            fontWeight: "bold",
+            color: "#fff",
+            fontSize: 12,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            padding: [4, 8],
+            borderRadius: 0,
+          },
+        },
+      ],
+    };
+  }, [chartData, currentCase?.currency]);
+
   return (
     <VisualCardWrapper
       title="Additional income needed by income source to reach a living income"
@@ -140,9 +220,9 @@ const ChartNeededIncomeLevel = () => {
           ) : (
             <Chart
               wrapper={false}
-              type="PIE"
+              type="BAR"
               loading={loading}
-              data={chartData}
+              override={chartOptions}
               height={415}
             />
           )}

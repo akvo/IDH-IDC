@@ -219,7 +219,7 @@ def process_confirmed_segmentation(
                 continue
 
             current_value = float(values.median())
-            feasible_value = float(values.quantile(0.9))
+            feasible_value = float(values.quantile(0.8))
 
             if raw_id and "-" in str(raw_id):
                 level, qid = raw_id.split("-", 1)

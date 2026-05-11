@@ -62,7 +62,7 @@ These entities manage the primary modeling lifecycle (Steps 1-5).
 | **Case** | Primary container for simulation data, year, and commodity focus. |
 | **Segment** | Farmer groupings within a case (Max 5). |
 | **SegmentAnswer** | Storage for Current/Feasible values mapped to Question IDs. |
-| **Visualization** | JSON configuration for Step 5 dashboards (ROI, Outcome charts). |
+| **Visualization** | JSON configuration for Step 4 & 5 dashboards (ROI, Advanced Modelling, Outcome charts). |
 | **CaseCommodity** | Junction table for cases with diversified/multiple commodities. |
 | **CaseImport** | Metadata for uploaded Excel templates; presence determines source (`import_id != null` => Upload). |
 
@@ -147,14 +147,15 @@ To maintain a clean architectural blueprint, detailed feature logic is documente
 
 | Feature Area | Key Specification Document | Coverage |
 | :--- | :--- | :--- |
-| **Segmentation** | [MUTUALLY_EXCLUSIVE_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/MUTUALLY_EXCLUSIVE_SEGMENTATION.md) | Source-of-truth guards, Tab switches. |
-| **ROI Analysis** | [ROI_INVESTMENT.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/ROI_INVESTMENT.md) | Calculations, Multipliers, ROI Charts. |
-| **Modelling Tools** | [ADVANCED_MODELLING.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/ADVANCED_MODELLING.md) | Sensitivity Analysis, Step 5 Logic. |
-| **Income Analysis** | [INCOME_GAP_ANALYSIS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/INCOME_GAP_ANALYSIS.md) | Gap Allocation, Composition Charts. |
-| **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
-| **Permissions** | [PERMISSIONS.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
-| **Academy LMS** | [LMS_POC.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/LMS_POC.md) | Hierarchical courses, progress gating, PDF transformation. |
-| **Case UX** | [CASE_MANAGEMENT_UX.md](file:///Users/galihpratama/Sites/IDH-IDC/docs/features/CASE_MANAGEMENT_UX.md) | Save Guards, Cleanup scripts. |
+| **Segmentation** | [MUTUALLY_EXCLUSIVE_SEGMENTATION.md](features/MUTUALLY_EXCLUSIVE_SEGMENTATION.md) | Source-of-truth guards, Tab switches. |
+| **ROI Analysis** | [ROI_INVESTMENT.md](features/ROI_INVESTMENT.md) | Calculations, Multipliers, ROI Charts. |
+| **Modelling Tools** | [ADVANCED_MODELLING.md](features/ADVANCED_MODELLING.md) | Sensitivity Analysis, Advanced Modelling (Step 4). |
+| **Chart Filtering** | [INCOME_GAP_CHART_FILTERING.md](INCOME_GAP_CHART_FILTERING.md) | Income Decrease filtering, Informative Alert logic. |
+| **Income Analysis** | [INCOME_GAP_ANALYSIS.md](features/INCOME_GAP_ANALYSIS.md) | Gap Allocation, Composition Charts. |
+| **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
+| **Permissions** | [PERMISSIONS.md](features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
+| **Academy LMS** | [LMS_POC.md](LMS_POC.md) | Hierarchical courses, progress gating, PDF transformation. |
+| **Case UX** | [CASE_MANAGEMENT_UX.md](features/CASE_MANAGEMENT_UX.md) | Save Guards, Cleanup scripts. |
 
 ---
 

@@ -16,6 +16,53 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Income Gap Chart Refinement (#801) - [COMPLETED]**:
+    - Refactored `ChartSegmentsIncomeGapScenarioModeling.js` to dynamically handle both income increases and decreases in the scenario modeling chart.
+    - Implemented a dual-stacking logic:
+        - **Increase**: Stacks *Current Income (Dark Green) → Additional Income (Light Green) → Gap (Yellow)*.
+        - **Decrease**: Stacks *New Income (Dark Green) → Income Decrease (Red) → Gap (Yellow)*.
+    - Utilized IDC brand colors: `#49D985` (Green) for growth and `#FF4D4F` (Red) for losses.
+    - Dynamically updated legend labels based on the scenario outcome ("Additional income..." vs "Income decrease...").
+    - Enforced 0-flooring for baseline segments to ensure visual stability in extreme loss scenarios.
+    - Verified implementation through a comprehensive end-to-end browser walkthrough and frontend test suite.
+    - Sanitized project documentation by removing absolute file paths and aligning the LLD.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_REFINEMENT.md`, `agent_docs/qa/qa-guide-issue-801.md`.
+
+- **Advanced Modelling Tool Migration & Optimization (#799) - [COMPLETED]**:
+        - Relocated the `AdvancedModellingTool` from Step 5 (Closing the Gap) to Step 4 (Assess Impact of Mitigation Strategies) to support earlier driver exploration.
+        - Updated `handleSaveVisualization` in Step 4 to ensure both `sensitivityAnalysis` and `scenarioModeling` are persisted to the backend simultaneously.
+        - Optimized the UI by aggressively reducing white space in the `EquationVisualizer` and parent containers for a more compact, professional look.
+        - Implemented **proportional responsive scaling** using CSS media queries (targeting `1366px` and below) to maintain equation legibility across all screen sizes.
+        - Refined the section header to "Model driver changes to close the income gap" to better align with the Step 4 context.
+        - Verified all changes with frontend linting, manual browser verification, and data persistence checks.
+    - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/steps/steps.scss`, `docs/features/ADVANCED_MODELLING.md`.
+
+- **Needed Income Level Bar Chart (#797) - [COMPLETED]**:
+        - Converted the "Needed Income Level" visualization from a Pie Chart to a Bar Chart for improved legibility and comparison.
+        - Implemented permanent bar labels with standardized `10K` string formatting (`formatNumberToString`).
+        - Added semi-transparent background boxes (`rgba(0,0,0,0.4)`) with white text and rounded corners to labels for enhanced contrast.
+        - Labeled the Y-axis with the current case currency.
+        - Updated feature documentation in `INCOME_GAP_ANALYSIS.md`.
+    - Path: `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`, `docs/features/INCOME_GAP_ANALYSIS.md`.
+
+- **ROI Chart Refinement (#795) - [COMPLETED]**:
+        - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
+        - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
+        - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
+        - **ROI Robustness**: Implemented conditional empty states and robust handling of mixed data states (component breakdown vs. direct total cost) to ensure continuous visualization in Step 5.
+        - **Visual Polish**: Suppressed zero-value labels to reduce clutter and synchronized total end-of-bar labels with direct cost inputs for full data visibility.
+        - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
+        - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
+        - Ensured visualizations respect the natural configuration order of scenarios and segments.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `frontend/src/components/chart/index.js`.
+
+- **Feasible Value Quantile Update (#793) - [COMPLETED]**:
+        - Updated the "feasible value" calculation from the 90th quantile to the 80th quantile to better represent achievable improvements.
+        - Modified backend `case_import_process_confirmed_segmentation.py` to use `values.quantile(0.8)`.
+        - Updated frontend `EnterIncomeData.js` tooltip text to reflect the 80th quantile calculation.
+        - Synchronized feature documentation in `CASE_MANAGEMENT_UX.md`.
+    - Path: `backend/utils/case_import_process_confirmed_segmentation.py`, `frontend/src/pages/cases/steps/EnterIncomeData.js`, `docs/features/CASE_MANAGEMENT_UX.md`.
+
 - **Academy Hierarchical Subcontent (#759/765) - [COMPLETED]**:
         - Refactored `CoursePlayer.js` and `CoursePlayer.scss` to support nested `sections` within chapters.
         - Implemented a hierarchical sidebar using Ant Design `SubMenu` with custom indentation and active state highlighting.

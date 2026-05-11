@@ -2,11 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
-import {
-  AdvancedModellingTool,
-  StandardScenarioModeling,
-  WhatIsNextInfoBox,
-} from "../components";
+import { StandardScenarioModeling, WhatIsNextInfoBox } from "../components";
 import { isEmpty, isEqual } from "lodash";
 import { api, removeUndefinedObjectValue } from "../../../lib";
 
@@ -171,12 +167,6 @@ const ClosingGap = ({
             Save
           </Button>
         </div>
-      </Col>
-
-      <Col span={24}>
-        <AdvancedModellingTool
-          disabled={!enableEditCase || !enableAdvancedTools}
-        />
       </Col>
 
       <Col span={24}>

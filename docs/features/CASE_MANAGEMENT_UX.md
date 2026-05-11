@@ -38,7 +38,7 @@ A standalone script (`backend/cleanup_imports.py`) is provided for administrativ
 ## 4. UI Text & Terminology Updates (#744)
 
 Standardized labels and tooltips have been updated throughout the application to align with business terminology:
-*   **Feasibility Tooltip**: Updated in Step 2 to explain the 90th quantile calculation used to determine "Feasible" values from uploaded data.
+*   **Feasibility Tooltip**: Updated in Step 2 to explain the 80th quantile calculation used to determine "Feasible" values from uploaded data.
 *   **Step 5 Reference**: Changed "physically possible" to "possible" for professional consistency.
 *   **Guidance Tooltips**: Dedicated "?" icons are provided in Step 1 for "Variable type" and "Number of segments".
 
