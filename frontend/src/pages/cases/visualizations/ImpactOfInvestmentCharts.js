@@ -634,7 +634,7 @@ const ImpactOfInvestmentCharts = () => {
       },
       yAxis: {
         type: "value",
-        name: "ROI",
+        name: "%",
         axisLabel: {
           formatter: "{value}",
         },
@@ -815,10 +815,11 @@ const ImpactOfInvestmentCharts = () => {
             <Space direction="vertical" size={16} style={{ width: "100%" }}>
               <div className="section-title">Scenario Cost by component</div>
               <div className="section-description">
-                The visual on the left shows scenario cost broken down by
-                component. It allows you to compare investment focus across
-                projects and identify the main cost drivers within each
-                scenario.
+                The visual on the left allows you to select and compare specific
+                combinations of scenarios and segments. You can explore how
+                household income composition and income gaps vary across
+                segments in the scenarios you create, to determine which
+                scenario has the best potential for each segment.
               </div>
               <div style={{ marginTop: 8 }}>
                 <Select

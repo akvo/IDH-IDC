@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Scenario Modeling UI & Customization (#803) - [COMPLETED]**:
+    - **Advanced Modelling**: Refactored tab titles to use customizable key-label pairs and renamed the "Model" tab to "Customized" for better clarity.
+    - **Layout Refinement**: Moved section descriptions for "ROI Impact" and "Scenario Outcomes" outside of the header `Card` components in `StandardScenarioModeling.js` for improved visual hierarchy.
+    - **Content Update**: Enhanced the ROI impact description with detailed guidance on comparing total cost vs. social impact.
+    - **Chart Polish**: Updated the Y-axis label of the ROI chart to "%" and refined the "Scenario Cost by component" description.
+    - Verified all changes with frontend linting and a full test suite pass.
+    - Path: `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
 - **Income Gap Chart Filtering (#801b) - [COMPLETED]**:
     - Implemented automatic filtering for the "Optimal driver values to reach your target" chart to exclude segments with income decreases.
     - Added an IDC-branded `Alert` (Type: Info, Background: `#EAF2F2`) that dynamically lists hidden segments to ensure transparency.
