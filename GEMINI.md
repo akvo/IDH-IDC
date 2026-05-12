@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Income Gap Chart Filtering (#801b) - [COMPLETED]**:
+    - Implemented automatic filtering for the "Optimal driver values to reach your target" chart to exclude segments with income decreases.
+    - Added an IDC-branded `Alert` (Type: Info, Background: `#EAF2F2`) that dynamically lists hidden segments to ensure transparency.
+    - Ensured the filtering only affects the visualization, preserving the integrity of the underlying scenario data in tables and other charts.
+    - Verified logic for scenarios with mixed increase/decrease and all-decrease states.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_FILTERING.md`.
+
 - **Income Gap Chart Refinement (#801) - [COMPLETED]**:
     - Refactored `ChartSegmentsIncomeGapScenarioModeling.js` to dynamically handle both income increases and decreases in the scenario modeling chart.
     - Implemented a dual-stacking logic:
