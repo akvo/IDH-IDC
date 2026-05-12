@@ -30,6 +30,12 @@ import IncomeGatingAlert from "./IncomeGatingAlert";
 
 const { Text, Title, Paragraph } = Typography;
 
+const SCENARIO_OPTIONS = [
+  { key: "current", label: "Current" },
+  { key: "feasible", label: "Feasible" },
+  { key: "model", label: "Customized" },
+];
+
 const InputRow = ({
   label,
   field,
@@ -1291,9 +1297,9 @@ const AdvancedModellingTool = ({ disabled }) => {
                   type="card"
                   centered
                   className="scenario-tabs-custom"
-                  items={["current", "feasible", "model"].map((key) => ({
+                  items={SCENARIO_OPTIONS.map(({ key, label }) => ({
                     key,
-                    label: key.charAt(0).toUpperCase() + key.slice(1),
+                    label,
                     children: renderModellingInputs(key),
                     disabled: disabled && key === "model", // Optionally keep current/feasible viewable?
                   }))}
