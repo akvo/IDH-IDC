@@ -264,21 +264,25 @@ const StandardScenarioModeling = () => {
         <Card className="card-section-wrapper">
           <Space className="step-wrapper" align="top">
             <div className="number">3.</div>
-            <div className="label">
-              Assess the impact of your investment
-              <div className="description">
-                This section allows you to assess the return on investment of
-                each scenario in terms of its contribution to closing the income
-                gap for farmers. It helps you compare the cost-efficiency of
-                different interventions, understand the main cost components
-                involved in implementation, and see how your resources translate
-                into income improvements at farmer and segment level. The focus
-                is on social returns rather than financial returns for the
-                company.
-              </div>
-            </div>
+            <div className="label">Assess the impact of your investment</div>
           </Space>
         </Card>
+        <p>
+          This section allows you to assess the return on investment of each
+          scenario in terms of its contribution to closing the income gap for
+          farmers. It helps you compare the cost-efficiency of different
+          interventions, understand the main cost components involved in
+          implementation, and see how your resources translate into income
+          improvements at farmer and segment level. The focus is on social
+          returns rather than financial returns for the company.
+        </p>
+        <p>
+          Use the first graph to understand the total cost of each scenario and
+          which components are driving that cost. Consider this total cost in
+          light of the second graph which tells you which scenario returns the
+          highest social impact. You might find that a more affordable scenario
+          returns higher social impact.
+        </p>
       </Col>
 
       <Col span={24}>
@@ -293,15 +297,15 @@ const StandardScenarioModeling = () => {
             <div className="number">4.</div>
             <div className="label">
               Better understand scenario outcomes for your segments
-              <div className="description">
-                In the table below, you can compare specific outcomes per
-                segment to understand in which scenario the farmers in that
-                segment reach the income target, how this is established, and
-                how it compares to the current scenario.
-              </div>
             </div>
           </Space>
         </Card>
+        <p>
+          In the table below, you can compare specific outcomes per segment to
+          understand in which scenario the farmers in that segment reach the
+          income target, how this is established, and how it compares to the
+          current scenario.
+        </p>
       </Col>
 
       <Col span={24}>
