@@ -1,5 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Row, Col, Card, Space, Button, Tabs, Popconfirm } from "antd";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
+import {
+  Row,
+  Col,
+  Card,
+  Space,
+  Button,
+  Tabs,
+  Popconfirm,
+  notification,
+} from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
@@ -22,6 +37,38 @@ const StandardScenarioModeling = () => {
     orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key || null
   );
   const [deleting, setDeleting] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
+  const prevActiveScenarioRef = useRef(activeScenario);
+
+  useEffect(() => {
+    if (
+      prevActiveScenarioRef.current !== activeScenario &&
+      activeScenario !== null
+    ) {
+      const scenarioInv =
+        scenarioModeling.config.investment_analysis?.scenarios?.[
+          activeScenario
+        ] || {};
+      const costAllocationMode =
+        scenarioInv.cost_allocation_mode ||
+        (scenarioInv.is_roi_enabled ? "per_segment" : "no");
+
+      if (costAllocationMode === "no") {
+        const scenarioName =
+          scenarioModeling.config.scenarioData.find(
+            (s) => s.key === activeScenario
+          )?.name || "Target Scenario";
+
+        api.info({
+          message: "ROI Modeling Disabled",
+          description: `ROI modeling is currently disabled for "${scenarioName}". You can enable it in the ROI section below if needed.`,
+          placement: "topRight",
+          duration: 5,
+        });
+      }
+      prevActiveScenarioRef.current = activeScenario;
+    }
+  }, [activeScenario, scenarioModeling, api]);
 
   const onDeleteScenario = useCallback(
     ({ currentScenarioData, scenarioDataState }) => {
@@ -202,6 +249,7 @@ const StandardScenarioModeling = () => {
 
   return (
     <>
+      {contextHolder}
       <Col span={24}>
         <Card className="card-section-wrapper">
           <Row align="middle" gutter={[20, 20]}>

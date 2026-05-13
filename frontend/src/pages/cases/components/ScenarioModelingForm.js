@@ -23,6 +23,7 @@ const ScenarioModelingTabContent = ({
   scenarioDetailForm,
   enableEditCase,
   scenarioModeling,
+  setActiveScenario,
 }) => (
   <>
     <ScenarioModelingIncomeDriversAndChart
@@ -35,6 +36,7 @@ const ScenarioModelingTabContent = ({
       currentScenarioData={current}
       enableEditCase={enableEditCase}
       scenarioModeling={scenarioModeling}
+      setActiveScenario={setActiveScenario}
     />
   </>
 );
@@ -46,6 +48,7 @@ const ScenarioModelingForm = ({
   deleteButtonPosition,
 }) => {
   const [scenarioDetailForm] = Form.useForm();
+
   const { enableEditCase } = CaseUIState.useState((s) => s.general);
   const scenarioModeling = CaseVisualState.useState((s) => s.scenarioModeling);
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
@@ -298,6 +301,7 @@ const ScenarioModelingForm = ({
                   scenarioDetailForm={scenarioDetailForm}
                   enableEditCase={enableEditCase}
                   scenarioModeling={scenarioModeling}
+                  setActiveScenario={setActiveScenario}
                 />
               </SegmentTabsWrapper>
             </Col>
