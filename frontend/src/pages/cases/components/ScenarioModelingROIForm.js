@@ -49,6 +49,7 @@ const ScenarioModelingROIForm = ({
   enableEditCase,
   scenarioModeling,
   segment, // Injected by SegmentTabsWrapper
+  setActiveScenario,
 }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
   const { activeSegmentId, isRoiExpandedAll, isRoiExpandedSegments } =
@@ -333,6 +334,7 @@ const ScenarioModelingROIForm = ({
               it down by component.
             </Text>
           </div>
+
           <Row
             align="middle"
             justify="space-between"
@@ -342,7 +344,29 @@ const ScenarioModelingROIForm = ({
             }}
           >
             <Col span={24}>
-              <Space direction="vertical" style={{ width: "100%" }}>
+              <Space direction="vertical" style={{ width: "100%" }} size={16}>
+                <Row align="middle" justify="end">
+                  <Col>
+                    <Radio.Group
+                      value={currentScenarioData.key}
+                      onChange={(e) => setActiveScenario?.(e.target.value)}
+                    >
+                      {orderBy(
+                        scenarioModeling?.config?.scenarioData || [],
+                        "key"
+                      ).map((sc) => (
+                        <Radio.Button
+                          key={sc.key}
+                          value={sc.key}
+                          style={{ fontWeight: "normal" }}
+                        >
+                          {sc.name}
+                        </Radio.Button>
+                      ))}
+                    </Radio.Group>
+                  </Col>
+                </Row>
+
                 {costAllocationMode === "all_farmers" ? (
                   <Typography.Text strong>
                     Scenario cost for all farmers

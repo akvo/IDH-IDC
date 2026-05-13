@@ -23,6 +23,7 @@ const ScenarioModelingTabContent = ({
   scenarioDetailForm,
   enableEditCase,
   scenarioModeling,
+  setActiveScenario,
 }) => (
   <>
     <ScenarioModelingIncomeDriversAndChart
@@ -35,6 +36,7 @@ const ScenarioModelingTabContent = ({
       currentScenarioData={current}
       enableEditCase={enableEditCase}
       scenarioModeling={scenarioModeling}
+      setActiveScenario={setActiveScenario}
     />
   </>
 );
@@ -298,6 +300,7 @@ const ScenarioModelingForm = ({
                   scenarioDetailForm={scenarioDetailForm}
                   enableEditCase={enableEditCase}
                   scenarioModeling={scenarioModeling}
+                  setActiveScenario={setActiveScenario}
                 />
               </SegmentTabsWrapper>
             </Col>

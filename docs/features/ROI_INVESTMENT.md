@@ -41,8 +41,11 @@ The ROI chart supports a **Multi-Selector** allowing users to pick up to 5 speci
 ### Mutual Exclusivity in Component Selection
 To ensure data integrity, each ROI cost component (e.g., "Training") can only be selected **once** within a single segment's investment table. If a component is already selected, it is disabled in the dropdown for other rows in that table.
 
-### Segment Selector Synchronization
-The inline ROI segment selector (Radio Group) is bidirectionally synchronized with the main application-wide `activeSegmentId`. Changing the segment via the top-level tabs updates the ROI filter automatically.
+### Segment & Scenario Selector Synchronization
+The ROI form includes inline selectors for both **Segments** and **Scenarios** (Radio Groups). These are bidirectionally synchronized with the main application-wide state:
+- **Segment Selector**: Synchronized with `activeSegmentId`. Changing the segment via top-level tabs or this selector updates the entire case view.
+- **Scenario Selector**: Synchronized with the active scenario tab. This allows users to switch between scenario cost modeling without scrolling back to the top of the page.
+
 
 ---
 
