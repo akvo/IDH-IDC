@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { stepPath, CurrentCaseState } from "../store";
+import { UserState } from "../../../store";
 import { Row, Col, Card, Space } from "antd";
 import {
   ChartIncomeGap,
@@ -15,6 +16,7 @@ import {
   ChartNetIncomePerLandUnit,
 } from "../visualizations";
 import { routePath } from "../../../components/route";
+import { ReadOnlyAlert } from "../components";
 
 /**
  * STEP 3
@@ -27,6 +29,7 @@ const UnderstandIncomeGap = ({
 }) => {
   const navigate = useNavigate();
   const currentCase = CurrentCaseState.useState((s) => s);
+  const { isExternalRegular } = UserState.useState((s) => s);
 
   const backFunction = useCallback(() => {
     navigate(-1);
@@ -69,6 +72,11 @@ const UnderstandIncomeGap = ({
         </Space>
       </Col>
 
+      {isExternalRegular && (
+        <Col span={24}>
+          <ReadOnlyAlert />
+        </Col>
+      )}
       <Col span={24}>
         <Card className="card-section-wrapper">
           Understand current income and the income gap
