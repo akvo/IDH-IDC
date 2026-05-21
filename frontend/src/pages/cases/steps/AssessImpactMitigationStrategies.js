@@ -17,6 +17,7 @@ import {
   // SensitivityAnalysis,
   ExploreChangeToCloseTheGap,
   AdvancedModellingTool,
+  ReadOnlyAlert,
 } from "../components";
 import { isEqual, isEmpty } from "lodash";
 import { api } from "../../../lib";
@@ -206,6 +207,12 @@ const AssessImpactMitigationStrategies = ({
           </Button>
         </div>
       </Col>
+
+      {!enableEditCase && (
+        <Col span={24}>
+          <ReadOnlyAlert />
+        </Col>
+      )}
 
       {/* #1 Chart */}
       <Col span={24}>

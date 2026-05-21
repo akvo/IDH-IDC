@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { CaseWrapper, SegmentTabsWrapper } from "./layout";
-import { ReadOnlyAlert } from "./components";
 import { useParams, useNavigate } from "react-router-dom";
 import { api, flatten, getFunctionDefaultValue } from "../../lib";
 import {
@@ -56,21 +55,16 @@ const addLevelIntoQuestions = ({ questions, level = 0 }) => {
   });
 };
 
-const renderPage = (key, navigate, isExternalRegular) => {
+const renderPage = (key, navigate) => {
   switch (key) {
     case stepPath.step1.label:
       return (
-        <>
-          {isExternalRegular && (
-            <ReadOnlyAlert style={{ marginBottom: "24px" }} />
-          )}
-          <SegmentTabsWrapper
-            titleId="set-income-target"
-            pageTitle="Set an income target"
-          >
-            <SetIncomeTarget />
-          </SegmentTabsWrapper>
-        </>
+        <SegmentTabsWrapper
+          titleId="set-income-target"
+          pageTitle="Set an income target"
+        >
+          <SetIncomeTarget />
+        </SegmentTabsWrapper>
       );
     case stepPath.step2.label:
       return (
@@ -104,7 +98,6 @@ const Case = () => {
     CaseVisualState.useState((s) => s);
 
   const userState = UserState.useState((s) => s);
-  const isExternalRegular = userState?.isExternalRegular || false;
   useScenarioCalculations();
 
   const updateStepIncomeTargetState = (key, value) => {
@@ -685,7 +678,7 @@ const Case = () => {
       currentCase={currentCase}
       loading={loading}
     >
-      {renderPage(step, navigate, isExternalRegular)}
+      {renderPage(step, navigate)}
     </CaseWrapper>
   );
 };
