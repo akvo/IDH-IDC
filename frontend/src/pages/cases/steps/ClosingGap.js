@@ -2,7 +2,11 @@ import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CurrentCaseState, CaseVisualState, CaseUIState } from "../store";
 import { Row, Col, Space, Button, message, Card } from "antd";
-import { StandardScenarioModeling, WhatIsNextInfoBox } from "../components";
+import {
+  StandardScenarioModeling,
+  WhatIsNextInfoBox,
+  ReadOnlyAlert,
+} from "../components";
 import { isEmpty, isEqual } from "lodash";
 import { api, removeUndefinedObjectValue } from "../../../lib";
 
@@ -168,6 +172,12 @@ const ClosingGap = ({
           </Button>
         </div>
       </Col>
+
+      {!enableEditCase && (
+        <Col span={24}>
+          <ReadOnlyAlert />
+        </Col>
+      )}
 
       <Col span={24}>
         <WhatIsNextInfoBox />
