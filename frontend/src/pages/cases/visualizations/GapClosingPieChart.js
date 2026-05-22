@@ -84,25 +84,25 @@ const GapClosingPieChart = ({
       {
         name: "All three drivers fall within feasible ranges",
         value: allFeasible,
-        color: "#5AD8A6",
+        color: "#49D985",
         order: 1,
       },
       {
         name: "One driver falls outside of feasible ranges",
         value: twoFeasible,
-        color: "#F6BD16",
+        color: "#FED754",
         order: 2,
       },
       {
         name: "Two drivers fall outside of feasible ranges",
         value: oneFeasible,
-        color: "#FFBB96",
+        color: "#FF7875",
         order: 3,
       },
       {
         name: "All drivers fall outside of feasible ranges",
         value: zeroFeasible,
-        color: "#FF8C54",
+        color: "#FF4D4F",
         order: 4,
       },
     ].filter((v) => v.value > 0);
@@ -134,7 +134,7 @@ const GapClosingPieChart = ({
       tooltipText="This graph shows how effective the selected third driver is in helping close the income gap."
     >
       <Row gutter={[40, 20]} align="middle">
-        <Col xs={24} md={12} style={{ padding: "32px 0 32px 32px" }}>
+        <Col xs={24} md={12} style={{ padding: "12px 12px 12px 32px" }}>
           <p>
             This graph shows how effective the selected third driver is in
             helping close the income gap. It does this by counting how many
@@ -154,7 +154,7 @@ const GapClosingPieChart = ({
           xs={24}
           md={12}
           style={{
-            padding: "32px 32px 32px 0",
+            padding: "12px",
             borderLeft: "1px solid #e2e4e9",
           }}
         >
