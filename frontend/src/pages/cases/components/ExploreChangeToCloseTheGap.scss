@@ -226,6 +226,32 @@
   background-color: #ffd0d3 !important;
 }
 
+.combination-info-box {
+  background-color: #eaf2f2;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: left;
+  width: 100%;
+
+  h3 {
+    margin: 0;
+  }
+
+  .combination-title {
+    color: #1b625f !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .combination-description {
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
 // Three Driver Combination Chart - High Fidelity Card Grid
 .three-driver-combination-chart {
   .combination-cards-grid {
