@@ -222,17 +222,18 @@ const ExploreChangeToCloseTheGap = ({ disabled }) => {
                   </Tooltip>
                 </Space>
                 <ModellingGoalReminder percentage={gapClosurePercentage} />
-                <Button
-                  className="button-ghost header-action-btn"
-                  onClick={handleClearHeatmap}
-                  size="small"
-                >
-                  Clear
-                </Button>
               </div>
             }
             key="2"
           >
+            <Button
+              className="button-ghost header-action-btn"
+              onClick={handleClearHeatmap}
+              size="small"
+              style={{ float: "right" }}
+            >
+              Clear
+            </Button>
             <TwoDriverHeatmap
               ref={heatmapRef}
               selectedSegment={selectedSegment}
