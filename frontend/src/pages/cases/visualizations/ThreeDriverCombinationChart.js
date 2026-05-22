@@ -43,6 +43,18 @@ const ThreeDriverCombinationChart = ({
 
   return (
     <div className="three-driver-combination-chart">
+      <div className="chart-legend">
+        <Space size={24} align="center">
+          <Space align="center">
+            <div className="legend-pips feasible" />
+            <span>Driver within feasible ranges</span>
+          </Space>
+          <Space align="center">
+            <div className="legend-pips not-feasible" />
+            <span>Driver outside feasible ranges</span>
+          </Space>
+        </Space>
+      </div>
       <div className="combination-cards-grid">
         {combinations.map((row, rowIdx) => (
           <div key={rowIdx} className="combination-card">
@@ -95,19 +107,6 @@ const ThreeDriverCombinationChart = ({
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="chart-legend">
-        <Space size={24} align="center">
-          <Space align="center">
-            <div className="legend-pips feasible" />
-            <span>Driver within feasible ranges</span>
-          </Space>
-          <Space align="center">
-            <div className="legend-pips not-feasible" />
-            <span>Driver outside feasible ranges</span>
-          </Space>
-        </Space>
       </div>
     </div>
   );

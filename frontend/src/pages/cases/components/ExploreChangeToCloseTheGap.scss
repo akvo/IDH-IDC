@@ -258,7 +258,6 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 24px;
-    margin-bottom: 24px;
 
     @include respond-from(lg) {
       grid-template-columns: repeat(2, 1fr);
@@ -269,7 +268,7 @@
     background-color: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
-    padding: 24px;
+    padding: 15px;
     margin-bottom: 0; // Let the grid gap handle bottom spacing
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
@@ -282,12 +281,9 @@
     // Responsive adjustments when card is half-width
     @include respond-between(lg, xlg) {
       grid-template-columns: 135px repeat(5, 1fr);
-      padding: 16px 12px;
-      grid-gap: 12px 6px;
+      // padding: 16px 12px;
+      // grid-gap: 12px 6px;
 
-      .row-label {
-        font-size: 13px;
-      }
       .indented-label {
         padding-right: 6px;
       }
@@ -295,39 +291,23 @@
         padding: 8px;
         grid-gap: 6px;
       }
-      .value-blob {
-        font-size: 12px;
-        padding: 4px 6px;
-      }
     }
 
     @include respond-between(xlg, xl) {
       grid-template-columns: 135px repeat(5, 1fr);
-      padding: 20px 16px;
+      // padding: 20px 16px;
 
-      .row-label {
-        font-size: 13px;
-      }
       .values-wrapper {
         padding: 10px;
-      }
-      .value-blob {
-        font-size: 13px;
       }
     }
 
     @include respond-between(xl, xxl) {
       grid-template-columns: 135px repeat(5, 1fr);
-      padding: 22px 20px;
+      // padding: 22px 20px;
 
-      .row-label {
-        font-size: 13px;
-      }
       .values-wrapper {
         padding: 12px 10px;
-      }
-      .value-blob {
-        font-size: 13px;
       }
     }
 
@@ -375,10 +355,10 @@
   }
 
   .value-blob {
-    padding: 6px 12px;
+    padding: 6px;
     border-radius: 10px;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -396,17 +376,17 @@
   }
 
   .chart-legend {
-    margin-top: 16px;
-    padding: 16px;
+    padding: 12px;
     background-color: #fafafa;
     border-radius: 8px;
     text-align: center;
     font-size: 13px;
+    margin-bottom: 24px;
 
     .legend-pips {
       width: 16px;
       height: 16px;
-      border-radius: 4px;
+      border-radius: 100%;
       &.feasible {
         background-color: #95deaf;
       }
