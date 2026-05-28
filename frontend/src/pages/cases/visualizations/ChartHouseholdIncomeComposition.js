@@ -117,10 +117,8 @@ const ChartHouseholdIncomeComposition = () => {
           <Divider style={{ margin: "5px" }} />
           <p style={{ minHeight: 150 }}>
             This graph shows the composition of income and how much each income
-            source contributes to total household earnings.
-            <br />
-            Use it to identify the activities that contribute most to farmer
-            incomes.
+            source contributes to total household earnings. Use it to identify
+            the activities that contribute most to farmer incomes.
           </p>
         </Col>
       </Row>

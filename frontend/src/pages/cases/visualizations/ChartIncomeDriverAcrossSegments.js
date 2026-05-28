@@ -355,12 +355,12 @@ const ChartIncomeDriverAcrossSegments = () => {
       <Row gutter={[20, 20]} align="middle">
         <Col span={16}>
           <VisualCardWrapper
-            title="Explore income drivers across segments"
+            title="Income drivers across segments"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartBreakdownDriverRef}
-            exportFilename="Explore income drivers across segments"
+            exportFilename="Income drivers across segments"
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>

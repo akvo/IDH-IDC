@@ -88,29 +88,30 @@ const ChartRevenueToCostRatio = () => {
       <Row gutter={[20, 20]} align="middle">
         <Col span={10}>
           <Space direction="vertical">
-            <div className="section-title">Revenue to cost ratio</div>
+            <div className="section-title">
+              How much household revenue is produced for every unit of currency
+              spent?
+            </div>
             <div className="section-description">
               This graph shows how much revenue the primary commodity generates
-              for every unit of money spent producing it. It is calculated as
-              primary commodity revenue divided by production costs and reflects
-              the farmer&apos;s return on investment after accounting for price
+              for every unit of money spent producing it. It reflects the
+              farmer&apos;s return on investment after accounting for price
               levels, premiums and production practices. Higher values indicate
               profitable production and effective farm and post-harvest
               management, while lower values point to thin margins, unfavourable
-              prices or overspending on inputs. Tracking this ratio over time
-              helps assess financial resilience and how market conditions or
-              agronomic changes influence household income.
+              prices or overspending on inputs.
             </div>
           </Space>
         </Col>
         <Col span={14}>
           <VisualCardWrapper
-            title="Change Indicators"
+            title="Household revenue to cost ratio"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename="Farm Economic Efficiency"
+            exportFilename="Household revenue to cost ratio"
+            tooltipText="This indicator is calculated by dividing the primary commodity revenue by commodity production cost. "
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>

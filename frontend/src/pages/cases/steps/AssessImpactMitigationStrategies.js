@@ -298,8 +298,8 @@ const AssessImpactMitigationStrategies = ({
         <>
           <Col span={24}>
             <Card className="card-section-wrapper">
-              What is the minimum change in drivers needed to close the income
-              gap within feasible limits?
+              Optimisation model for closing the income gap within feasible
+              limits
             </Card>
           </Col>
           <Col span={24}>
