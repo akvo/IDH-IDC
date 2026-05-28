@@ -74,17 +74,52 @@ const ChartNetIncomePerLandUnit = () => {
     });
   }, [currentCase, dashboardData, incomeDataDrivers]);
 
+  const rawUnit = useMemo(
+    () => focusCommodity?.area_size_unit || "land unit",
+    [focusCommodity?.area_size_unit]
+  );
+
+  const landUnit = useMemo(() => {
+    const unitLower = rawUnit.toLowerCase();
+    if (unitLower === "hectares") {
+      return "hectare";
+    }
+    if (unitLower === "acres") {
+      return "acre";
+    }
+    if (unitLower === "cubic-metres") {
+      return "cubic-metre";
+    }
+    if (unitLower === "cubic-feet") {
+      return "cubic-foot";
+    }
+    if (unitLower === "cubic-yards") {
+      return "cubic-yard";
+    }
+    if (unitLower === "square-feet") {
+      return "square-foot";
+    }
+    if (unitLower === "square-meter") {
+      return "square-meter";
+    }
+    if (unitLower.endsWith("s")) {
+      return rawUnit.slice(0, -1);
+    }
+    return rawUnit;
+  }, [rawUnit]);
+
   return (
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
         <Col span={14}>
           <VisualCardWrapper
-            title="Change Indicators"
+            title={`Primary commodity net income per ${landUnit}`}
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename="Farm Economic Efficiency"
+            exportFilename={`Primary commodity net income per ${landUnit}`}
+            tooltipText="This indicator is calculated by dividing net income by the cultivated area."
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
@@ -103,20 +138,16 @@ const ChartNetIncomePerLandUnit = () => {
         <Col span={10}>
           <Space direction="vertical">
             <div className="section-title">
-              Primary commodity net income per{" "}
-              {focusCommodity?.area_size_unit || "land unit"}
+              How much profit is earned from the primary commodity per unit of
+              land?
             </div>
             <div className="section-description">
-              This metric captures the profit earned from the commodity per unit
-              of land and is calculated by dividing net income by the cultivated
-              area. It reflects how well farmers translate land into financial
-              returns and is influenced by yields, input use, soil health and
+              This graph captures the profit earned from the commodity per unit
+              of land, reflecting how well farmers translate land into financial
+              returns. It is influenced by yields, input use, soil health and
               management practices. Higher values show profitable and efficient
               land use, while lower values signal underperforming plots,
-              degraded soils or suboptimal agronomy. Monitoring changes in this
-              indicator helps understand whether land productivity is improving
-              and whether interventions are resulting in better economic
-              outcomes
+              degraded soils or suboptimal agronomy.
             </div>
           </Space>
         </Col>

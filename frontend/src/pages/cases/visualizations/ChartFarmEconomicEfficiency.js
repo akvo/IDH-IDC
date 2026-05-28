@@ -88,12 +88,13 @@ const ChartFarmEconomicEfficiency = () => {
       <Row gutter={[20, 20]} align="middle">
         <Col span={14}>
           <VisualCardWrapper
-            title="Change Indicators"
+            title="Farm economic efficiency"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename="Farm Economic Efficiency"
+            exportFilename="Farm economic efficiency"
+            tooltipText="This indicator is calculated by dividing total production costs by total output."
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
@@ -111,17 +112,16 @@ const ChartFarmEconomicEfficiency = () => {
         </Col>
         <Col span={10}>
           <Space direction="vertical">
-            <div className="section-title">Farm Economic Efficiency</div>
+            <div className="section-title">
+              How much money is needed to produce 1kg of the primary commodity?
+            </div>
             <div className="section-description">
-              This graph shows the cash a farmer needs to invest to produce one
-              unit of the primary commodity. It is calculated by dividing total
-              production costs by total output and indicates how efficiently
-              inputs are converted into harvest. Lower values reflect more
-              efficient input use and stronger agronomic performance, while
-              higher values may point to low yields, inefficient input use, or
-              higher input prices. Over time, this metric helps assess whether
-              cost efficiency and production performance are improving or
-              deteriorating.
+              This graph visualises production efficiency per unit of the
+              primary commodity. It indicates how efficiently inputs are
+              converted into harvest. Low values reflect more efficient input
+              use and stronger agronomic performance, while higher values may
+              point to low yields, inefficient input use, or higher input
+              prices.
             </div>
           </Space>
         </Col>

@@ -216,7 +216,7 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartRef}
-            exportFilename="Explore income levels for different commodities"
+            exportFilename="Income levels for different commodities"
           >
             <Row gutter={[20, 20]} align="middle">
               <Col span={24}>
