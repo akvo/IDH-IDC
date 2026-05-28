@@ -277,6 +277,24 @@ const StandardScenarioModeling = () => {
       </Col>
 
       <Col span={24}>
+        <div className="scenario-info-box">
+          <div className="title">Building your scenarios</div>
+          <p>
+            A scenario represents a set of practical actions that change one or
+            more income drivers. These can range from targeted interventions
+            (e.g. access to inputs, training) to broader approaches (e.g. crop
+            diversification or new sourcing models).
+          </p>
+          <p>
+            Use the percentage changes explored earlier as a starting point, and
+            translate them into realistic combinations of actions. Each scenario
+            should reflect a coherent strategy you could implement, allowing you
+            to compare which approaches are both impactful and feasible.
+          </p>
+        </div>
+      </Col>
+
+      <Col span={24}>
         <Tabs
           className="step-segment-tabs-container scenario-segment-tabs-container"
           type="card"
@@ -315,22 +333,27 @@ const StandardScenarioModeling = () => {
             <div className="label">Assess the impact of your investment</div>
           </Space>
         </Card>
-        <p>
-          This section allows you to assess the return on investment of each
-          scenario in terms of its contribution to closing the income gap for
-          farmers. It helps you compare the cost-efficiency of different
-          interventions, understand the main cost components involved in
-          implementation, and see how your resources translate into income
-          improvements at farmer and segment level. The focus is on social
-          returns rather than financial returns for the company.
-        </p>
-        <p>
-          Use the first graph to understand the total cost of each scenario and
-          which components are driving that cost. Consider this total cost in
-          light of the second graph which tells you which scenario returns the
-          highest social impact. You might find that a more affordable scenario
-          returns higher social impact.
-        </p>
+      </Col>
+
+      <Col span={24}>
+        <div className="scenario-info-box">
+          <p>
+            This section allows you to assess the return on investment of each
+            scenario in terms of its contribution to closing the income gap for
+            farmers. It helps you compare the cost-efficiency of different
+            interventions, understand the main cost components involved in
+            implementation, and see how your resources translate into income
+            improvements at farmer and segment level. The focus is on social
+            returns rather than financial returns for the company.
+          </p>
+          <p>
+            Use the first graph to understand the total cost of each scenario
+            and which components are driving that cost. Consider this total cost
+            in light of the second graph which tells you which scenario returns
+            the highest social impact. You might find that a more affordable
+            scenario returns higher social impact.
+          </p>
+        </div>
       </Col>
 
       <Col span={24}>

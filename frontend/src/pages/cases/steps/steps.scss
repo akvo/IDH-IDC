@@ -2082,3 +2082,28 @@
     }
   }
 }
+
+.scenario-info-box {
+  background-color: #eaf2f2;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(1, 98, 95, 0.1);
+  box-shadow: 0 4px 12px rgba(1, 98, 95, 0.08);
+  line-height: 1.5;
+
+  .title {
+    color: #01625f;
+    font-family: "RocGrotesk";
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  p {
+    margin: 0 0 12px 0;
+
+    &:last-child {
+      margin: 0;
+    }
+  }
+}
