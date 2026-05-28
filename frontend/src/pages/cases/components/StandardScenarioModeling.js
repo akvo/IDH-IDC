@@ -371,12 +371,17 @@ const StandardScenarioModeling = () => {
             </div>
           </Space>
         </Card>
-        <p>
-          In the table below, you can compare specific outcomes per segment to
-          understand in which scenario the farmers in that segment reach the
-          income target, how this is established, and how it compares to the
-          current scenario.
-        </p>
+      </Col>
+
+      <Col span={24}>
+        <div className="scenario-info-box">
+          <p>
+            In the table below, you can compare specific outcomes per segment to
+            understand in which scenario the farmers in that segment reach the
+            income target, how this is established, and how it compares to the
+            current scenario.
+          </p>
+        </div>
       </Col>
 
       <Col span={24}>
