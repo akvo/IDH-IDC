@@ -88,12 +88,12 @@ const ChartFarmEconomicEfficiency = () => {
       <Row gutter={[20, 20]} align="middle">
         <Col span={14}>
           <VisualCardWrapper
-            title="Farm economic efficiency"
+            title="Change indicator: Farm economic efficiency"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename="Farm economic efficiency"
+            exportFilename="Change indicator: Farm economic efficiency"
             tooltipText="This indicator is calculated by dividing total production costs by total output."
           >
             <Row gutter={[20, 20]}>
@@ -113,7 +113,9 @@ const ChartFarmEconomicEfficiency = () => {
         <Col span={10}>
           <Space direction="vertical">
             <div className="section-title">
-              How much money is needed to produce 1kg of the primary commodity?
+              How much money is needed to produce 1
+              {currentCase?.volume_measurement_unit || "kg"} of the primary
+              commodity?
             </div>
             <div className="section-description">
               This graph visualises production efficiency per unit of the

@@ -105,12 +105,12 @@ const ChartRevenueToCostRatio = () => {
         </Col>
         <Col span={14}>
           <VisualCardWrapper
-            title="Household revenue to cost ratio"
+            title="Change indicator: Household revenue to cost ratio"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename="Household revenue to cost ratio"
+            exportFilename="Change indicator: Household revenue to cost ratio"
             tooltipText="This indicator is calculated by dividing the primary commodity revenue by commodity production cost. "
           >
             <Row gutter={[20, 20]}>

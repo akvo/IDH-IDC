@@ -113,12 +113,12 @@ const ChartNetIncomePerLandUnit = () => {
       <Row gutter={[20, 20]} align="middle">
         <Col span={14}>
           <VisualCardWrapper
-            title={`Primary commodity net income per ${landUnit}`}
+            title={`Change indicator: Primary commodity income per ${landUnit}`}
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename={`Primary commodity net income per ${landUnit}`}
+            exportFilename={`Change indicator: Primary commodity income per ${landUnit}`}
             tooltipText="This indicator is calculated by dividing net income by the cultivated area."
           >
             <Row gutter={[20, 20]}>
