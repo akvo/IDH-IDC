@@ -50,8 +50,10 @@ The ROI form includes inline selectors for both **Segments** and **Scenarios** (
 ---
 
 ## 5. Technical Implementation References
+*   **Scenario Modeling Parent View**: `frontend/src/pages/cases/components/StandardScenarioModeling.js` (rendered as collapsible panels)
 *   **State Hook**: `frontend/src/pages/cases/hooks/useScenarioCalculations.js` (SSOT recalculation)
 *   **Logical Utility**: `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`
 *   **ROI Calculations**: `frontend/src/pages/cases/utils/roiCalculations.js`
 *   **Visualization**: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`
 *   **Form Logic**: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`
+
