@@ -137,6 +137,7 @@ const TableScenarioOutcomes = ({
       title="Scenario Outcomes"
       exportElementRef={tableRef}
       exportFilename="Scenario Outcomes"
+      bordered
     >
       <Row gutter={[20, 20]}>
         <Col span={24}>
