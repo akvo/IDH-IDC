@@ -83,6 +83,31 @@ const ChartFarmEconomicEfficiency = () => {
     });
   }, [currentCase, dashboardData, incomeDataDrivers]);
 
+  const rawUnit = useMemo(
+    () => currentCase?.volume_measurement_unit || "kg",
+    [currentCase?.volume_measurement_unit]
+  );
+
+  const volumeUnit = useMemo(() => {
+    const unitLower = rawUnit.toLowerCase();
+    if (unitLower === "tonnes") {
+      return "tonne";
+    }
+    if (unitLower === "tons") {
+      return "ton";
+    }
+    if (unitLower === "bags") {
+      return "bag";
+    }
+    if (unitLower === "litres" || unitLower === "liters") {
+      return "litre";
+    }
+    if (unitLower.endsWith("s")) {
+      return rawUnit.slice(0, -1);
+    }
+    return rawUnit;
+  }, [rawUnit]);
+
   return (
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
@@ -113,8 +138,7 @@ const ChartFarmEconomicEfficiency = () => {
         <Col span={10}>
           <Space direction="vertical">
             <div className="section-title">
-              How much money is needed to produce 1
-              {currentCase?.volume_measurement_unit || "kg"} of the primary
+              How much money is needed to produce 1 {volumeUnit} of the primary
               commodity?
             </div>
             <div className="section-description">
