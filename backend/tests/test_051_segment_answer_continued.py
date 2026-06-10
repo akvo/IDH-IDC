@@ -225,6 +225,7 @@ class TestSegmentAnswerRouteContinued:
             "private": False,
             "tags": [2, 1],
             "company": None,
+            "import_id": None,
         }
 
     @pytest.mark.asyncio

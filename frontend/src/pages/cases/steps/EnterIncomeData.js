@@ -35,11 +35,18 @@ const generateSegmentAnswersPayload = ({
   // Use reduce to accumulate answers grouped by question ID
   const groupedAnswers = Object.keys(answerValues).reduce((acc, key) => {
     const [fieldName, caseCommodityId, questionId] = key.split("-");
+    const parsedCommodityId = parseInt(caseCommodityId);
+
+    // Filter out invalid case_commodity IDs (e.g., "null", NaN)
+    if (isNaN(parsedCommodityId)) {
+      return acc;
+    }
+
     const questionKey = `${caseCommodityId}-${questionId}`;
 
     if (!acc[questionKey]) {
       acc[questionKey] = {
-        case_commodity: parseInt(caseCommodityId),
+        case_commodity: parsedCommodityId,
         question: parseInt(questionId),
         segment: segmentId,
       };
@@ -305,7 +312,22 @@ const EnterIncomeData = ({
           <Space direction="vertical">
             <div className="level-text">
               Feasible{" "}
-              <Tooltip title="Feasible value can be defined as the realistically achievable improvement in each income driver, based on on-ground conditions. These estimate values can be arrived through a combination of sources like local experts, farmer interviews and published research studies.">
+              <Tooltip
+                title={
+                  <>
+                    Feasible value can be defined as the realistically
+                    achievable improvement in each income driver, based on
+                    on-ground conditions. These estimate values can be arrived
+                    through a combination of sources like local experts, farmer
+                    interviews and published research studies.
+                    <br />
+                    <br />
+                    If you used the data upload function, the feasible values
+                    represent top-performing farmers in your dataset. They are
+                    based on the 80th quantile of each driver.
+                  </>
+                }
+              >
                 <span>
                   <InfoCircleOutlined style={{ fontSize: 11 }} />
                 </span>

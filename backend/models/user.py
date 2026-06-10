@@ -37,12 +37,20 @@ class UserRole(enum.Enum):
     user = "user"
 
 
+class UserType(enum.Enum):
+    internal = "internal"
+    external_regular = "external_regular"
+    external_advanced = "external_advanced"
+
+
 # only for user:get_all route
 class FilterUserRole(enum.Enum):
     super_admin = "super_admin"
     admin = "admin"
     internal = "internal"
     external = "external"
+    external_regular = "external_regular"
+    external_advanced = "external_advanced"
 
 
 def json_load(value: Optional[str] = None):
@@ -77,6 +85,7 @@ class UserInfo(TypedDict):
     case_access: Optional[List[UserCasePermissionDict]]
     internal_user: bool  # UserRole == user has business unit
     company: Optional[int]
+    user_type: UserType
 
 
 class UserDetailDict(TypedDict):
@@ -91,6 +100,7 @@ class UserDetailDict(TypedDict):
     tags: Optional[List[int]]
     business_units: Optional[List[UserBusinessUnitRoleDict]]
     cases: Optional[List[UserCasePermissionDict]]
+    user_type: UserType
 
 
 class UserPageDict(TypedDict):
@@ -104,6 +114,7 @@ class UserPageDict(TypedDict):
     cases_count: int
     business_unit_count: int
     company: Optional[int] = None
+    user_type: UserType
 
 
 class UserDict(TypedDict):
@@ -114,6 +125,7 @@ class UserDict(TypedDict):
     role: UserRole
     active: bool
     company: Optional[int]
+    user_type: UserType
 
 
 class UserInvitation(TypedDict):
@@ -144,6 +156,11 @@ class User(Base):
     fullname = Column(String, nullable=False)
     password = Column(String, nullable=True)
     role = Column(Enum(UserRole, name="user_role"), nullable=False)
+    user_type = Column(
+        Enum(UserType, native_enum=False, length=50),
+        nullable=True,
+        server_default=None,
+    )
     all_cases = Column(SmallInteger, nullable=False, default=0)
     is_active = Column(SmallInteger, nullable=False, default=0)
     invitation_id = Column(String, nullable=True)
@@ -205,6 +222,11 @@ class User(Base):
         self.fullname = fullname
         self.password = password
         self.role = role
+        self.user_type = (
+            UserType.external_regular
+            if role == UserRole.user
+            else UserType.internal
+        )
         self.all_cases = all_cases
         self.is_active = is_active
         self.invitation_id = invitation_id
@@ -222,6 +244,7 @@ class User(Base):
             "email": self.email,
             "fullname": self.fullname,
             "role": self.role,
+            "user_type": self.user_type,
             "active": self.is_active,
         }
 
@@ -251,11 +274,10 @@ class User(Base):
             "cases_count": len(self.user_case_access),
             "case_access": case_access,
             "internal_user": (
-                False
-                if not business_unit_detail and self.role == UserRole.user
-                else True
+                True if self.user_type == UserType.internal else False
             ),
             "company": self.company,
+            "user_type": self.user_type,
         }
 
     @property
@@ -283,6 +305,7 @@ class User(Base):
             "tags": tags,
             "business_units": business_units,
             "cases": cases,
+            "user_type": self.user_type,
         }
 
     @property
@@ -298,6 +321,7 @@ class User(Base):
             "cases_count": len(self.user_case_access),
             "business_unit_count": len(self.user_business_units),
             "company": self.company,
+            "user_type": self.user_type,
         }
 
     @property
@@ -332,6 +356,7 @@ class UserBase(BaseModel):
     cases: Optional[str] = None
     business_units: Optional[str] = None
     company: Optional[int] = None
+    user_type: Optional[UserType] = None
 
     @field_validator("tags")
     @classmethod
@@ -362,6 +387,7 @@ class UserBase(BaseModel):
         tags: str = Form(None, description=tags_desc),
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
+        user_type: Optional[UserType] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -374,6 +400,7 @@ class UserBase(BaseModel):
             tags=tags,
             cases=cases,
             business_units=business_units,
+            user_type=user_type,
         )
 
 
@@ -395,6 +422,7 @@ class UserUpdateBase(BaseModel):
     cases: Optional[str] = None
     business_units: Optional[str] = None
     company: Optional[int] = None
+    user_type: Optional[UserType] = None
 
     @field_validator("tags")
     @classmethod
@@ -425,6 +453,7 @@ class UserUpdateBase(BaseModel):
         tags: str = Form(None, description=tags_desc),
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
+        user_type: Optional[UserType] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -437,4 +466,5 @@ class UserUpdateBase(BaseModel):
             tags=tags,
             cases=cases,
             business_units=business_units,
+            user_type=user_type,
         )

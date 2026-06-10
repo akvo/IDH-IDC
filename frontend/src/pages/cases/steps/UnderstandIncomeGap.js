@@ -8,12 +8,18 @@ import {
   ChartIncomeDriverAcrossSegments,
   ChartExploreIncomeDriverBreakdown,
   ChartIncomeLevelsForDifferentCommodities,
+  ChartHouseholdIncomeComposition,
+  ChartNeededIncomeLevel,
+  ChartFarmEconomicEfficiency,
+  ChartRevenueToCostRatio,
+  ChartNetIncomePerLandUnit,
 } from "../visualizations";
 import { routePath } from "../../../components/route";
 
 /**
  * STEP 3
  */
+
 const UnderstandIncomeGap = ({
   setbackfunction,
   setnextfunction,
@@ -62,35 +68,61 @@ const UnderstandIncomeGap = ({
           </div>
         </Space>
       </Col>
+
       <Col span={24}>
         <Card className="card-section-wrapper">
           Understand current income and the income gap
         </Card>
       </Col>
-      {/* Chart */}
+
       <Col span={24}>
         <ChartIncomeGap />
       </Col>
       <Col span={24}>
         <CompareIncomeGap />
       </Col>
-      {/* EOL Chart */}
+
       <Col span={24}>
         <Card className="card-section-wrapper">
           Explore your income drivers
         </Card>
       </Col>
-      {/* Chart */}
       <Col span={24}>
         <ChartIncomeDriverAcrossSegments />
       </Col>
+
       <Col span={24}>
         <ChartExploreIncomeDriverBreakdown />
       </Col>
       <Col span={24}>
         <ChartIncomeLevelsForDifferentCommodities />
       </Col>
-      {/* EOL Chart */}
+
+      {/* New Chart */}
+      <Col span={24}>
+        <Card className="card-visual-wrapper">
+          <Row gutter={[20, 20]}>
+            <Col span={12}>
+              <ChartHouseholdIncomeComposition />
+            </Col>
+            <Col span={12}>
+              <ChartNeededIncomeLevel />
+            </Col>
+          </Row>
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <ChartFarmEconomicEfficiency />
+      </Col>
+
+      <Col span={24}>
+        <ChartRevenueToCostRatio />
+      </Col>
+
+      <Col span={24}>
+        <ChartNetIncomePerLandUnit />
+      </Col>
     </Row>
   );
 };

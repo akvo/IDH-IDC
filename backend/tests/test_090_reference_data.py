@@ -169,7 +169,7 @@ class TestReferenceRoute:
                 {
                     "id": 2,
                     "country": "Indonesia",
-                    "commodity": "Wheat",
+                    "commodity": "Test Wheat",
                     "source": "Sample Source 2",
                     "link": "http://example.com",
                     "confidence_level": "Low",
@@ -177,7 +177,7 @@ class TestReferenceRoute:
                 {
                     "id": 1,
                     "country": "Indonesia",
-                    "commodity": "Wheat",
+                    "commodity": "Test Wheat",
                     "source": "Sample Source",
                     "link": "http://example.com",
                     "confidence_level": "High",
@@ -257,7 +257,7 @@ class TestReferenceRoute:
         assert res == {
             "country": [1],
             "commodity": [1],
-            "source": res['source'],
+            "source": res["source"],
             "driver": res["driver"],
         }
 

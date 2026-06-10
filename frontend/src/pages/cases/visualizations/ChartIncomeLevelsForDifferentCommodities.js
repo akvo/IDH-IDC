@@ -92,8 +92,8 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
           (a) =>
             a.name === x &&
             a.commodityId === cm.commodityId &&
-            !a.question.parent &&
-            a.question.question_type !== "diversified"
+            !a.question?.parent &&
+            a.question?.question_type !== "diversified"
         );
         const newTotalValue =
           incomeQuestion && incomeQuestion?.value
@@ -148,8 +148,8 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
       .filter(
         (a) =>
           (!a.commodityId || !a.commodityName) &&
-          a.question.question_type === "diversified" &&
-          !a.question.parent
+          a.question?.question_type === "diversified" &&
+          !a.question?.parent
       )
       .flatMap((a) => a.question);
     diversifiedQUestions = uniqBy(diversifiedQUestions, "id");
@@ -216,7 +216,7 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartRef}
-            exportFilename="Explore income levels for different commodities"
+            exportFilename="Income levels for different commodities"
           >
             <Row gutter={[20, 20]} align="middle">
               <Col span={24}>
@@ -233,7 +233,7 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
                   affix={true}
                   extra={{
                     axisTitle: {
-                      y: `Income  Levels (${currentCase.currency})`,
+                      y: `Income Levels (${currentCase.currency})`,
                     },
                   }}
                   showLabel={showLabel}
@@ -248,7 +248,7 @@ const ChartIncomeLevelsForDifferentCommodities = () => {
               Explore income levels for different commodities
             </div>
             <div className="section-description">
-              This graph shows the current net income levels for your focus
+              This graph shows the current net income levels for your primary
               commodity, any secondary or tertiary commodities, next to
               diversified income within different segments. Use it to compare
               income levels across sources and segments.

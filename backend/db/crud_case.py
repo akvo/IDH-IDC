@@ -1,5 +1,7 @@
+import db.crud_living_income_benchmark as crud_lib
+
 from sqlalchemy.orm import Session
-from sqlalchemy import and_, cast
+from sqlalchemy import and_, cast, or_
 from sqlalchemy.dialects.postgresql import TEXT
 from typing import Optional, List
 from typing_extensions import TypedDict
@@ -225,9 +227,12 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
         prev_focus_commodity.volume_measurement_unit = (
             payload.volume_measurement_unit
         )
+
     # handle update other commodities
-    if payload.other_commodities:
+    if payload.other_commodities is not None:
+        payload_commodity_types = []
         for val in payload.other_commodities:
+            payload_commodity_types.append(val.commodity_type.value)
             breakdown = 1 if val.breakdown else 0
             prev_case_commodity = (
                 session.query(CaseCommodity)
@@ -247,9 +252,6 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
                 prev_case_commodity.volume_measurement_unit = (
                     val.volume_measurement_unit
                 )
-                session.commit()
-                session.flush()
-                session.refresh(prev_case_commodity)
             else:
                 case_commodity = CaseCommodity(
                     commodity=val.commodity,
@@ -259,15 +261,49 @@ def update_case(session: Session, id: int, payload: CaseBase) -> CaseDict:
                     volume_measurement_unit=val.volume_measurement_unit,
                 )
                 case.case_commodities.append(case_commodity)
+
+        # delete removed commodities
+        commodities_to_remove = (
+            session.query(CaseCommodity)
+            .filter(
+                and_(
+                    CaseCommodity.case == case.id,
+                    CaseCommodity.commodity_type.in_(
+                        [
+                            CaseCommodityType.secondary.value,
+                            CaseCommodityType.tertiary.value,
+                        ]
+                    ),
+                    CaseCommodity.commodity_type.notin_(
+                        payload_commodity_types
+                    ),
+                )
+            )
+            .all()
+        )
+        for cc in commodities_to_remove:
+            session.delete(cc)
+
+    # Ensure all changes are committed and IDs are generated
+    session.commit()
+    session.flush()
+    session.refresh(case)
+
     # handle update segments
     if payload.segments:
         for segment in payload.segments:
             prev_segment = (
                 session.query(Segment)
                 .filter(
-                    and_(
-                        Segment.case == case.id,
-                        Segment.id == segment.id,
+                    or_(
+                        and_(
+                            Segment.case == case.id,
+                            Segment.id == segment.id,
+                        ),
+                        and_(
+                            Segment.case == case.id,
+                            Segment.name == segment.name,
+                        ),
                     )
                 )
                 .first()
@@ -348,6 +384,16 @@ def get_case_by_private(session: Session, private: Optional[bool] = False):
     return session.query(Case).filter(Case.private == private_param).all()
 
 
+def get_case_by_organisation(session: Session, organisation_id: int):
+    cases = (
+        session.query(Case)
+        .join(User, Case.created_by == User.id)
+        .filter(User.organisation == organisation_id)
+        .all()
+    )
+    return cases
+
+
 def delete_case(session: Session, case_id: int):
     case = get_case_by_id(session=session, id=case_id)
 
@@ -420,3 +466,15 @@ def get_case_by_company(session: Session, company: int) -> CaseDict:
 def get_case_countries(session: Session) -> List[int]:
     cases = session.query(Case.country).all()
     return set([x[0] for x in cases])
+
+
+def get_segment_benchmark(session: Session, case):
+    for segment in case["segments"]:
+        benchmark = crud_lib.get_by_country_region_year(
+            session=session,
+            country=case["country"],
+            region=segment["region"],
+            year=case["year"],
+        )
+        segment["benchmark"] = benchmark
+    return case

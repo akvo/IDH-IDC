@@ -3,7 +3,12 @@ import { Store } from "pullstate";
 const defaultCaseUIState = {
   general: {
     enableEditCase: true,
+    enableAdvancedTools: true,
+    enableDataUpload: true,
+    enableImpactOfInvestment: true,
     activeSegmentId: null,
+    isRoiExpandedAll: true,
+    isRoiExpandedSegments: {},
   },
   caseButton: {
     loading: false,

@@ -1,0 +1,22 @@
+@import "../../../variables.scss";
+
+.what-is-next-info-box {
+  background-color: #eaf2f2;
+  border-radius: 20px;
+  padding: 24px;
+  width: 100%;
+  border: 1px solid rgba(1, 98, 95, 0.1);
+  box-shadow: 0 4px 12px rgba(1, 98, 95, 0.08);
+
+  .title {
+    color: $primary-color;
+    font-family: "RocGrotesk";
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  p {
+    margin: 0;
+  }
+}

@@ -28,6 +28,7 @@ from routes.procurement_library.procurement_process import (
 )
 from routes.procurement_library_v2.practice import pl_practice_router_v2
 from routes.procurement_library_v2.category import pl_cat_router_v2
+from routes.case_import import case_import_route
 
 import os
 from jsmin import jsmin
@@ -55,6 +56,10 @@ JS_FILE = "./config.min.js"
 
 
 def generate_config_file() -> None:
+    if os.environ.get("TESTING"):
+        print("[TESTING] No config should be generated")
+        return None
+
     print("[START] Generating config")
     session = SessionLocal()
     env_js = "var __ENV__={"
@@ -128,6 +133,7 @@ app.include_router(organisation_route)
 app.include_router(company_route)
 app.include_router(user_route)
 app.include_router(case_route)
+app.include_router(case_import_route)
 app.include_router(question_route)
 app.include_router(segment_route)
 app.include_router(segment_answer_route)

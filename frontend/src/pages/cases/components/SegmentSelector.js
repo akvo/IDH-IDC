@@ -3,7 +3,7 @@ import { Radio } from "antd";
 import { CaseVisualState } from "../store";
 import { orderBy } from "lodash";
 
-const SegmentSelector = ({ selectedSegment, setSelectedSegment }) => {
+const SegmentSelector = ({ selectedSegment, setSelectedSegment, disabled }) => {
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
 
   useEffect(() => {
@@ -18,7 +18,11 @@ const SegmentSelector = ({ selectedSegment, setSelectedSegment }) => {
   };
 
   return (
-    <Radio.Group value={selectedSegment} onChange={handleChangeSegmentSelector}>
+    <Radio.Group
+      value={selectedSegment}
+      onChange={handleChangeSegmentSelector}
+      disabled={disabled}
+    >
       {orderBy(dashboardData, ["id"]).map((d) => (
         <Radio.Button key={d.id} value={d.id} style={{ fontWeight: "normal" }}>
           {d.name}

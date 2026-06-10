@@ -15,7 +15,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from typing import Optional, List
 from typing_extensions import TypedDict
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from models.case_commodity import (
     CaseCommodity,
     SimplifiedCaseCommodityDict,
@@ -23,7 +23,6 @@ from models.case_commodity import (
 )
 from models.segment import (
     Segment,
-    SegmentDict,
     SegmentWithAnswersDict,
     CaseSettingSegmentPayload,
 )
@@ -82,7 +81,7 @@ class CaseDict(TypedDict):
     multiple_commodities: bool
     logo: Optional[str]
     created_by: int
-    segments: Optional[List[SegmentDict]]
+    segments: Optional[List[SegmentWithAnswersDict]]
     case_commodities: List[SimplifiedCaseCommodityDict]
     private: bool
     status: int
@@ -116,6 +115,7 @@ class CaseDetailDict(TypedDict):
     status: int
     tags: Optional[List[int]] = []
     company: Optional[int] = None
+    import_id: Optional[str] = None
 
 
 class Case(Base):
@@ -199,6 +199,12 @@ class Case(Base):
         passive_deletes=True,
         backref="company_cases",
     )
+    case_imports = relationship(
+        "CaseImport",
+        cascade="all, delete",
+        passive_deletes=True,
+        backref="case_detail",
+    )
 
     def __init__(
         self,
@@ -251,6 +257,15 @@ class Case(Base):
 
     @property
     def serialize(self) -> CaseDict:
+        # Get the most recent import_id if exists
+        import_id = None
+        if self.case_imports:
+            # Sort by created_at and get the most recent one
+            most_recent_import = max(
+                self.case_imports, key=lambda x: x.created_at
+            )
+            import_id = str(most_recent_import.id)
+
         return {
             "id": self.id,
             "name": self.name,
@@ -270,11 +285,14 @@ class Case(Base):
             "logo": self.logo,
             "created_by": self.created_by,
             "case_commodities": [pc.simplify for pc in self.case_commodities],
-            "segments": [ps.serialize for ps in self.case_segments],
+            "segments": [
+                ps.serialize_with_answers for ps in self.case_segments
+            ],
             "private": self.private,
             "tags": [ct.tag for ct in self.case_tags],
             "company": self.company,
             "status": self.status,
+            "import_id": import_id,
         }
 
     @property
@@ -291,11 +309,29 @@ class Case(Base):
             for v in self.case_visualization
             if v.tab == VisualizationTab.scenario_modeling
         ]
-        # Check if any of them contain scenario data
+        # Check if any of them contain scenario data (traditional or advanced)
         has_scenario_data = any(
-            v.config.get("scenarioData")
-            and v.config.get("scenarioOutcomeDataSource")
-            and any(s["scenarioValues"] for s in v.config["scenarioData"])
+            (
+                # Advanced modelling tool check
+                v.config.get("advancedModeling")
+                and any(
+                    sv.get("calculationResult", {}).get("value")
+                    for k, sv in v.config.get("advancedModeling", {})
+                    .get("segmentData", {})
+                    .items()
+                    if k != "null"
+                )
+            )
+            or (
+                # Traditional scenario modeling check
+                # if Step 5 is updated to consistently populate it.
+                v.config.get("scenarioData")
+                and v.config.get("scenarioOutcomeDataSource")
+                and any(
+                    s.get("scenarioValues")
+                    for s in v.config.get("scenarioData", [])
+                )
+            )
             for v in scenario_modeling_visualizations
         )
         # get scenario outcome data source
@@ -343,6 +379,15 @@ class Case(Base):
 
     @property
     def to_case_detail(self) -> CaseDetailDict:
+        # Get the most recent import_id if exists
+        import_id = None
+        if self.case_imports:
+            # Sort by created_at and get the most recent one
+            most_recent_import = max(
+                self.case_imports, key=lambda x: x.created_at
+            )
+            import_id = str(most_recent_import.id)
+
         return {
             "id": self.id,
             "name": self.name,
@@ -374,6 +419,7 @@ class Case(Base):
             "tags": [ct.tag for ct in self.case_tags],
             "company": self.company,
             "status": self.status,
+            "import_id": import_id,
         }
 
     @property
@@ -413,7 +459,10 @@ class CaseBase(BaseModel):
     tags: Optional[List[int]] = None
     company: Optional[int] = None
     status: Optional[int] = None
-    segments: Optional[List[CaseSettingSegmentPayload]] = None
+    segments: Optional[List[CaseSettingSegmentPayload]] = Field(
+        None, max_length=5
+    )
+    import_id: Optional[str] = None
 
 
 class PaginatedCaseResponse(BaseModel):

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Card,
   Form,
@@ -13,7 +13,13 @@ import {
   Alert,
   Radio,
   Switch,
+  Tabs,
+  Button,
+  Upload,
+  message,
+  Modal,
 } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import {
   countryOptions,
   focusCommodityOptions,
@@ -22,12 +28,19 @@ import {
   currencyOptions,
 } from "../../../store/static";
 import { selectProps, getFieldDisableStatusForCommodity } from "../../../lib";
-import { AreaUnitFields, SegmentForm } from ".";
+import { AreaUnitFields, SegmentForm, SegmentConfigurationForm } from ".";
 import { UIState } from "../../../store";
 import dayjs from "dayjs";
 import { CaseUIState, CurrentCaseState } from "../store";
+import { MAX_SEGMENT } from "../constants";
 import { uniqBy } from "lodash";
 import { QuestionCircleOutline } from "../../../lib/icon";
+import {
+  FileExcelOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
+import { api } from "../../../lib";
 
 const responsiveCol = {
   xs: { span: 24 },
@@ -49,6 +62,8 @@ const livestockPrompt = (
     from livestock&apos;.
   </>
 );
+
+const { Dragger } = Upload;
 
 const SecondaryForm = ({
   index,
@@ -159,17 +174,254 @@ const SecondaryForm = ({
   );
 };
 
+const SegmentOverflowAlert = ({ segments = [] }) => {
+  const segmentCount = segments?.length || 0;
+  if (segmentCount <= MAX_SEGMENT) {
+    return null;
+  }
+  return (
+    <Alert
+      message={`You have defined ${segmentCount} segments. The maximum allowed is ${MAX_SEGMENT}. Please remove ${
+        segmentCount - MAX_SEGMENT
+      } segment(s) to save your changes.`}
+      type="error"
+      style={{
+        marginBottom: "16px",
+        display: "flex",
+        alignItems: "flex-start",
+      }}
+    />
+  );
+};
+
 const CaseForm = ({
   deletedSegmentIds = [],
   updateCurrentCase = () => {},
   setDeletedSegmentIds = () => {},
+  dataUploadFieldPreffix = "",
+  onTabChange = () => {},
+  activeTab = "manual",
 }) => {
   const form = Form.useFormInstance();
   const tagOptions = UIState.useState((s) => s.tagOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
   const currentCase = CurrentCaseState.useState((s) => s);
   const { secondary, tertiary, general } = CaseUIState.useState((s) => s);
-  const { enableEditCase } = general;
+  const { enableEditCase, enableDataUpload } = general;
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const [uploadResult, setUploadResult] = useState(null);
+  const isUpdateMode = !!currentCase?.id;
+
+  const segments = Form.useWatch("segments", form);
+  const importId = Form.useWatch("import_id", form);
+
+  const isAtMaxSegments = (segments?.length || 0) >= MAX_SEGMENT;
+
+  const [uploading, setUploading] = useState(false);
+  const [fileList, setFileList] = useState([]);
+  const [uploadErrorText, setUploadErrorText] = useState("");
+  const [downloading, setDownloading] = useState(false);
+
+  const resetDataUploadForm = () => {
+    setUploadResult(null);
+    setFileList([]);
+
+    // In update mode, preserve segments with IDs
+    const existingSegments = isUpdateMode
+      ? segments?.filter((s) => s?.id) || []
+      : [];
+
+    form.setFieldsValue({
+      import_id: null,
+      // reset variable type
+      [`${dataUploadFieldPreffix}variable_type`]: null,
+      // reset segmentation variable when variable type changes
+      [`${dataUploadFieldPreffix}segmentation_variable`]: null,
+      // reset segments
+      segments:
+        existingSegments.length > 0 ? existingSegments : [{ name: null }],
+      // reset number of segments
+      [`${dataUploadFieldPreffix}number_of_segments`]: null,
+    });
+  };
+
+  const handleTabChange = (key) => {
+    // Only guard if NOT in update mode and there is existing data
+    const hasData = (segments?.length > 0 && segments[0]?.name) || !!importId;
+
+    if (!isUpdateMode && hasData) {
+      Modal.confirm({
+        title: "Switch segmentation method?",
+        icon: <ExclamationCircleOutlined />,
+        content:
+          "Switching tabs will clear your current segmentation progress. Do you want to continue?",
+        okText: "Yes, switch and clear",
+        cancelText: "Cancel",
+        okButtonProps: {
+          style: { backgroundColor: "#01625F", borderColor: "#01625F" },
+        },
+        onOk: () => {
+          resetDataUploadForm();
+          onTabChange(key);
+        },
+      });
+    } else {
+      onTabChange(key);
+    }
+  };
+
+  const uploadProps = {
+    name: "file",
+    multiple: false,
+    accept: ".xlsm,application/vnd.ms-excel.sheet.macroEnabled.12",
+    disabled: uploading,
+    fileList: fileList, // Controlled file list
+    customRequest: async ({ file, onSuccess, onError, onProgress }) => {
+      setUploading(true);
+      try {
+        const response = await api.upload("/case-import", file, {
+          onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            onProgress({ percent });
+          },
+        });
+        const result = response.data;
+        setUploadResult(result);
+        if (result.import_id) {
+          form.setFieldValue("import_id", result.import_id);
+        }
+        onSuccess(result, file);
+        messageApi.success(`${file.name} uploaded successfully`);
+      } catch (error) {
+        console.error("Upload error:", error);
+        onError(error);
+        const { status, data } = error.response;
+        let errorText = `${file.name} upload failed.`;
+        if (status === 400 && data.detail) {
+          errorText = `${errorText} ${data.detail}`;
+          setUploadErrorText(data.detail);
+        }
+        messageApi.error(errorText);
+      } finally {
+        setUploading(false);
+      }
+    },
+    onChange(info) {
+      const { status, fileList: newFileList } = info;
+      setFileList(newFileList); // Update file list state
+
+      if (status === "uploading") {
+        console.info("Progress:", info.file.percent + "%");
+      }
+      if (status === "done") {
+        const result = info.file.response;
+        console.info("Upload completed with result:", result);
+      } else if (status === "error") {
+        console.error("Upload failed");
+      }
+    },
+    onRemove: () => {
+      // Clear upload result and form when file is removed
+      setUploadResult(null);
+      setFileList([]);
+      resetDataUploadForm();
+      return true;
+    },
+    showUploadList: {
+      showRemoveIcon: true,
+      removeIcon: <DeleteOutlined />,
+    },
+    itemRender: (originNode, file) => {
+      const isError = file.status === "error";
+      const isSuccess = file.status === "done";
+
+      return (
+        <div
+          className="case-form-dragger-item-container"
+          style={{
+            border: `1px solid ${
+              isError ? "#ff4d4f" : isSuccess ? "#52c41a" : "#d9d9d9"
+            }`,
+            backgroundColor: isError
+              ? "#fff2f0"
+              : isSuccess
+              ? "#f6ffed"
+              : "#fafafa",
+          }}
+        >
+          <div className="dragger-item-list-wrapper">
+            <FileExcelOutlined
+              style={{
+                color: isError ? "#ff4d4f" : isSuccess ? "#01625f" : "#1890ff",
+                fontSize: "36px",
+                marginRight: "12px",
+              }}
+            />
+            <div style={{ flex: 1 }}>
+              <h4
+                style={{
+                  color: isError
+                    ? "#ff4d4f"
+                    : isSuccess
+                    ? "#01625f"
+                    : "#262626",
+                }}
+              >
+                {file.name}
+              </h4>
+              {file.status === "uploading" && (
+                <p
+                  style={{
+                    color: "#8c8c8c",
+                  }}
+                >
+                  Uploading: {file.percent}%
+                </p>
+              )}
+              {isError && (
+                <div
+                  style={{
+                    color: "#ff4d4f",
+                  }}
+                >
+                  Upload failed. {uploadErrorText}
+                </div>
+              )}
+              {isSuccess && (
+                <p
+                  style={{
+                    color: "#01625f",
+                  }}
+                >
+                  Uploaded successfully
+                </p>
+              )}
+            </div>
+          </div>
+          {(isError || isSuccess) && (
+            <Button
+              type="text"
+              danger={isError}
+              icon={<DeleteOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                // Trigger the onRemove handler
+                setFileList([]);
+                setUploadResult(null);
+                resetDataUploadForm();
+              }}
+            >
+              Remove
+            </Button>
+          )}
+        </div>
+      );
+    },
+    maxCount: 1,
+  };
 
   const updateCaseUI = (key, value) => {
     CaseUIState.update((s) => ({
@@ -203,8 +455,23 @@ const CaseForm = ({
     }
   }, [form, currentCase]);
 
+  const handleDownloadTemplate = async () => {
+    setDownloading(true);
+    api
+      .download("/case-import/download-template", {
+        filename: "data_upload_template.zip",
+      })
+      .catch((error) => {
+        console.error("Download template error:", error);
+        messageApi.error("Failed to download template.");
+      })
+      .finally(() => {
+        setDownloading(false);
+      });
+  };
+
   return (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} className="case-form-body-wrapper">
       {/* GENERAL INFORMATION */}
       <Col span={24}>
         <Card
@@ -445,18 +712,137 @@ const CaseForm = ({
           </Row>
         </Card>
       </Col>
-      {/* SEGMENTATION */}
+      {/* MANUAL / DATA UPLOAD */}
       <Col span={24}>
-        <Card
-          title="Create up to 5 segments"
-          className="case-setting-child-card-wrapper"
-          size="small"
-        >
-          <SegmentForm
-            deletedSegmentIds={deletedSegmentIds}
-            setDeletedSegmentIds={setDeletedSegmentIds}
-          />
-        </Card>
+        {contextHolder}
+        <Tabs
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          items={[
+            {
+              key: "manual",
+              label: "Manual data input",
+              children: (
+                <Col span={24}>
+                  {/* SEGMENTATION */}
+                  <Card
+                    title="Create up to 5 segments"
+                    className="case-setting-child-card-wrapper"
+                    size="small"
+                  >
+                    <SegmentOverflowAlert segments={segments} />
+                    <SegmentForm
+                      deletedSegmentIds={deletedSegmentIds}
+                      setDeletedSegmentIds={setDeletedSegmentIds}
+                    />
+                  </Card>
+                </Col>
+              ),
+            },
+            enableDataUpload && {
+              key: "upload",
+              label: "Data upload",
+              children: (
+                <Col span={24}>
+                  <Row gutter={[16, 16]}>
+                    <Col span={24}>
+                      <h3 style={{ marginBottom: "4px" }}>
+                        Upload your completed data template
+                      </h3>
+                      <p
+                        style={{
+                          marginTop: 0,
+                          marginBottom: "8px",
+                          color: "rgba(0, 0, 0, 0.65)",
+                        }}
+                      >
+                        Download the template, enter your data, run the
+                        validation in Excel, and upload the validated file here.
+                      </p>
+                      {isUpdateMode && isAtMaxSegments && !uploadResult && (
+                        <Alert
+                          message={
+                            <span>
+                              You have reached the maximum of 5 segments. Please{" "}
+                              <b>delete</b> existing segments from the{" "}
+                              <b>&quot;Manual data input&quot;</b> tab before
+                              uploading a new data template.
+                            </span>
+                          }
+                          type="warning"
+                          style={{
+                            marginBottom: "16px",
+                            display: "flex",
+                            alignItems: "flex-start",
+                          }}
+                        />
+                      )}
+                      <Dragger
+                        {...uploadProps}
+                        style={{
+                          marginBottom: "24px",
+                          display:
+                            (isUpdateMode && isAtMaxSegments) ||
+                            (uploadProps.fileList &&
+                              uploadProps.fileList.length > 0)
+                              ? "none"
+                              : "block",
+                        }}
+                      >
+                        <p className="ant-upload-drag-icon">
+                          <FileExcelOutlined />
+                        </p>
+                        <p className="ant-upload-text">
+                          {uploading
+                            ? "Uploading..."
+                            : "Select a .xlsm data template to upload"}
+                        </p>
+                        <p className="ant-upload-hint">
+                          {uploading
+                            ? "Please wait while the file is being uploaded"
+                            : "Drag and drop your data file here or click to upload"}
+                        </p>
+                        <Button
+                          className="button-browse-file"
+                          disabled={uploading}
+                        >
+                          {uploading ? "Uploading..." : "Browse files"}
+                        </Button>
+                      </Dragger>
+                      <Form.Item name="import_id" hidden>
+                        <input type="hidden" />
+                      </Form.Item>
+                    </Col>
+                    {uploadResult && (
+                      <Col span={24}>
+                        <SegmentOverflowAlert segments={segments} />
+                        <SegmentConfigurationForm
+                          dataUploadFieldPreffix={dataUploadFieldPreffix}
+                          uploadResult={uploadResult}
+                          deletedSegmentIds={deletedSegmentIds}
+                          setDeletedSegmentIds={setDeletedSegmentIds}
+                          currentCase={currentCase}
+                        />
+                      </Col>
+                    )}
+                  </Row>
+                </Col>
+              ),
+            },
+          ].filter(Boolean)}
+          tabBarExtraContent={
+            enableDataUpload ? (
+              <Button
+                className="button-ghost"
+                onClick={handleDownloadTemplate}
+                disabled={downloading}
+                loading={downloading}
+              >
+                <DownloadOutlined /> Download required data template (ZIP)
+              </Button>
+            ) : null
+          }
+        />
       </Col>
     </Row>
   );

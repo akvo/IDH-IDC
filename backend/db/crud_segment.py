@@ -60,10 +60,14 @@ def update_segment(
         segment = get_segment_by_id(session=session, id=payload.id)
         segment.name = payload.name
         segment.case = payload.case
-        segment.region = payload.region
-        segment.target = payload.target
-        segment.adult = payload.adult
-        segment.child = payload.child
+        if payload.region is not None:
+            segment.region = payload.region
+        if payload.target is not None:
+            segment.target = payload.target
+        if payload.adult is not None:
+            segment.adult = payload.adult
+        if payload.child is not None:
+            segment.child = payload.child
         # delete prev segment answers
         if payload.answers:
             prev_segment_answers = (

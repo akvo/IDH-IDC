@@ -1,10 +1,16 @@
 import db.crud_case as crud_case
 import db.crud_user_business_unit as crud_bu
-import db.crud_living_income_benchmark as crud_lib
 import db.crud_user_case_access as crud_uca
 
 from math import ceil
-from fastapi import APIRouter, Request, Depends, HTTPException, Query, Response
+from fastapi import (
+    APIRouter,
+    Request,
+    Depends,
+    HTTPException,
+    Query,
+    Response,
+)
 from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import Optional, List
@@ -19,7 +25,7 @@ from models.case import (
     CaseDropdown,
     CaseStatusEnum,
 )
-from models.user import UserRole
+from models.user import UserRole, UserType
 from models.user_case_access import UserCaseAccessPayload, UserCaseAccessDict
 from middleware import (
     verify_admin,
@@ -29,21 +35,10 @@ from middleware import (
     verify_case_editor,
     verify_case_viewer,
 )
+from db.crud_case_import import update_case_import_case_id
 
 security = HTTPBearer()
 case_route = APIRouter()
-
-
-def get_segment_benchmark(session: Session, case):
-    for segment in case["segments"]:
-        benchmark = crud_lib.get_by_country_region_year(
-            session=session,
-            country=case["country"],
-            region=segment["region"],
-            year=case["year"],
-        )
-        segment["benchmark"] = benchmark
-    return case
 
 
 @case_route.post(
@@ -62,7 +57,24 @@ def create_case(
     user = verify_case_creator(
         session=session, authenticated=req.state.authenticated
     )
+
+    if payload.segments:
+        # Check for duplicate segment names in the payload
+        segment_names = [seg.name for seg in payload.segments if seg.name]
+        if len(segment_names) != len(set(segment_names)):
+            raise HTTPException(
+                status_code=400,
+                detail="Failed to save case setting: The segments need to have unique names.",  # noqa
+            )
+
     case = crud_case.add_case(session=session, payload=payload, user=user)
+    # Update case_import with case_id if available in request state
+    if payload.import_id and case:
+        update_case_import_case_id(
+            session=session,
+            import_id=payload.import_id,
+            case_id=case.id,
+        )
     return case.serialize
 
 
@@ -97,8 +109,10 @@ def get_all_case(
     )
     if (
         user.role == UserRole.user
-        and not len(user.user_business_units)
+        and user.user_type != UserType.internal
         and not user_permission
+        and not user.company
+        and user.user_type != UserType.external_advanced
     ):
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -112,13 +126,25 @@ def get_all_case(
         user_cases = [d.case for d in user_permission]
 
     # handle regular/internal user
-    if user.role == UserRole.user and len(user.user_business_units):
+    if user.role == UserRole.user and user.user_type == UserType.internal:
         # all public cases
         show_private = True
         all_public_cases = crud_case.get_case_by_private(
             session=session, private=False
         )
         user_cases = user_cases + [c.id for c in all_public_cases]
+
+    # handle advanced external user - DEPRECATED: Unified with company user
+    # if (
+    #     user.role == UserRole.user
+    #     and user.user_type == UserType.external_advanced
+    # ):
+    #     show_private = True
+    #     org_cases = crud_case.get_case_by_organisation(
+    #         session=session, organisation_id=user.organisation
+    #     )
+    #     if org_cases:
+    #         user_cases = user_cases + [c.id for c in org_cases]
 
     # handle company user
     if user.role == UserRole.user and user.company:
@@ -256,7 +282,7 @@ def update_case(
             session=session, case_id=case_id, user_id=user.id
         )
     case = case.to_case_detail
-    case = get_segment_benchmark(session=session, case=case)
+    case = crud_case.get_segment_benchmark(session=session, case=case)
     return case
 
 
@@ -278,7 +304,7 @@ def get_case_by_id(
     )
     case = crud_case.get_case_by_id(session=session, id=case_id)
     case = case.to_case_detail
-    case = get_segment_benchmark(session=session, case=case)
+    case = crud_case.get_segment_benchmark(session=session, case=case)
     return case
 
 

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging
 
 jobs:
   deploy:
@@ -22,53 +23,62 @@ jobs:
           path: composite-actions
           ref: 0.0.1
 
+      # Determine app name based on branch
+      - name: Set app name
+        id: vars
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            echo "app_name=idh-idc-staging" >> $GITHUB_OUTPUT
+          else
+            echo "app_name=idh-idc" >> $GITHUB_OUTPUT
+          fi
+
       - name: Node Operations
         uses: ./composite-actions/.github/actions/node-operation
         with:
           node-version: "18"
           node-command: "yarn install --no-progress --frozen-lock && yarn build && rm -rf node_modules"
 
-
       - name: Docker Build Frontend
         uses: ./composite-actions/.github/actions/docker-build
         with:
-          app-name: "idh-idc"
+          app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "frontend"
           dockerfile-location: "frontend"
 
       - name: Docker Build Backend
         uses: ./composite-actions/.github/actions/docker-build
         with:
-          app-name: "idh-idc"
+          app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "backend"
           dockerfile-location: "backend"
 
       - name: Docker Push Frontend
         uses: ./composite-actions/.github/actions/docker-push
         with:
-          app-name: "idh-idc"
+          app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "frontend"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
 
       - name: Docker Push Backend
         uses: ./composite-actions/.github/actions/docker-push
         with:
-          app-name: "idh-idc"
+          app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "backend"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
 
       - name: Rollout Frontend
         uses: ./composite-actions/.github/actions/rollout
         with:
-          app-name: "idh-idc"
+          app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "frontend"
           cluster-name: "test"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
 
       - name: Rollout Backend
         uses: ./composite-actions/.github/actions/rollout
         with:
-          app-name: "idh-idc"
+          app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "backend"
           cluster-name: "test"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}

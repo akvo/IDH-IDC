@@ -4,24 +4,47 @@ export const thousandFormatter = (value, toFixed = null) => {
   if (value === null || isNaN(value)) {
     return 0;
   }
+
+  // Ensure value is a number first
+  let numValue = typeof value === "string" ? parseFloat(value) : value;
+
   if (toFixed !== null) {
-    value = parseFloat(value)?.toFixed(toFixed);
+    numValue = parseFloat(numValue.toFixed(toFixed));
   }
-  const finalValue = value
-    ? String(value).replace(/(\d{1,3})(?=(?:\d{3})+(?!\d))/g, "$1,")
-    : 0;
-  return finalValue;
+
+  // Split into integer and decimal parts
+  const parts = String(numValue).split(".");
+  // Only add commas to the integer part
+  parts[0] = parts[0].replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+  return parts.join(".");
 };
 
 export const formatNumberToString = (number) => {
-  if (number < 1e3) {
-    return thousandFormatter(number);
-  } else if (number < 1e6) {
-    return (number / 1e3).toFixed(1) + "K";
-  } else if (number < 1e9) {
-    return (number / 1e6).toFixed(1) + "M";
+  // Handle null/undefined early
+  if (number === null || typeof number === "undefined") {
+    return "0";
   }
-  return (number / 1e9).toFixed(1) + "B";
+
+  // Convert to number
+  const num = typeof number === "string" ? parseFloat(number) : Number(number);
+
+  // Handle invalid numbers
+  if (isNaN(num)) {
+    return "0";
+  }
+
+  const absNum = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+
+  if (absNum < 1e3) {
+    return sign + thousandFormatter(absNum, 2);
+  } else if (absNum < 1e6) {
+    return sign + (absNum / 1e3).toFixed(2) + "K";
+  } else if (absNum < 1e9) {
+    return sign + (absNum / 1e6).toFixed(2) + "M";
+  }
+  return sign + (absNum / 1e9).toFixed(2) + "B";
 };
 
 export const popupFormatter = (params) => {

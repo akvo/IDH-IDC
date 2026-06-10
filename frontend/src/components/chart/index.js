@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Col, Card, Row } from "antd";
 import ReactECharts from "echarts-for-react";
-import { Bar, BarStack, ColumnBar, ChoroplethMap } from "./options";
+import { Bar, BarStack, ColumnBar, ChoroplethMap, Pie } from "./options";
 import { Easing } from "./options/common";
 import { SaveAsImageButton } from "../utils";
 
@@ -41,8 +41,18 @@ export const generateOptions = (
       });
     case "CHOROPLETH":
       return ChoroplethMap({ data, chartTitle, extra });
+    case "PIE":
+      return Pie({ data, percentage, chartTitle, extra, horizontal, grid });
     default:
-      return Bar({ data, percentage, chartTitle, extra, horizontal, grid });
+      return Bar({
+        data,
+        percentage,
+        chartTitle,
+        extra,
+        horizontal,
+        grid,
+        showLabel,
+      });
   }
 };
 
@@ -103,6 +113,7 @@ const Chart = ({
         callbacks.onClick(e);
       }
     },
+    ...(callbacks?.onEvents || {}),
   };
   let chartOptions = {
     option,

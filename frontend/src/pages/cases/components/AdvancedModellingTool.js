@@ -1,0 +1,1460 @@
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import {
+  Row,
+  Col,
+  Card,
+  Space,
+  Select,
+  Tabs,
+  Typography,
+  InputNumber,
+  Button,
+  Divider,
+  Alert,
+} from "antd";
+import { LockOutlined, QuestionCircleOutlined } from "@ant-design/icons";
+import { CaseVisualState, CurrentCaseState } from "../store";
+import { thousandFormatter } from "../../../components/chart/options/common";
+import {
+  InputNumberThousandFormatter,
+  flatten,
+  selectProps,
+} from "../../../lib";
+import EquationVisualizer from "./EquationVisualizer";
+import { calculateModellingDriver } from "../utils/incomeCalculations";
+import SegmentSelector from "./SegmentSelector";
+import { commodities } from "../../../store/static";
+import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg";
+import { isEqual } from "lodash";
+import IncomeGatingAlert from "./IncomeGatingAlert";
+
+const { Text, Title } = Typography;
+
+const SCENARIO_OPTIONS = [
+  { key: "current", label: "Current" },
+  { key: "feasible", label: "Feasible" },
+  { key: "model", label: "Customized" },
+];
+
+const InputRow = ({
+  label,
+  field,
+  // locked,
+  isCalculationTarget,
+  isModel,
+  displayValue,
+  // toggleLock,
+  handleInputChange,
+  disabled,
+}) => {
+  return (
+    <Row align="middle" gutter={12} className="input-row-wrapper">
+      <Col span={14}>
+        <Space size={4} className="input-label-row">
+          <Text>{label}</Text>
+          <QuestionCircleOutlined className="input-info-icon" />
+        </Space>
+      </Col>
+      <Col span={2} align="center">
+        {!isModel && <LockOutlined className="lock-icon static-lock" />}
+      </Col>
+      <Col span={8}>
+        <InputNumber
+          value={displayValue}
+          onChange={(val) => handleInputChange(field, val)}
+          disabled={disabled || !isModel || isCalculationTarget}
+          className="modelling-input"
+          controls={false}
+          style={{ width: "100%" }}
+          {...InputNumberThousandFormatter}
+        />
+      </Col>
+    </Row>
+  );
+};
+
+const AdvancedModellingTool = ({ disabled }) => {
+  const { dashboardData, incomeDataDrivers, sensitivityAnalysis } =
+    CaseVisualState.useState((s) => s);
+  const currentCase = CurrentCaseState.useState((s) => s);
+
+  // Initialize state from global store if available
+  const advancedModelingConfig = CaseVisualState.useState(
+    (s) => s.scenarioModeling?.config?.advancedModeling
+  );
+
+  const [selectedSegmentId, setSelectedSegmentId] = useState(
+    advancedModelingConfig?.selectedSegmentId || null
+  );
+
+  // Focus on selected segment
+  const segment = useMemo(() => {
+    if (!selectedSegmentId) {
+      return dashboardData?.[0] || {};
+    }
+    return dashboardData?.find((d) => d.id === selectedSegmentId) || {};
+  }, [dashboardData, selectedSegmentId]);
+
+  const adjustedIncometarget = useMemo(() => {
+    const adjustedTarget =
+      sensitivityAnalysis?.config?.[
+        `${selectedSegmentId || segment?.id}_adjusted-target`
+      ] || 0;
+    return adjustedTarget;
+  }, [sensitivityAnalysis?.config, selectedSegmentId, segment?.id]);
+
+  const incomeTarget = useMemo(() => {
+    const currentTarget = segment?.target || 0;
+    return adjustedIncometarget ? adjustedIncometarget : currentTarget;
+  }, [segment?.target, adjustedIncometarget]);
+
+  const isAboveTarget = useMemo(() => {
+    return (segment?.total_current_income || 0) >= (incomeTarget || 0);
+  }, [segment?.total_current_income, incomeTarget]);
+
+  // Helper to get initial data for the current segment
+  const getInitialSegmentData = () => {
+    const defaultData = {
+      selectedDriver: "cop",
+      activeScenario: "model",
+      lockedFields: {
+        price: false,
+        volume: false,
+        land: false,
+        cop: false,
+        odi: false,
+        secondary: false,
+        tertiary: false,
+      },
+      modelValues: {
+        price: 0,
+        volume: 0,
+        cop: 0,
+        land: 0,
+        odi: 0,
+        secondary: 0,
+        tertiary: 0,
+      },
+      calculationResults: {
+        current: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        feasible: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        model: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+      },
+    };
+
+    if (
+      selectedSegmentId &&
+      advancedModelingConfig?.segmentData?.[selectedSegmentId]
+    ) {
+      return {
+        ...defaultData,
+        ...advancedModelingConfig.segmentData[selectedSegmentId],
+      };
+    }
+    return defaultData;
+  };
+
+  const initialData = getInitialSegmentData();
+
+  const [selectedDriver, setSelectedDriver] = useState(
+    initialData.selectedDriver
+  );
+  const [activeScenario, setActiveScenario] = useState(
+    initialData.activeScenario
+  );
+  const [lockedFields, setLockedFields] = useState(initialData.lockedFields);
+  // Migration: If we have an old single calculationResult, migrate it to the current mapping
+  const getMappedInitialResults = () => {
+    if (initialData.calculationResults) {
+      return initialData.calculationResults;
+    }
+    // Fallback for legacy data
+    const results = {
+      current: {
+        value: null,
+        change: 0,
+        cost: 0,
+        profit: 0,
+        isTargetMet: false,
+        state: "normal",
+        message: null,
+      },
+      feasible: {
+        value: null,
+        change: 0,
+        cost: 0,
+        profit: 0,
+        isTargetMet: false,
+        state: "normal",
+        message: null,
+      },
+      model: {
+        value: null,
+        change: 0,
+        cost: 0,
+        profit: 0,
+        isTargetMet: false,
+        state: "normal",
+        message: null,
+      },
+    };
+    if (initialData.calculationResult && activeScenario) {
+      results[activeScenario] = initialData.calculationResult;
+    }
+    return results;
+  };
+
+  const [calculationResults, setCalculationResults] = useState(
+    getMappedInitialResults()
+  );
+  const [modelValues, setModelValues] = useState(initialData.modelValues);
+
+  // Sync state to global store (Local -> Global)
+  useEffect(() => {
+    const currentSegmentData = {
+      selectedDriver,
+      activeScenario,
+      lockedFields,
+      modelValues,
+      calculationResults,
+    };
+
+    CaseVisualState.update((s) => {
+      const prevConfig = s.scenarioModeling?.config?.advancedModeling;
+      const prevSegmentData =
+        prevConfig?.segmentData?.[selectedSegmentId] || {};
+
+      // Check if root config changed (segment only)
+      const rootChanged = prevConfig?.selectedSegmentId !== selectedSegmentId;
+
+      // Check if segment data changed
+      const segmentChanged = !isEqual(prevSegmentData, currentSegmentData);
+
+      if (rootChanged || segmentChanged) {
+        return {
+          ...s,
+          scenarioModeling: {
+            ...s.scenarioModeling,
+            case: currentCase.id,
+            config: {
+              ...s.scenarioModeling.config,
+              advancedModeling: {
+                selectedSegmentId,
+                segmentData: {
+                  ...prevConfig?.segmentData,
+                  [selectedSegmentId]: currentSegmentData,
+                },
+              },
+            },
+          },
+        };
+      }
+      return s;
+    });
+  }, [
+    selectedSegmentId,
+    selectedDriver,
+    activeScenario,
+    lockedFields,
+    modelValues,
+    calculationResults,
+    currentCase.id,
+  ]);
+
+  // Sync global store to local state (Global -> Local)
+  useEffect(() => {
+    if (advancedModelingConfig) {
+      // 1. Check Root Config (Segment/Driver)
+      if (
+        advancedModelingConfig.selectedSegmentId &&
+        advancedModelingConfig.selectedSegmentId !== selectedSegmentId
+      ) {
+        setSelectedSegmentId(advancedModelingConfig.selectedSegmentId);
+        // Note: Changing selectedSegmentId will trigger the other effect, but we should probably load data here too?
+        // Actually, if we change ID here, the next render will handle data loading if we wire it right.
+        // But let's look up data now for atomicity.
+        const segmentData =
+          advancedModelingConfig.segmentData?.[
+            advancedModelingConfig.selectedSegmentId
+          ];
+        if (segmentData) {
+          setActiveScenario(segmentData.activeScenario || "model");
+          setSelectedDriver(segmentData.selectedDriver || "cop");
+          setLockedFields(segmentData.lockedFields || {});
+          setModelValues(segmentData.modelValues || {});
+          setCalculationResults(
+            segmentData.calculationResults ||
+              (segmentData.calculationResult
+                ? {
+                    current: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    feasible: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    model: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    [segmentData.activeScenario || "model"]:
+                      segmentData.calculationResult,
+                  }
+                : {
+                    current: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    feasible: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                    model: {
+                      value: null,
+                      change: 0,
+                      cost: 0,
+                      profit: 0,
+                      isTargetMet: false,
+                      state: "normal",
+                      message: null,
+                    },
+                  })
+          );
+        }
+      }
+
+      // removed global driver sync
+
+      // 2. Check Segment Data (for current segment)
+      if (selectedSegmentId) {
+        const storedData =
+          advancedModelingConfig.segmentData?.[selectedSegmentId];
+        if (storedData) {
+          if (
+            storedData.selectedDriver &&
+            storedData.selectedDriver !== selectedDriver
+          ) {
+            setSelectedDriver(storedData.selectedDriver);
+          }
+          if (
+            storedData.activeScenario &&
+            storedData.activeScenario !== activeScenario
+          ) {
+            setActiveScenario(storedData.activeScenario);
+          }
+          if (
+            storedData.lockedFields &&
+            !isEqual(storedData.lockedFields, lockedFields)
+          ) {
+            setLockedFields(storedData.lockedFields);
+          }
+
+          if (storedData.modelValues) {
+            // Check for stale data (matches feasible)
+            const fields = [
+              "price",
+              "volume",
+              "land",
+              "cop",
+              "odi",
+              "secondary",
+              "tertiary",
+            ];
+            const targetSegment =
+              dashboardData?.find((d) => d.id === selectedSegmentId) || {};
+
+            const isStale = fields.every((f) => {
+              const val = storedData.modelValues[f];
+              const feasible = getSegmentAnswer("feasible", f, targetSegment);
+              return val === feasible;
+            });
+
+            if (isStale) {
+              const getPrefillValue = (field) => {
+                const currentVal = getSegmentAnswer(
+                  "current",
+                  field,
+                  targetSegment
+                );
+                return currentVal !== 0
+                  ? currentVal
+                  : getSegmentAnswer("feasible", field, targetSegment);
+              };
+
+              const refreshedValues = {
+                price: getPrefillValue("price"),
+                volume: getPrefillValue("volume"),
+                cop: getPrefillValue("cop"),
+                land: getPrefillValue("land"),
+                odi: getPrefillValue("odi"),
+                secondary: getPrefillValue("secondary"),
+                tertiary: getPrefillValue("tertiary"),
+              };
+
+              if (!isEqual(refreshedValues, modelValues)) {
+                setModelValues(refreshedValues);
+              }
+            } else if (!isEqual(storedData.modelValues, modelValues)) {
+              setModelValues(storedData.modelValues);
+            }
+          }
+
+          if (
+            storedData.calculationResults &&
+            !isEqual(storedData.calculationResults, calculationResults)
+          ) {
+            setCalculationResults(storedData.calculationResults);
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advancedModelingConfig, selectedSegmentId, dashboardData]);
+
+  // Find primary commodity QIDs
+  const focusCommodityGroup = useMemo(() => {
+    const primaryGroup = incomeDataDrivers?.find((d) => d.type === "primary");
+    return primaryGroup?.questionGroups?.[0] || {};
+  }, [incomeDataDrivers]);
+
+  const secondaryGroup = useMemo(() => {
+    const diversified = incomeDataDrivers?.find(
+      (d) => d.type === "diversified"
+    );
+    return diversified?.questionGroups?.find(
+      (qg) => qg.commodity_type === "secondary"
+    );
+  }, [incomeDataDrivers]);
+
+  const tertiaryGroup = useMemo(() => {
+    const diversified = incomeDataDrivers?.find(
+      (d) => d.type === "diversified"
+    );
+    return diversified?.questionGroups?.find(
+      (qg) => qg.commodity_type === "tertiary"
+    );
+  }, [incomeDataDrivers]);
+
+  const flattenedQuestions = useMemo(() => {
+    if (!focusCommodityGroup?.questions) {
+      return [];
+    }
+    return flatten(focusCommodityGroup.questions);
+  }, [focusCommodityGroup]);
+
+  const commodityCategory =
+    focusCommodityGroup?.commodity_category?.toLowerCase();
+
+  // Determine QIDs based on category from question.csv and docs/INCOME_CALCULATION.md
+  const qidMap = useMemo(() => {
+    if (commodityCategory === "livestock") {
+      return { price: 42, volume: 41, cop: 43, land: 40 };
+    }
+    if (commodityCategory === "aquaculture") {
+      return { price: 4, volume: 3, cop: 26, land: 2 };
+    }
+    // Default for Crop, Timber
+    return { price: 4, volume: 3, cop: 5, land: 2 };
+  }, [commodityCategory]);
+
+  const driverUnits = useMemo(() => {
+    if (flattenedQuestions.length === 0) {
+      return {};
+    }
+
+    return Object.entries(qidMap).reduce((acc, [key, id]) => {
+      const q = flattenedQuestions.find((q) => q.id === id);
+      if (q?.unit) {
+        const unitName = q.unit
+          .split("/")
+          .map((u) => u.trim())
+          .map((u) => {
+            if (u === "crop") {
+              return (
+                commodities
+                  .find((c) => c.id === focusCommodityGroup?.commodity_id)
+                  ?.name?.toLowerCase() || ""
+              );
+            }
+            return focusCommodityGroup?.[u] || u;
+          })
+          .join(" / ");
+        acc[key] = unitName;
+      } else {
+        acc[key] = "";
+      }
+      return acc;
+    }, {});
+  }, [flattenedQuestions, focusCommodityGroup, qidMap]);
+
+  const getSegmentAnswer = useCallback(
+    (scenario, field, targetSegment = segment) => {
+      const qidAggregator = 1;
+
+      if (field === "secondary" || field === "tertiary") {
+        const group = field === "secondary" ? secondaryGroup : tertiaryGroup;
+        if (!group) {
+          return 0;
+        }
+        if (Array.isArray(targetSegment?.answers)) {
+          return (
+            targetSegment.answers.find(
+              (a) =>
+                a.name === scenario &&
+                a.caseCommodityId === group.id &&
+                (a.questionId === qidAggregator ||
+                  a.question?.question_type === "aggregator" ||
+                  !a.question?.parent)
+            )?.value || 0
+          );
+        }
+        return 0;
+      }
+
+      if (field === "odi") {
+        const totalDiversified =
+          targetSegment?.[`total_${scenario}_diversified_income`] ||
+          targetSegment?.[`total_${scenario}_other_income`] ||
+          0;
+
+        let secondaryVal = 0;
+        if (secondaryGroup && Array.isArray(targetSegment?.answers)) {
+          secondaryVal =
+            targetSegment.answers.find(
+              (a) =>
+                a.name === scenario &&
+                a.caseCommodityId === secondaryGroup.id &&
+                (a.questionId === qidAggregator ||
+                  a.question?.question_type === "aggregator" ||
+                  !a.question?.parent)
+            )?.value || 0;
+        }
+
+        let tertiaryVal = 0;
+        if (tertiaryGroup && Array.isArray(targetSegment?.answers)) {
+          tertiaryVal =
+            targetSegment.answers.find(
+              (a) =>
+                a.name === scenario &&
+                a.caseCommodityId === tertiaryGroup.id &&
+                (a.questionId === qidAggregator ||
+                  a.question?.question_type === "aggregator" ||
+                  !a.question?.parent)
+            )?.value || 0;
+        }
+
+        return totalDiversified - secondaryVal - tertiaryVal;
+      }
+
+      const qid = qidMap[field];
+      if (Array.isArray(targetSegment?.answers)) {
+        return (
+          targetSegment.answers.find(
+            (a) => a.name === scenario && a.questionId === qid
+          )?.value || 0
+        );
+      }
+      return 0;
+    },
+    [segment, qidMap, secondaryGroup, tertiaryGroup]
+  );
+
+  // Sync initial values from segment data
+  useEffect(() => {
+    // Only sync if modelValues are empty/zero (initial load) and we have segment data
+    // OR if selectedSegment changes and we want to reset (but here we want persistence?)
+    // Actually, if we are loading saved data, we might NOT want to overwrite with segment defaults immediately
+    // unless the saved data is empty.
+
+    // Let's rely on the fact that if savedConfig exists, we used that.
+    // If not, modelValues is all 0s.
+    // So if modelValues is all 0s, populate from feasible.
+    const isModelValuesEmpty = Object.values(modelValues).every((v) => v === 0);
+
+    if (segment && isModelValuesEmpty) {
+      const getPrefillValue = (field) => {
+        const currentVal = getSegmentAnswer("current", field);
+        return currentVal !== 0
+          ? currentVal
+          : getSegmentAnswer("feasible", field);
+      };
+
+      setModelValues({
+        price: getPrefillValue("price"),
+        volume: getPrefillValue("volume"),
+        cop: getPrefillValue("cop"),
+        land: getPrefillValue("land"),
+        odi: getPrefillValue("odi"),
+        secondary: getPrefillValue("secondary"),
+        tertiary: getPrefillValue("tertiary"),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [segment, getSegmentAnswer]);
+  // Removed modelValues from dependency to avoid infinite loop or overwriting user changes?
+  // Added isModelValuesEmpty check to prevent overwriting user input on re-renders if segment changes?
+  // Actually, if segment changes, we might want to reload feasible values if the user hasn't started modeling for THAT segment?
+  // For now, let's keep it simple: if all 0, load feasible.
+
+  const toggleLock = (field) => {
+    setLockedFields((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const handleInputChange = (field, value) => {
+    setModelValues((prev) => ({ ...prev, [field]: value || 0 }));
+  };
+
+  const handleSegmentChange = (newSegmentId) => {
+    const storedData = advancedModelingConfig?.segmentData?.[newSegmentId];
+    const newSegment = dashboardData?.find((d) => d.id === newSegmentId) || {};
+
+    const getPrefillValue = (field, target) => {
+      const currentVal = getSegmentAnswer("current", field, target);
+      return currentVal !== 0
+        ? currentVal
+        : getSegmentAnswer("feasible", field, target);
+    };
+
+    let finalModelValues = {
+      price: getPrefillValue("price", newSegment),
+      volume: getPrefillValue("volume", newSegment),
+      cop: getPrefillValue("cop", newSegment),
+      land: getPrefillValue("land", newSegment),
+      odi: getPrefillValue("odi", newSegment),
+      secondary: getPrefillValue("secondary", newSegment),
+      tertiary: getPrefillValue("tertiary", newSegment),
+    };
+
+    // Detect stale data if storedData exists
+    if (storedData?.modelValues) {
+      const fields = [
+        "price",
+        "volume",
+        "land",
+        "cop",
+        "odi",
+        "secondary",
+        "tertiary",
+      ];
+      const isStale = fields.every((f) => {
+        const val = storedData.modelValues[f];
+        const feasible = getSegmentAnswer("feasible", f, newSegment);
+        return val === feasible;
+      });
+
+      if (!isStale) {
+        // Keep user customisations if NOT stale
+        finalModelValues = storedData.modelValues;
+      }
+    }
+
+    if (storedData && finalModelValues === storedData.modelValues) {
+      // Just switch the segment ID in the store if data is NOT stale
+      CaseVisualState.update((s) => ({
+        ...s,
+        scenarioModeling: {
+          ...s.scenarioModeling,
+          case: currentCase.id,
+          config: {
+            ...s.scenarioModeling.config,
+            advancedModeling: {
+              ...s.scenarioModeling.config.advancedModeling,
+              selectedSegmentId: newSegmentId,
+            },
+          },
+        },
+      }));
+    } else {
+      // Create or update segment data with refreshed values
+      const defaultCalculationResults = {
+        current: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        feasible: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+        model: {
+          value: null,
+          change: 0,
+          cost: 0,
+          profit: 0,
+          isTargetMet: false,
+          state: "normal",
+          message: null,
+        },
+      };
+
+      const defaultLockedFields = {
+        price: false,
+        volume: false,
+        land: false,
+        cop: false,
+        odi: false,
+        secondary: false,
+        tertiary: false,
+      };
+
+      const defaultActiveScenario = "model";
+      const defaultSelectedDriver = "cop";
+
+      CaseVisualState.update((s) => {
+        const prevConfig = s.scenarioModeling?.config?.advancedModeling;
+        return {
+          ...s,
+          scenarioModeling: {
+            ...s.scenarioModeling,
+            case: currentCase.id,
+            config: {
+              ...s.scenarioModeling.config,
+              advancedModeling: {
+                ...prevConfig,
+                selectedSegmentId: newSegmentId,
+                segmentData: {
+                  ...prevConfig?.segmentData,
+                  [newSegmentId]: {
+                    ...(storedData || {}),
+                    modelValues: finalModelValues,
+                    calculationResults:
+                      storedData?.calculationResults ||
+                      (storedData?.calculationResult
+                        ? {
+                            ...defaultCalculationResults,
+                            [storedData.activeScenario || "model"]:
+                              storedData.calculationResult,
+                          }
+                        : defaultCalculationResults),
+                    lockedFields:
+                      storedData?.lockedFields || defaultLockedFields,
+                    activeScenario:
+                      storedData?.activeScenario || defaultActiveScenario,
+                    selectedDriver:
+                      storedData?.selectedDriver || defaultSelectedDriver,
+                  },
+                },
+              },
+            },
+          },
+        };
+      });
+    }
+  };
+
+  const getTargetIncome = () => {
+    // benchmark income for the segment
+    const currentTarget = segment?.target || 0;
+
+    const targetIncomeLevel = currentTarget;
+
+    let diversifiedEarnings = 0;
+    let secondaryEarnings = 0;
+    let tertiaryEarnings = 0;
+
+    if (activeScenario === "model") {
+      diversifiedEarnings = modelValues.odi || 0;
+      secondaryEarnings = modelValues.secondary || 0;
+      tertiaryEarnings = modelValues.tertiary || 0;
+    } else {
+      diversifiedEarnings = getSegmentAnswer(activeScenario, "odi");
+      secondaryEarnings = getSegmentAnswer(activeScenario, "secondary");
+      tertiaryEarnings = getSegmentAnswer(activeScenario, "tertiary");
+    }
+
+    const otherIncomes =
+      diversifiedEarnings + secondaryEarnings + tertiaryEarnings;
+
+    return {
+      totalTarget: currentTarget,
+      targetPrimaryIncome: targetIncomeLevel - otherIncomes,
+      otherIncomes: otherIncomes,
+    };
+  };
+
+  const handleCalculate = () => {
+    const { totalTarget, targetPrimaryIncome, otherIncomes } =
+      getTargetIncome();
+
+    let drivers = {};
+    if (activeScenario === "model") {
+      drivers = {
+        land: modelValues.land,
+        volume: modelValues.volume,
+        price: modelValues.price,
+        cop: modelValues.cop,
+      };
+    } else {
+      drivers = {
+        land: getSegmentAnswer(activeScenario, "land"),
+        volume: getSegmentAnswer(activeScenario, "volume"),
+        price: getSegmentAnswer(activeScenario, "price"),
+        cop: getSegmentAnswer(activeScenario, "cop"),
+      };
+    }
+
+    const result = calculateModellingDriver(
+      targetPrimaryIncome,
+      drivers,
+      selectedDriver,
+      commodityCategory
+    );
+
+    // Identify Calculation State
+    let state = "normal";
+    let message = null;
+
+    // RIGOROUS SURPLUS VERIFICATION:
+    // We calculate the current actual primary income for this scenario
+    let actualPrimaryIncome = 0;
+    if (commodityCategory?.toLowerCase() === "aquaculture") {
+      // Aquaculture: L * (V * (P - C) + 1)
+      actualPrimaryIncome =
+        drivers.land * (drivers.volume * (drivers.price - drivers.cop) + 1);
+    } else {
+      // Crop/Livestock: L * (V * P - C)
+      actualPrimaryIncome =
+        drivers.land * (drivers.volume * drivers.price - drivers.cop);
+    }
+
+    // Total actual income for this scenario (Primary + Others)
+    const totalActualIncome = actualPrimaryIncome + otherIncomes;
+
+    // Surplus: Total scenario income already reaches total target
+    if (totalActualIncome >= totalTarget) {
+      state = "surplus";
+      message =
+        "Farmers in this segment already earn more than the income target. In this calculated scenario, incomes would decrease.";
+    } else if (result < 0) {
+      state = "impossible";
+      message =
+        "It is not possible to reach the income target with the specified model values.";
+    }
+
+    // Always show the raw result from the calculation
+    const finalResult = result;
+
+    // Calculate current scenario values for the breakdown
+    const currentPrice =
+      selectedDriver === "price" ? finalResult : drivers.price;
+    const currentVolume =
+      selectedDriver === "volume" ? finalResult : drivers.volume;
+    const currentCop = selectedDriver === "cop" ? finalResult : drivers.cop;
+
+    // cost = cop / volume
+    // profit = price - cost
+    let unitCost =
+      currentVolume !== 0 && currentVolume > 0 ? currentCop / currentVolume : 0;
+    let profit = currentPrice - unitCost;
+
+    // Handle 100% Profit for Impossible CoP
+    if (state === "impossible" && selectedDriver === "cop") {
+      unitCost = 0;
+      profit = currentPrice;
+    }
+
+    const feasibleValue = getSegmentAnswer("feasible", selectedDriver);
+    const change =
+      feasibleValue !== 0
+        ? ((finalResult - feasibleValue) / feasibleValue) * 100
+        : 0;
+
+    // Target is met if total actual income >= total target (surplus)
+    // OR if the calculated result for the specific driver meets the requirement
+    const isTargetMet =
+      totalActualIncome >= totalTarget ||
+      (selectedDriver === "cop"
+        ? drivers.cop <= result
+        : drivers[selectedDriver] >= result);
+
+    setCalculationResults((prev) => ({
+      ...prev,
+      [activeScenario]: {
+        value: finalResult,
+        change: change,
+        cost: unitCost,
+        profit: profit,
+        isTargetMet: isTargetMet,
+        state: state,
+        message: message,
+        rawResult: result, // Store raw result for visual logic
+      },
+    }));
+  };
+
+  const driverLabels = useMemo(() => {
+    if (flattenedQuestions.length === 0) {
+      return {};
+    }
+    const fallbacks = {
+      price: "Price",
+      volume: "Volume",
+      cop: "Cost of Production",
+      land: "Land",
+    };
+    return Object.entries(qidMap).reduce((acc, [key, id]) => {
+      const q = flattenedQuestions.find((q) => q.id === id);
+      acc[key] = q ? q.text : fallbacks[key] || key;
+      return acc;
+    }, {});
+  }, [flattenedQuestions, qidMap]);
+
+  const selectOptions = useMemo(() => {
+    if (flattenedQuestions.length === 0) {
+      return [];
+    }
+
+    const targetQids = [qidMap.price, qidMap.volume, qidMap.cop];
+    const keys = ["price", "volume", "cop"];
+    const fallbacks = {
+      price: "Price",
+      volume: "Volume",
+      cop: "Cost of Production",
+    };
+
+    return targetQids.map((id, index) => {
+      const q = flattenedQuestions.find((q) => q.id === id);
+      const key = keys[index];
+      return {
+        value: key,
+        label: q ? q.text : fallbacks[key] || key,
+      };
+    });
+  }, [flattenedQuestions, qidMap]);
+
+  const renderModellingInputs = (scenario) => {
+    const isModel = scenario === "model";
+    const getDisplayValue = (field) => {
+      return isModel ? modelValues[field] : getSegmentAnswer(scenario, field);
+    };
+
+    return (
+      <div className="modelling-inputs-content">
+        <InputRow
+          label={`${driverLabels.price || "Price"}`}
+          field="price"
+          locked={lockedFields.price}
+          isCalculationTarget={selectedDriver === "price"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("price")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+          disabled={disabled}
+        />
+        <InputRow
+          label={`${driverLabels.volume || "Volume"}`}
+          field="volume"
+          locked={lockedFields.volume}
+          isCalculationTarget={selectedDriver === "volume"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("volume")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+          disabled={disabled}
+        />
+        <InputRow
+          label={`${driverLabels.land || "Land"}`}
+          field="land"
+          locked={lockedFields.land}
+          isCalculationTarget={selectedDriver === "land"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("land")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+          disabled={disabled}
+        />
+        <InputRow
+          label={`${driverLabels.cop || "Cost of Production"}`}
+          field="cop"
+          locked={lockedFields.cop}
+          isCalculationTarget={selectedDriver === "cop"}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("cop")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+          disabled={disabled}
+        />
+        {secondaryGroup && (
+          <InputRow
+            label="Secondary Income"
+            field="secondary"
+            locked={lockedFields.secondary}
+            scenario={scenario}
+            isModel={isModel}
+            displayValue={getDisplayValue("secondary")}
+            toggleLock={toggleLock}
+            handleInputChange={handleInputChange}
+            disabled={disabled}
+          />
+        )}
+        {tertiaryGroup && (
+          <InputRow
+            label="Tertiary Income"
+            field="tertiary"
+            locked={lockedFields.tertiary}
+            scenario={scenario}
+            isModel={isModel}
+            displayValue={getDisplayValue("tertiary")}
+            toggleLock={toggleLock}
+            handleInputChange={handleInputChange}
+            disabled={disabled}
+          />
+        )}
+        <InputRow
+          label="Other Diversified Income"
+          field="odi"
+          locked={lockedFields.odi}
+          scenario={scenario}
+          isModel={isModel}
+          displayValue={getDisplayValue("odi")}
+          toggleLock={toggleLock}
+          handleInputChange={handleInputChange}
+          disabled={disabled}
+        />
+
+        <Divider className="modelling-divider" />
+
+        <Row gutter={12} className="modelling-result-row">
+          <Col span={24}>
+            <Text className="label-text">
+              Required {driverLabels[selectedDriver] || selectedDriver} (
+              {driverUnits[selectedDriver]})
+            </Text>
+            <div className="calculation-result-container">
+              {calculationResults[scenario]?.value !== null ? (
+                (() => {
+                  const scenarioResult = calculationResults[scenario];
+                  const feasibleValue = getSegmentAnswer(
+                    "feasible",
+                    selectedDriver
+                  );
+
+                  // Round to 2 decimals for precision-safe comparison
+                  const roundedResult =
+                    Math.round((scenarioResult.value || 0) * 100) / 100;
+                  const roundedFeasible =
+                    Math.round((feasibleValue || 0) * 100) / 100;
+
+                  let isFeasible = false;
+                  if (scenarioResult.state === "surplus") {
+                    // If we are in surplus, the current performance is already feasibility-proven
+                    isFeasible = true;
+                  } else if (scenarioResult.rawResult < 0) {
+                    // Impossible values are never feasible
+                    isFeasible = false;
+                  } else if (selectedDriver === "cop") {
+                    // For CoP, a higher required value is "easier" (more room for expense)
+                    isFeasible = roundedResult >= roundedFeasible;
+                  } else {
+                    // For Price/Volume, a lower required value is "easier" (less performance needed)
+                    isFeasible = roundedResult <= roundedFeasible;
+                  }
+
+                  return (
+                    <div className="result-display-wrapper">
+                      <div className="result-main-row">
+                        <div
+                          className={`result-value-box ${
+                            isFeasible ? "feasible" : "not-feasible"
+                          }`}
+                        >
+                          <span className="value-text">
+                            {thousandFormatter(scenarioResult.value, 2)}
+                          </span>
+                        </div>
+                        <div className="feasibility-status">
+                          <span className="status-text">
+                            {isFeasible
+                              ? "falls within feasible levels"
+                              : "outside feasible levels"}
+                          </span>
+                        </div>
+                      </div>
+                      {activeScenario === scenario &&
+                        scenarioResult.message && (
+                          <div className="calculation-message-wrapper">
+                            <Alert
+                              message={scenarioResult.message}
+                              type="info"
+                            />
+                          </div>
+                        )}
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="empty-result-placeholder">
+                  <Text type="secondary">Click Calculate to see results</Text>
+                </div>
+              )}
+            </div>
+          </Col>
+        </Row>
+
+        <Row gutter={12} className="footer-button-row">
+          <Col span={10}>
+            <Button
+              block
+              shape="round"
+              className="button-clear"
+              onClick={() => {
+                setCalculationResults((prev) => ({
+                  ...prev,
+                  [activeScenario]: {
+                    value: null,
+                    change: 0,
+                    cost: 0,
+                    profit: 0,
+                    isTargetMet: false,
+                    state: "normal",
+                    message: null,
+                  },
+                }));
+                setLockedFields({
+                  price: false,
+                  volume: false,
+                  land: false,
+                  cop: false,
+                  odi: false,
+                  secondary: false,
+                  tertiary: false,
+                });
+              }}
+              disabled={disabled}
+            >
+              Clear
+            </Button>
+          </Col>
+          <Col span={14}>
+            <Button
+              block
+              type="primary"
+              shape="round"
+              onClick={handleCalculate}
+              className="button-calculate"
+              disabled={disabled}
+            >
+              Calculate
+            </Button>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
+
+  return (
+    <Row className="advanced-modelling-tool-container" gutter={[0, 24]}>
+      {/* Header Section */}
+      <Col span={24}>
+        <Card className="card-section-wrapper">
+          Model driver changes to close the income gap
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <p style={{ margin: 0, padding: 0 }}>
+          Explore what changes are needed to close the income gap. Adjust key
+          drivers to see the required price, cost, or volume, and assess whether
+          these changes are realistic. Use the price breakdown to understand how
+          costs and profits are distributed as a result.
+        </p>
+      </Col>
+
+      {/* Segment Selector */}
+      <Col span={24}>
+        <Space direction="vertical" size="small">
+          <Text>Select the segment for which you want to model.</Text>
+          <SegmentSelector
+            selectedSegment={selectedSegmentId}
+            setSelectedSegment={handleSegmentChange}
+          />
+        </Space>
+      </Col>
+
+      <Col span={24}>
+        {isAboveTarget ? (
+          <IncomeGatingAlert style={{ marginTop: "12px" }} />
+        ) : (
+          <Row gutter={[24, 24]} align="stretch">
+            {/* Left Panel */}
+            <Col span={10}>
+              <Space
+                direction="vertical"
+                size="large"
+                className="panel-space left-panel"
+              >
+                <div>
+                  <Text className="driver-select-label">
+                    Select the driver you want to model:
+                  </Text>
+                  <Select
+                    value={selectedDriver}
+                    onChange={(val) => {
+                      setSelectedDriver(val);
+                      setCalculationResults({
+                        current: {
+                          value: null,
+                          change: 0,
+                          cost: 0,
+                          profit: 0,
+                          isTargetMet: false,
+                          state: "normal",
+                          message: null,
+                        },
+                        feasible: {
+                          value: null,
+                          change: 0,
+                          cost: 0,
+                          profit: 0,
+                          isTargetMet: false,
+                          state: "normal",
+                          message: null,
+                        },
+                        model: {
+                          value: null,
+                          change: 0,
+                          cost: 0,
+                          profit: 0,
+                          isTargetMet: false,
+                          state: "normal",
+                          message: null,
+                        },
+                      });
+                    }}
+                    options={selectOptions}
+                    {...selectProps}
+                    disabled={disabled}
+                  />
+                </div>
+
+                <Tabs
+                  activeKey={activeScenario}
+                  onChange={setActiveScenario}
+                  type="card"
+                  centered
+                  className="scenario-tabs-custom"
+                  items={SCENARIO_OPTIONS.map(({ key, label }) => ({
+                    key,
+                    label,
+                    children: renderModellingInputs(key),
+                    disabled: disabled && key === "model", // Optionally keep current/feasible viewable?
+                  }))}
+                />
+              </Space>
+            </Col>
+
+            {/* Right Panel */}
+            <Col span={14}>
+              <Space
+                direction="vertical"
+                size="middle"
+                className="panel-space right-panel"
+              >
+                <Card bordered={false} className="visualizer-card">
+                  <EquationVisualizer
+                    selectedDriver={selectedDriver}
+                    labels={driverLabels}
+                    category={commodityCategory}
+                    secondaryLabel={secondaryGroup?.commodity_name}
+                    tertiaryLabel={tertiaryGroup?.commodity_name}
+                  />
+                </Card>
+
+                <Card bordered={false} className="breakdown-card">
+                  <div className="breakdown-header">
+                    <Title level={3} className="breakdown-title">
+                      Price breakdown
+                    </Title>
+                    <div className="breakdown-icon-wrapper">
+                      <img
+                        src={PriceWhite}
+                        alt="Price"
+                        className="breakdown-icon"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Text className="breakdown-description">
+                      The bar below breaks down the price for the selected
+                      scenario. Orange shows how much of the price covers
+                      production costs. Green shows how much profit farmers earn{" "}
+                      {selectedDriver === "price" || selectedDriver === "cop"
+                        ? `per ${
+                            driverUnits.price?.split(" / ")[1] || "unit"
+                          } of ${
+                            commodities.find(
+                              (c) => c.id === focusCommodityGroup?.commodity_id
+                            )?.name || "commodity"
+                          }`
+                        : "for the selected driver"}
+                      .
+                    </Text>
+
+                    <div className="breakdown-chart-wrapper">
+                      <div className="price-total-display">
+                        <Text strong>
+                          Price:{" "}
+                          {calculationResults[activeScenario]?.value !== null
+                            ? thousandFormatter(
+                                calculationResults[activeScenario].cost +
+                                  calculationResults[activeScenario].profit,
+                                2
+                              ) +
+                              " " +
+                              currentCase?.currency
+                            : "-"}
+                        </Text>
+                      </div>
+
+                      {/* Real Bar Chart Logic */}
+                      {calculationResults[activeScenario]?.value !== null ? (
+                        (() => {
+                          const scenarioResult =
+                            calculationResults[activeScenario];
+
+                          // Impossible warning
+                          if (scenarioResult.state === "impossible") {
+                            const driverLabel =
+                              driverLabels[selectedDriver] || selectedDriver;
+                            return (
+                              <div className="impossible-breakdown-warning">
+                                <Alert
+                                  message={`Farmers would need a negative ${driverLabel} in order to hit the income target. This is not possible and the price breakdown is unavailable.`}
+                                  type="warning"
+                                  className="impossible-alert"
+                                />
+                              </div>
+                            );
+                          }
+
+                          // Use raw values for calculation but ensure breakdown logic
+                          // If target is met, we might want to show the scenario breakdown instead of theoretical
+                          // because theoretical breakdown for negative prices doesn't make sense visually.
+                          const displayCost =
+                            scenarioResult.cost < 0 ? 0 : scenarioResult.cost;
+                          const displayProfit =
+                            scenarioResult.profit < 0
+                              ? 0
+                              : scenarioResult.profit;
+
+                          const total =
+                            Math.abs(displayCost) + Math.abs(displayProfit);
+                          const costPerc =
+                            total !== 0 ? (displayCost / total) * 100 : 0;
+                          const profitPerc = 100 - costPerc;
+
+                          // cost_percentage = cost/price*100
+                          // profit_percentage = profit/price*100
+                          // Note: total is the price here.
+                          return (
+                            <div className="bar-row">
+                              <div
+                                className="bar-segment cost"
+                                style={{ width: `${costPerc}%` }}
+                              >
+                                <span className="segment-value">
+                                  {thousandFormatter(costPerc, 2)}%
+                                </span>
+                              </div>
+                              <div
+                                className="bar-segment profit"
+                                style={{ width: `${profitPerc}%` }}
+                              >
+                                <span className="segment-value">
+                                  {thousandFormatter(profitPerc, 2)}%
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()
+                      ) : (
+                        <div className="empty-bar-placeholder">
+                          <Text type="secondary">
+                            Click Calculate to see the breakdown
+                          </Text>
+                        </div>
+                      )}
+                      {calculationResults[activeScenario]?.state !==
+                        "impossible" && (
+                        <div className="bar-labels-row">
+                          <Text className="label-text">Cost</Text>
+                          <Text className="label-text">Profit</Text>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              </Space>
+            </Col>
+          </Row>
+        )}
+      </Col>
+    </Row>
+  );
+};
+
+export default AdvancedModellingTool;

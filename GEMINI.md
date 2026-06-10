@@ -16,11 +16,691 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **ROI Scenario Selector & UX Feedback (#805) - [COMPLETED]**:
+    - **Scenario Selector**: Integrated an inline scenario selector (Radio Button group) directly into the ROI modeling form in Step 5.
+    - **UX Feedback**: Implemented a dashboard-level notification system in `StandardScenarioModeling.js` to alert users when switching to a scenario with ROI modeling disabled, preventing confusion when the form "disappears."
+    - **Bidirectional Sync**: Ensured the new selector maintains perfect synchronization with the global application state and the top scenario tabs.
+    - **Layout Refinement**: Positioned the selector within the localized context of the ROI section for better usability.
+    - Verified all changes with frontend linting and manual walkthroughs.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/components/ScenarioModelingForm.js`, `docs/features/ROI_INVESTMENT.md`.
+
+- **Scenario Modeling UI & Customization (#803) - [COMPLETED]**:
+    - **Advanced Modelling**: Refactored tab titles to use customizable key-label pairs and renamed the "Model" tab to "Customized" for better clarity.
+    - **Layout Refinement**: Moved section descriptions for "ROI Impact" and "Scenario Outcomes" outside of the header `Card` components in `StandardScenarioModeling.js` for improved visual hierarchy.
+    - **Content Update**: Enhanced the ROI impact description with detailed guidance on comparing total cost vs. social impact.
+    - **Chart Polish**: Updated the Y-axis label of the ROI chart to "%" and refined the "Scenario Cost by component" description.
+    - Verified all changes with frontend linting and a full test suite pass.
+    - Path: `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
+- **Income Gap Chart Filtering (#801b) - [COMPLETED]**:
+    - Implemented automatic filtering for the "Optimal driver values to reach your target" chart to exclude segments with income decreases.
+    - Added an IDC-branded `Alert` (Type: Info, Background: `#EAF2F2`) that dynamically lists hidden segments to ensure transparency.
+    - Ensured the filtering only affects the visualization, preserving the integrity of the underlying scenario data in tables and other charts.
+    - Verified logic for scenarios with mixed increase/decrease and all-decrease states.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_FILTERING.md`.
+
+- **Income Gap Chart Refinement (#801) - [COMPLETED]**:
+    - Refactored `ChartSegmentsIncomeGapScenarioModeling.js` to dynamically handle both income increases and decreases in the scenario modeling chart.
+    - Implemented a dual-stacking logic:
+        - **Increase**: Stacks *Current Income (Dark Green) → Additional Income (Light Green) → Gap (Yellow)*.
+        - **Decrease**: Stacks *New Income (Dark Green) → Income Decrease (Red) → Gap (Yellow)*.
+    - Utilized IDC brand colors: `#49D985` (Green) for growth and `#FF4D4F` (Red) for losses.
+    - Dynamically updated legend labels based on the scenario outcome ("Additional income..." vs "Income decrease...").
+    - Enforced 0-flooring for baseline segments to ensure visual stability in extreme loss scenarios.
+    - Verified implementation through a comprehensive end-to-end browser walkthrough and frontend test suite.
+    - Sanitized project documentation by removing absolute file paths and aligning the LLD.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_REFINEMENT.md`, `agent_docs/qa/qa-guide-issue-801.md`.
+
+- **Advanced Modelling Tool Migration & Optimization (#799) - [COMPLETED]**:
+        - Relocated the `AdvancedModellingTool` from Step 5 (Closing the Gap) to Step 4 (Assess Impact of Mitigation Strategies) to support earlier driver exploration.
+        - Updated `handleSaveVisualization` in Step 4 to ensure both `sensitivityAnalysis` and `scenarioModeling` are persisted to the backend simultaneously.
+        - Optimized the UI by aggressively reducing white space in the `EquationVisualizer` and parent containers for a more compact, professional look.
+        - Implemented **proportional responsive scaling** using CSS media queries (targeting `1366px` and below) to maintain equation legibility across all screen sizes.
+        - Refined the section header to "Model driver changes to close the income gap" to better align with the Step 4 context.
+        - Verified all changes with frontend linting, manual browser verification, and data persistence checks.
+    - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/steps/steps.scss`, `docs/features/ADVANCED_MODELLING.md`.
+
+- **Needed Income Level Bar Chart (#797) - [COMPLETED]**:
+        - Converted the "Needed Income Level" visualization from a Pie Chart to a Bar Chart for improved legibility and comparison.
+        - Implemented permanent bar labels with standardized `10K` string formatting (`formatNumberToString`).
+        - Added semi-transparent background boxes (`rgba(0,0,0,0.4)`) with white text and rounded corners to labels for enhanced contrast.
+        - Labeled the Y-axis with the current case currency.
+        - Updated feature documentation in `INCOME_GAP_ANALYSIS.md`.
+    - Path: `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`, `docs/features/INCOME_GAP_ANALYSIS.md`.
+
+- **ROI Chart Refinement (#795) - [COMPLETED]**:
+
+        - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
+        - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
+        - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
+        - **ROI Robustness**: Implemented conditional empty states and robust handling of mixed data states (component breakdown vs. direct total cost) to ensure continuous visualization in Step 5.
+        - **Visual Polish**: Suppressed zero-value labels to reduce clutter and synchronized total end-of-bar labels with direct cost inputs for full data visibility.
+        - Refined coloring with an extended 12-color palette using branded IDH variations (tints/shades) for custom components.
+        - Updated fallback logic to show all scenario-segment combinations by default when selection is cleared.
+        - Ensured visualizations respect the natural configuration order of scenarios and segments.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `frontend/src/components/chart/index.js`.
+
+- **Feasible Value Quantile Update (#793) - [COMPLETED]**:
+        - Updated the "feasible value" calculation from the 90th quantile to the 80th quantile to better represent achievable improvements.
+        - Modified backend `case_import_process_confirmed_segmentation.py` to use `values.quantile(0.8)`.
+        - Updated frontend `EnterIncomeData.js` tooltip text to reflect the 80th quantile calculation.
+        - Synchronized feature documentation in `CASE_MANAGEMENT_UX.md`.
+    - Path: `backend/utils/case_import_process_confirmed_segmentation.py`, `frontend/src/pages/cases/steps/EnterIncomeData.js`, `docs/features/CASE_MANAGEMENT_UX.md`.
+
+- **ZIP Template Download (#791) - [COMPLETED]**:
+        - Updated template download functionality to serve `data_upload_template.zip` instead of `.xlsm`.
+        - Modified backend `case_import.py` to use `application/zip` media type and point to the ZIP asset.
+        - Updated frontend `CaseForm.js` logic and button label to match the new format.
+    - Path: `backend/routes/case_import.py`, `frontend/src/pages/cases/components/CaseForm.js`.
+
+- **Step 5 Disable Fill-in Values when Above Target (#789) - [COMPLETED]**:
+        - Refactored `AdvancedModellingTool.js` to dynamically compute `isAboveTarget` using `segment.total_current_income` against `incomeTarget`.
+        - Added conditional logic to render the `IncomeGatingAlert` in place of the input modelling panels when a farmer segment reaches its target.
+        - Preserved the visibility of the "Fill in values for your scenarios" header, instructional text, and the segment selector.
+        - Implemented `useMemo` hooks with safe fallback evaluation.
+        - Verified proper handling of `sensitivityAnalysis` adjusted targets.
+    - Path: `frontend/src/pages/cases/components/AdvancedModellingTool.js`
+
+- **Compare Income Gap Table Multiplier (#787) - [COMPLETED]**:
+        - Fixed the "Compare Income Gap" table in Step 3 to accurately calculate and display the total segment income gap by multiplying the per-farmer gap by the number of farmers in that segment.
+        - Updated table dimensions and column title from "Segment" to "Segment name" for improved clarity.
+    - Path: `frontend/src/pages/cases/visualizations/CompareIncomeGap.js`.
+
+
+- **Data Upload Template Tweaks (#783) - [COMPLETED]**:
+        - Updated the Excel data upload template (`data_upload_template.xlsm`) to address user feedback regarding wording and validation clarity.
+        - Optimized the project `.gitignore` to explicitly exclude agent-specific directories (`.agent/`, `agent_docs/`) while preserving core assets.
+    - Path: `backend/assets/templates/data_upload_template.xlsm`, `.gitignore`.
+
+- **Step 4 Income Driver Exploration Descriptions (#781) - [COMPLETED]**:
+        - Added a descriptive paragraph to the "Assess Impact of Mitigation Strategies" page (Step 4) to guide users on using the single, two, and three-driver exploration tools.
+        - Clarified the workflow: starting with a single driver to identify high-potential drivers based on the 'maximum feasible change' column before proceeding to multi-driver heatmaps.
+        - **Refinement**: Implemented a dynamic reminder text ("Modelling for [X]% gap closure (as set above)") at the top of each exploration tool (Single, Two, Three driver) to ensure transparency regarding the selected modelling goal.
+        - **Refactor**: Created a reusable `ModellingGoalReminder` component and moved it into the `Collapse` panel headers for continuous visibility across all Step 4 tools.
+        - **Refinement**: Integrated `CaseVisualState` access and implemented a default fallback of **0%** for the gap closure percentage if not explicitly set.
+        - Verified the implementation with a clean `yarn lint` pass (prior to environment sync issue).
+    - Path: `frontend/src/pages/cases/steps/AssessImpactMitigationStrategies.js`, `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.js`, `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.scss`.
+- **Step 4 Exploration UI Refinement & Unified Export (#779) - [COMPLETED]**:
+        - Integrated a unified, collapsible container for Step 4 exploration tools (Single, Two, and Three driver analysis) using branded teal backgrounds and custom expand/collapse icons.
+        - Refactored `TwoDriverHeatmap.js` using `React.forwardRef` to support centralized "Clear" functionality from the section header.
+        - Implemented a robust "Download" export system for the entire exploration card with a 500ms render-delay to ensure chart stability.
+        - Enforced clean exports by implementing an automated filtering logic that excludes interactive UI elements (buttons, selectors, tooltips) from the PNG.
+        - Optimized visualization layouts: refactored `ThreeDriverCombinationChart.js` with CSS Grid for perfect label alignment and standardized padding across Step 4 charts.
+        - Verified the implementation with a clean `yarn lint` pass and manual export validation.
+    - Path: `frontend/src/pages/cases/components/ExploreChangeToCloseTheGap.js`, `frontend/src/pages/cases/components/TwoDriverHeatmap.js`, `frontend/src/pages/cases/visualizations/ThreeDriverCombinationChart.js`, `frontend/src/pages/cases/visualizations/GapClosingPieChart.js`.
+- **ROI Input Box Guidance & Default Expansion (#776) - [COMPLETED]**:
+        - Refactored `ScenarioModelingROIForm.js` and `case_ui.js` to ensure the ROI component modeling section is expanded by default when cost allocation is enabled.
+        - Implemented an instructional info box in Step 5 to guide users on net cost inputs (fixed/variable costs vs. potential revenue).
+        - Migrated ROI info box styles from inline JSX to a dedicated `ScenarioModelingROIForm.scss` file for better maintainability.
+        - Standardized info box text to black for improved contrast and IDC brand alignment.
+        - Refined toggle handlers to ensure robust expansion/collapse behavior across segment switches and mode changes.
+        - Verified the implementation with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/components/ScenarioModelingROIForm.scss`, `frontend/src/pages/cases/store/case_ui.js`.
+- **Step 5 Chart Inconsistency & Stability Fix (#774) - [COMPLETED]**:
+        - Resolved a bug in Step 5 where chart baseline values fluctuated incorrectly when navigating between segment tabs.
+        - Refactored `backwardScenarioData` in `ScenarioModelingIncomeDriversAndChart.js` to correctly resolve segment-specific baseline data during synchronization.
+        - Implemented `lodash.isEqual` guards for all global state updates within the modeling component to prevent infinite render loops.
+        - Corrected a syntactic bug in the `orderBy`/`map` structure for scenario data updates.
+        - Verified the implementation with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingIncomeDriversAndChart.js`.
+- **Step 5 Circular Render Fix (#772) - [COMPLETED]**:
+        - Resolved widespread infinite render loops on the "Closing the Gap" page caused by recursive store updates.
+        - Implemented deep equality guards using `lodash.isEqual` in `useScenarioCalculations` and `StandardScenarioModeling`.
+        - Optimized state selectors in `ImpactOfInvestmentCharts` and modelling components to ensure components only re-render when their specific subset of data changes.
+        - Verified all changes with a clean `yarn lint` pass and manual logic validation.
+    - Path: `frontend/src/pages/cases/hooks/useScenarioCalculations.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Clustered ROI Graph by Scenario & Persistent Segment Colors (#770) - [COMPLETED]**:
+        - Refactored the Step 5 "Return on Investment" chart from a flat list to a clustered bar chart grouped by Scenario on the X-axis.
+        - Implemented persistent segment color-coding by mapping segments to global case indices, ensuring "Segment A" always maintains the same color across all comparisons.
+        - Sorted segments within each cluster based on their defined order in the case (e.g., Segment 1, then Segment 2) for a predictable visual flow.
+        - Restored and refined the `dynamicRoiBarWidth` calculation to ensure optimal bar spacing as the number of scenario-segment comparisons changes.
+        - Simplified the data mapping logic using a dedicated matrix-style series construction and removed unused chart configuration imports.
+        - Verified the implementation with a clean `yarn lint` pass and logical matrix verification.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
+- **Multi-Segment View for Change Indicators (#768) - [COMPLETED]**:
+        - Refactored `ChartFarmEconomicEfficiency.js`, `ChartRevenueToCostRatio.js`, and `ChartNetIncomePerLandUnit.js` to display all farmer segments simultaneously in a grouped bar chart format.
+        - Removed the individual `SegmentSelector` component from these visualizations to simplify the user experience and encourage cross-segment comparison.
+        - Implemented a "Show labels" toggle for each chart, allowing users to view data values directly on the bars.
+        - Standardized numerical formatting to use 2 decimal places and the "10K" format (e.g., `12.50K`) for improved readability.
+        - Updated the `ColumnBar` component to support `formatNumberToString` in series labels and refined the shared `formatNumberToString` utility for higher precision.
+        - Verified the implementation with a clean frontend linting pass.
+    - Path: `frontend/src/pages/cases/visualizations/ChartFarmEconomicEfficiency.js`, `frontend/src/pages/cases/visualizations/ChartRevenueToCostRatio.js`, `frontend/src/pages/cases/visualizations/ChartNetIncomePerLandUnit.js`, `frontend/src/components/chart/options/common.js`, `frontend/src/components/chart/options/ColumnBar.js`.
+
+- **Global Segment Limit Enforcement (#763) - [COMPLETED]**:
+        - Implemented strict 5-segment limit validation globally via Pydantic (`max_length=5`) in `CaseBase` and `CaseImport` models.
+        - Developed a reactive "Delete-before-Upload" UX pattern in `CaseForm.js` that blocks file uploads when a case is at segment capacity.
+        - Refined "Save case" button logic in `CaseSettings.js` to allow metadata updates (Description, etc.) without fresh uploads if segments already exist.
+        - Resolved a persistence conflict in `SegmentConfigurationForm.js` by filtering `deletedSegmentIds` during the Data Upload preview flow.
+        - Standardized Alert icons across the platform to align to `flex-start` for consistent multi-line layout aesthetics.
+        - Implemented comprehensive backend integration tests in `test_1006_segment_limit.py`, achieving full coverage for overflow scenarios.
+        - Formalized architectural decisions in `LLD.md` (ADR-006) and synchronized technical specifications.
+    - Path: `backend/models/case.py`, `backend/models/case_import.py`, `frontend/src/pages/cases/components/CaseSettings.js`, `frontend/src/pages/cases/components/CaseForm.js`, `backend/tests/test_1006_segment_limit.py`.
+
+    - **Scenario Outcomes Driver Display Fix (#765) - [COMPLETED]**:
+        - Fixed broken state key lookup in `scenarioOutcomeCalculations.js` by correcting `sd.segmentId` to `scenarioSegment.segmentId`.
+        - Implemented label fallback for "Diversified Income" drivers to prevent `undefined` display in the Outcomes table.
+        - Ensured consistent percentage formatting for all income drivers in Step 4.
+    - Path: `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`.
+
+    - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
+
+
+    - **ROI Multi-Scenario & Calculation Fix (#755) - [COMPLETED]**:
+        - Implemented a multi-selector in Step 5 for side-by-side waterfall comparison of up to 5 scenario-segment combinations.
+        - Centralized ROI and Income aggregation logic in `roiCalculations.js`, decoupling it from UI component mounting state.
+        - Updated the ROI chart to a robust `BAR` component with clear circular legend icons and fixed percentage Y-axis scaling.
+        - Ensured charts and breakdown tables accurately reflect scenario results even when calculation drawers are closed.
+        - Verified 100% logic accuracy and cleaned all linting/formatting warnings.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/utils/__tests__/roiCalculations.test.js`.
+
+    - **ROI Farmer Multiplier Fix (#743, #753) - [COMPLETED]**:
+        - Implemented case-wide `totalFarmers` calculation for ROI inputs when using "Yes, for all farmers" mode.
+        - Updated UI multiplier labels to correctly display total headcount (e.g., "x 1,055 Farmers").
+        - Fixed investment breakdown table's "Total" column render logic to support `per_land_unit` multipliers.
+        - Verified 100% calculation accuracy against manually calculated benchmarks in the browser.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`.
+    - **Custom ROI "Other" Components (#753) - [COMPLETED]**:
+        - Relaxed ROI component uniqueness selection to allow multiple "Other" entries within the same segment.
+        - Implemented Ant Design `Input` for custom component naming with a 30-character limit and real-time `showCount` indicator.
+        - Converted ROI breakdown table column widths to percentage-based (35% / 20% / 20% / 20% / 5%) for improved responsiveness across devices.
+        - Updated `roiCalculations.js` to utilize custom `otherName` values for accurate chart labeling and cost aggregation.
+        - Verified implementation with `yarn lint` and updated user documentation.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/utils/roiCalculations.js`, `agent_docs/user-guide.md`, `agent_docs/stories/STORY-743-ROI-Other-Custom-Names.md`.
+    - **ROI Cost Input Box Tweaks (#751) - [COMPLETED]**:
+        - Implemented dynamic unit multiplier label (e.g., "x 3,000 Farmers") for the primary "Total Cost" input in `ScenarioModelingROIForm.js`.
+        - Shifted the "Total" column alignment from right to left in the investment breakdown table for improved visual flow.
+        - Refined row alignment to "top" for better layout stability when dynamic labels are active.
+        - Verified implementation with `yarn lint` and documented the requirement in `STORY-743-ROI-Tweaks.md`.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `agent_docs/stories/STORY-743-ROI-Tweaks.md`.
+    - **BMAD Team & Workflow Alignment**:
+        - Aligned `.agent` rules, skills, and workflows with the reference.
+        - Added `add-stack` and `bmad-builder` skills.
+        - Added `add-stack.md`, `align-stack.md`, `bmad-fastpath.md`, `compile-agents.md`, and `sprint-status.md` workflows.
+        - Updated all existing `bmad-*` skills with the latest interaction protocols and stack awareness.
+        - Verified alignment with the project's `./dc.sh` and FastAPI/React architecture.
+    - **Step 5 Explanation Box & Layout Refinement (#749) - [COMPLETED]**:
+        - Implemented a "What is next?" info box in Step 5 (Closing the Gap) to guide users towards scenario modeling.
+        - Created a dedicated `WhatIsNextInfoBox` component with a responsive two-column layout and IDC-branded styling.
+        - Refined layout consistency by adjusting gutters in `AdvancedModellingTool.js` and removing redundant `!important` flags in `steps.scss`.
+        - Verified the implementation in the browser with a subtle border and shadow for enhanced component highlighting.
+    - Path: `frontend/src/pages/cases/components/WhatIsNextInfoBox.js`, `frontend/src/pages/cases/components/WhatIsNextInfoBox.scss`, `frontend/src/pages/cases/steps/ClosingGap.js`, `frontend/src/pages/cases/components/AdvancedModellingTool.js`.
+    - **ROI Chart Visibility Fix (#743) - [COMPLETED]**:
+        - Fixed the top-level `is_enabled` flag synchronization in `ScenarioModelingForm.js` to ensure ROI charts are visible when `cost_allocation_mode` changes.
+        - Corrected `dashboardData` usage in `ImpactOfInvestmentCharts.js` by treating it as an array of segments, fixing potential logic errors in the breakdown table.
+        - Refined the ROI selector synchronization in `ImpactOfInvestmentCharts.js` to start empty when no investment data exists for the current segment, while still allowing auto-population for segments with saved data.
+        - Verified the fix in both "All Farmers" and "Per Segment" modes via browser testing.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingForm.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 17: Proportional ROI Cost Allocation (#743) - [COMPLETED]**:
+        - Replaced ROI "Off/On" toggle with a 3-option Radio group ("No", "Yes, for all farmers", "Yes, per segment").
+        - Implemented proportional cost distribution logic for "All Farmers" mode based on farmer headcount ratio.
+        - **Refinement**: Added a context-aware segment selector (Radio Button group) inline with the "Scenario cost for segment" label.
+        - **Refinement**: Implemented "Scenario cost for all farmers" static label for shared cost mode.
+        - **Refinement**: Synchronized ROI form inputs across segments in "All Farmers" mode using a `useEffect` hook for a consistent view.
+        - **Refinement**: Implemented independent "Show label" and "Export" functionality for each ROI chart and breakdown table.
+        - **Refinement**: Enabled scenario-linked legends for the Return on Investment chart to support multi-scenario comparison.
+        - **Refinement**: Enforced strict 2-decimal precision for all ROI chart labels and values.
+        - Synchronized ROI dashboard segment selectors with application-wide `activeSegmentId` (bidirectional).
+        - Added comprehensive unit tests for proportional ROI calculations.
+        - Verified 100% accuracy and ESLint clean status.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingForm.js`, `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 16: ROI Scenario-Segment Multi-Selector (#743) - [COMPLETED]**:
+        - Refined the "Return on Investment" chart to support a multi-selector for Scenario-Segment combinations (Max 5 items).
+        - Unified the interaction pattern with the "Scenario Cost by component" chart.
+        - Implemented robust data filtering with the `::: ` delimiter and zero-value fallbacks.
+        - Synchronized technical and user documentation (Feature Doc, User Story, QA Guide, Safety Audit).
+        - Verified 100% lint-clean status and ROI calculation accuracy.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `agent_docs/`.
+    - **ROI Component Selection Restriction (#743) - [COMPLETED]**:
+        - Implemented a mutual exclusivity rule for the ROI cost component dropdown in `ScenarioModelingROIForm.js`.
+        - Prevented duplicate selection of categories (Training, Financing, etc.) within the same segment.
+        - Optimized React rendering using `useMemo` for stable `componentsData` and `selectedNames` dependencies.
+        - Updated User Guide and Feature Documentation to reflect the unique selection rule.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `agent_docs/user-guide.md`.
+    - **Phase 15: Selector Refinement & Documentation Sync (#743) - [COMPLETED]**:
+        - Isolated multi-selector to "Scenario Cost by component" chart and restored single-select for ROI.
+        - Implemented "show all" default behavior for the cost chart when no selections are made.
+        - Resolved "blank chart" bug via robust `::: ` delimiter and string-casting for numeric/string compatibility.
+        - Implemented zero-value fallback for segments without investment data to prevent "No Data" blank states.
+        - Synchronized all technical and user documentation (Feature Doc, User Guide, UX Spec, and Story #743-9).
+        - Verified 100% lint-clean status and calculation accuracy against Google Doc reference.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`, `agent_docs/`.
+    - **Phase 11: ROI Component Cost Color Refinement (#743) - [COMPLETED]**:
+        - Implemented a custom IDH-branded color palette for the "Scenario Cost by component" chart using official brand colors (Dark Green, Yellow, Teal, etc.).
+        - Fixed color mapping logic in `ImpactOfInvestmentCharts.js` to use the component index instead of the scenario index, ensuring visual consistency across scenarios.
+        - Verified that each cost component maintains a distinct and persistent color, improving readability and brand alignment.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+    - **Phase 10: ROI UI & Color Refinement (#743) - [COMPLETED]**:
+        - Fixed the **Segment Selector** in `ImpactOfInvestmentCharts.js` to correctly pull all available segments from `currentCase.segments`, resolving the "All Segments" only restriction.
+        - Updated the **ROI Chart Color** to the official IDH brand green (`#1B625F`) for visual consistency with Step 3 "Income gap" charts.
+        - Aligned the segment selector UI with "Scenario Outcomes" by adding a placeholder and refining dropdown ordering.
+        - Verified all refinements in the browser with dark green ROI bars and a fully functional segment dropdown.
+    - Path: `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 8: ROI Pseudocode Alignment (#743) - [COMPLETED]**:
+    - Aligned ROI calculation logic with IDH pseudocode, including proportional cost distribution for case-wide (All Farmers) inputs.
+    - Implemented new business metrics: Payback Period, Income Increase %, and Impact Percentage.
+    - Integrated these metrics into the `Segment Breakdown` table in `ImpactOfInvestmentCharts.js`.
+    - **Refinement**: Moved the `Segment Breakdown` table to a prominent full-width position and added a `SHOW_SEGMENT_BREAKDOWN_TABLE` visibility constant.
+    - **Refinement**: Enhanced the `Segment Breakdown` table to show a transparent multiplier breakdown (e.g., `cost x farmers x land_area`) for "Per Land Unit" costs.
+    - **Refinement**: Implemented a **Segment Selector** for ROI charts, allowing users to filter ROI percentage and cost breakdown by specific farmer segments.
+    - **Refinement**: Fixed `rowSpan` logic for multi-segment data presentation.
+    - **Bugfix**: Synchronized land area calculation logic between `roiCalculations.js` and `ImpactOfInvestmentCharts.js` by extracting and sharing a robust `getLandArea` utility that handles both dictionary and array-of-objects answer formats.
+    - Verified 100% calculation accuracy against Google Doc reference examples.
+    - Path: `frontend/src/pages/cases/utils/roiCalculations.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 7: Scenario Selector & Cost Transparency (#743)**:
+    - Implemented a scenario selector in `ImpactOfInvestmentCharts.js` to allow filtering ROI visualizations by specific scenario.
+    - Added a `Segment Breakdown` table for single-scenario views, providing granular transparency into cost components (applied multipliers for farmers/land).
+    - Resolved a critical calculation discrepancy where "Training" costs appeared incorrectly as 402,000 KES; identified origin as Company A (400k) + Company B (2k).
+    - Fixed linting warnings (eqeqeq, unused imports) across `roiCalculations.js` and `ImpactOfInvestmentCharts.js`.
+    - Updated `browserslist` dependency to resolve system alerts.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 4: ROI Visualization (#743)**:
+    - Integrated `ImpactOfInvestmentCharts` as Step 3 in `StandardScenarioModeling.js`.
+    - Implemented ROI and Investment vs. Income Improvement charts.
+    - Path: `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+- **Phase 5: ROI Design Alignment (#743)**:
+    - Synchronized documentation including Feature Doc, Sprint Plan, and a new User Story (`STORY-743-6`) for Figma parity.
+    - Planned zigzag layout and Scenario Cost by component visualization to match Section 3 of IDC-designs.
+- **Per-Segment ROI Breakdown (#743)**:
+    - Implemented nested ROI form within `SegmentTabsWrapper` to support independent investment analysis per farmer segment.
+    - Extracted ROI logic into a standalone `ScenarioModelingROIForm.js` component with isolated state management.
+    - Resolved critical initialization error (`MAX_SEGMENT`) by refactoring constants into a dedicated `constants.js` file.
+    - Fixed prop propagation crash (`segment is undefined`) and state persistence bugs in `ScenarioModelingForm.js`.
+    - Refined ROI table vertical alignment (align top) to ensure visual consistency with multi-line cells.
+    - Verified 100% lint-clean status and aggregate ROI calculation logic in `roiCalculations.js`.
+- **Impact of Investment Architecture (#743)**:
+    - Defined a frontend-heavy architecture for the new "Impact of Investment" premium feature to maintain real-time calculation performance.
+    - Standardized the JSON schema for storing investment data in the `visualization` table's `config` column.
+    - Created a comprehensive guide for **Visualization Config Schemas** covering Step 4 and Step 5 to ensure strict backward compatibility.
+    - Documented architectural decisions in `ADR-005` and established a regrouped optimistic estimation of 32 hours.
+    - Decomposed the feature into 3 granular User Stories (Backend Schema, Input UI, and Impact Charts) with explicit UAC/TAC.
+    - Updated the Sprint Plan with a detailed task breakdown for the implementation phase.
+- **Mutually Exclusive Segmentation (Feature Planning)**:
+    - Created a comprehensive Feature Document for mutually exclusive segmentation methods (Manual vs. Data Upload).
+    - Proposed a "Re-upload to Unlock" workflow to handle spreadsheet deletions while maintaining data-driven editability in existing cases.
+    - Defined requirements for tab-switch guards, confirmation modals, and read-only UI states to enforce a maximum of 5 segments.
+- **Income Composition & Gap Breakdown Clarifications (#746)**:
+    - Expanded descriptions in `ChartNeededIncomeLevel.js` and `ChartHouseholdIncomeComposition.js` to clearly explain proportional allocation of the income gap across existing sources.
+    - Standardized description container heights (`minHeight: 150`) across Step 3 visualizations to ensure visual alignment and accommodate expanded text.
+    - Refined terminology to improve user understanding of how "Additional income needed" is calculated and distributed.
+- **Text Updates & UI Clarifications (#744)**:
+    - Updated "Data Upload" tab in `CaseForm.js` with clearer titles ("Upload your completed data template"), subtitles, and simplified instructions.
+    - Refined Data Upload UI spacing in `cases.scss` to prevent overlap with drawer footers and added `marginBottom` to the upload zone.
+    - Replaced "physically possible" with "possible" in `AdvancedModellingTool.js` to align with business terminology.
+    - Added a detailed clarification to the "Feasible" tooltip in Step 2 (`EnterIncomeData.js`) regarding 90th quantile calculation for uploaded data, including line breaks for readability.
+    - Implemented a guidance tooltip for the "Number of segments" field in `SegmentConfigurationForm.js` to explain the automatic grouping logic.
+    - Created Feature Document, User Story, and Walkthrough artifacts to document the changes and verification steps.
+    - Verified implementation with a clean `yarn lint` run and backend logic validation.
+- **BMAD Team & Docs Alignment**:
+    - Aligned `.agent` rules, skills, and workflows with the reference project `~/Dev/my-antigravity-pilot`.
+    - Updated `bmad-team.md` and agent skills with a standardized documentation protocol (Living Documents vs. Chronological Records).
+    - Created `agent_docs/index.md` as the master project artifact map.
+    - Synchronized `bmad-orchestrator.md` with reference improvements including `index.md` consultation and time tracking.
+    - Added the `Create Feature Document` capability to the `bmad-pm` skill.
+- **Case Save UX Refinement (#739)**:
+    - Implemented tab-aware "Save case" button logic: button is now disabled in "Data upload" tab if no `import_id` is present, but enabled in "Manual data input".
+    - Added a `Tooltip` to the disabled "Save case" button providing guidance on required data upload.
+    - Implemented "Unsaved Changes Guard": added a confirmation modal (`Modal.confirm`) that triggers when attempting to close or cancel the case creation drawer with a "dirty" form.
+    - Updated `CaseForm.js` and `CaseSettings.js` to propagate and track active tab state.
+    - **Refinement**: Added `destroyOnClose` to drawer and refined `resetDataUploadForm` to ensure spreadsheet state is cleared on discard.
+    - **Refinement**: Updated guard logic to detect programmatic changes (file uploads) and segment deletions.
+    - **Refinement (Data Cleanup)**: Implemented immediate server-side deletion of uploaded spreadsheets upon "Discard" to ensure privacy and storage efficiency.
+    - **Refinement (Manual Maintenance)**: Created a standalone `cleanup_imports.py` script for manual purging of expired/orphaned upload records. Enhanced with verbose logging, a `--force` flag, and model imports for SQLAlchemy FK resolution.
+    - Verified implementation with frontend linting, new backend test cases in `test_1005_case_import.py`, and manual UX verification.
+- **Feature Gating for High Income Segments (#740)**:
+    - Implemented gating logic for Step 3 "Additional income needed" chart and Step 4 "Single driver change" tool.
+    - Resolved layout rendering issues in Step 4 table caused by nested grid components.
+    - Created a reusable `IncomeGatingAlert` component to centralize IDC-branded gating messages with improved icon alignment.
+    - Synchronized Step 3 card heights by implementing a balanced fixed-height container for the gating alert.
+    - Defined requirements and UX specification for disabling analysis tools when a segment's current income exceeds the target.
+    - Created Feature Document, User Story (BMAD 6.0 format), and UX Plan to guide implementation.
+    - Updated project index and sprint plan to include the new feature gating scope.
+- **BMAD Phase 5: Planning for Case Save UX (#739)**:
+    - Aligned user stories with the BMAD 6.0 `UAC/TAC` format, including `Timeline & Effort` and `Definition of Done`.
+    - Refined the "Save case" button logic to be tab-aware: button is disabled in "Data upload" tab if no file is present, but enabled in "Manual data input" if segments are defined.
+    - Updated the tooltip message to accurately reflect tab-specific requirements: "Please upload a data template, or switch to 'Manual data input' and define at least one segment to save this case."
+    - Documented an "Unsaved Changes Guard" requirement using `form.isFieldsTouched()` to prevent accidental data loss.
+    - Updated the project index (`agent_docs/index.md`) and sprint plan (`agent_docs/sprint-plan.md`) to reflect the consolidated planning artifacts.
+    - Synchronized `bmad-sm` skill with the reference project's latest protocols.
+- **Data Upload Segmentation Refinement (#737)**:
+    - Enforced a logical selection order in both `SegmentConfigurationForm.js` and `DataUploadSegmentForm.js`: users must now select a "Variable type" before the "Segmentation Variable" dropdown becomes active.
+    - Improved initial state handling by initializing the variable type to null, preventing confusion over empty variable lists.
+    - Added contextual guidance with a help tooltip ("?") for the "Variable type" label, explaining the purpose of the selection.
+    - Updated documentation including User Guide, QA Guide, and Technical Safety Audit to reflect the guided selection flow and robust layout.
+    - Refined the visual layout to a robust two-column structure with nested Row/Col alignment for headers and button-style toggles.
+    - Updated variable selection labels to "Select a variable to segment by:" and placeholders to "Select segmentation variable" for clearer intent.
+    - Verified frontend integrity with a full passing linting suite (`yarn lint`).
+- **Permission Matrix Documentation**:
+    - Compiled a comprehensive permission matrix mapping User Roles (Admin, Internal, External Advanced, External Regular) to Case Access levels (Visibility, Create, Edit, View, Delete, Manage Access).
+    - Documented backend middleware synchronization with frontend gating logic in `Case.js`.
+    - Saved detailed logic breakdown to [permission-matrix.md](file:///Users/galihpratama/Sites/IDH-IDC/agent_docs/features/permission-matrix.md).
+- **Git Workflow & Safety Improvements (#735)**:
+    - Formalized **Push Confirmation Rule**: Agents must now explicitly verify the active branch and ask for user confirmation before any remote push.
+    - Updated `PROJECT_RULES.md` and BMAD protocols to enforce this safety check.
+- **Data Upload Wording Refinement (#735)**:
+    - Updated "Download template" to "Download required data template" for improved clarity on IDH template requirements.
+    - Updated "Upload your data" to "Upload your validated data template" to emphasize validation status.
+    - Verified responsive layout on 1280x720 screens.
+    - Added comprehensive QA Guide and Technical Safety Audit documentation.
+- **Step 3 Missing Graphs Restoration (Issue #733)**:
+    - Restored `ChartIncomeGap`, `CompareIncomeGap`, and `ChartIncomeDriverAcrossSegments` in `UnderstandIncomeGap.js`.
+- **User Restrictions & View-Only Mode (#731)**:
+    - Centralized feature gating for Data Upload and Advanced Analysis tools in `CaseUIState` using granular flags (`enableAdvancedTools`, `enableDataUpload`).
+    - Standardized interactive element disabling across Steps 1, 4, and 5 via the centralized flags in `Case.js`.
+    - Implemented a unified "View-Only" baseline for `external_regular` users to ensure simplified interaction and data protection.
+    - **Refinement (Logic Parity)**: Refined the permission model to strictly follow the "Editor/Viewer" authority for all advanced features.
+    - **Unified Feature Gating**: Standardized `enableAdvancedTools` and `enableImpactOfInvestment` to follow `enableEditCase` status for ALL user types (Admin, Internal, Ext Adv, Ext Reg).
+    - **Manual Range Access**: Granted **External Regular** users access to advanced modelling tools and edit rights IF assigned as an explicitly authorized "Editor".
+    - **Data Upload Restriction**: Maintained strict type-based gating for the "Data Upload" tab, restricting it to **Internal** and **External Advanced** users with **Edit Permission**.
+    - **Step 4 Cleanup**: Removed hardcoded `isExternalRegular` checks in `AssessImpactMitigationStrategies.js`, successfully decoupling component rendering from static user roles in favor of dynamic state flags.
+    - **Robustness Fix**: Implemented strict `typeof === 'string'` checks in `checkEnableEditCase` and optional chaining for `case_access` to prevent runtime crashes (e.g., `toLowerCase is not a function`) when handling sparse user or case data.
+    - Updated `verify_case_creator` in `backend/middleware.py` to allow `external_advanced` users to create cases, aligning backend security with the power-user frontend model.
+    - Refactored `backend/tests/test_1000_permission_overiding.py` to specifically verify granular create permissions for both `external_regular` (denied) and `external_advanced` (allowed) users.
+    - Resolved widespread backend test failures by implementing robust master data seeding and relaxing static ID assertions in `test_1001_case_with_segments.py`, `test_1008_map.py`, and `test_1010_user_deletion.py`.
+    - Updated `checkEnableEditCase` and tool flags in `Case.js` to treat `external_advanced` like internal staff for feature access.
+    - Preserved segment browsing capabilities for all users by keeping the `SegmentSelector` enabled.
+    - Verified implementation with clean linting and a full passing test suite (`./check.sh`).
+- **External User Split UI Verification (#729)**:
+    - Implemented UI controls for Admins to assign specific external user types: **External Regular** and **External Advanced**.
+    - Updated the Users table to display granular `user_type` labels for improved transparency.
+    - Enforced organization-level visibility for **External Advanced** users, enabling lead-partner data management.
+    - Verified cross-organization security boundaries and ensured staff access logic is decoupled from Business Unit presence.
+    - **Filter Logic Fix**: Refactored the `Internal User` and `External User` filters in `crud_user.py` to use the `user_type` column instead of legacy Business Unit presence checks, preventing `external_regular` users from leaking into the `internal` filter views.
+    - **Enforced Data Isolation**: Implemented automatic cleanup of Business Unit associations in `update_user` whenever a user is changed to an `External` type, ensuring strict boundary preservation.
+    - **Align Identity Logic**: Updated the `internal_user` property in the `User` model to strictly check `user_type == internal`.
+- **Segmentation UI Refinement (Issue #727)**:
+    - Implemented "Manual Range Authority" model: user-defined Min and Max values are strictly respected during recalculation and final segment generation.
+    *   Updated backend Pydantic models to support explicit `min` and `max` fields in segmentation requests.
+    *   Enhanced `recalculate_numerical_segments` and `process_confirmed_segmentation` to prioritize manual boundaries over automatic cascading logic.
+    *   Decoupled "Segment range" display from live form fields, ensuring it remains static/calculated until an explicitly triggered update.
+    *   Prioritized manual segment addition by swapping button order in `DataUploadSegmentForm.js`.
+    *   Implemented full bi-directional cascading helpers for numerical range editing (Segment N Min updates Segment N-1 Max, and Segment N Max updates Segment N+1 Min) using a robust 0.01 precision offset.
+    *   Refined "Adjust" button logic to send both boundaries simultaneously, preventing range reversion bugs.
+    *   Resolved a "Save Case" React crash by implementing robust error stringification for Pydantic/FastAPI validation errors and sanitizing segment payloads to exclude redundant `min`/`max` fields for categorical data.
+    *   Fixed missing segment answer values in Step 2 by implementing inclusive lower bounds (`>=`) for the starting segment of each variable, ensuring all farmers are captured.
+    *   Fixed `UnboundLocalError` in `process_confirmed_segmentation` by resolving a scoping bug in numerical segment processing.
+    *   Enforced manual, unique naming for numerical segments with real-time frontend validation and empty-by-default inputs.
+    *   Simplified Step 2 layout: adjusted grid spans (12/12), added "Min/Max" input prefixes, and made the "Segment range" display optional via toggle.
+    *   Resolved frontend lint warnings by replacing `undefined` checks with `typeof` checks.
 - **Authentication Improvements (PR #705)**:
     - Fixed infinite redirect loop for unauthenticated users accessing protected routes.
     - Implemented "Redirect After Login" feature to return users to their originally requested page.
     - Resolved circular dependencies in route definitions by extracting `paths.js`.
     - Fixed 404 behavior for unauthenticated users on protected routes.
+- **Three Driver Calculator Implementation (Issue #709)**:
+    - Implemented `ThreeDriverCalculator` component in Step 4 for advanced income gap analysis.
+    - Added `ThreeDriverCombinationChart` with a 4-card table-based UI to visualize driver combinations.
+    - Implemented logic to calculate the required third driver value to reach the income target.
+    - Integrated dynamic ranges for X and Y axes derived from "Two driver heatmap" configuration.
+    - Added color coding (Green/Orange) to indicate feasibility based on driver ranges.
+    - Implemented 2-decimal rounding for all numerical displays.
+    - Implemented dynamic feasibility color coding for each driver independently.
+    - Integrated dynamic descriptions and conditional visibility based on driver selection.
+    - Refactored shared card and step styles into `steps.scss`.
+    - Finalized UI styling and alignment refinements for the combination chart.
+    - Fixed negative calculation results for Land and Animals/Area drivers by correcting formula numerators in `formula.js`.
+    - Included unit names (e.g., kilograms/acres) in `ThreeDriverCombinationChart` value boxes for improved readability and immediate feasibility verification.
+    - Refined UI styling by removing opacity from X-axis driver boxes and increasing label width and font weight for better alignment.
+    - Updated Three Driver calculator description text to be more precise and dynamic.
+    - Integrated "Diversified Income" as a selectable driver for three-driver analysis, including full formula and feasibility support.
+    - Implemented state persistence for the third driver selection, ensuring it is saved and reloaded across user sessions and segment changes.
+    - Fixed heatmap form synchronization: added `useEffect` to ensure form fields correctly load and update from global state.
+    - Improved synchronization for adjusted income targets, ensuring global state values are correctly loaded on component mount and updates.
+    - Implemented "Breakdown of closing the gap" pie chart to visualize 100 driver combinations using a 10x10 grid.
+    - Extracted shared three-driver calculation logic into `threeDriverCalculations.js` utility and added comprehensive unit tests.
+    - Refactored `ThreeDriverCombinationChart` to use the shared calculation utility for better consistency.
+    - Adopted `VisualCardWrapper` and project standard `Chart` patterns for the new pie chart.
+    - Implemented driver filtering in `ThreeDriverCalculator` to only show drivers supported by the analysis formulas.
+    - Implemented rounded feasibility background colors for all three driver value boxes in the combination chart.
+    - Aligned side labels horizontally with value boxes and refined layout for a more compact UI.
+    - Added conditional rendering to hide three-driver analysis sections until all three drivers are selected.
+- **Closing the Gap Calculation (PR #706)**:
+    - Implemented "Closing the Gap %" calculation to allow adjusting income targets based on a percentage of the remaining gap.
+    - Added `inlineView` mode to `AdjustIncomeTarget` for seamless integration in Step 4.
+    - Centralized calculation logic to ensure consistency across "Explore" and "Sensitivity Analysis" sections.
+- **Multiple Segment Addition Methods (Issue #683)**:
+    - Implemented UI to add segments based on different variables for data uploads.
+    - Refactored `SegmentForm` into simplified `SegmentForm` (manual) and `DataUploadSegmentForm` (complex).
+    - Added inline segment generators with visual grouping and automatic segment management.
+    - Enforced 5-segment limit across all addition methods.
+    - Added dev workflows for frontend linting and backend testing.
+    - Fixed and verified segment value generation for mixed numerical/categorical variables.
+    - Fixed UI bug where threshold fields were missing for numerical segments in inline generators.
+    - Fixed regression where editing a numerical segment's threshold during mixed segmentation caused other fields to disappear.
+    - Synced "Number of Segments" input with actual segment count to reflect deletions in inline generators.
+    - Fixed seeder unique constraint violations and updated backend tests for master seeder stability.
+    - Implemented interleaved chronological layout for manual segments and generators.
+    - Fixed field interactivity: correctly disabled "Number of farmers" for generated categorical/numerical segments while keeping it enabled for manual ones.
+    - Implemented manual segment support in Case Import: manual farmer counts are preserved and data filtering is skipped on backend.
+    - Fixed 422 error during segmentation submission by making index optional and correctly identifying manual segments via a hidden flag.
+    - Preserved interleaved segment ordering across session and save cycles by removing ID-based sorting in the frontend.
+    - Optimized segmentation preview fetches with caching to prevent redundant API calls.
+    - Improved manual segment count synchronization and allowed 0 as a valid input for cleared states.
+    - Refined segmentation UI by clarifying the variable selection label: updated "Segmentation variable" to "Select a variable to segment by:" in both manual and data-upload forms.
+    - Fixed "Number of Segments" synchronization bug: ensured the input field doesn't reset while typing by only syncing when the actual segment count changes (e.g., via deletion).
+    - Fixed field interactivity: correctly disabled "Number of farmers" for generated categorical/numerical segments while keeping it enabled for manual ones.
+    - Fixed manual segment field visibility: ensured adding a manual segment doesn't trigger global count synchronization or overwrite manual fields with global variables.
+    - Refined segment limit warnings: implemented three distinct levels (numerical data insufficiency, categorical variable overflow, and total limit overflow) to provide precise feedback while enforcing the 5-segment limit.
+- **Single Driver Change Refinement (Issue #696)**:
+    - Extracted complex calculation logic into `incomeCalculations.js` utility.
+    - Fixed identification of calculation bugs and corrected parenthesis errors in secondary driver formulas.
+    - Reverted baseline income for secondary/tertiary crops to use aggregator values (q1) for accuracy.
+    - Implemented unit tests for `incomeCalculations` utility.
+    - Improved component readability and simplified data processing in `SingleDriverChange.js`.
+- **Visualization Description Refinement (Issue #686, #688)**:
+    - Refined descriptive text for `ChartNetIncomePerLandUnit`, `ChartRevenueToCostRatio`, and `ChartFarmEconomicEfficiency` to improve clarity and terminology consistency.
+    - Updated `ChartNeededIncomeLevel` to show additional income needed (gap breakdown) instead of total needed income, and refined its title and description.
+    - Implemented title wrapping in `VisualCardWrapper` to prevent long titles from overflowing or overlapping.
+    - Improved responsiveness of chart headers in `VisualCardWrapper` to prevent title overlap with buttons on smaller screens.
+    - Aligned chart heights for Household Income Composition and Needed Income Level for better visual consistency.
+    - Standardized terminology by using "graph" or "chart" instead of "ratio" or "indicator" and "primary commodity" instead of "crop" or "raw material" where appropriate.
+- **Income Driver Calculation Refinement (Issue #711)**:
+    - Resolved race conditions in `EnterIncomeDataForm` initialization by replacing asynchronous change simulations with a structured single-pass synchronization.
+    - Implemented bottom-up question derivation logic to automatically calculate parent aggregator values (e.g., q1 total) when missing from input data.
+    - Refactored global state synchronization in `EnterIncomeDataForm` to use functional updates and deep merging, preventing data loss across driver groups and ensuring correct data flow to Step 3.
+    - Removed fragile 500ms timeout workaround from the initialization lifecycle.
+- **Step 5 Refactoring & Advanced Modelling Tool (Issue #713)**:
+    - Extracted all scenario modeling logic, state, and UI sections (1, 2, and 3) from `ClosingGap.js` into a standalone `StandardScenarioModeling` component.
+    - Implemented `AdvancedModellingTool` as a new high-fidelity modelling interface for Step 5.
+    - Created `create_pr.md` workflow to automate standard Pull Request generation with base branch selection.
+    - Integrated `EquationVisualizer` for graphical representation of income driver formulas, utilizing project-specific asset icons for improved visual consistency.
+    - Implemented dynamic QID mapping to support Crops, Aquaculture, and Livestock in modelling calculations.
+    - Implemented `SegmentSelector` in `AdvancedModellingTool.js` to enable dynamic segment-specific modelling scenarios.
+    - Added real-time profit/cost breakdown visualization using a dynamic bar chart.
+    - Synchronized driver labels and selectable options with the global question state for terminal terminology consistency.
+    - Refined UI by integrating modelling inputs directly into scenario tabs and implementing scenario-aware field loading for consistent data display.
+    - Refactored `AdvancedModellingTool.js` to eliminate code duplication using a `renderModellingInputs` helper function.
+    - Standardized styling with Ant Design `.card-section-wrapper` and moved all static styles to `steps.scss`.
+    - Encapsulated scenario-specific state and lifecycle hooks to improve modularity and maintainability.
+    - Implemented category-specific modelling formulas for Crops, Livestock, and Aquaculture in a centralized utility.
+    - Added unit-cost and unit-profit breakdown visualization for each modelling scenario.
+    - Refactored `EquationVisualizer.js` to eliminate all inline styles, moving them to structured SCSS classes in `steps.scss`.
+    - Implemented dynamic JavaScript-based scaling in `EquationVisualizer.js` to ensure the formula fits within its card on all screen sizes without horizontal overflow.
+    - Implemented vertical and horizontal centering for all equation elements, ensuring a balanced layout and preventing cropping.
+    - Standardized and refined equation symbols (+, -, *, =) to be more proportionate and harmonious with the driver icons.
+    - Simplified `RowSeparator` usage and ensured consistent color coding for all operators in the visualizer.
+    - Shortened multi-word labels in `EquationVisualizer` (COP, SEC, TER, ODI) and added a legend for clarity.
+    - Integrated `antd` `Tooltip` directly into `IconBox` component for better discoverability.
+    - Made the bottom legend in `EquationVisualizer` configurable via `showLegend` prop.
+    - Updated `steps.scss` to handle optional legend visibility and simplified cursor behavior.
+    - Reduced icon circle size to 40px and icon image size to 24px in the equation visualizer.
+    - Optimized dashed boxes to wrap content tightly using `width: fit-content`.
+    - Resolved React hook dependency warnings and optimized component lifecycle in the modelling interface.
+    - Standardized colors and styling in Step 5 using `$primary-color`.
+    - Implemented per-segment persistence for modelling values, ensuring data is saved and restored when switching between segments.
+    - Refactored `EquationVisualizer` to be responsive, including horizontal scrolling and specific scaling for 1280x720 screens.
+    - Refined Equation Visualizer legend styles for smaller screens.
+    - Fixed linting warning in `AdvancedModellingTool.js` regarding `useEffect` dependencies.
+    - Resolved continuous re-rendering issue in `AdvancedModellingTool` by refining state synchronization logic.
+    - Implemented per-segment persistence for the selected driver in `AdvancedModellingTool`, ensuring the user's choice is saved and restored when switching segments.
+    - Reset calculation result when switching drivers in `AdvancedModellingTool` to prevent stale data display.
+    - Aligned input and visualization card heights in the Advanced Modelling Tool for visual consistency by implementing flex-growth rules for the Equation Visualizer and Scenario Tabs.
+    - Resolved excessive spacing in the Price Breakdown card by using standardized fixed margins while maintaining equal-height alignment across all screen sizes.
+    - Updated `AdvancedModellingTool.js` with `left-panel` and `right-panel` classes for precise CSS targeting of internal Space components.
+    - Resolved persistence issues in Step 4 and 5: fixed bug where `AdvancedModellingTool` and `ThreeDriverCalculator` failed to save data due to missing `case` ID in the global store.
+    - Implemented explicit `case` ID initialization in `Case.js` for modelling tabs to ensure first-time saves are successful.
+    - Reinforced `AdvancedModellingTool.js` and `ThreeDriverCalculator.js` with robust `case` ID preservation during state updates.
+    - Refined backend logic in `backend/models/case.py` to correctly detect advanced scenario modeling data, excluding "null" keys and supporting traditional scenario values as fallback.
+    - Resolved a bug where calculation results of exactly `0` were not displayed in the modelling tool by using `null` as the initial state.
+    - Implemented "Income target already met" detection; the tool now displays the current driver value instead of a negative or zero value when the target is already reached, providing clearer feedback.
+    - Reverted calculation bounding logic in `incomeCalculations.js` to return raw theoretical values for mathematical precision, while handling UI display constraints in the component layer.
+    - Refined the price breakdown chart to handle theoretical results gracefully and display percentage contributions of cost and profit.
+    - Resolved ESLint `no-case-declarations` errors in `incomeCalculations.js` by implementing proper block scoping for case statements.
+    - Refined calculation bounding logic: implemented scenario-specific guidance for surplus (income decrease message) and impossible targets (physically unreachable warning).
+    - Decoupled input fields from calculation results to preserve user "What-If" assumptions while showing required thresholds.
+    - Updated Price Breakdown visualization: automatically displays 100% Profit for impossible cost scenarios.
+    - Corrected driver-aware feasibility logic to properly handle Price/Volume (higher = better) vs. CoP (lower = better).
+    - Enhanced guidance UI: implemented styled Alert-based hints positioned below calculation results for improved readability.
+    - Implemented comprehensive regression tests in `modellingFixes.test.js` to verify raw value calculations and UI state transitions.
+    - Implemented static locks for "Current" and "Feasible" scenarios in Step 5 to clearly indicate read-only data.
+    - Refined the "Model" scenario UI to be unlocked by default with hidden icons, providing a clean modeling interface.
+    - Implemented a "stale data" detection mechanism to automatically refresh model values from the "Current" scenario if they match the "Feasible" baseline.
+    - Preserved background "lock flag" state and logic for future toggleability while hiding it from the current UI.
+    - Resolved a `ReferenceError` (lexical declaration) by refactoring the data initialization lifecycle to ensure all functions are defined before use.
+    - Optimized per-segment persistence to ensure that starting model values are always relevant to the current segment state.
+    - Resolved a `ReferenceError` where `sensitivityAnalysis` was not defined in the Advanced Modelling Tool.
+    - Fixed an income target calculation bug in the Advanced Modelling Tool caused by a property name typo (`income_target_level` -> `target`).
+    - Implemented support for adjusted income targets from the sensitivity analysis configuration in the Advanced Modelling Tool.
+    - Refined surplus verification logic to compare total calculated income (primary + others) against the benchmark target.
+    - Decoupled surplus detection from adjusted targets to ensure baseline feasibility checks remain consistent with the original segment benchmark.
+    - Fixed decimal input issue in `AdvancedModellingTool.js` by replacing standard `Input` with `InputNumber` and integrating `InputNumberThousandFormatter`.
+    - Refined Advanced Modelling Tool: implemented "current value" clamping for surplus scenarios to avoid confusing negative results.
+    - Fixed feasibility signal bug by implementing 2-decimal rounding for precision-safe comparisons.
+    - Replaced Price Breakdown chart with a "physically impossible" warning alert for scenarios with negative required values.
+    - Refined guidance UI by removing icons from modelling tool alerts for a cleaner appearance.
+    - Aligned `.agent` configuration (rules, skills, workflows) with the project stack (FastAPI/React/Docker) to support future agentic modelling tasks.
+    - Created foundational Product Brief and PRD in `agent_docs/` to centralize modelling logic and requirements.
+    - Implemented `/2-implement` workflow for TDD-driven development in the project stack.
+    - **Logic Refinement & Feedback Alignment**:
+        - Refined `handleCalculate` to strictly prioritize raw mathematical results over clamped values for surplus and impossible scenarios.
+        - Implemented specific guidance alerts for `surplus` (income decrease warning) and `impossible` (negative value warning) states.
+        - Updated Price Breakdown logic to conditionally hide the bar chart and Cost/Profit labels only in `impossible` scenarios, ensuring the card remains visible for structural consistency.
+        - Re-verified all implementation logic against the latest Google Doc feedback to ensure perfect alignment with warning strings and visibility gates.
+        - Reverted the Advanced Modelling Tool (Step 5) to use the original baseline target from Step 1, ensuring adjusted targets from Step 4 are only applied within Step 4 features as per manager feedback.
+        - Formally documented the architecture and ADR-005 to capture the technical rationale for raw value preservation.
+        - Created `modelling-test-scenarios.md` with detailed Current/Feasible values for three distinct segments (Normal, Surplus, Impossible) to support manual verification.
+- **External (Regular) User Restrictions Implementation (Issue #731)**:
+    - **Frontend**:
+        - Centralized user type checking by adding `isExternalRegular` to `UserState` and initializing it in `App.js` based on `user_type`.
+        - Refactored `CaseForm.js`, `AssessImpactMitigationStrategies.js`, and `ClosingGap.js` to use the new `isExternalRegular` flag for feature gating.
+        - Hid "Data upload" tab in `CaseForm.js` for restricted users.
+        - Set Optimization Tool (Step 4) to "View Only" mode: disabled all interactive inputs, the "Run the model" button, and driver selection.
+        - Set Advanced Modelling Tool (Step 5) to "View Only" mode: disabled modelling inputs, "Calculate" button, and scenario tabs.
+        - Disabled the "Select the Goal" (AdjustIncomeTarget) and "Three driver calculator" interactive elements in Step 4.
+        - Disabled the "Mark as complete" button in Step 5 for restricted users.
+    - **Backend**:
+        - Deferring explicit backend guardrails (middleware and upload routes) for `external_regular` users pending further manager review; currently relying on existing business unit-based permission logic.
+    - **Verification**:
+        - Verified frontend integrity with linting pass.
+        - Updated `test_1005_case_import.py` to align with reverted backend focus.
+- **External (Regular) User Restrictions Planning**:
+    - Defined requirements and UAC/TAC (STORY-004) for restricting features for the `external_regular` user type.
+    - Specified that Data Spreadsheet Upload should be completely hidden.
+    - Specified that the Optimisation Algorithm chart (Step 4) and Advanced Modelling Tool (Step 5) should be set to "View Only" mode by disabling interactive inputs and run buttons.
+    - Calculated total effort estimation at ~5 hours.
+- **External User Split (Documentation)**:
+    - Formalized "Internal", "External (Regular)", and "External (Advanced)" user types in the project PRD.
+    - Created detailed feature specification for role-based access logic splitting External users.
+    - Defined developer-ready User Stories with UAC/TAC for backend migration and frontend UI updates.
+    - Established a "Phased Rollout" sprint plan to support incremental feature delivery.
+- **Documentation Maintenance & Rules**:
+    - Refined BMAD team rules in `.agent/rules/bmad-team.md` to designate `sprint-plans` as living documents.
+    - Enforced versioned history for ADRs and User Stories while prioritizing updates for active sprint tracking.
+- **Visualization & Step 3/4 Fixes (Issue #719)**:
+    - Resolved graph loading issues in "Understand Income Gap" and "Assess Impact Mitigation Strategies" by refining aggregator question identification for primary, secondary, and tertiary commodities.
+    - Implemented absolute-wedge rendering in the shared `Pie.js` component to visualize surpluses (negative gaps) while maintaining signed labels and tooltips.
+    - Refined `formatNumberToString` utility to support absolute thresholds for K/M/B suffixes, ensuring negative values are formatted correctly with their sign.
+    - Optimized `ChartNeededIncomeLevel.js` to align with the requested distribution formula and filtered out zero-value sectors for a cleaner UI.
+    - Fixed data loading in "Change Indicators" charts by implementing dynamic QID lookup based on commodity category.
+    - Resolved `Case.js` bug where cost questions were incorrectly identified due to property name mismatch (`commodityId` -> `commodity_id`).
+    - Added commodity category name lookup in `Case.js` to support dynamic chart logic and Advanced Modelling Tool.
+    - Implemented division by zero protection in `ChartRevenueToCostRatio.js` and `ChartNetIncomePerLandUnit.js` to prevent `Infinity` results.
+    - Resolved unit display issues in `SingleDriverChange.js` and `EnterIncomeDataForm.js` by implementing robust unit lookup for Land and Volume drivers.
+- **External User Split (Full Implementation) (Issue #729)**:
+    - **Backend**:
+        - Implemented `user_type` column in `User` model with `external_regular` as default for new registrations.
+        - Added database migration `3g4h5i6j7k8l` to introduce `user_type` field.
+        - Updated `crud_user.filter_user` and `crud_case.get_all_case` to enforce role-based access isolation.
+        - `external_regular` users are restricted to viewing/editing only their own cases or cases shared with them.
+        - `external_advanced` users maintain broader visibility within their organization as per original `external` behavior.
+        - Updated backend test suite (`test_001_auth.py`, `test_002_user.py`, `test_1000_permission_overiding.py`) to verify `user_type` assertions and permission overrides.
+        - Added `test_026_external_user_case_access.py` to verify access isolation between regular and advanced external users.
+    - **Internal User Refactor**:
+        - Standardized staff identification to use the new `user_type == 'internal'` column instead of legacy Business Unit presence checks.
+        - Refactored `backend/routes/case.py` and `backend/routes/map.py` to utilize the granular identity model for Case and Map visibility filtering.
+        - Added regression test `test_027_internal_user_refactor.py` and updated `architecture.md` to reflect these changes.
+        - Resolved hardcoded ID dependency issues in `test_1000_permission_overiding.py` to support dynamic test environments.
+    - **Frontend**:
+        - Updated `UserForm.js` to allow selection of "External Regular" and "External Advanced" roles for admins.
+        - Implemented conditional sub-selector logic and robust state mapping for `user_type` in creation and edit modes.
+        - Enhanced `Users.js` list with "External Regular" and "External Advanced" role filters.
+        - Updated the user management table to display descriptive labels for specific external user types.
+        - Verified frontend integrity with linting pass.
+    - Fixed 0 value calculation bugs in `SingleDriverChange.js` by implementing dynamic QID mapping for primary, secondary, and diversified commodities.
+    - Refined `InputNumberThousandFormatter` to support explicit decimal padding and applied it to the Two Driver Heatmap binning form to enforce 2-decimal rounding.
+    - Implemented case-insensitive matching for commodity categories in dynamic QID lookups across `SingleDriverChange.js` and `AdvancedModellingTool.js`.
+    - Resolved `ReferenceError` and `TypeError` in frontend components related to store state access.
+    - Resolved linting warnings in `Pie.js` regarding `undefined` property checks.
+    - Added safety null-checks and robust driver lookup logic across all Step 3/4 visualization components.
+    - Verified all changes with frontend linting and manual code review.
+- **Segmentation Preview & Value Generation Error Handling (Issue #717)**:
+    - Implemented error handling for segmentation preview API calls to prevent silent failures.
+    - Added state management to track and display API errors in both `SegmentConfigurationForm` and `DataUploadSegmentForm`.
+    - Integrated basic Ant Design `Alert` components for compact, inline error messaging.
+    - Improved backend error messages for missing segments, variables, and commodities during import.
+    - Added case-insensitive matching for segmentation variables to improve upload robustness.
+    - Updated `CaseSettings.js` to display specific backend error details in the frontend for segment generation.
+    - Verified implementation with frontend linting and backend tests.
+- **Segment Range Display Fix (Issue #725)**:
+    - Resolved a bug where adjusting segment thresholds caused all subsequent segment ranges to reset to the global minimum.
+    - Implemented case-insensitive variable name matching in `recalculate_numerical_segments` (backend) and `handleOnChangeFieldValue` (frontend).
+    - Ensured segment ranges correctly reflect the boundary of the previous segment regardless of variable name casing.
+    - Implemented broad case-insensitive support for case import, including sheet names ("Data", "Mapping") and validation flags.
+- **Fixed Crop Deactivation (Issue #721)**:
+    - Fixed a bug where deactivated secondary/tertiary crops persisted in the database and Step 2 UI.
+    - Implemented explicit deletion logic in `crud_case.py` to remove commodities not present in the update payload.
+    - Added `session.commit()` and `session.refresh(case)` in backend to ensure newly added commodities receive valid IDs immediately, resolving a recurring 422 error.
+    - Implemented a confirmation dialog in `CaseSettings.js` to warn users before permanently deactivating crops.
+    - Added safety checks in `Case.js` to handle missing commodity data and filter out commodities without IDs during initialization.
+    - Reinforced `EnterIncomeData.js` with defensive payload filtering to strip out invalid commodity IDs (e.g., "null") before submission.
+    - Verified fix with a new backend regression test `test_fix_commodity_removal.py` and front-to-back integration checks.
+- **Fix Inconsistent Farmer Distribution in IDC Auto Segmentation (Issue #723)**:
+    - Resolved numerical segmentation issues by switching to non-interpolating quantiles (`closest_observation`).
+    - Prevented creation of "artificial" thresholds in data gaps, eliminating empty segments with 0 farmers.
+    - Implemented support for "Equal Interval" strategy in backend segmentation logic.
+    - Updated Pydantic models to support optional strategy selection in segmentation previews and recalculations.
+    - Resolved floating point precision issues where values slightly exceeding cut thresholds (e.g., `1.95` stored as `1.9500001`) were excluded from segments by rounding input data to 2 decimal places.
+    - Added regression test `test_segmentation_repro.py` to verify boundary handling.
+- **Technical Improvements & Workflows**:
+    - **General Refactoring**: Split the monolithic `idc-antigravity-skills` into granular components: `idc-core`, `idc-database`, and `idc-testing`.
+    - **Workflows**: Updated `check_time`, `commit_changes`, and `create_pr` workflows with automated branch detection; implemented `seed_data`, `view_logs`, and `run_frontend_test`.
+    - **Asset Alignment & Centralized Rules**:
+        - Unified Rules, Skills, and Workflows into a cohesive hierarchy (The Law > Knowledge > Recipes).
+        - Standardized all container commands to use `./dc.sh` wrapper for consistency.
+        - Streamlined workflows by centralizing technical standards in `PROJECT_RULES.md`.
+        - Added cross-references between specialized skills and actionable workflows.
+        - Implemented **Synchronicity Mandate**: mandatory immediate updates to all related agent assets (Skills, Workflows, Docs) when a rule is updated.
+    - **Project Rules Implementation**:
+        - Created comprehensive `.agent/rules/PROJECT_RULES.md` defining FE/BE coding standards and best practices.
+        - Implemented technical linting rules (e.g., `exhaustive-deps`, `jsx-a11y`) and performance patterns (e.g., `useMemo`, `pullstate` functional updates).
+        - Standardized backend patterns (FastAPI DI for sessions/auth, business logic decoupling).
+        - Consolidated workflow rules for Git, PRs, and activity logging.
+    - **Technical Safety and QA protocols**:
+        - Mandatory Technical Safety Audit and UI QA Guide defined in `create_pr` workflow.
+        - Integrated Safety Audit and QA Guide artifacts into Phase 7 of BMAD lifecycle.
+        - Updated `bmad-tester` skill with protocols for Risk Matrix and Manual UI Verification.
+        - Formalized Tester responsibility in `bmad-team.md` to include safety validations.
+    - **Analytics**: Migrated from Piwik Pro to Matomo (Issue #idc-analytics) with environment-based site selection.
+    - **Time Analysis**: Enhanced `analyze_time.py` with issue grouping and idle time analysis; updated `/check_time` workflow to be interactive, proactively prompting for analysis criteria.
+    - **Segmentation UI Refinement (Issue #727)**:
+        - Defined UAC and TAC for improving farmer visibility and manual adjustment flow.
+        - Implemented colorized IDC Green tag style (`.farmer-count-tag`) for farmer counts for better visibility.
+        - Standardized tag sizes for both farmer count and segment range (`.segment-info-tag`) for visual balance.
+        - Implemented segment name initialization: numerical segments start with blank names and a `"Please specify the segment name"` placeholder.
+        - Reorganized documentation into `docs/segmentation_ui_refinement` and provided technical context in `docs/segmentation_fix`.
+        - Refactored Numerical Range UI using Ant Design `Space` and `InputNumber`, centering Min/Max labels below inputs and adding an IDC Green "Adjust" button.
+        - Prioritized the manual flow by making the "Add segment manually" button primary and moving it before the generator button.
+- **Documentation**: Created `INCOME_CALCULATION.md` and reorganized `docs/` folder.
 
 ## Codebase Structure
 - `backend/`: FastAPI application code.

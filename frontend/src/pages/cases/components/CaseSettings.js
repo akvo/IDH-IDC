@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Modal, Form, message } from "antd";
+import { Form, message, Drawer, Button, Modal, Tooltip } from "antd";
+import { CloseOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { CaseForm } from ".";
 import {
   removeUndefinedObjectValue,
@@ -13,12 +14,16 @@ import {
   CurrentCaseState,
   PrevCaseState,
   stepPath,
+  resetCurrentCaseState,
 } from "../store";
-import { isEqual, isEmpty, orderBy } from "lodash";
+import { isEqual, isEmpty } from "lodash";
 import { UserState } from "../../../store";
 import { countryOptions, focusCommodityOptions } from "../../../store/static";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
+import { MAX_SEGMENT } from "../constants";
+
+const dataUploadFieldPreffix = "data_upload_";
 
 const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const [form] = Form.useForm();
@@ -37,6 +42,74 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   const { internal_user: userInternal } = UserState.useState((s) => s);
 
   const [deletedSegmentIds, setDeletedSegmentIds] = useState([]);
+  const segmentFields = Form.useWatch("segments", form);
+  const [activeTab, setActiveTab] = useState("manual");
+  const importId = Form.useWatch("import_id", form);
+
+  const hasSegments = useMemo(() => {
+    return (
+      segmentFields?.some((s) =>
+        typeof s === "string" ? s.trim() !== "" : !!s?.name?.trim()
+      ) || false
+    );
+  }, [segmentFields]);
+
+  const isUploadMissing = activeTab === "upload" && !importId && !hasSegments;
+  const isSaveDisabled =
+    !enableEditCase ||
+    (segmentFields?.length || 0) > MAX_SEGMENT ||
+    isUploadMissing;
+
+  const handleCancelWithGuard = useCallback(() => {
+    const isDirty =
+      form.isFieldsTouched() || !!importId || deletedSegmentIds.length > 0;
+
+    if (isDirty) {
+      Modal.confirm({
+        title: "Unsaved Changes",
+        icon: <ExclamationCircleOutlined />,
+        content:
+          "You have unsaved changes. Are you sure you want to discard them?",
+        okText: "Discard changes",
+        okType: "danger",
+        cancelText: "Keep editing",
+        onOk: () => {
+          // server side cleanup if importId present
+          if (importId) {
+            api
+              .delete(`/case-import/${importId}`)
+              .then(() => {})
+              .catch(() => {});
+          }
+          // reset deleted segment on discard
+          if (deletedSegmentIds?.length) {
+            form.setFieldValue("segments", formData.segments);
+          }
+          // reset global state on discard
+          if (currentCase?.id) {
+            CurrentCaseState.update((s) => ({
+              ...s,
+              ...prevCase,
+            }));
+          } else {
+            resetCurrentCaseState();
+          }
+          form.resetFields();
+          handleCancel();
+        },
+      });
+    } else {
+      handleCancel();
+    }
+  }, [
+    form,
+    handleCancel,
+    deletedSegmentIds,
+    formData.segments,
+    importId,
+    currentCase?.id,
+    prevCase,
+  ]);
 
   const updateCurrentCase = useCallback((key, value) => {
     CurrentCaseState.update((s) => ({
@@ -110,14 +183,11 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         reporting_period: currentCase.reporting_period,
         company: currentCase.company,
         segments: currentCase?.segments?.length
-          ? orderBy(
-              currentCase.segments.map((s) => ({
-                id: s.id,
-                name: s.name,
-                number_of_farmers: s.number_of_farmers,
-              })),
-              ["id"]
-            )
+          ? currentCase.segments.map((s) => ({
+              id: s.id,
+              name: s.name,
+              number_of_farmers: s.number_of_farmers,
+            }))
           : [""],
       };
       // secondary
@@ -251,7 +321,8 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
       tags: values.tags || null,
       company: values.company || null,
       other_commodities: other_commodities,
-      segments: values.segments,
+      segments: form.getFieldValue("segments") || values.segments,
+      import_id: values?.import_id || null,
     };
 
     // detect is payload updated
@@ -272,6 +343,34 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
 
     apiCall
       .then((res) => {
+        let data = res?.data || {};
+        data = {
+          ...data,
+          segments: data?.segments?.length ? data.segments : [],
+        };
+
+        // NEW 23-06-2026 :: set form segments id fields value after saving the data
+        const currentSegments = form.getFieldValue("segments") || [];
+        const segmentsWithID = data?.segments?.length ? data.segments : [];
+        const updatedSegmentFields = currentSegments?.map((segment) => {
+          const findSegmentByName = segmentsWithID?.find(
+            (s) => s?.name?.toLowerCase() === segment?.name?.toLowerCase()
+          );
+          if (findSegmentByName?.id) {
+            return {
+              ...segment,
+              id: findSegmentByName.id,
+              name: findSegmentByName.name,
+            };
+          }
+          return segment;
+        });
+        form.setFieldsValue({
+          import_id: data?.import_id || null,
+          segments: updatedSegmentFields,
+        });
+        // EOL NEW 23-06-2026 set form segments id fields value after saving the data
+
         // track event: external user create new case (PoC)
         if (!userInternal && isNewCase) {
           const reportedCountry = countryOptions.find(
@@ -339,13 +438,6 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
         // EOL track event
 
         setPrevCaseSettingValue(filteredCurrentValue);
-        let data = res?.data || {};
-        data = {
-          ...data,
-          segments: data?.segments?.length
-            ? orderBy(data.segments, ["id"])
-            : [],
-        };
 
         const lowestSegmentId = data?.segments?.[0]?.id;
         const newActiveSegmentId = deleteSegment
@@ -473,18 +565,111 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           type: "success",
           content: "Case setting saved successfully.",
         });
-        setTimeout(() => {
-          form.resetFields();
-          handleCancel();
-          // always navigate to step 1 after save
-          navigate(`${routePath.idc.case}/${data.id}/${stepPath.step1.label}`);
-        }, 100);
+
+        // SAVE /case-import/generate-segment-values
+        if (values?.import_id) {
+          // determine segmentation variable fallback from segments if global variable is null
+          // this handles the case where segments are added via inline generators without a global selection
+          const firstSegmentWithVar = values.segments?.find(
+            (s) => s.segmentation_variable
+          );
+          const fallbackVar = firstSegmentWithVar?.segmentation_variable;
+
+          const confirmedSegPayload = {
+            case_id: data.id,
+            import_id: values.import_id,
+            segmentation_variable:
+              values.data_upload_segmentation_variable || fallbackVar,
+            segments: values.segments.map((seg, idx) => {
+              // find segment id from data.segments
+              const findSegment = data.segments.find(
+                (s) => s.name === seg.name
+              );
+              const sVarType =
+                seg.variable_type || values.data_upload_variable_type;
+              const isNumerical = sVarType === "numerical";
+              return {
+                id: findSegment ? findSegment.id : null,
+                index: idx,
+                name: seg.name,
+                value: seg.value || 0,
+                min: isNumerical ? seg.min : null,
+                max: isNumerical ? seg.value : null,
+                number_of_farmers: seg.number_of_farmers || 0,
+                is_manual: !!seg.is_manual,
+                segmentation_variable:
+                  seg.segmentation_variable ||
+                  values.data_upload_segmentation_variable,
+                variable_type: sVarType,
+              };
+            }),
+          };
+          api
+            .post("case-import/generate-segment-values", confirmedSegPayload)
+            .then((res) => {
+              const generatedData = res.data;
+
+              /// update currentCase global state with generated segments from generatedData
+              // when successfully generated segment values
+              if (generatedData?.segments?.length) {
+                CurrentCaseState.update((s) => ({
+                  ...s,
+                  segments: generatedData.segments,
+                  import_id: generatedData?.import_id || null,
+                }));
+              }
+              // EOL
+
+              // reset form and close drawer
+              setTimeout(() => {
+                form.resetFields();
+                handleCancel();
+                // always navigate to step 1 after save
+                navigate(
+                  `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
+                );
+              }, 1000);
+            })
+            .catch((e) => {
+              console.error(e);
+              const detail = e?.response?.data?.detail;
+              const errorMessage =
+                typeof detail === "string"
+                  ? detail
+                  : Array.isArray(detail)
+                  ? detail.map((d) => d.msg || JSON.stringify(d)).join(", ")
+                  : typeof detail === "object" && detail !== null
+                  ? JSON.stringify(detail)
+                  : "Failed to generate segment values from import data.";
+
+              messageApi.open({
+                type: "error",
+                content: errorMessage,
+                duration: 5,
+              });
+            });
+        } else {
+          // NORMAL BEHAVIOUR
+          setTimeout(() => {
+            form.resetFields();
+            handleCancel();
+            // always navigate to step 1 after save
+            navigate(
+              `${routePath.idc.case}/${data.id}/${stepPath.step1.label}`
+            );
+          }, 100);
+        }
+        // EOL SAVE /case-import/generate-segment-values
       })
       .catch((e) => {
         console.error(e);
         const { status, data } = e.response;
         let errorText = "Failed to save case setting.";
         if (status === 403) {
+          errorText = data.detail;
+        }
+        if (status === 400 && data?.detail?.includes("unique names")) {
+          // should have unique segment name
           errorText = data.detail;
         }
         messageApi.open({
@@ -498,55 +683,87 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
   };
 
   const onFinish = (values) => {
-    setIsSaving(true);
-    setFormData(values);
+    const handleSave = () => {
+      setIsSaving(true);
+      setFormData(values);
 
-    // handle if any segments deleted
-    if (deletedSegmentIds?.length) {
-      Promise.all(deletedSegmentIds.map((sId) => api.delete(`segment/${sId}`)))
-        .then(() => {
-          setDeletedSegmentIds([]);
-          setTimeout(() => {
-            saveCaseSettings(values, true);
-          }, 100);
-        })
-        .catch((e) => {
-          console.error(e);
-          messageApi.open({
-            type: "error",
-            content: "Failed to delete segments.",
+      // handle if any segments deleted
+      if (deletedSegmentIds?.length) {
+        Promise.all(
+          deletedSegmentIds.map((sId) => api.delete(`segment/${sId}`))
+        )
+          .then(() => {
+            setDeletedSegmentIds([]);
+            setTimeout(() => {
+              saveCaseSettings(values, true);
+            }, 100);
+          })
+          .catch((e) => {
+            console.error(e);
+            messageApi.open({
+              type: "error",
+              content: "Failed to delete segments.",
+            });
+            setIsSaving(false);
           });
-        });
+      } else {
+        saveCaseSettings(values);
+      }
+    };
+
+    const hasSecondarySaved = currentCase?.case_commodities?.some(
+      (c) => c.commodity_type === "secondary"
+    );
+    const hasTertiarySaved = currentCase?.case_commodities?.some(
+      (c) => c.commodity_type === "tertiary"
+    );
+
+    const isRemovingSecondary = hasSecondarySaved && !secondary.enable;
+    const isRemovingTertiary = hasTertiarySaved && !tertiary.enable;
+
+    if (isRemovingSecondary || isRemovingTertiary) {
+      let cropType = "";
+      if (isRemovingSecondary && isRemovingTertiary) {
+        cropType = "secondary and tertiary crops";
+      } else if (isRemovingSecondary) {
+        cropType = "secondary commodity";
+      } else {
+        cropType = "tertiary commodity";
+      }
+
+      Modal.confirm({
+        title: `Are you sure you want to remove this ${cropType}?`,
+        icon: <ExclamationCircleOutlined />,
+        content: `Removing this ${cropType} will permanently delete all associated data. This action cannot be undone.`,
+        okText: "Yes, remove it",
+        okType: "danger",
+        cancelText: "No, keep it",
+        onOk: handleSave,
+        onCancel: () => setIsSaving(false),
+      });
     } else {
-      saveCaseSettings(values);
+      handleSave();
     }
   };
 
   return (
-    <Modal
+    <Drawer
       title="Create new case"
+      closable={false}
+      onClose={handleCancelWithGuard}
       open={open}
-      onOk={() => form.submit()}
-      okButtonProps={{
-        loading: isSaving,
-        disabled: !enableEditCase,
-      }}
-      okText="Save case"
-      onCancel={() => {
-        // reset deleted segment on cancel
-        if (deletedSegmentIds?.length) {
-          form.setFieldValue("segments", formData.segments);
-        }
-        handleCancel();
-      }}
-      width="65%"
+      width="60%"
       className="case-settings-modal-container"
       maskClosable={false}
+      destroyOnClose={true}
+      extra={
+        <Button icon={<CloseOutlined />} onClick={handleCancelWithGuard} />
+      }
     >
       {contextHolder}
       <Form
         form={form}
-        name="basic"
+        name="case-settings-form"
         layout="vertical"
         initialValues={formData}
         onValuesChange={onValuesChange}
@@ -559,9 +776,40 @@ const CaseSettings = ({ open = false, handleCancel = () => {} }) => {
           updateCurrentCase={updateCurrentCase}
           deletedSegmentIds={deletedSegmentIds}
           setDeletedSegmentIds={setDeletedSegmentIds}
+          dataUploadFieldPreffix={dataUploadFieldPreffix}
+          onTabChange={(key) => setActiveTab(key)}
+          activeTab={activeTab}
+          currentCase={currentCase}
         />
+        <div className="case-form-button-wrapper">
+          <Button onClick={handleCancelWithGuard} className="button-cancel">
+            Cancel
+          </Button>
+          {isUploadMissing ? (
+            <Tooltip title="Please upload a data template, or switch to 'Manual data input' to define segments to save this case.">
+              <span className="cursor-not-allowed">
+                <Button
+                  loading={isSaving}
+                  disabled={isSaveDisabled}
+                  className="button-save"
+                >
+                  Save case
+                </Button>
+              </span>
+            </Tooltip>
+          ) : (
+            <Button
+              loading={isSaving}
+              disabled={isSaveDisabled}
+              className="button-save"
+              onClick={() => form.submit()}
+            >
+              Save case
+            </Button>
+          )}
+        </div>
       </Form>
-    </Modal>
+    </Drawer>
   );
 };
 

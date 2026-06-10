@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 from tests.test_000_main import Acc
 from db.crud_user import get_user_by_email
-from models.user import UserRole
+from models.user import UserRole, UserType
 from models.enum_type import PermissionType
 from models.user_business_unit import UserBusinessUnitRole
 
@@ -68,6 +68,7 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "cases_count": 1,
             "business_unit_count": 1,
             "company": None,
+            "user_type": UserType.internal,
         }
 
     @pytest.mark.asyncio
@@ -123,4 +124,5 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "case_access": [{"case": 1, "permission": "view"}],
             "internal_user": False,
             "company": None,
+            "user_type": UserType.external_regular.value,
         }

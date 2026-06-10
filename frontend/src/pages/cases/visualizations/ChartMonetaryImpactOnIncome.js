@@ -37,7 +37,7 @@ const ChartMonetaryImpactOnIncome = () => {
       .map((d) => d.question.text);
 
     const totalValueData = data.answers.find(
-      (dd) => dd.name === "current" && !dd.parent
+      (dd) => dd.name === "current" && !dd.question?.parent && dd.commodityFocus
     );
 
     const currentValues = dataSeries.filter((d) => d.name === "current");
@@ -277,6 +277,7 @@ const ChartMonetaryImpactOnIncome = () => {
             setShowLabel={setShowLabel}
             exportElementRef={chartRef}
             exportFilename="What is the monetary impact of adjusting income drivers?"
+            tooltipText="Each bar represents the change in income when one driver is shifted from its current to its feasible level, while keeping all other drivers constant to isolate its individual effect."
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
@@ -297,12 +298,22 @@ const ChartMonetaryImpactOnIncome = () => {
               What is the monetary impact of adjusting income drivers?
             </div>
             <div className="section-description">
-              This waterfall chart shows how income shifts as each driver is
-              adjusted from current to feasible levels, while others remain
-              constant. It highlights the drivers with the biggest impact on
-              boosting household income. Note that the values don’t sum to the
-              feasible income level, as the chart focuses on the isolated effect
-              of each driver, without accounting for their interactions.
+              This chart shows how household income changes when individual
+              income drivers are adjusted from their current levels to feasible
+              levels, one at a time. It illustrates the relative contribution of
+              each driver to overall income change, highlighting where the
+              greatest opportunities for improvement lie. Larger positive bars
+              indicate that adjusting a specific driver leads to a stronger
+              increase in income, while smaller bars suggest a more limited
+              impact.
+              <br />
+              <br />
+              <i>
+                Note: In this chart, the effect of each income driver is shown
+                in isolation, while in practice these drivers interact. Slide to
+                the next chart to highlight these interdependencies, in addition
+                to through exploring the heat map and optimisation model below.
+              </i>
             </div>
           </Space>
         </Col>

@@ -78,8 +78,13 @@ const VisualCardWrapper = ({
       title={
         <Row align="middle" gutter={[8, 8]} wrap>
           <Col span={14}>
-            <Space align="center">
-              <div className="title">{title}</div>
+            <Space align="center" wrap>
+              <div
+                className="title"
+                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+              >
+                {title}
+              </div>
               {tooltipText && tooltipText !== "" ? (
                 <Tooltip className="info-tooltip" title={tooltipText}>
                   <span>

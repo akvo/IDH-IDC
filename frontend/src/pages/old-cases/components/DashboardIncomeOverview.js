@@ -75,10 +75,10 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
               <br />
               <br />
               Insights: this graph helps reveal the composition of income,
-              changes in key elements (primary crop revenue, diversified income,
-              and cost of production for the primary crop) based on either the
-              current or feasible income drivers. It also shows variations
-              between segments.
+              changes in key elements (primary commodity revenue, diversified
+              income, and cost of production for the primary commodity) based on
+              either the current or feasible income drivers. It also shows
+              variations between segments.
             </p>
           </Col>
           <Col span={24} ref={elCurrentFeasibleChart}>
@@ -89,7 +89,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
                   <div>Current and feasible income</div>
                   <Tooltip
                     className="info-tooltip"
-                    title="The total household income is calculated by adding net-income from the focus commodity and diversified income. The net-income from the focus commodity is calculated by subtracting cost of production from the revenues from focus commodity."
+                    title="The total household income is calculated by adding net-income from the primary commodity and diversified income. The net-income from the primary commodity is calculated by subtracting cost of production from the revenues from primary commodity."
                   >
                     <InfoCircleOutlined style={{ color: "#fff" }} />
                   </Tooltip>
@@ -366,7 +366,7 @@ const DashboardIncomeOverview = ({ dashboardData, currentCase }) => {
             </h2>
             <p>
               This graph presents current and feasible net income levels for the
-              focus commodity, as well as any secondary and tertiary
+              primary commodity, as well as any secondary and tertiary
               commodities, within various segments.
               <br />
               <br />

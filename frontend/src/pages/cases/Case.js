@@ -23,6 +23,7 @@ import { isEmpty, orderBy } from "lodash";
 import { customFormula } from "../../lib/formula";
 import { adminRole } from "../../store/static";
 import { handleQuestionType } from "./utils";
+import useScenarioCalculations from "./hooks/useScenarioCalculations";
 
 const commodityOrder = ["focus", "secondary", "tertiary", "diversified"];
 const masterCommodityCategories = window.master?.commodity_categories || [];
@@ -97,6 +98,7 @@ const Case = () => {
     CaseVisualState.useState((s) => s);
 
   const userState = UserState.useState((s) => s);
+  useScenarioCalculations();
 
   const updateStepIncomeTargetState = (key, value) => {
     CaseUIState.update((s) => {
@@ -109,29 +111,38 @@ const Case = () => {
 
   // check for enableEditCase
   useEffect(() => {
+    const isAdmin = adminRole.includes(userState?.role);
+    const isInternal = userState?.internal_user;
+    const userType = userState?.user_type;
+
     const checkEnableEditCase = () => {
-      if (adminRole.includes(userState?.role)) {
+      const isPowerUser = userState?.isCaseCreator;
+
+      if (isAdmin) {
         return true;
       }
-      // allow internal user to create new case
-      if (userState?.internal_user && !caseId) {
+      // allow power users to create new case
+      if (isPowerUser && !caseId) {
         return true;
       }
       // check user access
-      const userPermission = userState.case_access.find(
+      const userPermission = userState.case_access?.find(
         (a) => a.case === parseInt(caseId)
       )?.permission;
-      // allow internal user case owner to edit case
-      if (
-        userState?.internal_user &&
-        currentCase?.created_by === userState?.email
-      ) {
+
+      // allow power user case owner to edit case (robust comparison)
+      const currentCaseCreatedBy = currentCase?.created_by
+        ? String(currentCase.created_by)
+        : "";
+      const isOwner =
+        currentCaseCreatedBy?.toLowerCase() ===
+          userState?.email?.toLowerCase() ||
+        currentCaseCreatedBy === String(userState?.id);
+
+      if (isPowerUser && isOwner) {
         return true;
       }
-      if (
-        (userState?.internal_user && !userPermission) ||
-        userPermission === "view"
-      ) {
+      if ((isPowerUser && !userPermission) || userPermission === "view") {
         return false;
       }
       if (userPermission === "edit") {
@@ -144,20 +155,26 @@ const Case = () => {
       return false;
     };
 
-    CaseUIState.update((s) => ({
-      ...s,
-      general: {
-        ...s.general,
-        enableEditCase: checkEnableEditCase(),
-      },
-    }));
+    const editAllowed = checkEnableEditCase();
+    const isAdvancedUser =
+      isAdmin || isInternal || userType === "external_advanced";
+
+    CaseUIState.update((s) => {
+      s.general.enableEditCase = editAllowed;
+      s.general.enableAdvancedTools = true; // Always visible
+      s.general.enableDataUpload = editAllowed && isAdvancedUser; // Restricted to advanced editors
+      s.general.enableImpactOfInvestment = isAdvancedUser; // Restricted to advanced/internal users
+    });
   }, [
     caseId,
+    userState?.id,
     userState?.internal_user,
     userState?.email,
+    userState?.user_type,
     userState?.case_access,
     userState?.role,
     userState?.company,
+    userState?.isCaseCreator,
     currentCase?.created_by,
     currentCase?.company,
   ]);
@@ -171,20 +188,12 @@ const Case = () => {
         .get(`case/${caseId}`)
         .then((res) => {
           const { data } = res;
-          if (data?.segments?.length) {
-            // order the segments by it's ID
-            data["segments"] = orderBy(data.segments, ["id"]);
-          }
           CurrentCaseState.update((s) => ({ ...s, ...data }));
           PrevCaseState.update((s) => ({ ...s, ...data }));
           // set default active segmentId
-          CaseUIState.update((s) => ({
-            ...s,
-            general: {
-              ...s.general,
-              activeSegmentId: orderBy(data.segments, ["id"])?.[0]?.id || null,
-            },
-          }));
+          CaseUIState.update((s) => {
+            s.general.activeSegmentId = data.segments?.[0]?.id || null;
+          });
         })
         .catch((e) => {
           console.error("Error fetching case data", e);
@@ -212,7 +221,7 @@ const Case = () => {
           );
           return findCommodity;
         })
-        .filter((x) => x);
+        .filter((cc) => cc && cc.id);
 
       api.get(`/questions/${currentCase.id}`).then((res) => {
         const { data } = res;
@@ -225,6 +234,12 @@ const Case = () => {
           tmp["questions"] = addLevelIntoQuestions({
             questions: tmp.questions,
           });
+          const category = masterCommodityCategories.find((cat) =>
+            cat.commodities.some((c) => c.id === cc.commodity)
+          );
+          if (category) {
+            tmp["commodity_category"] = category.name;
+          }
           if (cc.commodity_type === "focus") {
             incomeDataDriversTmp.push({
               type: "primary",
@@ -348,6 +363,10 @@ const Case = () => {
                   (cc) => cc.id === parseInt(caseCommodityId)
                 );
 
+                if (!commodity) {
+                  return;
+                }
+
                 const question = flattenQuestionList.find(
                   (q) => q.id === parseInt(questionId)
                 );
@@ -405,65 +424,74 @@ const Case = () => {
       // eol generate questions
       const mappedData = currentCase.segments.map((segment) => {
         const answers = isEmpty(segment?.answers) ? {} : segment.answers;
-        const remappedAnswers = Object.keys(answers).map((key) => {
-          const [fieldKey, caseCommodityId, questionId] = key.split("-");
-          const commodity = currentCase.case_commodities.find(
-            (cc) => cc.id === parseInt(caseCommodityId)
-          );
-          const commodityFocus = commodity.commodity_type === "focus";
-          const totalCommodityValue = totalCommodityQuestions.find(
-            (q) => q.id === parseInt(questionId)
-          );
-          const cost = costQuestions.find(
-            (q) =>
-              q.id === parseInt(questionId) &&
-              q.parent === 1 &&
-              q.commodityId === commodity.commodity
-          );
-          const question = flattenedQuestionGroups.find(
-            (q) =>
-              q.id === parseInt(questionId) &&
-              q.commodity_id === commodity.commodity
-          );
-          const totalOtherDiversifiedIncome =
-            question?.question_type === "diversified" && !question.parent;
-          return {
-            name: fieldKey,
-            question: question,
-            commodityFocus: commodityFocus,
-            commodityType: commodity.commodity_type,
-            caseCommodityId: parseInt(caseCommodityId),
-            commodityId: commodity.commodity,
-            commodityName: commodityNames[commodity.commodity],
-            questionId: parseInt(questionId),
-            value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
-            isTotalFeasibleFocusIncome:
-              totalCommodityValue && commodityFocus && fieldKey === "feasible"
-                ? true
-                : false,
-            isTotalFeasibleDiversifiedIncome:
-              totalCommodityValue && !commodityFocus && fieldKey === "feasible"
-                ? true
-                : totalOtherDiversifiedIncome && fieldKey === "feasible"
-                ? true
-                : false,
-            isTotalCurrentFocusIncome:
-              totalCommodityValue && commodityFocus && fieldKey === "current"
-                ? true
-                : false,
-            isTotalCurrentDiversifiedIncome:
-              totalCommodityValue && !commodityFocus && fieldKey === "current"
-                ? true
-                : totalOtherDiversifiedIncome && fieldKey === "current"
-                ? true
-                : false,
-            feasibleCost:
-              cost && answers[key] && fieldKey === "feasible" ? true : false,
-            currentCost:
-              cost && answers[key] && fieldKey === "current" ? true : false,
-            costName: cost ? cost.text : "",
-          };
-        });
+        const remappedAnswers = Object.keys(answers)
+          .map((key) => {
+            const [fieldKey, caseCommodityId, questionId] = key.split("-");
+            const commodity = currentCase.case_commodities.find(
+              (cc) => cc.id === parseInt(caseCommodityId)
+            );
+
+            if (!commodity) {
+              return null;
+            }
+
+            const commodityFocus = commodity.commodity_type === "focus";
+            const totalCommodityValue = totalCommodityQuestions.find(
+              (q) => q.id === parseInt(questionId)
+            );
+            const cost = costQuestions.find(
+              (q) =>
+                q.id === parseInt(questionId) &&
+                q.parent === 1 &&
+                q.commodity_id === commodity.commodity
+            );
+            const question = flattenedQuestionGroups.find(
+              (q) =>
+                q.id === parseInt(questionId) &&
+                q.commodity_id === commodity.commodity
+            );
+            const totalOtherDiversifiedIncome =
+              question?.question_type === "diversified" && !question.parent;
+            return {
+              name: fieldKey,
+              question: question,
+              commodityFocus: commodityFocus,
+              commodityType: commodity.commodity_type,
+              caseCommodityId: parseInt(caseCommodityId),
+              commodityId: commodity.commodity,
+              commodityName: commodityNames[commodity.commodity],
+              questionId: parseInt(questionId),
+              value: answers?.[key] || 0, // if not found set as 0 to calculated inside array reduce
+              isTotalFeasibleFocusIncome:
+                totalCommodityValue && commodityFocus && fieldKey === "feasible"
+                  ? true
+                  : false,
+              isTotalFeasibleDiversifiedIncome:
+                totalCommodityValue &&
+                !commodityFocus &&
+                fieldKey === "feasible"
+                  ? true
+                  : totalOtherDiversifiedIncome && fieldKey === "feasible"
+                  ? true
+                  : false,
+              isTotalCurrentFocusIncome:
+                totalCommodityValue && commodityFocus && fieldKey === "current"
+                  ? true
+                  : false,
+              isTotalCurrentDiversifiedIncome:
+                totalCommodityValue && !commodityFocus && fieldKey === "current"
+                  ? true
+                  : totalOtherDiversifiedIncome && fieldKey === "current"
+                  ? true
+                  : false,
+              feasibleCost:
+                cost && answers[key] && fieldKey === "feasible" ? true : false,
+              currentCost:
+                cost && answers[key] && fieldKey === "current" ? true : false,
+              costName: cost ? cost.text : "",
+            };
+          })
+          .filter((a) => a);
 
         const totalCurrentIncomeAnswer = totalIncomeQuestions
           .map((qs) => segment?.answers?.[`current-${qs}`] || 0)
@@ -573,6 +601,18 @@ const Case = () => {
               ...sensitivityAnalysisTmp,
             },
           }));
+        } else {
+          CaseVisualState.update((s) => ({
+            ...s,
+            sensitivityAnalysis: {
+              ...s.sensitivityAnalysis,
+              case: currentCase.id,
+            },
+            prevSensitivityAnalysis: {
+              ...s.prevSensitivityAnalysis,
+              case: currentCase.id,
+            },
+          }));
         }
         // Scenario modeling
         const scenarioModelingTmp = data.find(
@@ -612,6 +652,18 @@ const Case = () => {
                   })
                 ),
               },
+            },
+          }));
+        } else {
+          CaseVisualState.update((s) => ({
+            ...s,
+            scenarioModeling: {
+              ...s.scenarioModeling,
+              case: currentCase.id,
+            },
+            prevScenarioModeling: {
+              ...s.prevScenarioModeling,
+              case: currentCase.id,
             },
           }));
         }

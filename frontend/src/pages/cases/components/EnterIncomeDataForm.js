@@ -43,6 +43,7 @@ const EnterIncomeDataQuestions = ({
   const [collapsed, setCollapsed] = useState(
     question.question_type !== "aggregator"
   );
+  const currentCase = CurrentCaseState.useState((s) => s);
 
   // fieldKey format: [case_commodity]-[question_id]
   const fieldKey = `${group.id}-${question.id}`;
@@ -70,21 +71,35 @@ const EnterIncomeDataQuestions = ({
 
   const disableInput = !enableEditCase ? true : isCollapsible && !collapsed;
 
-  const unitName = useMemo(
-    () =>
-      question.unit
-        .split("/")
-        .map((u) => u.trim())
-        .map((u) =>
-          u === "crop"
-            ? commodities
-                .find((c) => c.id === group?.commodity_id)
-                ?.name?.toLowerCase() || ""
-            : group?.[u]
-        )
-        .join(" / "),
-    [question.unit, group]
-  );
+  const unitName = useMemo(() => {
+    if (!question.unit) {
+      return "";
+    }
+    return question.unit
+      .split("/")
+      .map((u) => u.trim())
+      .map((u) => {
+        if (u === "crop") {
+          return (
+            commodities
+              .find((c) => c.id === group?.commodity_id)
+              ?.name?.toLowerCase() || ""
+          );
+        }
+        if (u === "land" || u === "area_size_unit") {
+          return group?.area_size_unit || "";
+        }
+        if (u === "volume" || u === "volume_measurement_unit") {
+          return group?.volume_measurement_unit || "";
+        }
+        if (u === "currency") {
+          return currentCase?.currency || "";
+        }
+        return group?.[u] || u;
+      })
+      .filter((u) => u) // Remove empty strings to avoid trailing slashes
+      .join(" / ");
+  }, [question.unit, group, currentCase?.currency]);
 
   return (
     <>
@@ -146,6 +161,9 @@ const EnterIncomeDataQuestions = ({
           <Form.Item
             name={`current-${fieldKey}`}
             className="current-feasible-field"
+            getValueProps={(value) => ({
+              value: value ? parseFloat(value?.toFixed(2)) : value,
+            })}
           >
             <InputNumber
               style={{ width: "100%" }}
@@ -160,6 +178,9 @@ const EnterIncomeDataQuestions = ({
           <Form.Item
             name={`feasible-${fieldKey}`}
             className="current-feasible-field"
+            getValueProps={(value) => ({
+              value: value ? parseFloat(value?.toFixed(2)) : value,
+            })}
           >
             <InputNumber
               style={{ width: "100%" }}
@@ -229,13 +250,13 @@ const EnterIncomeDataDriver = ({
     return questions;
   }, [group]);
 
-  const updateCurrentSegmentState = (updatedSegmentValue) => {
+  const updateCurrentSegmentState = (updatedAnswers) => {
     CurrentCaseState.update((s) => {
       s.segments = s.segments.map((prev) => {
         if (prev.id === segment.id) {
           return {
             ...prev,
-            ...updatedSegmentValue,
+            answers: { ...prev.answers, ...updatedAnswers },
           };
         }
         return prev;
@@ -331,90 +352,171 @@ const EnterIncomeDataDriver = ({
       );
     }
 
-    updateCurrentSegmentState({
-      answers: { ...segment?.answers, ...form.getFieldsValue() },
-    });
+    updateCurrentSegmentState(form.getFieldsValue());
   };
 
   useEffect(() => {
     if (!isEmpty(initialDriverValues)) {
-      const onLoad = ({ key }) => {
-        const [fieldName, caseCommodityId, questionId] = key.split("-");
-        const fieldKey = `${fieldName}-${caseCommodityId}`;
+      const syncValues = { ...initialDriverValues };
 
+      // Sort questions bottom-up (deepest level first) to derive parent values
+      const sortedQuestions = orderBy(flattenQuestionList, ["level"], ["desc"]);
+
+      sortedQuestions.forEach((q) => {
+        if (q.childrens && q.childrens.length > 0) {
+          // It's a parent, calculate its value from children for both current and feasible
+          ["current", "feasible"].forEach((fieldName) => {
+            const fieldKey = `${fieldName}-${group.id}`;
+            const parentField = `${fieldKey}-${q.id}`;
+
+            // If parent value is missing or 0, derive it from its children
+            if (!syncValues[parentField]) {
+              const childrenValues = q.childrens.map((child) => ({
+                id: `${fieldKey}-${child.id}`,
+                value: syncValues[`${fieldKey}-${child.id}`] || 0,
+              }));
+
+              const derivedValue = q.default_value
+                ? getFunctionDefaultValue(q, fieldKey, childrenValues)
+                : childrenValues.reduce((acc, { value }) => acc + value, 0);
+
+              syncValues[parentField] = roundToDecimal(derivedValue);
+            }
+          });
+        }
+      });
+
+      // Update form values with derived synchronization object
+      form.setFieldsValue(syncValues);
+
+      // Reset section totals for this group's commodity types to avoid double-counting
+      const uniqueCommodityTypes = [
+        ...new Set(group.questions.map(() => group.commodity_type)),
+      ];
+      uniqueCommodityTypes.forEach((ct) => {
+        updateSectionTotalValues(ct, "current", 0);
+        updateSectionTotalValues(ct, "feasible", 0);
+      });
+
+      // Update section totals using top-level questions and derived syncValues
+      group.questions.forEach((q) => {
         const commodity = currentCase.case_commodities.find(
-          (cc) => cc.id === parseInt(caseCommodityId)
+          (cc) => cc.id === group.id
         );
-
-        const question = flattenQuestionList.find(
-          (q) => q.id === parseInt(questionId)
-        );
-        const parentQuestion = flattenQuestionList.find(
-          (q) => q.id === question?.parent
-        );
-
-        handleQuestionType(
-          question,
-          commodity,
-          fieldName,
-          initialDriverValues,
-          fieldKey,
-          flattenQuestionList,
-          updateSectionTotalValues
-        );
-
-        const parentQuestionField = `${fieldKey}-${question?.parent}`;
-
-        // TODO :: remove this code to fix issue total income/section total
-        /**
-         * e.g. primary section total should be 1400
-         * but if this part of code active the section total become 1600
-        const parentQuestionValue =
-          initialDriverValues?.[parentQuestionField] || 0;
-
-        const allChildrensValues = calculateChildrenValues(
-          question,
-          fieldKey,
-          initialDriverValues
-        );
-
-        const sumAllChildrensValues = parentQuestion?.default_value
-          ? getFunctionDefaultValue(
-              parentQuestion,
-              fieldKey,
-              allChildrensValues
-            )
-          : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
-        if (parentQuestion) {
-          // use parent value if they already have value
-          const formValue =
-            parentQuestionValue || parentQuestionValue === 0
-              ? roundToDecimal(parentQuestionValue)
-              : roundToDecimal(sumAllChildrensValues);
-          // EOL use parent value if they already have value
-          form.setFieldValue(parentQuestionField, formValue);
-          updateSectionTotalValues(
-            commodity.commodity_type,
+        ["current", "feasible"].forEach((fieldName) => {
+          handleQuestionType(
+            q,
+            commodity,
             fieldName,
-            sumAllChildrensValues
+            syncValues,
+            `${fieldName}-${group.id}`,
+            flattenQuestionList,
+            updateSectionTotalValues
           );
-        }
-        */
-        // EOL remove this code to fix issue total income/section total
-
-        if (parentQuestion?.parent) {
-          onLoad({ key: parentQuestionField });
-        }
-      };
-
-      setTimeout(() => {
-        Object.keys(initialDriverValues).forEach((key) => {
-          onLoad({ key });
         });
-      }, 500);
+      });
+
+      // Sync with global state including newly derived parent values
+      updateCurrentSegmentState(syncValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialDriverValues]);
+
+  // TODO:: OLD INITIAL VALUE LOAD USE EFFECT (REMOVE)
+  // useEffect(() => {
+  //   if (!isEmpty(initialDriverValues)) {
+  //     const onLoad = ({ key }) => {
+  //       const [fieldName, caseCommodityId, questionId] = key.split("-");
+  //       const fieldKey = `${fieldName}-${caseCommodityId}`;
+
+  //       const commodity = currentCase.case_commodities.find(
+  //         (cc) => cc.id === parseInt(caseCommodityId)
+  //       );
+
+  //       const question = flattenQuestionList.find(
+  //         (q) => q.id === parseInt(questionId)
+  //       );
+  //       const parentQuestion = flattenQuestionList.find(
+  //         (q) => q.id === question?.parent
+  //       );
+
+  //       handleQuestionType(
+  //         question,
+  //         commodity,
+  //         fieldName,
+  //         initialDriverValues,
+  //         fieldKey,
+  //         flattenQuestionList,
+  //         updateSectionTotalValues
+  //       );
+
+  //       const parentQuestionField = `${fieldKey}-${question?.parent}`;
+
+  //       // TODO :: remove this code to fix issue total income/section total (DONT REMOVE)
+  //       /**
+  //        * e.g. primary section total should be 1400
+  //        * but if this part of code active the section total become 1600
+  //        * ONLY RUN THIS IF PARENT QUESTION VALUE === 0 TO RE-EVALUATE THE TOTAL INCOME
+  //        */
+  //       const parentQuestionValue =
+  //         initialDriverValues?.[parentQuestionField] || 0;
+
+  //       if (
+  //         // parentQuestion?.question_type === "aggregator" &&
+  //         !parentQuestionValue &&
+  //         currentCase?.import_id
+  //       ) {
+  //         const allChildrensValues = calculateChildrenValues(
+  //           question,
+  //           fieldKey,
+  //           initialDriverValues
+  //         );
+
+  //         const sumAllChildrensValues = parentQuestion?.default_value
+  //           ? getFunctionDefaultValue(
+  //               parentQuestion,
+  //               fieldKey,
+  //               allChildrensValues
+  //             )
+  //           : allChildrensValues.reduce((acc, { value }) => acc + value, 0);
+  //         if (parentQuestion) {
+  //           // use parent value if they already have value
+  //           const formValue = parentQuestionValue
+  //             ? roundToDecimal(parentQuestionValue)
+  //             : roundToDecimal(sumAllChildrensValues);
+  //           // EOL use parent value if they already have value
+  //           form.setFieldValue(parentQuestionField, formValue);
+  //           console.log(parentQuestionField, formValue);
+  //           // trigger on change
+  //           onValuesChange(
+  //             { [parentQuestionField]: formValue },
+  //             form.getFieldsValue()
+  //           );
+  //           // eol trigger on change
+  //           updateSectionTotalValues(
+  //             commodity.commodity_type,
+  //             fieldName,
+  //             sumAllChildrensValues
+  //           );
+  //         }
+  //       }
+  //       // EOL RECALCULATE TOTAL INCOME
+  //       // EOL remove this code to fix issue total income/section total
+
+  //       if (parentQuestion?.parent) {
+  //         onLoad({ key: parentQuestionField });
+  //       }
+  //     };
+
+  //     setTimeout(() => {
+  //       Object.keys(initialDriverValues).forEach((key) => {
+  //         onLoad({ key });
+  //       });
+  //     }, 500);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [initialDriverValues, currentCase?.import_id]);
+  // EOL OLD INITIAL VALUE LOAD USE EFFECT
 
   return (
     <Row align="middle">

@@ -11,3 +11,12 @@ export { default as ChartIncomeLevelsForDifferentCommodities } from "./ChartInco
 export { default as ChartSegmentsIncomeGapScenarioModeling } from "./ChartSegmentsIncomeGapScenarioModeling";
 export { default as ChartIncomeGapAcrossScenario } from "./ChartIncomeGapAcrossScenario";
 export { default as TableScenarioOutcomes } from "./TableScenarioOutcomes";
+export { default as ChartHouseholdIncomeComposition } from "./ChartHouseholdIncomeComposition";
+export { default as ChartNeededIncomeLevel } from "./ChartNeededIncomeLevel";
+export { default as ChartFarmEconomicEfficiency } from "./ChartFarmEconomicEfficiency";
+export { default as ChartRevenueToCostRatio } from "./ChartRevenueToCostRatio";
+export { default as ChartNetIncomePerLandUnit } from "./ChartNetIncomePerLandUnit";
+export { default as ChartTwoDriverHeatmap } from "./ChartTwoDriverHeatmap";
+export { default as ThreeDriverCombinationChart } from "./ThreeDriverCombinationChart";
+export { default as GapClosingPieChart } from "./GapClosingPieChart";
+export { default as ImpactOfInvestmentCharts } from "./ImpactOfInvestmentCharts";

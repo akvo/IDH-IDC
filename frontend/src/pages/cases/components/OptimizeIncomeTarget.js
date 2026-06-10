@@ -71,7 +71,7 @@ const unitName = ({ currentCase, question, group }) => {
     .join("/");
 };
 
-const OptimizeIncomeTarget = () => {
+const OptimizeIncomeTarget = ({ disabled }) => {
   const currentCaseState = CurrentCaseState.useState((s) => s);
   const questionGroups = CaseVisualState.useState((s) => s.questionGroups);
   const dashboardData = CaseVisualState.useState((s) => s.dashboardData);
@@ -724,13 +724,10 @@ const OptimizeIncomeTarget = () => {
           <Row gutter={[20, 10]}>
             <Col span={24}>
               <div className="description">
-                The capacity of a business to impact specific income drivers
-                depends on several factors like your position in the supply
-                chain, level of influence on other value chain actors etc. Below
-                we provide an optimization model, where you can select the
-                income drivers in your sphere of influence. The model derives
-                the minimum necessary change needed in these drivers, to meet
-                the income target, within their feasible limits
+                Use this optimisation model to identify the smallest, realistic
+                changes in the drivers you can influence to close the income
+                gap. It shows which adjustments are feasible and where
+                meaningful impact can be achieved.
               </div>
             </Col>
             <Col span={24} style={{ marginTop: 10 }}>
@@ -767,6 +764,7 @@ const OptimizeIncomeTarget = () => {
                   value={selectedDrivers?.[selectedDriversFieldPreffix] || []}
                   segment={currentSegment}
                   disableDriversWithZeroChange={true}
+                  disabled={disabled}
                 />
               </div>
             </Col>
@@ -824,7 +822,7 @@ const OptimizeIncomeTarget = () => {
                   <label>1. Close gap by (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
-                    disabled={disableAdjusmentField}
+                    disabled={disabled || disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 1,
@@ -849,7 +847,7 @@ const OptimizeIncomeTarget = () => {
                   <label>2. Close gap by (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
-                    disabled={disableAdjusmentField}
+                    disabled={disabled || disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 2,
@@ -874,7 +872,7 @@ const OptimizeIncomeTarget = () => {
                   <label>3. Close gap by (%)</label>
                   <InputNumber
                     {...adjustmentInputNumberProps}
-                    disabled={disableAdjusmentField}
+                    disabled={disabled || disableAdjusmentField}
                     onChange={(value) =>
                       handleChangeIncreaseValues({
                         index: 3,
@@ -911,6 +909,7 @@ const OptimizeIncomeTarget = () => {
               <Button
                 className="button-clear-optimize-result"
                 onClick={handleClearResult}
+                disabled={disabled}
               >
                 Clear results
               </Button>
@@ -932,6 +931,7 @@ const OptimizeIncomeTarget = () => {
                   <Button
                     className="button-run-the-model"
                     disabled={
+                      disabled ||
                       !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
                       disableRunModelByIfSelectedIncreaseValuesNA
                     }
@@ -944,6 +944,7 @@ const OptimizeIncomeTarget = () => {
                   className="button-run-the-model"
                   onClick={handleRunModel}
                   disabled={
+                    disabled ||
                     !selectedDrivers?.[selectedDriversFieldPreffix]?.length ||
                     disableRunModelByIfSelectedIncreaseValuesNA
                   }

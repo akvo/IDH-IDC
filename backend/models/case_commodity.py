@@ -76,6 +76,20 @@ class CaseCommodity(Base):
             "volume_measurement_unit": self.volume_measurement_unit,
         }
 
+    @property
+    def simplify_with_case_commodity_level(self):
+        commodity_type = self.commodity_type
+        commodity_type = (
+            "primary"
+            if commodity_type == CaseCommodityType.focus
+            else commodity_type.value
+        )
+        return {
+            "id": self.id,
+            "breakdown": self.breakdown,
+            "commodity_type": commodity_type,
+        }
+
 
 class CaseCommodityBase(BaseModel):
     id: int

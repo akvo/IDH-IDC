@@ -4,11 +4,13 @@ on:
     branches:
       - main
       - develop
+      - staging
       - feature*
   pull_request:
     branches:
       - main
       - develop
+      - staging
       - feature*
 jobs:
   test:

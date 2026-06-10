@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef } from "react";
+import { Alert } from "antd";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 import { CurrentCaseState } from "../store";
@@ -28,15 +29,19 @@ const generateChartData = (data, current = false) => {
     const incomeTarget = d?.currentSegmentValue?.target || 0;
     const currentTotalIncome =
       d?.currentSegmentValue?.total_current_income || 0;
-
     const newTotalIncome =
       d?.updatedSegmentScenarioValue?.total_current_income || 0;
-    const additionalValue = newTotalIncome
-      ? newTotalIncome - currentTotalIncome
-      : 0;
 
-    let gapValue = incomeTarget - newTotalIncome;
-    gapValue = gapValue < 0 ? 0 : gapValue;
+    // Floor values at 0 for visualization consistency
+    const safeCurrentIncome = Math.max(0, currentTotalIncome);
+    const safeNewIncome = Math.max(0, newTotalIncome);
+
+    const baseValue = safeCurrentIncome;
+    const changeValue = Math.max(0, safeNewIncome - safeCurrentIncome);
+    const gapValue = Math.max(0, incomeTarget - safeNewIncome);
+
+    const changeLabel = "Additional income\nwhen income drivers\nare changed";
+    const changeColor = "#49D985"; // Light Green
 
     return {
       name: current ? d.name : `${d.scenarioName}-${d.name}`,
@@ -45,17 +50,17 @@ const generateChartData = (data, current = false) => {
         {
           name: "Current total\nhousehold income",
           title: "Current total\nhousehold income",
-          value: Math.round(currentTotalIncome),
-          total: Math.round(currentTotalIncome),
+          value: Math.round(baseValue),
+          total: Math.round(baseValue),
           color: "#1B625F",
           order: 1,
         },
         {
-          name: "Additional income\nwhen income drivers\nare changed",
-          title: "Additional income\nwhen income drivers\nare changed",
-          value: Math.round(additionalValue),
-          total: Math.round(additionalValue),
-          color: "#49D985",
+          name: changeLabel,
+          title: changeLabel,
+          value: Math.round(changeValue),
+          total: Math.round(changeValue),
+          color: changeColor,
           order: 2,
         },
         {
@@ -77,7 +82,7 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
   const [showLabel, setShowLabel] = useState(false);
   const chartRef = useRef(null);
 
-  const chartData = useMemo(() => {
+  const { chartData, hiddenSegmentNames } = useMemo(() => {
     const scenarioValues = currentScenarioData?.scenarioValues?.map((sv) => {
       const findSegment = currentCase?.segments?.find(
         (s) => s.id === sv.segmentId
@@ -87,7 +92,26 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
         name: findSegment?.name || sv.name,
       };
     });
-    return generateChartData(scenarioValues, true);
+
+    const filteredValues = (scenarioValues || []).filter((sv) => {
+      const current = sv.currentSegmentValue?.total_current_income || 0;
+      const updated = sv.updatedSegmentScenarioValue?.total_current_income || 0;
+      return updated >= current;
+    });
+
+    const hiddenSegmentNames = (scenarioValues || [])
+      .filter((sv) => {
+        const current = sv.currentSegmentValue?.total_current_income || 0;
+        const updated =
+          sv.updatedSegmentScenarioValue?.total_current_income || 0;
+        return updated < current;
+      })
+      .map((sv) => sv.name);
+
+    return {
+      chartData: generateChartData(filteredValues, true),
+      hiddenSegmentNames,
+    };
   }, [currentScenarioData, currentCase?.segments]);
 
   const targetChartData = useMemo(
@@ -104,12 +128,33 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
       exportElementRef={chartRef}
       exportFilename="Optimal driver values to reach your target"
     >
+      <Alert
+        message={
+          <span>
+            This graph only shows segments with improved or unchanged income in
+            this scenario.
+            {hiddenSegmentNames?.length > 0 && (
+              <div style={{ marginTop: 8, fontWeight: "bold" }}>
+                Hidden: {hiddenSegmentNames.join(", ")}
+              </div>
+            )}
+          </span>
+        }
+        type="info"
+        showIcon={false}
+        style={{
+          marginBottom: 14,
+          backgroundColor: "#EAF2F2",
+          borderColor: "#EAF2F2",
+          color: "#1B625F",
+        }}
+      />
       <Chart
         wrapper={false}
         type="BARSTACK"
         data={chartData}
         targetData={targetChartData}
-        loading={!chartData.length}
+        loading={!chartData.length && !hiddenSegmentNames?.length}
         extra={{
           axisTitle: { y: `Income ${currentCase?.currency || ""}` },
           legend: {
