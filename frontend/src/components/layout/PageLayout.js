@@ -28,6 +28,13 @@ const PageHeader = ({ isLoggedIn }) => {
         isPublic: true,
       },
       {
+        testid: "nav-menu-academy",
+        label: "IDC Academy",
+        key: routePath.idc.academy,
+        isPublic: false,
+        role: allUserRole,
+      },
+      {
         testid: "nav-menu-procurement-library",
         label: "Procurement Library",
         key: "/procurement-library",

@@ -69,7 +69,6 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
     - Path: `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js`, `docs/features/INCOME_GAP_ANALYSIS.md`.
 
 - **ROI Chart Refinement (#795) - [COMPLETED]**:
-
         - Converted the "Scenario Cost by component" waterfall chart into a horizontal stacked bar chart for improved legibility.
         - Implemented bold total value labels at the end of each bar with "Show Label" toggle support.
         - **Legend-Aware Totals**: Integrated dynamic recalculation of total labels and tooltip values based on visible components (legend filtering).
@@ -86,6 +85,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Updated frontend `EnterIncomeData.js` tooltip text to reflect the 80th quantile calculation.
         - Synchronized feature documentation in `CASE_MANAGEMENT_UX.md`.
     - Path: `backend/utils/case_import_process_confirmed_segmentation.py`, `frontend/src/pages/cases/steps/EnterIncomeData.js`, `docs/features/CASE_MANAGEMENT_UX.md`.
+
+- **Academy Hierarchical Subcontent (#759/765) - [COMPLETED]**:
+        - Refactored `CoursePlayer.js` and `CoursePlayer.scss` to support nested `sections` within chapters.
+        - Implemented a hierarchical sidebar using Ant Design `SubMenu` with custom indentation and active state highlighting.
+        - Enhanced the progress synchronization system to store and resume from `current_section_index`.
+        - Updated navigation logic to cycle through sections before enabling module assessments.
+        - Verified backward compatibility with single-content chapters and legacy progress data.
+    - Path: `backend/routes/academy.py`, `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/CoursePlayer.scss`.
 
 - **ZIP Template Download (#791) - [COMPLETED]**:
         - Updated template download functionality to serve `data_upload_template.zip` instead of `.xlsm`.
@@ -149,6 +156,7 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Optimized state selectors in `ImpactOfInvestmentCharts` and modelling components to ensure components only re-render when their specific subset of data changes.
         - Verified all changes with a clean `yarn lint` pass and manual logic validation.
     - Path: `frontend/src/pages/cases/hooks/useScenarioCalculations.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
 - **Clustered ROI Graph by Scenario & Persistent Segment Colors (#770) - [COMPLETED]**:
         - Refactored the Step 5 "Return on Investment" chart from a flat list to a clustered bar chart grouped by Scenario on the X-axis.
         - Implemented persistent segment color-coding by mapping segments to global case indices, ensuring "Segment A" always maintains the same color across all comparisons.
@@ -177,15 +185,46 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
         - Formalized architectural decisions in `LLD.md` (ADR-006) and synchronized technical specifications.
     - Path: `backend/models/case.py`, `backend/models/case_import.py`, `frontend/src/pages/cases/components/CaseSettings.js`, `frontend/src/pages/cases/components/CaseForm.js`, `backend/tests/test_1006_segment_limit.py`.
 
+    - **Course Resumption & Active Chapter Tracking (#763) - [COMPLETED]**:
+        - Implemented "Course Resumption" in `CoursePlayer.js` to automatically navigate users to their last active/completed chapter.
+        - Refined progress sync logic to track the "Active" chapter on every navigation (Menu, Next/Prev buttons, and Quiz completion).
+        - Optimized `useEffect` and `syncOccurredRef` to ensure seamless state preservation without redundant backend calls.
+        - Verified 100% lint-clean status (`yarn lint`) and consistent state management across the player.
+    - Path: `frontend/src/pages/academy/CoursePlayer.js`.
+
     - **Scenario Outcomes Driver Display Fix (#765) - [COMPLETED]**:
         - Fixed broken state key lookup in `scenarioOutcomeCalculations.js` by correcting `sd.segmentId` to `scenarioSegment.segmentId`.
         - Implemented label fallback for "Diversified Income" drivers to prevent `undefined` display in the Outcomes table.
         - Ensured consistent percentage formatting for all income drivers in Step 4.
     - Path: `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`.
 
+    - **Quiz Summary & Assessment Review (#759) - [COMPLETED]**:
+        - Implemented a detailed "Review Answers" summary page in `CoursePlayer.js`.
+        - Mapped user inputs to quiz metadata to show status (Correct/Incorrect), user answer, and the correct answer.
+        - Integrated detailed "EXPLANATION" blocks for each question to enhance the learning loop.
+        - Added styling in `CoursePlayer.scss` with branded status indicators and highlighted feedback boxes.
+        - **Refactor**: Extracted result and summary logic into a standalone `QuizResult.js` component to improve maintainability.
+        - Verified 100% lint-clean status (`yarn lint`) and consistent state management.
+    - Path: `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/components/QuizResult.js`.
+
     - **Global Video Component & FAQ Expansion (#761) - [COMPLETED]**:
+        - Created a reusable `YouTubePlayer` component in `src/components/utils/` to centralize 16:9 aspect ratio and desktop width capping (680px).
+        - Centralized YouTube metadata in `src/constants/videos.js` for easier platform-wide scaling.
+        - Refactored `Home.js` and `GetStarted.js` to use the new component, eliminating code duplication.
+        - Expanded the FAQ page with a "Guides & Tutorials" section featuring two user manual videos in a responsive grid.
+        - Implemented global `video.scss` for persistent design language across different tool sections.
+        - Verified 100% lint-clean status and responsive layout across all breakpoints.
+    - Path: `frontend/src/components/utils/YouTubePlayer.js`, `frontend/src/constants/videos.js`, `frontend/src/pages/faq/faq.js`, `frontend/src/pages/home/Home.js`.
 
-
+    - **IDC Academy LMS Implementation (#759) - [COMPLETED]**:
+        - Transformed the IDC Academy from a Proof-of-Concept to a production-ready module with granular progress tracking.
+        - Implemented a structured backend schema in `academy.py` supporting `completed_chapters`, `quiz_scores`, and `is_completed`.
+        - Added a backward-compatibility layer and automated JSON normalization for legacy progress data in `1.json`.
+        - Refactored the frontend `CoursePlayer` to dynamically calculate progress percentages and handle nested module states.
+        - Modularized the assessment experience by extracting `QuizTimer` as a standalone component in `components/`.
+        - Overhauled the UI/UX with minimalist branded elevation for Library cards and a premium, results-oriented Quiz Card with circular metrics and trophy visuals.
+        - Verified 100% lint-clean status (`yarn lint` and `flake8`) and validated the instructionally sound learning loop.
+    - Path: `backend/routes/academy.py`, `frontend/src/pages/academy/CoursePlayer.js`, `frontend/src/pages/academy/AcademyLibrary.js`, `frontend/src/pages/academy/components/QuizTimer.js`.
     - **ROI Multi-Scenario & Calculation Fix (#755) - [COMPLETED]**:
         - Implemented a multi-selector in Step 5 for side-by-side waterfall comparison of up to 5 scenario-segment combinations.
         - Centralized ROI and Income aggregation logic in `roiCalculations.js`, decoupling it from UI component mounting state.
