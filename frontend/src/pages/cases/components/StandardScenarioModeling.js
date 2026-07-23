@@ -101,42 +101,45 @@ const StandardScenarioModeling = () => {
   );
 
   // handle initial scenario data for all segments (run only once)
-  // and when dashboard data updated
+  // and when dashboard data or segments are updated
   useEffect(() => {
-    if (isEmpty(dashboardData)) {
+    if (isEmpty(dashboardData) || isEmpty(currentCase?.segments)) {
       return;
     }
 
+    // Order currentCase.segments by ID (matching SegmentTabsWrapper.js)
+    const orderedSegments = orderBy(currentCase.segments, ["id"]);
+
     const nextScenarioData = orderBy(
       scenarioModeling.config.scenarioData.map((scenario) => {
-        if (isEmpty(scenario?.scenarioValues)) {
+        const reconciledValues = orderedSegments.map((liveSeg) => {
+          const existing = scenario.scenarioValues?.find(
+            (sv) => sv.segmentId === liveSeg.id
+          );
+          const dashData = dashboardData.find((d) => d.id === liveSeg.id) || {};
+
+          if (existing) {
+            return {
+              ...existing,
+              name: liveSeg.name,
+              currentSegmentValue: dashData,
+            };
+          }
+
           return {
-            ...scenario,
-            scenarioValues: dashboardData.map((d) => {
-              return {
-                name: d.name,
-                segmentId: d.id,
-                selectedDrivers: [],
-                allNewValues: {},
-                currentSegmentValue: d,
-                updatedSegmentScenarioValue: d,
-                updatedSegment: {},
-              };
-            }),
+            name: liveSeg.name,
+            segmentId: liveSeg.id,
+            selectedDrivers: [],
+            allNewValues: {},
+            currentSegmentValue: dashData,
+            updatedSegmentScenarioValue: dashData,
+            updatedSegment: {},
           };
-        }
-        // add currentSegmentValue
+        });
+
         return {
           ...scenario,
-          scenarioValues: scenario?.scenarioValues?.map((sv) => {
-            const findDashboardData = dashboardData.find(
-              (d) => d.id === sv.segmentId
-            );
-            return {
-              ...sv,
-              currentSegmentValue: findDashboardData || {},
-            };
-          }),
+          scenarioValues: reconciledValues,
         };
       }),
       "key"
@@ -156,7 +159,7 @@ const StandardScenarioModeling = () => {
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dashboardData]);
+  }, [dashboardData, currentCase?.segments]);
 
   const handleAddScenario = () => {
     if (scenarioModeling?.config?.scenarioData?.length < MAX_SCENARIO) {
