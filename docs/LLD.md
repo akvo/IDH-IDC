@@ -145,6 +145,7 @@ To maintain a clean architectural blueprint, detailed feature logic is documente
 | **ROI Analysis** | [ROI_INVESTMENT.md](features/ROI_INVESTMENT.md) | Calculations, Multipliers, ROI Charts. |
 | **Modelling Tools** | [ADVANCED_MODELLING.md](features/ADVANCED_MODELLING.md) | Sensitivity Analysis, Advanced Modelling (Step 4). |
 | **Chart Filtering** | [INCOME_GAP_CHART_FILTERING.md](INCOME_GAP_CHART_FILTERING.md) | Income Decrease filtering, Informative Alert logic. |
+| **Segment Consistency** | [SEGMENT_CONSISTENCY_FIX.md](SEGMENT_CONSISTENCY_FIX.md) | Reconciliation of stale JSONB scenarioValues against live segment table; segment-table-as-source-of-truth pattern. |
 | **Income Analysis** | [INCOME_GAP_ANALYSIS.md](features/INCOME_GAP_ANALYSIS.md) | Gap Allocation, Composition Charts. |
 | **Data Upload** | [DATA_UPLOAD_SEGMENTATION.md](features/DATA_UPLOAD_SEGMENTATION.md) | Template Parsing, Field Order logic. |
 | **Permissions** | [PERMISSIONS.md](features/PERMISSIONS.md) | RBAC Matrix, View-Only restrictions. |
