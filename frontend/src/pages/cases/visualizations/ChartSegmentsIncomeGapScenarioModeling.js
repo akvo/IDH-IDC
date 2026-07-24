@@ -83,23 +83,24 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
   const chartRef = useRef(null);
 
   const { chartData, hiddenSegmentNames } = useMemo(() => {
-    const scenarioValues = currentScenarioData?.scenarioValues?.map((sv) => {
-      const findSegment = currentCase?.segments?.find(
-        (s) => s.id === sv.segmentId
-      );
-      return {
-        ...sv,
-        name: findSegment?.name || sv.name,
-      };
-    });
+    const liveSegmentIds = new Set(
+      (currentCase?.segments || []).map((s) => s.id)
+    );
 
-    const filteredValues = (scenarioValues || []).filter((sv) => {
+    const validScenarioValues = (currentScenarioData?.scenarioValues || [])
+      .filter((sv) => liveSegmentIds.has(sv.segmentId))
+      .map((sv) => {
+        const liveSeg = currentCase.segments.find((s) => s.id === sv.segmentId);
+        return { ...sv, name: liveSeg.name };
+      });
+
+    const filteredValues = validScenarioValues.filter((sv) => {
       const current = sv.currentSegmentValue?.total_current_income || 0;
       const updated = sv.updatedSegmentScenarioValue?.total_current_income || 0;
       return updated >= current;
     });
 
-    const hiddenSegmentNames = (scenarioValues || [])
+    const hiddenSegmentNames = validScenarioValues
       .filter((sv) => {
         const current = sv.currentSegmentValue?.total_current_income || 0;
         const updated =

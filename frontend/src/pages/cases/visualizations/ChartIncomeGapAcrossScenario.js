@@ -174,21 +174,27 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   }, [scenarioData, currentCase.segments]);
 
   const scenarioValues = useMemo(() => {
+    const liveSegmentIds = new Set(
+      (currentCase?.segments || []).map((s) => s.id)
+    );
+
     return scenarioData
       .flatMap((sd) => {
-        return sd.scenarioValues.map((sv) => {
-          const findSegment = currentCase?.segments?.find(
-            (s) => s.id === sv.segmentId
-          );
-          return {
-            scenarioKey: sd.key,
-            scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
-            scenarioName: sd.name,
-            segmentName: findSegment?.name || sv.name,
-            ...sv,
-            name: `${findSegment?.name || sv.name} - ${sd.name}`,
-          };
-        });
+        return (sd.scenarioValues || [])
+          .filter((sv) => liveSegmentIds.has(sv.segmentId))
+          .map((sv) => {
+            const findSegment = currentCase.segments.find(
+              (s) => s.id === sv.segmentId
+            );
+            return {
+              scenarioKey: sd.key,
+              scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
+              scenarioName: sd.name,
+              segmentName: findSegment.name,
+              ...sv,
+              name: `${findSegment.name} - ${sd.name}`,
+            };
+          });
       })
       .filter((sv) => {
         if (selectedScenarioSegmentChart.length) {
