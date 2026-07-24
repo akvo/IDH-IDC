@@ -200,9 +200,92 @@ const hiddenSegmentNames = validScenarioValues
   .map((sv) => sv.name);
 ```
 
-- [ ] Replace existing `scenarioValues` mapping with `validScenarioValues` (filtered + live name)
-- [ ] Remove the `|| sv.name` fallback entirely
-- [ ] Use `validScenarioValues` as the basis for both `filteredValues` and `hiddenSegmentNames`
+### Phase 3: Defensive Fix in Step 5 Scenario Comparison Chart — `ChartIncomeGapAcrossScenario.js`
+
+Similar to the main chart, the comparison chart `ChartIncomeGapAcrossScenario.js` maps over `scenarioValues` and has a potential fallback issue. We filter this defensively to exclude deleted segments:
+
+```javascript
+  const scenarioValues = useMemo(() => {
+    const liveSegmentIds = new Set(
+      (currentCase?.segments || []).map((s) => s.id)
+    );
+
+    return scenarioData
+      .flatMap((sd) => {
+        return (sd.scenarioValues || [])
+          .filter((sv) => liveSegmentIds.has(sv.segmentId))
+          .map((sv) => {
+            const findSegment = currentCase.segments.find(
+              (s) => s.id === sv.segmentId
+            );
+            return {
+              scenarioKey: sd.key,
+              scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
+              scenarioName: sd.name,
+              segmentName: findSegment.name,
+              ...sv,
+              name: `${findSegment.name} - ${sd.name}`,
+            };
+          });
+      })
+      // ... (filters by active scenario / segment selection)
+```
+
+### Phase 4: Backend Reconcile for Case List Summary Modal — `backend/models/case.py`
+
+When the user is on the **Case List** page, the active segments of a case are not loaded on the frontend. The `ViewSummaryModal` displays the summary directly from the case's serialized `scenario_outcome_data_source` property.
+
+To prevent ghost segments from appearing when a segment was deleted/modified but Step 5 was not re-saved, the backend serializes this property dynamically by filtering the saved JSONB blob against the case's active database segments:
+
+```python
+            # Reconcile segmentIds with active segments in DB
+            active_segment_ids = {seg.id for seg in self.case_segments}
+
+            # Filter scenarioData to exclude deleted segments
+            reconciled_scenario_data = []
+            for item in scenario_data:
+                # Filter scenarioValues inside the scenario
+                reconciled_values = [
+                    sv for sv in item.get("scenarioValues", [])
+                    if sv.get("segmentId") in active_segment_ids
+                ]
+                # Update item names using live segment names from DB
+                for sv in reconciled_values:
+                    live_seg = next(
+                        (s for s in self.case_segments
+                         if s.id == sv["segmentId"]),
+                        None
+                    )
+                    if live_seg:
+                        sv["name"] = live_seg.name
+
+                reconciled_scenario_data.append({
+                    **item,
+                    "scenarioValues": reconciled_values
+                })
+
+            # Remove scenarioValues from each scenario data entry for case list
+            cleaned_scenario_data = [
+                {k: v for k, v in item.items() if k != "scenarioValues"}
+                for item in reconciled_scenario_data
+            ]
+
+            raw_outcome_ds = scenario_modeling_viz.config.get(
+                "scenarioOutcomeDataSource", []
+            )
+            # Filter and update names in scenarioOutcomeDataSource
+            for outcome in (raw_outcome_ds or []):
+                seg_id = outcome.get("segmentId")
+                if seg_id in active_segment_ids:
+                    live_seg = next(
+                        (s for s in self.case_segments if s.id == seg_id),
+                        None
+                    )
+                    outcome_copy = {**outcome}
+                    if live_seg:
+                        outcome_copy["segmentName"] = live_seg.name
+                    scenario_outcome_data_source.append(outcome_copy)
+```
 
 ---
 
@@ -217,13 +300,16 @@ No API changes required. Existing endpoints are used unchanged:
 ---
 
 ## ✅ Implementation Checklist
-- [ ] `StandardScenarioModeling.js` — full reconciliation in `useEffect([dashboardData])`
-- [ ] `ChartSegmentsIncomeGapScenarioModeling.js` — filter + live name, no stale fallback
+- [x] `StandardScenarioModeling.js` — full reconciliation in `useEffect([dashboardData])`
+- [x] `ChartSegmentsIncomeGapScenarioModeling.js` — filter + live name, no stale fallback
+- [x] `ChartIncomeGapAcrossScenario.js` — filter + live name, no stale fallback
+- [x] `backend/models/case.py` — filter backend serialization to exclude stale segment IDs
+- [x] `backend/tests/test_820_segment_consistency.py` — integration test verifying serialization cleanup
 - [ ] `yarn lint` passes with no new issues
 - [ ] `yarn test:ci` passes with no new failures
-- [ ] All 5 manual QA scenarios verified in browser
-- [ ] `docs/LLD.md` updated to note the segment-table-as-source-of-truth pattern
-- [ ] `agent_docs/sprint-plan.md` status updated
+- [ ] All manual QA scenarios verified in browser
+- [x] `docs/LLD.md` updated to note the segment-table-as-source-of-truth pattern
+- [x] `agent_docs/sprint-plan.md` status updated
 
 ---
 
@@ -248,6 +334,10 @@ No API changes required. Existing endpoints are used unchanged:
 ### Scenario 5: Driver Inputs Preserved
 - **Setup**: Volume +20% and Cost of Production +5% are configured for Scenario 1, Visionary segment. User then renames "Traditionalist" → "Traditional" in Step 1 and returns to Step 5.
 - **Expected**: Volume +20% and Cost of Production +5% inputs for Visionary are still present and unchanged in Scenario 1.
+
+### Scenario 6: Case List Summary Protection
+- **Setup**: A segment is deleted in Step 1 and the case is saved. Without visiting the scenario modeling step, the user returns to the Case List page and clicks **View Summary**.
+- **Expected**: The summary modal only lists the active segments. The deleted segment is not displayed.
 
 ---
 
