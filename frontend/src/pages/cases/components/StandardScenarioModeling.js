@@ -315,6 +315,7 @@ const StandardScenarioModeling = () => {
                           scenarioModeling?.config?.scenarioData?.length ===
                           MAX_SCENARIO
                         }
+                        style={{ float: "right" }}
                       >
                         Add scenario
                       </Button>
