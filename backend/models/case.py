@@ -334,7 +334,7 @@ class Case(Base):
             )
             for v in scenario_modeling_visualizations
         )
-        # get scenario outcome data source
+        # get scenario outcome data source and clean up stale segment data
         scenario_outcome_data_source = []
         cleaned_scenario_data = []
         if has_scenario_data:
@@ -342,14 +342,57 @@ class Case(Base):
             scenario_data = scenario_modeling_viz.config.get(
                 "scenarioData", []
             )
-            # Remove scenarioValues from each scenario data entry
+
+            # Reconcile segmentIds with active segments in DB
+            active_segment_ids = {seg.id for seg in self.case_segments}
+
+            # Filter scenarioData to exclude deleted segments
+            reconciled_scenario_data = []
+            for item in scenario_data:
+                # Filter scenarioValues inside the scenario
+                reconciled_values = [
+                    sv
+                    for sv in item.get("scenarioValues", [])
+                    if sv.get("segmentId") in active_segment_ids
+                ]
+                # Update item names using live segment names from DB
+                for sv in reconciled_values:
+                    live_seg = next(
+                        (
+                            s
+                            for s in self.case_segments
+                            if s.id == sv["segmentId"]
+                        ),
+                        None,
+                    )
+                    if live_seg:
+                        sv["name"] = live_seg.name
+
+                reconciled_scenario_data.append(
+                    {**item, "scenarioValues": reconciled_values}
+                )
+
+            # Remove scenarioValues from each scenario data entry for case list
             cleaned_scenario_data = [
                 {k: v for k, v in item.items() if k != "scenarioValues"}
-                for item in scenario_data
+                for item in reconciled_scenario_data
             ]
-            scenario_outcome_data_source = scenario_modeling_viz.config.get(
-                "scenarioOutcomeDataSource"
+
+            raw_outcome_ds = scenario_modeling_viz.config.get(
+                "scenarioOutcomeDataSource", []
             )
+            # Filter and update names in scenarioOutcomeDataSource
+            for outcome in raw_outcome_ds or []:
+                seg_id = outcome.get("segmentId")
+                if seg_id in active_segment_ids:
+                    live_seg = next(
+                        (s for s in self.case_segments if s.id == seg_id), None
+                    )
+                    outcome_copy = {**outcome}
+                    if live_seg:
+                        outcome_copy["segmentName"] = live_seg.name
+                    scenario_outcome_data_source.append(outcome_copy)
+
         # get case with segment having answer to decide go to step 3
         has_segment_with_answers = False
         if self.case_segments:
