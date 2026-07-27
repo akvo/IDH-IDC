@@ -190,30 +190,23 @@ const ThreeDriverCalculator = ({
       )}
 
       {thirdDriver && xAxisDriver && yAxisDriver && (
-        <Col
-          span={24}
-          className="combination-section"
-          style={{ textAlign: "center" }}
-        >
+        <Col span={24} className="combination-section">
           <Space direction="vertical" size={24} style={{ width: "100%" }}>
-            <Space direction="vertical" size={16} style={{ width: "100%" }}>
+            <div className="combination-info-box">
               <h3 className="title combination-title">
                 What combination of drivers close to income gap?
               </h3>
-              <p
-                className="combination-description"
-                style={{ maxWidth: "800px", margin: "0 auto" }}
-              >
-                The tables below show the <b>{thirdDriver}</b> needed to close
-                the living income gap for different combinations of{" "}
-                <b>{xAxisDriver || "[X]"}</b> and <b>{yAxisDriver || "[Y]"}</b>.
-                The values for <b>{xAxisDriver || "[X]"}</b> and{" "}
-                <b>{yAxisDriver || "[Y]"}</b> are taken from the ranges defined
-                above. The table focuses on combinations that are most likely to
-                reach the income target while staying within feasible levels for
-                the selected drivers.
+              <p className="combination-description">
+                The table below shows the required level of <b>{thirdDriver}</b>{" "}
+                needed to close the living income gap for four different
+                combinations of <b>{xAxisDriver || "[X]"}</b> and{" "}
+                <b>{yAxisDriver || "[Y]"}</b>. The values for{" "}
+                <b>{xAxisDriver || "[X]"}</b> and <b>{yAxisDriver || "[Y]"}</b>{" "}
+                are taken from the ranges defined above. The table focuses on
+                combinations that are most likely to reach the income target
+                while staying within feasible levels for the selected drivers.
               </p>
-            </Space>
+            </div>
 
             <ThreeDriverCombinationChart
               selectedSegment={selectedSegment}

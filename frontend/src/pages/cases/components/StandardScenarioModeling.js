@@ -1,6 +1,27 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Row, Col, Card, Space, Button, Tabs, Popconfirm } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
+import {
+  Row,
+  Col,
+  Space,
+  Button,
+  Tabs,
+  Popconfirm,
+  notification,
+  Collapse,
+  Tooltip,
+} from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  RightOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 import { ScenarioModelingForm } from "../components";
 import { CaseVisualState, CurrentCaseState } from "../store";
 import { isEmpty, orderBy, isEqual } from "lodash";
@@ -9,6 +30,8 @@ import {
   TableScenarioOutcomes,
   ImpactOfInvestmentCharts,
 } from "../visualizations";
+
+const { Panel } = Collapse;
 
 const MAX_SCENARIO = 3;
 const deleteButtonPosition = "tab-item";
@@ -22,6 +45,38 @@ const StandardScenarioModeling = () => {
     orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key || null
   );
   const [deleting, setDeleting] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
+  const prevActiveScenarioRef = useRef(activeScenario);
+
+  useEffect(() => {
+    if (
+      prevActiveScenarioRef.current !== activeScenario &&
+      activeScenario !== null
+    ) {
+      const scenarioInv =
+        scenarioModeling.config.investment_analysis?.scenarios?.[
+          activeScenario
+        ] || {};
+      const costAllocationMode =
+        scenarioInv.cost_allocation_mode ||
+        (scenarioInv.is_roi_enabled ? "per_segment" : "no");
+
+      if (costAllocationMode === "no") {
+        const scenarioName =
+          scenarioModeling.config.scenarioData.find(
+            (s) => s.key === activeScenario
+          )?.name || "Target Scenario";
+
+        api.info({
+          message: "ROI Modeling Disabled",
+          description: `ROI modeling is currently disabled for "${scenarioName}". You can enable it in the ROI section below if needed.`,
+          placement: "topRight",
+          duration: 5,
+        });
+      }
+      prevActiveScenarioRef.current = activeScenario;
+    }
+  }, [activeScenario, scenarioModeling, api]);
 
   const onDeleteScenario = useCallback(
     ({ currentScenarioData, scenarioDataState }) => {
@@ -46,42 +101,45 @@ const StandardScenarioModeling = () => {
   );
 
   // handle initial scenario data for all segments (run only once)
-  // and when dashboard data updated
+  // and when dashboard data or segments are updated
   useEffect(() => {
-    if (isEmpty(dashboardData)) {
+    if (isEmpty(dashboardData) || isEmpty(currentCase?.segments)) {
       return;
     }
 
+    // Order currentCase.segments by ID (matching SegmentTabsWrapper.js)
+    const orderedSegments = orderBy(currentCase.segments, ["id"]);
+
     const nextScenarioData = orderBy(
       scenarioModeling.config.scenarioData.map((scenario) => {
-        if (isEmpty(scenario?.scenarioValues)) {
+        const reconciledValues = orderedSegments.map((liveSeg) => {
+          const existing = scenario.scenarioValues?.find(
+            (sv) => sv.segmentId === liveSeg.id
+          );
+          const dashData = dashboardData.find((d) => d.id === liveSeg.id) || {};
+
+          if (existing) {
+            return {
+              ...existing,
+              name: liveSeg.name,
+              currentSegmentValue: dashData,
+            };
+          }
+
           return {
-            ...scenario,
-            scenarioValues: dashboardData.map((d) => {
-              return {
-                name: d.name,
-                segmentId: d.id,
-                selectedDrivers: [],
-                allNewValues: {},
-                currentSegmentValue: d,
-                updatedSegmentScenarioValue: d,
-                updatedSegment: {},
-              };
-            }),
+            name: liveSeg.name,
+            segmentId: liveSeg.id,
+            selectedDrivers: [],
+            allNewValues: {},
+            currentSegmentValue: dashData,
+            updatedSegmentScenarioValue: dashData,
+            updatedSegment: {},
           };
-        }
-        // add currentSegmentValue
+        });
+
         return {
           ...scenario,
-          scenarioValues: scenario?.scenarioValues?.map((sv) => {
-            const findDashboardData = dashboardData.find(
-              (d) => d.id === sv.segmentId
-            );
-            return {
-              ...sv,
-              currentSegmentValue: findDashboardData || {},
-            };
-          }),
+          scenarioValues: reconciledValues,
         };
       }),
       "key"
@@ -101,7 +159,7 @@ const StandardScenarioModeling = () => {
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dashboardData]);
+  }, [dashboardData, currentCase?.segments]);
 
   const handleAddScenario = () => {
     if (scenarioModeling?.config?.scenarioData?.length < MAX_SCENARIO) {
@@ -202,110 +260,256 @@ const StandardScenarioModeling = () => {
 
   return (
     <>
+      {contextHolder}
       <Col span={24}>
-        <Card className="card-section-wrapper">
-          <Row align="middle" gutter={[20, 20]}>
-            <Col span={18}>
-              <Space className="step-wrapper" align="center">
-                <div className="number">1.</div>
-                <div className="label">Fill in values for your scenarios</div>
-              </Space>
-            </Col>
-            <Col span={6} align="end">
-              <Button
-                icon={<PlusOutlined />}
-                className="button-add-scenario"
-                onClick={handleAddScenario}
-                disabled={
-                  scenarioModeling?.config?.scenarioData?.length ===
-                  MAX_SCENARIO
-                }
+        <Collapse
+          defaultActiveKey={["1"]}
+          expandIconPosition="start"
+          expandIcon={({ isActive }) => (
+            <RightOutlined
+              rotate={isActive ? 90 : 0}
+              style={{ fontSize: "14px", color: "#1B625F" }}
+            />
+          )}
+          className="scenario-tools-collapse"
+          ghost
+        >
+          <Panel
+            header={
+              <Space
+                align="center"
+                style={{ gap: 8 }}
+                className="scenario-panel-header-content"
               >
-                Add scenario
-              </Button>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
-
-      <Col span={24}>
-        <Tabs
-          className="step-segment-tabs-container scenario-segment-tabs-container"
-          type="card"
-          tabBarGutter={5}
-          items={scenarioTabItems}
-          activeKey={
-            activeScenario ||
-            orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]?.key
-          }
-          onChange={(val) => {
-            setActiveScenario(val);
-          }}
-        />
+                <span className="step-title">
+                  1. Fill in values for your scenarios
+                </span>
+                <Tooltip title="Create scenarios by adjusting driver values for each segment.">
+                  <InfoCircleOutlined
+                    style={{ color: "rgba(0,0,0,0.45)", fontSize: "14px" }}
+                  />
+                </Tooltip>
+              </Space>
+            }
+            key="1"
+          >
+            <Row gutter={[24, 24]}>
+              <Col span={24}>
+                <div className="scenario-info-box">
+                  <Row
+                    align="middle"
+                    style={{ width: "100%", marginBottom: "16px" }}
+                  >
+                    <Col span={18} style={{ textAlign: "left" }}>
+                      <div className="title">Building your scenarios</div>
+                    </Col>
+                    <Col span={6} align="end">
+                      <Button
+                        icon={<PlusOutlined />}
+                        className="button-add-scenario"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddScenario();
+                        }}
+                        disabled={
+                          scenarioModeling?.config?.scenarioData?.length ===
+                          MAX_SCENARIO
+                        }
+                        style={{ float: "right" }}
+                      >
+                        Add scenario
+                      </Button>
+                    </Col>
+                  </Row>
+                  <p>
+                    A scenario represents a set of practical actions that change
+                    one or more income drivers. These can range from targeted
+                    interventions (e.g. access to inputs, training) to broader
+                    approaches (e.g. crop diversification or new sourcing
+                    models).
+                  </p>
+                  <p>
+                    Use the percentage changes explored earlier as a starting
+                    point, and translate them into realistic combinations of
+                    actions. Each scenario should reflect a coherent strategy
+                    you could implement, allowing you to compare which
+                    approaches are both impactful and feasible.
+                  </p>
+                </div>
+              </Col>
+              <Col span={24}>
+                <Tabs
+                  className="step-segment-tabs-container scenario-segment-tabs-container"
+                  type="card"
+                  tabBarGutter={5}
+                  items={scenarioTabItems}
+                  activeKey={
+                    activeScenario ||
+                    orderBy(scenarioModeling?.config?.scenarioData, "key")?.[0]
+                      ?.key
+                  }
+                  onChange={(val) => {
+                    setActiveScenario(val);
+                  }}
+                />
+              </Col>
+            </Row>
+          </Panel>
+        </Collapse>
       </Col>
 
       {/* Section 2 */}
       <Col span={24}>
-        <Card className="card-section-wrapper">
-          <Space className="step-wrapper" align="center">
-            <div className="number">2.</div>
-            <div className="label">Compare your scenarios</div>
-          </Space>
-        </Card>
-      </Col>
-
-      <Col span={24}>
-        <ChartIncomeGapAcrossScenario activeScenario={activeScenario} />
+        <Collapse
+          defaultActiveKey={["2"]}
+          expandIconPosition="start"
+          expandIcon={({ isActive }) => (
+            <RightOutlined
+              rotate={isActive ? 90 : 0}
+              style={{ fontSize: "14px", color: "#1B625F" }}
+            />
+          )}
+          className="scenario-tools-collapse"
+          ghost
+        >
+          <Panel
+            header={
+              <Space
+                align="center"
+                style={{ gap: 8 }}
+                className="scenario-panel-header-content"
+              >
+                <span className="step-title">2. Compare your scenarios</span>
+                <Tooltip title="Compare the income gap closure across your modeled scenarios.">
+                  <InfoCircleOutlined
+                    style={{ color: "rgba(0,0,0,0.45)", fontSize: "14px" }}
+                  />
+                </Tooltip>
+              </Space>
+            }
+            key="2"
+          >
+            <ChartIncomeGapAcrossScenario activeScenario={activeScenario} />
+          </Panel>
+        </Collapse>
       </Col>
       {/* EOL Section 2 */}
 
       {/* Section 3 */}
       <Col span={24}>
-        <Card className="card-section-wrapper">
-          <Space className="step-wrapper" align="top">
-            <div className="number">3.</div>
-            <div className="label">
-              Assess the impact of your investment
-              <div className="description">
-                This section allows you to assess the return on investment of
-                each scenario in terms of its contribution to closing the income
-                gap for farmers. It helps you compare the cost-efficiency of
-                different interventions, understand the main cost components
-                involved in implementation, and see how your resources translate
-                into income improvements at farmer and segment level. The focus
-                is on social returns rather than financial returns for the
-                company.
-              </div>
-            </div>
-          </Space>
-        </Card>
-      </Col>
-
-      <Col span={24}>
-        <ImpactOfInvestmentCharts />
+        <Collapse
+          defaultActiveKey={["3"]}
+          expandIconPosition="start"
+          expandIcon={({ isActive }) => (
+            <RightOutlined
+              rotate={isActive ? 90 : 0}
+              style={{ fontSize: "14px", color: "#1B625F" }}
+            />
+          )}
+          className="scenario-tools-collapse"
+          ghost
+        >
+          <Panel
+            header={
+              <Space
+                align="center"
+                style={{ gap: 8 }}
+                className="scenario-panel-header-content"
+              >
+                <span className="step-title">
+                  3. Assess the impact of your investment
+                </span>
+                <Tooltip title="Analyze the return on investment and breakdown of scenario costs.">
+                  <InfoCircleOutlined
+                    style={{ color: "rgba(0,0,0,0.45)", fontSize: "14px" }}
+                  />
+                </Tooltip>
+              </Space>
+            }
+            key="3"
+          >
+            <Row gutter={[24, 24]}>
+              <Col span={24}>
+                <div className="scenario-info-box">
+                  <p>
+                    This section allows you to assess the return on investment
+                    of each scenario in terms of its contribution to closing the
+                    income gap for farmers. It helps you compare the
+                    cost-efficiency of different interventions, understand the
+                    main cost components involved in implementation, and see how
+                    your resources translate into income improvements at farmer
+                    and segment level. The focus is on social returns rather
+                    than financial returns for the company.
+                  </p>
+                  <p>
+                    Use the first graph to understand the total cost of each
+                    scenario and which components are driving that cost.
+                    Consider this total cost in light of the second graph which
+                    tells you which scenario returns the highest social impact.
+                    You might find that a more affordable scenario returns
+                    higher social impact.
+                  </p>
+                </div>
+              </Col>
+              <Col span={24}>
+                <ImpactOfInvestmentCharts />
+              </Col>
+            </Row>
+          </Panel>
+        </Collapse>
       </Col>
       {/* EOL Section 3 */}
 
       {/* Section 4 */}
       <Col span={24}>
-        <Card className="card-section-wrapper">
-          <Space className="step-wrapper" align="top">
-            <div className="number">4.</div>
-            <div className="label">
-              Better understand scenario outcomes for your segments
-              <div className="description">
-                In the table below, you can compare specific outcomes per
-                segment to understand in which scenario the farmers in that
-                segment reach the income target, how this is established, and
-                how it compares to the current scenario.
-              </div>
-            </div>
-          </Space>
-        </Card>
-      </Col>
-
-      <Col span={24}>
-        <TableScenarioOutcomes />
+        <Collapse
+          defaultActiveKey={["4"]}
+          expandIconPosition="start"
+          expandIcon={({ isActive }) => (
+            <RightOutlined
+              rotate={isActive ? 90 : 0}
+              style={{ fontSize: "14px", color: "#1B625F" }}
+            />
+          )}
+          className="scenario-tools-collapse"
+          ghost
+        >
+          <Panel
+            header={
+              <Space
+                align="center"
+                style={{ gap: 8 }}
+                className="scenario-panel-header-content"
+              >
+                <span className="step-title">
+                  4. Better understand scenario outcomes for your segments
+                </span>
+                <Tooltip title="Review detailed baseline vs. scenario comparisons for each driver and segment.">
+                  <InfoCircleOutlined
+                    style={{ color: "rgba(0,0,0,0.45)", fontSize: "14px" }}
+                  />
+                </Tooltip>
+              </Space>
+            }
+            key="4"
+          >
+            <Row gutter={[24, 24]}>
+              <Col span={24}>
+                <div className="scenario-info-box">
+                  <p>
+                    In the table below, you can compare specific outcomes per
+                    segment to understand in which scenario the farmers in that
+                    segment reach the income target, how this is established,
+                    and how it compares to the current scenario.
+                  </p>
+                </div>
+              </Col>
+              <Col span={24}>
+                <TableScenarioOutcomes />
+              </Col>
+            </Row>
+          </Panel>
+        </Collapse>
       </Col>
     </>
   );

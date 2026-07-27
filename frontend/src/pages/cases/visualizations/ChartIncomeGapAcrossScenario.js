@@ -174,21 +174,27 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
   }, [scenarioData, currentCase.segments]);
 
   const scenarioValues = useMemo(() => {
+    const liveSegmentIds = new Set(
+      (currentCase?.segments || []).map((s) => s.id)
+    );
+
     return scenarioData
       .flatMap((sd) => {
-        return sd.scenarioValues.map((sv) => {
-          const findSegment = currentCase?.segments?.find(
-            (s) => s.id === sv.segmentId
-          );
-          return {
-            scenarioKey: sd.key,
-            scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
-            scenarioName: sd.name,
-            segmentName: findSegment?.name || sv.name,
-            ...sv,
-            name: `${findSegment?.name || sv.name} - ${sd.name}`,
-          };
-        });
+        return (sd.scenarioValues || [])
+          .filter((sv) => liveSegmentIds.has(sv.segmentId))
+          .map((sv) => {
+            const findSegment = currentCase.segments.find(
+              (s) => s.id === sv.segmentId
+            );
+            return {
+              scenarioKey: sd.key,
+              scenarioSegmentKey: `${sd.key}-${sv.segmentId}`,
+              scenarioName: sd.name,
+              segmentName: findSegment.name,
+              ...sv,
+              name: `${findSegment.name} - ${sd.name}`,
+            };
+          });
       })
       .filter((sv) => {
         if (selectedScenarioSegmentChart.length) {
@@ -328,10 +334,11 @@ const ChartIncomeGapAcrossScenario = ({ activeScenario }) => {
               What are the results for the different segments across scenarios?
             </div>
             <div className="section-description">
-              The visual on the left allows you to select and compare specific
-              combinations of scenarios and segments. You can explore how
-              household income composition and income gaps vary across segments
-              in the scenarios you create.
+              This chart compares how household income and the remaining income
+              gap change across your selected scenarios and segments. Higher
+              household income and smaller remaining gaps indicate more
+              effective scenarios. Comparing bars across segments shows where a
+              scenario works well and where additional effort may be needed.
             </div>
             <div>
               <Select

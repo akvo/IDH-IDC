@@ -83,17 +83,43 @@ const ChartFarmEconomicEfficiency = () => {
     });
   }, [currentCase, dashboardData, incomeDataDrivers]);
 
+  const rawUnit = useMemo(
+    () => currentCase?.volume_measurement_unit || "kg",
+    [currentCase?.volume_measurement_unit]
+  );
+
+  const volumeUnit = useMemo(() => {
+    const unitLower = rawUnit.toLowerCase();
+    if (unitLower === "tonnes") {
+      return "tonne";
+    }
+    if (unitLower === "tons") {
+      return "ton";
+    }
+    if (unitLower === "bags") {
+      return "bag";
+    }
+    if (unitLower === "litres" || unitLower === "liters") {
+      return "litre";
+    }
+    if (unitLower.endsWith("s")) {
+      return rawUnit.slice(0, -1);
+    }
+    return rawUnit;
+  }, [rawUnit]);
+
   return (
     <Card className="card-visual-wrapper">
       <Row gutter={[20, 20]} align="middle">
         <Col span={14}>
           <VisualCardWrapper
-            title="Change Indicators"
+            title="Change indicator: Farm economic efficiency"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartFarmEconomicEfficiencyRef}
-            exportFilename="Farm Economic Efficiency"
+            exportFilename="Change indicator: Farm economic efficiency"
+            tooltipText="This indicator is calculated by dividing total production costs by total output."
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
@@ -111,17 +137,17 @@ const ChartFarmEconomicEfficiency = () => {
         </Col>
         <Col span={10}>
           <Space direction="vertical">
-            <div className="section-title">Farm Economic Efficiency</div>
+            <div className="section-title">
+              How much money is needed to produce 1 {volumeUnit} of the primary
+              commodity?
+            </div>
             <div className="section-description">
-              This graph shows the cash a farmer needs to invest to produce one
-              unit of the primary commodity. It is calculated by dividing total
-              production costs by total output and indicates how efficiently
-              inputs are converted into harvest. Lower values reflect more
-              efficient input use and stronger agronomic performance, while
-              higher values may point to low yields, inefficient input use, or
-              higher input prices. Over time, this metric helps assess whether
-              cost efficiency and production performance are improving or
-              deteriorating.
+              This graph visualises production efficiency per unit of the
+              primary commodity. It indicates how efficiently inputs are
+              converted into harvest. Low values reflect more efficient input
+              use and stronger agronomic performance, while higher values may
+              point to low yields, inefficient input use, or higher input
+              prices.
             </div>
           </Space>
         </Col>

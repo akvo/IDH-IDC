@@ -28,7 +28,13 @@ import PriceWhite from "../../../assets/icons/equaion-visualizer/price_white.svg
 import { isEqual } from "lodash";
 import IncomeGatingAlert from "./IncomeGatingAlert";
 
-const { Text, Title, Paragraph } = Typography;
+const { Text, Title } = Typography;
+
+const SCENARIO_OPTIONS = [
+  { key: "current", label: "Current" },
+  { key: "feasible", label: "Feasible" },
+  { key: "model", label: "Customized" },
+];
 
 const InputRow = ({
   label,
@@ -1209,13 +1215,12 @@ const AdvancedModellingTool = ({ disabled }) => {
       </Col>
 
       <Col span={24}>
-        <Paragraph className="tool-description">
-          The model below allows you to calculate the required price, cost of
-          production, or volume needed to close the income gap, based on all
-          other income drivers set at current, feasible, or manually defined
-          levels. You can use the model to explore different scenarios and see
-          how changes affect each of the three key drivers.
-        </Paragraph>
+        <p style={{ margin: 0, padding: 0 }}>
+          Explore what changes are needed to close the income gap. Adjust key
+          drivers to see the required price, cost, or volume, and assess whether
+          these changes are realistic. Use the price breakdown to understand how
+          costs and profits are distributed as a result.
+        </p>
       </Col>
 
       {/* Segment Selector */}
@@ -1291,9 +1296,9 @@ const AdvancedModellingTool = ({ disabled }) => {
                   type="card"
                   centered
                   className="scenario-tabs-custom"
-                  items={["current", "feasible", "model"].map((key) => ({
+                  items={SCENARIO_OPTIONS.map(({ key, label }) => ({
                     key,
-                    label: key.charAt(0).toUpperCase() + key.slice(1),
+                    label,
                     children: renderModellingInputs(key),
                     disabled: disabled && key === "model", // Optionally keep current/feasible viewable?
                   }))}

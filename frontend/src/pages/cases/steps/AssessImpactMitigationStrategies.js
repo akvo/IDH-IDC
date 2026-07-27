@@ -17,6 +17,7 @@ import {
   // SensitivityAnalysis,
   ExploreChangeToCloseTheGap,
   AdvancedModellingTool,
+  ReadOnlyAlert,
 } from "../components";
 import { isEqual, isEmpty } from "lodash";
 import { api } from "../../../lib";
@@ -207,6 +208,12 @@ const AssessImpactMitigationStrategies = ({
         </div>
       </Col>
 
+      {!enableEditCase && (
+        <Col span={24}>
+          <ReadOnlyAlert />
+        </Col>
+      )}
+
       {/* #1 Chart */}
       <Col span={24}>
         <Card className="card-section-wrapper">
@@ -291,8 +298,8 @@ const AssessImpactMitigationStrategies = ({
         <>
           <Col span={24}>
             <Card className="card-section-wrapper">
-              What is the minimum change in drivers needed to close the income
-              gap within feasible limits?
+              Optimisation model for closing the income gap within feasible
+              limits
             </Card>
           </Col>
           <Col span={24}>

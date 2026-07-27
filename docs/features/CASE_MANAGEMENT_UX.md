@@ -44,7 +44,20 @@ Standardized labels and tooltips have been updated throughout the application to
 
 ---
 
-## 5. Technical Reference
+## 5. Step 5 Collapsible Scenario Modeling Sections (#814)
+
+To reduce excessive page scrolling and focus the analyst's workspace, all four primary sections in Step 5 (Scenario Modelling) are converted into styled collapsible panels:
+*   **Section 1 ("Fill in values for your scenarios")**: Styled with light teal background (`#eaf2f2`) and top border (`#e9e9e9`). Chevron expand icons are teal (`#1b625f`). Includes "?" info tooltip and the "Add scenario" button located inline (with event propagation handled so it does not collapse the panel). Expanded by default.
+*   **Section 2 ("Compare your scenarios")**: Wraps the scenario income gap comparison chart. Expanded by default.
+*   **Section 3 ("Assess the impact of your investment")**: Wraps the ROI charts and tables. Expanded by default.
+*   **Section 4 ("Better understand scenario outcomes for your segments")**: Wraps the segment comparison outcomes table, which is also styled with a bordered wrapper for premium aesthetics. Expanded by default.
+
+---
+
+## 6. Technical Reference
 *   **Validation Logic**: `frontend/src/pages/cases/CaseForm.js`
+*   **Scenario Modeling Parent**: `frontend/src/pages/cases/components/StandardScenarioModeling.js`
+*   **Outcomes Table Component**: `frontend/src/pages/cases/visualizations/TableScenarioOutcomes.js`
+*   **Styling Rules**: `frontend/src/pages/cases/steps/steps.scss`
 *   **Cleanup Script**: `backend/cleanup_imports.py`
-*   **UI Components**: Ant Design `Select`, `Tooltip`, and `Modal`.
+*   **UI Components**: Ant Design `Select`, `Tooltip`, `Collapse`, `Panel`, and `Modal`.

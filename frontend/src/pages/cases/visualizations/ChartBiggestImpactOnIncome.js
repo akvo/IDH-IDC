@@ -303,6 +303,7 @@ const ChartBiggestImpactOnIncome = () => {
             exportElementRef={chartRef}
             exportFilename="How does income change when an income driver changes to its
               feasible level?"
+            tooltipText="The chart shows the percentage change in income when each driver is shifted from current to feasible levels. The impact on income is presented for two scenarios: adjusting the driver in isolation, and adjusting it while all other drivers are also set to feasible levels."
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>
@@ -324,13 +325,20 @@ const ChartBiggestImpactOnIncome = () => {
               feasible level?
             </div>
             <div className="section-description">
-              This graph reveals how each income driver contributes to household
-              income. Yellow reflects how much the driver itself changes from
-              current to feasible, light green shows the impact on income when
-              only this driver is adjusted, green shows the effect when all
-              drivers are set to feasible levels, and . Use this to spot the
-              most impactful drivers, keeping in mind that their influence
-              depends on other drivers.
+              This chart shows the percentage change in household income when
+              drivers are adjusted from their current levels to feasible levels.
+              Firstly it shows the size of change between the current and
+              feasible level (yellow), and then compares the effect of each
+              driver under two conditions: impact on income with all other
+              drivers at current levels (light teal) and impact on income with
+              all other drivers at feasible levels (dark teal). This highlights
+              both the standalone impact of each driver and how its contribution
+              depends on interactions with other drivers. Higher percentage
+              income changes indicate that adjusting a driver has a stronger
+              positive effect on income, while lower or negative changes suggest
+              a limited or adverse impact. Differences between the two
+              conditions show how much a driver’s effect is influenced by the
+              performance of other drivers.
             </div>
           </Space>
         </Col>

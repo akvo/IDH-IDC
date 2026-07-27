@@ -308,12 +308,12 @@ const ChartExploreIncomeDriverBreakdown = () => {
         </Col>
         <Col span={16}>
           <VisualCardWrapper
-            title="Explore income driver breakdown"
+            title="Income driver breakdown"
             bordered
             showLabel={showLabel}
             setShowLabel={setShowLabel}
             exportElementRef={chartBreakdownDriverRef}
-            exportFilename="Explore income driver breakdown"
+            exportFilename="Income driver breakdown"
           >
             <Row gutter={[20, 20]}>
               <Col span={24}>

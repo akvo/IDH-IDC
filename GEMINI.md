@@ -16,6 +16,29 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **ROI Scenario Selector & UX Feedback (#805) - [COMPLETED]**:
+    - **Scenario Selector**: Integrated an inline scenario selector (Radio Button group) directly into the ROI modeling form in Step 5.
+    - **UX Feedback**: Implemented a dashboard-level notification system in `StandardScenarioModeling.js` to alert users when switching to a scenario with ROI modeling disabled, preventing confusion when the form "disappears."
+    - **Bidirectional Sync**: Ensured the new selector maintains perfect synchronization with the global application state and the top scenario tabs.
+    - **Layout Refinement**: Positioned the selector within the localized context of the ROI section for better usability.
+    - Verified all changes with frontend linting and manual walkthroughs.
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingROIForm.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/components/ScenarioModelingForm.js`, `docs/features/ROI_INVESTMENT.md`.
+
+- **Scenario Modeling UI & Customization (#803) - [COMPLETED]**:
+    - **Advanced Modelling**: Refactored tab titles to use customizable key-label pairs and renamed the "Model" tab to "Customized" for better clarity.
+    - **Layout Refinement**: Moved section descriptions for "ROI Impact" and "Scenario Outcomes" outside of the header `Card` components in `StandardScenarioModeling.js` for improved visual hierarchy.
+    - **Content Update**: Enhanced the ROI impact description with detailed guidance on comparing total cost vs. social impact.
+    - **Chart Polish**: Updated the Y-axis label of the ROI chart to "%" and refined the "Scenario Cost by component" description.
+    - Verified all changes with frontend linting and a full test suite pass.
+    - Path: `frontend/src/pages/cases/components/AdvancedModellingTool.js`, `frontend/src/pages/cases/components/StandardScenarioModeling.js`, `frontend/src/pages/cases/visualizations/ImpactOfInvestmentCharts.js`.
+
+- **Income Gap Chart Filtering (#801b) - [COMPLETED]**:
+    - Implemented automatic filtering for the "Optimal driver values to reach your target" chart to exclude segments with income decreases.
+    - Added an IDC-branded `Alert` (Type: Info, Background: `#EAF2F2`) that dynamically lists hidden segments to ensure transparency.
+    - Ensured the filtering only affects the visualization, preserving the integrity of the underlying scenario data in tables and other charts.
+    - Verified logic for scenarios with mixed increase/decrease and all-decrease states.
+    - Path: `frontend/src/pages/cases/visualizations/ChartSegmentsIncomeGapScenarioModeling.js`, `docs/INCOME_GAP_CHART_FILTERING.md`.
+
 - **Income Gap Chart Refinement (#801) - [COMPLETED]**:
     - Refactored `ChartSegmentsIncomeGapScenarioModeling.js` to dynamically handle both income increases and decreases in the scenario modeling chart.
     - Implemented a dual-stacking logic:

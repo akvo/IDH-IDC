@@ -84,25 +84,25 @@ const GapClosingPieChart = ({
       {
         name: "All three drivers fall within feasible ranges",
         value: allFeasible,
-        color: "#5AD8A6",
+        color: "#49D985",
         order: 1,
       },
       {
         name: "One driver falls outside of feasible ranges",
         value: twoFeasible,
-        color: "#F6BD16",
+        color: "#FED754",
         order: 2,
       },
       {
         name: "Two drivers fall outside of feasible ranges",
         value: oneFeasible,
-        color: "#FFBB96",
+        color: "#FF7875",
         order: 3,
       },
       {
         name: "All drivers fall outside of feasible ranges",
         value: zeroFeasible,
-        color: "#FF8C54",
+        color: "#FF4D4F",
         order: 4,
       },
     ].filter((v) => v.value > 0);
@@ -114,6 +114,18 @@ const GapClosingPieChart = ({
     sensitivityAnalysis,
     selectedSegment,
   ]);
+
+  const greenPercentage = useMemo(() => {
+    if (!combinationSummary) {
+      return 0;
+    }
+    const allFeasibleItem = combinationSummary.find(
+      (item) => item.color === "#49D985"
+    );
+    const allFeasible = allFeasibleItem ? allFeasibleItem.value : 0;
+    const total = combinationSummary.reduce((sum, item) => sum + item.value, 0);
+    return total > 0 ? Math.round((allFeasible / total) * 100) : 0;
+  }, [combinationSummary]);
 
   if (
     !hasFormula ||
@@ -127,34 +139,48 @@ const GapClosingPieChart = ({
 
   return (
     <VisualCardWrapper
-      title="Breakdown of closing the gap"
+      title="Effectiveness of the Third Driver in Closing the Income Gap"
       bordered
       exportElementRef={elementRef}
-      exportFilename="Breakdown of closing the gap"
-      tooltipText="This graph shows how effective the selected third driver is in helping close the income gap."
+      exportFilename="Effectiveness of the Third Driver in Closing the Income Gap"
+      tooltipText="The chart evaluates multiple combinations of the three selected drivers and calculates the proportion that result in the income gap being fully or partially closed, while indicating whether each combination stays within feasible ranges for all drivers."
     >
       <Row gutter={[40, 20]} align="middle">
-        <Col xs={24} md={12} style={{ padding: "32px 0 32px 32px" }}>
+        <Col xs={24} md={12} style={{ padding: "12px 12px 12px 32px" }}>
+          <h4
+            style={{
+              color: "#01625f",
+              fontFamily: "RocGrotesk",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 700,
+              lineHeight: "24px",
+            }}
+          >
+            Which third driver is most effective for closing the income gap?
+          </h4>
           <p>
-            This graph shows how effective the selected third driver is in
-            helping close the income gap. It does this by counting how many
-            combinations of the three selected drivers result in the income gap
-            being fully or partially closed while staying within feasible
-            levels.
+            This chart shows the gap-closing success rate of combinations of the
+            three selected income drivers. A third driver is added to the two
+            drivers carried forward from the heat map by toggling through
+            options from the down-drop. This helps compare which potential third
+            driver creates the most feasible pathway to closing the income gap,
+            by showing how frequently realistic combinations of all three
+            drivers achieve the target. A larger share of combinations within
+            feasible ranges (green slices of the chart) indicates that the
+            selected third driver is more effective in helping close the income
+            gap alongside the other two drivers.
           </p>
           <p>
-            Use this graph to judge how likely it is that changes in these three
-            drivers can realistically close the income gap. If only a small
-            number of successful combinations fall within feasible ranges for
-            all three drivers, it may be better to try modelling with different
-            drivers instead.
+            In this case, {greenPercentage}% of tested combinations close the
+            income gap with all drivers within feasible levels.
           </p>
         </Col>
         <Col
           xs={24}
           md={12}
           style={{
-            padding: "32px 32px 32px 0",
+            padding: "12px",
             borderLeft: "1px solid #e2e4e9",
           }}
         >

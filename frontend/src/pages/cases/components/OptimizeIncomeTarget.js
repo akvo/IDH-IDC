@@ -724,13 +724,10 @@ const OptimizeIncomeTarget = ({ disabled }) => {
           <Row gutter={[20, 10]}>
             <Col span={24}>
               <div className="description">
-                The capacity of a business to impact specific income drivers
-                depends on several factors like your position in the supply
-                chain, level of influence on other value chain actors etc. Below
-                we provide an optimization model, where you can select the
-                income drivers in your sphere of influence. The model derives
-                the minimum necessary change needed in these drivers, to meet
-                the income target, within their feasible limits
+                Use this optimisation model to identify the smallest, realistic
+                changes in the drivers you can influence to close the income
+                gap. It shows which adjustments are feasible and where
+                meaningful impact can be achieved.
               </div>
             </Col>
             <Col span={24} style={{ marginTop: 10 }}>
