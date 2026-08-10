@@ -14,6 +14,18 @@ MASTER_DIR = BASE_DIR + "/source/master/"
 sys.path.append(BASE_DIR)
 
 
+def clean_float(val):
+    if isinstance(val, str):
+        val = val.replace(",", ".").strip()
+        parts = val.split(".")
+        if len(parts) > 2:
+            val = parts[0] + "." + "".join(parts[1:])
+    try:
+        return float(val) if val != "" else 0.0
+    except (ValueError, TypeError):
+        return 0.0
+
+
 def seeder_benchmark(session: Session):
     # conversion rate
     truncatedb(session=session, table="conversion_rate")
@@ -76,6 +88,18 @@ def seeder_benchmark(session: Session):
         }
     )
     filtered_lib = filtered_lib.fillna(0)
+
+    def clean_float(val):
+        if isinstance(val, str):
+            val = val.replace(",", ".").strip()
+            parts = val.split(".")
+            if len(parts) > 2:
+                val = parts[0] + "." + "".join(parts[1:])
+        try:
+            return float(val) if val != "" else 0.0
+        except (ValueError, TypeError):
+            return 0.0
+
     for index, row in filtered_lib.iterrows():
         # find prev lib
         lib = (
@@ -83,33 +107,40 @@ def seeder_benchmark(session: Session):
             .filter(LivingIncomeBenchmark.id == row["id"])
             .first()
         )
+        household_size = clean_float(row["household_size"])
+        nr_adults = clean_float(row["nr_adults"])
+        household_equiv = clean_float(row["household_equiv"])
+        lcu = clean_float(row["lcu"])
+        usd = clean_float(row["usd"])
+        eur = clean_float(row["eur"])
+
         if lib:
             # update
             lib.country = row["country"]
             lib.region = row["region"]
-            lib.household_size = row["household_size"]
+            lib.household_size = household_size
             lib.year = row["year"]
             lib.source = row["source"]
-            lib.lcu = row["lcu"]
-            lib.usd = row["usd"]
-            lib.eur = row["eur"]
-            lib.nr_adults = (row["nr_adults"],)
-            lib.household_equiv = (row["household_equiv"],)
-            lib.links = (row["links"],)
+            lib.lcu = lcu
+            lib.usd = usd
+            lib.eur = eur
+            lib.nr_adults = nr_adults
+            lib.household_equiv = household_equiv
+            lib.links = row["links"]
         else:
             # create
             lib = LivingIncomeBenchmark(
                 id=row["id"],
                 country=row["country"],
                 region=row["region"],
-                household_size=row["household_size"],
+                household_size=household_size,
                 year=row["year"],
                 source=row["source"],
-                lcu=row["lcu"],
-                usd=row["usd"],
-                eur=row["eur"],
-                nr_adults=row["nr_adults"],
-                household_equiv=row["household_equiv"],
+                lcu=lcu,
+                usd=usd,
+                eur=eur,
+                nr_adults=nr_adults,
+                household_equiv=household_equiv,
                 links=row["links"],
             )
             session.add(lib)
