@@ -16,6 +16,14 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Living Income Benchmark Transformer & Source Data Fix (#825) - [COMPLETED]**:
+    - **Transformer Logic**: Added defensive input sanitization (`sanitize_household_size`) and deterministic OECD equivalence calculations (`calculate_household_equiv`) to `living_income_benchmark_v6.ipynb` to prevent `.01` decimal export corruptions.
+    - **East Timor Mapping**: Added `"East Timor": "Timor-Leste"` mapping to `find_country` and `find_new_country` so East Timor benchmarks correctly resolve to ID 187.
+    - **Version Sorting**: Enforced numeric version file sorting (`v2` $\rightarrow$ `v9`) during concatenation to ensure `v9` entries take precedence during deduplication.
+    - **Master Source Data**: Updated master benchmarks (`backend/source/master/li_benchmark.csv` and `regions.csv`) and verified database seeding.
+    - Verified all changes with clean backend unit tests (215/215 passed) and clean frontend linting.
+    - Path: `backend/source/transformer/benchmark_v6_with_conversion_rates/living_income_benchmark_v6.ipynb`, `backend/source/master/li_benchmark.csv`, `backend/source/master/regions.csv`, `agent_docs/research_logs/benchmark_2025_inflation_issue.md`.
+
 - **ROI Scenario Selector & UX Feedback (#805) - [COMPLETED]**:
     - **Scenario Selector**: Integrated an inline scenario selector (Radio Button group) directly into the ROI modeling form in Step 5.
     - **UX Feedback**: Implemented a dashboard-level notification system in `StandardScenarioModeling.js` to alert users when switching to a scenario with ROI modeling disabled, preventing confusion when the form "disappears."
