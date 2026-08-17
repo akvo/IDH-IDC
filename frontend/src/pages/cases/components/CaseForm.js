@@ -445,7 +445,10 @@ const CaseForm = ({
       ["eur", "usd"].includes(co.value.toLowerCase())
     );
     additonalCurrencies = uniqBy(additonalCurrencies, "value");
-    return [countryCurrency, ...additonalCurrencies];
+    return uniqBy(
+      [countryCurrency, ...additonalCurrencies].filter(Boolean),
+      "value"
+    );
   }, [currentCase, updateCurrentCase]);
 
   useEffect(() => {
