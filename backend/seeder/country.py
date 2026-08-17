@@ -19,20 +19,24 @@ def seeder_country(session: Session):
     # truncatedb(session=session, table="country")
     # truncatedb(session=session, table="currency")
 
-    data = pd.read_csv(MASTER_DIR + "countries.csv")
+    data = pd.read_csv(MASTER_DIR + "countries.csv", sep=None, engine="python")
 
     countries = data[["id", "country"]].rename(columns={"country": "name"})
     countries["parent"] = None
     for index, row in countries.iterrows():
         # find prev country
-        country = session.query(Country).filter(Country.id == row["id"]).first()
+        country = (
+            session.query(Country).filter(Country.id == row["id"]).first()
+        )
         if country:
             # update
             country.parent = row["parent"]
             country.name = row["name"]
         else:
             # create
-            country = Country(id=row["id"], parent=row["parent"], name=row["name"])
+            country = Country(
+                id=row["id"], parent=row["parent"], name=row["name"]
+            )
             session.add(country)
         session.commit()
         session.flush()
@@ -45,7 +49,9 @@ def seeder_country(session: Session):
     currencies["country"] = data["id"]
     for index, row in currencies.iterrows():
         # find prev currency
-        currency = session.query(Currency).filter(Currency.id == row["id"]).first()
+        currency = (
+            session.query(Currency).filter(Currency.id == row["id"]).first()
+        )
         if currency:
             # update
             currency.country = row["country"]

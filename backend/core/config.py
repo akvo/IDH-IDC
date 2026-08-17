@@ -171,6 +171,7 @@ def health_check():
 )
 async def main(res: Response):
     res.headers["Content-Type"] = "application/x-javascript; charset=utf-8"
+    res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     return JS_FILE
 
 
