@@ -39,6 +39,7 @@ import {
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
+import { AcademyLibrary, CoursePlayer } from "./pages/academy";
 
 const optionRoutes = [
   "organisation/options",
@@ -213,6 +214,18 @@ const App = () => {
               exact
               path={routePath.idc.livingIncomeBenchmarkExplorer}
               element={<LivingIncomeBenchmarkExplorer />}
+            />
+
+            {/* Academy */}
+            <Route
+              exact
+              path={routePath.idc.academy}
+              element={<AcademyLibrary />}
+            />
+            <Route
+              exact
+              path={`${routePath.idc.academy}/:courseId`}
+              element={<CoursePlayer />}
             />
           </Route>
           {/* ) : (

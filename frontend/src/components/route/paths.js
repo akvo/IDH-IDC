@@ -22,6 +22,7 @@ const routePath = {
       "/living-income-benchmark-explorer"
     ),
     exploreStudies: withPrefix("idc", "/explore-studies"),
+    academy: withPrefix("idc", "/academy"),
   },
 };
 
