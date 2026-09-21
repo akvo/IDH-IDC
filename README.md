@@ -20,9 +20,18 @@ Expected that PORT 5432 and 3000 are not being used by other services.
 .env
 
 ```bash
-MAILJET_APIKEY=""
-MAILJET_SECRET=""
+EMAIL_HOST=""
+EMAIL_PORT="587"
+EMAIL_HOST_USER=""
+EMAIL_HOST_PASSWORD=""
+EMAIL_USE_TLS="true"
+EMAIL_USE_SSL="false"
 ```
+
+`EMAIL_USE_TLS` (STARTTLS, port 587) and `EMAIL_USE_SSL` (implicit SSL, port
+465) are mutually exclusive; the defaults above match the common relay. Leave
+`EMAIL_HOST` empty during local development and mail sending simply fails and
+is logged.
 
 ### Start
 
