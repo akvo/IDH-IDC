@@ -16,6 +16,18 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **SMTP Email Migration & Custom Sender Alignment (#828) - [COMPLETED]**:
+    - **SMTP Migration**: Replaced legacy `mailjet-rest` client with Python standard library `smtplib` and `EmailMessage` for standard SMTP relay support.
+    - **Flexible Configuration**: Added `EMAIL_FROM` with fallback to `EMAIL_HOST_USER` to resolve sender domain authentication mismatches (e.g. `550 Message rejected` errors on strict SMTP servers).
+    - **Environment Template**: Added `.env.example` documenting all SMTP relay parameters (`EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL`, `EMAIL_FROM`).
+    - **Hermetic Tests**: Updated `test_900_utils_mailer.py` to ensure user creation and clean monkeypatched test environments.
+    - Verified all changes with clean unit tests (216/216 passed) and clean flake8/yarn linting.
+    - Path: `backend/utils/mailer.py`, `backend/tests/test_900_utils_mailer.py`, `docker-compose.yml`, `.env.example`.
+
+- **CI/CD Composite Actions 0.0.10 Migration (#831) - [COMPLETED]**:
+    - Migrated GitHub Actions rollout and deployment pipelines from `akvo/composite-actions@0.0.1` to `0.0.10` to resolve `google-cloud-sdk-gke-gcloud-auth-plugin` deprecation on Ubuntu runner updates.
+    - Path: `.github/workflows/deploy.yml`, `.github/workflows/release.yml`.
+
 - **Living Income Benchmark Transformer & Source Data Fix (#825) - [COMPLETED]**:
     - **Transformer Logic**: Added defensive input sanitization (`sanitize_household_size`) and deterministic OECD equivalence calculations (`calculate_household_equiv`) to `living_income_benchmark_v6.ipynb` to prevent `.01` decimal export corruptions.
     - **East Timor Mapping**: Added `"East Timor": "Timor-Leste"` mapping to `find_country` and `find_new_country` so East Timor benchmarks correctly resolve to ID 187.

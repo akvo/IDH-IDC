@@ -82,3 +82,24 @@ class TestMailer:
     async def test_smtp_tls_defaults(self) -> None:
         assert env_flag("TEST_NON_EXISTENT_TLS", "true") is True
         assert env_flag("TEST_NON_EXISTENT_SSL", "false") is False
+
+    async def test_smtp_port_ssl_inference(self) -> None:
+        port_465 = 465
+        tls_465 = env_flag(
+            "TEST_UNSET_VAR", "false" if port_465 == 465 else "true"
+        )
+        ssl_465 = env_flag(
+            "TEST_UNSET_VAR", "true" if port_465 == 465 else "false"
+        )
+        assert tls_465 is False
+        assert ssl_465 is True
+
+        port_587 = 587
+        tls_587 = env_flag(
+            "TEST_UNSET_VAR", "false" if port_587 == 465 else "true"
+        )
+        ssl_587 = env_flag(
+            "TEST_UNSET_VAR", "true" if port_587 == 465 else "false"
+        )
+        assert tls_587 is True
+        assert ssl_587 is False

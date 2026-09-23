@@ -43,8 +43,12 @@ EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
 EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = env_flag("EMAIL_USE_TLS", "true")
-EMAIL_USE_SSL = env_flag("EMAIL_USE_SSL", "false")
+EMAIL_USE_TLS = env_flag(
+    "EMAIL_USE_TLS", "false" if EMAIL_PORT == 465 else "true"
+)
+EMAIL_USE_SSL = env_flag(
+    "EMAIL_USE_SSL", "true" if EMAIL_PORT == 465 else "false"
+)
 EMAIL_FROM = os.environ.get("EMAIL_FROM", "")
 EMAIL_TIMEOUT = 10
 
@@ -215,5 +219,5 @@ class Email:
                 relay.send_message(self.data)
             return True
         except Exception as e:
-            print(f'[ERROR], Failed to send email: {e}')
+            print(f"[ERROR], Failed to send email: {e}")
             return False
