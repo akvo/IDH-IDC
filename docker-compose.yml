@@ -22,8 +22,13 @@ services:
       - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
       - CLIENT_ID=test
       - CLIENT_SECRET=test
-      - MAILJET_APIKEY
-      - MAILJET_SECRET
+      - EMAIL_HOST
+      - EMAIL_PORT
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - EMAIL_USE_TLS
+      - EMAIL_USE_SSL
+      - EMAIL_FROM
       - WEBDOMAIN=idc.akvotest.org
     network_mode: service:mainnetwork
     image: python:3.10.7

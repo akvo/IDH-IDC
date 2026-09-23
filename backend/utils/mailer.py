@@ -1,26 +1,56 @@
 import os
 import enum
-import base64
+import smtplib
+from email.message import EmailMessage
+from email.utils import formataddr
 from typing import List, Optional
 from bs4 import BeautifulSoup
 from models.user import EmailRecipient
-from mailjet_rest import Client
 from jinja2 import Environment, FileSystemLoader
 
-mjkey = os.environ["MAILJET_APIKEY"]
-mjsecret = os.environ["MAILJET_SECRET"]
 webdomain = os.environ["WEBDOMAIN"]
 if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
 if "https://" not in webdomain:
     webdomain = f"https://{webdomain}"
 
-mailjet = Client(auth=(mjkey, mjsecret))
 loader = FileSystemLoader(".")
 env = Environment(loader=loader)
 html_template = env.get_template("./templates/email.html")
 image_url = f"{webdomain}/email-icons"
-FTYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64"  # noqa
+
+
+# =========================================================
+# SMTP Relay Configuration
+# =========================================================
+
+# Every setting has a default so development and test environments boot
+# without a relay configured; only a deployment that actually sends mail
+# has to supply them.
+#
+# The defaults describe the common correct relay: port 587 with STARTTLS.
+# Implicit SSL is what port 465 wants instead, and neither mode can be
+# inferred from the port number -- pick the wrong one and smtplib opens a
+# plaintext socket against a TLS-only port and blocks until EMAIL_TIMEOUT.
+
+
+def env_flag(name: str, default: str) -> bool:
+    value = os.environ.get(name, default)
+    return value.strip().lower() in ("1", "true", "yes")
+
+
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = env_flag(
+    "EMAIL_USE_TLS", "false" if EMAIL_PORT == 465 else "true"
+)
+EMAIL_USE_SSL = env_flag(
+    "EMAIL_USE_SSL", "true" if EMAIL_PORT == 465 else "false"
+)
+EMAIL_FROM = os.environ.get("EMAIL_FROM", "")
+EMAIL_TIMEOUT = 10
 
 
 class EmailBody(enum.Enum):
@@ -84,10 +114,11 @@ class EmailBody(enum.Enum):
     }
 
 
-def send(data):
-    res = mailjet.send.create(data=data)
-    res = res.json()
-    return res
+# Recipients arrive as {"Email", "Name"} dicts -- the shape
+# models.user.User.recipient produces and every call site passes along. Here
+# they only have to be rendered into an RFC 5322 address list.
+def format_recipients(recipients: List[EmailRecipient]) -> str:
+    return ", ".join(formataddr((r["Name"], r["Email"])) for r in recipients)
 
 
 def generate_icon(icon: str, color: Optional[str] = None):
@@ -109,19 +140,6 @@ def html_to_text(html):
     return "".join(body.get_text())
 
 
-def format_attachment(file):
-    try:
-        with open(file, "rb") as f:
-            f.read()
-    except (OSError, IOError):
-        return None
-    return {
-        "ContentType": FTYPE,
-        "Filename": file.split("/")[2],
-        "content": base64.b64encode(open(file, "rb").read()).decode("UTF-8"),
-    }
-
-
 class MailTypeEnum(enum.Enum):
     REG_NEW = "USER_REGISTRATION_NEW"
     REG_APPROVED = "USER_REGISTRATION_APPROVED"
@@ -136,7 +154,6 @@ class Email:
         recipients: List[EmailRecipient],
         email: MailTypeEnum,
         bcc: Optional[List[EmailRecipient]] = None,
-        attachment: Optional[str] = None,
         context: Optional[str] = None,
         body: Optional[str] = None,
         url: Optional[str] = None,
@@ -144,18 +161,19 @@ class Email:
         self.email = EmailBody[email.value]
         self.recipients = recipients
         self.bcc = bcc
-        self.attachment = attachment
         self.context = context
         self.body = body
         self.url = url
 
     @property
-    def data(self):
-        from_email = "noreply@incomedrivercalculator.idhtrade.org"
-        TESTING = os.environ.get("TESTING")
-        CLIENT_ID = os.environ.get("CLIENT_ID")
-        if TESTING or CLIENT_ID == "test":
-            from_email = "noreply@akvo.org"
+    def data(self) -> EmailMessage:
+        from_email = EMAIL_FROM or EMAIL_HOST_USER
+        if not from_email:
+            from_email = "noreply@incomedrivercalculator.idhtrade.org"
+            TESTING = os.environ.get("TESTING")
+            CLIENT_ID = os.environ.get("CLIENT_ID")
+            if TESTING or CLIENT_ID == "test":
+                from_email = "noreply@akvo.org"
         email = self.email.value
         body = email["body"]
         message = email["message"]
@@ -173,24 +191,33 @@ class Email:
             message=message,
             context=self.context,
         )
-        payload = {
-            "FromEmail": from_email,
-            "Subject": email["subject"],
-            "Html-part": html,
-            "Text-part": html_to_text(html),
-            "Recipients": self.recipients,
-        }
+        msg = EmailMessage()
+        msg["From"] = from_email
+        msg["Subject"] = email["subject"]
+        msg["To"] = format_recipients(self.recipients)
         if self.bcc:
-            payload.update({"Bcc": self.bcc})
-        if self.attachment:
-            attachment = format_attachment(self.attachment)
-            payload.update({"Attachments": [attachment]})
-        return payload
+            msg["Bcc"] = format_recipients(self.bcc)
+        # The plain-text rendering is the message body and the HTML is
+        # registered as an alternative, so a client that refuses HTML still
+        # receives something readable. smtplib strips the Bcc header on send
+        # while still using it for the envelope.
+        msg.set_content(html_to_text(html))
+        msg.add_alternative(html, subtype="html")
+        return msg
 
     @property
-    def send(self) -> int:
+    def send(self) -> bool:
         try:
-            res = mailjet.send.create(data=self.data)
-            return res.status_code == 200
+            cls = smtplib.SMTP_SSL if EMAIL_USE_SSL else smtplib.SMTP
+            with cls(EMAIL_HOST, EMAIL_PORT, timeout=EMAIL_TIMEOUT) as relay:
+                # STARTTLS upgrades a plaintext connection, so it is only
+                # meaningful when the socket did not already start as SSL.
+                if EMAIL_USE_TLS and not EMAIL_USE_SSL:
+                    relay.starttls()
+                if EMAIL_HOST_USER:
+                    relay.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+                relay.send_message(self.data)
+            return True
         except Exception as e:
-            print(f'[ERROR], Failed to send email: {e}')
+            print(f"[ERROR], Failed to send email: {e}")
+            return False
