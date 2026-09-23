@@ -20,7 +20,7 @@ jobs:
           repository: akvo/composite-actions
           token: ${{ secrets.GH_PAT }}
           path: composite-actions
-          ref: 0.0.1
+          ref: 0.0.10
 
       - name: Node Operations
         uses: ./composite-actions/.github/actions/node-operation
@@ -34,6 +34,7 @@ jobs:
           app-name: "idh-idc"
           service-name: "frontend"
           dockerfile-location: "frontend"
+          cluster-name: "production"
 
       - name: Docker Build Backend
         uses: ./composite-actions/.github/actions/docker-build
@@ -41,33 +42,40 @@ jobs:
           app-name: "idh-idc"
           service-name: "backend"
           dockerfile-location: "backend"
+          cluster-name: "production"
 
       - name: Docker Push Frontend
         uses: ./composite-actions/.github/actions/docker-push
         with:
           app-name: "idh-idc"
           service-name: "frontend"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          cluster-name: "production"
 
       - name: Docker Push Backend
         uses: ./composite-actions/.github/actions/docker-push
         with:
           app-name: "idh-idc"
           service-name: "backend"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          cluster-name: "production"
 
       - name: Rollout Frontend
-        uses: ./composite-actions/.github/actions/rollout
+        uses: ./composite-actions/.github/actions/k8s-rollout
         with:
           app-name: "idh-idc"
-          service-name: "frontend"
+          deployment-name: "idh-idc"
+          container-name: "frontend"
           cluster-name: "production"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
+          namespace-name: "default"
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
 
       - name: Rollout Backend
-        uses: ./composite-actions/.github/actions/rollout
+        uses: ./composite-actions/.github/actions/k8s-rollout
         with:
           app-name: "idh-idc"
-          service-name: "backend"
+          deployment-name: "idh-idc"
+          container-name: "backend"
           cluster-name: "production"
-          gcloud-sa:  ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
+          namespace-name: "default"
+          gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
