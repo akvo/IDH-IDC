@@ -45,6 +45,7 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_flag("EMAIL_USE_TLS", "true")
 EMAIL_USE_SSL = env_flag("EMAIL_USE_SSL", "false")
+EMAIL_FROM = os.environ.get("EMAIL_FROM", "")
 EMAIL_TIMEOUT = 10
 
 
@@ -162,11 +163,13 @@ class Email:
 
     @property
     def data(self) -> EmailMessage:
-        from_email = "noreply@incomedrivercalculator.idhtrade.org"
-        TESTING = os.environ.get("TESTING")
-        CLIENT_ID = os.environ.get("CLIENT_ID")
-        if TESTING or CLIENT_ID == "test":
-            from_email = "noreply@akvo.org"
+        from_email = EMAIL_FROM or EMAIL_HOST_USER
+        if not from_email:
+            from_email = "noreply@incomedrivercalculator.idhtrade.org"
+            TESTING = os.environ.get("TESTING")
+            CLIENT_ID = os.environ.get("CLIENT_ID")
+            if TESTING or CLIENT_ID == "test":
+                from_email = "noreply@akvo.org"
         email = self.email.value
         body = email["body"]
         message = email["message"]

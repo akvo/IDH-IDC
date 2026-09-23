@@ -28,6 +28,7 @@ services:
       - EMAIL_HOST_PASSWORD
       - EMAIL_USE_TLS
       - EMAIL_USE_SSL
+      - EMAIL_FROM
       - WEBDOMAIN=idc.akvotest.org
     network_mode: service:mainnetwork
     image: python:3.10.7
