@@ -21,7 +21,7 @@ jobs:
           repository: akvo/composite-actions
           token: ${{ secrets.GH_PAT }}
           path: composite-actions
-          ref: 0.0.1
+          ref: 0.0.10
 
       # Determine app name based on branch
       - name: Set app name
@@ -45,6 +45,7 @@ jobs:
           app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "frontend"
           dockerfile-location: "frontend"
+          cluster-name: "test"
 
       - name: Docker Build Backend
         uses: ./composite-actions/.github/actions/docker-build
@@ -52,6 +53,7 @@ jobs:
           app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "backend"
           dockerfile-location: "backend"
+          cluster-name: "test"
 
       - name: Docker Push Frontend
         uses: ./composite-actions/.github/actions/docker-push
@@ -59,6 +61,7 @@ jobs:
           app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "frontend"
           gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          cluster-name: "test"
 
       - name: Docker Push Backend
         uses: ./composite-actions/.github/actions/docker-push
@@ -66,19 +69,24 @@ jobs:
           app-name: ${{ steps.vars.outputs.app_name }}
           service-name: "backend"
           gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_REGISTRY }}
+          cluster-name: "test"
 
       - name: Rollout Frontend
-        uses: ./composite-actions/.github/actions/rollout
+        uses: ./composite-actions/.github/actions/k8s-rollout
         with:
           app-name: ${{ steps.vars.outputs.app_name }}
-          service-name: "frontend"
+          deployment-name: ${{ steps.vars.outputs.app_name }}
+          container-name: "frontend"
           cluster-name: "test"
+          namespace-name: "default"
           gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
 
       - name: Rollout Backend
-        uses: ./composite-actions/.github/actions/rollout
+        uses: ./composite-actions/.github/actions/k8s-rollout
         with:
           app-name: ${{ steps.vars.outputs.app_name }}
-          service-name: "backend"
+          deployment-name: ${{ steps.vars.outputs.app_name }}
+          container-name: "backend"
           cluster-name: "test"
+          namespace-name: "default"
           gcloud-sa: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_K8S }}
