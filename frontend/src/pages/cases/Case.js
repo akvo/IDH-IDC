@@ -190,9 +190,10 @@ const Case = () => {
           const { data } = res;
           CurrentCaseState.update((s) => ({ ...s, ...data }));
           PrevCaseState.update((s) => ({ ...s, ...data }));
-          // set default active segmentId
+          // set default active segmentId matching the first ordered segment
           CaseUIState.update((s) => {
-            s.general.activeSegmentId = data.segments?.[0]?.id || null;
+            const orderedSegments = orderBy(data.segments || [], ["id"]);
+            s.general.activeSegmentId = orderedSegments[0]?.id || null;
           });
         })
         .catch((e) => {

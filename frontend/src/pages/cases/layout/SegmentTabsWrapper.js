@@ -86,7 +86,7 @@ const SegmentTabsWrapper = ({
                         (s) => String(s.id) === String(activeSegmentId)
                       )
                       ? String(activeSegmentId)
-                      : String(currentCase.segments[0].id)
+                      : String(orderBy(currentCase.segments, ["id"])[0]?.id)
                     : null
                 }
                 onChange={(val) => {
