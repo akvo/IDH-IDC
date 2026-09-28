@@ -1,124 +1,322 @@
 import React, { useMemo, useState, useRef } from "react";
-import { Alert } from "antd";
 import { VisualCardWrapper } from "../components";
 import Chart from "../../../components/chart";
 import { CurrentCaseState } from "../store";
+import { orderBy } from "lodash";
+import {
+  Easing,
+  Color,
+  TextStyle,
+  backgroundColor,
+  AxisShortLabelFormatter,
+  Legend,
+  NoData,
+  thousandFormatter,
+  formatNumberToString,
+} from "../../../components/chart/options/common";
 
-const generateTargetChartData = (data) => {
-  const target = [
+export const determineScenarioBarColor = (currentIncome, scenarioIncome) => {
+  if (scenarioIncome > currentIncome) {
+    return "#49D985"; // Light Green (Increase)
+  }
+  if (scenarioIncome < currentIncome) {
+    return "#FF4D4F"; // Red (Decrease)
+  }
+  return "#9CC2C1"; // Teal (No Change)
+};
+
+export const formatTooltipContent = (item, currency = "") => {
+  if (!item) {
+    return "";
+  }
+  const currencySuffix = currency ? ` ${currency}` : "";
+  const incomeChangeSign = item.incomeChange > 0 ? "+" : "";
+  const changeColor =
+    item.incomeChange > 0
+      ? "#237804"
+      : item.incomeChange < 0
+      ? "#FF4D4F"
+      : "#4b4b4e";
+
+  return `
+    <div style="font-family: inherit; font-size: 13px; min-width: 200px;">
+      <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; color: #262626;">
+        ${item.name}
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span style="color: #595959;">Current Income:</span>
+        <span style="font-weight: 600; color: #1B625F;">${thousandFormatter(
+          Math.round(item.currentIncome)
+        )}${currencySuffix}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span style="color: #595959;">Scenario Income:</span>
+        <span style="font-weight: 600; color: ${
+          item.scenarioColor
+        };">${thousandFormatter(
+    Math.round(item.scenarioIncome)
+  )}${currencySuffix}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span style="color: #595959;">Income Change:</span>
+        <span style="font-weight: 600; color: ${changeColor};">
+          ${incomeChangeSign}${thousandFormatter(
+    Math.round(item.incomeChange)
+  )}${currencySuffix}
+        </span>
+      </div>
+      <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <span style="color: #595959;">Income Target:</span>
+        <span style="font-weight: 600; color: #262626;">${thousandFormatter(
+          Math.round(item.target)
+        )}${currencySuffix}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between;">
+        <span style="color: #595959;">Remaining Gap:</span>
+        <span style="font-weight: 600; color: #F9CB21;">${thousandFormatter(
+          Math.round(item.gap)
+        )}${currencySuffix}</span>
+      </div>
+    </div>
+  `.trim();
+};
+
+export const generateScenarioModelingChartData = (
+  scenarioValues = [],
+  segments = [],
+  showLabel = false
+) => {
+  const orderedSegments = orderBy(segments || [], ["id"]);
+  const segmentData = orderedSegments.map((segment) => {
+    const sv = (scenarioValues || []).find((v) => v.segmentId === segment.id);
+    const currentIncome =
+      typeof sv?.currentSegmentValue?.total_current_income !== "undefined"
+        ? sv.currentSegmentValue.total_current_income
+        : segment?.total_current_income || 0;
+    const scenarioIncome =
+      typeof sv?.updatedSegmentScenarioValue?.total_current_income !==
+      "undefined"
+        ? sv.updatedSegmentScenarioValue.total_current_income
+        : currentIncome;
+    const target =
+      typeof sv?.currentSegmentValue?.target !== "undefined"
+        ? sv.currentSegmentValue.target
+        : segment?.target || 0;
+
+    const incomeChange = scenarioIncome - currentIncome;
+    const gap = Math.max(0, target - scenarioIncome);
+    const scenarioColor = determineScenarioBarColor(
+      currentIncome,
+      scenarioIncome
+    );
+
+    return {
+      segmentId: segment.id,
+      name: segment.name,
+      currentIncome,
+      scenarioIncome,
+      incomeChange,
+      target,
+      gap,
+      scenarioColor,
+    };
+  });
+
+  const series = [
+    {
+      name: "Current total household income",
+      type: "bar",
+      barMaxWidth: 35,
+      itemStyle: { color: "#1B625F" },
+      data: segmentData.map((d) => ({
+        name: d.name,
+        value: Math.round(d.currentIncome),
+        itemStyle: { color: "#1B625F" },
+      })),
+      label: {
+        show: showLabel,
+        position: "top",
+        color: "#fff",
+        backgroundColor: "rgba(0,0,0,.4)",
+        padding: [2, 4],
+        borderRadius: 3,
+        formatter: (params) => formatNumberToString(params.value),
+        ...TextStyle,
+      },
+    },
+    {
+      name: "Scenario income",
+      type: "bar",
+      barMaxWidth: 35,
+      itemStyle: { color: "#49D985" },
+      data: segmentData.map((d) => ({
+        name: d.name,
+        value: Math.round(d.scenarioIncome),
+        itemStyle: { color: d.scenarioColor },
+      })),
+      label: {
+        show: showLabel,
+        position: "top",
+        color: "#fff",
+        backgroundColor: "rgba(0,0,0,.4)",
+        padding: [2, 4],
+        borderRadius: 3,
+        formatter: (params) => formatNumberToString(params.value),
+        ...TextStyle,
+      },
+    },
     {
       name: "Income Target",
       type: "line",
       symbol: "diamond",
       symbolSize: 15,
-      color: "#000",
-      lineStyle: {
-        width: 0,
-      },
-      data: data.map((d) => ({
+      color: "#000000",
+      lineStyle: { width: 0 },
+      itemStyle: { color: "#000000" },
+      data: segmentData.map((d) => ({
         name: "Benchmark",
-        value: d?.target ? Math.round(d.target) : 0,
+        value: Math.round(d.target),
       })),
+      z: 10,
     },
   ];
-  return target;
+
+  return {
+    segmentData,
+    series,
+  };
 };
 
-const generateChartData = (data, current = false) => {
-  return data.map((d) => {
-    const incomeTarget = d?.currentSegmentValue?.target || 0;
-    const currentTotalIncome =
-      d?.currentSegmentValue?.total_current_income || 0;
-    const newTotalIncome =
-      d?.updatedSegmentScenarioValue?.total_current_income || 0;
+export const getScenarioModelingChartOptions = ({
+  segmentData = [],
+  series = [],
+  currency = "",
+  grid = {},
+}) => {
+  if (!segmentData.length) {
+    return NoData;
+  }
 
-    // Floor values at 0 for visualization consistency
-    const safeCurrentIncome = Math.max(0, currentTotalIncome);
-    const safeNewIncome = Math.max(0, newTotalIncome);
+  const xAxisData = segmentData.map((d) => d.name);
 
-    const baseValue = safeCurrentIncome;
-    const changeValue = Math.max(0, safeNewIncome - safeCurrentIncome);
-    const gapValue = Math.max(0, incomeTarget - safeNewIncome);
-
-    const changeLabel = "Additional income\nwhen income drivers\nare changed";
-    const changeColor = "#49D985"; // Light Green
-
-    return {
-      name: current ? d.name : `${d.scenarioName}-${d.name}`,
-      target: Math.round(incomeTarget),
-      stack: [
+  return {
+    ...Color,
+    ...backgroundColor,
+    ...Easing,
+    legend: {
+      ...Legend,
+      data: [
         {
-          name: "Current total\nhousehold income",
-          title: "Current total\nhousehold income",
-          value: Math.round(baseValue),
-          total: Math.round(baseValue),
-          color: "#1B625F",
-          order: 1,
+          name: "Current total household income",
+          icon: "circle",
+          itemStyle: { color: "#1B625F" },
         },
         {
-          name: changeLabel,
-          title: changeLabel,
-          value: Math.round(changeValue),
-          total: Math.round(changeValue),
-          color: changeColor,
-          order: 2,
+          name: "Scenario income",
+          icon: "circle",
+          itemStyle: { color: "#49D985" },
         },
         {
-          name: "Gap",
-          title: "Gap",
-          value: Math.round(gapValue),
-          total: Math.round(gapValue),
-          color: "#F9CB21",
-          order: 3,
+          name: "Income Target",
+          icon: "diamond",
+          itemStyle: { color: "#000000" },
         },
       ],
-    };
-  });
+      top: 10,
+      left: "center",
+      orient: "horizontal",
+    },
+    grid: {
+      top: grid?.top || 50,
+      bottom: grid?.bottom || 30,
+      left: grid?.left || 50,
+      right: grid?.right || 20,
+      containLabel: true,
+      show: true,
+      label: {
+        color: "#222",
+        ...TextStyle,
+      },
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+      },
+      show: true,
+      backgroundColor: "#ffffff",
+      padding: 10,
+      formatter: (params) => {
+        if (!params || !params.length) {
+          return "";
+        }
+        const dataIndex = params[0].dataIndex;
+        const item = segmentData[dataIndex];
+        return formatTooltipContent(item, currency);
+      },
+      ...TextStyle,
+    },
+    xAxis: {
+      type: "category",
+      data: xAxisData,
+      axisLabel: {
+        width: 100,
+        interval: 0,
+        overflow: "break",
+        ...TextStyle,
+        color: "#4b4b4e",
+        formatter: AxisShortLabelFormatter?.formatter,
+      },
+      axisTick: {
+        alignWithLabel: true,
+      },
+    },
+    yAxis: {
+      type: "value",
+      name: `Income ${currency || ""}`.trim(),
+      nameTextStyle: { ...TextStyle },
+      nameLocation: "middle",
+      nameGap: 55,
+      axisLabel: {
+        ...TextStyle,
+        color: "#9292ab",
+        formatter: (value) => formatNumberToString(value),
+      },
+    },
+    series,
+  };
 };
 
 const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
   const currentCase = CurrentCaseState.useState((s) => s);
+  const { segments, currency } = currentCase || {};
 
   const [showLabel, setShowLabel] = useState(false);
   const chartRef = useRef(null);
 
-  const { chartData, hiddenSegmentNames } = useMemo(() => {
-    const liveSegmentIds = new Set(
-      (currentCase?.segments || []).map((s) => s.id)
+  const { chartOptions, loading } = useMemo(() => {
+    if (!segments?.length) {
+      return { chartOptions: null, loading: true };
+    }
+
+    const { segmentData, series } = generateScenarioModelingChartData(
+      currentScenarioData?.scenarioValues || [],
+      segments,
+      showLabel
     );
 
-    const validScenarioValues = (currentScenarioData?.scenarioValues || [])
-      .filter((sv) => liveSegmentIds.has(sv.segmentId))
-      .map((sv) => {
-        const liveSeg = currentCase.segments.find((s) => s.id === sv.segmentId);
-        return { ...sv, name: liveSeg.name };
-      });
-
-    const filteredValues = validScenarioValues.filter((sv) => {
-      const current = sv.currentSegmentValue?.total_current_income || 0;
-      const updated = sv.updatedSegmentScenarioValue?.total_current_income || 0;
-      return updated >= current;
+    const options = getScenarioModelingChartOptions({
+      segmentData,
+      series,
+      currency,
+      grid: { top: 50, right: 20, left: 50, bottom: 30 },
     });
 
-    const hiddenSegmentNames = validScenarioValues
-      .filter((sv) => {
-        const current = sv.currentSegmentValue?.total_current_income || 0;
-        const updated =
-          sv.updatedSegmentScenarioValue?.total_current_income || 0;
-        return updated < current;
-      })
-      .map((sv) => sv.name);
-
     return {
-      chartData: generateChartData(filteredValues, true),
-      hiddenSegmentNames,
+      chartOptions: options,
+      loading: false,
     };
-  }, [currentScenarioData, currentCase?.segments]);
-
-  const targetChartData = useMemo(
-    () => generateTargetChartData(chartData),
-    [chartData]
-  );
+  }, [currentScenarioData, segments, currency, showLabel]);
 
   return (
     <VisualCardWrapper
@@ -129,45 +327,14 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
       exportElementRef={chartRef}
       exportFilename="Optimal driver values to reach your target"
     >
-      <Alert
-        message={
-          <span>
-            This graph only shows segments with improved or unchanged income in
-            this scenario.
-            {hiddenSegmentNames?.length > 0 && (
-              <div style={{ marginTop: 8, fontWeight: "bold" }}>
-                Hidden: {hiddenSegmentNames.join(", ")}
-              </div>
-            )}
-          </span>
-        }
-        type="info"
-        showIcon={false}
-        style={{
-          marginBottom: 14,
-          backgroundColor: "#EAF2F2",
-          borderColor: "#EAF2F2",
-          color: "#1B625F",
-        }}
-      />
-      <Chart
-        wrapper={false}
-        type="BARSTACK"
-        data={chartData}
-        targetData={targetChartData}
-        loading={!chartData.length && !hiddenSegmentNames?.length}
-        extra={{
-          axisTitle: { y: `Income ${currentCase?.currency || ""}` },
-          legend: {
-            top: 0,
-            left: "top",
-            orient: "horizontal",
-          },
-        }}
-        grid={{ top: 60, right: 5, left: 35, bottom: 10 }}
-        showLabel={showLabel}
-        height={385}
-      />
+      <div ref={chartRef} style={{ width: "100%", height: 385 }}>
+        <Chart
+          wrapper={false}
+          override={chartOptions}
+          loading={loading}
+          height={385}
+        />
+      </div>
     </VisualCardWrapper>
   );
 };
