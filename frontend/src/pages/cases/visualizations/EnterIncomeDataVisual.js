@@ -5,6 +5,7 @@ import { UserState } from "../../../store";
 import { thousandFormatter } from "../../../components/chart/options/common";
 import ChartCalculatedHouseholdIncome from "./ChartCalculatedHouseholdIncome";
 import ExploreDataFromOtherStudiesTable from "./ExploreDataFromOtherStudiesTable";
+import { orderBy } from "lodash";
 
 const EnterIncomeDataVisual = () => {
   const { activeSegmentId } = CaseUIState.useState((s) => s.general);
@@ -21,11 +22,10 @@ const EnterIncomeDataVisual = () => {
   }, [userId, isInternalUser]);
 
   const currentSegment = useMemo(() => {
-    const findCase = currentCase.segments.find(
-      (segment) => segment.id === activeSegmentId
-    );
+    const ordered = orderBy(currentCase.segments || [], ["id"]);
+    const findCase = ordered.find((segment) => segment.id === activeSegmentId);
     if (!findCase) {
-      return currentCase.segments?.[0] || null;
+      return ordered?.[0] || null;
     }
     return findCase;
   }, [currentCase.segments, activeSegmentId]);
