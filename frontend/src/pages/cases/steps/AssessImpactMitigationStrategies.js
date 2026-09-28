@@ -66,7 +66,9 @@ const AssessImpactMitigationStrategies = ({
       }
 
       upateCaseButtonState({ loading: true });
-      const payloads = [sensitivityAnalysis, scenarioModeling];
+      const validPayloads = [sensitivityAnalysis, scenarioModeling].filter(
+        (p) => !isEmpty(p?.config) && p?.case && p?.tab
+      );
       // check if any data updated
       const isSensitivityUpdated = !isEqual(
         removeUndefinedObjectValue(prevSensitivityAnalysis?.config),
@@ -79,16 +81,13 @@ const AssessImpactMitigationStrategies = ({
 
       const isDataUpdated = isSensitivityUpdated || isScenarioUpdated;
 
-      // save only when the payloads is provided
-      if (
-        (!isEmpty(payloads?.[0]?.config) && payloads?.[0]?.case) ||
-        (!isEmpty(payloads?.[1]?.config) && payloads?.[1]?.case)
-      ) {
+      // save only when valid payloads are provided
+      if (validPayloads.length > 0) {
         // Save
         api
           .sendCompressedData(
             `visualization?updated=${isDataUpdated}`,
-            payloads
+            validPayloads
           )
           .then(() => {
             CaseVisualState.update((s) => ({
@@ -115,10 +114,10 @@ const AssessImpactMitigationStrategies = ({
           })
           .catch((e) => {
             console.error(e);
-            const { status, data } = e.response;
+            const { status, data } = e.response || {};
             let errorText =
               "Failed to save assess impact of mitigation strategies.";
-            if (status === 403) {
+            if (status === 403 && data?.detail) {
               errorText = data.detail;
             }
             messageApi.open({
