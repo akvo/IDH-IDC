@@ -34,3 +34,6 @@ const handleQuestionType = (
 };
 
 export { handleQuestionType };
+export * from "./incomeCalculations";
+export * from "./roiCalculations";
+export * from "./scenarioOutcomeCalculations";

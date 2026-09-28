@@ -6,6 +6,7 @@ import {
   IncomeGatingAlert,
 } from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
+import { checkNoPrimaryProfit } from "../utils";
 import Chart from "../../../components/chart";
 import {
   thousandFormatter,
@@ -34,6 +35,10 @@ const ChartNeededIncomeLevel = () => {
     [dashboardData, selectedSegment]
   );
 
+  const isNoPrimaryProfit = useMemo(() => {
+    return checkNoPrimaryProfit(currentCase, currentDashboardData);
+  }, [currentCase, currentDashboardData]);
+
   const isAboveTarget = useMemo(() => {
     return (
       (currentDashboardData?.total_current_income || 0) >=
@@ -42,7 +47,7 @@ const ChartNeededIncomeLevel = () => {
   }, [currentDashboardData]);
 
   const chartData = useMemo(() => {
-    if (isAboveTarget) {
+    if (isNoPrimaryProfit || isAboveTarget) {
       return [];
     }
     setLoading(true);
@@ -116,6 +121,7 @@ const ChartNeededIncomeLevel = () => {
     setLoading(false);
     return caseCommoditiesTotalIncome;
   }, [
+    isNoPrimaryProfit,
     isAboveTarget,
     currentDashboardData,
     currentCase?.currency,
@@ -213,7 +219,15 @@ const ChartNeededIncomeLevel = () => {
           />
         </Col>
         <Col span={24}>
-          {isAboveTarget ? (
+          {isNoPrimaryProfit ? (
+            <div style={{ height: 365, display: "flex", alignItems: "center" }}>
+              <IncomeGatingAlert
+                title="No profit from primary commodity"
+                description="Farmers in this segment do not generate a positive profit from their primary commodity. This feature is therefore disabled because the calculation is not meaningful for this segment."
+                style={{ width: "100%" }}
+              />
+            </div>
+          ) : isAboveTarget ? (
             <div style={{ height: 365, display: "flex", alignItems: "center" }}>
               <IncomeGatingAlert style={{ width: "100%" }} />
             </div>

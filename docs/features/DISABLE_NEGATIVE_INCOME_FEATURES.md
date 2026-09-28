@@ -17,12 +17,15 @@
 ## 2. Requirements & UI Copy
 
 ### 2.1 Gating Alert Specifications
+
 When a selected segment has primary commodity income $\le 0$:
+
 - **Title**: `No profit from primary commodity`
 - **Description**: `Farmers in this segment do not generate a positive profit from their primary commodity. This feature is therefore disabled because the calculation is not meaningful for this segment.`
 - **Styling**: IDC branded alert styling (`#eaf2f2` background, `#01625f` border, rounded corners, info icon).
 
 ### 2.2 Affected Step 3 Visualizations
+
 1. **Household Income Composition (`ChartHouseholdIncomeComposition.js`)**:
    - Keep `<SegmentSelector />` mounted at the top.
    - If `primaryIncome <= 0`, replace the pie chart with `<IncomeGatingAlert />`.
@@ -54,8 +57,11 @@ flowchart TD
 | Operation | File Path | Scope |
 | :--- | :--- | :--- |
 | `[MODIFY]` | `frontend/src/pages/cases/components/IncomeGatingAlert.js` | Add configurable `title` & `description` props with backward-compatible defaults |
-| `[MODIFY]` | `frontend/src/pages/cases/visualizations/ChartHouseholdIncomeComposition.js` | Import `IncomeGatingAlert`, evaluate `isNoPrimaryProfit`, conditionally render alert |
-| `[MODIFY]` | `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js` | Evaluate `isNoPrimaryProfit` and render respective gating alert |
+| `[MODIFY]` | `frontend/src/pages/cases/utils/incomeCalculations.js` | Implement pure `checkNoPrimaryProfit` helper function |
+| `[MODIFY]` | `frontend/src/pages/cases/utils/index.js` | Re-export `incomeCalculations` utilities |
+| `[MODIFY]` | `frontend/src/pages/cases/visualizations/ChartHouseholdIncomeComposition.js` | Import `IncomeGatingAlert` and `checkNoPrimaryProfit`, conditionally render alert |
+| `[MODIFY]` | `frontend/src/pages/cases/visualizations/ChartNeededIncomeLevel.js` | Import `checkNoPrimaryProfit`, evaluate `isNoPrimaryProfit` with precedence over `isAboveTarget` |
+| `[CREATE]` | `frontend/src/pages/cases/visualizations/__tests__/IncomeGatingCalculations.test.js` | Unit tests for `checkNoPrimaryProfit` logic and edge cases |
 | `[CREATE]` | `docs/features/DISABLE_NEGATIVE_INCOME_FEATURES.md` | Feature specification and documentation alignment |
 
 ---
