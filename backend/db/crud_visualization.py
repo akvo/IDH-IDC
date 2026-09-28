@@ -10,22 +10,29 @@ from models.visualization import (
 
 def create_or_update_visualization(
     session: Session, payloads: List[dict]
-) -> VisualizationDict:
+) -> List[Visualization]:
     res = []
     for payload in payloads:
+        if not isinstance(payload, dict):
+            continue
+        case_id = payload.get("case")
+        tab = payload.get("tab")
+        config = payload.get("config")
+        if not case_id or not tab or config is None:
+            continue
         prev_data = (
             session.query(Visualization)
             .filter(
                 and_(
-                    Visualization.case == payload.get("case"),
-                    Visualization.tab == payload.get("tab"),
+                    Visualization.case == case_id,
+                    Visualization.tab == tab,
                 )
             )
             .first()
         )
         if prev_data:
             # update
-            prev_data.config = payload.get("config")
+            prev_data.config = config
             session.commit()
             session.flush()
             session.refresh(prev_data)
@@ -33,9 +40,9 @@ def create_or_update_visualization(
         else:
             # add
             data = Visualization(
-                case=payload.get("case"),
-                tab=payload.get("tab"),
-                config=payload.get("config"),
+                case=case_id,
+                tab=tab,
+                config=config,
             )
             session.add(data)
             session.commit()

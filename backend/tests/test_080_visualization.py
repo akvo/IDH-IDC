@@ -160,3 +160,81 @@ class TestVisualizationRoute:
                 },
             },
         ]
+
+    @pytest.mark.asyncio
+    async def test_create_visualization_with_sparse_payload(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        payload = [
+            {},
+            {
+                "case": 1,
+                "tab": VisualizationTab.scenario_modeling.value,
+                "config": {
+                    "key": "value_from_sparse",
+                },
+            },
+        ]
+        compressed_payload = gzip.compress(json.dumps(payload).encode("utf-8"))
+
+        res = await client.post(
+            app.url_path_for("visualization:create_or_update"),
+            headers={
+                "Authorization": f"Bearer {admin_account.token}",
+                "Content-Encoding": "gzip",
+                "Accept-Encoding": "gzip",
+            },
+            content=compressed_payload,
+        )
+        assert res.status_code == 200
+        res = res.json()
+        assert len(res) == 1
+        assert res[0]["case"] == 1
+        assert res[0]["tab"] == VisualizationTab.scenario_modeling.value
+        assert res[0]["config"] == {"key": "value_from_sparse"}
+
+    @pytest.mark.asyncio
+    async def test_create_visualization_missing_case_id(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        payload = [
+            {},
+            {
+                "tab": VisualizationTab.scenario_modeling.value,
+                "config": {"key": "no_case_id"},
+            },
+        ]
+        compressed_payload = gzip.compress(json.dumps(payload).encode("utf-8"))
+
+        res = await client.post(
+            app.url_path_for("visualization:create_or_update"),
+            headers={
+                "Authorization": f"Bearer {admin_account.token}",
+                "Content-Encoding": "gzip",
+                "Accept-Encoding": "gzip",
+            },
+            content=compressed_payload,
+        )
+        assert res.status_code == 400
+        res = res.json()
+        assert res["detail"] == "Valid case ID required in payload"
+
+    @pytest.mark.asyncio
+    async def test_create_visualization_invalid_payload_type(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        payload = {"case": 1}
+        compressed_payload = gzip.compress(json.dumps(payload).encode("utf-8"))
+
+        res = await client.post(
+            app.url_path_for("visualization:create_or_update"),
+            headers={
+                "Authorization": f"Bearer {admin_account.token}",
+                "Content-Encoding": "gzip",
+                "Accept-Encoding": "gzip",
+            },
+            content=compressed_payload,
+        )
+        assert res.status_code == 400
+        res = res.json()
+        assert res["detail"] == "Invalid payload format, expected list"
