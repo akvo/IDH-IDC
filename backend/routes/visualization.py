@@ -49,8 +49,25 @@ async def create_visualization(
         except Exception as e:
             return {"error": f"Invalid JSON: {str(e)}"}
 
-    # Get case_id from first payload item
-    case_id = payload[0].get("case")
+    if not isinstance(payload, list):
+        raise HTTPException(
+            status_code=400, detail="Invalid payload format, expected list"
+        )
+
+    # Get case_id from first valid payload item
+    case_id = next(
+        (
+            item.get("case")
+            for item in payload
+            if isinstance(item, dict) and item.get("case")
+        ),
+        None,
+    )
+    if not case_id:
+        raise HTTPException(
+            status_code=400, detail="Valid case ID required in payload"
+        )
+
     user = verify_case_editor(
         session=session, authenticated=req.state.authenticated, case_id=case_id
     )
@@ -63,8 +80,14 @@ async def create_visualization(
     ] or user.role in [UserRole.super_admin, UserRole.admin]
 
     for item in payload:
+        if not isinstance(item, dict):
+            continue
         config = item.get("config", {})
-        if "investment_analysis" in config and not is_premium:
+        if (
+            isinstance(config, dict)
+            and "investment_analysis" in config
+            and not is_premium
+        ):
             raise HTTPException(
                 status_code=403,
                 detail="Investment analysis is a premium feature.",
