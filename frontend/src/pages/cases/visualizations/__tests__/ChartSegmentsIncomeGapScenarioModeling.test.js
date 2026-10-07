@@ -151,15 +151,17 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       expect(result.segmentData[3].scenarioColor).toBe("#FF4D4F");
     });
 
-    it("generates 3 distinct series (Current Bar, Scenario Bar, Target Diamond)", () => {
+    it("generates series data with legend helper series for outcome states", () => {
       const result = generateScenarioModelingChartData(
         scenarioValues,
         segments,
         "USD"
       );
-      expect(result.series.length).toBe(3);
+      expect(result.series.length).toBe(6);
 
-      const [currentSeries, scenarioSeries, targetSeries] = result.series;
+      const [currentSeries, scenarioSeries] = result.series;
+      const targetSeries = result.series[5];
+
       expect(currentSeries.name).toBe("Current total household income");
       expect(currentSeries.type).toBe("bar");
       expect(currentSeries.data[0].value).toBe(3000);
@@ -168,10 +170,7 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       expect(scenarioSeries.type).toBe("bar");
       expect(scenarioSeries.data[0].value).toBe(4500);
       expect(scenarioSeries.data[0].itemStyle.color).toBe("#49D985");
-      expect(
-        scenarioSeries.data[1].dataIndexColor ||
-          scenarioSeries.data[1].itemStyle.color
-      ).toBe("#FF4D4F");
+      expect(scenarioSeries.data[1].itemStyle.color).toBe("#FF4D4F");
 
       expect(targetSeries.name).toBe("Income Target");
       expect(targetSeries.type).toBe("line");

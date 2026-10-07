@@ -148,7 +148,6 @@ export const generateScenarioModelingChartData = (
       name: "Scenario income",
       type: "bar",
       barMaxWidth: 35,
-      itemStyle: { color: "#49D985" },
       data: segmentData.map((d) => ({
         name: d.name,
         value: Math.round(d.scenarioIncome),
@@ -164,6 +163,24 @@ export const generateScenarioModelingChartData = (
         formatter: (params) => formatNumberToString(params.value),
         ...TextStyle,
       },
+    },
+    {
+      name: "Scenario income (increase)",
+      type: "bar",
+      itemStyle: { color: "#49D985" },
+      data: [],
+    },
+    {
+      name: "Scenario income (decrease)",
+      type: "bar",
+      itemStyle: { color: "#FF4D4F" },
+      data: [],
+    },
+    {
+      name: "Scenario income (no change)",
+      type: "bar",
+      itemStyle: { color: "#9CC2C1" },
+      data: [],
     },
     {
       name: "Income Target",
@@ -232,13 +249,13 @@ export const getScenarioModelingChartOptions = ({
           itemStyle: { color: "#000000" },
         },
       ],
-      top: 10,
+      top: 5,
       left: "center",
       orient: "horizontal",
     },
     grid: {
-      top: grid?.top || 50,
-      bottom: grid?.bottom || 30,
+      top: grid?.top || 75,
+      bottom: grid?.bottom || 25,
       left: grid?.left || 50,
       right: grid?.right || 20,
       containLabel: true,
@@ -319,7 +336,7 @@ const ChartSegmentsIncomeGapScenarioModeling = ({ currentScenarioData }) => {
       segmentData,
       series,
       currency,
-      grid: { top: 50, right: 20, left: 50, bottom: 30 },
+      grid: { top: 75, right: 20, left: 50, bottom: 25 },
     });
 
     return {
