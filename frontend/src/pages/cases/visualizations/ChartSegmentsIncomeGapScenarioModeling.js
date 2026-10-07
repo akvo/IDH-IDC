@@ -212,9 +212,19 @@ export const getScenarioModelingChartOptions = ({
           itemStyle: { color: "#1B625F" },
         },
         {
-          name: "Scenario income",
+          name: "Scenario income (increase)",
           icon: "circle",
           itemStyle: { color: "#49D985" },
+        },
+        {
+          name: "Scenario income (decrease)",
+          icon: "circle",
+          itemStyle: { color: "#FF4D4F" },
+        },
+        {
+          name: "Scenario income (no change)",
+          icon: "circle",
+          itemStyle: { color: "#9CC2C1" },
         },
         {
           name: "Income Target",

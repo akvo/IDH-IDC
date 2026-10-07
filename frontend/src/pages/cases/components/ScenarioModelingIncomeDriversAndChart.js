@@ -212,15 +212,24 @@ const ScenarioModelingIncomeDriversAndChart = ({
     });
   }, [questionGroups]);
 
-  const calculateChildrenValues = (question, fieldKey, values) => {
+  const calculateChildrenValues = (
+    question,
+    fieldKey,
+    values,
+    targetSegment
+  ) => {
     const childrenQuestions = flattenIncomeDataDriversQuestions.filter(
       (q) => q.parent === question?.parent
     );
     const allChildrensIds = childrenQuestions.map((q) => `${fieldKey}-${q.id}`);
     const allChildrensValues = allChildrensIds.reduce((acc, id) => {
-      const value = values?.[id];
-      if (value) {
-        acc.push({ id, value });
+      const rawVal =
+        typeof values?.[id] !== "undefined" && values?.[id] !== null
+          ? values[id]
+          : targetSegment?.answers?.[id];
+      if (typeof rawVal !== "undefined" && rawVal !== null && rawVal !== "") {
+        const numVal = parseFloat(rawVal);
+        acc.push({ id, value: isNaN(numVal) ? 0 : numVal });
       }
       return acc;
     }, []);
@@ -253,7 +262,8 @@ const ScenarioModelingIncomeDriversAndChart = ({
       const allChildrensValues = calculateChildrenValues(
         question,
         fieldKey,
-        updatedSegment.answers
+        updatedSegment.answers,
+        updatedSegment
       );
       const sumAllChildrensValues = parentQuestion?.default_value
         ? getFunctionDefaultValue(parentQuestion, fieldKey, allChildrensValues)

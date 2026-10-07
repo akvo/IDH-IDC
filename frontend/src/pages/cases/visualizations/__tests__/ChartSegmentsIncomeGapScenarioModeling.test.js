@@ -236,4 +236,28 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       expect(html).toContain("0 USD");
     });
   });
+
+  describe("getScenarioModelingChartOptions", () => {
+    it("includes legend entries for current income, increase, decrease, no-change, and target", () => {
+      const {
+        getScenarioModelingChartOptions,
+      } = require("../ChartSegmentsIncomeGapScenarioModeling");
+      const segmentData = [
+        { name: "Seg 1", currentIncome: 100, scenarioIncome: 150, target: 200 },
+        { name: "Seg 2", currentIncome: 200, scenarioIncome: 150, target: 250 },
+      ];
+      const options = getScenarioModelingChartOptions({
+        segmentData,
+        series: [],
+        currency: "USD",
+      });
+      const legendNames = options.legend.data.map((item) => item.name);
+
+      expect(legendNames).toContain("Current total household income");
+      expect(legendNames).toContain("Scenario income (increase)");
+      expect(legendNames).toContain("Scenario income (decrease)");
+      expect(legendNames).toContain("Scenario income (no change)");
+      expect(legendNames).toContain("Income Target");
+    });
+  });
 });
