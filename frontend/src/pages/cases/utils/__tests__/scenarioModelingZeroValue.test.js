@@ -60,7 +60,8 @@ describe("Scenario Modeling Zero and Negative Percentage Driver Handling", () =>
   });
 
   test("numeric filter correctly preserves 0 in array of driver values", () => {
-    const absoluteValues = [0, 500, null, undefined];
+    const missingValue = {}.unassigned;
+    const absoluteValues = [0, 500, null, missingValue];
     const filtered = absoluteValues.filter(
       (x) => typeof x === "number" && !isNaN(x)
     );
