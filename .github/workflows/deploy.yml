@@ -1,23 +1,31 @@
 name: Deploy to Test Cluster
 
 on:
-  workflow_run:
-    workflows: ["Build & Test"]
+  push:
     branches:
       - main
       - staging
-    types:
-      - completed
 
 jobs:
-  deploy:
+  test:
+    name: Build & Test
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and Test
+        run: |
+          ./ci/build.sh
+
+  deploy:
+    name: Deploy
+    needs: test
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           path: src
 
       - name: Checkout Akvo composite actions
@@ -32,7 +40,7 @@ jobs:
       - name: Set app name
         id: vars
         run: |
-          if [ "${{ github.event.workflow_run.head_branch }}" == "staging" ]; then
+          if [ "${{ github.ref }}" == "refs/heads/staging" ]; then
             echo "app_name=idh-idc-staging" >> $GITHUB_OUTPUT
           else
             echo "app_name=idh-idc" >> $GITHUB_OUTPUT
