@@ -16,13 +16,15 @@ import {
 } from "../../../components/chart/options/common";
 
 export const determineScenarioBarColor = (currentIncome, scenarioIncome) => {
-  if (scenarioIncome > currentIncome) {
+  const roundedCurrent = Math.round(currentIncome);
+  const roundedScenario = Math.round(scenarioIncome);
+  if (roundedScenario > roundedCurrent) {
     return "#49D985"; // Light Green (Increase)
   }
-  if (scenarioIncome < currentIncome) {
+  if (roundedScenario < roundedCurrent) {
     return "#FF4D4F"; // Red (Decrease)
   }
-  return "#9CC2C1"; // Teal (No Change)
+  return "#9CC2C1"; // Teal / Gray (No Change)
 };
 
 export const formatTooltipContent = (item, currency = "") => {
@@ -73,7 +75,7 @@ export const formatTooltipContent = (item, currency = "") => {
       </div>
       <div style="display: flex; justify-content: space-between;">
         <span style="color: #595959;">Remaining Gap:</span>
-        <span style="font-weight: 600; color: #F9CB21;">${thousandFormatter(
+        <span style="font-weight: 600; color: #262626;">${thousandFormatter(
           Math.round(item.gap)
         )}${currencySuffix}</span>
       </div>
@@ -103,8 +105,10 @@ export const generateScenarioModelingChartData = (
         ? sv.currentSegmentValue.target
         : segment?.target || 0;
 
-    const incomeChange = scenarioIncome - currentIncome;
-    const gap = Math.max(0, target - scenarioIncome);
+    const roundedCurrent = Math.round(currentIncome);
+    const roundedScenario = Math.round(scenarioIncome);
+    const incomeChange = roundedScenario - roundedCurrent;
+    const gap = Math.max(0, Math.round(target) - roundedScenario);
     const scenarioColor = determineScenarioBarColor(
       currentIncome,
       scenarioIncome

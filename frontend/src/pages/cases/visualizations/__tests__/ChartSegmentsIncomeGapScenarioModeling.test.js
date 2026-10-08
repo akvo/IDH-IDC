@@ -17,6 +17,11 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
     it("returns teal (#9CC2C1) when scenario income is unchanged", () => {
       expect(determineScenarioBarColor(1500, 1500)).toBe("#9CC2C1");
     });
+
+    it("returns teal (#9CC2C1) when difference is only due to minor decimal rounding", () => {
+      expect(determineScenarioBarColor(120000.1, 120000.08)).toBe("#9CC2C1");
+      expect(determineScenarioBarColor(50432.4, 50432.1)).toBe("#9CC2C1");
+    });
   });
 
   describe("generateScenarioModelingChartData", () => {
@@ -221,6 +226,7 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       expect(html).toContain("+1,500 USD");
       expect(html).toContain("4,000 USD");
       expect(html).toContain("500 USD");
+      expect(html).toContain('color: #262626;">500 USD');
     });
 
     it("formats tooltip with negative delta prefix (-)", () => {
