@@ -127,6 +127,7 @@ export const generateScenarioModelingChartData = (
       name: "Current total household income",
       type: "bar",
       barMaxWidth: 35,
+      barGap: "20%",
       itemStyle: { color: "#1B625F" },
       data: segmentData.map((d) => ({
         name: d.name,
@@ -166,19 +167,28 @@ export const generateScenarioModelingChartData = (
     },
     {
       name: "Scenario income (increase)",
-      type: "bar",
+      type: "line",
+      symbol: "circle",
+      showSymbol: false,
+      lineStyle: { width: 0, opacity: 0 },
       itemStyle: { color: "#49D985" },
       data: [],
     },
     {
       name: "Scenario income (decrease)",
-      type: "bar",
+      type: "line",
+      symbol: "circle",
+      showSymbol: false,
+      lineStyle: { width: 0, opacity: 0 },
       itemStyle: { color: "#FF4D4F" },
       data: [],
     },
     {
       name: "Scenario income (no change)",
-      type: "bar",
+      type: "line",
+      symbol: "circle",
+      showSymbol: false,
+      lineStyle: { width: 0, opacity: 0 },
       itemStyle: { color: "#9CC2C1" },
       data: [],
     },
@@ -222,6 +232,7 @@ export const getScenarioModelingChartOptions = ({
     ...Easing,
     legend: {
       ...Legend,
+      selectedMode: false,
       data: [
         {
           name: "Current total household income",

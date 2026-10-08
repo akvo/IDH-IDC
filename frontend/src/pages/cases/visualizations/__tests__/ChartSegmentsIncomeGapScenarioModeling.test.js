@@ -151,7 +151,7 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       expect(result.segmentData[3].scenarioColor).toBe("#FF4D4F");
     });
 
-    it("generates series data with legend helper series for outcome states", () => {
+    it("generates series data with legend helper series for outcome states without bar spacing pollution", () => {
       const result = generateScenarioModelingChartData(
         scenarioValues,
         segments,
@@ -159,11 +159,18 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       );
       expect(result.series.length).toBe(6);
 
-      const [currentSeries, scenarioSeries] = result.series;
-      const targetSeries = result.series[5];
+      const [
+        currentSeries,
+        scenarioSeries,
+        incHelper,
+        decHelper,
+        noChangeHelper,
+        targetSeries,
+      ] = result.series;
 
       expect(currentSeries.name).toBe("Current total household income");
       expect(currentSeries.type).toBe("bar");
+      expect(currentSeries.barGap).toBe("20%");
       expect(currentSeries.data[0].value).toBe(3000);
 
       expect(scenarioSeries.name).toBe("Scenario income");
@@ -171,6 +178,22 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       expect(scenarioSeries.data[0].value).toBe(4500);
       expect(scenarioSeries.data[0].itemStyle.color).toBe("#49D985");
       expect(scenarioSeries.data[1].itemStyle.color).toBe("#FF4D4F");
+
+      // Verify helper series are line-based with zero width to prevent ECharts phantom bar column allocation
+      expect(incHelper.type).toBe("line");
+      expect(incHelper.showSymbol).toBe(false);
+      expect(incHelper.lineStyle.width).toBe(0);
+      expect(incHelper.data).toEqual([]);
+
+      expect(decHelper.type).toBe("line");
+      expect(decHelper.showSymbol).toBe(false);
+      expect(decHelper.lineStyle.width).toBe(0);
+      expect(decHelper.data).toEqual([]);
+
+      expect(noChangeHelper.type).toBe("line");
+      expect(noChangeHelper.showSymbol).toBe(false);
+      expect(noChangeHelper.lineStyle.width).toBe(0);
+      expect(noChangeHelper.data).toEqual([]);
 
       expect(targetSeries.name).toBe("Income Target");
       expect(targetSeries.type).toBe("line");
@@ -252,6 +275,7 @@ describe("ChartSegmentsIncomeGapScenarioModeling Helper Calculations", () => {
       });
       const legendNames = options.legend.data.map((item) => item.name);
 
+      expect(options.legend.selectedMode).toBe(false);
       expect(legendNames).toContain("Current total household income");
       expect(legendNames).toContain("Scenario income (increase)");
       expect(legendNames).toContain("Scenario income (decrease)");
