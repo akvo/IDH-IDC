@@ -271,10 +271,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
 
       const parentQuestionField = `${fieldKey}-${question?.parent}`;
       if (parentQuestion) {
-        // use parentValue if child is 0
-        const parentValue = !sumAllChildrensValues
-          ? updatedSegment.answers?.[parentQuestionField] || 0
-          : sumAllChildrensValues;
+        // use parentValue if no child values exist
+        const parentValue =
+          allChildrensValues.length === 0
+            ? updatedSegment.answers?.[parentQuestionField] || 0
+            : sumAllChildrensValues;
 
         updatedSegment["answers"] = {
           ...updatedSegment["answers"],
@@ -420,13 +421,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
             d?.includes("diversified")
           );
 
-          const isAllPercentageNull = !percentageValues.filter((x) => x)
-            ?.length;
-          const isAllAbsoluteNull = !absoluteValues.filter((x) => x)?.length;
+          const isAllPercentageNull = !percentageValues.filter(
+            (x) => typeof x === "number" && !isNaN(x)
+          )?.length;
+          const isAllAbsoluteNull = !absoluteValues.filter(
+            (x) => typeof x === "number" && !isNaN(x)
+          )?.length;
 
           let updatedCurrentValues = {};
 
-          if (isAllAbsoluteNull || isAllPercentageNull) {
+          if (isAllAbsoluteNull && isAllPercentageNull) {
             backwardValues = {};
             updatedCurrentValues = {};
           } else {
@@ -435,12 +439,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
               .forEach((key) => {
                 const [, scenarioKey, segmentId, driverIndex] = key.split("-");
                 const absoluteKey = `absolute-${scenarioKey}-${segmentId}-${driverIndex}`;
-                const absoluteValue = sv?.allNewValues?.[absoluteKey] || null;
+                const absoluteValue = sv?.allNewValues?.[absoluteKey];
 
                 const driverValue = sv?.allNewValues?.[key] || null;
                 const currentKey = `current-${driverValue}`;
 
-                if (driverValue && typeof absoluteValue === "number") {
+                if (
+                  driverValue &&
+                  typeof absoluteValue === "number" &&
+                  !isNaN(absoluteValue)
+                ) {
                   updatedCurrentValues = {
                     ...updatedCurrentValues,
                     [currentKey]: parseFloat(absoluteValue),
@@ -820,10 +828,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
       valueField === "percentage" &&
       typeof currentSegmentAnswer !== "undefined"
     ) {
-      const valueTmp = currentSegmentAnswer * (newValue / 100);
-      newFeasibleValue = newValue ? currentSegmentAnswer + valueTmp : 0;
-      scenarioDriversForm.setFieldValue(absoluteField, newFeasibleValue);
-      allNewValues[absoluteField] = newFeasibleValue;
+      const numNewVal =
+        typeof newValue === "number" ? newValue : parseFloat(newValue);
+      if (!isNaN(numNewVal)) {
+        const valueTmp = currentSegmentAnswer * (numNewVal / 100);
+        newFeasibleValue = currentSegmentAnswer + valueTmp;
+        scenarioDriversForm.setFieldValue(absoluteField, newFeasibleValue);
+        allNewValues[absoluteField] = newFeasibleValue;
+      } else {
+        newFeasibleValue = currentSegmentAnswer;
+      }
     }
     // EOL calculate percentage change
 
@@ -832,24 +846,35 @@ const ScenarioModelingIncomeDriversAndChart = ({
       valueField === "absolute" &&
       typeof currentSegmentAnswer !== "undefined"
     ) {
-      newFeasibleValue = newValue;
-      scenarioDriversForm.setFieldValue(percentageField, newFeasibleValue);
-      allNewValues[percentageField] = newFeasibleValue;
+      const numNewVal =
+        typeof newValue === "number" ? newValue : parseFloat(newValue);
+      if (!isNaN(numNewVal)) {
+        newFeasibleValue = numNewVal;
+        const calculatedPercentage = currentSegmentAnswer
+          ? ((newFeasibleValue - currentSegmentAnswer) / currentSegmentAnswer) *
+            100
+          : 0;
+        scenarioDriversForm.setFieldValue(
+          percentageField,
+          calculatedPercentage
+        );
+        allNewValues[percentageField] = calculatedPercentage;
+      } else {
+        newFeasibleValue = currentSegmentAnswer;
+      }
     }
     // EOL calculate absolute change
 
     // CALCULATION :: calculate new total income based on driver change and new scenario value
     // assume the scenario modeling value to replace the current value
-    if (newFeasibleValue || newFeasibleValue === 0) {
+    if (typeof newFeasibleValue === "number" && !isNaN(newFeasibleValue)) {
       // update segment answers current value with the new value from scenario modeling
       updatedSegment = {
         ...updatedSegment,
         answers: {
           ...updatedSegment.answers,
           ...updatedChildAnswer,
-          [segmentAnswerField]: newFeasibleValue
-            ? newFeasibleValue
-            : currentSegmentAnswer,
+          [segmentAnswerField]: newFeasibleValue,
         },
       };
       recalculate({
