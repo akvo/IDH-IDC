@@ -152,6 +152,39 @@ const calculateModellingDriver = (targetIncome, drivers, qKey, category) => {
   }
 };
 
+/**
+ * Checks if a segment does not generate positive profit from its primary (focus) commodity.
+ * @param {Object} currentCase - Current case object containing case_commodities
+ * @param {Object} currentDashboardData - Selected segment dashboard data containing answers
+ * @returns {boolean} True if primary profit <= 0, false otherwise
+ */
+const checkNoPrimaryProfit = (currentCase, currentDashboardData) => {
+  const focusCommodity = currentCase?.case_commodities?.find(
+    (cc) => cc.commodity_type === "focus"
+  );
+  if (!focusCommodity || !currentDashboardData?.answers?.length) {
+    return false;
+  }
+
+  const totalIncome = currentDashboardData.answers.filter(
+    (a) =>
+      a?.question?.question_type === "aggregator" &&
+      !a?.question?.parent &&
+      a.caseCommodityId === focusCommodity.id
+  );
+  if (!totalIncome.length) {
+    return false;
+  }
+
+  const currentIncomeAnswer = totalIncome.find((ti) => ti.name === "current");
+  if (!currentIncomeAnswer) {
+    return false;
+  }
+
+  const totalCurrentIncome = currentIncomeAnswer.value ?? 0;
+  return totalCurrentIncome <= 0;
+};
+
 export {
   getTargetPrimaryIncome,
   getTargetSecondaryIncome,
@@ -159,4 +192,5 @@ export {
   getTargetDiversifiedIncome,
   calculateBreakdownDriver,
   calculateModellingDriver,
+  checkNoPrimaryProfit,
 };

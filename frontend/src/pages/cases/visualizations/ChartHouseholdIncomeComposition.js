@@ -1,7 +1,12 @@
 import React, { useRef, useState, useMemo } from "react";
 import { Row, Col, Divider } from "antd";
-import { VisualCardWrapper, SegmentSelector } from "../components";
+import {
+  VisualCardWrapper,
+  SegmentSelector,
+  IncomeGatingAlert,
+} from "../components";
 import { CurrentCaseState, CaseVisualState } from "../store";
+import { checkNoPrimaryProfit } from "../utils";
 import Chart from "../../../components/chart";
 import { sumBy, upperFirst } from "lodash";
 
@@ -20,12 +25,20 @@ const ChartHouseholdIncomeComposition = () => {
   const [selectedSegment, setSelectedSegment] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const currentDashboardData = useMemo(
+    () => dashboardData.find((d) => d.id === selectedSegment),
+    [dashboardData, selectedSegment]
+  );
+
+  const isNoPrimaryProfit = useMemo(() => {
+    return checkNoPrimaryProfit(currentCase, currentDashboardData);
+  }, [currentCase, currentDashboardData]);
+
   const chartData = useMemo(() => {
+    if (isNoPrimaryProfit) {
+      return [];
+    }
     setLoading(true);
-    // find current dashboard data by selected segment
-    const currentDashboardData = dashboardData.find(
-      (d) => d.id === selectedSegment
-    );
     // retrieve
     const caseCommoditiesTotalIncome = currentCase?.case_commodities
       ?.map((cc) => {
@@ -87,7 +100,7 @@ const ChartHouseholdIncomeComposition = () => {
       ?.filter((v) => v.value !== 0);
     setLoading(false);
     return caseCommoditiesTotalIncome;
-  }, [selectedSegment, dashboardData, currentCase]);
+  }, [isNoPrimaryProfit, currentDashboardData, currentCase]);
 
   return (
     <VisualCardWrapper
@@ -104,14 +117,24 @@ const ChartHouseholdIncomeComposition = () => {
           />
         </Col>
         <Col span={24}>
-          <Chart
-            wrapper={false}
-            type="PIE"
-            loading={loading}
-            data={chartData}
-            percentage={true}
-            height={415}
-          />
+          {isNoPrimaryProfit ? (
+            <div style={{ height: 365, display: "flex", alignItems: "center" }}>
+              <IncomeGatingAlert
+                title="No profit from primary commodity"
+                description="Farmers in this segment do not generate a positive profit from their primary commodity. This feature is therefore disabled because the calculation is not meaningful for this segment."
+                style={{ width: "100%" }}
+              />
+            </div>
+          ) : (
+            <Chart
+              wrapper={false}
+              type="PIE"
+              loading={loading}
+              data={chartData}
+              percentage={true}
+              height={415}
+            />
+          )}
         </Col>
         <Col span={24}>
           <Divider style={{ margin: "5px" }} />

@@ -2,7 +2,11 @@ import React from "react";
 import { Alert } from "antd";
 import { InfoCircleOutlined } from "@ant-design/icons";
 
-const IncomeGatingAlert = ({ style = {} }) => {
+const IncomeGatingAlert = ({
+  title = "Income target reached",
+  description = "Farmers in this segment already earn more than the income target. This feature is therefore disabled.",
+  style = {},
+}) => {
   return (
     <Alert
       type="info"
@@ -27,7 +31,7 @@ const IncomeGatingAlert = ({ style = {} }) => {
             marginBottom: "4px",
           }}
         >
-          Income target reached
+          {title}
         </span>
       }
       description={
@@ -40,8 +44,7 @@ const IncomeGatingAlert = ({ style = {} }) => {
             display: "block",
           }}
         >
-          Farmers in this segment already earn more than the income target. This
-          feature is therefore disabled.
+          {description}
         </span>
       }
       style={{

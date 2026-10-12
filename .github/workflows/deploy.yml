@@ -7,7 +7,20 @@ on:
       - staging
 
 jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build and Test
+        run: |
+          ./ci/build.sh
+
   deploy:
+    name: Deploy
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

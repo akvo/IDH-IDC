@@ -27,7 +27,11 @@
        - **No Change** (`Scenario == Current`): Light Green / Teal (`#9CC2C1`)
 4. **Income Target Marker**:
    - Rendered as a black diamond (`#000000`) point overlaid across the segment group.
-5. **Removal of Segment Filtering & Alert**:
+5. **Legend Specifications**:
+   - Includes distinct legend entries for all outcome states: `Current total household income` (`#1B625F`), `Scenario income (increase)` (`#49D985`), `Scenario income (decrease)` (`#FF4D4F`), `Scenario income (no change)` (`#9CC2C1`), and `Income Target` (`#000000`).
+6. **Partial Driver Selection Calculation Safeguard**:
+   - When users select fewer than 5 drivers (e.g. only modifying `Land`), `calculateChildrenValues` preserves baseline values from `targetSegment.answers` for un-modeled variables (Volume, Price, COP) instead of evaluating missing variables to `0`.
+7. **Removal of Segment Filtering & Alert**:
    - Revert the exclusion rule that previously hid segments with income decreases.
    - Remove the Ant Design `<Alert>` banner ("This graph only shows segments with improved or unchanged income...").
 
