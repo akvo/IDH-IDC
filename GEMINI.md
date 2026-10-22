@@ -19,8 +19,8 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **Scenario Modelling Zero-Value Driver Input & Total Income Rounding (#832) - [COMPLETED]**:
     - **Zero Handling in Absolute Mode**: Fixed `Question` component and outcome calculation to treat `0` as an active input rather than falsy, correctly calculating `-100%` change when setting a driver's new absolute value to 0.
     - **Zero Handling in Percentage Mode**: Fixed `Question` component so that entering `0%` change retains the current baseline value (e.g., `2.1` instead of `0`).
-    - **Total Income Alignment**: Guaranteed baseline preservation when no drivers have changed, eliminating floating-point evaluation discrepancies between survey baseline and formula evaluation. Aligned table total income display with chart using integer rounding (`Math.round`), ensuring identical figures when no change occurs.
-    - Verified all changes with clean frontend linting (0 errors) and automated unit test suite (14/14 suites, 70 tests passed).
+    - **Total Income Alignment & Baseline Comparison**: Implemented `getDriverBaselineValue` to compare absolute driver values against pre-scenario baseline values and resolved variable shadowing in `onScenarioModelingIncomeDriverFormValuesChange`, fixing dynamic income recalculation in value change mode. Aligned table total income display with chart using integer rounding (`Math.round`), ensuring identical figures when no change occurs.
+    - Verified all changes with clean frontend linting (0 errors), frontend unit tests (14/14 suites, 77 tests passed), and backend tests (220/220 passed).
     - Path: `frontend/src/pages/cases/components/ScenarioModelingIncomeDriversAndChart.js`, `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`, `frontend/src/pages/cases/utils/__tests__/scenarioModelingZeroValue.test.js`.
 
 - **SMTP Email Migration & Custom Sender Alignment (#828) - [COMPLETED]**:
