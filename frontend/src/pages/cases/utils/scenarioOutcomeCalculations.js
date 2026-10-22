@@ -135,7 +135,11 @@ export const calculateOutcomeData = (
 
                 if (hasPercentage) {
                   percentChange = `${parseFloat(sdv.percentage)?.toFixed(2)}%`;
-                } else if (sdv.absolute !== 0 && sdv.currentValue !== 0) {
+                } else if (
+                  typeof sdv.absolute === "number" &&
+                  !isNaN(sdv.absolute) &&
+                  sdv.currentValue !== 0
+                ) {
                   percentChange =
                     (
                       ((sdv.absolute - sdv.currentValue) / sdv.currentValue) *

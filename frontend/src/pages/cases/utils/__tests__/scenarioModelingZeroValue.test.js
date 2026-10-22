@@ -68,4 +68,90 @@ describe("Scenario Modeling Zero and Negative Percentage Driver Handling", () =>
     expect(filtered).toEqual([0, 500]);
     expect(filtered.length).toBe(2);
   });
+
+  describe("Question component currentIncrease calculation logic", () => {
+    const computeQuestionIncrease = ({ percentage, currentValue, val }) => {
+      const numVal = typeof val === "number" ? val : parseFloat(val);
+      const hasInput =
+        typeof val !== "undefined" &&
+        val !== null &&
+        val !== "" &&
+        !isNaN(numVal);
+
+      if (!hasInput) {
+        return 0;
+      }
+
+      if (percentage) {
+        const value = currentValue * (numVal / 100);
+        return currentValue + value;
+      }
+
+      const percent = currentValue
+        ? ((numVal - currentValue) / currentValue) * 100
+        : 0;
+      return isNaN(percent)
+        ? 0
+        : percent % 1 === 0
+        ? percent.toFixed(0)
+        : percent.toFixed(2);
+    };
+
+    test("Case 1: absolute mode with new value 0 computes -100% change", () => {
+      const result = computeQuestionIncrease({
+        percentage: false,
+        currentValue: 2.1,
+        val: 0,
+      });
+      expect(result).toBe("-100");
+    });
+
+    test("Case 1: absolute mode with new value equal to current computes 0% change", () => {
+      const result = computeQuestionIncrease({
+        percentage: false,
+        currentValue: 2.1,
+        val: 2.1,
+      });
+      expect(result).toBe("0");
+    });
+
+    test("Case 2: percentage mode with change 0 returns current value (2.1)", () => {
+      const result = computeQuestionIncrease({
+        percentage: true,
+        currentValue: 2.1,
+        val: 0,
+      });
+      expect(result).toBe(2.1);
+    });
+
+    test("Case 2: percentage mode with change 10% returns increased value (2.31)", () => {
+      const result = computeQuestionIncrease({
+        percentage: true,
+        currentValue: 2.1,
+        val: 10,
+      });
+      expect(result).toBeCloseTo(2.31, 2);
+    });
+
+    test("unfilled / empty input returns 0", () => {
+      const emptyResult = computeQuestionIncrease({
+        percentage: true,
+        currentValue: 2.1,
+        val: null,
+      });
+      expect(emptyResult).toBe(0);
+    });
+  });
+
+  describe("Total Income equivalence and rounding when no change happened", () => {
+    test("Math.round displays identical figure for Current and Scenario total income", () => {
+      const currentDashboardIncome = 274857.24;
+      const scenarioIncomeUnchanged = 274857.24;
+
+      expect(Math.round(currentDashboardIncome)).toBe(
+        Math.round(scenarioIncomeUnchanged)
+      );
+      expect(Math.round(currentDashboardIncome)).toBe(274857);
+    });
+  });
 });

@@ -80,22 +80,39 @@ const Question = ({
   }, [segment.answers, selectedDriver, globalSectionTotalValues, segment.id]);
 
   const currentIncrease = useMemo(() => {
-    let newFormValue = newValue || 0;
-    if (percentage) {
-      const percentageField = `percentage-${fieldName}`;
-      newFormValue = scenarioModelingForm.getFieldValue(percentageField);
-    } else {
-      const absoluteField = `absolute-${fieldName}`;
-      newFormValue = scenarioModelingForm.getFieldValue(absoluteField);
+    const fieldKey = percentage
+      ? `percentage-${fieldName}`
+      : `absolute-${fieldName}`;
+    const formVal = scenarioModelingForm.getFieldValue(fieldKey);
+    const val =
+      typeof formVal !== "undefined" && formVal !== null && formVal !== ""
+        ? formVal
+        : newValue;
+
+    const numVal = typeof val === "number" ? val : parseFloat(val);
+    const hasInput =
+      typeof val !== "undefined" &&
+      val !== null &&
+      val !== "" &&
+      !isNaN(numVal);
+
+    if (!hasInput) {
+      return 0;
     }
+
     if (percentage) {
-      const value = currentValue * (newFormValue / 100);
-      return newFormValue ? currentValue + value : 0;
+      const value = currentValue * (numVal / 100);
+      return currentValue + value;
     }
-    const percent = newFormValue
-      ? ((newFormValue - currentValue) / currentValue) * 100
+
+    const percent = currentValue
+      ? ((numVal - currentValue) / currentValue) * 100
       : 0;
-    return isNaN(percent) ? 0 : percent.toFixed(2);
+    return isNaN(percent)
+      ? 0
+      : percent % 1 === 0
+      ? percent.toFixed(0)
+      : percent.toFixed(2);
   }, [percentage, currentValue, newValue, scenarioModelingForm, fieldName]);
 
   return (
@@ -622,9 +639,54 @@ const ScenarioModelingIncomeDriversAndChart = ({
             focusCommodityAnswers
           );
 
+          const isPercentageApproach = !!currentScenarioData?.percentage;
+          let hasActualDriverChange = false;
+          MAX_VARIABLES.forEach((idx) => {
+            const driverVal =
+              backwardValues[
+                `driver-${currentScenarioData.key}-${sv.segmentId}-${idx}`
+              ];
+            if (driverVal) {
+              if (isPercentageApproach) {
+                const pVal =
+                  backwardValues[
+                    `percentage-${currentScenarioData.key}-${sv.segmentId}-${idx}`
+                  ];
+                if (
+                  typeof pVal === "number" &&
+                  !isNaN(pVal) &&
+                  Math.abs(pVal) > 0.0001
+                ) {
+                  hasActualDriverChange = true;
+                }
+              } else {
+                const aVal =
+                  backwardValues[
+                    `absolute-${currentScenarioData.key}-${sv.segmentId}-${idx}`
+                  ];
+                const currVal =
+                  actualSegment?.answers?.[`current-${driverVal}`];
+                if (
+                  typeof aVal === "number" &&
+                  !isNaN(aVal) &&
+                  typeof currVal === "number" &&
+                  !isNaN(currVal) &&
+                  Math.abs(aVal - currVal) > 0.0001
+                ) {
+                  hasActualDriverChange = true;
+                }
+              }
+            }
+          });
+
+          const finalTotalCurrentIncome = hasActualDriverChange
+            ? totalCurrentIncomeAnswer
+            : actualDashboardData?.total_current_income ??
+              totalCurrentIncomeAnswer;
+
           return {
             ...segment,
-            total_current_income: totalCurrentIncomeAnswer,
+            total_current_income: finalTotalCurrentIncome,
             total_feasible_income: totalFeasibleIncomeAnswer,
             total_feasible_cost: -totalCostFeasible,
             total_current_cost: -totalCostCurrent,
@@ -1003,9 +1065,53 @@ const ScenarioModelingIncomeDriversAndChart = ({
         focusCommodityAnswers
       );
 
+      const isPercentageApproach = !!backwardScenarioData?.percentage;
+      let hasActualDriverChange = false;
+      MAX_VARIABLES.forEach((idx) => {
+        const driverVal =
+          allNewValues[
+            `driver-${currentScenarioData.key}-${segment.id}-${idx}`
+          ];
+        if (driverVal) {
+          if (isPercentageApproach) {
+            const pVal =
+              allNewValues[
+                `percentage-${currentScenarioData.key}-${segment.id}-${idx}`
+              ];
+            if (
+              typeof pVal === "number" &&
+              !isNaN(pVal) &&
+              Math.abs(pVal) > 0.0001
+            ) {
+              hasActualDriverChange = true;
+            }
+          } else {
+            const aVal =
+              allNewValues[
+                `absolute-${currentScenarioData.key}-${segment.id}-${idx}`
+              ];
+            const currVal = segment?.answers?.[`current-${driverVal}`];
+            if (
+              typeof aVal === "number" &&
+              !isNaN(aVal) &&
+              typeof currVal === "number" &&
+              !isNaN(currVal) &&
+              Math.abs(aVal - currVal) > 0.0001
+            ) {
+              hasActualDriverChange = true;
+            }
+          }
+        }
+      });
+
+      const finalTotalCurrentIncome = hasActualDriverChange
+        ? totalCurrentIncomeAnswer
+        : currentDashboardData?.total_current_income ??
+          totalCurrentIncomeAnswer;
+
       return {
         ...segment,
-        total_current_income: totalCurrentIncomeAnswer,
+        total_current_income: finalTotalCurrentIncome,
         total_feasible_income: totalFeasibleIncomeAnswer,
         total_feasible_cost: -totalCostFeasible,
         total_current_cost: -totalCostCurrent,
@@ -1141,9 +1247,16 @@ const ScenarioModelingIncomeDriversAndChart = ({
         (s) => s.segmentId === segment.id
       ) || {};
     const newTotalIncome =
-      findScenario?.updatedSegmentScenarioValue?.total_current_income || 0;
-    return newTotalIncome;
-  }, [segment?.id, backwardScenarioData?.scenarioValues]);
+      findScenario?.updatedSegmentScenarioValue?.total_current_income;
+    if (typeof newTotalIncome === "number" && !isNaN(newTotalIncome)) {
+      return newTotalIncome;
+    }
+    return currentDashboardData?.total_current_income || 0;
+  }, [
+    segment?.id,
+    backwardScenarioData?.scenarioValues,
+    currentDashboardData?.total_current_income,
+  ]);
 
   return (
     <Row
@@ -1207,12 +1320,11 @@ const ScenarioModelingIncomeDriversAndChart = ({
                 </Col>
                 <Col span={4} align="end">
                   {thousandFormatter(
-                    currentDashboardData?.total_current_income || 0,
-                    2
+                    Math.round(currentDashboardData?.total_current_income || 0)
                   )}
                 </Col>
                 <Col span={4} align="end">
-                  {thousandFormatter(scenarioTotalIncome, 2)}
+                  {thousandFormatter(Math.round(scenarioTotalIncome))}
                 </Col>
               </Row>
             </div>
