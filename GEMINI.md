@@ -16,6 +16,13 @@ Income Driver Calculator (IDC) is a web application designed to help companies t
 - **CI/CD**: Automated deployment to test cluster on push to `main`.
 
 ## Recent Changes
+- **Scenario Modelling Zero-Value Driver Input & Total Income Rounding (#832) - [COMPLETED]**:
+    - **Zero Handling in Absolute Mode**: Fixed `Question` component and outcome calculation to treat `0` as an active input rather than falsy, correctly calculating `-100%` change when setting a driver's new absolute value to 0.
+    - **Zero Handling in Percentage Mode**: Fixed `Question` component so that entering `0%` change retains the current baseline value (e.g., `2.1` instead of `0`).
+    - **Total Income Alignment**: Guaranteed baseline preservation when no drivers have changed, eliminating floating-point evaluation discrepancies between survey baseline and formula evaluation. Aligned table total income display with chart using integer rounding (`Math.round`), ensuring identical figures when no change occurs.
+    - Verified all changes with clean frontend linting (0 errors) and automated unit test suite (14/14 suites, 70 tests passed).
+    - Path: `frontend/src/pages/cases/components/ScenarioModelingIncomeDriversAndChart.js`, `frontend/src/pages/cases/utils/scenarioOutcomeCalculations.js`, `frontend/src/pages/cases/utils/__tests__/scenarioModelingZeroValue.test.js`.
+
 - **SMTP Email Migration & Custom Sender Alignment (#828) - [COMPLETED]**:
     - **SMTP Migration**: Replaced legacy `mailjet-rest` client with Python standard library `smtplib` and `EmailMessage` for standard SMTP relay support.
     - **Flexible Configuration**: Added `EMAIL_FROM` with fallback to `EMAIL_HOST_USER` to resolve sender domain authentication mismatches (e.g. `550 Message rejected` errors on strict SMTP servers).
