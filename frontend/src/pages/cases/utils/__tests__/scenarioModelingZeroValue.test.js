@@ -154,4 +154,118 @@ describe("Scenario Modeling Zero and Negative Percentage Driver Handling", () =>
       expect(Math.round(currentDashboardIncome)).toBe(274857);
     });
   });
+
+  describe("Driver change detection (hasActualDriverChange)", () => {
+    const checkDriverChange = ({
+      isPercentageApproach,
+      driverVal,
+      pVal,
+      aVal,
+      baselineVal,
+    }) => {
+      let hasActualDriverChange = false;
+      if (driverVal) {
+        if (isPercentageApproach) {
+          const numPVal = typeof pVal === "number" ? pVal : parseFloat(pVal);
+          if (
+            typeof pVal !== "undefined" &&
+            pVal !== null &&
+            pVal !== "" &&
+            !isNaN(numPVal) &&
+            Math.abs(numPVal) > 0.0001
+          ) {
+            hasActualDriverChange = true;
+          }
+        } else {
+          const numAVal = typeof aVal === "number" ? aVal : parseFloat(aVal);
+          if (
+            typeof aVal !== "undefined" &&
+            aVal !== null &&
+            aVal !== "" &&
+            !isNaN(numAVal) &&
+            typeof baselineVal === "number" &&
+            !isNaN(baselineVal) &&
+            Math.abs(numAVal - baselineVal) > 0.0001
+          ) {
+            hasActualDriverChange = true;
+          }
+        }
+      }
+      return hasActualDriverChange;
+    };
+
+    test("Value change: entering 3.0 when baseline is 2.1 triggers change", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: false,
+          driverVal: "2-4",
+          aVal: 3.0,
+          baselineVal: 2.1,
+        })
+      ).toBe(true);
+    });
+
+    test("Value change: entering 0 when baseline is 2.1 triggers change (-100%)", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: false,
+          driverVal: "2-4",
+          aVal: 0,
+          baselineVal: 2.1,
+        })
+      ).toBe(true);
+    });
+
+    test("Value change: entering 2.1 when baseline is 2.1 does NOT trigger change", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: false,
+          driverVal: "2-4",
+          aVal: 2.1,
+          baselineVal: 2.1,
+        })
+      ).toBe(false);
+    });
+
+    test("Value change: empty/unfilled input does NOT trigger change", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: false,
+          driverVal: "2-4",
+          aVal: null,
+          baselineVal: 2.1,
+        })
+      ).toBe(false);
+    });
+
+    test("Percentage change: entering 0% does NOT trigger change", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: true,
+          driverVal: "2-4",
+          pVal: 0,
+        })
+      ).toBe(false);
+    });
+
+    test("Percentage change: entering 10% triggers change", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: true,
+          driverVal: "2-4",
+          pVal: 10,
+        })
+      ).toBe(true);
+    });
+
+    test("Percentage change: entering -100% triggers change", () => {
+      expect(
+        checkDriverChange({
+          isPercentageApproach: true,
+          driverVal: "2-4",
+          pVal: -100,
+        })
+      ).toBe(true);
+    });
+  });
 });
