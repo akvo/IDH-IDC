@@ -1,0 +1,81 @@
+{
+  "courseId": "academy-user-guide",
+  "title": "IDC Academy User Guide",
+  "chapters": [
+    {
+      "id": "intro",
+      "title": "1. Getting Started",
+      "sections": [
+        {
+          "id": "welcome",
+          "title": "Welcome to IDC Academy",
+          "content": "## Welcome!\nThe IDC Academy is designed to help you master the Income Driver Calculator tool. This course will walk you through the interactive features available in this learning platform.\n\n### What you will learn:\n- How to navigate hierarchical content.\n- How progress is tracked across devices.\n- How to complete assessments and review your performance."
+        },
+        {
+          "id": "navigation",
+          "title": "Hierarchical Navigation",
+          "content": "## Navigating Sections\nCourses in the IDC Academy can be structured into **Chapters** and **Sections**. \n\n### The Sidebar\nOn the left, you will see a hierarchical menu. \n- **Chapters** act as main modules.\n- **Sections** (like this one) are nested sub-topics.\n\nYou can click on any section to jump directly to it, or use the **Next** and **Previous** buttons at the bottom of the page to move through the content sequentially."
+        }
+      ],
+      "quiz": {
+        "quizTitle": "Navigation Check",
+        "quizSynopsis": "A quick check on your navigation skills.",
+        "nrOfQuestions": "1",
+        "timerInMinutes": 2,
+        "questions": [
+          {
+            "question": "Where can you find the hierarchical list of course sections?",
+            "questionType": "text",
+            "answerSelectionType": "single",
+            "answers": ["Header", "Footer", "Left Sidebar", "Right Sidebar"],
+            "correctAnswer": "3",
+            "messageForCorrectAnswer": "Correct! The sidebar holds the course structure.",
+            "messageForIncorrectAnswer": "Not quite, look to the left.",
+            "explanation": "The sidebar uses Ant Design SubMenus to show chapters and sections.",
+            "point": "100"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tracking",
+      "title": "2. Progress & Resumption",
+      "sections": [
+        {
+          "id": "auto-sync",
+          "title": "Automatic Syncing",
+          "content": "## Never Lose Your Place\nEvery time you move to a new section or chapter, your progress is automatically saved to our servers. \n\nThis means you can start a course on your desktop at the office and finish it on your laptop at home—you will always be returned to the **exact section** where you left off."
+        },
+        {
+          "id": "completion",
+          "title": "Course Completion",
+          "content": "## Marking as Complete\nA chapter is marked as complete once you successfully pass its **Knowledge Check**. \n\nOnce all chapters are completed, the course will be marked as 'Finished' in your library, allowing you to track your learning journey over time."
+        }
+      ],
+      "quiz": {
+        "quizTitle": "Progress Check",
+        "quizSynopsis": "Validate your understanding of progress tracking.",
+        "nrOfQuestions": "1",
+        "timerInMinutes": 2,
+        "questions": [
+          {
+            "question": "What happens if you close the browser in the middle of a section?",
+            "questionType": "text",
+            "answerSelectionType": "single",
+            "answers": [
+              "I lose everything",
+              "I start from Chapter 1",
+              "I resume from the exact section",
+              "The course is deleted"
+            ],
+            "correctAnswer": "3",
+            "messageForCorrectAnswer": "Exactly! Granular resumption is a core feature.",
+            "messageForIncorrectAnswer": "Don't worry, we save your spot.",
+            "explanation": "The system stores the current_section_index in the backend progress record.",
+            "point": "100"
+          }
+        ]
+      }
+    }
+  ]
+}
