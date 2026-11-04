@@ -135,6 +135,7 @@
           color: #ffffff;
           margin-bottom: 24px;
           letter-spacing: -0.5px;
+          text-transform: capitalize;
 
           @media (max-width: 768px) {
             font-size: 32px;
@@ -183,7 +184,9 @@
 
           .btn-arrow-icon {
             width: 16px;
-            height: 16px;
+            height: 12px;
+            object-fit: contain;
+            flex-shrink: 0;
           }
         }
       }
@@ -205,21 +208,31 @@
       margin-bottom: 56px;
     }
 
-    .about-content-row {
+    .about-content-grid {
+      display: flex;
+      gap: 32px;
+      align-items: stretch;
+
+      @media (max-width: 991px) {
+        flex-direction: column;
+      }
+
       .about-steps-col {
+        flex: 1 1 0%;
+        min-width: 0;
+
         .steps-list {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 16px;
 
           .step-card {
             display: flex;
             align-items: flex-start;
-            gap: 20px;
+            gap: 16px;
             padding: 8px 0;
 
             .step-marker {
-              position: relative;
               width: 48px;
               height: 48px;
               flex-shrink: 0;
@@ -227,40 +240,42 @@
               align-items: center;
               justify-content: center;
 
-              .hex-bg {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-              }
-
-              .step-icon {
-                position: relative;
-                z-index: 2;
-                width: 24px;
-                height: 24px;
+              .step-hex-icon {
+                width: 48px;
+                height: 48px;
+                display: block;
               }
             }
 
             .step-body {
-              flex: 1;
+              flex: 1 1 0%;
+              min-width: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
 
               .step-title {
-                font-size: 22px;
+                font-family: "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+                font-size: 24px;
                 font-weight: 700;
+                line-height: 32px;
+                letter-spacing: -0.24px;
                 color: #01625f;
-                margin-bottom: 6px;
-                line-height: 1.3;
+                margin: 0;
 
                 @media (max-width: 768px) {
-                  font-size: 18px;
+                  font-size: 20px;
+                  line-height: 28px;
                 }
               }
 
               .step-text {
-                font-size: 15px;
-                line-height: 1.55;
-                color: #333333;
-                margin-bottom: 0;
+                font-family: "Actor", sans-serif;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #000000;
+                margin: 0;
               }
             }
           }
@@ -268,17 +283,27 @@
       }
 
       .about-image-col {
+        flex: 1 1 0%;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
         .about-image-wrapper {
           width: 100%;
-          border-radius: 16px;
+          max-width: 592px;
+          aspect-ratio: 592 / 502;
+          border-radius: 12px;
           overflow: hidden;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+          position: relative;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 
           .about-image {
             width: 100%;
-            height: auto;
-            max-height: 520px;
+            height: 100%;
             object-fit: cover;
+            object-position: center;
+            border-radius: 12px;
             display: block;
           }
         }
@@ -583,7 +608,9 @@
 
           .btn-arrow-icon {
             width: 14px;
-            height: 14px;
+            height: 10px;
+            object-fit: contain;
+            flex-shrink: 0;
           }
         }
       }

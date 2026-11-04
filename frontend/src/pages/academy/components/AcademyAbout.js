@@ -1,32 +1,30 @@
 import React from "react";
-import { Row, Col } from "antd";
-import StepHex from "../../../assets/icons/academy/step-hex.svg";
-import Step1Icon from "../../../assets/icons/academy/step1-icon.svg";
-import Step2Icon from "../../../assets/icons/academy/step2-icon.svg";
-import Step3Icon from "../../../assets/icons/academy/step3-icon.svg";
-import Step4Icon from "../../../assets/icons/academy/step4-icon.svg";
+import Step1HexIcon from "../../../assets/icons/academy/step1-hex-icon.svg";
+import Step2HexIcon from "../../../assets/icons/academy/step2-hex-icon.svg";
+import Step3HexIcon from "../../../assets/icons/academy/step3-hex-icon.svg";
+import Step4HexIcon from "../../../assets/icons/academy/step4-hex-icon.svg";
 import GreenhouseImg from "../../../assets/images/academy/about-greenhouse.png";
 
 const steps = [
   {
+    icon: Step1HexIcon,
     title: "Foundations of Living Income",
     text: "Get a shared starting point: what a living income is, why it matters for your business and how it fits your sustainability and commercial goals.",
-    icon: Step1Icon,
   },
   {
+    icon: Step2HexIcon,
     title: "Materiality and Prioritization",
     text: "Identify where income gaps matter most in your value chain and decide which crops, regions or farmer groups to focus on first.",
-    icon: Step2Icon,
   },
   {
+    icon: Step3HexIcon,
     title: "Measuring Income Gaps",
     text: "Use the Income Driver Calculator and other tools to see how far farmer incomes fall short of a living income and which drivers explain the difference.",
-    icon: Step3Icon,
   },
   {
+    icon: Step4HexIcon,
     title: "Designing Living Income Programs",
     text: "Turn your findings into action: choose interventions, set targets and build the business case for a programme that closes the gap.",
-    icon: Step4Icon,
   },
 ];
 
@@ -50,23 +48,17 @@ const AcademyAbout = () => {
           </p>
         </div>
 
-        <Row gutter={[48, 32]} className="about-content-row" align="middle">
-          <Col xs={24} lg={12} className="about-steps-col">
+        <div className="about-content-grid">
+          <div className="about-steps-col">
             <div className="steps-list">
               {steps.map((step, idx) => (
                 <div className="step-card" key={`step-${idx}`}>
                   <div className="step-marker">
                     <img
-                      src={StepHex}
-                      alt=""
-                      aria-hidden="true"
-                      className="hex-bg"
-                    />
-                    <img
                       src={step.icon}
                       alt=""
                       aria-hidden="true"
-                      className="step-icon"
+                      className="step-hex-icon"
                     />
                   </div>
                   <div className="step-body">
@@ -76,9 +68,9 @@ const AcademyAbout = () => {
                 </div>
               ))}
             </div>
-          </Col>
+          </div>
 
-          <Col xs={24} lg={12} className="about-image-col">
+          <div className="about-image-col">
             <div className="about-image-wrapper">
               <img
                 src={GreenhouseImg}
@@ -86,8 +78,8 @@ const AcademyAbout = () => {
                 className="about-image"
               />
             </div>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </div>
     </section>
   );
