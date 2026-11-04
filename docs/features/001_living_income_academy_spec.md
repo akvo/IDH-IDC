@@ -355,6 +355,28 @@ erDiagram
   }
   ```
 
+#### `GET /user/me` (Enhanced Core User Endpoint)
+- **File**: `/backend/routes/user.py` & `/backend/models/user.py`
+- Delivers the learner's extended `user_profile` dictionary alongside existing core user details (`email`, `fullname`, `role`, etc.) so the frontend can immediately hydrate user state upon login:
+  ```json
+  {
+    "id": 1,
+    "email": "kole@untitledui.com",
+    "fullname": "Kole Jain",
+    "role": "user",
+    "user_profile": {
+      "first_name": "Kole",
+      "last_name": "Jain",
+      "company_name": "Unicef",
+      "company_type": "NGO",
+      "sector": "Agriculture",
+      "region_id": 4,
+      "region_name": "West-Africa",
+      "commodities": ["Wheat", "Corn", "Grain", "Cocoa", "Sugar", "Cane", "Cotton", "Rice"]
+    }
+  }
+  ```
+
 #### `GET /academy/profile` & `PUT /academy/profile`
 - Retrieves or updates the authenticated user's Personal Info (`first_name`, `last_name`, `email`) and Additional Info (`company_name`, `company_type`, `sector`, `region_id`, `region_name`, `commodities`). Updating `first_name` / `last_name` synchronizes `user.fullname`.
 
@@ -474,8 +496,8 @@ frontend/src/pages/academy/
 | **BE-02** | **Master CSVs (HTML Content) & Academy Seeder**: Create `/backend/source/master/academy_*.csv` (6 modules, 27 HTML chapters, resources, glossary terms), implement idempotent `/backend/seeder/academy.py`, and hook into `seed_master.sh`. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
 | **BE-03** | **Course Overview, Progress & History API**: Implement `/backend/db/academy/crud_course.py` and `/backend/routes/academy/course.py` (`GET /academy/overview`, `GET /academy/modules` with search/tag filter, `POST /academy/chapters/{id}/progress`, `GET /academy/history`). | 3.0h | 1.5h | 0.5h | 1.0h | **6.0h** | 0.86d | Must Have |
 | **BE-04** | **Technical Resources & Glossary API**: Implement `/backend/db/academy/crud_resource.py` and `/backend/routes/academy/resource.py` (`GET /academy/resources` and `GET /academy/glossary` with search, filter, and sort). | 2.0h | 1.0h | 0.5h | 1.0h | **4.5h** | 0.64d | Must Have |
-| **BE-05** | **User Profile (`user` + `user_profile`) API**: Implement `/backend/db/academy/crud_profile.py` and `/backend/routes/academy/profile.py` (`GET /academy/profile`, `PUT /academy/profile` syncing `user.fullname` & `user.company` with `user_profile` and `commodities` JSONB tags). | 2.0h | 1.0h | 0.5h | 1.0h | **4.5h** | 0.64d | Must Have |
-| **BE Subtotal** | **Backend Group (5 Tasks)** | **12.0h** | **5.5h** | **2.5h** | **5.0h** | **25.0h** | **3.57d** | — |
+| **BE-05** | **User Profile Delivery & Management API (`user` + `user_profile`)**: Update `GET /user/me` in `/backend/routes/user.py` to deliver `user_profile`; implement `/backend/routes/academy/profile.py` (`GET/PUT /academy/profile` syncing `user.fullname`, `user.company`, and `commodities` JSONB tags); update `/frontend/src/store/user.js`. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
+| **BE Subtotal** | **Backend Group (5 Tasks)** | **12.5h** | **5.5h** | **2.5h** | **5.0h** | **25.5h** | **3.64d** | — |
 
 #### Task Details: Backend Workstream
 
@@ -527,17 +549,21 @@ frontend/src/pages/academy/
   - [ ] Enforces enum validation for `resource_type` and `term_type`.
   - [ ] Unit tests in `backend/tests/test_academy_resource.py` reach ≥80% test coverage.
 
-##### `BE-05`: User Profile (`user` + `user_profile`) API
+##### `BE-05`: User Profile Delivery & Management API (`user` + `user_profile`)
 - **UAC**:
-  - [ ] Learner can view personal information and additional organization/sector/region/commodities profile details.
-  - [ ] Learner can update profile info, with first and last name updates automatically updating the account display name.
+  - [ ] Learner's profile details (`first_name`, `last_name`, company details, sector, region, and commodities) are automatically delivered upon login with account information (`GET /user/me`) and populated in global user state.
+  - [ ] Learner can view personal information and additional organization/sector/region/commodities profile details via Academy endpoints.
+  - [ ] Learner can update profile info, with first and last name updates automatically updating the account display name (`user.fullname`) and company name (`user.company`).
 - **TAC**:
+  - [ ] `UserInfo` TypedDict in `backend/models/user.py` and `to_user_info` method updated to include `user_profile: Optional[UserProfileDict]` (delivering `first_name`, `last_name`, `company_name`, `company_type`, `sector`, `region_id`, `region_name`, and `commodities`).
+  - [ ] `GET /user/me` in `backend/routes/user.py` verified to return the extended `user_profile`.
   - [ ] Endpoints implemented in `backend/routes/academy/profile.py` and `backend/db/academy/crud_profile.py`:
     - `GET /academy/profile` (fetches joint `user` and `user_profile` record; creates default `user_profile` if none exists)
     - `PUT /academy/profile` (validates schema via Pydantic; updates `user_profile` and syncs `user.fullname` and `user.company`)
+  - [ ] `frontend/src/store/user.js` default state updated with `profile` object, and `frontend/src/App.js` updated to hydrate `UserState.profile` on login.
   - [ ] Commodities payload validated as JSONB array of strings.
   - [ ] Strictly scoped to authenticated `current_user.id` (users cannot view or edit profiles belonging to other users).
-  - [ ] Unit tests in `backend/tests/test_academy_profile.py` reach ≥80% test coverage.
+  - [ ] Unit tests in `backend/tests/test_academy_profile.py` and `backend/tests/test_user.py` reach ≥80% test coverage.
 
 ### 5.2 Frontend Development Tasks (`FE-01` – `FE-07`)
 
@@ -646,6 +672,6 @@ frontend/src/pages/academy/
 
 | Workstream | Tasks | Dev Hours | Testing Hours | QA & Review | Buffer (1h/task) | Total Hours | Working Days (7h/day) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Backend (`BE-01` – `BE-05`)** | 5 | 12.0h | 5.5h | 2.5h | 5.0h | **25.0h** | **3.57 days** |
+| **Backend (`BE-01` – `BE-05`)** | 5 | 12.5h | 5.5h | 2.5h | 5.0h | **25.5h** | **3.64 days** |
 | **Frontend (`FE-01` – `FE-07`)** | 7 | 20.0h | 8.5h | 3.5h | 7.0h | **39.0h** | **5.57 days** |
-| **GRAND TOTAL** | **12** | **32.0h** | **14.0h** | **6.0h** | **12.0h** | **64.0h** | **~9.14 days** |
+| **GRAND TOTAL** | **12** | **32.5h** | **14.0h** | **6.0h** | **12.0h** | **64.5h** | **~9.21 days** |
