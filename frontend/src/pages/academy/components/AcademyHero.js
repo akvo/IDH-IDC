@@ -18,7 +18,7 @@ const AcademyHero = ({ onExploreClick }) => {
       <div className="hero-content-container">
         <div className="hero-text-block">
           <h1 className="hero-title">
-            Expertise what drives living income impact
+            Expertise What Drives Living Income Impact
           </h1>
           <p className="hero-description">
             Build the practical expertise to design, implement and scale living
