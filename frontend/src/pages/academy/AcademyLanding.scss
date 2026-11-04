@@ -316,17 +316,17 @@
   // ==========================================
   .academy-roadmap-section {
     background-color: #005953;
-    padding: 64px 0 96px;
+    padding: 64px 0 48px;
     color: #ffffff;
     position: relative;
     overflow: hidden;
 
     @media (max-width: 768px) {
-      padding: 48px 0 64px;
+      padding: 48px 0 36px;
     }
 
     .roadmap-header {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
       text-align: center;
 
       .section-title-light {
@@ -349,7 +349,7 @@
       width: 100%;
       max-width: 1440px;
       margin: 0 auto;
-      min-height: 980px;
+      min-height: 846px;
 
       @media (max-width: 1199px) {
         min-height: auto;
@@ -360,7 +360,7 @@
 
       .radar-center-wrapper {
         position: absolute;
-        top: 130px;
+        top: 106px;
         left: 50%;
         transform: translateX(-50%);
         width: 595px;
@@ -373,7 +373,7 @@
           transform: none;
           width: 320px;
           height: 310px;
-          margin-bottom: 40px;
+          margin-bottom: 24px;
         }
 
         .radar-graphic {
@@ -416,31 +416,31 @@
           // Desktop positioning
           &.roadmap-step-1 {
             left: calc(50% - 591px);
-            top: 176px;
+            top: 152px;
             width: 480px;
           }
 
           &.roadmap-step-2 {
             right: calc(50% - 591px);
-            top: 87px;
+            top: 63px;
             width: 479px;
           }
 
           &.roadmap-step-3 {
             right: calc(50% - 591px);
-            top: 324px;
+            top: 300px;
             width: 396px;
           }
 
           &.roadmap-step-4 {
             right: calc(50% - 591px);
-            top: 582px;
+            top: 558px;
             width: 479px;
           }
 
           &.roadmap-step-5 {
             left: calc(50% - 591px);
-            top: 444px;
+            top: 420px;
             width: 443px;
           }
 
