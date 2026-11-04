@@ -46,11 +46,11 @@ describe("AcademyLanding Component", () => {
       screen.getByRole("heading", { name: /roadmap on living income/i })
     ).toBeInTheDocument();
     expect(screen.getByText(/laying the groundwork/i)).toBeInTheDocument();
-    expect(screen.getByText(/measuring \+ analysis/i)).toBeInTheDocument();
+    expect(screen.getByText(/measuring [&+] analysis/i)).toBeInTheDocument();
     expect(screen.getByText(/building the business case/i)).toBeInTheDocument();
     expect(screen.getByText(/implementing solutions/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/reporting \+ sharing insights/i)
+      screen.getByText(/reporting [&+] sharing insights/i)
     ).toBeInTheDocument();
   });
 

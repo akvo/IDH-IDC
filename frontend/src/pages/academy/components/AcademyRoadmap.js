@@ -5,47 +5,57 @@ import Step2Img from "../../../assets/images/academy/roadmap-step2.png";
 import Step3Img from "../../../assets/images/academy/roadmap-step3.png";
 import Step4Img from "../../../assets/images/academy/roadmap-step4.png";
 import Step5Img from "../../../assets/images/academy/roadmap-step5.png";
+import MarkerStep1 from "../../../assets/icons/academy/roadmap-marker-step1.svg";
+import MarkerStep2 from "../../../assets/icons/academy/roadmap-marker-step2.svg";
+import MarkerStep3 from "../../../assets/icons/academy/roadmap-marker-step3.svg";
+import MarkerStep4 from "../../../assets/icons/academy/roadmap-marker-step4.svg";
+import MarkerStep5 from "../../../assets/icons/academy/roadmap-marker-step5.svg";
 
 const roadmapNodes = [
   {
     step: 1,
     title: "Laying the Groundwork",
     description:
-      "Build the overall foundation to act on living income, ensuring internal alignment and understanding in priority areas.",
+      "Establish a solid foundation to act on living income, ensuring internal alignment and understanding in priority areas.",
     illustration: Step1Img,
-    positionClass: "pos-step-1",
+    marker: MarkerStep1,
+    side: "left",
   },
   {
     step: 2,
-    title: "Measuring + Analysis",
+    title: "Measuring & Analysis",
     description:
-      "Use actual and standard to identify credible living income benchmarks, calculate income gaps and assess root cause options.",
+      "Use recognised standards to identify credible living income benchmarks, calculate income gaps and assess verification options.",
     illustration: Step2Img,
-    positionClass: "pos-step-2",
+    marker: MarkerStep2,
+    side: "right",
   },
   {
     step: 3,
     title: "Building the Business Case",
     description:
-      "Harmonize and align internal stakeholders on the value proposition and strategic priorities, design your Living Income strategy, and finalize the roadmap.",
+      "Align internal and external stakeholders on the value proposition and strategic priorities. Design your Living Income strategy and mobilise resources.",
     illustration: Step3Img,
-    positionClass: "pos-step-3",
+    marker: MarkerStep3,
+    side: "right",
   },
   {
     step: 4,
     title: "Implementing Solutions",
     description:
-      "Take coordinated, targeted actions to close the living income gap, identify priority regions, commodities or household segments, and determine tailored sets of interventions to improve income drivers.",
+      "Take coordinated, targeted action to close the living income gap. Identify priority regions, commodities or household segments and determine a smart-mix of interventions to improve income drivers.",
     illustration: Step4Img,
-    positionClass: "pos-step-4",
+    marker: MarkerStep4,
+    side: "right",
   },
   {
     step: 5,
-    title: "Reporting + Sharing Insights",
+    title: "Reporting & Sharing Insights",
     description:
-      "Build shared knowledge and demonstrate compliance through transparent reporting and shared learning that supports broader advocacy.",
+      "Build trust, knowledge, and demonstrate compliance through transparent reporting and shared learning that supports broader advocacy.",
     illustration: Step5Img,
-    positionClass: "pos-step-5",
+    marker: MarkerStep5,
+    side: "left",
   },
 ];
 
@@ -73,30 +83,55 @@ const AcademyRoadmap = () => {
           </div>
 
           <div className="roadmap-nodes-container">
-            {roadmapNodes.map((node) => (
-              <div
-                key={`roadmap-step-${node.step}`}
-                className={`roadmap-node-card ${node.positionClass}`}
-              >
-                <div className="node-marker-row">
-                  <div className="step-badge">
-                    <span>{node.step}</span>
-                  </div>
-                  <div className="node-illustration-wrapper">
+            {roadmapNodes.map((node) => {
+              const isLeft = node.side === "left";
+              return (
+                <div
+                  key={`roadmap-step-${node.step}`}
+                  className={`roadmap-step-group roadmap-step-${node.step} side-${node.side}`}
+                >
+                  <div className="step-illustration-wrapper">
                     <img
                       src={node.illustration}
                       alt=""
                       aria-hidden="true"
-                      className="node-illustration"
+                      className="step-illustration"
                     />
                   </div>
+
+                  <div className="step-connector-row">
+                    {isLeft ? (
+                      <>
+                        <div className="connector-line" />
+                        <img
+                          src={node.marker}
+                          alt=""
+                          aria-hidden="true"
+                          className="connector-marker"
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <img
+                          src={node.marker}
+                          alt=""
+                          aria-hidden="true"
+                          className="connector-marker"
+                        />
+                        <div className="connector-line" />
+                      </>
+                    )}
+                  </div>
+
+                  <div className="step-content-wrapper">
+                    <div className="step-content">
+                      <h3 className="step-title">{node.title}</h3>
+                      <p className="step-description">{node.description}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="node-text-body">
-                  <h3 className="node-title">{node.title}</h3>
-                  <p className="node-description">{node.description}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

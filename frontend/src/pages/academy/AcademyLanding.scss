@@ -316,43 +316,63 @@
   // ==========================================
   .academy-roadmap-section {
     background-color: #005953;
-    padding: 80px 0 96px;
+    padding: 64px 0 96px;
     color: #ffffff;
     position: relative;
     overflow: hidden;
 
     @media (max-width: 768px) {
-      padding: 60px 0;
+      padding: 48px 0 64px;
     }
 
     .roadmap-header {
-      margin-bottom: 48px;
+      margin-bottom: 40px;
+      text-align: center;
+
+      .section-title-light {
+        font-family: "RocGroteskBold", "RocGrotesk",
+          "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+        font-size: 42px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.25;
+        margin: 0;
+
+        @media (max-width: 768px) {
+          font-size: 32px;
+        }
+      }
     }
 
     .roadmap-visual-stage {
       position: relative;
       width: 100%;
-      min-height: 600px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      max-width: 1440px;
+      margin: 0 auto;
+      min-height: 980px;
 
-      @media (max-width: 1024px) {
-        flex-direction: column;
+      @media (max-width: 1199px) {
         min-height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       .radar-center-wrapper {
-        position: relative;
-        width: 480px;
-        height: 480px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: absolute;
+        top: 130px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 595px;
+        height: 577px;
+        z-index: 1;
+        pointer-events: none;
 
-        @media (max-width: 1024px) {
-          width: 280px;
-          height: 280px;
+        @media (max-width: 1199px) {
+          position: static;
+          transform: none;
+          width: 320px;
+          height: 310px;
           margin-bottom: 40px;
         }
 
@@ -360,7 +380,7 @@
           width: 100%;
           height: 100%;
           object-fit: contain;
-          opacity: 0.95;
+          display: block;
         }
       }
 
@@ -370,106 +390,167 @@
         left: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none;
+        z-index: 2;
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1199px) {
           position: static;
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 36px;
           width: 100%;
-          pointer-events: auto;
+          max-width: 600px;
         }
 
-        .roadmap-node-card {
-          pointer-events: auto;
+        .roadmap-step-group {
           position: absolute;
-          width: 340px;
-          background: rgba(2, 45, 42, 0.65);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          border-radius: 12px;
-          padding: 16px 20px;
-          transition: transform 150ms ease, background 150ms ease;
+          box-sizing: border-box;
 
-          @media (max-width: 1024px) {
-            position: static;
-            width: 100%;
+          @media (max-width: 1199px) {
+            position: static !important;
+            width: 100% !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
           }
 
-          &:hover {
-            background: rgba(2, 45, 42, 0.85);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+          // Desktop positioning
+          &.roadmap-step-1 {
+            left: calc(50% - 591px);
+            top: 176px;
+            width: 480px;
           }
 
-          &.pos-step-1 {
-            top: 20px;
-            left: 20px;
+          &.roadmap-step-2 {
+            right: calc(50% - 591px);
+            top: 87px;
+            width: 479px;
           }
 
-          &.pos-step-2 {
-            top: 20px;
-            right: 20px;
+          &.roadmap-step-3 {
+            right: calc(50% - 591px);
+            top: 324px;
+            width: 396px;
           }
 
-          &.pos-step-3 {
-            top: 250px;
-            right: 10px;
+          &.roadmap-step-4 {
+            right: calc(50% - 591px);
+            top: 582px;
+            width: 479px;
           }
 
-          &.pos-step-4 {
-            bottom: 20px;
-            right: 30px;
+          &.roadmap-step-5 {
+            left: calc(50% - 591px);
+            top: 444px;
+            width: 443px;
           }
 
-          &.pos-step-5 {
-            bottom: 30px;
-            left: 20px;
+          .step-illustration-wrapper {
+            margin-bottom: 8px;
+            display: flex;
+
+            .step-illustration {
+              height: 64px;
+              width: auto;
+              object-fit: contain;
+              display: block;
+            }
           }
 
-          .node-marker-row {
+          .step-connector-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
+            width: 100%;
+            height: 2px;
+            margin: 12px 0 8px;
+            position: relative;
 
-            .step-badge {
-              width: 32px;
-              height: 32px;
-              border-radius: 50%;
-              background-color: #ffc505;
-              color: #005953;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-weight: 700;
-              font-size: 15px;
+            @media (max-width: 1199px) {
+              height: auto;
+              gap: 12px;
+              margin: 10px 0 8px;
             }
 
-            .node-illustration-wrapper {
-              .node-illustration {
-                height: 48px;
-                width: auto;
-                object-fit: contain;
+            .connector-marker {
+              width: 48px;
+              height: 48px;
+              flex-shrink: 0;
+              display: block;
+              border-radius: 50%;
+              overflow: hidden;
+              transition: transform 200ms ease;
+
+              &:hover {
+                transform: scale(1.08);
+              }
+
+              @media (max-width: 1199px) {
+                width: 40px;
+                height: 40px;
+              }
+            }
+
+            .connector-line {
+              flex: 1;
+              height: 1.5px;
+              background-color: #96eaba;
+              border-radius: 9999px;
+            }
+          }
+
+          .step-content-wrapper {
+            display: flex;
+            margin-top: 4px;
+
+            .step-content {
+              max-width: 324px;
+
+              .step-title {
+                font-family: "RocGroteskBold", "RocGrotesk",
+                  "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+                font-size: 20px;
+                font-weight: 700;
+                line-height: 28px;
+                color: #48d985;
+                margin-bottom: 8px;
+              }
+
+              .step-description {
+                font-family: "Actor", sans-serif;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #ffffff;
+                margin: 0;
               }
             }
           }
 
-          .node-text-body {
-            .node-title {
-              font-size: 18px;
-              font-weight: 700;
-              color: #ffffff;
-              margin-bottom: 6px;
-              line-height: 1.3;
+          // Side-specific alignments
+          &.side-left {
+            .step-illustration-wrapper {
+              justify-content: flex-start;
             }
 
-            .node-description {
-              font-size: 13px;
-              line-height: 1.5;
-              color: rgba(255, 255, 255, 0.85);
-              margin-bottom: 0;
+            .step-content-wrapper {
+              justify-content: flex-start;
+            }
+          }
+
+          &.side-right {
+            .step-illustration-wrapper {
+              justify-content: flex-end;
+
+              @media (max-width: 1199px) {
+                justify-content: flex-start;
+              }
+            }
+
+            .step-content-wrapper {
+              justify-content: flex-end;
+
+              @media (max-width: 1199px) {
+                justify-content: flex-start;
+              }
             }
           }
         }
