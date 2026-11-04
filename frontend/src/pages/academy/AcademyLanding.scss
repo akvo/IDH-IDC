@@ -559,7 +559,7 @@
   }
 
   // ==========================================
-  // 4. CTA BANNER
+  // 4. CALL TO ACTION (CTA)
   // ==========================================
   .academy-cta-section {
     padding: 64px 0;
@@ -568,13 +568,17 @@
     .cta-card {
       position: relative;
       background-color: #eaf2f2;
-      border-radius: 20px;
-      padding: 56px 40px;
+      border-radius: 16px;
+      padding: 48px 32px;
       overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
+      width: 100%;
+      max-width: 1216px;
+      margin: 0 auto;
+      box-sizing: border-box;
 
       @media (max-width: 768px) {
         padding: 40px 24px;
@@ -582,57 +586,104 @@
 
       .cta-pattern-bg {
         position: absolute;
-        right: -60px;
-        bottom: -60px;
-        opacity: 0.35;
+        inset: 0;
         pointer-events: none;
+        overflow: hidden;
 
         img {
-          width: 320px;
-          height: auto;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: right center;
         }
       }
 
       .cta-content {
         position: relative;
         z-index: 2;
-        max-width: 720px;
+        width: 100%;
+        max-width: 768px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
 
-        .cta-title {
-          font-size: 32px;
-          font-weight: 700;
-          color: #01625f;
-          margin-bottom: 12px;
-          line-height: 1.3;
+        .cta-text-group {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
 
-          @media (max-width: 768px) {
-            font-size: 24px;
+          .cta-title {
+            font-family: "RocGroteskBold", "RocGrotesk",
+              "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #01625f;
+            margin: 0;
+            line-height: 42px;
+            letter-spacing: -0.32px;
+
+            @media (max-width: 768px) {
+              font-size: 24px;
+              line-height: 32px;
+            }
+          }
+
+          .cta-subtitle {
+            font-family: "Actor", -apple-system, BlinkMacSystemFont, "Segoe UI",
+              Roboto, sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 28px;
+            color: #000000;
+            margin: 0;
+
+            @media (max-width: 768px) {
+              font-size: 16px;
+              line-height: 24px;
+            }
           }
         }
 
-        .cta-subtitle {
-          font-size: 17px;
-          line-height: 1.55;
-          color: #1a1a1a;
-          margin-bottom: 28px;
-        }
-
         .cta-action {
-          .cta-start-btn {
-            height: 46px;
-            padding: 0 32px;
+          display: flex;
+          justify-content: center;
+
+          .cta-start-btn.ant-btn {
+            height: 48px;
+            padding: 0 24px;
             border-radius: 999px;
-            border: 2px solid #01625f;
-            background-color: transparent;
+            border: 1px solid #01625f;
+            background: transparent !important;
+            background-color: transparent !important;
             color: #01625f;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
+            line-height: 24px;
+            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             transition: all 120ms ease;
 
-            &:hover {
+            span {
+              font-weight: 700;
+              color: #01625f;
+              transition: color 120ms ease;
+            }
+
+            &:hover,
+            &:focus {
+              background: #01625f !important;
               background-color: #01625f !important;
               color: #ffffff !important;
               border-color: #01625f !important;
+
+              span {
+                color: #ffffff !important;
+              }
             }
 
             &:active {
@@ -649,136 +700,6 @@
   // ==========================================
   .academy-tools-section {
     background-color: #ffffff;
-    padding: 64px 0 80px;
-
-    .tools-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 40px;
-
-      @media (max-width: 768px) {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-      }
-
-      .tools-header-action {
-        .explore-all-btn {
-          height: 44px;
-          padding: 0 24px;
-          border-radius: 999px;
-          background-color: #01625f;
-          border-color: #01625f;
-          color: #ffffff;
-          font-weight: 700;
-          font-size: 15px;
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          transition: background-color 120ms ease, transform 120ms ease;
-
-          &:hover {
-            background-color: #004d4a !important;
-            border-color: #004d4a !important;
-          }
-
-          &:active {
-            transform: scale(0.98);
-          }
-
-          .btn-arrow-icon {
-            width: 14px;
-            height: 10px;
-            object-fit: contain;
-            flex-shrink: 0;
-          }
-        }
-      }
-    }
-
-    .tools-cards-row {
-      .tool-card-custom {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        border-radius: 16px;
-        border: 1px solid #e5e7eb;
-        overflow: hidden;
-        transition: transform 150ms ease, box-shadow 150ms ease;
-
-        &:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        .ant-card-body {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-          padding: 24px;
-        }
-
-        .tool-cover-wrapper {
-          height: 200px;
-          overflow: hidden;
-          background-color: #f9fafb;
-
-          .tool-cover-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-          }
-        }
-
-        .tool-card-body {
-          flex: 1;
-
-          .tool-badge {
-            background-color: #01625f;
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 10px;
-            margin-bottom: 12px;
-          }
-
-          .tool-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 10px;
-            line-height: 1.35;
-          }
-
-          .tool-description {
-            font-size: 14px;
-            line-height: 1.55;
-            color: #474747;
-            margin-bottom: 16px;
-          }
-        }
-
-        .tool-card-footer {
-          padding-top: 12px;
-          border-top: 1px solid #f3f4f6;
-
-          .tool-action-link {
-            color: #00625f;
-            font-weight: 700;
-            font-size: 14px;
-            transition: color 120ms ease;
-
-            &:hover {
-              color: #004d4a;
-              text-decoration: underline;
-            }
-          }
-        }
-      }
-    }
   }
 
   // ==========================================

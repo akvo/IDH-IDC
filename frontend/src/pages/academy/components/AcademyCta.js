@@ -12,15 +12,18 @@ const AcademyCta = ({ onStartLearningClick }) => {
           </div>
 
           <div className="cta-content">
-            <h2 className="cta-title">
-              Ready to accelerate your Living Income journey?
-            </h2>
-            <p className="cta-subtitle">
-              Gain the knowledge, tools, and confidence to turn strategy into
-              measurable impact.
-            </p>
+            <div className="cta-text-group">
+              <h2 className="cta-title">
+                Ready to accelerate your Living Income journey?
+              </h2>
+              <p className="cta-subtitle">
+                Gain the knowledge, tools, and confidence to turn strategy into
+                measurable impact.
+              </p>
+            </div>
             <div className="cta-action">
               <Button
+                ghost
                 type="default"
                 className="cta-start-btn"
                 onClick={onStartLearningClick}
