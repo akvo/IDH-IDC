@@ -477,6 +477,68 @@ frontend/src/pages/academy/
 | **BE-05** | **User Profile (`user` + `user_profile`) API**: Implement `/backend/db/academy/crud_profile.py` and `/backend/routes/academy/profile.py` (`GET /academy/profile`, `PUT /academy/profile` syncing `user.fullname` & `user.company` with `user_profile` and `commodities` JSONB tags). | 2.0h | 1.0h | 0.5h | 1.0h | **4.5h** | 0.64d | Must Have |
 | **BE Subtotal** | **Backend Group (5 Tasks)** | **12.0h** | **5.5h** | **2.5h** | **5.0h** | **25.0h** | **3.57d** | — |
 
+#### Task Details: Backend Workstream
+
+##### `BE-01`: DB Models, Schemas & Alembic Migration
+- **UAC**:
+  - [ ] The database securely supports persistent storage of user profiles, Academy course curriculum, progress tracking, technical resources, and glossary entries.
+- **TAC**:
+  - [ ] `backend/models/user_profile.py` defines `UserProfile` with a 1:1 relation to `user.id` (`ForeignKey("user.id", ondelete="CASCADE")`, `unique=True`), columns `first_name`, `last_name`, `company_name`, `company_type`, `sector`, `region_id`, `region_name`, and `commodities` (`JSONB`).
+  - [ ] `backend/models/academy/academy_models.py` defines `AcademyModule`, `AcademyChapter`, `AcademyUserChapterProgress`, `AcademyResource`, and `AcademyGlossaryTerm` with cascades and `UniqueConstraint('user_id', 'chapter_id')`.
+  - [ ] `backend/models/academy/academy_schemas.py` defines Pydantic v2 schemas for all payloads with field validations.
+  - [ ] Alembic migration applies cleanly (`alembic upgrade head`) and rolls back without error (`alembic downgrade -1`).
+  - [ ] Linter pass: `./dc.sh exec backend flake8` returns 0 errors.
+
+##### `BE-02`: Master CSVs (HTML Content) & Academy Seeder
+- **UAC**:
+  - [ ] The platform is pre-loaded with official IDH Living Income Roadmap content (6 modules, 27 chapters with rich HTML content, technical resources, and glossary terms).
+- **TAC**:
+  - [ ] Master seed CSVs created under `backend/source/master/`: `academy_modules.csv`, `academy_chapters.csv`, `academy_resources.csv`, and `academy_glossary.csv`.
+  - [ ] Chapters and modules contain sanitized, valid HTML in `content_html`.
+  - [ ] `backend/seeder/academy.py` runs idempotently without duplicating rows or disrupting existing progress records.
+  - [ ] `backend/seed_master.sh` includes `python -m seeder.academy`.
+  - [ ] Unit test verifies database row counts match expected master CSV counts after seeding.
+
+##### `BE-03`: Course Overview, Progress & History API
+- **UAC**:
+  - [ ] Learner can fetch dashboard metrics (`continue_chapter_id`, KPI ring percentages, module progress cards, and 3 recently opened chapters).
+  - [ ] Learner can retrieve all 6 modules and chapters with keyword search and tag filtering.
+  - [ ] Learner can update chapter progress (`not_started`, `in_progress`, `completed`), updating `last_opened_at` and recalculating progress dynamically.
+  - [ ] Learner can fetch their historical sequence of visited chapters.
+- **TAC**:
+  - [ ] Endpoints implemented in `backend/routes/academy/course.py` and `backend/db/academy/crud_course.py`:
+    - `GET /academy/overview`
+    - `GET /academy/modules` (supports `?search=` and `?tag=`)
+    - `POST /academy/chapters/{chapter_id}/progress` (upserts progress, updates `last_opened_at` / `completed_at`)
+    - `GET /academy/history` (paginated, ordered by `last_opened_at DESC`)
+  - [ ] Endpoints require JWT authentication (`Depends(get_current_user_required)`) and scope data strictly to `current_user.id`.
+  - [ ] Test suite in `backend/tests/test_academy_course.py` reaches ≥80% test coverage.
+
+##### `BE-04`: Technical Resources & Glossary API
+- **UAC**:
+  - [ ] Learner can list and search downloadable technical resources filtered by resource type (`Guidance`, `Organisation`, `Template`, `Tool`) or module.
+  - [ ] Learner can list and search glossary terms filtered by term type (`Core`, `Finance`, `Additional`).
+  - [ ] Learner can sort resources and glossary entries by name or date.
+- **TAC**:
+  - [ ] Endpoints implemented in `backend/routes/academy/resource.py` and `backend/db/academy/crud_resource.py`:
+    - `GET /academy/resources` (supports `?search=`, `?resource_type=`, `?module_id=`, `?sort_by=`, `?sort_order=`)
+    - `GET /academy/glossary` (supports `?search=`, `?term_type=`, `?sort_by=`, `?sort_order=`)
+  - [ ] Search query executes case-insensitive matching (`ilike`) on name, definition, and module title.
+  - [ ] Enforces enum validation for `resource_type` and `term_type`.
+  - [ ] Unit tests in `backend/tests/test_academy_resource.py` reach ≥80% test coverage.
+
+##### `BE-05`: User Profile (`user` + `user_profile`) API
+- **UAC**:
+  - [ ] Learner can view personal information and additional organization/sector/region/commodities profile details.
+  - [ ] Learner can update profile info, with first and last name updates automatically updating the account display name.
+- **TAC**:
+  - [ ] Endpoints implemented in `backend/routes/academy/profile.py` and `backend/db/academy/crud_profile.py`:
+    - `GET /academy/profile` (fetches joint `user` and `user_profile` record; creates default `user_profile` if none exists)
+    - `PUT /academy/profile` (validates schema via Pydantic; updates `user_profile` and syncs `user.fullname` and `user.company`)
+  - [ ] Commodities payload validated as JSONB array of strings.
+  - [ ] Strictly scoped to authenticated `current_user.id` (users cannot view or edit profiles belonging to other users).
+  - [ ] Unit tests in `backend/tests/test_academy_profile.py` reach ≥80% test coverage.
+
 ### 5.2 Frontend Development Tasks (`FE-01` – `FE-07`)
 
 | Task ID | Frontend Component & Description | Dev | Testing | QA & Review | Buffer | Total Est. | Days (7h/d) | Priority |
@@ -489,6 +551,96 @@ frontend/src/pages/academy/
 | **FE-06** | **Academy Resources & Glossary Page (`Resources` & `Glossary` Tabs)**: Build `AcademyResourcesPage.js` segmented toggle (`Resources` \| `Glossary`), `Sort`/`Filter`/`Search` toolbar controls, `ResourcesTable.js`, and `GlossaryTable.js`. | 3.0h | 1.5h | 0.5h | 1.0h | **6.0h** | 0.86d | Must Have |
 | **FE-07** | **User Account / Profile Page (`Account`)**: Build `AcademyAccountPage.js` hero header (`160px` avatar initials, `Edit profile`), `Personal info` form card, and `Additional info` form card with interactive `CommodityTagSelector.js` (`×` remove & `"Add more +"`). | 3.0h | 1.5h | 0.5h | 1.0h | **6.0h** | 0.86d | Must Have |
 | **FE Subtotal** | **Frontend Group (7 Tasks)** | **20.0h** | **8.5h** | **3.5h** | **7.0h** | **39.0h** | **5.57d** | — |
+
+#### Task Details: Frontend Workstream
+
+##### `FE-01`: Academy Layout Shell, Sidebar, Footer & Routing
+- **UAC**:
+  - [ ] Learner navigates via a dedicated Academy sidebar (`Quick Search`, `My overview`, `Course Overview`, `Academy resources`, `Need help?` card, `Account`, `Settings`).
+  - [ ] Top navbar highlights `Academy` and shows user initials avatar.
+  - [ ] Footer displays IDH partner logos and the Living Income Academy disclaimer.
+  - [ ] Floating chatbot facilitator button (`48x48px`) is visible in the bottom-right corner.
+- **TAC**:
+  - [ ] Components implemented under `frontend/src/pages/academy/components/`: `AcademyLayout.js`, `AcademySidebar.js`, `AcademyFooter.js`, `ChatbotFloatButton.js`.
+  - [ ] Academy routes registered in `frontend/src/components/route/paths.js` and `frontend/src/App.js` with authentication protection.
+  - [ ] API service client `frontend/src/services/academy.js` configured with Axios interceptors and global error handling.
+  - [ ] Layout renders responsively down to 1024px without overlapping or horizontal scrolling.
+  - [ ] Unit tests for sidebar navigation and active path highlighting pass with 0 errors.
+
+##### `FE-02`: User Overview Page — Greeting, KPI Rings & Roadmap Grid
+- **UAC**:
+  - [ ] Learner sees a personalized time-aware greeting ("Good morning, [Name]") and a `"Continue learning"` button.
+  - [ ] Displays 3 KPI progress cards with circular progress rings: `Academy progress`, `Modules completed` (`X/6`), `Chapters completed` (`X of 27`).
+  - [ ] Displays the 3x2 grid of 6 Living Income Roadmap module cards with status pills, descriptions, `#tags`, progress bars, and `"Go →"` caret button.
+- **TAC**:
+  - [ ] Components: `AcademyOverviewPage.js`, `ProgressMetricCard.js`, `RoadmapModuleCard.js`.
+  - [ ] Circular progress rings rendered using Ant Design `Progress type="circle"` or custom SVG adhering to brand color tokens.
+  - [ ] Module grid styled with CSS Grid (`grid-template-columns: repeat(3, 1fr)`) with responsive wrapping for tablet/mobile viewports.
+  - [ ] Graceful loading skeleton states and zero-progress edge case handling.
+  - [ ] Unit tests verify KPI percentage calculations, greeting format, and tag badge rendering.
+
+##### `FE-03`: User Overview Page — Recently Opened, History Modal & CTA Banner
+- **UAC**:
+  - [ ] Overview page displays up to 3 recently opened chapters with chapter badges, status pills, and clickable circular completion checkboxes.
+  - [ ] Toggling completion updates the checkbox state immediately, recalculates KPI ring values, and persists progress to the backend.
+  - [ ] Clicking `"View history"` opens a modal displaying the learner's complete reading history.
+  - [ ] Bottom banner displays `"Learn more about the living income roadmap"` with `"Learn more"` action.
+- **TAC**:
+  - [ ] Components: `RecentlyOpenedChapterCard.js`, `ChapterHistoryModal.js`, `RoadmapCtaBanner.js`.
+  - [ ] Optimistic state update on completion checkbox toggle with automatic rollback if API call fails.
+  - [ ] History modal supports scrollable or paginated list of historically visited chapters.
+  - [ ] Unit tests cover checkbox toggle interactions and modal open/close transitions.
+
+##### `FE-04`: Course Overview Page — Search, Tag Chips & HTML Summary
+- **UAC**:
+  - [ ] Learner can search modules, chapters, and tags using the search input bar.
+  - [ ] Learner can filter curriculum using topic chips (`All`, `#Income measurement`, `#Income gap`, `#Benchmark`, etc.).
+  - [ ] Course summary displays introductory overview text with an expandable `"Read more"` trigger displaying full HTML content.
+- **TAC**:
+  - [ ] Components: `CourseOverviewPage.js`, `CourseTagFilter.js`, `CourseSummaryBlock.js`.
+  - [ ] Search input implements 300ms debouncing before triggering filtering.
+  - [ ] HTML content rendered securely using `DOMPurify.sanitize()` to protect against XSS (`[SEC]`).
+  - [ ] Active filter state synchronizes bidirectionally with URL query parameters (`?tag=...&search=...`).
+  - [ ] Unit tests verify debounced input, tag filtering logic, and HTML sanitization.
+
+##### `FE-05`: Course Overview Page — Module Accordions & Chapter Viewer
+- **UAC**:
+  - [ ] Learner can expand and collapse 6 module accordions showing title, completion time ("16 minutes to complete"), progress bar, status tag, and `"Go →"` link.
+  - [ ] Expanded module displays ordered chapters (`01`, `02`, ...) with title, status pill, and completion radio/check button.
+  - [ ] Clicking a chapter opens lesson content in an HTML reader view.
+- **TAC**:
+  - [ ] Components: `ModuleAccordion.js`, `ChapterRow.js`, `ChapterContentViewer.js`.
+  - [ ] Module accordion built using customized Ant Design `Collapse` matching Figma header padding and caret icons.
+  - [ ] Status badge dynamically derived from chapter progress counts (`0` = `Not started`, all = `Completed`, else = `In progress`).
+  - [ ] Lesson viewer renders responsive HTML with styling for callouts, tables, and lists.
+  - [ ] Unit tests verify accordion expansion, chapter selection, and status badge derivation.
+
+##### `FE-06`: Academy Resources & Glossary Page (`Resources` & `Glossary` Tabs)
+- **UAC**:
+  - [ ] Learner can switch between `Resources` and `Glossary` views via segmented control.
+  - [ ] In `Resources` tab: table displays `Name` (with document icon), `Module`, `Type` tag (`Guidance`, `Organisation`, `Template`, `Tool`), and `Actions` (Download / external link).
+  - [ ] In `Glossary` tab: table displays `Name` (term), `Type` (`Core`, `Finance`, `Additional`), and `Definition`.
+  - [ ] Learner can search, filter by type/module, and sort columns in both tables.
+- **TAC**:
+  - [ ] Components: `AcademyResourcesPage.js`, `ResourcesTable.js`, `GlossaryTable.js`, `ResourceToolbar.js`.
+  - [ ] Segmented toggle synchronized with URL query param `?tab=resources|glossary`.
+  - [ ] Table sorting and filtering handled via API parameters or client-side caching.
+  - [ ] Download action triggers secure direct download or file blob streaming.
+  - [ ] Unit tests verify tab toggling, toolbar filtering, and table sort behavior.
+
+##### `FE-07`: User Account / Profile Page (`Account`)
+- **UAC**:
+  - [ ] Hero header displays user avatar initials (`160px`), full name, email, and `"Edit profile"` / `"Continue learning"` buttons.
+  - [ ] Personal info card displays `First name`, `Last name`, and `Email`.
+  - [ ] Additional info card displays `Company name`, `Company type` (dropdown), `Sector` (dropdown), `Region` (dropdown), and `Commodities` tags.
+  - [ ] Commodities tags can be removed with `×` and added via `"Add more +"` tag input.
+  - [ ] Saving updates displays a success notification and immediately reflects updated name/avatar across the app.
+- **TAC**:
+  - [ ] Components: `AcademyAccountPage.js`, `AccountHeroBanner.js`, `PersonalInfoForm.js`, `AdditionalInfoForm.js`, `CommodityTagSelector.js`.
+  - [ ] Form built with Ant Design `Form` with client-side validation rules.
+  - [ ] `CommodityTagSelector` supports keyboard addition (Enter/Comma), deduplication, and dropdown selection from known commodities.
+  - [ ] Submits payload via `PUT /academy/profile` and refreshes user context in React state if `fullname` changed.
+  - [ ] Unit tests verify validation errors, tag addition/deletion, and successful submission handling.
 
 ### 5.3 Summary Rollup (1 Developer @ 7h/Day)
 
