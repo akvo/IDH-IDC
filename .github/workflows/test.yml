@@ -3,13 +3,19 @@ on:
   push:
     branches:
       - develop
-      - feature*
+      - 'feature/**'
+      - 'feature*'
+      - 'epic/**'
+      - 'epic*'
   pull_request:
     branches:
       - main
       - develop
       - staging
-      - feature*
+      - 'feature/**'
+      - 'feature*'
+      - 'epic/**'
+      - 'epic*'
 jobs:
   test:
     runs-on: ubuntu-latest
