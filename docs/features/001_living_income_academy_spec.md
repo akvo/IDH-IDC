@@ -16,7 +16,7 @@ The **Living Income Academy** is an interactive, self-paced learning and resourc
   2. **User Overview Page (`/academy/overview`)**: Personalized greeting (`"Good morning, [First Name]"`), `"Continue learning"` CTA button, 3 KPI progress cards with circular progress rings (`Academy progress %`, `Modules completed X/6`, `Chapters completed X of Y`), `"Your roadmap progress"` 6-card module grid with tags and progress bars, `"Recently opened"` chapters list with `"View history"` action and inline completion toggles, and bottom `"Learn more about the living income roadmap"` CTA banner.
   3. **User Account / Profile Page (`/academy/account`)**: Hero banner with large avatar initials (`KJ`), full name, email, `"Edit profile"` / `"Continue learning"` buttons, **Personal info** card (`First name`, `Last name`, `Email`), and **Additional info** card (`Company name`, `Company type`, `Sector`, `Region`, and interactive `Commodities` multi-tag selector with `"Add more +"`).
   4. **Course Overview Page (`/academy/courses`)**: `"Course Overview"` header with `"Continue learning"` CTA, search bar (`"Search modules, chapters and tags..."`), `"Browse by tag"` filter chips (`All`, `#Income measurement`, `#Income gap`, `#Benchmark`, `#Due diligence`, `#Gender`, `#Procurement`), course summary with `"Read more"` (rendering HTML module/course content), and a collapsible 6-module accordion listing each module's completion %, status pill (`Completed`, `In progress`, `Not started`), estimated time (`16 minutes to complete`), and expandable chapter rows with status tags and completion check toggles.
-  5. **Academy Resources — Resources Tab (`/academy/resources?tab=resources`)**: `"Technical Resources & Glossary"` header, segmented toggle (`Resources` | `Glossary`), table action icons (`Sort`, `Filter`, `Search`), and a table with columns: `Name` (with document icon), `Module`, `Type` tag (`Guidance`, `Organisation`, `Template`, `Tool`), and `Actions` (download/external link).
+  5. **Academy Resources — Resources Tab (`/academy/resources?tab=resources`)**: `"Technical Resources & Glossary"` header, segmented toggle (`Resources` | `Glossary`), table action icons (`Sort`, `Filter`, `Search`), and a table with columns: `Name` (with document icon), `Type` tag (`Guidance`, `Organisation`, `Template`, `Tool`), and `Actions` (download/external link).
   6. **Academy Resources — Glossary Tab (`/academy/resources?tab=glossary`)**: Segmented toggle active on `Glossary`, table action icons (`Sort`, `Filter`, `Search`), and a table with columns: `Name` (bold term), `Type` (`Core`, `Finance`, `Additional`), and `Definition`.
 - **Where (System Location)**:
   - **Backend (Dedicated `academy` namespace mirroring `procurement_library_v2`)**:
@@ -142,7 +142,9 @@ erDiagram
     USER ||--o| USER_PROFILE : "has 1:1 profile (user_profile)"
     USER ||--o{ ACADEMY_USER_CHAPTER_PROGRESS : "tracks progress"
     ACADEMY_MODULE ||--o{ ACADEMY_CHAPTER : "contains"
-    ACADEMY_MODULE ||--o{ ACADEMY_RESOURCE : "references"
+    ACADEMY_TAG ||--o{ ACADEMY_TAG_RELATION : "categorizes"
+    ACADEMY_MODULE ||--o{ ACADEMY_TAG_RELATION : "tagged with"
+    ACADEMY_CHAPTER ||--o{ ACADEMY_TAG_RELATION : "tagged with"
     ACADEMY_CHAPTER ||--o{ ACADEMY_USER_CHAPTER_PROGRESS : "completed/opened by"
 
     USER {
@@ -168,15 +170,29 @@ erDiagram
         datetime updated_at
     }
 
+    ACADEMY_TAG {
+        int id PK
+        string name "VARCHAR(100), UNIQUE, NOT NULL e.g. 'Income measurement'"
+        string slug "VARCHAR(100), UNIQUE, NOT NULL e.g. 'income-measurement'"
+        int order_index "DEFAULT 0"
+        datetime created_at
+    }
+
+    ACADEMY_TAG_RELATION {
+        int id PK
+        int tag_id FK "ForeignKey(academy_tag.id, ondelete=CASCADE), NOT NULL"
+        int module_id FK "ForeignKey(academy_module.id, ondelete=CASCADE), NULLABLE"
+        int chapter_id FK "ForeignKey(academy_chapter.id, ondelete=CASCADE), NULLABLE"
+        datetime created_at
+    }
+
     ACADEMY_MODULE {
         int id PK
         int order_index "1 to 6, NOT NULL, UNIQUE"
         string title "VARCHAR(255), NOT NULL"
-        text short_description "Plain text summary for cards"
-        text content_html "HTML formatted module overview / Read more content"
+        text description "Plain text summary for cards & accordions"
         int estimated_minutes "DEFAULT 16"
         string icon_theme "VARCHAR(50) e.g. blue, green, pink, purple, cyan, yellow"
-        jsonb tags "JSONB array of tag strings e.g. ['#Income measurement']"
         datetime created_at
         datetime updated_at
     }
@@ -186,8 +202,8 @@ erDiagram
         int module_id FK "ForeignKey(academy_module.id, ondelete=CASCADE)"
         int chapter_number "1 to N within module, NOT NULL"
         string title "VARCHAR(255), NOT NULL"
-        text content_html "HTML formatted lesson content"
-        jsonb tags "Optional JSONB array of tag strings"
+        text content_html "Rich HTML formatted lesson content (sanitized via DOMPurify)"
+        int estimated_minutes "DEFAULT 5"
         datetime created_at
         datetime updated_at
     }
@@ -205,7 +221,6 @@ erDiagram
     ACADEMY_RESOURCE {
         int id PK
         string name "VARCHAR(255), NOT NULL e.g. Tech requirements.pdf"
-        int module_id FK "ForeignKey(academy_module.id, ondelete=SET NULL), NULLABLE"
         string resource_type "Enum: Guidance | Organisation | Template | Tool"
         string file_url "VARCHAR(500), NOT NULL"
         datetime created_at
@@ -224,13 +239,24 @@ erDiagram
 
 ### 1.3 Database Migration & Seeding
 **File**: `/backend/alembic/versions/[revision]_create_academy_and_user_profile_tables.py`
-- Reuses the existing `user` table and creates `user_profile` (1-to-1 with `user.id`), `academy_module`, `academy_chapter`, `academy_user_chapter_progress` (with `UniqueConstraint('user_id', 'chapter_id', name='uq_academy_user_chapter')`), `academy_resource`, and `academy_glossary_term`.
+- Reuses the existing `user` table and creates `user_profile` (1-to-1 with `user.id`), `academy_tag`, `academy_tag_relation` (single unified junction table linking `tag_id` with nullable `module_id` and nullable `chapter_id`, protected by `CheckConstraint('(module_id IS NOT NULL AND chapter_id IS NULL) OR (module_id IS NULL AND chapter_id IS NOT NULL)', name='chk_academy_tag_target')` and unique indexes `uq_academy_tag_module` / `uq_academy_tag_chapter`), `academy_module`, `academy_chapter`, `academy_user_chapter_progress` (with `UniqueConstraint('user_id', 'chapter_id', name='uq_academy_user_chapter')`), `academy_resource`, and `academy_glossary_term`.
 - **File**: `/backend/seeder/academy.py` (added to `/backend/seed_master.sh`):
-  - Truncates and seeds `academy_module`, `academy_chapter`, `academy_resource`, and `academy_glossary_term` from `/backend/source/master/academy_*.csv`.
-  - Module and chapter rich content is stored in `content_html` (HTML format).
+  - Truncates and seeds `academy_tag`, `academy_tag_relation`, `academy_module`, `academy_chapter`, `academy_resource`, and `academy_glossary_term` from `/backend/source/master/academy_*.csv`.
+  - Rich lesson content is stored strictly in `academy_chapter.content_html` (HTML format sanitized on the frontend with `DOMPurify`). Modules store plain text summaries in `description`.
 
 ### 1.4 API Routers
 **Files**: `/backend/routes/academy/course.py`, `/backend/routes/academy/resource.py`, `/backend/routes/academy/profile.py`
+
+#### `GET /academy/tags`
+- Returns all normalized course tags with counts of tagged modules and chapters for the `"Browse by tag"` filter bar on Course Overview.
+- **Response Payload**:
+  ```json
+  [
+    { "id": 1, "name": "Income measurement", "slug": "income-measurement", "module_count": 2, "chapter_count": 5 },
+    { "id": 2, "name": "Income gap", "slug": "income-gap", "module_count": 3, "chapter_count": 6 },
+    { "id": 3, "name": "Benchmark", "slug": "benchmark", "module_count": 1, "chapter_count": 4 }
+  ]
+  ```
 
 #### `GET /academy/overview`
 - Fetches personalized learner dashboard metrics, 6 module progress cards, and top 3 recently opened chapters.
@@ -253,9 +279,12 @@ erDiagram
         "id": 1,
         "order_index": 1,
         "title": "The concept of living income",
-        "short_description": "Establish a solid foundation to act on living income...",
+        "description": "Establish a solid foundation to act on living income...",
         "icon_theme": "blue",
-        "tags": ["#Income measurement", "#Income gap"],
+        "tags": [
+          { "id": 1, "name": "Income measurement", "slug": "income-measurement" },
+          { "id": 2, "name": "Income gap", "slug": "income-gap" }
+        ],
         "progress_pct": 100,
         "status": "Completed"
       }
@@ -274,35 +303,57 @@ erDiagram
   ```
 
 #### `GET /academy/modules`
-- Lists all 6 modules with their HTML content (`content_html`), nested chapters, and user-specific progress. Supports `?search=` (matches module title, description, chapter title, or tags) and `?tag=` (e.g., `#Income measurement`).
+- Lists all 6 modules, their nested chapters metadata, tags, and user-specific progress. Supports `?search=` (matches module title, description, chapter title, or tag names) and `?tag=` / `?tag_id=` (relational tag filtering).
 - **Response Payload**:
   ```json
   {
     "total_modules": 6,
-    "course_summary_html": "<p>Lorem ipsum dolor sit amet...</p>",
-    "available_tags": ["All", "#Income measurement", "#Income gap", "#Benchmark", "#Due diligence", "#Gender", "#Procurement"],
+    "course_summary_html": "<p>There are 6 process modules in the IDH Living Income Roadmap...</p>",
     "modules": [
       {
         "id": 2,
         "order_index": 2,
         "title": "Measuring & Analysis",
-        "short_description": "Use recognised standards to identify credible living income benchmarks...",
-        "content_html": "<p>Detailed module HTML overview...</p>",
+        "description": "Use recognised standards to identify credible living income benchmarks...",
         "estimated_minutes": 16,
         "progress_pct": 20,
         "status": "In progress",
-        "tags": ["#Income measurement", "#Income gap"],
+        "tags": [
+          { "id": 1, "name": "Income measurement", "slug": "income-measurement" },
+          { "id": 2, "name": "Income gap", "slug": "income-gap" }
+        ],
         "chapters": [
           {
             "id": 6,
             "chapter_number": 1,
             "title": "Why living income matters to farmers and companies",
-            "content_html": "<div><h2>Chapter 1</h2><p>HTML lesson content...</p></div>",
-            "status": "Completed"
+            "estimated_minutes": 5,
+            "status": "Completed",
+            "tags": [
+              { "id": 1, "name": "Income measurement", "slug": "income-measurement" }
+            ]
           }
         ]
       }
     ]
+  }
+  ```
+
+#### `GET /academy/chapters/{chapter_id}`
+- Returns full chapter details including the rich HTML lesson content (`content_html`) for reader display, previous/next chapter navigation IDs, and associated tags.
+- **Response Payload**:
+  ```json
+  {
+    "id": 6,
+    "module_id": 2,
+    "chapter_number": 1,
+    "title": "Why living income matters to farmers and companies",
+    "content_html": "<div><h2>Why living income matters</h2><p>Lesson content paragraph...</p></div>",
+    "estimated_minutes": 5,
+    "status": "Completed",
+    "tags": [{ "id": 1, "name": "Income measurement", "slug": "income-measurement" }],
+    "prev_chapter_id": 5,
+    "next_chapter_id": 7
   }
   ```
 
@@ -320,7 +371,7 @@ erDiagram
 - Returns paginated list of chapters opened by the user (`last_opened_at IS NOT NULL`) ordered by `last_opened_at DESC` for the `"View history"` action.
 
 #### `GET /academy/resources`
-- Returns technical resources with filtering and sorting (`?search=&resource_type=&module_id=&sort_by=name&sort_order=asc`).
+- Returns technical resources with filtering and sorting (`?search=&resource_type=&sort_by=name&sort_order=asc`).
 - **Response Payload**:
   ```json
   {
@@ -329,8 +380,6 @@ erDiagram
       {
         "id": 1,
         "name": "Tech requirements.pdf",
-        "module_id": 1,
-        "module_label": "Module 1",
         "resource_type": "Guidance",
         "file_url": "/assets/academy/tech_requirements.pdf"
       }
@@ -444,12 +493,12 @@ frontend/src/pages/academy/
 - [ ] **UAC-2 (User Overview — `12320:15548`)**: Displays dynamic greeting, `"Continue learning"` button, 3 KPI cards with circular progress rings, 6-module `"Your roadmap progress"` grid with status pills and `#tags`, `"Recently opened"` chapters (up to 3) with completion checkboxes and `"View history"`, and bottom `"Learn more about the living income roadmap"` CTA banner.
 - [ ] **UAC-3 (User Account / Profile — `12029:57236`)**: Displays hero banner with `160px` avatar initials, full name, email, `"Edit profile"`, and `"Continue learning"`. Allows viewing and saving **Personal info** (`First name`, `Last name`, `Email`) and **Additional info** (`Company name`, `Company type`, `Sector`, `Region`, and removable `Commodities` tags with `"Add more +"`).
 - [ ] **UAC-4 (Course Overview — `12338:25909`)**: Displays search bar (`"Search modules, chapters and tags..."`), `"Browse by tag"` filter chips (`All`, `#Income measurement`, `#Income gap`, `#Benchmark`, `#Due diligence`, `#Gender`, `#Procurement`), expandable HTML course summary (`"Read more"`), and 6 collapsible module accordions with chapter lists, status tags, and completion checkboxes.
-- [ ] **UAC-5 (Resources & Glossary — `12327:22288` & `12327:24333`)**: Segmented control switches cleanly between `Resources` (`Name`, `Module`, `Type` tag, `Actions`) and `Glossary` (`Name`, `Type`, `Definition`), with working `Sort`, `Filter`, and `Search` toolbar controls.
+- [ ] **UAC-5 (Resources & Glossary — `12327:22288` & `12327:24333`)**: Segmented control switches cleanly between `Resources` (`Name`, `Type` tag, `Actions`) and `Glossary` (`Name`, `Type`, `Definition`), with working `Sort`, `Filter`, and `Search` toolbar controls.
 
 ### 3.2 Technical Acceptance Criteria (TAC)
 - [ ] **TAC-1 (Dedicated Backend Folder Structure)**: All Academy backend code is isolated in `/backend/models/academy/`, `/backend/db/academy/`, `/backend/routes/academy/`, and `/backend/seeder/academy.py`, matching the `procurement_library_v2` architecture.
-- [ ] **TAC-2 (HTML Content & Master Seeding)**: Course/module/chapter content is stored as HTML (`content_html`) and seeded via `./dc.sh exec backend python -m seeder.academy` (and hooked into `seed_master.sh`). Frontend sanitizes rendered HTML via `dompurify` (`[SEC]`).
-- [ ] **TAC-3 (Database & Migration Integrity)**: Reuses the existing `user` table and creates `user_profile` (with `UNIQUE(user_id)` foreign key to `user.id`) plus the 5 Academy tables (`academy_module`, `academy_chapter`, `academy_user_chapter_progress`, `academy_resource`, `academy_glossary_term`) with foreign key cascades and `UniqueConstraint('user_id', 'chapter_id')`.
+- [ ] **TAC-2 (Chapter HTML Content & Master Seeding)**: Rich lesson content is stored strictly as HTML (`content_html`) on `academy_chapter` and seeded via `./dc.sh exec backend python -m seeder.academy` (and hooked into `seed_master.sh`). Frontend sanitizes rendered HTML via `dompurify` (`[SEC]`).
+- [ ] **TAC-3 (Database & Migration Integrity)**: Reuses the existing `user` table and creates `user_profile` (with `UNIQUE(user_id)` foreign key to `user.id`), `academy_tag`, `academy_tag_relation` (single unified junction table for module and chapter tags), plus the 5 core Academy tables (`academy_module`, `academy_chapter`, `academy_user_chapter_progress`, `academy_resource`, `academy_glossary_term`) with foreign key cascades and unique constraints.
 - [ ] **TAC-4 (Authentication & Scope Security)**: All `/academy/*` endpoints verify JWT authentication (`decode_token`) and strictly scope progress/profile reads and writes to the authenticated user's `id`.
 - [ ] **TAC-5 (Quality & Coverage Gates)**:
   - `./dc.sh exec backend flake8` passes with 0 errors.
@@ -492,9 +541,9 @@ frontend/src/pages/academy/
 
 | Task ID | Backend Component & Description | Dev | Testing | QA & Review | Buffer | Total Est. | Days (7h/d) | Priority |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **BE-01** | **DB Models, Schemas & Alembic Migration**: Create `/backend/models/user_profile.py` (`user_profile` linked 1:1 to existing `user` table), `/backend/models/academy/` (`academy_models.py`, `academy_schemas.py`), and Alembic migration for all 6 tables. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
-| **BE-02** | **Master CSVs (HTML Content) & Academy Seeder**: Create `/backend/source/master/academy_*.csv` (6 modules, 27 HTML chapters, resources, glossary terms), implement idempotent `/backend/seeder/academy.py`, and hook into `seed_master.sh`. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
-| **BE-03** | **Course Overview, Progress & History API**: Implement `/backend/db/academy/crud_course.py` and `/backend/routes/academy/course.py` (`GET /academy/overview`, `GET /academy/modules` with search/tag filter, `POST /academy/chapters/{id}/progress`, `GET /academy/history`). | 3.0h | 1.5h | 0.5h | 1.0h | **6.0h** | 0.86d | Must Have |
+| **BE-01** | **DB Models, Schemas & Alembic Migration**: Create `/backend/models/user_profile.py` (`user_profile` linked 1:1 to existing `user` table), `/backend/models/academy/` (`academy_models.py`, `academy_schemas.py` including `AcademyTag`, `AcademyTagRelation`, `AcademyModule`, `AcademyChapter`, `AcademyUserChapterProgress`, `AcademyResource`, `AcademyGlossaryTerm`), and Alembic migration for all tables. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
+| **BE-02** | **Master CSVs (HTML Content) & Academy Seeder**: Create `/backend/source/master/academy_*.csv` (`academy_tags.csv`, `academy_tag_relations.csv`, 6 modules, 27 chapters with rich HTML `content_html`, resources, glossary terms), implement idempotent `/backend/seeder/academy.py`, and hook into `seed_master.sh`. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
+| **BE-03** | **Course Overview, Tags, Progress & History API**: Implement `/backend/db/academy/crud_course.py` and `/backend/routes/academy/course.py` (`GET /academy/tags`, `GET /academy/overview`, `GET /academy/modules` with search/tag filter, `GET /academy/chapters/{id}`, `POST /academy/chapters/{id}/progress`, `GET /academy/history`). | 3.0h | 1.5h | 0.5h | 1.0h | **6.0h** | 0.86d | Must Have |
 | **BE-04** | **Technical Resources & Glossary API**: Implement `/backend/db/academy/crud_resource.py` and `/backend/routes/academy/resource.py` (`GET /academy/resources` and `GET /academy/glossary` with search, filter, and sort). | 2.0h | 1.0h | 0.5h | 1.0h | **4.5h** | 0.64d | Must Have |
 | **BE-05** | **User Profile Delivery & Management API (`user` + `user_profile`)**: Update `GET /user/me` in `/backend/routes/user.py` to deliver `user_profile`; implement `/backend/routes/academy/profile.py` (`GET/PUT /academy/profile` syncing `user.fullname`, `user.company`, and `commodities` JSONB tags); update `/frontend/src/store/user.js`. | 2.5h | 1.0h | 0.5h | 1.0h | **5.0h** | 0.71d | Must Have |
 | **BE Subtotal** | **Backend Group (5 Tasks)** | **12.5h** | **5.5h** | **2.5h** | **5.0h** | **25.5h** | **3.64d** | — |
@@ -503,34 +552,38 @@ frontend/src/pages/academy/
 
 ##### `BE-01`: DB Models, Schemas & Alembic Migration
 - **UAC**:
-  - [ ] The database securely supports persistent storage of user profiles, Academy course curriculum, progress tracking, technical resources, and glossary entries.
+  - [ ] The database securely supports persistent storage of user profiles, normalized course tags, module/chapter tag mappings, Academy course curriculum, progress tracking, technical resources, and glossary entries.
 - **TAC**:
   - [ ] `backend/models/user_profile.py` defines `UserProfile` with a 1:1 relation to `user.id` (`ForeignKey("user.id", ondelete="CASCADE")`, `unique=True`), columns `first_name`, `last_name`, `company_name`, `company_type`, `sector`, `region_id`, `region_name`, and `commodities` (`JSONB`).
-  - [ ] `backend/models/academy/academy_models.py` defines `AcademyModule`, `AcademyChapter`, `AcademyUserChapterProgress`, `AcademyResource`, and `AcademyGlossaryTerm` with cascades and `UniqueConstraint('user_id', 'chapter_id')`.
+  - [ ] `backend/models/academy/academy_models.py` defines `AcademyTag` (`id`, `name`, `slug`, `order_index`), `AcademyTagRelation` (unified junction table with `tag_id`, nullable `module_id`, nullable `chapter_id`, guarded by `CheckConstraint` ensuring exactly one target is set, plus unique indexes on `(tag_id, module_id)` and `(tag_id, chapter_id)`), `AcademyModule` (plain text `description`, no `content_html`), `AcademyChapter` (`content_html` for rich lesson text), `AcademyUserChapterProgress`, `AcademyResource`, and `AcademyGlossaryTerm`.
   - [ ] `backend/models/academy/academy_schemas.py` defines Pydantic v2 schemas for all payloads with field validations.
   - [ ] Alembic migration applies cleanly (`alembic upgrade head`) and rolls back without error (`alembic downgrade -1`).
   - [ ] Linter pass: `./dc.sh exec backend flake8` returns 0 errors.
 
 ##### `BE-02`: Master CSVs (HTML Content) & Academy Seeder
 - **UAC**:
-  - [ ] The platform is pre-loaded with official IDH Living Income Roadmap content (6 modules, 27 chapters with rich HTML content, technical resources, and glossary terms).
+  - [ ] The platform is pre-loaded with official IDH Living Income Roadmap content (master tags, module/chapter tag relations, 6 modules, 27 chapters with rich HTML content, technical resources, and glossary terms).
 - **TAC**:
-  - [ ] Master seed CSVs created under `backend/source/master/`: `academy_modules.csv`, `academy_chapters.csv`, `academy_resources.csv`, and `academy_glossary.csv`.
-  - [ ] Chapters and modules contain sanitized, valid HTML in `content_html`.
+  - [ ] Master seed CSVs created under `backend/source/master/`: `academy_tags.csv`, `academy_tag_relations.csv`, `academy_modules.csv`, `academy_chapters.csv`, `academy_resources.csv`, and `academy_glossary.csv`.
+  - [ ] Chapters contain sanitized, valid HTML in `content_html` (modules store plain text in `description`).
   - [ ] `backend/seeder/academy.py` runs idempotently without duplicating rows or disrupting existing progress records.
   - [ ] `backend/seed_master.sh` includes `python -m seeder.academy`.
   - [ ] Unit test verifies database row counts match expected master CSV counts after seeding.
 
-##### `BE-03`: Course Overview, Progress & History API
+##### `BE-03`: Course Overview, Tags, Progress & History API
 - **UAC**:
+  - [ ] Learner can fetch course tags for the `"Browse by tag"` filter bar on Course Overview.
   - [ ] Learner can fetch dashboard metrics (`continue_chapter_id`, KPI ring percentages, module progress cards, and 3 recently opened chapters).
   - [ ] Learner can retrieve all 6 modules and chapters with keyword search and tag filtering.
+  - [ ] Learner can retrieve specific chapter lesson details and rich HTML content (`GET /academy/chapters/{id}`).
   - [ ] Learner can update chapter progress (`not_started`, `in_progress`, `completed`), updating `last_opened_at` and recalculating progress dynamically.
   - [ ] Learner can fetch their historical sequence of visited chapters.
 - **TAC**:
   - [ ] Endpoints implemented in `backend/routes/academy/course.py` and `backend/db/academy/crud_course.py`:
-    - `GET /academy/overview`
-    - `GET /academy/modules` (supports `?search=` and `?tag=`)
+    - `GET /academy/tags` (returns all active tags with module/chapter counts)
+    - `GET /academy/overview` (returns dashboard metrics, modules with tag objects, and recently opened chapters)
+    - `GET /academy/modules` (supports `?search=` and `?tag=` / `?tag_id=`)
+    - `GET /academy/chapters/{chapter_id}` (returns chapter details, rich `content_html`, and prev/next chapter navigation)
     - `POST /academy/chapters/{chapter_id}/progress` (upserts progress, updates `last_opened_at` / `completed_at`)
     - `GET /academy/history` (paginated, ordered by `last_opened_at DESC`)
   - [ ] Endpoints require JWT authentication (`Depends(get_current_user_required)`) and scope data strictly to `current_user.id`.
@@ -538,14 +591,14 @@ frontend/src/pages/academy/
 
 ##### `BE-04`: Technical Resources & Glossary API
 - **UAC**:
-  - [ ] Learner can list and search downloadable technical resources filtered by resource type (`Guidance`, `Organisation`, `Template`, `Tool`) or module.
+  - [ ] Learner can list and search downloadable technical resources filtered by resource type (`Guidance`, `Organisation`, `Template`, `Tool`).
   - [ ] Learner can list and search glossary terms filtered by term type (`Core`, `Finance`, `Additional`).
   - [ ] Learner can sort resources and glossary entries by name or date.
 - **TAC**:
   - [ ] Endpoints implemented in `backend/routes/academy/resource.py` and `backend/db/academy/crud_resource.py`:
-    - `GET /academy/resources` (supports `?search=`, `?resource_type=`, `?module_id=`, `?sort_by=`, `?sort_order=`)
+    - `GET /academy/resources` (supports `?search=`, `?resource_type=`, `?sort_by=`, `?sort_order=`)
     - `GET /academy/glossary` (supports `?search=`, `?term_type=`, `?sort_by=`, `?sort_order=`)
-  - [ ] Search query executes case-insensitive matching (`ilike`) on name, definition, and module title.
+  - [ ] Search query executes case-insensitive matching (`ilike`) on name and definition.
   - [ ] Enforces enum validation for `resource_type` and `term_type`.
   - [ ] Unit tests in `backend/tests/test_academy_resource.py` reach ≥80% test coverage.
 
@@ -644,9 +697,9 @@ frontend/src/pages/academy/
 ##### `FE-06`: Academy Resources & Glossary Page (`Resources` & `Glossary` Tabs)
 - **UAC**:
   - [ ] Learner can switch between `Resources` and `Glossary` views via segmented control.
-  - [ ] In `Resources` tab: table displays `Name` (with document icon), `Module`, `Type` tag (`Guidance`, `Organisation`, `Template`, `Tool`), and `Actions` (Download / external link).
+  - [ ] In `Resources` tab: table displays `Name` (with document icon), `Type` tag (`Guidance`, `Organisation`, `Template`, `Tool`), and `Actions` (Download / external link).
   - [ ] In `Glossary` tab: table displays `Name` (term), `Type` (`Core`, `Finance`, `Additional`), and `Definition`.
-  - [ ] Learner can search, filter by type/module, and sort columns in both tables.
+  - [ ] Learner can search, filter by type, and sort columns in both tables.
 - **TAC**:
   - [ ] Components: `AcademyResourcesPage.js`, `ResourcesTable.js`, `GlossaryTable.js`, `ResourceToolbar.js`.
   - [ ] Segmented toggle synchronized with URL query param `?tab=resources|glossary`.
