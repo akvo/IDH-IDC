@@ -1,6 +1,11 @@
 # IMPORTANT: import all models here
 from models.user import User  # noqa
 from models.user_profile import UserProfile  # noqa
+from models.academy import (  # noqa
+    AcademyTag,
+    AcademyResource,
+    AcademyGlossaryTerm,
+)
 from models.question import Question  # noqa
 from models.company import Company  # noqa
 from models.commodity_category import CommodityCategory  # noqa
