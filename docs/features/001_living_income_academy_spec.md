@@ -215,6 +215,7 @@ erDiagram
         string status "Enum: not_started | in_progress | completed"
         datetime last_opened_at "Nullable, indexed for Recently Opened sorting"
         datetime completed_at "Nullable"
+        datetime created_at
         datetime updated_at
     }
 
@@ -240,11 +241,14 @@ erDiagram
 ### 1.3 Database Migration & Seeding
 - **Alembic Migration Architecture Standard (1 Migration File Per Model)**:
   To enforce strict schema modularity, isolate DDL lifecycles, and enable independent rollback/verification without cross-domain side effects, database migrations follow a **strictly 1 migration file per model** policy:
-  1. `[revision]_create_user_profile_table.py` (`user_profile` table extending existing `user` table with 1:1 cascade and `commodities` JSONB)
-  2. `[revision]_create_academy_tag_table.py` (`academy_tag` topic catalog table)
-  3. `[revision]_create_academy_resource_table.py` (`academy_resource` technical downloads and tools table, with `academy_resource_type` enum)
-  4. `[revision]_create_academy_glossary_term_table.py` (`academy_glossary_term` terminology dictionary table, with `academy_glossary_term_type` enum)
-  *(Note: Content-dependent tables `academy_module`, `academy_chapter`, `academy_tag_relation`, and `academy_user_chapter_progress` will likewise each receive their own dedicated migration file once the content format is finalized).*
+  1. `2026_11_05_0429-413e4c18b8eb_create_user_profile_table.py` (`user_profile` table extending existing `user` table with 1:1 cascade and `commodities` JSONB)
+  2. `2026_11_05_0942-17ecb7685606_create_academy_tag_table.py` (`academy_tag` topic catalog table)
+  3. `2026_11_05_0943-cb28c82405a6_create_academy_resource_table.py` (`academy_resource` technical downloads and tools table, with `academy_resource_type` enum)
+  4. `2026_11_05_0945-cb29ec330c92_create_academy_glossary_term_table.py` (`academy_glossary_term` terminology dictionary table, with `academy_glossary_term_type` enum)
+  5. `[revision]_create_academy_module_table.py` (`academy_module` roadmap modules table with unique order_index 1-6)
+  6. `[revision]_create_academy_chapter_table.py` (`academy_chapter` lesson content table with FK to module, `content_html`, and unique module_id+chapter_number)
+  7. `[revision]_create_academy_tag_relation_table.py` (`academy_tag_relation` polymorphic junction table with XOR check constraint and FK cascades)
+  8. `[revision]_create_academy_user_chapter_progress_table.py` (`academy_user_chapter_progress` user tracking table with status enum, unique user_id+chapter_id, and last_opened_at index)
 - **Master Data Seeder**:
   - **File**: `/backend/seeder/academy.py` (added to `/backend/seed_master.sh`):
     - Truncates and seeds `academy_tag`, `academy_tag_relation`, `academy_module`, `academy_chapter`, `academy_resource`, and `academy_glossary_term` from `/backend/source/master/academy_*.csv`.
@@ -565,6 +569,24 @@ frontend/src/pages/academy/
   - [ ] `backend/models/academy/academy_schemas.py` defines Pydantic v2 schemas for all payloads with field validations.
   - [ ] Alembic migrations apply cleanly per model (individual revision files per table) and roll back without error (`alembic upgrade head` and `alembic downgrade -1`).
   - [ ] Linter pass: `./dc.sh exec backend flake8` returns 0 errors.
+
+###### Sub-Task Phasing & Vibe Coding Estimation Standard (`BE-01` Breakdown)
+- **Phase 1: Foundation & Independent Entities [COMPLETED]**:
+  - `BE-01-A`: UserProfile model & Pydantic v2 schemas (`backend/models/user_profile.py`)
+  - `BE-01-B`: UserProfile Alembic migration (`2026_11_05_0429-413e4c18b8eb_create_user_profile_table.py`)
+  - `BE-01-C`: Independent Academy entities: `AcademyTag`, `AcademyResource`, `AcademyGlossaryTerm` models & Pydantic v2 schemas
+  - `BE-01-D`: Independent Academy Alembic migrations (`create_academy_tag_table.py`, `create_academy_resource_table.py`, `create_academy_glossary_term_table.py`)
+  - `BE-01-E`: Independent models unit test suite (`test_user_profile_model.py`, `test_academy_models.py`)
+
+- **Phase 2: Content-Dependent Entities & Migrations [IN PROGRESS]**:
+  | Task ID | Story / Sub-Task Description | Vibe Coding (Dev) | Automated Testing | QA & Review | Total Est. | Actual Time |
+  | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+  | **BE-01-F** | Content-Dependent ORM Models (`AcademyModule`, `AcademyChapter`, `AcademyTagRelation`, `AcademyUserChapterProgress`) | 25m | 15m | 10m | **50m (0.83h)** | - |
+  | **BE-01-G** | Pydantic v2 Schemas (`BaseSchema`, `ConfigDict(from_attributes=True)`) & `__init__.py` Re-exports | 20m | 15m | 10m | **45m (0.75h)** | - |
+  | **BE-01-H** | Alembic Migrations 5 & 6 (`academy_module`, `academy_chapter`) | 20m | 15m | 10m | **45m (0.75h)** | - |
+  | **BE-01-I** | Alembic Migrations 7 & 8 (`academy_tag_relation` XOR CK, `academy_user_chapter_progress` Enum & UQ) | 20m | 15m | 10m | **45m (0.75h)** | - |
+  | **BE-01-J** | Unit & Migration Regression Tests (`test_academy_models.py`, ≥80% coverage gate) | 15m | 30m | 15m | **60m (1.00h)** | - |
+  | **Subtotal (Phase 2)** | **Content-Dependent Models, Schemas & Migrations** | **100m (1.67h)** | **90m (1.50h)** | **55m (0.92h)** | **245m (4.08h)** | - |
 
 ##### `BE-02`: Master CSVs (HTML Content) & Academy Seeder
 - **UAC**:

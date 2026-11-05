@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict
 from models.academy.academy_models import (
     AcademyResourceType,
     AcademyGlossaryTermType,
+    AcademyChapterProgressStatus,
 )
 
 
@@ -84,6 +85,111 @@ class AcademyGlossaryTermUpdate(BaseSchema):
 
 
 class AcademyGlossaryTermResponse(AcademyGlossaryTermBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+# ============================================================
+# 4. ACADEMY MODULE SCHEMAS
+# ============================================================
+class AcademyModuleBase(BaseSchema):
+    order_index: int
+    title: str
+    description: Optional[str] = None
+    estimated_minutes: int = 16
+    icon_theme: Optional[str] = None
+
+
+class AcademyModuleCreate(AcademyModuleBase):
+    pass
+
+
+class AcademyModuleUpdate(BaseSchema):
+    order_index: Optional[int] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    estimated_minutes: Optional[int] = None
+    icon_theme: Optional[str] = None
+
+
+class AcademyModuleResponse(AcademyModuleBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+# ============================================================
+# 5. ACADEMY CHAPTER SCHEMAS
+# ============================================================
+class AcademyChapterBase(BaseSchema):
+    module_id: int
+    chapter_number: int
+    title: str
+    content_html: Optional[str] = None
+    estimated_minutes: int = 5
+
+
+class AcademyChapterCreate(AcademyChapterBase):
+    pass
+
+
+class AcademyChapterUpdate(BaseSchema):
+    module_id: Optional[int] = None
+    chapter_number: Optional[int] = None
+    title: Optional[str] = None
+    content_html: Optional[str] = None
+    estimated_minutes: Optional[int] = None
+
+
+class AcademyChapterResponse(AcademyChapterBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+# ============================================================
+# 6. ACADEMY TAG RELATION SCHEMAS
+# ============================================================
+class AcademyTagRelationBase(BaseSchema):
+    tag_id: int
+    module_id: Optional[int] = None
+    chapter_id: Optional[int] = None
+
+
+class AcademyTagRelationCreate(AcademyTagRelationBase):
+    pass
+
+
+class AcademyTagRelationResponse(AcademyTagRelationBase):
+    id: int
+    created_at: datetime
+
+
+# ============================================================
+# 7. ACADEMY USER CHAPTER PROGRESS SCHEMAS
+# ============================================================
+class AcademyUserChapterProgressBase(BaseSchema):
+    user_id: int
+    chapter_id: int
+    status: AcademyChapterProgressStatus = (
+        AcademyChapterProgressStatus.not_started
+    )
+    last_opened_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+
+class AcademyUserChapterProgressCreate(AcademyUserChapterProgressBase):
+    pass
+
+
+class AcademyUserChapterProgressUpdate(BaseSchema):
+    status: Optional[AcademyChapterProgressStatus] = None
+    last_opened_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+
+class AcademyUserChapterProgressResponse(AcademyUserChapterProgressBase):
     id: int
     created_at: datetime
     updated_at: datetime

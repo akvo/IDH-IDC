@@ -5,6 +5,10 @@ from models.academy import (  # noqa
     AcademyTag,
     AcademyResource,
     AcademyGlossaryTerm,
+    AcademyModule,
+    AcademyChapter,
+    AcademyTagRelation,
+    AcademyUserChapterProgress,
 )
 from models.question import Question  # noqa
 from models.company import Company  # noqa
