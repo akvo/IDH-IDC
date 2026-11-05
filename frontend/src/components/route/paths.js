@@ -23,6 +23,9 @@ const routePath = {
     ),
     exploreStudies: withPrefix("idc", "/explore-studies"),
   },
+  academy: {
+    landing: "/academy",
+  },
 };
 
 export { routePath, routePrefix };

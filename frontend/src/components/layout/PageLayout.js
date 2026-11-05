@@ -42,6 +42,13 @@ const PageHeader = ({ isLoggedIn }) => {
         role: [],
       },
       {
+        testid: "nav-menu-academy",
+        label: "Academy",
+        key: "/academy",
+        isPublic: true,
+        role: [],
+      },
+      {
         testid: "nav-menu-tools-and-resources",
         label: "Tools & Resources",
         key: "/tools-and-resources",

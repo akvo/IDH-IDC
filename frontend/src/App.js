@@ -36,6 +36,7 @@ import {
   CocoaIncomeInventory,
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
+import { AcademyLanding } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
@@ -285,6 +286,7 @@ const App = () => {
             path="/cocoa-income-inventory/dashboard"
             element={<CocoaIncomeInventoryDashboard />}
           />
+          <Route exact path="/academy" element={<AcademyLanding />} />
           <Route
             exact
             path="/procurement-library"
