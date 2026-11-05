@@ -570,24 +570,6 @@ frontend/src/pages/academy/
   - [ ] Alembic migrations apply cleanly per model (individual revision files per table) and roll back without error (`alembic upgrade head` and `alembic downgrade -1`).
   - [ ] Linter pass: `./dc.sh exec backend flake8` returns 0 errors.
 
-###### Sub-Task Phasing & Vibe Coding Estimation Standard (`BE-01` Breakdown)
-- **Phase 1: Foundation & Independent Entities [COMPLETED]**:
-  - `BE-01-A`: UserProfile model & Pydantic v2 schemas (`backend/models/user_profile.py`)
-  - `BE-01-B`: UserProfile Alembic migration (`2026_11_05_0429-413e4c18b8eb_create_user_profile_table.py`)
-  - `BE-01-C`: Independent Academy entities: `AcademyTag`, `AcademyResource`, `AcademyGlossaryTerm` models & Pydantic v2 schemas
-  - `BE-01-D`: Independent Academy Alembic migrations (`create_academy_tag_table.py`, `create_academy_resource_table.py`, `create_academy_glossary_term_table.py`)
-  - `BE-01-E`: Independent models unit test suite (`test_user_profile_model.py`, `test_academy_models.py`)
-
-- **Phase 2: Content-Dependent Entities & Migrations [IN PROGRESS]**:
-  | Task ID | Story / Sub-Task Description | Vibe Coding (Dev) | Automated Testing | QA & Review | Total Est. | Actual Time |
-  | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-  | **BE-01-F** | Content-Dependent ORM Models (`AcademyModule`, `AcademyChapter`, `AcademyTagRelation`, `AcademyUserChapterProgress`) | 25m | 15m | 10m | **50m (0.83h)** | - |
-  | **BE-01-G** | Pydantic v2 Schemas (`BaseSchema`, `ConfigDict(from_attributes=True)`) & `__init__.py` Re-exports | 20m | 15m | 10m | **45m (0.75h)** | - |
-  | **BE-01-H** | Alembic Migrations 5 & 6 (`academy_module`, `academy_chapter`) | 20m | 15m | 10m | **45m (0.75h)** | - |
-  | **BE-01-I** | Alembic Migrations 7 & 8 (`academy_tag_relation` XOR CK, `academy_user_chapter_progress` Enum & UQ) | 20m | 15m | 10m | **45m (0.75h)** | - |
-  | **BE-01-J** | Unit & Migration Regression Tests (`test_academy_models.py`, ≥80% coverage gate) | 15m | 30m | 15m | **60m (1.00h)** | - |
-  | **Subtotal (Phase 2)** | **Content-Dependent Models, Schemas & Migrations** | **100m (1.67h)** | **90m (1.50h)** | **55m (0.92h)** | **245m (4.08h)** | - |
-
 ##### `BE-02`: Master CSVs (HTML Content) & Academy Seeder
 - **UAC**:
   - [ ] The platform is pre-loaded with official IDH Living Income Roadmap content (master tags, module/chapter tag relations, 6 modules, 27 chapters with rich HTML content, technical resources, and glossary terms).
