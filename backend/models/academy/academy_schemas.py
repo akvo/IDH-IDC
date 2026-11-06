@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from models.academy.academy_models import (
     AcademyResourceType,
@@ -65,6 +65,41 @@ class AcademyResourceResponse(AcademyResourceBase):
     updated_at: datetime
 
 
+class AcademyResourceItemResponse(BaseSchema):
+    id: int
+    name: str
+    type: AcademyResourceType
+    url: str
+    description: Optional[str] = None
+    created_at: datetime
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_resource_fields(cls, data):
+        if not isinstance(data, dict):
+            return {
+                "id": getattr(data, "id", None),
+                "name": getattr(data, "name", None),
+                "type": getattr(
+                    data, "resource_type", getattr(data, "type", None)
+                ),
+                "url": getattr(data, "file_url", getattr(data, "url", None)),
+                "description": getattr(data, "description", None),
+                "created_at": getattr(data, "created_at", None),
+            }
+        mapped = dict(data)
+        if "type" not in mapped and "resource_type" in mapped:
+            mapped["type"] = mapped["resource_type"]
+        if "url" not in mapped and "file_url" in mapped:
+            mapped["url"] = mapped["file_url"]
+        return mapped
+
+
+class AcademyResourceListResponse(BaseSchema):
+    total: int
+    data: List[AcademyResourceItemResponse] = []
+
+
 # ============================================================
 # 3. ACADEMY GLOSSARY TERM SCHEMAS
 # ============================================================
@@ -88,6 +123,39 @@ class AcademyGlossaryTermResponse(AcademyGlossaryTermBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+class AcademyGlossaryItemResponse(BaseSchema):
+    id: int
+    term: str
+    type: AcademyGlossaryTermType
+    definition: str
+    created_at: datetime
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_glossary_fields(cls, data):
+        if not isinstance(data, dict):
+            return {
+                "id": getattr(data, "id", None),
+                "term": getattr(data, "name", getattr(data, "term", None)),
+                "type": getattr(
+                    data, "term_type", getattr(data, "type", None)
+                ),
+                "definition": getattr(data, "definition", None),
+                "created_at": getattr(data, "created_at", None),
+            }
+        mapped = dict(data)
+        if "term" not in mapped and "name" in mapped:
+            mapped["term"] = mapped["name"]
+        if "type" not in mapped and "term_type" in mapped:
+            mapped["type"] = mapped["term_type"]
+        return mapped
+
+
+class AcademyGlossaryListResponse(BaseSchema):
+    total: int
+    data: List[AcademyGlossaryItemResponse] = []
 
 
 # ============================================================

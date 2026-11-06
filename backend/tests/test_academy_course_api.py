@@ -5,6 +5,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 from middleware import create_access_token
+from db.academy import crud_course
 from models.academy import (
     AcademyChapter,
     AcademyChapterProgressStatus,
@@ -1018,3 +1019,174 @@ class TestAcademyCrossUserIsolationApi:
         data_b_hist = res_b_hist.json()
         assert data_b_hist["total"] == 0
         assert data_b_hist["data"] == []
+
+
+class TestAcademyCourseEdgeCasesAndCoverage:
+    """Test suite covering edge cases, fallbacks, and boundary conditions."""
+
+    @pytest.mark.asyncio
+    async def test_reading_history_negative_and_zero_pagination(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        user = get_or_create_test_user(session, "page_fallback@test.org")
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_reading_history")
+
+        # FastAPI ge=1 validation rejects page=0 with 422
+        res = await client.get(
+            url, headers=headers, params={"page": 0, "page_size": 10}
+        )
+        assert res.status_code == 422
+
+        res_neg = await client.get(
+            url, headers=headers, params={"page": 1, "page_size": -5}
+        )
+        assert res_neg.status_code == 422
+
+        # Direct CRUD call verifies internal defense fallbacks for page < 1
+        crud_res = crud_course.get_user_reading_history(
+            session=session, user_id=user.id, page=0, page_size=0
+        )
+        assert crud_res.page == 1
+        assert crud_res.page_size == 10
+
+    def test_greeting_name_lastname_only_fallback(self, session: Session):
+        user = get_or_create_test_user(
+            session, "lastname_only@test.org", fullname=""
+        )
+        profile = (
+            session.query(UserProfile)
+            .filter(UserProfile.user_id == user.id)
+            .first()
+        )
+        if not profile:
+            profile = UserProfile(
+                user_id=user.id, first_name="", last_name="Skywalker"
+            )
+            session.add(profile)
+        else:
+            profile.first_name = ""
+            profile.last_name = "Skywalker"
+        session.commit()
+
+        greeting = crud_course.get_user_greeting_name(session, user)
+        assert greeting == "Skywalker"
+
+    def test_greeting_name_learner_fallback(self, session: Session):
+        user = get_or_create_test_user(
+            session, "no_name_no_email@test.org", fullname=""
+        )
+        # Clear profile
+        session.query(UserProfile).filter(
+            UserProfile.user_id == user.id
+        ).delete()
+        user.fullname = ""
+        user.email = ""
+        session.commit()
+
+        greeting = crud_course.get_user_greeting_name(session, user)
+        assert greeting == "Learner"
+
+    def test_resolve_prev_next_nonexistent_chapter_direct(
+        self, session: Session
+    ):
+        chapters = session.query(AcademyChapter).limit(3).all()
+        prev_id, next_id = crud_course.get_chapter_navigation_ids(
+            chapters, target_chapter_id=999999
+        )
+        assert prev_id is None
+        assert next_id is None
+
+    def test_determine_continue_empty_chapters_direct(self):
+        result = crud_course.determine_continue_chapter_id([], {}, [])
+        assert result is None
+
+    def test_determine_continue_with_in_progress_opened_records(
+        self, session: Session
+    ):
+        chapters = session.query(AcademyChapter).limit(5).all()
+        user = get_or_create_test_user(session, "continue_test@test.org")
+
+        opened_rec = AcademyUserChapterProgress(
+            user_id=user.id,
+            chapter_id=chapters[2].id,
+            status=AcademyChapterProgressStatus.in_progress,
+            last_opened_at=datetime.utcnow(),
+        )
+        res = crud_course.determine_continue_chapter_id(
+            chapters, {}, [opened_rec]
+        )
+        assert res == chapters[2].id
+
+    @pytest.mark.asyncio
+    async def test_update_progress_status_not_started_without_mark_opened(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        user = get_or_create_test_user(session, "not_started_test@test.org")
+        headers = get_auth_header(user.email)
+        chapter = session.query(AcademyChapter).first()
+
+        res = await client.post(
+            app.url_path_for(
+                "academy:update_chapter_progress", chapter_id=chapter.id
+            ),
+            json={"status": "not_started", "mark_opened": False},
+            headers=headers,
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["status"] == "Not started"
+        assert data["module_status"] == "Not started"
+
+    @pytest.mark.asyncio
+    async def test_modules_query_module_progress_statuses(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        user = get_or_create_test_user(session, "mod_status_test@test.org")
+        headers = get_auth_header(user.email)
+
+        # Mark all chapters of Module 1 completed
+        mod1 = (
+            session.query(AcademyModule)
+            .filter(AcademyModule.order_index == 1)
+            .first()
+        )
+        mod1_chapters = (
+            session.query(AcademyChapter)
+            .filter(AcademyChapter.module_id == mod1.id)
+            .all()
+        )
+        for c in mod1_chapters:
+            crud_course.upsert_chapter_progress(
+                session, c.id, user.id,
+                AcademyChapterProgressStatus.completed,
+                mark_opened=True
+            )
+
+        # Mark one chapter of Module 2 in progress
+        mod2 = (
+            session.query(AcademyModule)
+            .filter(AcademyModule.order_index == 2)
+            .first()
+        )
+        mod2_chap = (
+            session.query(AcademyChapter)
+            .filter(AcademyChapter.module_id == mod2.id)
+            .first()
+        )
+        crud_course.upsert_chapter_progress(
+            session, mod2_chap.id, user.id,
+            AcademyChapterProgressStatus.in_progress,
+            mark_opened=True
+        )
+
+        res = await client.get(
+            app.url_path_for("academy:get_modules"), headers=headers
+        )
+        assert res.status_code == 200
+        data = res.json()
+        m1_data = next(m for m in data["modules"] if m["id"] == mod1.id)
+        m2_data = next(m for m in data["modules"] if m["id"] == mod2.id)
+        assert m1_data["status"] == "Completed"
+        assert m1_data["progress_pct"] == 100
+        assert m2_data["status"] == "In progress"
