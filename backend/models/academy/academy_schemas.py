@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 
 from models.academy.academy_models import (
@@ -193,3 +193,162 @@ class AcademyUserChapterProgressResponse(AcademyUserChapterProgressBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+# ============================================================
+# 8. COURSE OVERVIEW, PROGRESS & HISTORY SCHEMAS (BE-03)
+# ============================================================
+class AcademyTagSummary(BaseSchema):
+    id: int
+    name: str
+    slug: str
+
+
+class AcademyTagWithCounts(BaseSchema):
+    id: int
+    name: str
+    slug: str
+    order_index: int = 0
+    module_count: int = 0
+    chapter_count: int = 0
+
+
+AcademyTagWithCountsResponse = AcademyTagWithCounts
+
+
+class AcademyMetricsResponse(BaseSchema):
+    academy_progress_pct: int = 0
+    modules_completed: int = 0
+    total_modules: int = 0
+    modules_completed_pct: int = 0
+    chapters_completed: int = 0
+    total_chapters: int = 0
+    chapters_completed_pct: int = 0
+
+
+class AcademyModuleOverviewCard(BaseSchema):
+    id: int
+    order_index: int
+    title: str
+    description: Optional[str] = None
+    estimated_minutes: int
+    icon_theme: Optional[str] = None
+    progress_pct: int = 0
+    status: str = "Not started"
+    tags: List[AcademyTagSummary] = []
+
+
+class AcademyRecentlyOpenedChapter(BaseSchema):
+    id: int
+    module_id: int
+    module_order_index: int
+    module_title: str
+    chapter_number: int
+    title: str
+    estimated_minutes: int
+    status: str = "Not started"
+    last_opened_at: Optional[datetime] = None
+    tags: List[AcademyTagSummary] = []
+
+
+class AcademyOverviewResponse(BaseSchema):
+    greeting_name: str
+    continue_chapter_id: Optional[int] = None
+    metrics: AcademyMetricsResponse
+    modules: List[AcademyModuleOverviewCard]
+    recently_opened: List[AcademyRecentlyOpenedChapter] = []
+
+
+class AcademyChapterSummary(BaseSchema):
+    id: int
+    chapter_number: int
+    title: str
+    estimated_minutes: int
+    status: str = "Not started"
+    tags: List[AcademyTagSummary] = []
+
+
+class AcademyModuleDetailItem(BaseSchema):
+    id: int
+    order_index: int
+    title: str
+    description: Optional[str] = None
+    estimated_minutes: int
+    icon_theme: Optional[str] = None
+    progress_pct: int = 0
+    status: str = "Not started"
+    tags: List[AcademyTagSummary] = []
+    chapters: List[AcademyChapterSummary] = []
+
+
+class AcademyModulesResponse(BaseSchema):
+    total_modules: int
+    course_summary_html: Optional[str] = None
+    modules: List[AcademyModuleDetailItem]
+
+
+AcademyModulesListResponse = AcademyModulesResponse
+
+
+class AcademyChapterDetailResponse(BaseSchema):
+    id: int
+    module_id: int
+    module_title: Optional[str] = None
+    chapter_number: int
+    title: str
+    content_html: Optional[str] = None
+    estimated_minutes: int
+    status: str = "Not started"
+    tags: List[AcademyTagSummary] = []
+    prev_chapter_id: Optional[int] = None
+    next_chapter_id: Optional[int] = None
+
+
+class ChapterProgressUpdateRequest(BaseSchema):
+    status: AcademyChapterProgressStatus = (
+        AcademyChapterProgressStatus.not_started
+    )
+    mark_opened: bool = False
+
+
+AcademyChapterProgressUpdateRequest = ChapterProgressUpdateRequest
+
+
+class ChapterProgressUpdateResponse(BaseSchema):
+    chapter_id: int
+    status: str
+    last_opened_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    module_id: int
+    module_progress_pct: int
+    module_status: str
+    course_progress_pct: int
+    modules_completed: int
+    chapters_completed: int
+
+
+AcademyChapterProgressUpdateResponse = ChapterProgressUpdateResponse
+
+
+class AcademyHistoryItem(BaseSchema):
+    chapter_id: int
+    chapter_title: str
+    chapter_number: int
+    module_id: int
+    module_order_index: int
+    module_title: str
+    estimated_minutes: int
+    status: str
+    last_opened_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+
+
+AcademyHistoryItemResponse = AcademyHistoryItem
+
+
+class AcademyHistoryResponse(BaseSchema):
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+    data: List[AcademyHistoryItem] = []
