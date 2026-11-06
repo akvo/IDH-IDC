@@ -15,3 +15,6 @@ python -m seeder.procurement_library
 
 # new PL seeder oct 2025
 python -m seeder.procurement_library_v2
+
+# academy seeder
+python -m seeder.academy
