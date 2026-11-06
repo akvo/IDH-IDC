@@ -16,5 +16,7 @@ from models.commodity_category import CommodityCategory  # noqa
 from models.commodity_category_question import (  # noqa
     CommodityCategoryQuestion,
 )
+from models.case import Case  # noqa
+from models.case_import import CaseImport  # noqa
 
 # add all other models
