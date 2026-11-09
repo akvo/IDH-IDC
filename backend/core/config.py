@@ -33,6 +33,7 @@ from routes.academy import (
     academy_course_router,
     academy_profile_router,
     academy_resource_router,
+    academy_settings_router,
 )
 
 import os
@@ -158,6 +159,7 @@ app.include_router(pl_practice_router_v2)
 app.include_router(academy_course_router)
 app.include_router(academy_profile_router)
 app.include_router(academy_resource_router)
+app.include_router(academy_settings_router)
 
 
 @app.get("/", tags=["Dev"])
