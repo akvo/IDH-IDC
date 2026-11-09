@@ -25,7 +25,7 @@ The table below provides a complete cross-reference between the browser routes, 
 | **3** | **Course Overview** | `/academy/courses` | `/academy/tags`<br>`/academy/modules`<br>`/academy/chapters/{id}`<br>`/academy/chapters/{id}/progress` | `GET`<br>`GET`<br>`GET`<br>`POST` | 10 topic tag badges & counts<br>6 modules with nested chapters & filters<br>Full chapter content & prev/next pointers<br>Inline chapter completion toggle |
 | **4** | **Technical Resources & Glossary** | `/academy/resources`<br>`?tab=resources`<br>`?tab=glossary` | `/academy/resources`<br>`/academy/glossary` | `GET`<br>`GET` | Downloadable guidance files, templates & tools<br>Standardized terminology definitions |
 | **5** | **User Account & Profile** | `/academy/account` | `/academy/profile`<br>`/academy/profile`<br>`/user/me` | `GET`<br>`PUT`<br>`GET` | Fetch learner profile & commodities<br>Update demographics, org, commodities & bio<br>Refresh global user state & header avatar |
-| **6** | **Settings & Security**<br>*(Figma `12029:57853`)* | `/academy/settings` | `/user/{user_id}`<br>`/user/{user_id}` | `PUT`<br>`DELETE` | Update learner password (with validation)<br>Delete account & cascade clean up progress |
+| **6** | **Settings & Security**<br>*(Figma `12029:57853`)* | `/academy/settings` | `/academy/settings/change-password`<br>`/academy/account`<br>`/user/me` | `POST`<br>`DELETE`<br>`GET` | Update learner password (verifies current)<br>Delete learner account with FK case-ownership check<br>Refresh session state |
 
 ---
 
@@ -52,7 +52,7 @@ flowchart TD
     Shell --> Courses["FE-04 & FE-05: Course Overview & Reader\nRoute: /academy/courses\nEndpoints: GET /tags, GET /modules, GET /chapters/{id}, POST /progress"]
     Shell --> Resources["FE-06: Technical Resources & Glossary\nRoute: /academy/resources?tab=...\nEndpoints: GET /academy/resources, GET /academy/glossary"]
     Shell --> Account["FE-07: Learner Account & Profile\nRoute: /academy/account\nEndpoints: GET/PUT /academy/profile, GET /user/me"]
-    Shell --> Settings["FE-08: Settings & Security (Figma 12029:57853)\nRoute: /academy/settings\nEndpoints: PUT /user/{id}, DELETE /user/{id}"]
+    Shell --> Settings["FE-08: Settings & Security (Figma 12029:57853)\nRoute: /academy/settings\nEndpoints: POST /academy/settings/change-password, DELETE /academy/account"]
 ```
 
 ---
@@ -275,14 +275,37 @@ flowchart TD
   - `Delete` button: Triggers an Ant Design modal confirmation dialog (`Modal.confirm`) requiring explicit user confirmation before executing account deletion.
 
 #### Backend API Endpoints Used
-1. `PUT /user/{user_id}`:
+1. `POST /academy/settings/change-password`:
    - **Headers**: `Authorization: Bearer <token>`
-   - **Payload**: Form data with `password: <new_password>`
-   - **Usage**: Updates learner password securely with bcrypt hashing.
-2. `DELETE /user/{user_id}`:
+   - **Payload**:
+     ```json
+     {
+       "current_password": "CurrentPassword123!",
+       "new_password": "NewSecurePassword456!"
+     }
+     ```
+   - **Validation & Business Logic**:
+     - Verifies `current_password` via bcrypt against `user.password`. If incorrect, returns `400 Bad Request` (`"Incorrect current password"`).
+     - Hashes `new_password` with bcrypt (`get_password_hash`) and updates `user.password`.
+   - **Response**: `200 OK`
+     ```json
+     {
+       "message": "Password changed successfully"
+     }
+     ```
+   - **Error Handling**: `400 Bad Request`, `401 Unauthorized`, `422 Unprocessable Entity`.
+2. `DELETE /academy/account`:
    - **Headers**: `Authorization: Bearer <token>`
-   - **Usage**: Permanently deletes user account, automatically cascading through `user_profile`, `academy_user_chapter_progress`, and case associations.
-   - **Post-Action**: Signs the learner out and redirects to the landing page.
+   - **Foreign Key Safety Checks**:
+     - **Blocking FK Check**: Queries `Case` table for cases where `created_by == user.id`. If found, rejects with `409 Conflict` returning the list of blocking cases.
+     - **Secondary FK Cleanup**: Reassigns `case.updated_by = case.created_by`, unlinks `Tag.created_by`, `Question.created_by`, and `ReferenceData.created_by`.
+     - **Related Tables Deletion**: Deletes `UserCaseAccess` and `UserBusinessUnit`.
+     - **Cascaded Academy Data**: Automatically cascades deletion of `user_profile` and `academy_user_chapter_progress`.
+     - **User Removal**: Permanently deletes the `User` record.
+   - **Response**: `204 No Content`.
+   - **Error Handling**: `401 Unauthorized`, `409 Conflict` (when user owns existing cases).
+3. `GET /user/me`:
+   - **Usage**: Verify authenticated session and refresh header state.
 
 #### Touchpoint Files & Component Structure
 - `[CREATE]` `frontend/src/pages/academy/AcademySettingsPage.js`

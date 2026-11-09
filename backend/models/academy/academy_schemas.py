@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from models.academy.academy_models import (
     AcademyResourceType,
@@ -420,6 +420,22 @@ class AcademyHistoryResponse(BaseSchema):
     page_size: int
     total_pages: int
     data: List[AcademyHistoryItem] = []
+
+
+# ============================================================
+# 8. ACADEMY SETTINGS / SECURITY SCHEMAS
+# ============================================================
+class ChangePasswordPayload(BaseSchema):
+    current_password: str = Field(
+        ..., min_length=1, description="Current user password"
+    )
+    new_password: str = Field(
+        ..., min_length=1, description="New user password"
+    )
+
+
+class ChangePasswordResponse(BaseSchema):
+    message: str = "Password changed successfully"
 
 
 from models.user_profile import (  # noqa: E402, F401
