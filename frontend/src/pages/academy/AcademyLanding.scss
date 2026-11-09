@@ -1,0 +1,791 @@
+.academy-landing-page {
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  font-family: "Actor", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+
+  .section-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 32px;
+
+    @media (max-width: 768px) {
+      padding: 0 20px;
+    }
+  }
+
+  .section-title {
+    font-size: 36px;
+    font-weight: 700;
+    color: #01625f;
+    line-height: 1.25;
+    margin-bottom: 16px;
+
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
+  }
+
+  .section-title-light {
+    font-size: 36px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    text-align: center;
+
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
+  }
+
+  .section-lead {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #27272a;
+    max-width: 1100px;
+    margin-bottom: 0;
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+    }
+  }
+
+  .section-subtitle {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #474747;
+    margin-bottom: 0;
+
+    @media (max-width: 768px) {
+      font-size: 15px;
+    }
+  }
+
+  // ==========================================
+  // 1. HERO SECTION
+  // ==========================================
+  .academy-hero {
+    position: relative;
+    width: 100%;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    padding: 96px 0;
+    color: #ffffff;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+      min-height: 500px;
+      padding: 64px 20px;
+    }
+
+    .hero-background-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+
+      .hero-background-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(1, 48, 47, 0.88) 0%,
+          rgba(1, 98, 95, 0.75) 50%,
+          rgba(2, 35, 34, 0.85) 100%
+        );
+      }
+    }
+
+    .hero-content-container {
+      position: relative;
+      z-index: 2;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+      width: 100%;
+
+      @media (max-width: 768px) {
+        padding: 0;
+      }
+
+      .hero-text-block {
+        max-width: 760px;
+        margin-bottom: 40px;
+
+        .hero-title {
+          font-size: 56px;
+          font-weight: 700;
+          line-height: 1.15;
+          color: #ffffff;
+          margin-bottom: 24px;
+          letter-spacing: -0.5px;
+          text-transform: capitalize;
+
+          @media (max-width: 768px) {
+            font-size: 32px;
+            line-height: 1.25;
+            margin-bottom: 16px;
+          }
+        }
+
+        .hero-description {
+          font-size: 18px;
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.92);
+          margin-bottom: 0;
+
+          @media (max-width: 768px) {
+            font-size: 15px;
+          }
+        }
+      }
+
+      .hero-action {
+        .hero-cta-btn {
+          height: 48px;
+          padding: 0 24px;
+          border-radius: 999px;
+          background-color: #ffc505;
+          border-color: #ffc505;
+          color: #00625f;
+          font-weight: 700;
+          font-size: 16px;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: transform 120ms ease, background-color 120ms ease;
+
+          &:hover {
+            background-color: #ffd233 !important;
+            border-color: #ffd233 !important;
+            color: #004d4a !important;
+          }
+
+          &:active {
+            transform: scale(0.98);
+          }
+
+          .btn-arrow-icon {
+            width: 16px;
+            height: 12px;
+            object-fit: contain;
+            flex-shrink: 0;
+          }
+        }
+      }
+    }
+  }
+
+  // ==========================================
+  // 2. ABOUT SECTION
+  // ==========================================
+  .academy-about-section {
+    background-color: #fcf9f4;
+    padding: 96px 0;
+
+    @media (max-width: 768px) {
+      padding: 64px 0;
+    }
+
+    .about-header-block {
+      margin-bottom: 56px;
+    }
+
+    .about-content-grid {
+      display: flex;
+      gap: 32px;
+      align-items: stretch;
+
+      @media (max-width: 991px) {
+        flex-direction: column;
+      }
+
+      .about-steps-col {
+        flex: 1 1 0%;
+        min-width: 0;
+
+        .steps-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+
+          .step-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 8px 0;
+
+            .step-marker {
+              width: 48px;
+              height: 48px;
+              flex-shrink: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              .step-hex-icon {
+                width: 48px;
+                height: 48px;
+                display: block;
+              }
+            }
+
+            .step-body {
+              flex: 1 1 0%;
+              min-width: 0;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+
+              .step-title {
+                font-family: "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+                font-size: 24px;
+                font-weight: 700;
+                line-height: 32px;
+                letter-spacing: -0.24px;
+                color: #01625f;
+                margin: 0;
+
+                @media (max-width: 768px) {
+                  font-size: 20px;
+                  line-height: 28px;
+                }
+              }
+
+              .step-text {
+                font-family: "Actor", sans-serif;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #000000;
+                margin: 0;
+              }
+            }
+          }
+        }
+      }
+
+      .about-image-col {
+        flex: 1 1 0%;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .about-image-wrapper {
+          width: 100%;
+          max-width: 592px;
+          aspect-ratio: 592 / 502;
+          border-radius: 12px;
+          overflow: hidden;
+          position: relative;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+          .about-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 12px;
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+  // ==========================================
+  // 3. ROADMAP SECTION
+  // ==========================================
+  .academy-roadmap-section {
+    background-color: #005953;
+    padding: 64px 0 48px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+
+    @media (max-width: 768px) {
+      padding: 48px 0 36px;
+    }
+
+    .roadmap-header {
+      margin-bottom: 20px;
+      text-align: center;
+
+      .section-title-light {
+        font-family: "RocGroteskBold", "RocGrotesk",
+          "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+        font-size: 42px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.25;
+        margin: 0;
+
+        @media (max-width: 768px) {
+          font-size: 32px;
+        }
+      }
+    }
+
+    .roadmap-visual-stage {
+      position: relative;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      min-height: 846px;
+
+      @media (max-width: 1199px) {
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .radar-center-wrapper {
+        position: absolute;
+        top: 106px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 595px;
+        height: 577px;
+        z-index: 1;
+        pointer-events: none;
+
+        @media (max-width: 1199px) {
+          position: static;
+          transform: none;
+          width: 320px;
+          height: 310px;
+          margin-bottom: 24px;
+        }
+
+        .radar-graphic {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
+        }
+      }
+
+      .roadmap-nodes-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+
+        @media (max-width: 1199px) {
+          position: static;
+          display: flex;
+          flex-direction: column;
+          gap: 36px;
+          width: 100%;
+          max-width: 600px;
+        }
+
+        .roadmap-step-group {
+          position: absolute;
+          box-sizing: border-box;
+
+          @media (max-width: 1199px) {
+            position: static !important;
+            width: 100% !important;
+            left: auto !important;
+            right: auto !important;
+            top: auto !important;
+          }
+
+          // Desktop positioning
+          &.roadmap-step-1 {
+            left: calc(50% - 591px);
+            top: 152px;
+            width: 480px;
+          }
+
+          &.roadmap-step-2 {
+            right: calc(50% - 591px);
+            top: 63px;
+            width: 479px;
+          }
+
+          &.roadmap-step-3 {
+            right: calc(50% - 591px);
+            top: 300px;
+            width: 396px;
+          }
+
+          &.roadmap-step-4 {
+            right: calc(50% - 591px);
+            top: 558px;
+            width: 479px;
+          }
+
+          &.roadmap-step-5 {
+            left: calc(50% - 591px);
+            top: 420px;
+            width: 443px;
+          }
+
+          .step-illustration-wrapper {
+            margin-bottom: 8px;
+            display: flex;
+
+            .step-illustration {
+              height: 64px;
+              width: auto;
+              object-fit: contain;
+              display: block;
+            }
+          }
+
+          .step-connector-row {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 2px;
+            margin: 12px 0 8px;
+            position: relative;
+
+            @media (max-width: 1199px) {
+              height: auto;
+              gap: 12px;
+              margin: 10px 0 8px;
+            }
+
+            .connector-marker {
+              width: 48px;
+              height: 48px;
+              flex-shrink: 0;
+              display: block;
+              border-radius: 50%;
+              overflow: hidden;
+              transition: transform 200ms ease;
+
+              &:hover {
+                transform: scale(1.08);
+              }
+
+              @media (max-width: 1199px) {
+                width: 40px;
+                height: 40px;
+              }
+            }
+
+            .connector-line {
+              flex: 1;
+              height: 1.5px;
+              background-color: #96eaba;
+              border-radius: 9999px;
+            }
+          }
+
+          .step-content-wrapper {
+            display: flex;
+            margin-top: 4px;
+
+            .step-content {
+              max-width: 324px;
+
+              .step-title {
+                font-family: "RocGroteskBold", "RocGrotesk",
+                  "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+                font-size: 20px;
+                font-weight: 700;
+                line-height: 28px;
+                color: #48d985;
+                margin-bottom: 8px;
+              }
+
+              .step-description {
+                font-family: "Actor", sans-serif;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #ffffff;
+                margin: 0;
+              }
+            }
+          }
+
+          // Side-specific alignments
+          &.side-left {
+            .step-illustration-wrapper {
+              justify-content: flex-start;
+            }
+
+            .step-content-wrapper {
+              justify-content: flex-start;
+            }
+          }
+
+          &.side-right {
+            .step-illustration-wrapper {
+              justify-content: flex-end;
+
+              @media (max-width: 1199px) {
+                justify-content: flex-start;
+              }
+            }
+
+            .step-content-wrapper {
+              justify-content: flex-end;
+
+              @media (max-width: 1199px) {
+                justify-content: flex-start;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ==========================================
+  // 4. CALL TO ACTION (CTA)
+  // ==========================================
+  .academy-cta-section {
+    padding: 64px 0;
+    background-color: #ffffff;
+
+    .cta-card {
+      position: relative;
+      background-color: #eaf2f2;
+      border-radius: 16px;
+      padding: 48px 32px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      max-width: 1216px;
+      margin: 0 auto;
+      box-sizing: border-box;
+
+      @media (max-width: 768px) {
+        padding: 40px 24px;
+      }
+
+      .cta-pattern-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: right center;
+        }
+      }
+
+      .cta-content {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 768px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+
+        .cta-text-group {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          width: 100%;
+
+          .cta-title {
+            font-family: "RocGroteskBold", "RocGrotesk",
+              "FONTSPRING DEMO - Roc Grotesk", sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #01625f;
+            margin: 0;
+            line-height: 42px;
+            letter-spacing: -0.32px;
+
+            @media (max-width: 768px) {
+              font-size: 24px;
+              line-height: 32px;
+            }
+          }
+
+          .cta-subtitle {
+            font-family: "Actor", -apple-system, BlinkMacSystemFont, "Segoe UI",
+              Roboto, sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 28px;
+            color: #000000;
+            margin: 0;
+
+            @media (max-width: 768px) {
+              font-size: 16px;
+              line-height: 24px;
+            }
+          }
+        }
+
+        .cta-action {
+          display: flex;
+          justify-content: center;
+
+          .cta-start-btn.ant-btn {
+            height: 48px;
+            padding: 0 24px;
+            border-radius: 999px;
+            border: 1px solid #01625f;
+            background: transparent !important;
+            background-color: transparent !important;
+            color: #01625f;
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 24px;
+            box-shadow: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 120ms ease;
+
+            span {
+              font-weight: 700;
+              color: #01625f;
+              transition: color 120ms ease;
+            }
+
+            &:hover,
+            &:focus {
+              background: #01625f !important;
+              background-color: #01625f !important;
+              color: #ffffff !important;
+              border-color: #01625f !important;
+
+              span {
+                color: #ffffff !important;
+              }
+            }
+
+            &:active {
+              transform: scale(0.98);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ==========================================
+  // 5. TOOLS & RESOURCES
+  // ==========================================
+  .academy-tools-section {
+    background-color: #ffffff;
+  }
+
+  // ==========================================
+  // 6. COLLABORATION PARTNERS
+  // ==========================================
+  .academy-partners-section {
+    background-color: #ffffff;
+    padding: 64px 0 96px;
+    border-top: 1px solid #f3f4f6;
+
+    .partners-header-block {
+      text-align: center;
+      max-width: 860px;
+      margin: 0 auto 48px;
+
+      .section-title {
+        text-align: center;
+      }
+
+      .partners-lead {
+        font-size: 17px;
+        line-height: 1.6;
+        color: #27272a;
+        margin-bottom: 0;
+      }
+    }
+
+    .partners-cards-row {
+      .partner-card-custom {
+        height: 100%;
+        background-color: #eaf2f2;
+        border: none;
+        border-radius: 14px;
+        transition: transform 150ms ease, box-shadow 150ms ease;
+
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .ant-card-body {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          padding: 24px;
+        }
+
+        .partner-logo-container {
+          height: 60px;
+          display: flex;
+          align-items: center;
+          margin-bottom: 20px;
+
+          .partner-logo-img {
+            max-height: 48px;
+            width: auto;
+            object-fit: contain;
+          }
+        }
+
+        .partner-card-content {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          justify-content: space-between;
+
+          .partner-description-text {
+            font-size: 13px;
+            line-height: 1.55;
+            color: #27272a;
+            margin-bottom: 20px;
+          }
+
+          .partner-discover-link {
+            color: #01625f;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-block;
+
+            &:hover {
+              text-decoration: underline;
+              color: #004d4a;
+            }
+          }
+        }
+      }
+    }
+  }
+}

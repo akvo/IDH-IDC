@@ -115,6 +115,45 @@ const procurementDisclaimerText = () => (
   </div>
 );
 
+const academyDisclaimerText = () => (
+  <div className="disclaimer-text-wrapper">
+    <div>
+      <p data-testid="disclaimer-section-description">
+        The Living Income Academy offers general guidance to help companies and
+        their partners work towards living incomes in their value chains. Every
+        effort has been made to ensure that the content is accurate and
+        up-to-date; however, errors and omissions may occur. The information is
+        provided on an &quot;as is&quot; basis and is intended to complement
+        your own due diligence, context-specific analysis, and professional
+        advice.
+        <br />
+        <br />
+        IDH does not guarantee or warrant that the information is complete or
+        free of error. IDH accepts no liability for any damage arising from
+        decisions or actions taken, or not taken, in reliance on it, or for any
+        inadvertent misrepresentation made or implied.
+      </p>
+    </div>
+    <div>
+      <p data-testid="disclaimer-section-description">
+        Case examples, figures and benchmarks are illustrative and reflect the
+        situation at the time of publication. Living income benchmarks and
+        methodologies are updated regularly; please check for the latest version
+        before use. Links to third-party websites are provided for convenience,
+        and IDH is not responsible for their content.
+        <br />
+        <br />
+        For more information or to share your experience, please contact the IDH
+        Living Income team at{" "}
+        <a href="mailto:livingincome@idhtrade.org" style={{ color: "#fff" }}>
+          <u>livingincome@idhtrade.org</u>
+        </a>
+        .
+      </p>
+    </div>
+  </div>
+);
+
 const FooterDisclaimer = ({
   disclaimerText = "default",
   showPageFooter = true,
@@ -148,6 +187,7 @@ const FooterDisclaimer = ({
               </Link>
               <Link to="/procurement-library">Procurement Library</Link>
               <Link to="/cocoa-income-inventory">Cocoa Income Inventory</Link>
+              <Link to="/academy">Academy</Link>
               <Link to="/tools-and-resources">Tools & Resources</Link>
               {showFAQNav ? <Link to={routePath.idc.faq}>FAQ</Link> : ""}
             </Space>
@@ -171,6 +211,7 @@ const FooterDisclaimer = ({
           defaultDisclaimerText(handleSecurityClick)}
         {disclaimerText === "cii" && ciiDisclaimerText(handleSecurityClick)}
         {disclaimerText === "procurement" && procurementDisclaimerText()}
+        {disclaimerText === "academy" && academyDisclaimerText()}
       </Col>
       {showPageFooter && (
         <Col span={24} className="footer-wrapper">
