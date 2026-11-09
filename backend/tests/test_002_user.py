@@ -413,6 +413,7 @@ class TestUserEndpoint:
                 "internal_user": True,
                 "company": None,
                 "user_type": "internal",
+                "user_profile": None,
             },
         }
 

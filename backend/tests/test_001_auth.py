@@ -233,4 +233,5 @@ class TestUserAuthentication:
             "internal_user": False,
             "company": None,
             "user_type": "external_regular",
+            "user_profile": None,
         }

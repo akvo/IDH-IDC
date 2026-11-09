@@ -125,4 +125,5 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "internal_user": False,
             "company": None,
             "user_type": UserType.external_regular.value,
+            "user_profile": None,
         }

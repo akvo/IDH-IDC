@@ -274,3 +274,33 @@ class TestExistingUserRegression:
         assert dump == {"commodities": ["Rice", "Soy"]}
         assert "first_name" not in dump
         assert "company_name" not in dump
+
+    def test_pydantic_schema_string_length_bounds(self):
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(first_name="A" * 126)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(last_name="B" * 126)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(company_name="C" * 256)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(company_type="D" * 101)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(sector="E" * 101)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(region_name="F" * 126)
+
+        # Valid lengths should succeed
+        valid_update = UserProfileUpdate(
+            first_name="A" * 125,
+            last_name="B" * 125,
+            company_name="C" * 255,
+            company_type="D" * 100,
+            sector="E" * 100,
+            region_name="F" * 125,
+        )
+        assert len(valid_update.first_name) == 125
