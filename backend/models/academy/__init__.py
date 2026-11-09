@@ -68,6 +68,11 @@ from models.academy.academy_schemas import (
     AcademyHistoryItem,
     AcademyHistoryItemResponse,
     AcademyHistoryResponse,
+    UserProfileBase,
+    UserProfileCreate,
+    UserProfileUpdate,
+    UserProfileUpdatePayload,
+    UserProfileResponse,
 )
 
 __all__ = [
@@ -138,4 +143,9 @@ __all__ = [
     "AcademyHistoryItem",
     "AcademyHistoryItemResponse",
     "AcademyHistoryResponse",
+    "UserProfileBase",
+    "UserProfileCreate",
+    "UserProfileUpdate",
+    "UserProfileUpdatePayload",
+    "UserProfileResponse",
 ]

@@ -23,6 +23,7 @@ from models.user_business_unit import (
     UserBusinessUnitDetailDict,
     UserBusinessUnitRoleDict,
 )
+from models.user_profile import UserProfileDict
 
 tags_desc = "JSON stringify of tag ids [1, 2, 3]"
 cases_desc = "JSON stringify of [{'case': 1, 'permission': 'edit/view'}]"
@@ -86,6 +87,7 @@ class UserInfo(TypedDict):
     internal_user: bool  # UserRole == user has business unit
     company: Optional[int]
     user_type: UserType
+    user_profile: Optional[UserProfileDict]
 
 
 class UserDetailDict(TypedDict):
@@ -261,6 +263,10 @@ class User(Base):
         if self.user_case_access:
             case_access = [c.to_case_permission for c in self.user_case_access]
 
+        user_profile = None
+        if hasattr(self, "profile") and self.profile:
+            user_profile = self.profile.to_dict()
+
         return {
             "id": self.id,
             "fullname": self.fullname,
@@ -278,6 +284,7 @@ class User(Base):
             ),
             "company": self.company,
             "user_type": self.user_type,
+            "user_profile": user_profile,
         }
 
     @property
