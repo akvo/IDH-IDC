@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
+from jose import jwt
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
-from middleware import create_access_token
+from middleware import create_access_token, SECRET_KEY, ALGORITHM
 from db.academy import crud_course
 from models.academy import (
     AcademyChapter,
@@ -1190,3 +1191,389 @@ class TestAcademyCourseEdgeCasesAndCoverage:
         assert m1_data["status"] == "Completed"
         assert m1_data["progress_pct"] == 100
         assert m2_data["status"] == "In progress"
+
+
+class TestAcademyCourseDeepEdgeCases:
+    """Deep test verification for boundary, structure, edge cases and security."""
+
+    @pytest.mark.asyncio
+    async def test_history_negative_and_zero_page_size_query_validation(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """FastAPI query validation ge=1, le=100 returns 422 for invalid page/page_size."""
+        user = get_or_create_test_user(session, "history_param_user@test.org")
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_reading_history")
+
+        invalid_params = [
+            {"page": -1, "page_size": 10},
+            {"page": 0, "page_size": 10},
+            {"page": 1, "page_size": 0},
+            {"page": 1, "page_size": -5},
+            {"page": 1, "page_size": 101},
+            {"page": 1, "page_size": 10000},
+        ]
+        for params in invalid_params:
+            res = await client.get(url, params=params, headers=headers)
+            assert res.status_code == 422, f"Expected 422 for params {params}, got {res.status_code}"
+
+    @pytest.mark.asyncio
+    async def test_history_extreme_page_number_out_of_bounds(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Extremely high page numbers safely return empty data list with 200 OK."""
+        user = get_or_create_test_user(session, "history_extreme_page@test.org")
+        headers = get_auth_header(user.email)
+        res = await client.get(
+            app.url_path_for("academy:get_reading_history"),
+            params={"page": 999999, "page_size": 50},
+            headers=headers,
+        )
+        assert res.status_code == 200
+        body = res.json()
+        assert body["page"] == 999999
+        assert body["page_size"] == 50
+        assert body["data"] == []
+
+    @pytest.mark.asyncio
+    async def test_modules_search_sql_injection_and_wildcards_resilience(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Search query strings with SQL wildcards, escapes, quotes are handled safely."""
+        user = get_or_create_test_user(session, "modules_sql_test@test.org")
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_modules")
+
+        payloads = [
+            "%",
+            "%%",
+            "_",
+            "' OR '1'='1",
+            "\" OR \"1\"=\"1",
+            "1; DROP TABLE academy_chapter; --",
+            "\\0",
+            "/* comment */",
+            "UNION SELECT * FROM user",
+        ]
+        for q in payloads:
+            res = await client.get(url, params={"search": q}, headers=headers)
+            assert res.status_code == 200, f"Failed on SQL payload: {q}"
+            data = res.json()
+            assert "modules" in data
+            assert isinstance(data["modules"], list)
+
+    @pytest.mark.asyncio
+    async def test_modules_search_unicode_and_emojis(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Search supports multi-byte Unicode, accents, and emojis."""
+        user = get_or_create_test_user(session, "modules_unicode_test@test.org")
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_modules")
+
+        for term in ["🌾 Cacao Academy 🍫", "café", "Español", "Côte d'Ivoire", "日本語"]:
+            res = await client.get(url, params={"search": term}, headers=headers)
+            assert res.status_code == 200, f"Failed on unicode term: {term}"
+            assert "modules" in res.json()
+
+    @pytest.mark.asyncio
+    async def test_modules_search_whitespace_variations(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Whitespace-only search terms are stripped and return full modules list."""
+        user = get_or_create_test_user(session, "modules_ws_test@test.org")
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_modules")
+
+        res_unfiltered = await client.get(url, headers=headers)
+        unfiltered_count = res_unfiltered.json()["total_modules"]
+
+        for ws in ["   ", "\t", "\n", " \t \n "]:
+            res = await client.get(url, params={"search": ws}, headers=headers)
+            assert res.status_code == 200
+            assert res.json()["total_modules"] == unfiltered_count
+
+    @pytest.mark.asyncio
+    async def test_modules_cross_filter_combinations(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Cross-filtering with search + tag + tag_id evaluates correctly."""
+        user = get_or_create_test_user(session, "modules_cross_filter@test.org")
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_modules")
+
+        # 1. Contradictory tag search that matches nothing
+        res_empty = await client.get(
+            url,
+            params={"search": "Introduction", "tag": "non_existent_tag_slug_xyz"},
+            headers=headers,
+        )
+        assert res_empty.status_code == 200
+        assert res_empty.json()["total_modules"] == 0
+        assert res_empty.json()["modules"] == []
+
+        # 2. Non-existent tag_id returns 0 modules
+        res_no_tag_id = await client.get(
+            url,
+            params={"tag_id": 999999},
+            headers=headers,
+        )
+        assert res_no_tag_id.status_code == 200
+        assert res_no_tag_id.json()["total_modules"] == 0
+
+        # 3. Matching tag slug
+        first_tag = session.query(AcademyTag).first()
+        if first_tag:
+            res_tag = await client.get(
+                url,
+                params={"tag": first_tag.slug},
+                headers=headers,
+            )
+            assert res_tag.status_code == 200
+            assert "modules" in res_tag.json()
+
+    @pytest.mark.asyncio
+    async def test_chapter_progress_invalid_payloads_and_boundaries(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Malformed progress payloads, non-existent or negative chapter IDs fail safely."""
+        user = get_or_create_test_user(session, "progress_invalid_test@test.org")
+        headers = get_auth_header(user.email)
+
+        # 1. Non-existent chapter ID returns 404
+        res_404 = await client.post(
+            app.url_path_for("academy:update_chapter_progress", chapter_id=999999),
+            json={"status": "in_progress"},
+            headers=headers,
+        )
+        assert res_404.status_code == 404
+
+        # 2. Negative chapter ID returns 404
+        res_neg = await client.post(
+            app.url_path_for("academy:update_chapter_progress", chapter_id=-1),
+            json={"status": "in_progress"},
+            headers=headers,
+        )
+        assert res_neg.status_code == 404
+
+        # 3. Invalid enum status string returns 422
+        chapter = session.query(AcademyChapter).first()
+        res_invalid_enum = await client.post(
+            app.url_path_for("academy:update_chapter_progress", chapter_id=chapter.id),
+            json={"status": "SUPER_COMPLETED"},
+            headers=headers,
+        )
+        assert res_invalid_enum.status_code == 422
+
+        # 4. Invalid non-dict/null status payload returns 422
+        res_null_status = await client.post(
+            app.url_path_for("academy:update_chapter_progress", chapter_id=chapter.id),
+            json={"status": None},
+            headers=headers,
+        )
+        assert res_null_status.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_chapter_detail_invalid_id_boundaries(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Chapter detail returns 404 for missing/negative IDs and 422 for non-integer."""
+        user = get_or_create_test_user(session, "chap_detail_bound@test.org")
+        headers = get_auth_header(user.email)
+
+        res_404 = await client.get(
+            app.url_path_for("academy:get_chapter_detail", chapter_id=999999),
+            headers=headers,
+        )
+        assert res_404.status_code == 404
+
+        res_neg = await client.get(
+            app.url_path_for("academy:get_chapter_detail", chapter_id=-1),
+            headers=headers,
+        )
+        assert res_neg.status_code == 404
+
+        res_str = await client.get(
+            "/academy/chapters/not-a-number",
+            headers=headers,
+        )
+        assert res_str.status_code == 422
+
+    @pytest.mark.asyncio
+    async def test_overview_and_modules_with_empty_module_having_zero_chapters(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Modules without chapters are handled gracefully in overview and module listings."""
+        user = get_or_create_test_user(session, "empty_mod_test@test.org")
+        headers = get_auth_header(user.email)
+
+        # Create an orphan module with zero chapters
+        orphan_mod = AcademyModule(
+            order_index=99,
+            title="Empty Test Module",
+            description="A module with no chapters",
+            estimated_minutes=0,
+        )
+        session.add(orphan_mod)
+        session.commit()
+        session.refresh(orphan_mod)
+
+        try:
+            # 1. Overview handles 0 chapters module
+            res_ov = await client.get(
+                app.url_path_for("academy:get_overview"),
+                headers=headers,
+            )
+            assert res_ov.status_code == 200
+            ov_data = res_ov.json()
+            ov_orphan = next((m for m in ov_data["modules"] if m["id"] == orphan_mod.id), None)
+            assert ov_orphan is not None
+            assert ov_orphan["progress_pct"] == 0
+            assert ov_orphan["status"] == "Not started"
+
+            # 2. Modules endpoint handles 0 chapters module
+            res_mod = await client.get(
+                app.url_path_for("academy:get_modules"),
+                headers=headers,
+            )
+            assert res_mod.status_code == 200
+            mod_data = res_mod.json()
+            mod_orphan = next((m for m in mod_data["modules"] if m["id"] == orphan_mod.id), None)
+            assert mod_orphan is not None
+            assert len(mod_orphan["chapters"]) == 0
+            assert mod_orphan["status"] == "Not started"
+        finally:
+            session.delete(orphan_mod)
+            session.commit()
+
+    def test_chapter_navigation_edge_cases_single_first_last(self):
+        """Direct unit test for get_chapter_navigation_ids boundary cases."""
+        c1 = AcademyChapter(id=101, module_id=1, chapter_number=1, title="Chap 1")
+        c2 = AcademyChapter(id=102, module_id=1, chapter_number=2, title="Chap 2")
+        c3 = AcademyChapter(id=103, module_id=1, chapter_number=3, title="Chap 3")
+
+        # Single chapter curriculum
+        prev_id, next_id = crud_course.get_chapter_navigation_ids([c1], 101)
+        assert prev_id is None
+        assert next_id is None
+
+        # Chapter not in list
+        prev_id, next_id = crud_course.get_chapter_navigation_ids([c1, c2, c3], 999)
+        assert prev_id is None
+        assert next_id is None
+
+        # First chapter
+        prev_id, next_id = crud_course.get_chapter_navigation_ids([c1, c2, c3], 101)
+        assert prev_id is None
+        assert next_id == 102
+
+        # Middle chapter
+        prev_id, next_id = crud_course.get_chapter_navigation_ids([c1, c2, c3], 102)
+        assert prev_id == 101
+        assert next_id == 103
+
+        # Last chapter
+        prev_id, next_id = crud_course.get_chapter_navigation_ids([c1, c2, c3], 103)
+        assert prev_id == 102
+        assert next_id is None
+
+    @pytest.mark.asyncio
+    async def test_chapter_with_null_optional_fields(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Chapter with null content_html and default estimated_minutes delivers cleanly."""
+        user = get_or_create_test_user(session, "null_fields_user@test.org")
+        headers = get_auth_header(user.email)
+
+        first_module = session.query(AcademyModule).first()
+        max_num = (
+            session.query(AcademyChapter.chapter_number)
+            .filter(AcademyChapter.module_id == first_module.id)
+            .order_by(AcademyChapter.chapter_number.desc())
+            .first()
+        )[0]
+
+        null_chap = AcademyChapter(
+            module_id=first_module.id,
+            chapter_number=max_num + 99,
+            title="Minimal Chapter",
+            content_html=None,
+            estimated_minutes=5,
+        )
+        session.add(null_chap)
+        session.commit()
+        session.refresh(null_chap)
+
+        try:
+            res = await client.get(
+                app.url_path_for("academy:get_chapter_detail", chapter_id=null_chap.id),
+                headers=headers,
+            )
+            assert res.status_code == 200
+            data = res.json()
+            assert data["content_html"] is None
+            assert data["title"] == "Minimal Chapter"
+            assert data["estimated_minutes"] == 5
+        finally:
+            session.delete(null_chap)
+            session.commit()
+
+    @pytest.mark.asyncio
+    async def test_course_endpoints_reject_expired_jwt(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Expired JWT token returns 401 across course endpoints."""
+        expired_token = jwt.encode(
+            {
+                "email": "academy_learner@test.org",
+                "exp": datetime.utcnow() - timedelta(hours=2),
+            },
+            SECRET_KEY,
+            algorithm=ALGORITHM,
+        )
+        headers = {"Authorization": f"Bearer {expired_token}"}
+        res = await client.get(app.url_path_for("academy:get_overview"), headers=headers)
+        assert res.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_course_endpoints_reject_tampered_signature_jwt(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Tampered JWT signature is rejected with 401/403."""
+        tampered_token = jwt.encode(
+            {
+                "email": "academy_learner@test.org",
+                "exp": datetime.utcnow() + timedelta(hours=2),
+            },
+            "completely_wrong_secret_key_1234567890",
+            algorithm=ALGORITHM,
+        )
+        headers = {"Authorization": f"Bearer {tampered_token}"}
+        res = await client.get(app.url_path_for("academy:get_overview"), headers=headers)
+        assert res.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_course_endpoints_reject_malformed_bearer_headers(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Malformed Authorization headers return 401/403."""
+        malformed = [
+            {"Authorization": "Bearer"},
+            {"Authorization": "Bearer "},
+            {"Authorization": "Basic dGVzdDp0ZXN0"},
+            {"Authorization": "Token some_token"},
+            {"Authorization": ""},
+        ]
+        for h in malformed:
+            res = await client.get(app.url_path_for("academy:get_overview"), headers=h)
+            assert res.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_course_endpoints_reject_user_not_found_in_db(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Valid JWT containing email that does not exist in DB is rejected with 401."""
+        ghost_token = create_access_token(data={"email": "non_existent_ghost_learner@test.org"})
+        headers = {"Authorization": f"Bearer {ghost_token}"}
+        res = await client.get(app.url_path_for("academy:get_overview"), headers=headers)
+        assert res.status_code in (401, 403)

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from db.academy import crud_profile
 from middleware import create_access_token, SECRET_KEY, ALGORITHM
+from models.company import Company
 from models.organisation import Organisation
 from models.region import Region
 from models.user import User, UserRole
@@ -1219,3 +1220,298 @@ class TestCRUDProfileUnitOperations:
         )
         # Explicit empty string in payload overrides region_name
         assert profile.region_name == ""
+
+
+class TestUserProfileDeepEdgeCases:
+    """Deep test verification for user profile sync, decoupling, regions, and security."""
+
+    @pytest.mark.asyncio
+    async def test_put_profile_repeated_partial_updates_isolation(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Sequential partial updates mutate only declared fields, leaving others intact."""
+        user = get_or_create_test_user(
+            session=session,
+            email="repeated_partial@test.org",
+            fullname="Original Person",
+        )
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        url = app.url_path_for("academy:update_profile")
+
+        # 1. Update first_name only
+        res1 = await client.put(url, json={"first_name": "Alice"}, headers=headers)
+        assert res1.status_code == 200
+        d1 = res1.json()
+        assert d1["first_name"] == "Alice"
+        assert d1["sector"] is None
+
+        # 2. Update sector only
+        res2 = await client.put(url, json={"sector": "Finance & Impact"}, headers=headers)
+        assert res2.status_code == 200
+        d2 = res2.json()
+        assert d2["first_name"] == "Alice"
+        assert d2["sector"] == "Finance & Impact"
+        assert d2["company_name"] is None
+
+        # 3. Update company_name only
+        res3 = await client.put(url, json={"company_name": "Global Cocoa Corp"}, headers=headers)
+        assert res3.status_code == 200
+        d3 = res3.json()
+        assert d3["first_name"] == "Alice"
+        assert d3["sector"] == "Finance & Impact"
+        assert d3["company_name"] == "Global Cocoa Corp"
+
+        # 4. Empty update payload
+        res4 = await client.put(url, json={}, headers=headers)
+        assert res4.status_code == 200
+        d4 = res4.json()
+        assert d4["first_name"] == "Alice"
+        assert d4["sector"] == "Finance & Impact"
+        assert d4["company_name"] == "Global Cocoa Corp"
+
+    @pytest.mark.asyncio
+    async def test_put_profile_fullname_sync_with_leading_trailing_whitespace(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Whitespace in names is trimmed when synchronizing to user.fullname."""
+        user = get_or_create_test_user(
+            session=session,
+            email="ws_name_sync@test.org",
+            fullname="Before Sync",
+        )
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        res = await client.put(
+            app.url_path_for("academy:update_profile"),
+            json={"first_name": "  Carlos  ", "last_name": "  Santana  "},
+            headers=headers,
+        )
+        assert res.status_code == 200
+        session.refresh(user)
+        assert user.fullname.startswith("Carlos")
+        assert user.fullname.endswith("Santana")
+        assert user.fullname == user.fullname.strip()
+
+    @pytest.mark.asyncio
+    async def test_put_profile_fullname_sync_only_last_name(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Updating last_name only without first_name syncs cleanly to user.fullname."""
+        user = get_or_create_test_user(
+            session=session,
+            email="lastname_only_sync@test.org",
+            fullname="Before Sync",
+        )
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        res = await client.put(
+            app.url_path_for("academy:update_profile"),
+            json={"first_name": None, "last_name": "Márquez"},
+            headers=headers,
+        )
+        assert res.status_code == 200
+        session.refresh(user)
+        assert user.fullname == "Márquez"
+
+    @pytest.mark.asyncio
+    async def test_put_profile_fullname_sync_preserves_when_whitespace_only(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Whitespace-only names do not clear or corrupt existing user.fullname."""
+        user = get_or_create_test_user(
+            session=session,
+            email="ws_only_preserve@test.org",
+            fullname="Original Preserved Name",
+        )
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        res = await client.put(
+            app.url_path_for("academy:update_profile"),
+            json={"first_name": "   ", "last_name": "   "},
+            headers=headers,
+        )
+        assert res.status_code == 200
+        session.refresh(user)
+        assert user.fullname == "Original Preserved Name"
+
+    @pytest.mark.asyncio
+    async def test_put_profile_company_name_special_chars_boundary_and_user_company_fk_integrity(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Updating profile company_name with 255 chars, emoji, special chars leaves user.company intact."""
+        user = get_or_create_test_user(
+            session=session,
+            email="company_fk_integrity@test.org",
+            fullname="Company Tester",
+        )
+        company = session.query(Company).first()
+        if not company:
+            company = Company(id=None, name="Test Agro Corp")
+            session.add(company)
+            session.commit()
+            session.refresh(company)
+
+        user.company = company.id
+        session.commit()
+
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        rich_company = "IDH Sustainable Trade Initiative & Partners 🌾 100% (Certified)"
+        res = await client.put(
+            app.url_path_for("academy:update_profile"),
+            json={"company_name": rich_company},
+            headers=headers,
+        )
+        assert res.status_code == 200
+        assert res.json()["company_name"] == rich_company
+        session.refresh(user)
+        assert user.company == company.id  # Untouched
+
+        # Test exact 255 char boundary
+        exact_255 = "A" * 255
+        res_bound = await client.put(
+            app.url_path_for("academy:update_profile"),
+            json={"company_name": exact_255},
+            headers=headers,
+        )
+        assert res_bound.status_code == 200
+        assert res_bound.json()["company_name"] == exact_255
+        session.refresh(user)
+        assert user.company == company.id
+
+    @pytest.mark.asyncio
+    async def test_put_profile_region_id_and_auto_hydration_edge_cases(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Auto-hydration, explicit custom name, nullification, and 404 for invalid regions."""
+        user = get_or_create_test_user(
+            session=session,
+            email="region_edge_user@test.org",
+            fullname="Region Learner",
+        )
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        url = app.url_path_for("academy:update_profile")
+
+        region = session.query(Region).first()
+        if not region:
+            region = Region(name="Latin America")
+            session.add(region)
+            session.commit()
+            session.refresh(region)
+
+        # 1. Valid region_id with omitted region_name auto-hydrates
+        res_hydrated = await client.put(url, json={"region_id": region.id}, headers=headers)
+        assert res_hydrated.status_code == 200
+        assert res_hydrated.json()["region_id"] == region.id
+        assert res_hydrated.json()["region_name"] == region.name
+
+        # 2. Valid region_id with explicit custom region_name preserves custom name
+        res_custom = await client.put(
+            url,
+            json={"region_id": region.id, "region_name": "Custom Sub-Region"},
+            headers=headers,
+        )
+        assert res_custom.status_code == 200
+        assert res_custom.json()["region_id"] == region.id
+        assert res_custom.json()["region_name"] == "Custom Sub-Region"
+
+        # 3. Invalid region_id returns 404
+        res_invalid = await client.put(url, json={"region_id": 999999}, headers=headers)
+        assert res_invalid.status_code == 404
+        assert "not found" in res_invalid.json()["detail"].lower()
+
+        # 4. Negative region_id returns 404
+        res_neg = await client.put(url, json={"region_id": -1}, headers=headers)
+        assert res_neg.status_code == 404
+
+        # 5. Nullifying region_id
+        res_null = await client.put(url, json={"region_id": None}, headers=headers)
+        assert res_null.status_code == 200
+        assert res_null.json()["region_id"] is None
+
+    @pytest.mark.asyncio
+    async def test_put_profile_commodities_deduplication_and_sanitization(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Commodities list is deduplicated, trimmed, and unicode-friendly."""
+        user = get_or_create_test_user(
+            session=session,
+            email="commodities_sanitization@test.org",
+            fullname="Commodity Learner",
+        )
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        url = app.url_path_for("academy:update_profile")
+
+        payload = {
+            "commodities": [
+                "  Cocoa  ",
+                "Coffee",
+                "Cocoa",
+                "   ",
+                "Coffee  ",
+                "Vanilla",
+                "Cacao Criollo (Perú) 🍫",
+            ]
+        }
+        res = await client.put(url, json=payload, headers=headers)
+        assert res.status_code == 200
+        data = res.json()["commodities"]
+        assert data == ["Cocoa", "Coffee", "Vanilla", "Cacao Criollo (Perú) 🍫"]
+
+    def test_get_or_create_user_profile_idempotent_multiple_calls(
+        self, session: Session
+    ):
+        """Calling get_or_create_user_profile multiple times returns same record without duplicate."""
+        user = get_or_create_test_user(
+            session=session,
+            email="idempotent_profile@test.org",
+            fullname="Idempotent Learner",
+        )
+        p1 = crud_profile.get_or_create_user_profile(session=session, user=user)
+        p2 = crud_profile.get_or_create_user_profile(session=session, user=user)
+        p3 = crud_profile.get_or_create_user_profile(session=session, user=user)
+
+        assert p1.id == p2.id == p3.id
+        all_profiles = (
+            session.query(UserProfile)
+            .filter(UserProfile.user_id == user.id)
+            .all()
+        )
+        assert len(all_profiles) == 1
+
+    @pytest.mark.asyncio
+    async def test_profile_endpoints_auth_header_permutations(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Malformed authorization header variations return 401/403."""
+        malformed = [
+            {"Authorization": "Bearer"},
+            {"Authorization": "Bearer "},
+            {"Authorization": "Basic dGVzdDp0ZXN0"},
+            {"Authorization": "Token xyz"},
+            {"Authorization": ""},
+        ]
+        for h in malformed:
+            res_get = await client.get(app.url_path_for("academy:get_profile"), headers=h)
+            assert res_get.status_code in (401, 403)
+
+            res_put = await client.put(
+                app.url_path_for("academy:update_profile"),
+                json={"first_name": "Test"},
+                headers=h,
+            )
+            assert res_put.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_profile_endpoints_reject_valid_jwt_with_deleted_user(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Valid JWT containing email that does not exist in DB returns 401."""
+        ghost_token = create_access_token(data={"email": "non_existent_ghost_profile@test.org"})
+        headers = {"Authorization": f"Bearer {ghost_token}"}
+
+        res_get = await client.get(app.url_path_for("academy:get_profile"), headers=headers)
+        assert res_get.status_code in (401, 403)
+
+        res_put = await client.put(
+            app.url_path_for("academy:update_profile"),
+            json={"first_name": "Test"},
+            headers=headers,
+        )
+        assert res_put.status_code in (401, 403)

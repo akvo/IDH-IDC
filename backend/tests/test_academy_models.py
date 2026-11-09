@@ -10,6 +10,11 @@ from sqlalchemy import (
     CheckConstraint,
     UniqueConstraint,
 )
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from models.organisation import Organisation
+from models.user import User, UserRole
 
 from models.academy import (
     AcademyTag,
@@ -832,3 +837,226 @@ class TestAcademyDomainInvariantsAndChecklist:
             if isinstance(c, UniqueConstraint)
         ]
         assert "uq_academy_user_chapter_progress_user_chapter" in prog_uqs
+
+
+class TestAcademyModelsLiveDatabaseIntegrity:
+    """Validate database constraints and Pydantic validation boundaries."""
+
+    def test_academy_tag_relation_xor_constraint_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces XOR check constraint on academy_tag_relation."""
+        tag = AcademyTag(name="XOR Test Tag", slug="xor-test-tag")
+        mod = AcademyModule(order_index=555, title="XOR Test Module")
+        session.add_all([tag, mod])
+        session.commit()
+        session.refresh(tag)
+        session.refresh(mod)
+
+        chap = AcademyChapter(
+            module_id=mod.id,
+            chapter_number=1,
+            title="XOR Test Chapter",
+        )
+        session.add(chap)
+        session.commit()
+        session.refresh(chap)
+
+        # 1. Both module_id and chapter_id provided -> violates XOR
+        invalid_both = AcademyTagRelation(
+            tag_id=tag.id,
+            module_id=mod.id,
+            chapter_id=chap.id,
+        )
+        session.add(invalid_both)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        # 2. Neither module_id nor chapter_id provided -> violates XOR
+        invalid_neither = AcademyTagRelation(
+            tag_id=tag.id,
+            module_id=None,
+            chapter_id=None,
+        )
+        session.add(invalid_neither)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        # Clean up
+        session.delete(chap)
+        session.delete(mod)
+        session.delete(tag)
+        session.commit()
+
+    def test_academy_tag_unique_name_and_slug_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces unique constraints on tag name and slug."""
+        t1 = AcademyTag(name="UniqueNameOne", slug="unique-slug-one")
+        session.add(t1)
+        session.commit()
+
+        # Duplicate name
+        t_dup_name = AcademyTag(name="UniqueNameOne", slug="unique-slug-two")
+        session.add(t_dup_name)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        # Duplicate slug
+        t_dup_slug = AcademyTag(name="UniqueNameTwo", slug="unique-slug-one")
+        session.add(t_dup_slug)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        session.delete(session.query(AcademyTag).filter_by(name="UniqueNameOne").first())
+        session.commit()
+
+    def test_academy_module_unique_order_index_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces unique constraint on module order_index."""
+        m1 = AcademyModule(order_index=777, title="Module 777")
+        session.add(m1)
+        session.commit()
+
+        m_dup = AcademyModule(order_index=777, title="Module 777 Duplicate")
+        session.add(m_dup)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        session.delete(session.query(AcademyModule).filter_by(order_index=777).first())
+        session.commit()
+
+    def test_academy_chapter_composite_unique_constraint_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces unique constraint on (module_id, chapter_number)."""
+        mod = AcademyModule(order_index=666, title="Module 666")
+        session.add(mod)
+        session.commit()
+        session.refresh(mod)
+
+        c1 = AcademyChapter(module_id=mod.id, chapter_number=1, title="Chapter One")
+        session.add(c1)
+        session.commit()
+
+        # Duplicate chapter number in same module
+        c_dup = AcademyChapter(module_id=mod.id, chapter_number=1, title="Duplicate Chapter")
+        session.add(c_dup)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        session.delete(mod)
+        session.commit()
+
+    def test_academy_tag_relation_composite_unique_constraints_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces composite unique on (tag_id, module_id) and (tag_id, chapter_id)."""
+        tag = AcademyTag(name="Rel Unique Tag", slug="rel-unique-tag")
+        mod = AcademyModule(order_index=444, title="Rel Unique Module")
+        session.add_all([tag, mod])
+        session.commit()
+        session.refresh(tag)
+        session.refresh(mod)
+
+        # Duplicate (tag_id, module_id)
+        r1 = AcademyTagRelation(tag_id=tag.id, module_id=mod.id)
+        session.add(r1)
+        session.commit()
+
+        r1_dup = AcademyTagRelation(tag_id=tag.id, module_id=mod.id)
+        session.add(r1_dup)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        session.delete(mod)
+        session.delete(tag)
+        session.commit()
+
+    def test_academy_user_chapter_progress_composite_unique_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces composite unique on (user_id, chapter_id)."""
+        user = session.query(User).filter_by(email="prog_uniq_user@test.org").first()
+        if not user:
+            org = session.query(Organisation).first()
+            if not org:
+                org = Organisation(id=None, name="Prog Org")
+                session.add(org)
+                session.commit()
+                session.refresh(org)
+            user = User(
+                organisation=org.id,
+                fullname="Progress User",
+                email="prog_uniq_user@test.org",
+                password="pw",
+                role=UserRole.user,
+                is_active=1,
+            )
+            session.add(user)
+            session.commit()
+            session.refresh(user)
+
+        chap = session.query(AcademyChapter).first()
+
+        # Ensure no prior progress for this user/chapter
+        session.query(AcademyUserChapterProgress).filter_by(
+            user_id=user.id, chapter_id=chap.id
+        ).delete()
+        session.commit()
+
+        p1 = AcademyUserChapterProgress(
+            user_id=user.id,
+            chapter_id=chap.id,
+            status=AcademyChapterProgressStatus.in_progress,
+        )
+        session.add(p1)
+        session.commit()
+
+        p_dup = AcademyUserChapterProgress(
+            user_id=user.id,
+            chapter_id=chap.id,
+            status=AcademyChapterProgressStatus.completed,
+        )
+        session.add(p_dup)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+    def test_pydantic_schema_boundary_and_validation_errors(self):
+        """Pydantic schemas enforce required fields, types, and enum validation boundaries."""
+        # Missing required fields
+        with pytest.raises(ValidationError):
+            AcademyTagCreate()
+
+        # Invalid enum for resource
+        with pytest.raises(ValidationError):
+            AcademyResourceCreate(
+                name="Tool",
+                resource_type="INVALID_TYPE",
+                file_url="https://example.org",
+            )
+
+        # Invalid enum for glossary
+        with pytest.raises(ValidationError):
+            AcademyGlossaryTermCreate(
+                name="Term",
+                term_type="INVALID_TERM",
+                definition="Def",
+            )
+
+        # Missing order_index or title in module
+        with pytest.raises(ValidationError):
+            AcademyModuleCreate(title="No order index")
+
+        # Missing module_id or chapter_number in chapter
+        with pytest.raises(ValidationError):
+            AcademyChapterCreate(title="No IDs")
