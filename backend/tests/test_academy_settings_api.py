@@ -4,6 +4,7 @@ from jose import jwt
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from middleware import (
@@ -32,6 +33,21 @@ from models.user import User, UserRole
 from models.user_business_unit import UserBusinessUnit, UserBusinessUnitRole
 from models.user_case_access import PermissionType, UserCaseAccess
 from models.user_profile import UserProfile
+
+
+def sync_sequences(session: Session, tables: list) -> None:
+    """Synchronize autoincrement sequences to avoid duplicate key conflicts."""
+    for table in tables:
+        try:
+            session.execute(
+                text(
+                    f"SELECT setval('{table}_id_seq', "
+                    f'(SELECT COALESCE(MAX(id), 1) FROM "{table}"));'
+                )
+            )
+            session.commit()
+        except Exception:
+            pass
 
 
 def get_or_create_org(session: Session, name: str = "Test Org") -> Organisation:
@@ -816,7 +832,10 @@ class TestAcademyDeleteAccount:
         )
         session.add(ubu)
 
-        # 4. Tag created by learner
+        # 4. Synchronize sequences and create Tag, Question, ReferenceData
+        sync_sequences(
+            session, ["tag", "question", "reference_data", "case"]
+        )
         tag = Tag(name="Learner Tag", created_by=user_learner_id)
         session.add(tag)
 
@@ -898,8 +917,11 @@ class TestAcademyDeleteAccount:
         )
         assert refreshed_ref.created_by is None
 
-        # Cleanup case
+        # Cleanup created records
         session.delete(refreshed_case)
+        session.delete(refreshed_tag)
+        session.delete(refreshed_q)
+        session.delete(refreshed_ref)
         session.commit()
 
     @pytest.mark.asyncio
@@ -1050,7 +1072,10 @@ class TestAcademyDeleteAccount:
         )
         session.add_all([ubu1, ubu2])
 
-        # 6. Multiple Tags created by learner
+        # 6. Synchronize sequences and create Tags, Questions, References
+        sync_sequences(
+            session, ["tag", "question", "reference_data", "case"]
+        )
         tag1 = Tag(name="Matrix Tag 1", created_by=learner_id)
         tag2 = Tag(name="Matrix Tag 2", created_by=learner_id)
         session.add_all([tag1, tag2])
@@ -1178,9 +1203,15 @@ class TestAcademyDeleteAccount:
             is None
         )
 
-        # Clean up cases, modules, chapters
+        # Clean up cases, modules, chapters, and created records
         session.delete(refreshed_c1)
         session.delete(refreshed_c2)
+        session.delete(tag1)
+        session.delete(tag2)
+        session.delete(q1)
+        session.delete(q2)
+        session.delete(r1)
+        session.delete(r2)
         session.delete(ch1)
         session.delete(ch2)
         session.delete(ch3)
