@@ -3,7 +3,11 @@ import pytest
 from pydantic import ValidationError
 from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy import Integer, String, DateTime
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
+from models.organisation import Organisation
+from models.region import Region
 from models.user import User, UserRole
 from models.user_profile import (
     UserProfile,
@@ -274,3 +278,229 @@ class TestExistingUserRegression:
         assert dump == {"commodities": ["Rice", "Soy"]}
         assert "first_name" not in dump
         assert "company_name" not in dump
+
+    def test_pydantic_schema_string_length_bounds(self):
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(first_name="A" * 126)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(last_name="B" * 126)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(company_name="C" * 256)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(company_type="D" * 101)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(sector="E" * 101)
+
+        with pytest.raises(ValidationError):
+            UserProfileUpdate(region_name="F" * 126)
+
+        # Valid lengths should succeed
+        valid_update = UserProfileUpdate(
+            first_name="A" * 125,
+            last_name="B" * 125,
+            company_name="C" * 255,
+            company_type="D" * 100,
+            sector="E" * 100,
+            region_name="F" * 125,
+        )
+        assert len(valid_update.first_name) == 125
+
+
+class TestUserProfileLiveDatabaseIntegrity:
+    """Validate database constraints (unique, foreign key cascade, set null) and Pydantic boundaries."""
+
+    def test_user_profile_user_id_unique_constraint_enforced_by_db(
+        self, session: Session
+    ):
+        """Database enforces 1:1 unique constraint on user_id in user_profile."""
+        org = session.query(Organisation).first()
+        if not org:
+            org = Organisation(id=None, name="Profile Constraint Org")
+            session.add(org)
+            session.commit()
+            session.refresh(org)
+
+        user = User(
+            organisation=org.id,
+            fullname="OneToOne User",
+            email="onetoone_user@test.org",
+            password="pw",
+            role=UserRole.user,
+            is_active=1,
+        )
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        p1 = UserProfile(user_id=user.id, first_name="First")
+        session.add(p1)
+        session.commit()
+
+        # Duplicate profile for same user_id must violate unique constraint
+        p_dup = UserProfile(user_id=user.id, first_name="Duplicate")
+        session.add(p_dup)
+        with pytest.raises(IntegrityError):
+            session.commit()
+        session.rollback()
+
+        session.delete(user)
+        session.commit()
+
+    def test_user_profile_cascade_delete_on_user(
+        self, session: Session
+    ):
+        """Deleting User cascades to delete corresponding UserProfile record."""
+        org = session.query(Organisation).first()
+        if not org:
+            org = Organisation(id=None, name="Cascade Org")
+            session.add(org)
+            session.commit()
+            session.refresh(org)
+
+        user = User(
+            organisation=org.id,
+            fullname="Cascade User",
+            email="cascade_profile_user@test.org",
+            password="pw",
+            role=UserRole.user,
+            is_active=1,
+        )
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        profile = UserProfile(user_id=user.id, first_name="CascadeTarget")
+        session.add(profile)
+        session.commit()
+        session.refresh(profile)
+
+        profile_id = profile.id
+        session.delete(user)
+        session.commit()
+
+        orphaned = session.query(UserProfile).filter_by(id=profile_id).first()
+        assert orphaned is None
+
+    def test_user_profile_set_null_on_region(
+        self, session: Session
+    ):
+        """Deleting Region sets region_id to NULL on UserProfile while preserving profile."""
+        org = session.query(Organisation).first()
+        if not org:
+            org = Organisation(id=None, name="Set Null Org")
+            session.add(org)
+            session.commit()
+            session.refresh(org)
+
+        user = User(
+            organisation=org.id,
+            fullname="Region Cascade User",
+            email="region_cascade_user@test.org",
+            password="pw",
+            role=UserRole.user,
+            is_active=1,
+        )
+        from sqlalchemy import func
+        max_region_id = session.query(func.max(Region.id)).scalar() or 0
+        region = Region(id=max_region_id + 500, name="Temporary Region For Cascade")
+        session.add_all([user, region])
+        session.commit()
+        session.refresh(user)
+        session.refresh(region)
+
+        profile = UserProfile(
+            user_id=user.id,
+            region_id=region.id,
+            region_name=region.name,
+        )
+        session.add(profile)
+        session.commit()
+        session.refresh(profile)
+
+        # Delete region
+        session.delete(region)
+        session.commit()
+
+        session.refresh(profile)
+        assert profile.region_id is None
+        assert profile.region_name == "Temporary Region For Cascade"
+
+        session.delete(user)
+        session.commit()
+
+    def test_user_profile_unicode_and_emojis_in_fields(
+        self, session: Session
+    ):
+        """UserProfile stores multi-byte Unicode and emojis across fields safely."""
+        org = session.query(Organisation).first()
+        if not org:
+            org = Organisation(id=None, name="Unicode Org")
+            session.add(org)
+            session.commit()
+            session.refresh(org)
+
+        user = User(
+            organisation=org.id,
+            fullname="María José 🌾",
+            email="unicode_profile_user@test.org",
+            password="pw",
+            role=UserRole.user,
+            is_active=1,
+        )
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        profile = UserProfile(
+            user_id=user.id,
+            first_name="María José 🌾",
+            last_name="García Márquez",
+            company_name="Cooperativa Cacao Fino & Aroma 🍫",
+            company_type="Cooperativa",
+            sector="Agricultura Sostenible",
+            commodities=["Cacao Criollo (Perú) 🍫", "Café Geisha ☕"],
+        )
+        session.add(profile)
+        session.commit()
+        session.refresh(profile)
+
+        assert profile.first_name == "María José 🌾"
+        assert profile.last_name == "García Márquez"
+        assert profile.company_name == "Cooperativa Cacao Fino & Aroma 🍫"
+        assert profile.commodities == ["Cacao Criollo (Perú) 🍫", "Café Geisha ☕"]
+
+        session.delete(user)
+        session.commit()
+
+    def test_pydantic_create_schema_boundary_values(self):
+        """UserProfileCreate enforces length limits on all string fields."""
+        with pytest.raises(ValidationError):
+            UserProfileCreate(user_id=1, first_name="A" * 126)
+
+        with pytest.raises(ValidationError):
+            UserProfileCreate(user_id=1, last_name="A" * 126)
+
+        with pytest.raises(ValidationError):
+            UserProfileCreate(user_id=1, company_name="A" * 256)
+
+        with pytest.raises(ValidationError):
+            UserProfileCreate(user_id=1, company_type="A" * 101)
+
+        with pytest.raises(ValidationError):
+            UserProfileCreate(user_id=1, sector="A" * 101)
+
+        with pytest.raises(ValidationError):
+            UserProfileCreate(user_id=1, region_name="A" * 126)
+
+        # Valid create with commodities
+        valid_create = UserProfileCreate(
+            user_id=999,
+            first_name="María",
+            commodities=["Cocoa", "Coffee"],
+        )
+        assert valid_create.user_id == 999
+        assert valid_create.commodities == ["Cocoa", "Coffee"]

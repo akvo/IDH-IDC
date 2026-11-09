@@ -1,10 +1,12 @@
+from datetime import datetime, timedelta
+from jose import jwt
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
 
 from db.academy import crud_resource
-from middleware import create_access_token
+from middleware import create_access_token, SECRET_KEY, ALGORITHM
 from models.academy import (
     AcademyGlossaryItemResponse,
     AcademyGlossaryTerm,
@@ -1034,3 +1036,245 @@ class TestCrudResourceDirect:
         )
         assert g_item_dict.term == "Dict Term"
         assert g_item_dict.type == AcademyGlossaryTermType.Core
+
+
+class TestAcademyResourceDeepEdgeCases:
+    """Deep test verification for resource and glossary edge cases, malformed params, security."""
+
+    @pytest.mark.asyncio
+    async def test_resources_extreme_and_invalid_query_parameters(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Malformed enums return 422, unknown sorts and wildcards fall back gracefully."""
+        user = get_or_create_test_user(session, "res_deep_user@test.org")
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        url = app.url_path_for("academy:get_resources")
+
+        # 1. Invalid enum query params return 422
+        for invalid_type in ["SUPER_TOOL", "UNKNOWN_TYPE", "123"]:
+            res = await client.get(url, params={"resource_type": invalid_type}, headers=headers)
+            assert res.status_code == 422, f"Expected 422 for resource_type={invalid_type}"
+
+        # 2. Unknown sort_by and sort_order fall back gracefully
+        res_sort = await client.get(
+            url,
+            params={"sort_by": "unrecognized_column_xyz", "sort_order": "sideways"},
+            headers=headers,
+        )
+        assert res_sort.status_code == 200
+        assert "data" in res_sort.json()
+
+        # 3. Whitespace-only search returns full resource list
+        res_all = await client.get(url, headers=headers)
+        total_all = res_all.json()["total"]
+
+        for ws in ["   ", "\t\t", "\n"]:
+            res_ws = await client.get(url, params={"search": ws}, headers=headers)
+            assert res_ws.status_code == 200
+            assert res_ws.json()["total"] == total_all
+
+        # 4. SQL wildcards and injections resilience
+        for sql_term in ["%", "_", "' OR '1'='1", "\\0", "UNION SELECT"]:
+            res_sql = await client.get(url, params={"search": sql_term}, headers=headers)
+            assert res_sql.status_code == 200
+
+        # 5. Unicode and emoji search resilience
+        res_uni = await client.get(url, params={"search": "🌾 Cacao Tool 🍫"}, headers=headers)
+        assert res_uni.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_glossary_extreme_and_invalid_query_parameters(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ):
+        """Malformed glossary enums return 422, single letters and wildcards handled cleanly."""
+        user = get_or_create_test_user(session, "glossary_deep_user@test.org")
+        headers = {"Authorization": f"Bearer {create_access_token(data={'email': user.email})}"}
+        url = app.url_path_for("academy:get_glossary")
+
+        # 1. Invalid enum query params return 422
+        for invalid_type in ["SUPER_TERM", "INVALID", "999"]:
+            res = await client.get(url, params={"term_type": invalid_type}, headers=headers)
+            assert res.status_code == 422, f"Expected 422 for term_type={invalid_type}"
+
+        # 2. Unknown sort_by and sort_order fall back gracefully
+        res_sort = await client.get(
+            url,
+            params={"sort_by": "unknown_field", "sort_order": "inverted"},
+            headers=headers,
+        )
+        assert res_sort.status_code == 200
+        assert "data" in res_sort.json()
+
+        # 3. Numeric and single-character search
+        for char_term in ["A", "z", "ñ", "1", "0"]:
+            res_char = await client.get(url, params={"search": char_term}, headers=headers)
+            assert res_char.status_code == 200
+
+        # 4. Whitespace-only search returns full glossary
+        res_all = await client.get(url, headers=headers)
+        total_all = res_all.json()["total"]
+
+        for ws in ["   ", "\t", " \n "]:
+            res_ws = await client.get(url, params={"search": ws}, headers=headers)
+            assert res_ws.status_code == 200
+            assert res_ws.json()["total"] == total_all
+
+        # 5. Unicode and emoji
+        res_uni = await client.get(url, params={"search": "🌾 Living Income 🍫"}, headers=headers)
+        assert res_uni.status_code == 200
+
+    def test_direct_crud_resources_long_url_and_special_characters(
+        self, session: Session
+    ):
+        """Resource with 500-char URL, special query parameters, and unicode name persists and retrieves."""
+        long_url = "https://example.org/files/guidance/" + ("subpath/" * 20) + "doc.pdf?token=xyz123&ver=2.0#frag"
+        assert len(long_url) <= 500
+
+        custom_res = AcademyResource(
+            name="Guía Técnica: Brecha de Ingreso Vital — 2026 🌾",
+            resource_type=AcademyResourceType.Guidance,
+            file_url=long_url,
+        )
+        session.add(custom_res)
+        session.commit()
+        session.refresh(custom_res)
+
+        try:
+            lookup = crud_resource.get_academy_resources(
+                session=session,
+                search="Brecha de Ingreso Vital",
+            )
+            assert lookup.total >= 1
+            found = next((r for r in lookup.data if r.id == custom_res.id), None)
+            assert found is not None
+            assert found.name == "Guía Técnica: Brecha de Ingreso Vital — 2026 🌾"
+            assert found.url == long_url
+            assert found.type == AcademyResourceType.Guidance
+        finally:
+            session.delete(custom_res)
+            session.commit()
+
+    def test_direct_crud_glossary_multiline_html_and_markdown(
+        self, session: Session
+    ):
+        """Glossary term with multi-paragraph definition, HTML, and punctuation stores cleanly."""
+        multiline_def = (
+            "<p>First paragraph explaining the living income benchmark.</p>\n"
+            "<p>Second paragraph detailing cost of basic decent living including:</p>\n"
+            "<ul><li>Food</li><li>Housing</li><li>Education</li><li>Healthcare</li></ul>"
+        )
+        custom_term = AcademyGlossaryTerm(
+            name="Living Income Benchmark (Multi-line) 📊",
+            term_type=AcademyGlossaryTermType.Core,
+            definition=multiline_def,
+        )
+        session.add(custom_term)
+        session.commit()
+        session.refresh(custom_term)
+
+        try:
+            lookup = crud_resource.get_academy_glossary(
+                session=session,
+                search="Healthcare",
+            )
+            assert lookup.total >= 1
+            found = next((g for g in lookup.data if g.id == custom_term.id), None)
+            assert found is not None
+            assert found.term == "Living Income Benchmark (Multi-line) 📊"
+            assert found.type == AcademyGlossaryTermType.Core
+            assert "Healthcare" in found.definition
+        finally:
+            session.delete(custom_term)
+            session.commit()
+
+    def test_empty_table_isolated_crud_operations(
+        self, session: Session
+    ):
+        """Search query matching no records cleanly returns total=0 and empty data list."""
+        empty_res = crud_resource.get_academy_resources(
+            session=session,
+            search="absolutely_non_existent_token_xyz_99999",
+        )
+        assert empty_res.total == 0
+        assert empty_res.data == []
+
+        empty_glossary = crud_resource.get_academy_glossary(
+            session=session,
+            search="absolutely_non_existent_token_xyz_99999",
+        )
+        assert empty_glossary.total == 0
+        assert empty_glossary.data == []
+
+    @pytest.mark.asyncio
+    async def test_resource_and_glossary_reject_expired_jwt(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Expired JWT token returns 401 on resources and glossary endpoints."""
+        expired_token = jwt.encode(
+            {
+                "email": "resource_learner@test.org",
+                "exp": datetime.utcnow() - timedelta(hours=2),
+            },
+            SECRET_KEY,
+            algorithm=ALGORITHM,
+        )
+        headers = {"Authorization": f"Bearer {expired_token}"}
+
+        res_r = await client.get(app.url_path_for("academy:get_resources"), headers=headers)
+        assert res_r.status_code in (401, 403)
+
+        res_g = await client.get(app.url_path_for("academy:get_glossary"), headers=headers)
+        assert res_g.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_resource_and_glossary_reject_tampered_jwt(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Tampered JWT signature returns 401 on resources and glossary endpoints."""
+        tampered_token = jwt.encode(
+            {
+                "email": "resource_learner@test.org",
+                "exp": datetime.utcnow() + timedelta(hours=2),
+            },
+            "completely_fake_secret_key_abcdef123456",
+            algorithm=ALGORITHM,
+        )
+        headers = {"Authorization": f"Bearer {tampered_token}"}
+
+        res_r = await client.get(app.url_path_for("academy:get_resources"), headers=headers)
+        assert res_r.status_code in (401, 403)
+
+        res_g = await client.get(app.url_path_for("academy:get_glossary"), headers=headers)
+        assert res_g.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_resource_and_glossary_reject_malformed_auth_headers(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Malformed authorization headers return 401/403."""
+        malformed = [
+            {"Authorization": "Bearer"},
+            {"Authorization": "Bearer "},
+            {"Authorization": "Basic dGVzdDp0ZXN0"},
+            {"Authorization": "Token xyz"},
+            {"Authorization": ""},
+        ]
+        for h in malformed:
+            res_r = await client.get(app.url_path_for("academy:get_resources"), headers=h)
+            assert res_r.status_code in (401, 403)
+            res_g = await client.get(app.url_path_for("academy:get_glossary"), headers=h)
+            assert res_g.status_code in (401, 403)
+
+    @pytest.mark.asyncio
+    async def test_resource_and_glossary_reject_user_not_found_in_db(
+        self, app: FastAPI, client: AsyncClient
+    ):
+        """Valid JWT containing email that does not exist in DB returns 401."""
+        ghost_token = create_access_token(data={"email": "ghost_resource_learner@test.org"})
+        headers = {"Authorization": f"Bearer {ghost_token}"}
+
+        res_r = await client.get(app.url_path_for("academy:get_resources"), headers=headers)
+        assert res_r.status_code in (401, 403)
+
+        res_g = await client.get(app.url_path_for("academy:get_glossary"), headers=headers)
+        assert res_g.status_code in (401, 403)

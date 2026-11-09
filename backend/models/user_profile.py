@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 from typing_extensions import TypedDict
 from pydantic import BaseModel, Field, ConfigDict
 from sqlalchemy import (
@@ -14,8 +14,10 @@ import sqlalchemy.dialects.postgresql as pg
 from sqlalchemy.orm import relationship, backref
 
 from db.connection import Base
-from models.user import User  # noqa: F401
-from models.region import Region  # noqa: F401
+
+if TYPE_CHECKING:
+    from models.user import User  # noqa: F401
+    from models.region import Region  # noqa: F401
 
 
 # ============================================================
@@ -127,13 +129,13 @@ class BaseSchema(BaseModel):
 
 
 class UserProfileBase(BaseSchema):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    company_name: Optional[str] = None
-    company_type: Optional[str] = None
-    sector: Optional[str] = None
+    first_name: Optional[str] = Field(default=None, max_length=125)
+    last_name: Optional[str] = Field(default=None, max_length=125)
+    company_name: Optional[str] = Field(default=None, max_length=255)
+    company_type: Optional[str] = Field(default=None, max_length=100)
+    sector: Optional[str] = Field(default=None, max_length=100)
     region_id: Optional[int] = None
-    region_name: Optional[str] = None
+    region_name: Optional[str] = Field(default=None, max_length=125)
     commodities: List[str] = Field(default_factory=list)
 
 
@@ -141,12 +143,22 @@ class UserProfileCreate(UserProfileBase):
     user_id: int
 
 
-class UserProfileUpdate(UserProfileBase):
-    pass
+class UserProfileUpdatePayload(BaseSchema):
+    first_name: Optional[str] = Field(default=None, max_length=125)
+    last_name: Optional[str] = Field(default=None, max_length=125)
+    company_name: Optional[str] = Field(default=None, max_length=255)
+    company_type: Optional[str] = Field(default=None, max_length=100)
+    sector: Optional[str] = Field(default=None, max_length=100)
+    region_id: Optional[int] = None
+    region_name: Optional[str] = Field(default=None, max_length=125)
+    commodities: Optional[List[str]] = None
+
+
+UserProfileUpdate = UserProfileUpdatePayload
 
 
 class UserProfileResponse(UserProfileBase):
     id: int
     user_id: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None

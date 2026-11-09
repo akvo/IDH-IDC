@@ -420,3 +420,12 @@ class AcademyHistoryResponse(BaseSchema):
     page_size: int
     total_pages: int
     data: List[AcademyHistoryItem] = []
+
+
+from models.user_profile import (  # noqa: E402, F401
+    UserProfileBase,
+    UserProfileCreate,
+    UserProfileUpdate,
+    UserProfileUpdatePayload,
+    UserProfileResponse,
+)

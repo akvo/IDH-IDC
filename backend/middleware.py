@@ -71,10 +71,24 @@ def decode_token(token: str = Depends(oauth2_scheme)):
         return HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
         )
+    except JWTError:
+        return HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 
 def verify_token(authenticated):
-    if authenticated and datetime.now().timestamp() > authenticated.get("exp"):
+    if isinstance(authenticated, HTTPException):
+        raise authenticated
+    if not authenticated or not isinstance(authenticated, dict):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if datetime.now().timestamp() > authenticated.get("exp", 0):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
         )
@@ -93,7 +107,7 @@ def verify_user(session: Session, authenticated):
         if email is None:
             raise credentials_exception
         token_data = TokenData(email=email)
-    except JWTError:
+    except (JWTError, AttributeError):
         raise credentials_exception
     user = crud_user.get_user_by_email(session=session, email=token_data.email)
     if not user:
