@@ -28,4 +28,11 @@ const routePath = {
   },
 };
 
-export { routePath, routePrefix };
+const paths = {
+  casesWelcome: routePath.idc.dashboard,
+  academy: routePath.academy.landing,
+  login: "/login",
+  register: "/register",
+};
+
+export { routePath, routePrefix, paths };

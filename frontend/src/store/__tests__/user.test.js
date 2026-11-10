@@ -15,6 +15,7 @@ describe("UserState", () => {
       tags_count,
       cases_count,
       case_access,
+      tools,
     } = result.current;
 
     expect(id).toBe(0);
@@ -22,6 +23,7 @@ describe("UserState", () => {
     expect(email).toBe(null);
     expect(role).toBe(null);
     expect(active).toBe(false);
+    expect(tools).toEqual([]);
     expect(organisation_detail).toEqual({
       id: null,
       name: null,
@@ -63,6 +65,7 @@ describe("UserState", () => {
         s.case_access = [{ case: 1, permission: "edit" }];
         s.internal_user = false;
         s.company = 1;
+        s.tools = ["idc", "academy"];
       });
     });
     const {
@@ -78,6 +81,7 @@ describe("UserState", () => {
       case_access,
       internal_user,
       company,
+      tools,
     } = result.current;
 
     expect(id).toBe(1);
@@ -85,6 +89,7 @@ describe("UserState", () => {
     expect(email).toBe("admin@akvo.com");
     expect(role).toBe("admin");
     expect(active).toBe(true);
+    expect(tools).toEqual(["idc", "academy"]);
     expect(organisation_detail).toEqual({
       id: 1,
       name: "Akvo",
