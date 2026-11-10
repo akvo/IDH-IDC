@@ -20,6 +20,7 @@ import LogoWhite from "../../assets/images/logo-white.png";
 import {
   PasswordCriteria,
   checkPasswordCriteria,
+  passwordCheckBoxOptions,
 } from "../../components/utils";
 import { DataSecurityProvisionModal } from "../../components/utils";
 import { routePath } from "../../components/route";
@@ -144,7 +145,11 @@ const ResetPassword = () => {
                   },
                   () => ({
                     validator(_, value) {
-                      if (passwordCheckList.length === 4 || !value) {
+                      if (
+                        passwordCheckList.length ===
+                          passwordCheckBoxOptions.length ||
+                        !value
+                      ) {
                         return Promise.resolve();
                       }
                       return Promise.reject(

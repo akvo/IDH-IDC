@@ -1,5 +1,6 @@
 export const passwordCheckBoxOptions = [
   { name: "Uppercase Character", re: /[A-Z]/ },
+  { name: "Lowercase Character", re: /[a-z]/ },
   { name: "Numbers", re: /\d/ },
   { name: "Special Character", re: /[-._!"`'#%&,:;<>=@{}~$()*+/?[\]^|]/ },
   { name: "Min 8 Character", re: /[^ ]{8}/ },
