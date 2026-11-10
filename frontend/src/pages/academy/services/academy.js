@@ -1,6 +1,6 @@
 import axios from "axios";
 import { message } from "antd";
-import api, { config } from "../lib/api";
+import api, { config } from "../../../lib/api";
 
 export const DEFAULT_ERROR_MESSAGE = "Something went wrong. Please try again.";
 // Shared key so a burst of failing requests shows a single toast

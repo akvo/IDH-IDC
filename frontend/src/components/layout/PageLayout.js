@@ -8,7 +8,7 @@ import { allUserRole } from "../../store/static";
 import { routePath } from "../route";
 import { MenuOutlined } from "@ant-design/icons";
 import { useWindowDimensions } from "../../hooks";
-import { getUserInitials } from "../../lib";
+import { getUserInitials } from "../../pages/academy/utils";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const { Header, Content } = Layout;

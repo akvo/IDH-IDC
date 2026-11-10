@@ -6,7 +6,7 @@ import academyService, {
   normaliseError,
   DEFAULT_ERROR_MESSAGE,
 } from "../academy";
-import api from "../../lib/api";
+import api from "../../../../lib/api";
 
 describe("academy service", () => {
   let mock;
