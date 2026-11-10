@@ -3,7 +3,8 @@ from typing import Generator
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy import inspect
-from models.user import User, UserRole, UserBase, UserUpdateBase
+from models.user import User, UserRole, UserBase, UserUpdateBase, ToolType
+from pydantic import ValidationError
 from db.crud_user import add_user, update_user
 
 
@@ -279,3 +280,42 @@ class TestUserToolsArray:
             assert existing_user.tools is not None
             assert len(existing_user.tools) > 0
             assert "idc" in existing_user.tools
+
+    def test_tool_type_enum_attributes_and_string_inheritance(self) -> None:
+        """Verify ToolType enum values and str subclassing behavior."""
+        assert ToolType.idc == "idc"
+        assert ToolType.academy == "academy"
+        assert isinstance(ToolType.idc, str)
+        assert isinstance(ToolType.academy, str)
+        assert set(ToolType.__members__.keys()) == {"idc", "academy"}
+
+    def test_pydantic_schema_tool_type_validation(self) -> None:
+        """Verify Pydantic models validate tools using ToolType enum."""
+        # Valid tools via enum and string
+        valid_user = UserBase(
+            fullname="Valid Tool User",
+            email="valid_tool@example.com",
+            tools=[ToolType.idc, "academy"],
+        )
+        assert valid_user.tools == [ToolType.idc, ToolType.academy]
+
+        # Valid tools in UserUpdateBase
+        valid_update = UserUpdateBase(
+            fullname="Valid Update User",
+            tools=["academy"],
+        )
+        assert valid_update.tools == [ToolType.academy]
+
+        # Invalid tool string triggers Pydantic ValidationError
+        with pytest.raises(ValidationError):
+            UserBase(
+                fullname="Invalid Tool User",
+                email="invalid_tool@example.com",
+                tools=["unknown_tool"],
+            )
+
+        with pytest.raises(ValidationError):
+            UserUpdateBase(
+                fullname="Invalid Tool User",
+                tools=["bad_tool"],
+            )

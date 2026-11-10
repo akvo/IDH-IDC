@@ -45,6 +45,11 @@ class UserType(enum.Enum):
     external_advanced = "external_advanced"
 
 
+class ToolType(str, enum.Enum):
+    idc = "idc"
+    academy = "academy"
+
+
 # only for user:get_all route
 class FilterUserRole(enum.Enum):
     super_admin = "super_admin"
@@ -245,7 +250,11 @@ class User(Base):
         self.is_active = is_active
         self.invitation_id = invitation_id
         self.company = company
-        self.tools = tools if tools is not None else ["idc", "academy"]
+        self.tools = (
+            [t.value if isinstance(t, enum.Enum) else str(t) for t in tools]
+            if tools is not None
+            else [ToolType.idc.value, ToolType.academy.value]
+        )
 
     def __repr__(self) -> int:
         return f"<User {self.id}>"
@@ -381,7 +390,7 @@ class UserBase(BaseModel):
     business_units: Optional[str] = None
     company: Optional[int] = None
     user_type: Optional[UserType] = None
-    tools: Optional[List[str]] = None
+    tools: Optional[List[ToolType]] = None
 
     @field_validator("tags")
     @classmethod
@@ -413,7 +422,7 @@ class UserBase(BaseModel):
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
         user_type: Optional[UserType] = Form(None),
-        tools: Optional[List[str]] = Form(None),
+        tools: Optional[List[ToolType]] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -450,7 +459,7 @@ class UserUpdateBase(BaseModel):
     business_units: Optional[str] = None
     company: Optional[int] = None
     user_type: Optional[UserType] = None
-    tools: Optional[List[str]] = None
+    tools: Optional[List[ToolType]] = None
 
     @field_validator("tags")
     @classmethod
@@ -482,7 +491,7 @@ class UserUpdateBase(BaseModel):
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
         user_type: Optional[UserType] = Form(None),
-        tools: Optional[List[str]] = Form(None),
+        tools: Optional[List[ToolType]] = Form(None),
     ):
         return cls(
             fullname=fullname,

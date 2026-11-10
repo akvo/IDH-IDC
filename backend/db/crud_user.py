@@ -1,3 +1,4 @@
+import enum
 from uuid import uuid4
 from fastapi import HTTPException, status
 from typing import Optional, List
@@ -12,6 +13,7 @@ from models.user import (
     UserRole,
     FilterUserRole,
     UserType,
+    ToolType,
 )
 from models.user_case_access import UserCaseAccess
 from models.user_tag import UserTag
@@ -46,7 +48,7 @@ def add_user(
     tools = (
         payload.tools
         if hasattr(payload, "tools") and payload.tools is not None
-        else ["idc", "academy"]
+        else [ToolType.idc.value, ToolType.academy.value]
     )
     user = User(
         fullname=payload.fullname,
@@ -110,7 +112,10 @@ def update_user(
     )
     user.company = payload.company
     if hasattr(payload, "tools") and payload.tools is not None:
-        user.tools = payload.tools
+        user.tools = [
+            t.value if isinstance(t, enum.Enum) else str(t)
+            for t in payload.tools
+        ]
 
     role = payload.role if payload.role else user.role
 
