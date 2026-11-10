@@ -83,6 +83,7 @@ class TestUserAuthentication:
             "role": UserRole.user.value,
             "company": None,
             "user_type": "external_regular",
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -234,4 +235,5 @@ class TestUserAuthentication:
             "company": None,
             "user_type": "external_regular",
             "user_profile": None,
+            "tools": ["idc", "academy"],
         }
