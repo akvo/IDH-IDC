@@ -7,7 +7,7 @@ import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/income-driver-calculator";
-import { Login, ResetPassword } from "./pages/login";
+import { Login, ResetPassword, Register, VerifyAcademy } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
@@ -269,6 +269,7 @@ const App = () => {
           {/* IDC PAGE */}
           <Route exact path={routePath.idc.landing} element={<Landing />} />
           <Route exact path={routePath.idc.login} element={<Login />} />
+          <Route exact path="/login" element={<Login />} />
           <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}
           <Route
@@ -316,7 +317,8 @@ const App = () => {
             path="/procurement-library/intervention-library/:practiceId"
             element={<ProcurementPage.Practice />}
           />
-          {/* <Route exact path="/register" element={<Register />} /> */}
+          <Route exact path="/register" element={<Register />} />
+          <Route exact path="/verify-academy" element={<VerifyAcademy />} />
           <Route
             exact
             path="/invitation/:tokenId"

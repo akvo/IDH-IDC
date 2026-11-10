@@ -25,6 +25,8 @@ const routePath = {
   },
   academy: {
     landing: "/academy",
+    register: "/register",
+    verify: "/verify-academy",
   },
 };
 
@@ -33,6 +35,7 @@ const paths = {
   academy: routePath.academy.landing,
   login: "/login",
   register: "/register",
+  verifyAcademy: "/verify-academy",
 };
 
 export { routePath, routePrefix, paths };

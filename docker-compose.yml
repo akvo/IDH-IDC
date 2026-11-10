@@ -14,21 +14,28 @@ services:
       - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
       - pg-data:/var/lib/postgresql/data
       - ./db/script:/script:ro
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - 1025:1025
+      - 8025:8025
+    restart: unless-stopped
   backend:
     depends_on:
       - db
+      - mailpit
     environment:
       - DATABASE_URL=postgresql://idc:password@db:5432/idh_idc
       - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
       - CLIENT_ID=test
       - CLIENT_SECRET=test
-      - EMAIL_HOST
-      - EMAIL_PORT
-      - EMAIL_HOST_USER
-      - EMAIL_HOST_PASSWORD
-      - EMAIL_USE_TLS
-      - EMAIL_USE_SSL
-      - EMAIL_FROM
+      - EMAIL_HOST=${EMAIL_HOST:-mailpit}
+      - EMAIL_PORT=${EMAIL_PORT:-1025}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-false}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL:-false}
+      - EMAIL_FROM=${EMAIL_FROM:-}
       - WEBDOMAIN=idc.akvotest.org
     network_mode: service:mainnetwork
     image: python:3.10.7

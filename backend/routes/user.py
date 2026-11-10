@@ -1,4 +1,5 @@
 import os
+import secrets
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
 import db.crud_reset_password as crud_reset_pwd
@@ -7,6 +8,8 @@ import db.crud_user_case_access as crud_uca
 import db.crud_tag as crud_tag
 import db.crud_question as crud_question
 import db.crud_reference_data as crud_ref_data
+from db.crud_organisation import default_organisation
+from db.academy.crud_profile import get_or_create_user_profile
 
 from math import ceil
 from middleware import (
@@ -30,10 +33,12 @@ from fastapi import Response
 from fastapi.security import HTTPBearer
 from fastapi.security import HTTPBasicCredentials as credentials
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from db.connection import get_session
 from models.user import (
+    User,
+    ToolType,
     UserDict,
     UserBase,
     UserResponse,
@@ -44,6 +49,9 @@ from models.user import (
     UserRole,
     UserSearchDict,
     FilterUserRole,
+    UserRegisterAcademy,
+    AcademyRegisterResponse,
+    AcademyVerifyResponse,
 )
 from models.user_business_unit import UserBusinessUnitRole
 from typing import Optional, List
@@ -279,6 +287,118 @@ def register(
         )
         email.send
     return user
+
+
+@user_route.post(
+    "/user/register-academy",
+    response_model=AcademyRegisterResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Register new user for Living Income Academy",
+    name="user:register_academy",
+    tags=["User"],
+)
+def register_academy(
+    req: Request,
+    payload: UserRegisterAcademy,
+    session: Session = Depends(get_session),
+):
+    normalized_email = payload.email.strip().lower()
+    check_user_exist = crud_user.get_user_by_email(
+        session=session, email=normalized_email
+    )
+    if check_user_exist:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"User {normalized_email} already exists.",
+        )
+
+    verification_token = secrets.token_hex(32)
+    hashed_password = get_password_hash(payload.password)
+    def_org = default_organisation(session=session, name="IDH")
+    organisation_id = def_org.id if def_org else None
+
+    user = User(
+        fullname=payload.fullname.strip(),
+        email=normalized_email,
+        password=hashed_password,
+        role=UserRole.user,
+        organisation=organisation_id,
+        company=None,
+        is_active=0,
+        all_cases=0,
+        invitation_id=verification_token,
+        tools=[ToolType.academy.value],
+    )
+    session.add(user)
+    session.commit()
+    session.flush()
+    session.refresh(user)
+
+    profile = get_or_create_user_profile(session=session, user=user)
+    profile.company_name = payload.company_name.strip()
+    session.commit()
+
+    base_url = req.headers.get("origin") or webdomain
+    verify_url = f"{base_url}/verify-academy?token={verification_token}"
+    email = Email(
+        recipients=[user.recipient],
+        email=MailTypeEnum.ACADEMY_VERIFY,
+        url=verify_url,
+    )
+    email.send
+
+    return {
+        "message": (
+            "Registration successful. Please check your email to verify your account."
+        )
+    }
+
+
+@user_route.get(
+    "/user/verify-academy",
+    response_model=AcademyVerifyResponse,
+    summary="Verify Living Income Academy registration token",
+    name="user:verify_academy",
+    tags=["User"],
+)
+def verify_academy(
+    req: Request,
+    token: str = Query(..., description="Verification token"),
+    session: Session = Depends(get_session),
+):
+    if not token or not token.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Verification token is required.",
+        )
+
+    user = (
+        session.query(User)
+        .filter(User.invitation_id == token.strip())
+        .first()
+    )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token.",
+        )
+
+    user.is_active = 1
+    user.invitation_id = None
+    session.commit()
+
+    accept_header = req.headers.get("accept", "")
+    if "text/html" in accept_header:
+        base_url = req.headers.get("origin") or webdomain
+        return RedirectResponse(
+            url=f"{base_url}/login?verified=true",
+            status_code=status.HTTP_302_FOUND,
+        )
+
+    return {
+        "message": "Account verified successfully. You may now log in.",
+        "verified": True,
+    }
 
 
 @user_route.get(
