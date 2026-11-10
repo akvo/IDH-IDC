@@ -4,10 +4,11 @@ import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
 from sqlalchemy.orm import Session
+from jose import jwt
 from db import crud_organisation
-from middleware import verify_token
+from middleware import verify_token, SECRET_KEY, ALGORITHM
 from tests.test_000_main import Acc
-from models.user import UserRole
+from models.user import UserRole, User
 
 sys.path.append("..")
 
@@ -237,3 +238,69 @@ class TestUserAuthentication:
             "user_profile": None,
             "tools": ["idc", "academy"],
         }
+
+    @pytest.mark.asyncio
+    async def test_login_claims_and_tools_payload(
+        self, app: FastAPI, session: Session, client: AsyncClient
+    ) -> None:
+        # 1. Activate super_admin test user to test successful login
+        user = session.query(User).filter(User.email == "super_admin@akvo.org").first()
+        assert user is not None
+        user.is_active = 1
+        session.commit()
+
+        # Login with dual-access user
+        res = await client.post(
+            app.url_path_for("user:login"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "username": "super_admin@akvo.org",
+                "password": "test",
+                "grant_type": "password",
+                "scopes": ["openid", "email"],
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+            },
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert "access_token" in data
+        assert data["token_type"] == "bearer"
+        assert data["user"]["tools"] == ["idc", "academy"]
+
+        # Decode JWT token and verify claims
+        decoded = jwt.decode(data["access_token"], SECRET_KEY, algorithms=[ALGORITHM])
+        assert decoded["email"] == "super_admin@akvo.org"
+        assert decoded["sub"] == "super_admin@akvo.org"
+        assert decoded["role"] == user.role.value
+        assert decoded["tools"] == ["idc", "academy"]
+
+        # 2. Test Academy-only user login and token claims by updating tools
+        user.tools = ["academy"]
+        session.commit()
+
+        res_academy = await client.post(
+            app.url_path_for("user:login"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "username": "super_admin@akvo.org",
+                "password": "test",
+                "grant_type": "password",
+                "scopes": ["openid", "email"],
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+            },
+        )
+        assert res_academy.status_code == 200
+        acad_data = res_academy.json()
+        assert acad_data["user"]["tools"] == ["academy"]
+
+        decoded_acad = jwt.decode(acad_data["access_token"], SECRET_KEY, algorithms=[ALGORITHM])
+        assert decoded_acad["email"] == "super_admin@akvo.org"
+        assert decoded_acad["sub"] == "super_admin@akvo.org"
+        assert decoded_acad["tools"] == ["academy"]
+
+        # Restore original state of user
+        user.tools = ["idc", "academy"]
+        user.is_active = 0
+        session.commit()
