@@ -15,6 +15,8 @@ $academy-item-inset: 16px;
 $academy-icon-size: 18px;
 $academy-icon-gap: 12px;
 $academy-item-height: 32px;
+$academy-item-spacing: 6px;
+$academy-section-gap: 16px; // Figma --base
 
 $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
 
@@ -47,11 +49,13 @@ $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
       overflow-y: auto;
     }
 
+    // Equal spacing around dividers comes from this gap alone
+    // (divider and menu margins are zeroed below)
     .academy-sidebar-top,
     .academy-sidebar-bottom {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: $academy-section-gap;
     }
 
     // Figma: radius --lg, Other-Stroke border, Base-White background
@@ -91,7 +95,12 @@ $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
         gap: $academy-icon-gap;
         width: 100%;
         height: $academy-item-height;
-        margin-inline: 0;
+        // antd adds 4px top/bottom margins, which skews the divider spacing
+        margin: 0;
+
+        & + li.ant-menu-item {
+          margin-top: $academy-item-spacing;
+        }
         // antd sets an inline padding-left on inline menu items
         padding: 0 $academy-item-inset !important;
         border-radius: 8px;
@@ -156,7 +165,7 @@ $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
     }
 
     .academy-sidebar-divider {
-      margin: 4px 0;
+      margin: 0;
     }
   }
 
