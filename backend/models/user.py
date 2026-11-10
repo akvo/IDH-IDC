@@ -10,6 +10,7 @@ from sqlalchemy import (
     SmallInteger,
     Enum,
 )
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from typing import Optional, List
@@ -88,6 +89,7 @@ class UserInfo(TypedDict):
     company: Optional[int]
     user_type: UserType
     user_profile: Optional[UserProfileDict]
+    tools: List[str]
 
 
 class UserDetailDict(TypedDict):
@@ -103,6 +105,7 @@ class UserDetailDict(TypedDict):
     business_units: Optional[List[UserBusinessUnitRoleDict]]
     cases: Optional[List[UserCasePermissionDict]]
     user_type: UserType
+    tools: List[str]
 
 
 class UserPageDict(TypedDict):
@@ -117,6 +120,7 @@ class UserPageDict(TypedDict):
     business_unit_count: int
     company: Optional[int] = None
     user_type: UserType
+    tools: List[str]
 
 
 class UserDict(TypedDict):
@@ -128,6 +132,7 @@ class UserDict(TypedDict):
     active: bool
     company: Optional[int]
     user_type: UserType
+    tools: List[str]
 
 
 class UserInvitation(TypedDict):
@@ -166,6 +171,12 @@ class User(Base):
     all_cases = Column(SmallInteger, nullable=False, default=0)
     is_active = Column(SmallInteger, nullable=False, default=0)
     invitation_id = Column(String, nullable=True)
+    tools = Column(
+        ARRAY(String),
+        nullable=False,
+        default=list,
+        server_default="{}",
+    )
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(
         DateTime,
@@ -217,6 +228,7 @@ class User(Base):
         password: Optional[str] = None,
         all_cases: Optional[int] = 0,
         company: Optional[int] = None,
+        tools: Optional[List[str]] = None,
     ):
         self.id = id
         self.organisation = organisation
@@ -233,6 +245,7 @@ class User(Base):
         self.is_active = is_active
         self.invitation_id = invitation_id
         self.company = company
+        self.tools = tools if tools is not None else ["idc", "academy"]
 
     def __repr__(self) -> int:
         return f"<User {self.id}>"
@@ -248,6 +261,7 @@ class User(Base):
             "role": self.role,
             "user_type": self.user_type,
             "active": self.is_active,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -285,6 +299,7 @@ class User(Base):
             "company": self.company,
             "user_type": self.user_type,
             "user_profile": user_profile,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -313,6 +328,7 @@ class User(Base):
             "business_units": business_units,
             "cases": cases,
             "user_type": self.user_type,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -329,6 +345,7 @@ class User(Base):
             "business_unit_count": len(self.user_business_units),
             "company": self.company,
             "user_type": self.user_type,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -364,6 +381,7 @@ class UserBase(BaseModel):
     business_units: Optional[str] = None
     company: Optional[int] = None
     user_type: Optional[UserType] = None
+    tools: Optional[List[str]] = None
 
     @field_validator("tags")
     @classmethod
@@ -395,6 +413,7 @@ class UserBase(BaseModel):
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
         user_type: Optional[UserType] = Form(None),
+        tools: Optional[List[str]] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -408,6 +427,7 @@ class UserBase(BaseModel):
             cases=cases,
             business_units=business_units,
             user_type=user_type,
+            tools=tools,
         )
 
 
@@ -430,6 +450,7 @@ class UserUpdateBase(BaseModel):
     business_units: Optional[str] = None
     company: Optional[int] = None
     user_type: Optional[UserType] = None
+    tools: Optional[List[str]] = None
 
     @field_validator("tags")
     @classmethod
@@ -461,6 +482,7 @@ class UserUpdateBase(BaseModel):
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
         user_type: Optional[UserType] = Form(None),
+        tools: Optional[List[str]] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -474,4 +496,5 @@ class UserUpdateBase(BaseModel):
             cases=cases,
             business_units=business_units,
             user_type=user_type,
+            tools=tools,
         )

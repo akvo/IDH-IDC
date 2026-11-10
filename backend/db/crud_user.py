@@ -43,6 +43,11 @@ def add_user(
     if not organisation:
         def_org = default_organisation(session=session, name="IDH")
         organisation = def_org.id
+    tools = (
+        payload.tools
+        if hasattr(payload, "tools") and payload.tools is not None
+        else ["idc", "academy"]
+    )
     user = User(
         fullname=payload.fullname,
         email=payload.email,
@@ -53,6 +58,7 @@ def add_user(
         is_active=1 if invitation_id else 0,
         invitation_id=str(uuid4()) if invitation_id else None,
         company=payload.company,
+        tools=tools,
     )
     if role == UserRole.user:
         if payload.user_type:
@@ -103,6 +109,8 @@ def update_user(
         payload.organisation if payload.organisation else user.organisation
     )
     user.company = payload.company
+    if hasattr(payload, "tools") and payload.tools is not None:
+        user.tools = payload.tools
 
     role = payload.role if payload.role else user.role
 
