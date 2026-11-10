@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
-import { Row, Col, Typography, Image, Spin, Result, Button } from "antd";
+import { Row, Col, Typography, Image, Spin, Button } from "antd";
+import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
 import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
@@ -51,7 +52,12 @@ const VerifyAcademy = () => {
             <div className="page-title-container">
               <Typography.Title>
                 Living Income <br />
-                <span style={{ color: "#47d985" }}>Academy</span>
+                <span style={{ color: "#47d985", fontSize: "2.5rem" }}>
+                  Academy
+                </span>
+              </Typography.Title>
+              <Typography.Title level={3}>
+                Account Verification
               </Typography.Title>
             </div>
 
@@ -68,71 +74,79 @@ const VerifyAcademy = () => {
             )}
 
             {status === "success" && (
-              <div data-testid="verify-success" style={{ padding: "20px 0" }}>
-                <Result
-                  status="success"
-                  title={
-                    <span style={{ color: "#fff" }}>
-                      Account Verified Successfully!
-                    </span>
-                  }
-                  subTitle={
-                    <span style={{ color: "#e6f7ff" }}>
-                      Your Living Income Academy account is now active. You may
-                      now sign in to begin learning.
-                    </span>
-                  }
-                  extra={[
-                    <Button
-                      type="primary"
-                      key="login"
-                      data-testid="button-go-login"
-                      style={{
-                        backgroundColor: "#47d985",
-                        borderColor: "#47d985",
-                        color: "#000",
-                        fontWeight: 600,
-                      }}
-                    >
-                      <Link to={`${routePath.idc.login}?verified=true`}>
-                        Sign In Now
-                      </Link>
-                    </Button>,
-                  ]}
+              <div
+                className="registration-feedback-view"
+                data-testid="verify-success"
+              >
+                <CheckCircleFilled
+                  style={{
+                    fontSize: 54,
+                    color: "#47d985",
+                    marginBottom: 20,
+                  }}
                 />
+                <h2>Account Verified Successfully!</h2>
+                <p className="feedback-description">
+                  Your Living Income Academy account is now active. You may now
+                  sign in to begin learning.
+                </p>
+                <Link to={`${routePath.idc.login}?verified=true`}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    className="button-login"
+                    data-testid="button-go-login"
+                    block
+                  >
+                    Sign In Now
+                  </Button>
+                </Link>
               </div>
             )}
 
             {status === "error" && (
-              <div data-testid="verify-error" style={{ padding: "20px 0" }}>
-                <Result
-                  status="error"
-                  title={
-                    <span style={{ color: "#fff" }}>Verification Failed</span>
-                  }
-                  subTitle={
-                    <span style={{ color: "#ffccc7" }}>{errorMessage}</span>
-                  }
-                  extra={[
+              <div
+                className="registration-feedback-view"
+                data-testid="verify-error"
+              >
+                <CloseCircleFilled
+                  style={{
+                    fontSize: 54,
+                    color: "#ff4d4f",
+                    marginBottom: 20,
+                  }}
+                />
+                <h2>Verification Failed</h2>
+                <p className="feedback-description">{errorMessage}</p>
+                <Link to="/register">
+                  <Button
+                    size="large"
+                    type="primary"
+                    className="button-login"
+                    data-testid="button-back-register"
+                    block
+                  >
+                    Register Again
+                  </Button>
+                </Link>
+                <div style={{ marginTop: 14 }}>
+                  <Link to={routePath.idc.login}>
                     <Button
-                      type="primary"
-                      key="retry"
-                      data-testid="button-back-register"
+                      size="large"
+                      className="button-secondary"
+                      data-testid="button-back-login"
+                      block
                       style={{
-                        backgroundColor: "#47d985",
-                        borderColor: "#47d985",
-                        color: "#000",
-                        fontWeight: 600,
-                        marginRight: 8,
+                        background: "transparent",
+                        borderColor: "rgba(255, 255, 255, 0.4)",
+                        color: "#fff",
+                        borderRadius: 20,
                       }}
                     >
-                      <Link to="/register">Register Again</Link>
-                    </Button>,
-                    <Button key="login" data-testid="button-back-login">
-                      <Link to={routePath.idc.login}>Return to Sign In</Link>
-                    </Button>,
-                  ]}
-                />
+                      Return to Sign In
+                    </Button>
+                  </Link>
+                </div>
               </div>
             )}
           </Col>

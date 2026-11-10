@@ -11,9 +11,9 @@ import {
   Typography,
   Image,
   Checkbox,
-  Result,
   message,
 } from "antd";
+import { CheckCircleFilled } from "@ant-design/icons";
 import { api } from "../../lib";
 import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
@@ -73,9 +73,19 @@ const Register = () => {
       });
   };
 
+  const onValuesChange = (changedValues) => {
+    if ("password" in changedValues) {
+      const res = checkPasswordCriteria(changedValues.password || "");
+      setPasswordCheckList(res);
+    }
+  };
+
   const onChange = ({ target }) => {
-    if (target.id === "form-registration_password") {
-      const res = checkPasswordCriteria(target.value);
+    if (
+      target.id === "form-registration_password" ||
+      target.getAttribute?.("data-testid") === "input-password"
+    ) {
+      const res = checkPasswordCriteria(target.value || "");
       setPasswordCheckList(res);
     }
   };
@@ -95,60 +105,67 @@ const Register = () => {
             <div className="page-title-container">
               <Typography.Title>
                 Living Income <br />
-                <span style={{ color: "#47d985" }}>Academy</span>
+                <span style={{ color: "#47d985", fontSize: "2.5rem" }}>
+                  Academy
+                </span>
+              </Typography.Title>
+              <Typography.Title level={3}>
+                Welcome to the Living Income Academy
               </Typography.Title>
             </div>
 
             {registeredEmail ? (
               <div
+                className="registration-feedback-view"
                 data-testid="registration-success-container"
-                style={{ padding: "20px 0" }}
               >
-                <Result
-                  status="success"
-                  title={
-                    <span style={{ color: "#fff" }}>
-                      Registration Successful!
-                    </span>
-                  }
-                  subTitle={
-                    <span style={{ color: "#e6f7ff" }}>
-                      We have sent a verification link to{" "}
-                      <strong>{registeredEmail}</strong>. Please check your
-                      inbox and click the link to activate your Living Income
-                      Academy access.
-                    </span>
-                  }
-                  extra={[
-                    <Button
-                      type="primary"
-                      key="login"
-                      data-testid="button-success-login"
-                      style={{
-                        backgroundColor: "#47d985",
-                        borderColor: "#47d985",
-                        color: "#000",
-                        fontWeight: 600,
-                      }}
-                    >
-                      <Link to={`${routePath.idc.login}?verified=pending`}>
-                        Return to Sign In
-                      </Link>
-                    </Button>,
-                  ]}
+                <CheckCircleFilled
+                  style={{
+                    fontSize: 54,
+                    color: "#47d985",
+                    marginBottom: 20,
+                  }}
                 />
+                <h2>Registration Successful!</h2>
+                <p className="feedback-description">
+                  We have sent a verification link to{" "}
+                  <strong style={{ color: "#47d985", fontWeight: 700 }}>
+                    {registeredEmail}
+                  </strong>
+                  .
+                  <br />
+                  Please check your inbox and click the link to activate your
+                  Living Income Academy access.
+                </p>
+                <p className="feedback-hint">
+                  Didn&apos;t receive the email? Check your spam folder or wait
+                  a few minutes.
+                </p>
+                <Link to={`${routePath.idc.login}?verified=pending`}>
+                  <Button
+                    size="large"
+                    type="primary"
+                    className="button-login"
+                    data-testid="button-success-login"
+                    block
+                  >
+                    Return to Sign In
+                  </Button>
+                </Link>
               </div>
             ) : (
               <>
                 <h2>Create Account</h2>
-                <p style={{ color: "#e0e0e0", marginBottom: 16 }}>
+                <p
+                  style={{
+                    color: "#e0e0e0",
+                    fontSize: "0.95rem",
+                    marginBottom: 24,
+                  }}
+                >
                   Register to access interactive learning modules, case studies,
                   and tools.
                 </p>
-                <PasswordCriteria
-                  values={passwordCheckList}
-                  className="white"
-                />
                 <Form
                   form={form}
                   name="form-registration"
@@ -157,6 +174,7 @@ const Register = () => {
                   onFinish={onFinish}
                   autoComplete="off"
                   onChange={onChange}
+                  onValuesChange={onValuesChange}
                 >
                   <Form.Item
                     name="fullname"
@@ -168,6 +186,7 @@ const Register = () => {
                     ]}
                   >
                     <Input
+                      size="large"
                       data-testid="input-fullname"
                       placeholder="Fullname"
                     />
@@ -185,7 +204,11 @@ const Register = () => {
                       },
                     ]}
                   >
-                    <Input data-testid="input-email" placeholder="Email" />
+                    <Input
+                      size="large"
+                      data-testid="input-email"
+                      placeholder="Email"
+                    />
                   </Form.Item>
                   <Form.Item
                     name="company_name"
@@ -198,10 +221,12 @@ const Register = () => {
                     ]}
                   >
                     <Input
+                      size="large"
                       data-testid="input-company-name"
                       placeholder="Organization / Company Name"
                     />
                   </Form.Item>
+
                   <Form.Item
                     name="password"
                     rules={[
@@ -211,7 +236,11 @@ const Register = () => {
                       },
                       () => ({
                         validator(_, value) {
+                          const meetsCriteria =
+                            checkPasswordCriteria(value || "").length ===
+                            passwordCheckBoxOptions.length;
                           if (
+                            meetsCriteria ||
                             passwordCheckList.length ===
                               passwordCheckBoxOptions.length ||
                             !value
@@ -226,10 +255,17 @@ const Register = () => {
                     ]}
                   >
                     <Input.Password
+                      size="large"
                       data-testid="input-password"
                       placeholder="Password (8+ chars, upper, lower, number, symbol)"
                     />
                   </Form.Item>
+
+                  <PasswordCriteria
+                    values={passwordCheckList}
+                    className="white compact"
+                  />
+
                   <Form.Item
                     name="confirm"
                     dependencies={["password"]}
@@ -253,6 +289,7 @@ const Register = () => {
                     ]}
                   >
                     <Input.Password
+                      size="large"
                       data-testid="input-confirm-password"
                       placeholder="Confirm Password"
                     />
@@ -282,6 +319,7 @@ const Register = () => {
                   </Form.Item>
                   <Form.Item>
                     <Button
+                      size="large"
                       data-testid="button-register"
                       className={`button-login ${
                         !agreeDataSecurityProvision ? "disabled" : ""

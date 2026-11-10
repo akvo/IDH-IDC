@@ -12,8 +12,8 @@ import {
   Image,
   message,
   Divider,
-  Alert,
 } from "antd";
+import { CheckCircleFilled } from "@ant-design/icons";
 import { useCookies } from "react-cookie";
 import { api } from "../../lib";
 import UserState from "../../store/user";
@@ -239,14 +239,19 @@ const Login = () => {
               )}
             </div>
             {isVerifiedParam && !isResetPassword && (
-              <Alert
-                message="Email Verified"
-                description="Your email has been verified successfully. Please sign in to access your account."
-                type="success"
-                showIcon
-                style={{ marginBottom: 16, textAlign: "left" }}
+              <div
+                className="verified-notification-banner"
                 data-testid="alert-verified"
-              />
+              >
+                <CheckCircleFilled className="verified-icon" />
+                <div className="verified-content">
+                  <span className="verified-title">Email Verified</span>
+                  <span className="verified-desc">
+                    Your email has been verified successfully. Please sign in to
+                    access your account.
+                  </span>
+                </div>
+              </div>
             )}
             <h2>{!isResetPassword ? "Sign In" : "Reset Password"}</h2>
             {!isResetPassword ? (
