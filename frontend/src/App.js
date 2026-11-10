@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import "./App.scss";
-import { Spin } from "antd";
+import { Spin, Empty } from "antd";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes, routePath } from "./components/route";
@@ -36,7 +36,7 @@ import {
   CocoaIncomeInventory,
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
-import { AcademyLanding } from "./pages/academy";
+import { AcademyLanding, AcademyLayout } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
@@ -59,6 +59,19 @@ const ScrollToTop = () => {
 
   return null;
 };
+
+// TODO:: Replace with the real Academy pages (LIACD screens 2-6)
+const AcademyPagePlaceholder = ({ title }) => (
+  <Empty description={`${title} is coming soon`} />
+);
+
+const academyChildRoutes = [
+  { path: routePath.academy.overview, title: "My overview" },
+  { path: routePath.academy.courses, title: "Course Overview" },
+  { path: routePath.academy.resources, title: "Academy resources" },
+  { path: routePath.academy.account, title: "Account" },
+  { path: routePath.academy.settings, title: "Settings" },
+];
 
 const App = () => {
   const host = window.location.hostname;
@@ -142,6 +155,7 @@ const App = () => {
             s.internal_user = data.internal_user;
             s.company = data.company;
             s.user_type = data.user_type;
+            s.user_profile = data.user_profile || null;
             s.isExternalRegular = data.user_type === "external_regular";
             s.isCaseCreator =
               adminRole.includes(data.role) ||
@@ -215,6 +229,19 @@ const App = () => {
               path={routePath.idc.livingIncomeBenchmarkExplorer}
               element={<LivingIncomeBenchmarkExplorer />}
             />
+
+            {/* Academy (authenticated) */}
+            <Route element={<AcademyLayout />}>
+              {academyChildRoutes.map(({ path, title }) => (
+                <Route
+                  key={path}
+                  exact
+                  path={path}
+                  element={<AcademyPagePlaceholder title={title} />}
+                />
+              ))}
+            </Route>
+            {/* EOL Academy */}
           </Route>
           {/* ) : (
             ""

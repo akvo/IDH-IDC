@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Layout, Row, Col, Menu, Button, Drawer } from "antd";
+import { Layout, Row, Col, Menu, Button, Drawer, Avatar } from "antd";
 import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -8,15 +8,31 @@ import { allUserRole } from "../../store/static";
 import { routePath } from "../route";
 import { MenuOutlined } from "@ant-design/icons";
 import { useWindowDimensions } from "../../hooks";
+import { getUserInitials } from "../../lib";
 
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const { Header, Content } = Layout;
+
+// Keep the top-level menu item active on nested pages, e.g. /academy/courses
+const isAcademyShellPath = (pathname) =>
+  pathname.startsWith(`${routePath.academy.landing}/`);
+
+const getSelectedMenuKey = (pathname) =>
+  isAcademyShellPath(pathname) ? routePath.academy.landing : pathname;
 
 const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
   const location = useLocation();
+  const fullname = UserState.useState((s) => s.fullname);
+  const userProfile = UserState.useState((s) => s.user_profile);
+  const selectedKeys = [getSelectedMenuKey(location.pathname)];
+  const isAcademyPage = isAcademyShellPath(location.pathname);
+  const userInitials = getUserInitials({
+    fullname,
+    user_profile: userProfile,
+  });
 
   const menuItems = useMemo(() => {
     const menuList = [
@@ -44,7 +60,7 @@ const PageHeader = ({ isLoggedIn }) => {
       {
         testid: "nav-menu-academy",
         label: "Academy",
-        key: "/academy",
+        key: routePath.academy.landing,
         isPublic: true,
         role: [],
       },
@@ -158,7 +174,7 @@ const PageHeader = ({ isLoggedIn }) => {
                   mode="inline"
                   items={menuItems}
                   onClick={handleMenuClick}
-                  selectedKeys={[location.pathname]}
+                  selectedKeys={selectedKeys}
                 />
               </Drawer>
             </>
@@ -169,8 +185,26 @@ const PageHeader = ({ isLoggedIn }) => {
               items={menuItems}
               style={{ borderBottom: "none" }}
               className="navigation-container"
-              selectedKeys={[location.pathname]}
+              selectedKeys={selectedKeys}
             />
+          )}
+          {isLoggedIn && isAcademyPage && userInitials && (
+            <Link
+              to={routePath.academy.account}
+              aria-label="My account"
+              data-testid="header-user-avatar"
+            >
+              <Avatar
+                style={{
+                  backgroundColor: "#f0f2f5",
+                  color: "#1a1a1a",
+                  fontWeight: 600,
+                  marginLeft: isMobile ? 0 : 16,
+                }}
+              >
+                {userInitials}
+              </Avatar>
+            </Link>
           )}
         </Col>
       </Row>

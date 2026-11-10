@@ -30,6 +30,7 @@ const useSignOut = () => {
       s.case_access = [];
       s.internal_user = false;
       s.company = null;
+      s.user_profile = null;
     });
   }, [removeCookie]);
 

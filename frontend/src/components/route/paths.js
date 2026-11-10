@@ -25,6 +25,11 @@ const routePath = {
   },
   academy: {
     landing: "/academy",
+    overview: "/academy/overview",
+    courses: "/academy/courses",
+    resources: "/academy/resources",
+    account: "/academy/account",
+    settings: "/academy/settings",
   },
 };
 
