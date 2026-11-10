@@ -30,12 +30,13 @@ This specification details the architecture, endpoint contracts, security constr
 ## 2. Mailpit Local Email Testing
 - Added `mailpit` service to `docker-compose.yml` (`image: axllent/mailpit:latest`).
 - Port mappings: `1025:1025` (SMTP relay) and `8025:8025` (Web UI).
+- `docker-compose.yml`: Added `${EMAIL_HOST:-mailpit}` and `${EMAIL_PORT:-1025}` fallback defaults to backend service environment.
 - `backend/utils/mailer.py`: Port 1025 automatically disables STARTTLS and SSL defaults for local development.
 
 ---
 
 ## 3. Frontend Architecture
-- **`Register.js`**: Dedicated public registration form for the Living Income Academy with live `PasswordCriteria` validation, organization name input, and email verification confirmation view.
-- **`VerifyAcademy.js`**: Standalone verification page displaying loading spinner, success outcome, or error guidance with navigation back to sign in.
-- **`Login.js`**: Renders success alert banner when redirected with `?verified=true`.
+- **`Register.js`**: Dedicated public registration form for the Living Income Academy with live, compact `PasswordCriteria` validation, organization name input, and seamless card-free email verification confirmation view.
+- **`VerifyAcademy.js`**: Standalone verification page displaying loading spinner, seamless success outcome, or error guidance with navigation back to sign in.
+- **`Login.js`**: Renders a proportional, theme-aligned emerald notification banner (`.verified-notification-banner`) when redirected with `?verified=true`.
 - **`paths.js` & `App.js`**: Registered `/register`, `/verify-academy`, and `/login` routes.
