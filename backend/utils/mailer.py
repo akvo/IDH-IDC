@@ -44,7 +44,7 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_flag(
-    "EMAIL_USE_TLS", "false" if EMAIL_PORT == 465 else "true"
+    "EMAIL_USE_TLS", "false" if EMAIL_PORT in (465, 1025) else "true"
 )
 EMAIL_USE_SSL = env_flag(
     "EMAIL_USE_SSL", "true" if EMAIL_PORT == 465 else "false"
@@ -112,6 +112,23 @@ class EmailBody(enum.Enum):
         """,
         "image": f"{image_url}/user.png",
     }
+    ACADEMY_REGISTRATION_VERIFY = {
+        "title": "Verify Your Academy Account",
+        "subject": "Verify Your Living Income Academy Account",
+        "body": "Thank you for registering for the Living Income Academy.",
+        "message": """
+            Please click
+            <a href="#url#" target="_blank" rel="noreferrer">
+                here
+            </a> or the link below to verify your account and activate your access.
+            <br/>
+            <br/>
+            <a href="#url#" target="_blank" rel="noreferrer">
+                #url#
+            </a>
+        """,
+        "image": f"{image_url}/user.png",
+    }
 
 
 # Recipients arrive as {"Email", "Name"} dicts -- the shape
@@ -146,6 +163,7 @@ class MailTypeEnum(enum.Enum):
     REG_PASSWORD_CREATED = "USER_PASSWORD_CREATED"
     FORGOT_PASSWORD = "FORGOT_PASSWORD"
     INVITATION = "INVITATION"
+    ACADEMY_VERIFY = "ACADEMY_REGISTRATION_VERIFY"
 
 
 class Email:

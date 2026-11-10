@@ -1,5 +1,6 @@
 import enum
 import json
+import re
 from db.connection import Base
 from sqlalchemy import (
     Column,
@@ -15,7 +16,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from typing import Optional, List
 from typing_extensions import TypedDict
-from pydantic import BaseModel, SecretStr, field_validator, ValidationInfo
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    SecretStr,
+    field_validator,
+    ValidationInfo,
+)
 from models.organisation import OrganisationDict
 from fastapi import Form, HTTPException, status
 from models.user_tag import UserTag
@@ -507,3 +514,58 @@ class UserUpdateBase(BaseModel):
             user_type=user_type,
             tools=tools,
         )
+
+
+class UserRegisterAcademy(BaseModel):
+    fullname: str
+    email: EmailStr
+    password: str
+    company_name: str
+
+    @field_validator("fullname")
+    @classmethod
+    def validate_fullname(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Fullname cannot be empty")
+        return v
+
+    @field_validator("company_name")
+    @classmethod
+    def validate_company_name(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Company name cannot be empty")
+        if len(v) > 255:
+            raise ValueError("Company name cannot exceed 255 characters")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_complexity(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        if not re.search(r"[A-Z]", v):
+            raise ValueError(
+                "Password must contain at least one uppercase letter"
+            )
+        if not re.search(r"[a-z]", v):
+            raise ValueError(
+                "Password must contain at least one lowercase letter"
+            )
+        if not re.search(r"\d", v):
+            raise ValueError("Password must contain at least one digit")
+        if not re.search(r"[-._!\"`'#%&,:;<>=@{}~$()*+/?[\]^|]", v):
+            raise ValueError(
+                "Password must contain at least one special character"
+            )
+        return v
+
+
+class AcademyRegisterResponse(BaseModel):
+    message: str
+
+
+class AcademyVerifyResponse(BaseModel):
+    message: str
+    verified: bool
