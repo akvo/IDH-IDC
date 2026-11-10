@@ -6,7 +6,7 @@ from httpx import AsyncClient
 from sqlalchemy.orm import Session
 from jose import jwt
 from db import crud_organisation
-from middleware import verify_token, SECRET_KEY, ALGORITHM
+from middleware import verify_token, SECRET_KEY, ALGORITHM, generate_user_token
 from tests.test_000_main import Acc
 from models.user import UserRole, User
 
@@ -35,6 +35,19 @@ class TestUserAuthentication:
         assert account.decoded == account.data
         verify = verify_token(account.decoded)
         assert verify["exp"] > 0
+
+    def test_generate_user_token(self):
+        class MockUser:
+            email = "token_test@akvo.org"
+            role = UserRole.admin
+            tools = ["idc", "academy"]
+
+        token = generate_user_token(MockUser())
+        decoded = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        assert decoded["sub"] == "token_test@akvo.org"
+        assert decoded["email"] == "token_test@akvo.org"
+        assert decoded["role"] == UserRole.admin.value
+        assert decoded["tools"] == ["idc", "academy"]
 
     @pytest.mark.asyncio
     async def test_add_organisation(

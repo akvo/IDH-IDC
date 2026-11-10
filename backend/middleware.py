@@ -66,6 +66,18 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
+def generate_user_token(user) -> str:
+    role = user.role.value if hasattr(user.role, "value") else user.role
+    return create_access_token(
+        data={
+            "sub": user.email,
+            "email": user.email,
+            "role": role,
+            "tools": user.tools or [],
+        }
+    )
+
+
 def decode_token(token: str = Depends(oauth2_scheme)):
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
