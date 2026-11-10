@@ -12,7 +12,7 @@ from math import ceil
 from middleware import (
     Token,
     authenticate_user,
-    create_access_token,
+    generate_user_token,
     verify_user,
     get_password_hash,
     verify_admin,
@@ -97,7 +97,7 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"email": user.email})
+    access_token = generate_user_token(user)
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -321,7 +321,7 @@ def change_password(
     )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
-    access_token = create_access_token(data={"email": user.email})
+    access_token = generate_user_token(user)
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -566,7 +566,7 @@ def post_forgot_password(
         session=session, id=reset_password["user"], password=password
     )
     crud_reset_pwd.delete_reset_password(session=session, url=url)
-    access_token = create_access_token(data={"email": user.email})
+    access_token = generate_user_token(user)
     return {
         "access_token": access_token,
         "token_type": "bearer",

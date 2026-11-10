@@ -48,6 +48,37 @@
         }
       }
 
+      .toolkit-login-guidance {
+        padding: 0 10px;
+        margin-bottom: 12px;
+
+        .academy-register-callout {
+          margin-bottom: 8px;
+          font-size: 0.95rem;
+          color: #fff;
+          a {
+            color: #47d985;
+            font-weight: 600;
+            text-decoration: underline;
+            &:hover {
+              color: lighten(#47d985, 10%);
+            }
+          }
+        }
+
+        .idc-request-callout {
+          font-size: 0.85rem;
+          opacity: 0.9;
+          margin-bottom: 12px;
+          line-height: 1.4;
+          color: #e0e0e0;
+          a {
+            color: #47d985;
+            text-decoration: underline;
+          }
+        }
+      }
+
       .form-login {
         .ant-form-item {
           margin-bottom: 28px;

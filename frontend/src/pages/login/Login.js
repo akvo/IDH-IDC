@@ -12,9 +12,11 @@ import {
   Image,
   message,
   Divider,
+  Alert,
 } from "antd";
 import { useCookies } from "react-cookie";
 import { api } from "../../lib";
+import UserState from "../../store/user";
 import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
@@ -30,10 +32,13 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
+  const [, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isResetPassword, setIsResetPassword] = useState(false);
   const { isMobile } = useWindowDimensions();
+
+  const searchParams = new URLSearchParams(location.search);
+  const isVerifiedParam = searchParams.get("verified") === "true";
 
   const trackEventOnClickLivingIncomeEmail = () => {
     CustomEvent.trackEvent(
@@ -46,7 +51,6 @@ const Login = () => {
 
     // Matomo event
     if (window._paq) {
-      // 1️⃣ Free Matomo-friendly event (readable & countable)
       window._paq.push([
         "trackEvent",
         "Registration",
@@ -54,8 +58,6 @@ const Login = () => {
         "",
         1,
       ]);
-
-      // 2️⃣ Upgrade-safe canonical event (future parsing)
       window._paq.push([
         "trackEvent",
         "Registration",
@@ -81,20 +83,96 @@ const Login = () => {
       .post("user/login", payload)
       .then((res) => {
         const { data } = res;
+        const token = data?.access_token;
+        const user = data?.user;
+
         removeCookie("AUTH_TOKEN");
-        setCookie("AUTH_TOKEN", data?.access_token);
-        api.setToken(cookies?.AUTH_TOKEN);
+        setCookie("AUTH_TOKEN", token, { path: "/" });
+        api.setToken(token);
+
+        if (user) {
+          UserState.update((s) => {
+            s.id = user.id;
+            s.fullname = user.fullname;
+            s.email = user.email;
+            s.role = user.role;
+            s.active = user.active;
+            s.business_unit_detail = user.business_unit_detail;
+            s.organisation_detail = user.organisation_detail;
+            s.tags_count = user.tags_count;
+            s.cases_count = user.cases_count;
+            s.case_access = user.case_access;
+            s.internal_user = user.internal_user;
+            s.company = user.company;
+            s.user_type = user.user_type;
+            s.isExternalRegular = user.user_type === "external_regular";
+            s.isCaseCreator =
+              user.role === "admin" || user.user_type === "external_advanced";
+            s.tools = user.tools || [];
+          });
+        }
+
+        const isSafeRedirect = (url) => {
+          return (
+            typeof url === "string" &&
+            url.startsWith("/") &&
+            !url.startsWith("//") &&
+            !url.includes("\\")
+          );
+        };
+
+        const isIdcPath = (path) => {
+          return (
+            typeof path === "string" &&
+            (path.startsWith("/income-driver-calculator") ||
+              path.startsWith("/cases") ||
+              path.startsWith("/case") ||
+              path.startsWith("/admin"))
+          );
+        };
+
+        const currentSearchParams = new URLSearchParams(location.search);
+        const redirectParam = currentSearchParams.get("redirect");
+        const fromState = location.state?.from?.pathname;
+
+        const candidatePath =
+          (isSafeRedirect(redirectParam) ? redirectParam : null) ||
+          (isSafeRedirect(fromState) ? fromState : null);
+
+        const tools = user?.tools || [];
+        const hasIdc = tools.includes("idc");
+        const hasAcademy = tools.includes("academy");
+
+        let targetRoute;
+        const navigationState = { fromLogin: true };
+
+        if (hasIdc) {
+          targetRoute = candidatePath || routePath.idc.dashboard;
+        } else if (hasAcademy) {
+          if (candidatePath && !isIdcPath(candidatePath)) {
+            targetRoute = candidatePath;
+          } else {
+            targetRoute = routePath.academy.landing;
+            if (candidatePath && isIdcPath(candidatePath)) {
+              navigationState.unauthorizedIDC = true;
+            }
+          }
+        } else {
+          targetRoute = candidatePath || routePath.idc.dashboard;
+        }
+
         setTimeout(() => {
-          const from =
-            location.state?.from?.pathname || routePath.idc.dashboard;
-          navigate(from, { replace: true, state: { fromLogin: true } });
-        }, 100);
+          navigate(targetRoute, { replace: true, state: navigationState });
+        }, 50);
       })
       .catch((e) => {
-        const { status, data } = e.response;
+        const { status, data } = e?.response || {};
         let errorMessage = "Please contact an admin.";
-        if (status === 401) {
-          errorMessage = data.detail;
+        if (status === 401 && data?.detail) {
+          errorMessage =
+            typeof data.detail === "string"
+              ? data.detail
+              : JSON.stringify(data.detail);
         }
         messageApi.open({
           type: "error",
@@ -149,35 +227,53 @@ const Login = () => {
           <Col span={24} align="center" className="login-form">
             <div className="page-title-container">
               <Typography.Title>
-                Income Driver <br />
+                Better Income <br />
                 <span style={{ color: "#47d985", fontSize: "2.5rem" }}>
-                  Calculator
+                  Toolkit
                 </span>
               </Typography.Title>
               {!isResetPassword && (
                 <Typography.Title level={3}>
-                  Welcome to the income driver calculator version 2.1
+                  Welcome to the Better Income Toolkit
                 </Typography.Title>
               )}
             </div>
+            {isVerifiedParam && !isResetPassword && (
+              <Alert
+                message="Email Verified"
+                description="Your email has been verified successfully. Please sign in to access your account."
+                type="success"
+                showIcon
+                style={{ marginBottom: 16, textAlign: "left" }}
+                data-testid="alert-verified"
+              />
+            )}
             <h2>{!isResetPassword ? "Sign In" : "Reset Password"}</h2>
             {!isResetPassword ? (
-              <div style={{ padding: "0 10px" }}>
-                <p>
-                  For registration, please reach out to your IDH point of
-                  contact or email us at{" "}
+              <div
+                className="toolkit-login-guidance"
+                data-testid="toolkit-login-guidance"
+              >
+                <p className="academy-register-callout">
+                  New to the Academy?{" "}
+                  <Link to="/register" data-testid="link-register-academy">
+                    Register for free
+                  </Link>
+                </p>
+                <p className="idc-request-callout">
+                  Need access to the Income Driver Calculator? Contact your
+                  organization administrator or email{" "}
                   <a
-                    href="mailto:someone@example.com"
+                    href="mailto:livingincome@idhtrade.org"
                     onClick={trackEventOnClickLivingIncomeEmail}
                   >
                     livingincome@idhtrade.org
-                  </a>
+                  </a>{" "}
+                  to request an invitation.
                 </p>
                 <Divider style={{ borderColor: "#fff", opacity: 0.2 }} />
               </div>
-            ) : (
-              ""
-            )}
+            ) : null}
             <Form
               name="form-login"
               className="form-login"
@@ -235,16 +331,13 @@ const Login = () => {
                 </Button>
               </Form.Item>
               <Form.Item noStyle>
-                <Row align="top">
-                  {/* <Col span={12} align="start" style={{ float: "left" }}>
-                    <p>
-                      Don&apos;t have an account?{" "}
-                      <Link to="/register">Register here.</Link>
-                    </p>
-                  </Col> */}
-                  <Col span={24} align="end" style={{ float: "right" }}>
-                    <Link onClick={() => setIsResetPassword(!isResetPassword)}>
-                      <p>
+                <Row align="top" style={{ marginTop: 12 }}>
+                  <Col span={24} align="end">
+                    <Link
+                      onClick={() => setIsResetPassword(!isResetPassword)}
+                      data-testid="link-forgot-password"
+                    >
+                      <p style={{ margin: 0 }}>
                         {!isResetPassword ? "Forgot password" : "Back to Login"}
                       </p>
                     </Link>

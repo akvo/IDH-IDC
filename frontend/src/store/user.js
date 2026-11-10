@@ -25,6 +25,7 @@ const defaultUserState = {
   user_type: null,
   isExternalRegular: false,
   isCaseCreator: false,
+  tools: [],
 };
 
 const UserState = new Store(defaultUserState);

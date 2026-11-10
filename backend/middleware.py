@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt, exceptions
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 
 from models.user import UserInfo, UserRole, UserType
@@ -38,6 +38,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+    role: Optional[UserRole] = None
+    tools: Optional[List[str]] = None
 
 
 def verify_password(plain_password, hashed_password):
@@ -62,6 +64,18 @@ def create_access_token(data: dict):
     data.update({"exp": expire})
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def generate_user_token(user) -> str:
+    role = user.role.value if hasattr(user.role, "value") else user.role
+    return create_access_token(
+        data={
+            "sub": user.email,
+            "email": user.email,
+            "role": role,
+            "tools": user.tools or [],
+        }
+    )
 
 
 def decode_token(token: str = Depends(oauth2_scheme)):
@@ -103,10 +117,12 @@ def verify_user(session: Session, authenticated):
     )
     authenticated = verify_token(authenticated)
     try:
-        email: str = authenticated.get("email")
+        email: str = authenticated.get("email") or authenticated.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = TokenData(email=email)
+        role = authenticated.get("role")
+        tools = authenticated.get("tools")
+        token_data = TokenData(email=email, role=role, tools=tools)
     except (JWTError, AttributeError):
         raise credentials_exception
     user = crud_user.get_user_by_email(session=session, email=token_data.email)
