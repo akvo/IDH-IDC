@@ -36,7 +36,11 @@ import {
   CocoaIncomeInventory,
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
-import { AcademyLanding, AcademyLayout } from "./pages/academy";
+import {
+  AcademyLanding,
+  AcademyLayout,
+  AcademyOverviewPage,
+} from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
@@ -66,7 +70,6 @@ const AcademyPagePlaceholder = ({ title }) => (
 );
 
 const academyChildRoutes = [
-  { path: routePath.academy.overview, title: "My overview" },
   { path: routePath.academy.courses, title: "Course Overview" },
   { path: routePath.academy.resources, title: "Academy resources" },
   { path: routePath.academy.account, title: "Account" },
@@ -232,6 +235,11 @@ const App = () => {
 
             {/* Academy (authenticated) */}
             <Route element={<AcademyLayout />}>
+              <Route
+                exact
+                path={routePath.academy.overview}
+                element={<AcademyOverviewPage />}
+              />
               {academyChildRoutes.map(({ path, title }) => (
                 <Route
                   key={path}
