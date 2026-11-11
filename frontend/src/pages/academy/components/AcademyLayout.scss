@@ -192,6 +192,21 @@ $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
       object-fit: contain;
     }
   }
+
+  // FE-01: the shell must render cleanly down to 1024px
+  @media (max-width: 1024px) {
+    .academy-shell-content {
+      padding: 20px 24px;
+    }
+
+    .academy-footer-partners {
+      gap: 24px;
+
+      .academy-footer-partner-logo {
+        max-width: 170px;
+      }
+    }
+  }
 }
 
 .academy-chatbot-button {
@@ -245,9 +260,9 @@ $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
 
 // TabletGothic/RocGrotesk are forced with `!important` in many places
 // (headings, cards, ...). Academy sidebar and page content use Inter; the
-// shared footer keeps the global fonts.
+// shared footer keeps the global fonts. Code blocks keep their monospace font.
 #root .academy-shell .academy-shell-body,
-#root .academy-shell .academy-shell-body *:not(.anticon) {
+#root .academy-shell .academy-shell-body *:not(.anticon):not(code):not(pre) {
   font-family: $academy-font-family !important;
 }
 

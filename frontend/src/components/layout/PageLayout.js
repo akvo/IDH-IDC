@@ -199,6 +199,7 @@ const PageHeader = ({ isLoggedIn }) => {
                   backgroundColor: "#f0f2f5",
                   color: "#1a1a1a",
                   fontWeight: 600,
+                  flexShrink: 0,
                   marginLeft: isMobile ? 0 : 16,
                 }}
               >
