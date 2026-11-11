@@ -1,6 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { Cookies } from "react-cookie";
 import { Modal } from "antd";
 import { UserState } from "../../../store";
 import PageLayout, { PageHeader, getInitials } from "../PageLayout";
@@ -20,6 +21,7 @@ describe("PageLayout Component & Header Navigation", () => {
         s.email = "";
         s.role = "";
         s.tools = [];
+        s.user_profile = null;
       });
     });
   });
@@ -365,5 +367,77 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(screen.getByTestId("dashboard-content")).toBeInTheDocument();
       expect(screen.getByTestId("layout-header")).toBeInTheDocument();
     });
+  });
+});
+
+describe("PageLayout header on Academy pages", () => {
+  const cookies = new Cookies();
+
+  const renderAt = (path) =>
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <PageLayout>
+          <div>content</div>
+        </PageLayout>
+      </MemoryRouter>
+    );
+
+  const getSelectedNavText = () =>
+    Array.from(
+      document.querySelectorAll(".navigation-container .ant-menu-item-selected")
+    ).map((el) => el.textContent);
+
+  beforeEach(() => {
+    window.innerWidth = 1024;
+    act(() => {
+      cookies.set("AUTH_TOKEN", "token", { path: "/" });
+      UserState.update((s) => {
+        s.id = 1;
+        s.active = true;
+        s.fullname = "Kole Johnson";
+        s.user_profile = null;
+      });
+    });
+  });
+
+  afterEach(() => {
+    act(() => {
+      cookies.remove("AUTH_TOKEN", { path: "/" });
+      UserState.update((s) => {
+        s.id = 0;
+        s.active = false;
+        s.fullname = null;
+        s.user_profile = null;
+      });
+    });
+  });
+
+  it("keeps Academy highlighted on nested academy pages", () => {
+    renderAt(routePath.academy.courses);
+    expect(getSelectedNavText()).toEqual(["Academy"]);
+  });
+
+  it("prefers the learner profile name for the avatar initials", () => {
+    act(() => {
+      UserState.update((s) => {
+        s.user_profile = { first_name: "Olivia", last_name: "Reyes" };
+      });
+    });
+    renderAt(routePath.academy.overview);
+    expect(screen.getByTestId("header-avatar-btn")).toHaveTextContent("OR");
+  });
+
+  it("does not show the avatar or a stray '0' when signed out", () => {
+    act(() => {
+      cookies.remove("AUTH_TOKEN", { path: "/" });
+      UserState.update((s) => {
+        s.id = 0;
+        s.active = false;
+      });
+    });
+    renderAt(routePath.academy.overview);
+    expect(screen.queryByTestId("header-avatar-btn")).not.toBeInTheDocument();
+    // A numeric `isLoggedIn` (user id 0) would render a stray "0"
+    expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
 });

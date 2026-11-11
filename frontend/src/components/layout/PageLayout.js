@@ -25,6 +25,7 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import { useWindowDimensions, useSignOut } from "../../hooks";
+import { getUserInitials } from "../../pages/academy/utils";
 
 export const getInitials = (name, mail) => {
   if (name && typeof name === "string" && name.trim()) {
@@ -43,6 +44,13 @@ export const getInitials = (name, mail) => {
 const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
 const { Header, Content } = Layout;
 
+// Keep the top-level menu item active on nested pages, e.g. /academy/courses
+const isAcademyShellPath = (pathname) =>
+  pathname.startsWith(`${routePath.academy.landing}/`);
+
+const getSelectedMenuKey = (pathname) =>
+  isAcademyShellPath(pathname) ? routePath.academy.landing : pathname;
+
 export const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
@@ -53,11 +61,16 @@ export const PageHeader = ({ isLoggedIn }) => {
   const fullname = UserState.useState((s) => s.fullname);
   const email = UserState.useState((s) => s.email);
   const userRole = UserState.useState((s) => s.role);
+  const userProfile = UserState.useState((s) => s.user_profile);
   const rawTools = UserState.useState((s) => s.tools);
   const userTools = useMemo(
     () => (Array.isArray(rawTools) ? rawTools : []),
     [rawTools]
   );
+  const selectedKeys = [getSelectedMenuKey(location.pathname)];
+  const avatarInitials =
+    getUserInitials({ user_profile: userProfile }) ||
+    getInitials(fullname, email);
 
   const hasIdcAccess = userTools.includes("idc");
   const isCurrentIdc =
@@ -130,7 +143,7 @@ export const PageHeader = ({ isLoggedIn }) => {
       {
         testid: "nav-menu-academy",
         label: "Academy",
-        key: "/academy",
+        key: routePath.academy.landing,
       },
       {
         testid: "nav-menu-tools-and-resources",
@@ -323,7 +336,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                     data-testid="drawer-user-card"
                   >
                     <Avatar className="drawer-avatar" size={40}>
-                      {getInitials(fullname, email)}
+                      {avatarInitials}
                     </Avatar>
                     <div className="drawer-user-details">
                       <div
@@ -382,7 +395,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                   mode="inline"
                   items={menuItems}
                   onClick={handleMenuClick}
-                  selectedKeys={[location.pathname]}
+                  selectedKeys={selectedKeys}
                 />
 
                 {isLoggedIn ? (
@@ -455,7 +468,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                   justifyContent: "flex-end",
                 }}
                 className="navigation-container"
-                selectedKeys={[location.pathname]}
+                selectedKeys={selectedKeys}
               />
               {isLoggedIn ? (
                 <Dropdown
@@ -484,7 +497,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                       data-testid="header-avatar"
                       size={36}
                     >
-                      {getInitials(fullname, email)}
+                      {avatarInitials}
                     </Avatar>
                   </button>
                 </Dropdown>
@@ -526,7 +539,7 @@ const PageLayout = ({ children }) => {
   }, [cookies?.AUTH_TOKEN]);
 
   const isLoggedIn = useMemo(
-    () => authTokenAvailable || (userId && userActive),
+    () => Boolean(authTokenAvailable || (userId && userActive)),
     [authTokenAvailable, userId, userActive]
   );
 
