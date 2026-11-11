@@ -1,15 +1,13 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { Modal } from "antd";
 import { UserState } from "../../../store";
 import PageLayout, { PageHeader, getInitials } from "../PageLayout";
-import { routePath } from "../../route";
+import { routePath, paths } from "../../route";
 
-jest.mock("../../../hooks/useSignOut", () => {
-  const mockSignOut = jest.fn();
-  return () => mockSignOut;
-});
+const mockSignOut = jest.fn();
+jest.mock("../../../hooks/useSignOut", () => () => mockSignOut);
 
 describe("PageLayout Component & Header Navigation", () => {
   beforeEach(() => {
@@ -60,7 +58,9 @@ describe("PageLayout Component & Header Navigation", () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByTestId("button-signin")).toBeInTheDocument();
+      const signInLink = screen.getByTestId("button-signin");
+      expect(signInLink).toBeInTheDocument();
+      expect(signInLink).toHaveAttribute("href", paths.login);
       expect(screen.queryByTestId("header-avatar-btn")).not.toBeInTheDocument();
       expect(screen.getByText("Tools & Resources")).toBeInTheDocument();
     });
@@ -100,6 +100,12 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(screen.getByText("SWITCH TOOL")).toBeInTheDocument();
       expect(screen.getByTestId("switcher-idc")).toBeInTheDocument();
       expect(screen.getByTestId("switcher-academy")).toBeInTheDocument();
+      expect(screen.getByTestId("switcher-idc").closest("li")).toHaveClass(
+        "tool-item-active"
+      );
+      expect(
+        screen.getByTestId("switcher-academy").closest("li")
+      ).not.toHaveClass("tool-item-active");
       expect(screen.getByText("Log out")).toBeInTheDocument();
 
       // Since user is role "user", Admin Panel should not be rendered
@@ -131,7 +137,13 @@ describe("PageLayout Component & Header Navigation", () => {
     it("handles My Profile and Log out clicks in desktop dropdown", () => {
       render(
         <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
-          <PageHeader isLoggedIn={true} />
+          <Routes>
+            <Route
+              path={paths.login}
+              element={<div data-testid="login-route-target">Login Page</div>}
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
         </MemoryRouter>
       );
 
@@ -140,8 +152,12 @@ describe("PageLayout Component & Header Navigation", () => {
       const profileBtn = screen.getByText("My Profile");
       fireEvent.click(profileBtn);
 
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
       const logoutBtn = screen.getByText("Log out");
       fireEvent.click(logoutBtn);
+
+      expect(mockSignOut).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId("login-route-target")).toBeInTheDocument();
     });
   });
 
@@ -169,6 +185,12 @@ describe("PageLayout Component & Header Navigation", () => {
 
       fireEvent.click(screen.getByTestId("header-avatar-btn"));
 
+      expect(screen.getByTestId("switcher-idc").closest("li")).not.toHaveClass(
+        "tool-item-active"
+      );
+      expect(screen.getByTestId("switcher-academy").closest("li")).toHaveClass(
+        "tool-item-active"
+      );
       expect(screen.getByText("No access")).toBeInTheDocument();
 
       const idcOption = screen.getByTestId("switcher-idc");
@@ -243,6 +265,12 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(screen.getByText("Mobile User")).toBeInTheDocument();
       expect(screen.getByText("mobile@idhtrade.org")).toBeInTheDocument();
       expect(screen.getByTestId("drawer-tool-switcher")).toBeInTheDocument();
+      expect(screen.getByTestId("drawer-switch-idc")).toHaveClass(
+        "tool-item-active"
+      );
+      expect(screen.getByTestId("drawer-switch-academy")).not.toHaveClass(
+        "tool-item-active"
+      );
       expect(screen.getByTestId("button-drawer-profile")).toBeInTheDocument();
       expect(screen.getByTestId("button-drawer-admin")).toBeInTheDocument();
       expect(screen.getByTestId("button-drawer-logout")).toBeInTheDocument();
@@ -291,7 +319,13 @@ describe("PageLayout Component & Header Navigation", () => {
     it("renders Sign In button inside mobile drawer when logged out", () => {
       render(
         <MemoryRouter initialEntries={["/"]}>
-          <PageHeader isLoggedIn={false} />
+          <Routes>
+            <Route
+              path={paths.login}
+              element={<div data-testid="login-route-target">Login Page</div>}
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={false} />} />
+          </Routes>
         </MemoryRouter>
       );
 
@@ -300,6 +334,7 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(drawerLoginBtn).toBeInTheDocument();
       expect(screen.queryByTestId("drawer-user-card")).not.toBeInTheDocument();
       fireEvent.click(drawerLoginBtn);
+      expect(screen.getByTestId("login-route-target")).toBeInTheDocument();
     });
   });
 

@@ -16,7 +16,7 @@ import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import { adminRole } from "../../store/static";
-import { routePath, routePrefix } from "../route";
+import { routePath, routePrefix, paths } from "../route";
 import {
   MenuOutlined,
   UserOutlined,
@@ -106,7 +106,7 @@ export const PageHeader = ({ isLoggedIn }) => {
 
   const handleLogout = useCallback(() => {
     signOut();
-    navigate(routePath.idc.login);
+    navigate(paths.login);
     setDrawerVisible(false);
   }, [signOut, navigate]);
 
@@ -432,7 +432,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                       block
                       className="button-green"
                       onClick={() => {
-                        navigate(routePath.idc.login);
+                        navigate(paths.login);
                         setDrawerVisible(false);
                       }}
                       data-testid="button-drawer-login"
@@ -490,7 +490,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                 </Dropdown>
               ) : (
                 <Link
-                  to={routePath.idc.login}
+                  to={paths.login}
                   className="nav-sign-in"
                   data-testid="button-signin"
                 >
