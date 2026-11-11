@@ -1,39 +1,24 @@
 @import "../../../variables.scss";
 
-// Figma tokens
-$academy-primary: #005ea3; // --color-primary-brand-100
-$academy-text-primary: #000; // --Text-Color-Primary-dark
-$academy-text-muted: #757575;
-$academy-stroke: #e0e0e0; // --Other-Stroke
-$academy-sidebar-bg: #f9fafb;
-$academy-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-  Roboto, "Helvetica Neue", Arial, sans-serif;
-
-// Sidebar grid shared by the search box and the menu items, so the search
-// icon lines up with the menu icons and the placeholder with the labels
-$academy-item-inset: 16px;
-$academy-icon-size: 18px;
-$academy-icon-gap: 12px;
-$academy-item-height: 32px;
-$academy-item-spacing: 6px;
-$academy-section-gap: 16px; // Figma --base
-
-$academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
+@import "../styles/tokens";
 
 .academy-shell {
   font-family: $academy-font-family;
   width: 100%;
-  overflow-x: hidden;
+  // `clip`, not `hidden`: `hidden` makes the shell a scroll container, so the
+  // sticky sidebar would offset from the shell instead of the viewport
+  overflow-x: clip;
   background: $bg-color-white;
 
+  // Grey canvas: the sidebar sits on it and page content floats on top in a
+  // white panel (Figma)
   .academy-shell-body {
     min-height: calc(100vh - #{$academy-header-height});
-    background: $bg-color-white;
+    background: $academy-sidebar-bg;
   }
 
   .academy-sidebar.ant-layout-sider {
     background: $academy-sidebar-bg;
-    border-right: 1px solid $academy-stroke;
 
     // Fill the viewport below the header: navigation pinned to the top,
     // help card + account links pinned to the bottom
@@ -171,7 +156,12 @@ $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
 
   .academy-shell-content {
     min-width: 0;
+    margin-top: $academy-section-gap;
     padding: $default-space-size 32px;
+    border: 1px solid $academy-stroke;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: $academy-panel-radius;
     background: $bg-color-white;
   }
 
