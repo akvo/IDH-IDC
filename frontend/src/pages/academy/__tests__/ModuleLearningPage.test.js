@@ -22,21 +22,39 @@ const chapterTitles = [
 
 const buildModules = ({ chapters = chapterTitles, statuses = {} } = {}) => ({
   total_modules: 2,
+  course_summary_html: "<p>Course summary</p>",
   modules: [
     {
       id: 11,
       order_index: 1,
       title: "The concept of living income",
+      description: "Understand what a living income means.",
       estimated_minutes: 30,
+      icon_theme: "blue",
+      progress_pct: 0,
+      status: "Not started",
+      tags: [{ id: 1, name: "Living income", slug: "living-income" }],
       chapters: chapters.map((title, index) => ({
         id: 101 + index,
         chapter_number: index + 1,
         title,
         estimated_minutes: 5,
         status: statuses[101 + index] || "Not started",
+        tags: [],
       })),
     },
-    { id: 12, order_index: 2, title: "Second module", chapters: [] },
+    {
+      id: 12,
+      order_index: 2,
+      title: "Second module",
+      description: "Second module description.",
+      estimated_minutes: 20,
+      icon_theme: "green",
+      progress_pct: 0,
+      status: "Not started",
+      tags: [],
+      chapters: [],
+    },
   ],
 });
 
@@ -80,6 +98,14 @@ const deferred = () => {
 const saveResponse = (id, status) => ({
   chapter_id: id,
   status: status === "completed" ? "Completed" : "In progress",
+  last_opened_at: "2026-11-10T10:00:00Z",
+  completed_at: status === "completed" ? "2026-11-10T10:05:00Z" : null,
+  module_id: 11,
+  module_progress_pct: status === "completed" ? 33 : 0,
+  module_status: "In progress",
+  course_progress_pct: status === "completed" ? 10 : 0,
+  modules_completed: 0,
+  chapters_completed: status === "completed" ? 1 : 0,
 });
 
 // Completion saves carry no options; view records pass { markOpened: true }
@@ -231,6 +257,20 @@ describe("ModuleLearningPage", () => {
     );
   });
 
+  it("still completes and advances with Next step if recording the view fails", async () => {
+    const view = deferred();
+    academyService.updateChapterProgress.mockReturnValueOnce(view.promise);
+    renderPage();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Next step" }));
+    view.reject({ status: 500, message: "Boom" });
+
+    await waitFor(() =>
+      expect(location()).toHaveTextContent("/academy/modules/11?chapter=102")
+    );
+    expect(completionCalls()).toEqual([[101, "completed"]]);
+  });
+
   it("does not pull the learner back when they leave during a save", async () => {
     const save = deferred();
     renderPage();
@@ -249,6 +289,28 @@ describe("ModuleLearningPage", () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(location()).toHaveTextContent("/academy/courses");
+  });
+
+  it("suppresses client error toasts when a save rejects after leaving", async () => {
+    const error = jest.spyOn(message, "error").mockImplementation(() => {});
+    const save = deferred();
+    renderPage();
+    const next = await screen.findByRole("button", { name: "Next step" });
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledTimes(1)
+    );
+    academyService.updateChapterProgress.mockReturnValueOnce(save.promise);
+
+    fireEvent.click(next);
+    await waitFor(() => expect(completionCalls()).toHaveLength(1));
+    fireEvent.click(screen.getByRole("link", { name: "Course overview" }));
+    expect(location()).toHaveTextContent("/academy/courses");
+
+    save.reject({ status: 404, message: "Chapter not found" });
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
   });
 
   it("moves on and records the next view without completing on Skip", async () => {
@@ -300,6 +362,51 @@ describe("ModuleLearningPage", () => {
       expect(location()).toHaveTextContent("/academy/overview")
     );
     expect(completionCalls()).toEqual([[103, "completed"]]);
+  });
+
+  it("waits for the completion save before navigating on Finish module", async () => {
+    const save = deferred();
+    renderPage("/academy/modules/11?chapter=103");
+    const finish = await screen.findByRole("button", {
+      name: "Finish module",
+    });
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        ...viewCall(103, "in_progress")
+      )
+    );
+    academyService.updateChapterProgress.mockReturnValueOnce(save.promise);
+
+    fireEvent.click(finish);
+    await waitFor(() => expect(completionCalls()).toHaveLength(1));
+    expect(finish).toHaveClass("ant-btn-loading");
+    expect(location()).toHaveTextContent("/academy/modules/11?chapter=103");
+
+    save.resolve(saveResponse(103, "completed"));
+    await waitFor(() =>
+      expect(location()).toHaveTextContent("/academy/overview")
+    );
+  });
+
+  it("renders Back to the overview and Finish module without Skip for a single-chapter module", async () => {
+    academyService.getModules.mockResolvedValue(
+      buildModules({ chapters: ["Only chapter"] })
+    );
+    renderPage();
+
+    const finish = await screen.findByRole("button", {
+      name: "Finish module",
+    });
+    expect(
+      screen.getByRole("button", { name: "Back to the overview" })
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Skip" })).toBeNull();
+
+    fireEvent.click(finish);
+    await waitFor(() =>
+      expect(location()).toHaveTextContent("/academy/overview")
+    );
+    expect(completionCalls()).toEqual([[101, "completed"]]);
   });
 
   it("shows a client error from saving progress", async () => {

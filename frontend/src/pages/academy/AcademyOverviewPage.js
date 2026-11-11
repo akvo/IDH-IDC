@@ -21,18 +21,26 @@ import "./AcademyOverviewPage.scss";
 // `id` of the roadmap section on the public Academy landing page
 const LANDING_ROADMAP_ID = "academy-roadmap";
 
-const withChapterStatuses = (overview, statuses) => ({
-  ...overview,
-  recently_opened: overview.recently_opened.map((chapter) =>
-    statuses.has(chapter.id)
-      ? { ...chapter, status: statuses.get(chapter.id) }
-      : chapter
-  ),
-});
+const withChapterStatuses = (overview, statuses) => {
+  if (!overview?.recently_opened) {
+    return overview;
+  }
+  return {
+    ...overview,
+    recently_opened: overview.recently_opened.map((chapter) =>
+      statuses.has(chapter.id)
+        ? { ...chapter, status: statuses.get(chapter.id) }
+        : chapter
+    ),
+  };
+};
 
 // Applies the KPIs recomputed by POST /chapters/{id}/progress, so the cards
 // are correct even if the follow-up overview refresh fails
 const withProgressTotals = (overview, progress) => {
+  if (!overview?.metrics || !progress) {
+    return overview;
+  }
   const { metrics, modules = [] } = overview;
   return {
     ...overview,

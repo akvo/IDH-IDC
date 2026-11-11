@@ -217,6 +217,37 @@ describe("AcademyOverviewPage", () => {
     ]);
   });
 
+  it("renders all-zero metrics and empty roadmap/recent states cleanly", async () => {
+    academyService.getOverview.mockResolvedValue(
+      buildOverview({
+        continue_chapter_id: null,
+        metrics: {
+          academy_progress_pct: 0,
+          modules_completed: 0,
+          total_modules: 6,
+          modules_completed_pct: 0,
+          chapters_completed: 0,
+          total_chapters: 27,
+          chapters_completed_pct: 0,
+        },
+        modules: [],
+        recently_opened: [],
+      })
+    );
+    await renderLoadedPage();
+
+    const cards = screen.getAllByTestId("academy-metric-card");
+    expect(cards.map((card) => card.textContent)).toEqual([
+      expect.stringContaining("Academy progress0%"),
+      expect.stringContaining("Modules completed0/6"),
+      expect.stringContaining("Chapters completed0 of 27"),
+    ]);
+    expect(screen.queryAllByTestId("academy-module-card")).toHaveLength(0);
+    expect(
+      screen.getByText(/haven't opened any chapters yet/i)
+    ).toBeInTheDocument();
+  });
+
   it("renders the six roadmap modules with status, tags and progress", async () => {
     await renderLoadedPage();
     const cards = screen.getAllByTestId("academy-module-card");
@@ -348,11 +379,41 @@ describe("AcademyOverviewPage", () => {
       screen.getByText("40%", { selector: ".academy-metric-value" })
     ).toBeInTheDocument();
     expect(screen.getByText("3/6")).toBeInTheDocument();
+    const metricCards = screen.getAllByTestId("academy-metric-card");
+    expect(
+      metricCards[1].querySelector(".ant-progress-text")
+    ).toHaveTextContent("50%");
+    const module2 = within(screen.getAllByTestId("academy-module-card")[1]);
+    expect(module2.getByText("100%")).toBeInTheDocument();
+    expect(module2.getByText("Completed")).toBeInTheDocument();
+
     await waitFor(() =>
       expect(academyService.getOverview).toHaveBeenCalledTimes(2)
     );
     // The failed refresh keeps the applied numbers
     expect(screen.getByText("7 of 27")).toBeInTheDocument();
+  });
+
+  it("keeps the checkbox checked and shows no error toast when progress save resolves with null", async () => {
+    const errorToast = jest
+      .spyOn(message, "error")
+      .mockImplementation(() => {});
+    academyService.updateChapterProgress.mockResolvedValue(null);
+    await renderLoadedPage();
+    academyService.getOverview.mockRejectedValue({
+      status: 500,
+      message: "Offline",
+    });
+
+    fireEvent.click(getChapterCheckbox("Why living income matters"));
+
+    await waitFor(() =>
+      expect(academyService.getOverview).toHaveBeenCalledTimes(2)
+    );
+    expect(getChapterCheckbox("Why living income matters")).toBeChecked();
+    expect(getChapterCheckbox("Why living income matters")).toBeEnabled();
+    expect(screen.getByText("6 of 27")).toBeInTheDocument();
+    expect(errorToast).not.toHaveBeenCalled();
   });
 
   it("moves an unticked chapter back to in progress", async () => {
@@ -691,6 +752,74 @@ describe("AcademyOverviewPage", () => {
       const dialog = await screen.findByRole("dialog");
       fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
       expect(request.signal.aborted).toBe(true);
+    });
+
+    it("resets back to page 1 when closed and reopened", async () => {
+      const dialog = await openHistory();
+      fireEvent.click(within(dialog).getByTitle("2"));
+      expect(
+        await within(dialog).findByText("History chapter page 2")
+      ).toBeInTheDocument();
+
+      fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      await waitFor(() =>
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+      );
+
+      academyService.getHistory.mockClear();
+      fireEvent.click(screen.getByRole("button", { name: "View history" }));
+      const reopened = await screen.findByRole("dialog");
+      expect(
+        await within(reopened).findByText("History chapter page 1")
+      ).toBeInTheDocument();
+      expect(academyService.getHistory).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 1, pageSize: 10 })
+      );
+    });
+
+    it("recovers from a page-2 error when clicking page 1", async () => {
+      const dialog = await openHistory();
+      academyService.getHistory.mockRejectedValueOnce({
+        status: 403,
+        message: "Not allowed",
+      });
+      fireEvent.click(within(dialog).getByTitle("2"));
+      expect(await within(dialog).findByText("Not allowed")).toBeVisible();
+
+      fireEvent.click(within(dialog).getByTitle("1"));
+      expect(
+        await within(dialog).findByText("History chapter page 1")
+      ).toBeInTheDocument();
+      expect(within(dialog).queryByText("Not allowed")).not.toBeInTheDocument();
+      expect(academyService.getHistory).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 1 })
+      );
+    });
+
+    it("aborts the previous page request on rapid page changes", async () => {
+      academyService.getHistory.mockResolvedValueOnce(historyPage(1, 25));
+      const dialog = await openHistory();
+      const requests = [];
+      academyService.getHistory.mockImplementation(({ signal }) => {
+        const request = deferred(signal);
+        requests.push(request);
+        return request.promise;
+      });
+
+      fireEvent.click(within(dialog).getByTitle("2"));
+      fireEvent.click(within(dialog).getByTitle("3"));
+
+      expect(requests).toHaveLength(2);
+      expect(requests[0].signal.aborted).toBe(true);
+      expect(requests[1].signal.aborted).toBe(false);
+
+      requests[1].resolve(historyPage(3, 25));
+      expect(
+        await within(dialog).findByText("History chapter page 3")
+      ).toBeInTheDocument();
+      expect(
+        within(dialog).queryByText("History chapter page 2")
+      ).not.toBeInTheDocument();
     });
   });
 });
