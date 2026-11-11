@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import "./landing.scss";
 import { Row, Col, Card, Image } from "antd";
+import { Navigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import { UserState } from "../../store";
+import { routePath } from "../../components/route";
 import {
   LandingInfoHelpIcon,
   LandingInfoEstimateIcon,
@@ -175,6 +179,29 @@ const FAQSection = () => {
 
 const Landing = () => {
   const { isMobile } = useWindowDimensions();
+  const [cookies] = useCookies(["AUTH_TOKEN"]);
+  const userId = UserState.useState((s) => s.id);
+  const userActive = UserState.useState((s) => s.active);
+  const rawTools = UserState.useState((s) => s.tools);
+
+  const userTools = useMemo(
+    () => (Array.isArray(rawTools) ? rawTools : []),
+    [rawTools]
+  );
+  const authTokenAvailable = Boolean(
+    cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined"
+  );
+  const isAuthenticated = Boolean(authTokenAvailable || (userId && userActive));
+
+  if (isAuthenticated && !userTools.includes("idc")) {
+    return (
+      <Navigate
+        to={routePath.academy.landing}
+        state={{ unauthorizedIDC: true }}
+        replace
+      />
+    );
+  }
 
   return (
     <div
