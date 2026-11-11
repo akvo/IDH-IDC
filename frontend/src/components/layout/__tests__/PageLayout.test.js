@@ -86,5 +86,7 @@ describe("PageLayout header on Academy pages", () => {
     });
     renderAt(routePath.academy.overview);
     expect(screen.queryByTestId("header-user-avatar")).not.toBeInTheDocument();
+    // A numeric `isLoggedIn` (user id 0) would render a stray "0"
+    expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
 });

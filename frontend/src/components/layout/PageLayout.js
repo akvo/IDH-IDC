@@ -234,7 +234,7 @@ const PageLayout = ({ children }) => {
   }, [cookies?.AUTH_TOKEN]);
 
   const isLoggedIn = useMemo(
-    () => authTokenAvailable || (userId && userActive),
+    () => Boolean(authTokenAvailable || (userId && userActive)),
     [authTokenAvailable, userId, userActive]
   );
 
