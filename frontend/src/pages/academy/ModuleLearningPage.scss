@@ -162,6 +162,10 @@
     background: transparent;
     cursor: pointer;
 
+    &:disabled {
+      cursor: not-allowed;
+    }
+
     &--reached {
       border-color: $academy-learning-text;
       background: $academy-learning-text;
@@ -170,6 +174,22 @@
     &:focus-visible {
       outline: 2px solid $academy-learning-accent;
       outline-offset: 2px;
+    }
+  }
+
+  // Laptop screens (1280-1366px wide, ~720px tall): keep the footer above
+  // the fold
+  @media (max-width: $academy-compact-breakpoint) {
+    .academy-learning-stage {
+      padding-bottom: 20px;
+    }
+
+    .academy-learning-card {
+      min-height: 360px;
+    }
+
+    h1.academy-learning-title {
+      font-size: 20px;
     }
   }
 

@@ -20,7 +20,7 @@ const chapterTitles = [
   "Measuring actual income",
 ];
 
-const buildModules = ({ chapters = chapterTitles } = {}) => ({
+const buildModules = ({ chapters = chapterTitles, statuses = {} } = {}) => ({
   total_modules: 2,
   modules: [
     {
@@ -33,7 +33,7 @@ const buildModules = ({ chapters = chapterTitles } = {}) => ({
         chapter_number: index + 1,
         title,
         estimated_minutes: 5,
-        status: "Not started",
+        status: statuses[101 + index] || "Not started",
       })),
     },
     { id: 12, order_index: 2, title: "Second module", chapters: [] },
@@ -66,13 +66,37 @@ const renderPage = (path = "/academy/modules/11") =>
   );
 
 const location = () => screen.getByTestId("location");
+
+const deferred = () => {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+};
+
+const saveResponse = (id, status) => ({
+  chapter_id: id,
+  status: status === "completed" ? "Completed" : "In progress",
+});
+
+// Completion saves carry no options; view records pass { markOpened: true }
+const completionCalls = () =>
+  academyService.updateChapterProgress.mock.calls.filter(
+    (call) => call.length === 2
+  );
+const viewCall = (id, status) => [id, status, { markOpened: true }];
 const title = () => screen.getByRole("heading", { level: 1 });
 
 describe("ModuleLearningPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     academyService.getModules.mockResolvedValue(buildModules());
-    academyService.updateChapterProgress.mockResolvedValue({});
+    academyService.updateChapterProgress.mockImplementation((id, status) =>
+      Promise.resolve(saveResponse(id, status))
+    );
   });
 
   it("shows a skeleton while the module loads", async () => {
@@ -116,24 +140,128 @@ describe("ModuleLearningPage", () => {
     await waitFor(() => expect(title()).toHaveTextContent("Why living"));
   });
 
+  it("records the opened chapter as viewed", async () => {
+    renderPage();
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        ...viewCall(101, "in_progress")
+      )
+    );
+  });
+
+  it("keeps a completed chapter completed when recording its view", async () => {
+    academyService.getModules.mockResolvedValue(
+      buildModules({ statuses: { 101: "Completed" } })
+    );
+    renderPage();
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        ...viewCall(101, "completed")
+      )
+    );
+  });
+
   it("completes the chapter and moves on with Next step", async () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "Next step" }));
 
-    expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
-      101,
-      "completed"
+    await waitFor(() =>
+      expect(location()).toHaveTextContent("/academy/modules/11?chapter=102")
     );
-    expect(location()).toHaveTextContent("/academy/modules/11?chapter=102");
+    expect(completionCalls()).toEqual([[101, "completed"]]);
     expect(title()).toHaveTextContent("Defining the benchmark");
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        ...viewCall(102, "in_progress")
+      )
+    );
   });
 
-  it("moves on without saving progress with Skip", async () => {
+  it("sends completed when revisiting a chapter completed on this page", async () => {
+    renderPage();
+    fireEvent.click(await screen.findByRole("button", { name: "Next step" }));
+    await waitFor(() => expect(location()).toHaveTextContent("?chapter=102"));
+    academyService.updateChapterProgress.mockClear();
+
+    fireEvent.click(screen.getByRole("button", { name: "Previous" }));
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        ...viewCall(101, "completed")
+      )
+    );
+  });
+
+  it("locks the footer until the save lands, then moves on", async () => {
+    const save = deferred();
+    renderPage();
+    const next = await screen.findByRole("button", { name: "Next step" });
+    academyService.updateChapterProgress.mockReturnValueOnce(save.promise);
+
+    fireEvent.click(next);
+    await waitFor(() => expect(completionCalls()).toHaveLength(1));
+    expect(next).toHaveClass("ant-btn-loading");
+    expect(screen.getByRole("button", { name: "Skip" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Back to the overview" })
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /Chapter 2 of 3/ })
+    ).toBeDisabled();
+    fireEvent.click(next);
+    expect(completionCalls()).toHaveLength(1);
+    expect(location()).toHaveTextContent("/academy/modules/11");
+    expect(location()).not.toHaveTextContent("chapter=102");
+
+    save.resolve(saveResponse(101, "completed"));
+    await waitFor(() => expect(location()).toHaveTextContent("?chapter=102"));
+  });
+
+  it("waits for the chapter's view record before completing it", async () => {
+    const view = deferred();
+    academyService.updateChapterProgress.mockReturnValueOnce(view.promise);
+    renderPage();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Next step" }));
+    await Promise.resolve();
+    expect(completionCalls()).toHaveLength(0);
+
+    view.resolve(saveResponse(101, "in_progress"));
+    await waitFor(() =>
+      expect(completionCalls()).toEqual([[101, "completed"]])
+    );
+  });
+
+  it("does not pull the learner back when they leave during a save", async () => {
+    const save = deferred();
+    renderPage();
+    const next = await screen.findByRole("button", { name: "Next step" });
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledTimes(1)
+    );
+    academyService.updateChapterProgress.mockReturnValueOnce(save.promise);
+
+    fireEvent.click(next);
+    await waitFor(() => expect(completionCalls()).toHaveLength(1));
+    fireEvent.click(screen.getByRole("link", { name: "Course overview" }));
+    expect(location()).toHaveTextContent("/academy/courses");
+
+    save.resolve(saveResponse(101, "completed"));
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(location()).toHaveTextContent("/academy/courses");
+  });
+
+  it("moves on and records the next view without completing on Skip", async () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "Skip" }));
 
-    expect(academyService.updateChapterProgress).not.toHaveBeenCalled();
     expect(location()).toHaveTextContent("?chapter=102");
+    await waitFor(() =>
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        ...viewCall(102, "in_progress")
+      )
+    );
+    expect(completionCalls()).toHaveLength(0);
   });
 
   it("goes back a step with Previous", async () => {
@@ -166,11 +294,12 @@ describe("ModuleLearningPage", () => {
     expect(screen.queryByRole("button", { name: "Skip" })).toBeNull();
 
     fireEvent.click(finish);
-    expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
-      103,
-      "completed"
+    // Only after the save, so the overview loads the new KPIs
+    expect(location()).toHaveTextContent("/academy/modules/11");
+    await waitFor(() =>
+      expect(location()).toHaveTextContent("/academy/overview")
     );
-    expect(location()).toHaveTextContent("/academy/overview");
+    expect(completionCalls()).toEqual([[103, "completed"]]);
   });
 
   it("shows a client error from saving progress", async () => {
@@ -185,6 +314,9 @@ describe("ModuleLearningPage", () => {
     await waitFor(() =>
       expect(error).toHaveBeenCalledWith("Chapter not found")
     );
+    // Stays on the step so the learner can try again
+    expect(location()).not.toHaveTextContent("chapter=102");
+    expect(screen.getByRole("button", { name: "Next step" })).toBeEnabled();
     error.mockRestore();
   });
 
@@ -197,10 +329,12 @@ describe("ModuleLearningPage", () => {
     renderPage();
     fireEvent.click(await screen.findByRole("button", { name: "Next step" }));
 
+    await waitFor(() => expect(completionCalls()).toHaveLength(1));
     await waitFor(() =>
-      expect(academyService.updateChapterProgress).toHaveBeenCalled()
+      expect(screen.getByRole("button", { name: "Next step" })).not.toHaveClass(
+        "ant-btn-loading"
+      )
     );
-    await Promise.resolve();
     expect(error).not.toHaveBeenCalled();
     error.mockRestore();
   });

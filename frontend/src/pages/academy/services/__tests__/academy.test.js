@@ -38,11 +38,28 @@ describe("academy service", () => {
 
   it("updateChapterProgress posts the new status", async () => {
     mock
-      .onPost("academy/chapters/7/progress", { status: "completed" })
+      .onPost("academy/chapters/7/progress", {
+        status: "completed",
+        mark_opened: false,
+      })
       .reply(200, { chapter_id: 7, status: "Completed" });
     await expect(
       academyService.updateChapterProgress(7, "completed")
     ).resolves.toEqual({ chapter_id: 7, status: "Completed" });
+  });
+
+  it("updateChapterProgress can record a chapter view", async () => {
+    mock
+      .onPost("academy/chapters/7/progress", {
+        status: "in_progress",
+        mark_opened: true,
+      })
+      .reply(200, { chapter_id: 7, status: "In progress" });
+    await expect(
+      academyService.updateChapterProgress(7, "in_progress", {
+        markOpened: true,
+      })
+    ).resolves.toEqual({ chapter_id: 7, status: "In progress" });
   });
 
   it("getHistory sends page and page_size", async () => {

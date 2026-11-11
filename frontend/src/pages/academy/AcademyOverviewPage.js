@@ -30,6 +30,35 @@ const withChapterStatuses = (overview, statuses) => ({
   ),
 });
 
+// Applies the KPIs recomputed by POST /chapters/{id}/progress, so the cards
+// are correct even if the follow-up overview refresh fails
+const withProgressTotals = (overview, progress) => {
+  const { metrics, modules = [] } = overview;
+  return {
+    ...overview,
+    metrics: {
+      ...metrics,
+      academy_progress_pct: progress.course_progress_pct,
+      chapters_completed: progress.chapters_completed,
+      chapters_completed_pct: progress.course_progress_pct,
+      modules_completed: progress.modules_completed,
+      // Not in the response; the refresh replaces it with the server value
+      modules_completed_pct: metrics.total_modules
+        ? Math.round((progress.modules_completed / metrics.total_modules) * 100)
+        : 0,
+    },
+    modules: modules.map((module) =>
+      module.id === progress.module_id
+        ? {
+            ...module,
+            progress_pct: progress.module_progress_pct,
+            status: progress.module_status,
+          }
+        : module
+    ),
+  };
+};
+
 const AcademyOverviewPage = () => {
   const navigate = useNavigate();
   const [overview, setOverview] = useState(null);
@@ -107,9 +136,11 @@ const AcademyOverviewPage = () => {
             ? CHAPTER_API_STATUS.completed
             : CHAPTER_API_STATUS.inProgress
         )
-        .then(() => {
+        .then((progress) => {
           settle();
-          // Pick up the recomputed KPIs and module progress
+          setOverview((current) => withProgressTotals(current, progress));
+          // Picks up the new "Recently opened" order; a failure keeps the
+          // KPIs applied above
           loadOverview({ silent: true });
           return true;
         })

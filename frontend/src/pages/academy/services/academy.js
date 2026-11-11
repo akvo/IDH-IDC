@@ -65,10 +65,15 @@ const academyService = {
   // Modules with their nested chapters, in curriculum order
   getModules: ({ signal } = {}) =>
     academyClient.get("academy/modules", { signal }).then((res) => res.data),
-  // status: "not_started" | "in_progress" | "completed"
-  updateChapterProgress: (chapterId, status) =>
+  // status: "not_started" | "in_progress" | "completed". The API always
+  // writes `status`, so send the chapter's current one when only recording a
+  // view (`markOpened` sets last_opened_at for Recently opened / history)
+  updateChapterProgress: (chapterId, status, { markOpened = false } = {}) =>
     academyClient
-      .post(`academy/chapters/${chapterId}/progress`, { status })
+      .post(`academy/chapters/${chapterId}/progress`, {
+        status,
+        mark_opened: markOpened,
+      })
       .then((res) => res.data),
   getHistory: ({ page = 1, pageSize = 10, signal } = {}) =>
     academyClient

@@ -25,6 +25,7 @@ const ChapterHistoryModal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pendingChapterIds, setPendingChapterIds] = useState([]);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!open) {
@@ -48,11 +49,13 @@ const ChapterHistoryModal = ({
         if (isRequestCancelled(err)) {
           return;
         }
+        // Drop the previous page's rows; keep the total so the pager stays
+        setHistory((current) => ({ ...current, data: [] }));
         setError(err.message);
         setLoading(false);
       });
     return () => controller.abort();
-  }, [open, page]);
+  }, [open, page, reloadKey]);
 
   const setChapterStatus = (chapterId, status) =>
     setHistory((current) => ({
@@ -113,6 +116,11 @@ const ChapterHistoryModal = ({
           showIcon
           message={error}
           className="academy-history-error"
+          action={
+            <Button size="small" onClick={() => setReloadKey((key) => key + 1)}>
+              Try again
+            </Button>
+          }
         />
       )}
       <Spin spinning={loading}>

@@ -87,6 +87,19 @@ const buildOverview = (overrides = {}) => ({
   ...overrides,
 });
 
+// POST /chapters/{id}/progress response; defaults match buildOverview()
+const progressResponse = (overrides = {}) => ({
+  chapter_id: 101,
+  status: "Completed",
+  module_id: 11,
+  module_progress_pct: 100,
+  module_status: "Completed",
+  course_progress_pct: 35,
+  modules_completed: 2,
+  chapters_completed: 6,
+  ...overrides,
+});
+
 const historyPage = (page, total = 12) => ({
   total,
   page,
@@ -154,7 +167,7 @@ const getChapterCheckbox = (title) =>
 describe("AcademyOverviewPage", () => {
   beforeEach(() => {
     academyService.getOverview.mockResolvedValue(buildOverview());
-    academyService.updateChapterProgress.mockResolvedValue({});
+    academyService.updateChapterProgress.mockResolvedValue(progressResponse());
     academyService.getHistory.mockImplementation(({ page }) =>
       Promise.resolve(historyPage(page))
     );
@@ -304,11 +317,42 @@ describe("AcademyOverviewPage", () => {
         metrics: { ...buildOverview().metrics, chapters_completed: 7 },
       })
     );
-    resolveUpdate({});
+    resolveUpdate(progressResponse({ chapters_completed: 7 }));
 
     await screen.findByText("7 of 27");
     expect(academyService.getOverview).toHaveBeenCalledTimes(2);
     expect(getChapterCheckbox("Why living income matters")).toBeEnabled();
+  });
+
+  it("applies the saved KPIs even when the follow-up refresh fails", async () => {
+    await renderLoadedPage();
+    academyService.getOverview.mockRejectedValue({
+      status: 500,
+      message: "Boom",
+    });
+    academyService.updateChapterProgress.mockResolvedValue(
+      progressResponse({
+        course_progress_pct: 40,
+        chapters_completed: 7,
+        modules_completed: 3,
+        module_id: 12,
+        module_progress_pct: 100,
+        module_status: "Completed",
+      })
+    );
+
+    fireEvent.click(getChapterCheckbox("Why living income matters"));
+
+    expect(await screen.findByText("7 of 27")).toBeInTheDocument();
+    expect(
+      screen.getByText("40%", { selector: ".academy-metric-value" })
+    ).toBeInTheDocument();
+    expect(screen.getByText("3/6")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(academyService.getOverview).toHaveBeenCalledTimes(2)
+    );
+    // The failed refresh keeps the applied numbers
+    expect(screen.getByText("7 of 27")).toBeInTheDocument();
   });
 
   it("moves an unticked chapter back to in progress", async () => {
@@ -438,7 +482,7 @@ describe("AcademyOverviewPage", () => {
     });
 
     it("keeps a pending tick when another chapter's refresh lands first", async () => {
-      saves[101].resolve({});
+      saves[101].resolve(progressResponse());
       await waitFor(() => expect(refreshes).toHaveLength(1));
 
       // The server has saved 101 but not yet 104
@@ -453,9 +497,9 @@ describe("AcademyOverviewPage", () => {
     });
 
     it("drops a superseded refresh so only the latest response is shown", async () => {
-      saves[101].resolve({});
+      saves[101].resolve(progressResponse());
       await waitFor(() => expect(refreshes).toHaveLength(1));
-      saves[104].resolve({});
+      saves[104].resolve(progressResponse());
       await waitFor(() => expect(refreshes).toHaveLength(2));
 
       expect(refreshes[0].signal.aborted).toBe(true);
@@ -591,6 +635,33 @@ describe("AcademyOverviewPage", () => {
       expect(
         within(dialog).queryByText("You haven't opened any chapters yet.")
       ).not.toBeInTheDocument();
+    });
+
+    it("drops the previous page's rows when a page fails, then retries", async () => {
+      const dialog = await openHistory();
+      academyService.getHistory.mockRejectedValueOnce({
+        status: 403,
+        message: "Not allowed",
+      });
+      fireEvent.click(within(dialog).getByTitle("2"));
+
+      expect(await within(dialog).findByText("Not allowed")).toBeVisible();
+      expect(
+        within(dialog).queryByText("History chapter page 1")
+      ).not.toBeInTheDocument();
+      // The pager stays so the learner can go back
+      expect(within(dialog).getByTitle("1")).toBeInTheDocument();
+
+      fireEvent.click(
+        within(dialog).getByRole("button", { name: "Try again" })
+      );
+      expect(
+        await within(dialog).findByText("History chapter page 2")
+      ).toBeInTheDocument();
+      expect(within(dialog).queryByText("Not allowed")).not.toBeInTheDocument();
+      expect(academyService.getHistory).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 2 })
+      );
     });
 
     it("shows an empty state without history", async () => {

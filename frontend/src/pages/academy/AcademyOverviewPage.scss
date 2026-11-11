@@ -322,6 +322,51 @@ $academy-icon-themes: (
     font-size: 14px;
     line-height: 20px;
   }
+
+  // Laptop screens (1280-1366px wide, ~720px tall): beside the sidebar the
+  // desktop scale pushes the roadmap below the fold, so step it down
+  @media (max-width: $academy-compact-breakpoint) {
+    gap: 24px;
+
+    .academy-overview-greeting {
+      font-size: 26px;
+      line-height: 34px;
+    }
+
+    .academy-metric-value {
+      font-size: 26px;
+      line-height: 34px;
+    }
+
+    .academy-overview-section {
+      gap: 16px;
+    }
+
+    .academy-section-title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .academy-section-subtitle,
+    .academy-module-number {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .academy-module-title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .academy-roadmap-cta {
+      padding: 20px;
+    }
+
+    .academy-roadmap-cta-title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+  }
 }
 
 // Status pills: on the page and inside the history modal portal (outside

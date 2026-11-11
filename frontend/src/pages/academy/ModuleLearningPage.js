@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, ConfigProvider, Result, Skeleton, message } from "antd";
 import {
   DownloadOutlined,
@@ -13,7 +13,7 @@ import {
 } from "react-router-dom";
 import ChatbotFloatButton from "./components/ChatbotFloatButton";
 import academyService, { isRequestCancelled } from "./services/academy";
-import { ACADEMY_THEME, CHAPTER_API_STATUS } from "./utils";
+import { ACADEMY_THEME, CHAPTER_API_STATUS, PROGRESS_STATUS } from "./utils";
 import { routePath } from "../../components/route";
 import "./ModuleLearningPage.scss";
 
@@ -28,6 +28,34 @@ const ModuleLearningPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [saving, setSaving] = useState(false);
+  // Latest known status per chapter, updated by this page's own saves. The
+  // progress API always writes the status it is sent, so recording a view
+  // must send the current one or it would undo a completion.
+  const chapterStatuses = useRef(new Map());
+  // In-flight view record per chapter; completing waits on it so the two
+  // writes for one chapter cannot reach the server out of order
+  const viewRequests = useRef(new Map());
+  // Set on unmount so a save that finishes after the learner left does not
+  // navigate them back or toast on another page
+  const hasLeft = useRef(false);
+
+  const chapters = module?.chapters || [];
+  // `?chapter=` keeps the step in the URL so refresh and browser back work
+  const requestedIndex = chapters.findIndex(
+    ({ id }) => String(id) === searchParams.get("chapter")
+  );
+  const stepIndex = Math.max(requestedIndex, 0);
+  const chapter = chapters[stepIndex];
+  const chapterId = chapter?.id;
+
+  useEffect(() => {
+    // Reset too: StrictMode remounts once in development
+    hasLeft.current = false;
+    return () => {
+      hasLeft.current = true;
+    };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -36,7 +64,11 @@ const ModuleLearningPage = () => {
     academyService
       .getModules({ signal: controller.signal })
       .then(({ modules = [] } = {}) => {
-        setModule(modules.find(({ id }) => String(id) === moduleId) || null);
+        const found = modules.find(({ id }) => String(id) === moduleId);
+        chapterStatuses.current = new Map(
+          (found?.chapters || []).map(({ id, status }) => [id, status])
+        );
+        setModule(found || null);
         setLoading(false);
       })
       .catch((err) => {
@@ -48,6 +80,28 @@ const ModuleLearningPage = () => {
       });
     return () => controller.abort();
   }, [moduleId, reloadKey]);
+
+  // Record every chapter step the learner views (Recently opened / history)
+  useEffect(() => {
+    if (!chapterId) {
+      return;
+    }
+    const completed =
+      chapterStatuses.current.get(chapterId) === PROGRESS_STATUS.completed;
+    const request = academyService
+      .updateChapterProgress(
+        chapterId,
+        completed
+          ? CHAPTER_API_STATUS.completed
+          : CHAPTER_API_STATUS.inProgress,
+        { markOpened: true }
+      )
+      .then(({ status }) => chapterStatuses.current.set(chapterId, status))
+      // Best effort: a missed view must not block learning; server and
+      // network errors are already toasted by academyClient
+      .catch(() => {});
+    viewRequests.current.set(chapterId, request);
+  }, [chapterId]);
 
   const backToOverview = () => navigate(routePath.academy.overview);
 
@@ -102,13 +156,6 @@ const ModuleLearningPage = () => {
     );
   }
 
-  const chapters = module.chapters || [];
-  // `?chapter=` keeps the step in the URL so refresh and browser back work
-  const requestedIndex = chapters.findIndex(
-    ({ id }) => String(id) === searchParams.get("chapter")
-  );
-  const stepIndex = Math.max(requestedIndex, 0);
-  const chapter = chapters[stepIndex];
   const isFirstStep = stepIndex === 0;
   const isLastStep = stepIndex >= chapters.length - 1;
   const moduleLabel = `Module ${module.order_index} · ${module.title}`;
@@ -117,18 +164,32 @@ const ModuleLearningPage = () => {
   const advance = () =>
     isLastStep ? backToOverview() : goToStep(stepIndex + 1);
 
-  // "Next step" completes the chapter; "Skip" moves on without saving.
-  // The save is not awaited so navigation never waits on the network.
+  // "Next step" completes the chapter; "Skip" moves on without completing.
+  // Navigation waits for the save so the overview never loads stale KPIs,
+  // and the footer is locked meanwhile so clicks cannot double-submit.
   const handleNextStep = () => {
-    academyService
-      .updateChapterProgress(chapter.id, CHAPTER_API_STATUS.completed)
+    setSaving(true);
+    Promise.resolve(viewRequests.current.get(chapter.id))
+      .then(() =>
+        academyService.updateChapterProgress(
+          chapter.id,
+          CHAPTER_API_STATUS.completed
+        )
+      )
+      .then(() => {
+        chapterStatuses.current.set(chapter.id, PROGRESS_STATUS.completed);
+        setSaving(false);
+        if (!hasLeft.current) {
+          advance();
+        }
+      })
       .catch((err) => {
+        setSaving(false);
         // Server and network errors are already toasted by academyClient
-        if (err?.status && err.status < 500) {
+        if (!hasLeft.current && err?.status && err.status < 500) {
           message.error(err.message);
         }
       });
-    advance();
   };
 
   const breadcrumb = [
@@ -228,6 +289,7 @@ const ModuleLearningPage = () => {
       <div className="academy-learning-footer-start">
         <Button
           className="academy-learning-outline"
+          disabled={saving}
           onClick={() =>
             isFirstStep ? backToOverview() : goToStep(stepIndex - 1)
           }
@@ -240,6 +302,7 @@ const ModuleLearningPage = () => {
           <li key={id}>
             <button
               type="button"
+              disabled={saving}
               className={`academy-learning-step${
                 index <= stepIndex ? " academy-learning-step--reached" : ""
               }`}
@@ -257,12 +320,13 @@ const ModuleLearningPage = () => {
           <Button
             type="text"
             className="academy-learning-skip"
+            disabled={saving}
             onClick={advance}
           >
             Skip
           </Button>
         )}
-        <Button type="primary" onClick={handleNextStep}>
+        <Button type="primary" loading={saving} onClick={handleNextStep}>
           {isLastStep ? "Finish module" : "Next step"}
         </Button>
       </div>

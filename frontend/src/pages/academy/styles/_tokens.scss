@@ -20,6 +20,9 @@ $academy-section-gap: 16px; // Figma --base
 
 $academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
 
+// Laptop widths (1280 x 720, 1366 x 768) get a smaller type scale
+$academy-compact-breakpoint: 1366px;
+
 $academy-surface-muted: #f9fafb;
 $academy-panel-radius: 24px; // Figma --3xl, content panel corner
 $academy-shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.05); // Shadow/xs
