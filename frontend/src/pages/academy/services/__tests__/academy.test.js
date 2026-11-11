@@ -29,6 +29,40 @@ describe("academy service", () => {
     await expect(academyService.getMe()).resolves.toEqual(user);
   });
 
+  it("getOverview returns the learner overview", async () => {
+    const overview = { greeting_name: "Wayan Galih", modules: [] };
+    mock.onGet("academy/overview").reply(200, overview);
+    await expect(academyService.getOverview()).resolves.toEqual(overview);
+  });
+
+  it("updateChapterProgress posts the new status", async () => {
+    mock
+      .onPost("academy/chapters/7/progress", { status: "completed" })
+      .reply(200, { chapter_id: 7, status: "Completed" });
+    await expect(
+      academyService.updateChapterProgress(7, "completed")
+    ).resolves.toEqual({ chapter_id: 7, status: "Completed" });
+  });
+
+  it("getHistory sends page and page_size", async () => {
+    mock
+      .onGet("academy/history", { params: { page: 2, page_size: 5 } })
+      .reply(200, { total: 6, data: [] });
+    await expect(
+      academyService.getHistory({ page: 2, pageSize: 5 })
+    ).resolves.toEqual({ total: 6, data: [] });
+  });
+
+  it("getHistory defaults to the first page of 10", async () => {
+    mock
+      .onGet("academy/history", { params: { page: 1, page_size: 10 } })
+      .reply(200, { total: 0, data: [] });
+    await expect(academyService.getHistory()).resolves.toEqual({
+      total: 0,
+      data: [],
+    });
+  });
+
   it("sends the session token as a bearer header", async () => {
     api.setToken("abc123");
     mock.onGet("user/me").reply((req) => [200, req.headers]);

@@ -56,6 +56,17 @@ academyClient.interceptors.response.use(
 const academyService = {
   // Used to refresh UserState after the learner edits their profile
   getMe: () => academyClient.get("user/me").then((res) => res.data),
+  getOverview: () =>
+    academyClient.get("academy/overview").then((res) => res.data),
+  // status: "not_started" | "in_progress" | "completed"
+  updateChapterProgress: (chapterId, status) =>
+    academyClient
+      .post(`academy/chapters/${chapterId}/progress`, { status })
+      .then((res) => res.data),
+  getHistory: ({ page = 1, pageSize = 10 } = {}) =>
+    academyClient
+      .get("academy/history", { params: { page, page_size: pageSize } })
+      .then((res) => res.data),
 };
 
 export default academyService;
