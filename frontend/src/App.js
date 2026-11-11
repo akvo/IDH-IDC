@@ -156,6 +156,7 @@ const App = () => {
             s.company = data.company;
             s.user_type = data.user_type;
             s.user_profile = data.user_profile || null;
+            s.tools = Array.isArray(data.tools) ? data.tools : [];
             s.isExternalRegular = data.user_type === "external_regular";
             s.isCaseCreator =
               adminRole.includes(data.role) ||

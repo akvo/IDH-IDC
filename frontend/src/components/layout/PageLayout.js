@@ -8,7 +8,6 @@ import {
   Drawer,
   Avatar,
   Dropdown,
-  Modal,
   Tag,
 } from "antd";
 import { useCookies } from "react-cookie";
@@ -22,9 +21,9 @@ import {
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
-  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { useWindowDimensions, useSignOut } from "../../hooks";
+import { showIdcAccessRequestModal } from "../utils";
 import { getUserInitials } from "../../pages/academy/utils";
 
 export const getInitials = (name, mail) => {
@@ -82,41 +81,6 @@ export const PageHeader = ({ isLoggedIn }) => {
   const isCurrentAcademy = location.pathname.startsWith("/academy");
   const isAdmin = adminRole.includes(userRole);
 
-  const showAccessRequestModal = () => {
-    Modal.info({
-      title: "Income Driver Calculator Access",
-      icon: <InfoCircleOutlined style={{ color: "#01625f" }} />,
-      className: "access-request-modal",
-      width: 480,
-      okText: "Got it",
-      okButtonProps: {
-        className: "button-modal-ok",
-      },
-      content: (
-        <div className="access-modal-content">
-          <p>
-            The <strong>Income Driver Calculator</strong> is restricted to
-            authorized supply chain partners and program participants.
-          </p>
-          <p>
-            If your company or organization participates in an IDH living income
-            program, please contact your organization administrator or reach out
-            to us at:
-          </p>
-          <div className="access-modal-contact-card">
-            <span className="contact-label">Support & Invitations:</span>
-            <a
-              href="mailto:livingincome@idhtrade.org"
-              className="contact-email"
-            >
-              livingincome@idhtrade.org
-            </a>
-          </div>
-        </div>
-      ),
-    });
-  };
-
   const handleLogout = useCallback(() => {
     signOut();
     navigate(paths.login);
@@ -159,7 +123,7 @@ export const PageHeader = ({ isLoggedIn }) => {
   const handleMenuClick = ({ key }) => {
     if (key === routePath.idc.dashboard || key === routePath.idc.landing) {
       if (isLoggedIn && !hasIdcAccess) {
-        showAccessRequestModal();
+        showIdcAccessRequestModal();
         setDrawerVisible(false);
         return;
       }
@@ -208,7 +172,7 @@ export const PageHeader = ({ isLoggedIn }) => {
             ),
             onClick: () => {
               if (!hasIdcAccess) {
-                showAccessRequestModal();
+                showIdcAccessRequestModal();
                 return;
               }
               navigate(routePath.idc.dashboard);
@@ -363,7 +327,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                       data-testid="drawer-switch-idc"
                       onClick={() => {
                         if (!hasIdcAccess) {
-                          showAccessRequestModal();
+                          showIdcAccessRequestModal();
                           setDrawerVisible(false);
                           return;
                         }

@@ -1,12 +1,17 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { Modal } from "antd";
 import AcademyLanding from "../AcademyLanding";
 
 describe("AcademyLanding Component", () => {
-  const renderComponent = () =>
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const renderComponent = (initialEntry = "/academy") =>
     render(
-      <MemoryRouter initialEntries={["/academy"]}>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <AcademyLanding />
       </MemoryRouter>
     );
@@ -100,5 +105,26 @@ describe("AcademyLanding Component", () => {
     expect(
       screen.getByText(/the living income academy offers general guidance/i)
     ).toBeInTheDocument();
+  });
+
+  it("does not open unauthorized IDC access modal when navigation state is absent", () => {
+    const infoSpy = jest.spyOn(Modal, "info").mockImplementation(jest.fn());
+    renderComponent();
+    expect(infoSpy).not.toHaveBeenCalled();
+  });
+
+  it("opens IDH access request modal when redirected with unauthorizedIDC state", () => {
+    const infoSpy = jest.spyOn(Modal, "info").mockImplementation(jest.fn());
+    renderComponent({
+      pathname: "/academy",
+      state: { unauthorizedIDC: true },
+    });
+    expect(infoSpy).toHaveBeenCalledTimes(1);
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Income Driver Calculator Access",
+        className: "access-request-modal",
+      })
+    );
   });
 });
