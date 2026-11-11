@@ -84,6 +84,8 @@ describe("PrivateRoutes Component", () => {
     routePath.idc.dashboard,
     routePath.idc.cases,
     `${routePath.idc.case}/42/1`,
+    "/income-driver-calculator/explore-studies",
+    "/old-cases/1",
     "/admin/users",
   ])(
     "redirects Academy-only user from IDC route (%s) to /academy with unauthorizedIDC state",
@@ -220,4 +222,42 @@ describe("PrivateRoutes Component", () => {
 
     expect(getByTestId("idc-cases")).toBeInTheDocument();
   });
+
+  it.each([[["IDC"]], [["academy", "idc_admin"]]])(
+    "rejects case-mismatched or partial tool claims (%j) from IDC routes",
+    (malformedTools) => {
+      const cookies = new Cookies();
+      act(() => {
+        cookies.set("AUTH_TOKEN", "malformedToolsToken", { path: "/" });
+        UserState.update((s) => {
+          s.id = 6;
+          s.active = true;
+          s.tools = malformedTools;
+        });
+      });
+
+      const { getByTestId, queryByTestId } = render(
+        <MemoryRouter initialEntries={[routePath.idc.cases]}>
+          <Routes>
+            <Route element={<PrivateRoutes />}>
+              <Route
+                path={routePath.idc.cases}
+                element={<div data-testid="idc-cases">Cases</div>}
+              />
+            </Route>
+            <Route
+              path={routePath.academy.landing}
+              element={<LocationCapture />}
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(queryByTestId("idc-cases")).not.toBeInTheDocument();
+      const probe = JSON.parse(
+        getByTestId("academy-redirect-probe").textContent
+      );
+      expect(probe.state).toEqual({ unauthorizedIDC: true });
+    }
+  );
 });
