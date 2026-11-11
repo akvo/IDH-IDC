@@ -12,7 +12,7 @@ Ensure that **Living Income Academy** users (`user.tools = ['academy']`) are pre
 
 ### 5W1H Summary
 - **Who**: Academy-only users (denied IDC access), authorized IDC / dual-tool users (allowed), unauthenticated visitors (redirected to `/login` or rejected with HTTP `401`/`403`).
-- **What**: Server-side FastAPI dependency `verify_idc_access` enforcing `'idc' in user.tools` (`HTTP 403 Forbidden`, `"Tool access required: idc"`) across confidential IDC routes, paired with frontend `PrivateRoutes.js` path guarding, `App.js` `UserState.tools` hydration, and an `unauthorizedIDC` warning banner on `/academy`.
+- **What**: Server-side FastAPI dependency `verify_idc_access` enforcing `'idc' in user.tools` (`HTTP 403 Forbidden`, `"Tool access required: idc"`) across confidential IDC routes, paired with frontend `PrivateRoutes.js` path guarding, `App.js` `UserState.tools` hydration, and the unified `showIdcAccessRequestModal()` prompt on `/academy`.
 - **Where**:
   - Backend: `backend/middleware.py`, `backend/routes/case.py`, `backend/routes/case_import.py`, `backend/routes/segment.py`, `backend/routes/segment_answer.py`, `backend/routes/visualization.py`, `backend/routes/optimization.py`, `backend/routes/map.py`
   - Frontend: `frontend/src/components/route/PrivateRoutes.js`, `frontend/src/components/layout/PageLayout.js`, `frontend/src/components/utils/idcAccessModal.js`, `frontend/src/components/utils/index.js`, `frontend/src/App.js`, `frontend/src/pages/income-driver-calculator/Landing.js`, `frontend/src/pages/academy/AcademyLanding.js`
@@ -25,7 +25,7 @@ Ensure that **Living Income Academy** users (`user.tools = ['academy']`) are pre
 ## Architecture Overview
 
 1. **Unauthenticated Request** → Backend `HTTPBearer()` rejects missing header (`403`) or invalid/expired JWT rejects (`401`); Frontend `PrivateRoutes` redirects to `/login` (`paths.login`) preserving `state.from`.
-2. **Unauthorized Tool Request (`'idc' not in user.tools`)** → Backend `verify_idc_access` raises `HTTP 403 Forbidden` (`"Tool access required: idc"`); Frontend `PrivateRoutes` detects `isIdcRoute` (`routePrefix.idc`, `/cases`, `/case`, `/old-welcome`, `/old-cases`, `/admin`) and redirects to `/academy` (`routePath.academy.landing`) with `state: { unauthorizedIDC: true }`, triggering an Ant Design warning `<Alert>` banner.
+2. **Unauthorized Tool Request (`'idc' not in user.tools`)** → Backend `verify_idc_access` raises `HTTP 403 Forbidden` (`"Tool access required: idc"`); Frontend `PrivateRoutes` detects `isIdcRestrictedPath` (`routePrefix.idc`, `/cases`, `/case`, `/old-welcome`, `/old-cases`, `/admin`) and redirects to `/academy` (`routePath.academy.landing`) with `state: { unauthorizedIDC: true }`, triggering `showIdcAccessRequestModal()` once.
 3. **Authorized Tool Request (`'idc' in user.tools`)** → `verify_idc_access` returns the DB `User` and existing RBAC/case-level checks (`verify_case_viewer`, `verify_case_editor`, etc.) proceed normally; Frontend renders `<Outlet />` cleanly, including after browser reload via `App.js` `GET user/me` hydration of `UserState.tools`.
 
 ```mermaid
@@ -43,7 +43,7 @@ sequenceDiagram
         Router-->>User: Redirect to /login (state.from)
     else Authenticated & 'idc' not in UserState.tools
         Router-->>Academy: Navigate /academy (state: { unauthorizedIDC: true })
-        Academy-->>User: Render prominent warning Alert banner
+        Academy-->>User: Show "Income Driver Calculator Access" modal (showIdcAccessRequestModal)
     else Authenticated & 'idc' in UserState.tools
         Router-->>User: Render <Outlet /> (IDC Page)
         User->>API: Request IDC API with Bearer JWT
@@ -129,11 +129,12 @@ sequenceDiagram
 
 ### 4.1 Automated Tests
 - **Backend Guarding**: `./dc.sh exec backend pytest tests/test_1032_route_guarding.py -v`
+  - Includes valid-payload `POST /case` rejection with zero DB mutation across `user` and `admin` roles, authorized `tools=["idc"]` positive control, `super_admin` + `internal` bypass prevention, 20-route `POST`/`PUT`/`DELETE`/protected `GET` IDC write/destructive matrix, revoked `Case.created_by` + `UserCaseAccess` lockout, live mid-session DB revocation with cached JWT, and case-sensitive/malformed tool strings (`["IDC"]`, `["academy", "idc_admin"]`).
 - **Backend Regression + Coverage**: `./dc.sh exec backend pytest tests/test_1032_route_guarding.py tests/test_1005_case_import.py tests/test_051_optimization.py tests/test_1000_permission_overiding.py tests/test_1007_user_tools.py -v` and `./dc.sh exec backend flake8`
-- **Frontend Route Guard & Banner Tests**: `./dc.sh exec frontend yarn test:ci` and `./dc.sh exec frontend yarn lint`
+- **Frontend Route Guard & Banner Tests**: `./dc.sh exec frontend yarn test:ci` and `./dc.sh exec frontend yarn lint` (including `/old-cases/1`, `/income-driver-calculator/explore-studies`, and malformed/case-mismatched tool claims in `PrivateRoutes.test.js`)
 
 ### 4.2 Manual Verification Steps
-1. Log in as an Academy-only user (`tools=['academy']`) and navigate manually to `/income-driver-calculator/cases` → confirm immediate redirect to `/academy` with the warning banner rendered.
+1. Log in as an Academy-only user (`tools=['academy']`) and navigate manually to `/income-driver-calculator/cases` or `/income-driver-calculator` → confirm immediate redirect to `/academy` with the "Income Driver Calculator Access" modal displayed once.
 2. Attempt `GET /api/case` with that user's Bearer JWT → confirm `HTTP 403 Forbidden` (`{"detail": "Tool access required: idc"}`).
 3. Log in as a dual-access or IDC-only user, visit `/income-driver-calculator/welcome` and refresh the browser → confirm `UserState.tools` hydrates via `/user/me` and the page remains accessible without redirect.
 
