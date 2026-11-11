@@ -40,6 +40,10 @@ academyClient.interceptors.response.use(
       return Promise.reject(error);
     }
     const normalised = normaliseError(error);
+    // Expired or revoked session: stop sending the stale token
+    if (normalised.status === 401) {
+      api.setToken(null);
+    }
     // Network failures and server errors are surfaced globally;
     // 4xx errors are left to the calling page to handle.
     if (!normalised.status || normalised.status >= 500) {

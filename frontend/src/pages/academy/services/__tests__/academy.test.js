@@ -51,6 +51,17 @@ describe("academy service", () => {
     expect(errorToast).not.toHaveBeenCalled();
   });
 
+  it("drops the stale session token on 401", async () => {
+    api.setToken("expired-token");
+    mock.onGet("user/me").reply(401, { detail: "Not authenticated" });
+    await expect(academyService.getMe()).rejects.toEqual({
+      status: 401,
+      message: "Not authenticated",
+    });
+    expect(api.token).toBeNull();
+    expect(errorToast).not.toHaveBeenCalled();
+  });
+
   it("shows one deduplicated global toast for server errors", async () => {
     mock.onGet("user/me").reply(500);
     await expect(academyService.getMe()).rejects.toMatchObject({
