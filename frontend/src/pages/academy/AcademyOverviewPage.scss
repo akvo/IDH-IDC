@@ -47,6 +47,7 @@ $academy-icon-themes: (
 
   .academy-overview-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
@@ -114,6 +115,7 @@ $academy-icon-themes: (
 
   .academy-section-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
@@ -302,6 +304,7 @@ $academy-icon-themes: (
   // Roadmap CTA banner
   .academy-roadmap-cta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
@@ -367,6 +370,22 @@ $academy-icon-themes: (
       line-height: 28px;
     }
   }
+
+  @media (max-width: 768px) {
+    .academy-metrics,
+    .academy-module-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    gap: 24px;
+
+    .academy-roadmap-cta {
+      padding: 16px;
+      gap: 16px;
+    }
+  }
 }
 
 // Status pills: on the page and inside the history modal portal (outside
@@ -413,6 +432,11 @@ $academy-icon-themes: (
     border: 1px solid $academy-card-stroke;
     border-radius: 12px;
     background: $bg-color-white;
+
+    @media (max-width: 640px) {
+      padding: 10px 12px;
+      gap: 8px;
+    }
   }
 
   .academy-chapter-number {

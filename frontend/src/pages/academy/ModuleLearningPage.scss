@@ -146,27 +146,40 @@
 
   .academy-learning-steps {
     display: flex;
-    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .academy-learning-step {
-    display: block;
-    width: 8px;
-    height: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
     padding: 0;
-    border: 1px solid $academy-learning-text-muted;
+    border: none;
     border-radius: 50%;
     background: transparent;
     cursor: pointer;
+
+    &::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border: 1px solid $academy-learning-text-muted;
+      border-radius: 50%;
+      background: transparent;
+    }
 
     &:disabled {
       cursor: not-allowed;
     }
 
-    &--reached {
+    &--reached::before {
       border-color: $academy-learning-text;
       background: $academy-learning-text;
     }
@@ -202,6 +215,22 @@
         grid-row: 1;
         justify-content: center;
       }
+    }
+  }
+
+  @media (max-width: 640px) {
+    .academy-learning-topbar,
+    .academy-learning-footer {
+      padding: 12px 16px;
+    }
+
+    .academy-learning-stage {
+      padding: 8px 16px 20px;
+    }
+
+    .academy-learning-card {
+      padding: 16px;
+      min-height: 280px;
     }
   }
 }
