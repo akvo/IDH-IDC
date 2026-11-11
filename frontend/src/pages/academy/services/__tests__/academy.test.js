@@ -3,6 +3,7 @@ import MockAdapter from "axios-mock-adapter";
 import { message } from "antd";
 import academyService, {
   academyClient,
+  isRequestCancelled,
   normaliseError,
   DEFAULT_ERROR_MESSAGE,
 } from "../academy";
@@ -27,6 +28,140 @@ describe("academy service", () => {
     const user = { id: 1, fullname: "Kole Johnson", user_profile: null };
     mock.onGet("user/me").reply(200, user);
     await expect(academyService.getMe()).resolves.toEqual(user);
+  });
+
+  it("getOverview returns the learner overview", async () => {
+    const overview = {
+      greeting_name: "Wayan Galih",
+      continue_chapter_id: null,
+      metrics: {
+        academy_progress_pct: 0,
+        modules_completed: 0,
+        total_modules: 6,
+        modules_completed_pct: 0,
+        chapters_completed: 0,
+        total_chapters: 27,
+        chapters_completed_pct: 0,
+      },
+      modules: [],
+      recently_opened: [],
+    };
+    mock.onGet("academy/overview").reply(200, overview);
+    await expect(academyService.getOverview()).resolves.toEqual(overview);
+  });
+
+  it("updateChapterProgress posts the new status", async () => {
+    const response = {
+      chapter_id: 7,
+      status: "Completed",
+      last_opened_at: "2026-11-10T10:00:00Z",
+      completed_at: "2026-11-10T10:05:00Z",
+      module_id: 1,
+      module_progress_pct: 100,
+      module_status: "Completed",
+      course_progress_pct: 17,
+      modules_completed: 1,
+      chapters_completed: 5,
+    };
+    mock
+      .onPost("academy/chapters/7/progress", {
+        status: "completed",
+        mark_opened: false,
+      })
+      .reply(200, response);
+    await expect(
+      academyService.updateChapterProgress(7, "completed")
+    ).resolves.toEqual(response);
+  });
+
+  it("updateChapterProgress can record a chapter view", async () => {
+    const response = {
+      chapter_id: 7,
+      status: "In progress",
+      last_opened_at: "2026-11-10T10:00:00Z",
+      completed_at: null,
+      module_id: 1,
+      module_progress_pct: 20,
+      module_status: "In progress",
+      course_progress_pct: 4,
+      modules_completed: 0,
+      chapters_completed: 1,
+    };
+    mock
+      .onPost("academy/chapters/7/progress", {
+        status: "in_progress",
+        mark_opened: true,
+      })
+      .reply(200, response);
+    await expect(
+      academyService.updateChapterProgress(7, "in_progress", {
+        markOpened: true,
+      })
+    ).resolves.toEqual(response);
+  });
+
+  it("getHistory sends page and page_size", async () => {
+    const response = {
+      total: 6,
+      page: 2,
+      page_size: 5,
+      total_pages: 2,
+      data: [],
+    };
+    mock
+      .onGet("academy/history", { params: { page: 2, page_size: 5 } })
+      .reply(200, response);
+    await expect(
+      academyService.getHistory({ page: 2, pageSize: 5 })
+    ).resolves.toEqual(response);
+  });
+
+  it("passes an AbortSignal through and reports the cancellation", async () => {
+    const controller = new AbortController();
+    mock.onGet("academy/overview").reply(200, {});
+    const request = academyService.getOverview({ signal: controller.signal });
+    controller.abort();
+    const error = await request.catch((err) => err);
+    expect(isRequestCancelled(error)).toBe(true);
+    expect(isRequestCancelled({ status: 500, message: "x" })).toBe(false);
+    expect(errorToast).not.toHaveBeenCalled();
+  });
+
+  it("getModules returns modules with their chapters", async () => {
+    const body = {
+      total_modules: 1,
+      course_summary_html: null,
+      modules: [
+        {
+          id: 1,
+          order_index: 1,
+          title: "Module 1",
+          description: null,
+          estimated_minutes: 15,
+          icon_theme: "blue",
+          progress_pct: 0,
+          status: "Not started",
+          tags: [],
+          chapters: [],
+        },
+      ],
+    };
+    mock.onGet("academy/modules").reply(200, body);
+    await expect(academyService.getModules()).resolves.toEqual(body);
+  });
+
+  it("getHistory defaults to the first page of 10", async () => {
+    const response = {
+      total: 0,
+      page: 1,
+      page_size: 10,
+      total_pages: 0,
+      data: [],
+    };
+    mock
+      .onGet("academy/history", { params: { page: 1, page_size: 10 } })
+      .reply(200, response);
+    await expect(academyService.getHistory()).resolves.toEqual(response);
   });
 
   it("sends the session token as a bearer header", async () => {

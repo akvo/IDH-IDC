@@ -53,9 +53,35 @@ academyClient.interceptors.response.use(
   }
 );
 
+// Cancelled requests reject with axios' Cancel, not a normalised error
+export const isRequestCancelled = (error) => axios.isCancel(error);
+
 const academyService = {
   // Used to refresh UserState after the learner edits their profile
   getMe: () => academyClient.get("user/me").then((res) => res.data),
+  // Reads accept an AbortSignal so callers can cancel superseded requests
+  getOverview: ({ signal } = {}) =>
+    academyClient.get("academy/overview", { signal }).then((res) => res.data),
+  // Modules with their nested chapters, in curriculum order
+  getModules: ({ signal } = {}) =>
+    academyClient.get("academy/modules", { signal }).then((res) => res.data),
+  // status: "not_started" | "in_progress" | "completed". The API always
+  // writes `status`, so send the chapter's current one when only recording a
+  // view (`markOpened` sets last_opened_at for Recently opened / history)
+  updateChapterProgress: (chapterId, status, { markOpened = false } = {}) =>
+    academyClient
+      .post(`academy/chapters/${chapterId}/progress`, {
+        status,
+        mark_opened: markOpened,
+      })
+      .then((res) => res.data),
+  getHistory: ({ page = 1, pageSize = 10, signal } = {}) =>
+    academyClient
+      .get("academy/history", {
+        params: { page, page_size: pageSize },
+        signal,
+      })
+      .then((res) => res.data),
 };
 
 export default academyService;
