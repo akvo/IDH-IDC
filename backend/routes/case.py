@@ -34,11 +34,12 @@ from middleware import (
     verify_case_creator,
     verify_case_editor,
     verify_case_viewer,
+    verify_idc_access,
 )
 from db.crud_case_import import update_case_import_case_id
 
 security = HTTPBearer()
-case_route = APIRouter()
+case_route = APIRouter(dependencies=[Depends(verify_idc_access)])
 
 
 @case_route.post(

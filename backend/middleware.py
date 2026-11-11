@@ -2,15 +2,20 @@ import os
 
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import (
+    HTTPAuthorizationCredentials,
+    HTTPBearer,
+    OAuth2PasswordBearer,
+)
 from jose import JWTError, jwt, exceptions
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from typing import Optional, List
 from sqlalchemy.orm import Session
 
-from models.user import UserInfo, UserRole, UserType
+from db.connection import get_session
+from models.user import ToolType, UserInfo, UserRole, UserType
 from models.enum_type import PermissionType
 
 from db import crud_user
@@ -28,6 +33,7 @@ ACCESS_TOKEN_EXPIRE_DAYS = 1
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+idc_security = HTTPBearer()
 
 
 class Token(BaseModel):
@@ -128,6 +134,24 @@ def verify_user(session: Session, authenticated):
     user = crud_user.get_user_by_email(session=session, email=token_data.email)
     if not user:
         raise credentials_exception
+    return user
+
+
+def verify_idc_access(
+    req: Request,
+    session: Session = Depends(get_session),
+    credentials: HTTPAuthorizationCredentials = Depends(idc_security),
+):
+    """Ensure authenticated user holds 'idc' tool access (authoritative DB)."""
+    authenticated = getattr(req.state, "authenticated", None)
+    if authenticated is None:
+        authenticated = decode_token(credentials.credentials)
+    user = verify_user(session=session, authenticated=authenticated)
+    if not user.tools or ToolType.idc.value not in user.tools:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tool access required: idc",
+        )
     return user
 
 
