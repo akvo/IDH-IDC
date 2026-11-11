@@ -184,14 +184,10 @@ export const PageHeader = ({ isLoggedIn }) => {
         children: [
           {
             key: "switch-idc",
+            className: isCurrentIdc ? "tool-item-active" : "",
             label: (
               <div className="tool-switcher-item" data-testid="switcher-idc">
                 <span className="tool-name">Income Driver Calculator</span>
-                {isCurrentIdc && (
-                  <Tag color="#47d985" className="tool-tag-active">
-                    Current
-                  </Tag>
-                )}
                 {!hasIdcAccess && (
                   <Tag className="tool-tag-no-access">No access</Tag>
                 )}
@@ -207,17 +203,13 @@ export const PageHeader = ({ isLoggedIn }) => {
           },
           {
             key: "switch-academy",
+            className: isCurrentAcademy ? "tool-item-active" : "",
             label: (
               <div
                 className="tool-switcher-item"
                 data-testid="switcher-academy"
               >
                 <span className="tool-name">Living Income Academy</span>
-                {isCurrentAcademy && (
-                  <Tag color="#47d985" className="tool-tag-active">
-                    Current
-                  </Tag>
-                )}
               </div>
             ),
             onClick: () => navigate(routePath.academy.landing),
@@ -352,7 +344,9 @@ export const PageHeader = ({ isLoggedIn }) => {
                   >
                     <span className="drawer-section-title">SWITCH TOOL</span>
                     <div
-                      className="drawer-tool-item"
+                      className={`drawer-tool-item ${
+                        isCurrentIdc ? "tool-item-active" : ""
+                      }`}
                       data-testid="drawer-switch-idc"
                       onClick={() => {
                         if (!hasIdcAccess) {
@@ -365,17 +359,14 @@ export const PageHeader = ({ isLoggedIn }) => {
                       }}
                     >
                       <span>Income Driver Calculator</span>
-                      {isCurrentIdc && (
-                        <Tag color="#47d985" className="tool-tag-active">
-                          Current
-                        </Tag>
-                      )}
                       {!hasIdcAccess && (
                         <Tag className="tool-tag-no-access">No access</Tag>
                       )}
                     </div>
                     <div
-                      className="drawer-tool-item"
+                      className={`drawer-tool-item ${
+                        isCurrentAcademy ? "tool-item-active" : ""
+                      }`}
                       data-testid="drawer-switch-academy"
                       onClick={() => {
                         navigate(routePath.academy.landing);
@@ -383,11 +374,6 @@ export const PageHeader = ({ isLoggedIn }) => {
                       }}
                     >
                       <span>Living Income Academy</span>
-                      {isCurrentAcademy && (
-                        <Tag color="#47d985" className="tool-tag-active">
-                          Current
-                        </Tag>
-                      )}
                     </div>
                   </div>
                 ) : null}
@@ -473,7 +459,16 @@ export const PageHeader = ({ isLoggedIn }) => {
               />
               {isLoggedIn ? (
                 <Dropdown
-                  menu={{ items: avatarDropdownItems }}
+                  menu={{
+                    items: avatarDropdownItems,
+                    selectedKeys: [
+                      isCurrentIdc
+                        ? "switch-idc"
+                        : isCurrentAcademy
+                        ? "switch-academy"
+                        : "",
+                    ],
+                  }}
                   trigger={["click"]}
                   placement="bottomRight"
                   overlayClassName="header-avatar-dropdown"

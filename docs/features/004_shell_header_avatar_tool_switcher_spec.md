@@ -22,10 +22,10 @@ The **Better Income Toolkit** expands the IDH platform from a standalone calcula
      - User Identity card (Fullname, Email).
      - "My Profile" (`/profile`).
      - "Switch Tool" section:
-       - **Income Driver Calculator**: Active indicator if currently on IDC. If user lacks `'idc'` tool permission, renders with muted styling and a subtle `(no access)` tag. Clicking opens the Access Request Modal.
-       - **Living Income Academy**: Active indicator if currently on Academy. Clicking routes to `/academy`.
+       - **Income Driver Calculator**: Active indicator (soft mint wash `#f0fcf5` background and bold `#01625f` text) if currently on IDC. If user lacks `'idc'` tool permission, renders with muted styling and a subtle `(no access)` tag. Clicking opens the Access Request Modal.
+       - **Living Income Academy**: Active indicator (soft mint wash `#f0fcf5` background and bold `#01625f` text) if currently on Academy. Clicking routes to `/academy`.
      - "Admin Panel" (if `role` is `admin` or `super_admin`).
-     - "Log out" (triggers `useSignOut()`, clears `AUTH_TOKEN` cookie, resets `UserState`, and redirects to `/login`).
+     - "Log out" (triggers `useSignOut()`, clears `AUTH_TOKEN` cookie, resets `UserState`, and redirects to `/login`; styled with `#cf1322` high-contrast crimson on soft `#fff1f0` wash when hovered).
   3. **Access Request Modal**: Editorial, IDH-branded informational dialog triggered when an Academy user clicks the gated IDC item, explaining access criteria and support contact (`livingincome@idhtrade.org`).
   4. **Mobile Drawer Integration**: Clean responsive adaptation where user profile, tool switcher, and navigation actions are housed within the mobile slide-out drawer.
 - **Where**:
@@ -193,9 +193,11 @@ Triggered when an Academy-only user attempts to switch to IDC:
 
 | Token | Value | Purpose |
 | :--- | :--- | :--- |
-| `$primary-color` | `#01625f` | Avatar circle background, modal primary button, brand headings |
-| `$light-green` | `#47d985` | Active tool indicator badge |
+| `$primary-color` | `#01625f` | Avatar circle background, modal primary button, brand headings, active tool label |
+| `$hover-mint` | `#f0fcf5` | Active tool switcher background and dropdown item hover wash |
+| `$danger-crimson` | `#cf1322` | Log out item active/hover text and icon color |
 | `$yellow-color` | `#ffc505` | Accent highlights |
+| `nav-signin-size` | `36px` height / `20px` radius | Proportional, compact horizontal pill for unauthenticated sign-in |
 | `avatar-size` | `36px` desktop / `32px` mobile | Ergonomic, touch-friendly proportions |
 | `border-radius-avatar` | `50%` | Perfectly circular avatar |
 | `card-border` | `1px solid rgba(0, 0, 0, 0.08)` | Subdued hairline divider |
