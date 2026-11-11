@@ -1,0 +1,39 @@
+// Shared Academy design tokens (Figma "Living income academy")
+
+$academy-primary: #005ea3; // --color-primary-brand-100
+$academy-text-primary: #000; // --Text-Color-Primary-dark
+$academy-text-muted: #757575;
+$academy-stroke: #e0e0e0; // --Other-Stroke
+$academy-card-stroke: #e5e5e5; // --Components-Card-stroke-color
+$academy-sidebar-bg: #f9fafb;
+$academy-font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+  Roboto, "Helvetica Neue", Arial, sans-serif;
+
+// Sidebar grid shared by the search box and the menu items, so the search
+// icon lines up with the menu icons and the placeholder with the labels
+$academy-item-inset: 16px;
+$academy-icon-size: 18px;
+$academy-icon-gap: 12px;
+$academy-item-height: 32px;
+$academy-item-spacing: 6px;
+$academy-section-gap: 16px; // Figma --base
+
+$academy-header-height: 80px; // global PageHeader (`header { height: 5rem }`)
+
+$academy-surface-muted: #f9fafb;
+$academy-panel-radius: 24px; // Figma --3xl, content panel corner
+$academy-shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.05); // Shadow/xs
+$academy-primary-tint: #e6eff6; // roadmap CTA banner
+
+// Roadmap module card
+$academy-module-control-size: 36px; // icon tile, status pill, arrow button
+$academy-tag-stroke: #d0d5dd;
+$academy-tag-text: #344054;
+
+// Status pills: Completed / In progress / Not started
+$academy-status-completed-bg: #cbf4dc; // --color-grass-green-30
+$academy-status-completed-text: #01625f; // --color-green-100
+$academy-status-progress-bg: #d0ecff; // --color-blue-20
+$academy-status-progress-text: #006eb8;
+$academy-status-pending-bg: #fffaeb; // --color-yellow-10
+$academy-status-pending-text: #ff6e1a; // --color-orange-90

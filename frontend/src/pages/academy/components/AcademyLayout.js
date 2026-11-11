@@ -5,13 +5,14 @@ import AcademySidebar from "./AcademySidebar";
 import AcademyFooter from "./AcademyFooter";
 import ChatbotFloatButton from "./ChatbotFloatButton";
 import { routePath } from "../../../components/route";
+import { ACADEMY_PRIMARY_COLOR } from "../utils";
 import "./AcademyLayout.scss";
 
-// Academy brand colour (Figma --color-primary-brand-100) and Inter font,
-// mirrored from AcademyLayout.scss so antd components and portals match
+// Academy brand colour and Inter font, mirrored from AcademyLayout.scss so
+// antd components and portals match
 const academyTheme = {
   token: {
-    colorPrimary: "#005EA3",
+    colorPrimary: ACADEMY_PRIMARY_COLOR,
     fontFamily:
       '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },
