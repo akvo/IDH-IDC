@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Table, Alert } from "antd";
 import { Link } from "react-router-dom";
 import ProgressStatusTag from "./ProgressStatusTag";
-import academyService from "../services/academy";
+import academyService, { isRequestCancelled } from "../services/academy";
 import { getChapterPath } from "../utils";
 
 export const HISTORY_PAGE_SIZE = 10;
@@ -65,30 +65,28 @@ const ChapterHistoryModal = ({ open, onClose }) => {
     if (!open) {
       return;
     }
-    // Ignore responses that arrive after a newer page was requested
-    let ignore = false;
+    // Changing page or closing cancels the request for the previous page
+    const controller = new AbortController();
     setLoading(true);
     setError(null);
     academyService
-      .getHistory({ page, pageSize: HISTORY_PAGE_SIZE })
+      .getHistory({
+        page,
+        pageSize: HISTORY_PAGE_SIZE,
+        signal: controller.signal,
+      })
       .then((res) => {
-        if (!ignore) {
-          setHistory({ data: res.data || [], total: res.total || 0 });
-        }
+        setHistory({ data: res.data || [], total: res.total || 0 });
+        setLoading(false);
       })
       .catch((err) => {
-        if (!ignore) {
-          setError(err.message);
+        if (isRequestCancelled(err)) {
+          return;
         }
-      })
-      .finally(() => {
-        if (!ignore) {
-          setLoading(false);
-        }
+        setError(err.message);
+        setLoading(false);
       });
-    return () => {
-      ignore = true;
-    };
+    return () => controller.abort();
   }, [open, page]);
 
   return (

@@ -3,6 +3,7 @@ import MockAdapter from "axios-mock-adapter";
 import { message } from "antd";
 import academyService, {
   academyClient,
+  isRequestCancelled,
   normaliseError,
   DEFAULT_ERROR_MESSAGE,
 } from "../academy";
@@ -51,6 +52,17 @@ describe("academy service", () => {
     await expect(
       academyService.getHistory({ page: 2, pageSize: 5 })
     ).resolves.toEqual({ total: 6, data: [] });
+  });
+
+  it("passes an AbortSignal through and reports the cancellation", async () => {
+    const controller = new AbortController();
+    mock.onGet("academy/overview").reply(200, {});
+    const request = academyService.getOverview({ signal: controller.signal });
+    controller.abort();
+    const error = await request.catch((err) => err);
+    expect(isRequestCancelled(error)).toBe(true);
+    expect(isRequestCancelled({ status: 500, message: "x" })).toBe(false);
+    expect(errorToast).not.toHaveBeenCalled();
   });
 
   it("getHistory defaults to the first page of 10", async () => {

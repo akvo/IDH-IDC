@@ -13,6 +13,7 @@ import academyService from "../services/academy";
 
 jest.mock("../services/academy", () => ({
   __esModule: true,
+  isRequestCancelled: (error) => Boolean(error?.__CANCEL__),
   default: {
     getOverview: jest.fn(),
     updateChapterProgress: jest.fn(),
@@ -132,6 +133,18 @@ const renderLoadedPage = async () => {
 };
 
 const location = () => screen.getByTestId("location");
+
+// A pending request the test settles by hand; rejects like axios when aborted
+const deferred = (signal) => {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  signal?.addEventListener("abort", () => reject({ __CANCEL__: true }));
+  return { promise, resolve, reject, signal };
+};
 
 const getChapterCheckbox = (title) =>
   within(
@@ -378,21 +391,90 @@ describe("AcademyOverviewPage", () => {
     expect(academyService.getOverview).toHaveBeenCalledTimes(2);
   });
 
-  it("does not update state after unmounting", async () => {
-    let resolveOverview;
-    academyService.getOverview.mockReturnValue(
-      new Promise((resolve) => {
-        resolveOverview = resolve;
-      })
-    );
-    const errorSpy = jest.spyOn(console, "error");
+  it("cancels the in-flight overview request on unmount", () => {
+    let request;
+    academyService.getOverview.mockImplementation(({ signal }) => {
+      request = deferred(signal);
+      return request.promise;
+    });
     const { unmount } = renderPage();
+    expect(request.signal.aborted).toBe(false);
     unmount();
-    resolveOverview(buildOverview());
-    await Promise.resolve();
-    expect(errorSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining("unmounted component")
-    );
+    expect(request.signal.aborted).toBe(true);
+  });
+
+  describe("overlapping completion toggles", () => {
+    let saves;
+    let refreshes;
+
+    const serverOverview = (statuses, chaptersCompleted) => {
+      const base = buildOverview();
+      return {
+        ...base,
+        metrics: { ...base.metrics, chapters_completed: chaptersCompleted },
+        recently_opened: base.recently_opened.map((chapter) => ({
+          ...chapter,
+          status: statuses[chapter.id],
+        })),
+      };
+    };
+
+    beforeEach(async () => {
+      saves = {};
+      refreshes = [];
+      academyService.updateChapterProgress.mockImplementation((id) => {
+        saves[id] = deferred();
+        return saves[id].promise;
+      });
+      await renderLoadedPage();
+      academyService.getOverview.mockImplementation(({ signal }) => {
+        const request = deferred(signal);
+        refreshes.push(request);
+        return request.promise;
+      });
+      // Tick 101 (In progress) and untick 104 (Completed) back to back
+      fireEvent.click(getChapterCheckbox("Why living income matters"));
+      fireEvent.click(getChapterCheckbox("Setting the baseline"));
+    });
+
+    it("keeps a pending tick when another chapter's refresh lands first", async () => {
+      saves[101].resolve({});
+      await waitFor(() => expect(refreshes).toHaveLength(1));
+
+      // The server has saved 101 but not yet 104
+      refreshes[0].resolve(
+        serverOverview({ 101: "Completed", 104: "Completed" }, 7)
+      );
+      await screen.findByText("7 of 27");
+
+      expect(getChapterCheckbox("Why living income matters")).toBeChecked();
+      expect(getChapterCheckbox("Setting the baseline")).not.toBeChecked();
+      expect(getChapterCheckbox("Setting the baseline")).toBeDisabled();
+    });
+
+    it("drops a superseded refresh so only the latest response is shown", async () => {
+      saves[101].resolve({});
+      await waitFor(() => expect(refreshes).toHaveLength(1));
+      saves[104].resolve({});
+      await waitFor(() => expect(refreshes).toHaveLength(2));
+
+      expect(refreshes[0].signal.aborted).toBe(true);
+      // A late response for the aborted request must not win
+      refreshes[0].resolve(
+        serverOverview({ 101: "Completed", 104: "Completed" }, 7)
+      );
+      refreshes[1].resolve(
+        serverOverview({ 101: "Completed", 104: "In progress" }, 6)
+      );
+
+      await waitFor(() =>
+        expect(getChapterCheckbox("Setting the baseline")).toBeEnabled()
+      );
+      expect(screen.getByText("6 of 27")).toBeInTheDocument();
+      expect(screen.queryByText("7 of 27")).not.toBeInTheDocument();
+      expect(getChapterCheckbox("Why living income matters")).toBeChecked();
+      expect(getChapterCheckbox("Setting the baseline")).not.toBeChecked();
+    });
   });
 
   describe("reading history", () => {
@@ -408,10 +490,9 @@ describe("AcademyOverviewPage", () => {
       expect(
         await within(dialog).findByText("History chapter page 1")
       ).toBeInTheDocument();
-      expect(academyService.getHistory).toHaveBeenCalledWith({
-        page: 1,
-        pageSize: 10,
-      });
+      expect(academyService.getHistory).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 1, pageSize: 10 })
+      );
       expect(
         within(dialog).getByText("Module 1 · Module title 1")
       ).toBeInTheDocument();
@@ -428,10 +509,9 @@ describe("AcademyOverviewPage", () => {
       expect(
         await within(dialog).findByText("History chapter page 2")
       ).toBeInTheDocument();
-      expect(academyService.getHistory).toHaveBeenLastCalledWith({
-        page: 2,
-        pageSize: 10,
-      });
+      expect(academyService.getHistory).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 2, pageSize: 10 })
+      );
       // Not completed yet
       expect(within(dialog).getByText("—")).toBeInTheDocument();
     });
@@ -459,6 +539,17 @@ describe("AcademyOverviewPage", () => {
       expect(
         await within(dialog).findByText("You haven't opened any chapters yet.")
       ).toBeInTheDocument();
+    });
+
+    it("cancels a pending history request when the modal closes", async () => {
+      let request;
+      academyService.getHistory.mockImplementation(({ signal }) => {
+        request = deferred(signal);
+        return request.promise;
+      });
+      await openHistory();
+      fireEvent.click(screen.getByRole("button", { name: "Close" }));
+      expect(request.signal.aborted).toBe(true);
     });
 
     it("closes the modal", async () => {

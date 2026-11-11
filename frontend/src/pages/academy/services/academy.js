@@ -53,19 +53,26 @@ academyClient.interceptors.response.use(
   }
 );
 
+// Cancelled requests reject with axios' Cancel, not a normalised error
+export const isRequestCancelled = (error) => axios.isCancel(error);
+
 const academyService = {
   // Used to refresh UserState after the learner edits their profile
   getMe: () => academyClient.get("user/me").then((res) => res.data),
-  getOverview: () =>
-    academyClient.get("academy/overview").then((res) => res.data),
+  // Reads accept an AbortSignal so callers can cancel superseded requests
+  getOverview: ({ signal } = {}) =>
+    academyClient.get("academy/overview", { signal }).then((res) => res.data),
   // status: "not_started" | "in_progress" | "completed"
   updateChapterProgress: (chapterId, status) =>
     academyClient
       .post(`academy/chapters/${chapterId}/progress`, { status })
       .then((res) => res.data),
-  getHistory: ({ page = 1, pageSize = 10 } = {}) =>
+  getHistory: ({ page = 1, pageSize = 10, signal } = {}) =>
     academyClient
-      .get("academy/history", { params: { page, page_size: pageSize } })
+      .get("academy/history", {
+        params: { page, page_size: pageSize },
+        signal,
+      })
       .then((res) => res.data),
 };
 

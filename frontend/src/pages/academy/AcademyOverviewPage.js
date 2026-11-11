@@ -6,7 +6,7 @@ import RoadmapModuleCard from "./components/RoadmapModuleCard";
 import RecentlyOpenedChapterCard from "./components/RecentlyOpenedChapterCard";
 import ChapterHistoryModal from "./components/ChapterHistoryModal";
 import RoadmapCtaBanner from "./components/RoadmapCtaBanner";
-import academyService from "./services/academy";
+import academyService, { isRequestCancelled } from "./services/academy";
 import {
   PROGRESS_STATUS,
   getChapterPath,
@@ -25,10 +25,12 @@ const API_STATUS = {
   inProgress: "in_progress",
 };
 
-const setChapterStatus = (overview, chapterId, status) => ({
+const withChapterStatuses = (overview, statuses) => ({
   ...overview,
   recently_opened: overview.recently_opened.map((chapter) =>
-    chapter.id === chapterId ? { ...chapter, status } : chapter
+    statuses.has(chapter.id)
+      ? { ...chapter, status: statuses.get(chapter.id) }
+      : chapter
   ),
 });
 
@@ -39,35 +41,39 @@ const AcademyOverviewPage = () => {
   const [error, setError] = useState(null);
   const [pendingChapterIds, setPendingChapterIds] = useState([]);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    isMounted.current = true;
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
+  // In-flight overview request; a newer load aborts it so an older response
+  // can never overwrite a newer one
+  const overviewRequest = useRef(null);
+  // Optimistic statuses of chapters whose save has not finished yet, kept so
+  // a refresh triggered by another chapter does not flip them back
+  const optimisticStatuses = useRef(new Map());
 
   // `silent` refreshes the KPIs in place without swapping in the skeleton
   const loadOverview = useCallback(({ silent = false } = {}) => {
+    overviewRequest.current?.abort();
+    const controller = new AbortController();
+    overviewRequest.current = controller;
+
     if (!silent) {
       setLoading(true);
       setError(null);
     }
     return academyService
-      .getOverview()
+      .getOverview({ signal: controller.signal })
       .then((data) => {
-        if (isMounted.current) {
-          setOverview(data);
+        setOverview(withChapterStatuses(data, optimisticStatuses.current));
+        if (!silent) {
+          setLoading(false);
         }
       })
       .catch((err) => {
-        if (isMounted.current && !silent) {
-          setError(err.message);
+        // Superseded or unmounted; the newer request owns the state
+        if (isRequestCancelled(err)) {
+          return;
         }
-      })
-      .finally(() => {
-        if (isMounted.current && !silent) {
+        // A failed background refresh keeps the current numbers
+        if (!silent) {
+          setError(err.message);
           setLoading(false);
         }
       });
@@ -75,6 +81,7 @@ const AcademyOverviewPage = () => {
 
   useEffect(() => {
     loadOverview();
+    return () => overviewRequest.current?.abort();
   }, [loadOverview]);
 
   const handleToggleComplete = useCallback(
@@ -84,36 +91,39 @@ const AcademyOverviewPage = () => {
       const nextStatus = completed
         ? PROGRESS_STATUS.completed
         : PROGRESS_STATUS.inProgress;
+      const settle = () => {
+        optimisticStatuses.current.delete(chapter.id);
+        setPendingChapterIds((ids) => ids.filter((id) => id !== chapter.id));
+      };
 
+      optimisticStatuses.current.set(chapter.id, nextStatus);
       setOverview((current) =>
-        setChapterStatus(current, chapter.id, nextStatus)
+        withChapterStatuses(current, new Map([[chapter.id, nextStatus]]))
       );
       setPendingChapterIds((ids) => [...ids, chapter.id]);
 
+      // The save itself is not cancelled on unmount: progress should persist
       academyService
         .updateChapterProgress(
           chapter.id,
           completed ? API_STATUS.completed : API_STATUS.inProgress
         )
-        // Pick up the recomputed KPIs and module progress
-        .then(() => loadOverview({ silent: true }))
+        .then(() => {
+          settle();
+          // Pick up the recomputed KPIs and module progress
+          return loadOverview({ silent: true });
+        })
         .catch((err) => {
-          if (!isMounted.current) {
-            return;
-          }
+          settle();
           setOverview((current) =>
-            setChapterStatus(current, chapter.id, previousStatus)
+            withChapterStatuses(
+              current,
+              new Map([[chapter.id, previousStatus]])
+            )
           );
           // Server and network errors are already toasted by academyClient
           if (err?.status && err.status < 500) {
             message.error(err.message);
-          }
-        })
-        .finally(() => {
-          if (isMounted.current) {
-            setPendingChapterIds((ids) =>
-              ids.filter((id) => id !== chapter.id)
-            );
           }
         });
     },
