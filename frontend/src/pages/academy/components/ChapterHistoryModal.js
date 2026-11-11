@@ -1,65 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Table, Alert } from "antd";
-import { Link } from "react-router-dom";
-import ProgressStatusTag from "./ProgressStatusTag";
+import React, { useCallback, useEffect, useState } from "react";
+import { Modal, Alert, Button, Pagination, Spin } from "antd";
+import RecentlyOpenedChapterCard from "./RecentlyOpenedChapterCard";
 import academyService, { isRequestCancelled } from "../services/academy";
-import { getChapterPath } from "../utils";
+import { PROGRESS_STATUS } from "../utils";
 
 export const HISTORY_PAGE_SIZE = 10;
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
+// History items use chapter_* keys; the row card expects the overview shape
+const toChapter = (item) => ({
+  id: item.chapter_id,
+  chapter_number: item.chapter_number,
+  title: item.chapter_title,
+  status: item.status,
 });
 
-// The API stores UTC (`datetime.utcnow()`) but serialises it without a zone,
-// which browsers would otherwise read as local time
-const HAS_TIMEZONE = /(Z|[+-]\d{2}:?\d{2})$/i;
-export const parseApiDate = (value) =>
-  new Date(HAS_TIMEZONE.test(value) ? value : `${value}Z`);
-
-export const formatDate = (value) =>
-  value ? dateFormatter.format(parseApiDate(value)) : "—";
-
-const columns = [
-  {
-    title: "Chapter",
-    key: "chapter",
-    render: (_, item) => (
-      <div className="academy-history-chapter">
-        <Link to={getChapterPath(item.chapter_id)}>{item.chapter_title}</Link>
-        <span className="academy-history-module">
-          Module {item.module_order_index} · {item.module_title}
-        </span>
-      </div>
-    ),
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (status) => <ProgressStatusTag status={status} />,
-  },
-  {
-    title: "Last opened",
-    dataIndex: "last_opened_at",
-    key: "last_opened_at",
-    render: formatDate,
-  },
-  {
-    title: "Completed",
-    dataIndex: "completed_at",
-    key: "completed_at",
-    render: formatDate,
-  },
-];
-
-const ChapterHistoryModal = ({ open, onClose }) => {
+const ChapterHistoryModal = ({
+  open,
+  onClose,
+  onToggleComplete,
+  onContinue,
+}) => {
   const [page, setPage] = useState(1);
   const [history, setHistory] = useState({ data: [], total: 0 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [pendingChapterIds, setPendingChapterIds] = useState([]);
 
   useEffect(() => {
     if (!open) {
@@ -89,17 +54,58 @@ const ChapterHistoryModal = ({ open, onClose }) => {
     return () => controller.abort();
   }, [open, page]);
 
+  const setChapterStatus = (chapterId, status) =>
+    setHistory((current) => ({
+      ...current,
+      data: current.data.map((item) =>
+        item.chapter_id === chapterId ? { ...item, status } : item
+      ),
+    }));
+
+  // Saving and KPI refresh are owned by the page; the modal mirrors the
+  // optimistic tick and reverts it if the page reports a failed save
+  const handleToggleComplete = useCallback(
+    (chapter, completed) => {
+      setChapterStatus(
+        chapter.id,
+        completed ? PROGRESS_STATUS.completed : PROGRESS_STATUS.inProgress
+      );
+      setPendingChapterIds((ids) => [...ids, chapter.id]);
+      onToggleComplete(chapter, completed).then((saved) => {
+        if (!saved) {
+          setChapterStatus(chapter.id, chapter.status);
+        }
+        setPendingChapterIds((ids) => ids.filter((id) => id !== chapter.id));
+      });
+    },
+    [onToggleComplete]
+  );
+
   return (
     <Modal
-      title="Reading history"
       open={open}
       onCancel={onClose}
       // Reopening starts from the first page
       afterClose={() => setPage(1)}
-      footer={null}
-      width={880}
-      destroyOnClose
+      closable={false}
+      width={640}
       className="academy-history-modal"
+      title={
+        <>
+          <h2 className="academy-history-title">Recently opened</h2>
+          <p className="academy-history-subtitle">
+            Pick up where you left off in the chapters you viewed most recently.
+          </p>
+        </>
+      }
+      footer={
+        <div className="academy-history-actions">
+          <Button onClick={onClose}>Cancel</Button>
+          <Button type="primary" onClick={onContinue}>
+            Continue learning
+          </Button>
+        </div>
+      }
     >
       {error && (
         <Alert
@@ -109,20 +115,36 @@ const ChapterHistoryModal = ({ open, onClose }) => {
           className="academy-history-error"
         />
       )}
-      <Table
-        rowKey="chapter_id"
-        columns={columns}
-        dataSource={history.data}
-        loading={loading}
-        locale={{ emptyText: "You haven't opened any chapters yet." }}
-        pagination={{
-          current: page,
-          pageSize: HISTORY_PAGE_SIZE,
-          total: history.total,
-          showSizeChanger: false,
-          hideOnSinglePage: true,
-          onChange: setPage,
-        }}
+      <Spin spinning={loading}>
+        {history.data.length ? (
+          <ul className="academy-chapter-list">
+            {history.data.map((item) => (
+              <RecentlyOpenedChapterCard
+                key={item.chapter_id}
+                chapter={toChapter(item)}
+                pending={pendingChapterIds.includes(item.chapter_id)}
+                onToggleComplete={handleToggleComplete}
+              />
+            ))}
+          </ul>
+        ) : (
+          !loading &&
+          !error && (
+            <p className="academy-history-empty">
+              You haven&apos;t opened any chapters yet.
+            </p>
+          )
+        )}
+      </Spin>
+      <Pagination
+        className="academy-history-pagination"
+        size="small"
+        current={page}
+        pageSize={HISTORY_PAGE_SIZE}
+        total={history.total}
+        showSizeChanger={false}
+        hideOnSinglePage
+        onChange={setPage}
       />
     </Modal>
   );

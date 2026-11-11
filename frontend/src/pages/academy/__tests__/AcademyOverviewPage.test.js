@@ -96,14 +96,14 @@ const historyPage = (page, total = 12) => ({
     {
       chapter_id: page * 100,
       chapter_title: `History chapter page ${page}`,
-      chapter_number: 1,
+      chapter_number: page,
       module_id: 11,
       module_order_index: 1,
       module_title: "Module title 1",
       estimated_minutes: 5,
-      status: "Completed",
+      status: "In progress",
       last_opened_at: "2026-11-10T10:00:00Z",
-      completed_at: page === 1 ? "2026-11-11T09:00:00Z" : null,
+      completed_at: null,
     },
   ],
 });
@@ -481,29 +481,36 @@ describe("AcademyOverviewPage", () => {
     const openHistory = async () => {
       await renderLoadedPage();
       fireEvent.click(screen.getByRole("button", { name: "View history" }));
-      return screen.findByRole("dialog");
+      const dialog = await screen.findByRole("dialog");
+      await within(dialog).findByText("History chapter page 1");
+      return dialog;
     };
 
-    it("loads the first page when View history is clicked", async () => {
+    const historyCheckbox = (dialog, title) =>
+      within(
+        within(dialog)
+          .getByText(title)
+          .closest("[data-testid='academy-chapter-row']")
+      ).getByRole("checkbox");
+
+    it("lists the first page of opened chapters as chapter rows", async () => {
       const dialog = await openHistory();
-      expect(within(dialog).getByText("Reading history")).toBeInTheDocument();
       expect(
-        await within(dialog).findByText("History chapter page 1")
+        within(dialog).getByRole("heading", { name: "Recently opened" })
       ).toBeInTheDocument();
       expect(academyService.getHistory).toHaveBeenCalledWith(
         expect.objectContaining({ page: 1, pageSize: 10 })
       );
+      const row = within(dialog).getByTestId("academy-chapter-row");
+      expect(within(row).getByText("01")).toBeInTheDocument();
+      expect(within(row).getByText("In progress")).toBeInTheDocument();
       expect(
-        within(dialog).getByText("Module 1 · Module title 1")
-      ).toBeInTheDocument();
-      expect(within(dialog).getByText("10 Nov 2026")).toBeInTheDocument();
-      expect(within(dialog).getByText("11 Nov 2026")).toBeInTheDocument();
+        within(row).getByRole("link", { name: "History chapter page 1" })
+      ).toHaveAttribute("href", "/academy/courses?chapter=100");
     });
 
     it("requests the next page from the pagination", async () => {
       const dialog = await openHistory();
-      await within(dialog).findByText("History chapter page 1");
-
       fireEvent.click(within(dialog).getByTitle("2"));
 
       expect(
@@ -512,8 +519,62 @@ describe("AcademyOverviewPage", () => {
       expect(academyService.getHistory).toHaveBeenLastCalledWith(
         expect.objectContaining({ page: 2, pageSize: 10 })
       );
-      // Not completed yet
-      expect(within(dialog).getByText("—")).toBeInTheDocument();
+    });
+
+    it("hides the pagination when everything fits on one page", async () => {
+      academyService.getHistory.mockResolvedValue(historyPage(1, 3));
+      const dialog = await openHistory();
+      expect(within(dialog).queryByTitle("2")).not.toBeInTheDocument();
+    });
+
+    it("saves a completion tick through the page and refreshes the KPIs", async () => {
+      const dialog = await openHistory();
+      fireEvent.click(historyCheckbox(dialog, "History chapter page 1"));
+
+      expect(historyCheckbox(dialog, "History chapter page 1")).toBeChecked();
+      expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
+        100,
+        "completed"
+      );
+      await waitFor(() =>
+        expect(academyService.getOverview).toHaveBeenCalledTimes(2)
+      );
+      expect(historyCheckbox(dialog, "History chapter page 1")).toBeEnabled();
+      expect(historyCheckbox(dialog, "History chapter page 1")).toBeChecked();
+    });
+
+    it("reverts the tick in the modal when the save fails", async () => {
+      jest.spyOn(message, "error").mockImplementation(() => {});
+      academyService.updateChapterProgress.mockRejectedValue({
+        status: 404,
+        message: "Chapter not found",
+      });
+      const dialog = await openHistory();
+      fireEvent.click(historyCheckbox(dialog, "History chapter page 1"));
+
+      await waitFor(() =>
+        expect(
+          historyCheckbox(dialog, "History chapter page 1")
+        ).not.toBeChecked()
+      );
+      expect(historyCheckbox(dialog, "History chapter page 1")).toBeEnabled();
+      expect(message.error).toHaveBeenCalledWith("Chapter not found");
+    });
+
+    it("continues learning from the modal", async () => {
+      const dialog = await openHistory();
+      fireEvent.click(
+        within(dialog).getByRole("button", { name: "Continue learning" })
+      );
+      expect(location()).toHaveTextContent("/academy/courses?chapter=4");
+    });
+
+    it("closes with Cancel", async () => {
+      const dialog = await openHistory();
+      fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
+      await waitFor(() =>
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+      );
     });
 
     it("shows the API error inside the modal", async () => {
@@ -521,10 +582,15 @@ describe("AcademyOverviewPage", () => {
         status: 403,
         message: "Not allowed",
       });
-      const dialog = await openHistory();
+      await renderLoadedPage();
+      fireEvent.click(screen.getByRole("button", { name: "View history" }));
+      const dialog = await screen.findByRole("dialog");
       expect(
         await within(dialog).findByText("Not allowed")
       ).toBeInTheDocument();
+      expect(
+        within(dialog).queryByText("You haven't opened any chapters yet.")
+      ).not.toBeInTheDocument();
     });
 
     it("shows an empty state without history", async () => {
@@ -535,7 +601,9 @@ describe("AcademyOverviewPage", () => {
         total_pages: 0,
         data: [],
       });
-      const dialog = await openHistory();
+      await renderLoadedPage();
+      fireEvent.click(screen.getByRole("button", { name: "View history" }));
+      const dialog = await screen.findByRole("dialog");
       expect(
         await within(dialog).findByText("You haven't opened any chapters yet.")
       ).toBeInTheDocument();
@@ -547,17 +615,11 @@ describe("AcademyOverviewPage", () => {
         request = deferred(signal);
         return request.promise;
       });
-      await openHistory();
-      fireEvent.click(screen.getByRole("button", { name: "Close" }));
+      await renderLoadedPage();
+      fireEvent.click(screen.getByRole("button", { name: "View history" }));
+      const dialog = await screen.findByRole("dialog");
+      fireEvent.click(within(dialog).getByRole("button", { name: "Cancel" }));
       expect(request.signal.aborted).toBe(true);
-    });
-
-    it("closes the modal", async () => {
-      await openHistory();
-      fireEvent.click(screen.getByRole("button", { name: "Close" }));
-      await waitFor(() =>
-        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
-      );
     });
   });
 });

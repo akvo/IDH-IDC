@@ -294,54 +294,6 @@ $academy-icon-themes: (
     line-height: 20px;
   }
 
-  // Recently opened
-  .academy-chapter-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .academy-chapter-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border: 1px solid $academy-stroke;
-    border-radius: 8px;
-    background: $bg-color-white;
-  }
-
-  .academy-chapter-number {
-    min-width: 20px;
-    font-size: 11px;
-    color: $academy-text-muted;
-  }
-
-  .academy-chapter-title {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 14px;
-    color: $academy-text-primary;
-
-    &:hover,
-    &:focus-visible {
-      color: $academy-primary;
-    }
-  }
-
-  // Round completion toggle
-  .academy-chapter-check .ant-checkbox-inner {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-  }
-
   .academy-empty-text {
     font-size: 14px;
     color: $academy-text-muted;
@@ -372,24 +324,6 @@ $academy-icon-themes: (
   }
 }
 
-// The history modal renders in a portal outside .academy-overview
-.academy-history-modal {
-  .academy-history-error {
-    margin-bottom: 16px;
-  }
-
-  .academy-history-chapter {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .academy-history-module {
-    font-size: 12px;
-    color: $academy-text-muted;
-  }
-}
-
 // Status pills: on the page and inside the history modal portal (outside
 // #root). The #root selector outranks the global `#root span { 14px }`.
 .academy-status-tag,
@@ -413,5 +347,147 @@ $academy-icon-themes: (
   &--not-started {
     background: $academy-status-pending-bg;
     color: $academy-status-pending-text;
+  }
+}
+
+// Chapter rows: "Recently opened" on the page and the history modal portal
+.academy-chapter-list,
+#root .academy-chapter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  .academy-chapter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 12px;
+    background: $bg-color-white;
+  }
+
+  .academy-chapter-number {
+    flex-shrink: 0;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: $academy-chapter-number-bg;
+    font-size: 12px;
+    line-height: 18px;
+    color: $academy-text-muted;
+  }
+
+  .academy-chapter-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $academy-text-primary;
+
+    &:hover,
+    &:focus-visible {
+      color: $academy-primary;
+    }
+  }
+
+  // Round completion toggle; green with a white tick once completed
+  .academy-chapter-check {
+    .ant-checkbox-inner {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+
+    .ant-checkbox-checked .ant-checkbox-inner {
+      border-color: $academy-success;
+      background: $academy-success;
+    }
+
+    .ant-checkbox-checked::after {
+      border-radius: 50%;
+    }
+  }
+}
+
+// View history modal (portal: outside #root, so the shell font is set here)
+.academy-history-modal {
+  font-family: $academy-font-family;
+
+  .ant-modal-content {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .ant-modal-header {
+    margin-bottom: 24px;
+  }
+
+  .academy-history-title {
+    margin: 0;
+    font-family: $academy-font-family;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30px;
+    color: $academy-text-primary;
+  }
+
+  .academy-history-subtitle {
+    margin: 4px 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: $academy-text-muted;
+  }
+
+  .academy-history-error {
+    margin-bottom: 16px;
+  }
+
+  .academy-history-empty {
+    margin: 0;
+    font-size: 14px;
+    color: $academy-text-muted;
+  }
+
+  .academy-history-pagination {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .ant-modal-footer {
+    margin-top: 24px;
+  }
+
+  // Two equal-width actions; outranks App.scss `.ant-modal .ant-btn` (24px)
+  .academy-history-actions {
+    display: flex;
+    gap: 12px;
+
+    .ant-btn {
+      flex: 1;
+      height: 44px;
+      // antd spaces footer buttons with `.ant-btn + .ant-btn` margin; the
+      // flex gap does that here
+      margin-inline-start: 0 !important;
+      border-radius: 8px;
+      box-shadow: $academy-shadow-xs;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .ant-btn-default {
+      border-color: $academy-primary;
+      color: $academy-primary;
+
+      &:not(:disabled):hover {
+        background: $academy-primary-tint;
+      }
+    }
   }
 }

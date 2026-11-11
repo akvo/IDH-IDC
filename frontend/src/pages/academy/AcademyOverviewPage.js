@@ -102,8 +102,9 @@ const AcademyOverviewPage = () => {
       );
       setPendingChapterIds((ids) => [...ids, chapter.id]);
 
-      // The save itself is not cancelled on unmount: progress should persist
-      academyService
+      // The save itself is not cancelled on unmount: progress should persist.
+      // Resolves to whether it was saved, so the history modal can revert too.
+      return academyService
         .updateChapterProgress(
           chapter.id,
           completed ? API_STATUS.completed : API_STATUS.inProgress
@@ -111,7 +112,8 @@ const AcademyOverviewPage = () => {
         .then(() => {
           settle();
           // Pick up the recomputed KPIs and module progress
-          return loadOverview({ silent: true });
+          loadOverview({ silent: true });
+          return true;
         })
         .catch((err) => {
           settle();
@@ -125,6 +127,7 @@ const AcademyOverviewPage = () => {
           if (err?.status && err.status < 500) {
             message.error(err.message);
           }
+          return false;
         });
     },
     [loadOverview]
@@ -163,6 +166,12 @@ const AcademyOverviewPage = () => {
     recently_opened: recentlyOpened = [],
   } = overview;
   const firstName = getFirstName(greetingName);
+  const handleContinue = () =>
+    navigate(
+      continueChapterId
+        ? getChapterPath(continueChapterId)
+        : routePath.academy.courses
+    );
 
   return (
     <div className="academy-overview" data-testid="academy-overview">
@@ -171,16 +180,7 @@ const AcademyOverviewPage = () => {
         <h1 className="academy-overview-greeting">
           {firstName ? `${getGreeting()}, ${firstName}` : getGreeting()}
         </h1>
-        <Button
-          type="primary"
-          onClick={() =>
-            navigate(
-              continueChapterId
-                ? getChapterPath(continueChapterId)
-                : routePath.academy.courses
-            )
-          }
-        >
+        <Button type="primary" onClick={handleContinue}>
           Continue learning
         </Button>
       </div>
@@ -276,6 +276,8 @@ const AcademyOverviewPage = () => {
       <ChapterHistoryModal
         open={historyOpen}
         onClose={() => setHistoryOpen(false)}
+        onToggleComplete={handleToggleComplete}
+        onContinue={handleContinue}
       />
     </div>
   );
