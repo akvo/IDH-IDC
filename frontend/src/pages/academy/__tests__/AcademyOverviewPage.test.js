@@ -226,7 +226,7 @@ describe("AcademyOverviewPage", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Open module 2: Module title 2" })
     );
-    expect(location()).toHaveTextContent("/academy/courses?module=12");
+    expect(location()).toHaveTextContent("/academy/modules/12");
   });
 
   it("continues learning from the recommended chapter", async () => {

@@ -32,8 +32,12 @@ describe("getFirstName", () => {
 });
 
 describe("course links", () => {
-  it("builds chapter and module links on Course Overview", () => {
+  it("builds chapter links on Course Overview", () => {
     expect(getChapterPath(5)).toBe("/academy/courses?chapter=5");
-    expect(getModulePath(2)).toBe("/academy/courses?module=2");
+  });
+
+  it("builds module learning page links", () => {
+    expect(getModulePath(2)).toBe("/academy/modules/2");
+    expect(getModulePath(2, 7)).toBe("/academy/modules/2?chapter=7");
   });
 });

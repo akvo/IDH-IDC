@@ -62,6 +62,9 @@ const academyService = {
   // Reads accept an AbortSignal so callers can cancel superseded requests
   getOverview: ({ signal } = {}) =>
     academyClient.get("academy/overview", { signal }).then((res) => res.data),
+  // Modules with their nested chapters, in curriculum order
+  getModules: ({ signal } = {}) =>
+    academyClient.get("academy/modules", { signal }).then((res) => res.data),
   // status: "not_started" | "in_progress" | "completed"
   updateChapterProgress: (chapterId, status) =>
     academyClient

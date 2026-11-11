@@ -3,6 +3,16 @@ import { routePath } from "../../../components/route/paths";
 // Figma --color-primary-brand-100 (mirrors $academy-primary in SCSS)
 export const ACADEMY_PRIMARY_COLOR = "#005EA3";
 
+// Academy brand colour and Inter font for antd, mirrored from the SCSS tokens
+// so antd components and portals match. Shared by every Academy page frame.
+export const ACADEMY_THEME = {
+  token: {
+    colorPrimary: ACADEMY_PRIMARY_COLOR,
+    fontFamily:
+      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  },
+};
+
 // "Kole Johnson" -> "KJ"; prefers the learner profile name over fullname
 export const getUserInitials = ({ fullname, user_profile } = {}) => {
   const profileNames = [user_profile?.first_name, user_profile?.last_name]
@@ -41,10 +51,19 @@ export const PROGRESS_STATUS = {
   notStarted: "Not started",
 };
 
+// Statuses accepted by POST /academy/chapters/{id}/progress
+export const CHAPTER_API_STATUS = {
+  completed: "completed",
+  inProgress: "in_progress",
+};
+
 // The chapter reader lives on Course Overview (FE-04/05); keep its URL
 // shape in one place so links survive if the reader moves to a nested route
 export const getChapterPath = (chapterId) =>
   `${routePath.academy.courses}?chapter=${encodeURIComponent(chapterId)}`;
 
-export const getModulePath = (moduleId) =>
-  `${routePath.academy.courses}?module=${encodeURIComponent(moduleId)}`;
+// Module learning page; `chapterId` opens a specific chapter step
+export const getModulePath = (moduleId, chapterId) => {
+  const path = `${routePath.academy.modules}/${encodeURIComponent(moduleId)}`;
+  return chapterId ? `${path}?chapter=${encodeURIComponent(chapterId)}` : path;
+};

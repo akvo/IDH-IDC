@@ -8,6 +8,7 @@ import ChapterHistoryModal from "./components/ChapterHistoryModal";
 import RoadmapCtaBanner from "./components/RoadmapCtaBanner";
 import academyService, { isRequestCancelled } from "./services/academy";
 import {
+  CHAPTER_API_STATUS,
   PROGRESS_STATUS,
   getChapterPath,
   getFirstName,
@@ -19,11 +20,6 @@ import "./AcademyOverviewPage.scss";
 
 // `id` of the roadmap section on the public Academy landing page
 const LANDING_ROADMAP_ID = "academy-roadmap";
-
-const API_STATUS = {
-  completed: "completed",
-  inProgress: "in_progress",
-};
 
 const withChapterStatuses = (overview, statuses) => ({
   ...overview,
@@ -107,7 +103,9 @@ const AcademyOverviewPage = () => {
       return academyService
         .updateChapterProgress(
           chapter.id,
-          completed ? API_STATUS.completed : API_STATUS.inProgress
+          completed
+            ? CHAPTER_API_STATUS.completed
+            : CHAPTER_API_STATUS.inProgress
         )
         .then(() => {
           settle();

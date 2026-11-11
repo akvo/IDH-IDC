@@ -65,6 +65,12 @@ describe("academy service", () => {
     expect(errorToast).not.toHaveBeenCalled();
   });
 
+  it("getModules returns modules with their chapters", async () => {
+    const body = { total_modules: 1, modules: [{ id: 1, chapters: [] }] };
+    mock.onGet("academy/modules").reply(200, body);
+    await expect(academyService.getModules()).resolves.toEqual(body);
+  });
+
   it("getHistory defaults to the first page of 10", async () => {
     mock
       .onGet("academy/history", { params: { page: 1, page_size: 10 } })

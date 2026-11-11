@@ -39,3 +39,11 @@ $academy-status-progress-bg: #d0ecff; // --color-blue-20
 $academy-status-progress-text: #006eb8;
 $academy-status-pending-bg: #fffaeb; // --color-yellow-10
 $academy-status-pending-text: #ff6e1a; // --color-orange-90
+
+// Module learning page: navy frame around the white content card
+$academy-learning-bg: #0b2a4a;
+$academy-learning-footer-bg: #12365c;
+$academy-learning-text: #fff;
+$academy-learning-text-muted: rgba(255, 255, 255, 0.6);
+$academy-learning-control-stroke: rgba(255, 255, 255, 0.4);
+$academy-learning-accent: #7cb9e8; // current breadcrumb, focus ring

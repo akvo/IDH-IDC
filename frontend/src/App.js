@@ -40,6 +40,7 @@ import {
   AcademyLanding,
   AcademyLayout,
   AcademyOverviewPage,
+  ModuleLearningPage,
 } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { useSignOut, useMatomoPageView } from "./hooks";
@@ -249,6 +250,12 @@ const App = () => {
                 />
               ))}
             </Route>
+            {/* Full-width learning frame, outside the sidebar shell */}
+            <Route
+              exact
+              path={`${routePath.academy.modules}/:moduleId`}
+              element={<ModuleLearningPage />}
+            />
             {/* EOL Academy */}
           </Route>
           {/* ) : (

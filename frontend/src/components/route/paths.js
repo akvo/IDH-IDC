@@ -27,6 +27,7 @@ const routePath = {
     landing: "/academy",
     overview: "/academy/overview",
     courses: "/academy/courses",
+    modules: "/academy/modules",
     resources: "/academy/resources",
     account: "/academy/account",
     settings: "/academy/settings",

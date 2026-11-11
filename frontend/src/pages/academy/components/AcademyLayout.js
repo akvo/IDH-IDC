@@ -5,18 +5,8 @@ import AcademySidebar from "./AcademySidebar";
 import AcademyFooter from "./AcademyFooter";
 import ChatbotFloatButton from "./ChatbotFloatButton";
 import { routePath } from "../../../components/route";
-import { ACADEMY_PRIMARY_COLOR } from "../utils";
+import { ACADEMY_THEME } from "../utils";
 import "./AcademyLayout.scss";
-
-// Academy brand colour and Inter font, mirrored from AcademyLayout.scss so
-// antd components and portals match
-const academyTheme = {
-  token: {
-    colorPrimary: ACADEMY_PRIMARY_COLOR,
-    fontFamily:
-      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  },
-};
 
 // The current user (incl. user_profile for the header avatar) is loaded into
 // UserState by App's GET /user/me on startup, so the shell does not refetch it.
@@ -29,7 +19,7 @@ const AcademyLayout = () => {
   );
 
   return (
-    <ConfigProvider theme={academyTheme}>
+    <ConfigProvider theme={ACADEMY_THEME}>
       <div className="academy-shell" data-testid="academy-layout">
         <Layout className="academy-shell-body">
           <AcademySidebar onGetHelp={handleGetHelp} />
