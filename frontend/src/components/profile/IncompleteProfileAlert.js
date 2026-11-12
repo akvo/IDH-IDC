@@ -13,17 +13,23 @@ export const isUserProfileIncomplete = (userState) => {
   if (!fullname) {
     return true;
   }
-  const tools = Array.isArray(userState.tools) ? userState.tools : [];
   const companyName = userState.company_name
     ? String(userState.company_name).trim()
     : "";
-  if (tools.includes("idc")) {
-    return !userState.company && !companyName;
-  }
   const profileCompanyName = userState.user_profile?.company_name
     ? String(userState.user_profile.company_name).trim()
     : "";
-  return !profileCompanyName && !companyName;
+  const internalOrgName =
+    userState.internal_user && userState.organisation_detail?.name
+      ? String(userState.organisation_detail.name).trim()
+      : "";
+
+  return Boolean(
+    !userState.company &&
+      !companyName &&
+      !profileCompanyName &&
+      !internalOrgName
+  );
 };
 
 export const getProfileAlertStorageKey = (userId) =>
@@ -90,17 +96,26 @@ const IncompleteProfileAlert = ({
       type="info"
       showIcon
       closable
-      message="Complete your profile"
-      description={
-        <span>
-          Please complete your full name and organization details.
-          {showActionLink && (
-            <>
-              {" "}
-              <Link to={routePath.profile}>Complete Profile &rarr;</Link>
-            </>
-          )}
-        </span>
+      message={
+        <div className="incomplete-profile-alert__content">
+          <span className="incomplete-profile-alert__title">
+            Complete your profile
+          </span>
+          <span className="incomplete-profile-alert__subtitle">
+            Add your name and organization details.
+          </span>
+        </div>
+      }
+      action={
+        showActionLink ? (
+          <Link
+            to={routePath.profile}
+            data-testid="link-complete-profile"
+            className="incomplete-profile-alert__action"
+          >
+            Complete Profile &rarr;
+          </Link>
+        ) : null
       }
       onClose={handleClose}
       className={`incomplete-profile-alert ${className}`.trim()}

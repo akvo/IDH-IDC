@@ -61,7 +61,13 @@ const Profile = () => {
         return matched.label;
       }
     }
-    return userState?.user_profile?.company_name || "";
+    if (userState?.user_profile?.company_name) {
+      return userState.user_profile.company_name;
+    }
+    if (userState?.internal_user && userState?.organisation_detail?.name) {
+      return userState.organisation_detail.name;
+    }
+    return "";
   }, [userState, companyOptions]);
 
   useEffect(() => {
