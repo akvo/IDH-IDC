@@ -414,6 +414,7 @@ class TestUserEndpoint:
                 "case_access": [],
                 "internal_user": True,
                 "company": None,
+                "company_name": None,
                 "user_type": "internal",
                 "user_profile": None,
                 "tools": ["idc", "academy"],

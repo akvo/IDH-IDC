@@ -10,6 +10,7 @@ const withPrefix = (prefix, path) =>
 
 // Route definitions
 const routePath = {
+  profile: "/profile",
   idc: {
     landing: withPrefix("idc"),
     login: withPrefix("idc", "/login"),
@@ -37,6 +38,7 @@ const routePath = {
 };
 
 const paths = {
+  profile: "/profile",
   casesWelcome: routePath.idc.dashboard,
   academy: routePath.academy.landing,
   login: "/login",

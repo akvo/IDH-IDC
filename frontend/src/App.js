@@ -43,6 +43,7 @@ import {
   ModuleLearningPage,
 } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
+import { Profile } from "./pages/profile";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
 
@@ -158,6 +159,7 @@ const App = () => {
             s.case_access = data.case_access || [];
             s.internal_user = data.internal_user;
             s.company = data.company;
+            s.company_name = data.company_name || null;
             s.user_type = data.user_type;
             s.user_profile = data.user_profile || null;
             s.tools = Array.isArray(data.tools) ? data.tools : [];
@@ -193,6 +195,9 @@ const App = () => {
           <Route element={<PrivateRoutes />}>
             {/* IDC Dashboard after login */}
             <Route exact path={routePath.idc.dashboard} element={<Welcome />} />
+
+            {/* Profile */}
+            <Route exact path={routePath.profile} element={<Profile />} />
 
             {/* Case */}
             {/* Manage new cases step routes */}

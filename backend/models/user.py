@@ -19,6 +19,7 @@ from typing_extensions import TypedDict
 from pydantic import (
     BaseModel,
     EmailStr,
+    Field,
     SecretStr,
     field_validator,
     ValidationInfo,
@@ -99,6 +100,7 @@ class UserInfo(TypedDict):
     case_access: Optional[List[UserCasePermissionDict]]
     internal_user: bool  # UserRole == user has business unit
     company: Optional[int]
+    company_name: Optional[str]
     user_type: UserType
     user_profile: Optional[UserProfileDict]
     tools: List[str]
@@ -297,6 +299,18 @@ class User(Base):
         if hasattr(self, "profile") and self.profile:
             user_profile = self.profile.to_dict()
 
+        tools_list = self.tools if self.tools is not None else []
+        if "idc" in tools_list:
+            company_name = (
+                self.user_company.name if self.user_company else None
+            )
+        else:
+            company_name = (
+                self.profile.company_name
+                if (hasattr(self, "profile") and self.profile)
+                else None
+            )
+
         return {
             "id": self.id,
             "fullname": self.fullname,
@@ -313,9 +327,10 @@ class User(Base):
                 True if self.user_type == UserType.internal else False
             ),
             "company": self.company,
+            "company_name": company_name,
             "user_type": self.user_type,
             "user_profile": user_profile,
-            "tools": self.tools if self.tools is not None else [],
+            "tools": tools_list,
         }
 
     @property
@@ -516,6 +531,72 @@ class UserUpdateBase(BaseModel):
         )
 
 
+def validate_password_strength(v: str) -> str:
+    if len(v) < 8:
+        raise ValueError("Password must be at least 8 characters long")
+    if not re.search(r"[A-Z]", v):
+        raise ValueError(
+            "Password must contain at least one uppercase letter"
+        )
+    if not re.search(r"[a-z]", v):
+        raise ValueError(
+            "Password must contain at least one lowercase letter"
+        )
+    if not re.search(r"\d", v):
+        raise ValueError("Password must contain at least one digit")
+    if not re.search(r"[-._!\"`'#%&,:;<>=@{}~$()*+/?[\]^|]", v):
+        raise ValueError(
+            "Password must contain at least one special character"
+        )
+    return v
+
+
+class UserProfileUpdateRequest(BaseModel):
+    fullname: Optional[str] = None
+    company_name: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+    @field_validator("fullname")
+    @classmethod
+    def validate_fullname(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if not v:
+                raise ValueError("Fullname cannot be empty")
+            if len(v) > 125:
+                raise ValueError("Fullname cannot exceed 125 characters")
+        return v
+
+    @field_validator("company_name")
+    @classmethod
+    def validate_company_name(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if len(v) > 255:
+                raise ValueError(
+                    "Company name cannot exceed 255 characters"
+                )
+        return v
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            return validate_password_strength(v)
+        return v
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=1)
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: str) -> str:
+        return validate_password_strength(v)
+
+
 class UserRegisterAcademy(BaseModel):
     fullname: str
     email: EmailStr
@@ -543,23 +624,7 @@ class UserRegisterAcademy(BaseModel):
     @field_validator("password")
     @classmethod
     def validate_password_complexity(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("Password must be at least 8 characters long")
-        if not re.search(r"[A-Z]", v):
-            raise ValueError(
-                "Password must contain at least one uppercase letter"
-            )
-        if not re.search(r"[a-z]", v):
-            raise ValueError(
-                "Password must contain at least one lowercase letter"
-            )
-        if not re.search(r"\d", v):
-            raise ValueError("Password must contain at least one digit")
-        if not re.search(r"[-._!\"`'#%&,:;<>=@{}~$()*+/?[\]^|]", v):
-            raise ValueError(
-                "Password must contain at least one special character"
-            )
-        return v
+        return validate_password_strength(v)
 
 
 class AcademyRegisterResponse(BaseModel):
