@@ -234,6 +234,26 @@ def register(
         session=session, email=payload.email
     )
     if check_user_exist:
+        if invitation_id and ToolType.idc.value not in (
+            check_user_exist.tools or []
+        ):
+            academy_company = (
+                check_user_exist.profile.company_name
+                if hasattr(check_user_exist, "profile")
+                and check_user_exist.profile
+                else None
+            )
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "User already has an Academy account",
+                    "is_academy_user": True,
+                    "user_id": check_user_exist.id,
+                    "fullname": check_user_exist.fullname,
+                    "email": check_user_exist.email,
+                    "academy_company": academy_company,
+                },
+            )
         raise HTTPException(
             status_code=409, detail=f"User {payload.email} already exist."
         )

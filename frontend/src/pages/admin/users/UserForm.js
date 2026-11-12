@@ -74,10 +74,15 @@ const UserForm = () => {
   const [revokingIdc, setRevokingIdc] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  const [conflictUser, setConflictUser] = useState(null);
+  const [conflictCompanyId, setConflictCompanyId] = useState(null);
+  const [grantingConflict, setGrantingConflict] = useState(false);
+
   const currentUserId = UserState.useState((s) => s.id);
 
   // const organisationOptions = UIState.useState((s) => s.organisationOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
+  const companyList = companyOptions;
 
   const businessUnitOptions = window.master.business_units?.map((x) => ({
     label: x.name,
@@ -275,6 +280,51 @@ const UserForm = () => {
     }
   };
 
+  const handleCancelConflict = () => {
+    setConflictUser(null);
+    setConflictCompanyId(null);
+  };
+
+  const handleGrantConflict = async () => {
+    if (!conflictCompanyId) {
+      messageApi.open({
+        type: "error",
+        content: "Please select an IDC Company.",
+      });
+      return;
+    }
+    setGrantingConflict(true);
+    try {
+      await api.post(`user/${conflictUser.user_id}/grant-idc`, {
+        company_id: conflictCompanyId,
+        user_type: conflictUser.user_type,
+      });
+      messageApi.open({
+        type: "success",
+        content: "IDC access granted and company linked successfully.",
+      });
+      setConflictUser(null);
+      setConflictCompanyId(null);
+      form.resetFields();
+      setTimeout(() => {
+        navigate("/admin/users");
+      }, 500);
+    } catch (e) {
+      console.error(e);
+      let content = "Failed to grant IDC access.";
+      const detail = e?.response?.data?.detail;
+      if (typeof detail === "string") {
+        content = detail;
+      }
+      messageApi.open({
+        type: "error",
+        content,
+      });
+    } finally {
+      setGrantingConflict(false);
+    }
+  };
+
   const onFinish = async (values) => {
     setSubmitting(true);
     const {
@@ -433,8 +483,26 @@ const UserForm = () => {
       .catch((e) => {
         console.error(e);
         let content = "Failed! Something went wrong.";
-        const { data, status } = e.response;
-        if (status === 409 && data?.detail) {
+        const { data, status } = e?.response || {};
+        if (status === 409 && data?.detail?.is_academy_user === true) {
+          const detail = data.detail;
+          const conflictUserType =
+            resolvedUserType === "internal"
+              ? "external_regular"
+              : resolvedUserType || "external_regular";
+          setConflictUser({
+            user_id: detail.user_id || detail.id,
+            fullname: detail.fullname,
+            email: detail.email,
+            academy_company: detail.academy_company,
+            user_type: conflictUserType,
+          });
+          setConflictCompanyId(company || null);
+          return;
+        }
+        if (status === 409 && typeof data?.detail === "string") {
+          content = data.detail;
+        } else if (typeof data?.detail === "string") {
           content = data.detail;
         }
         messageApi.open({
@@ -829,6 +897,61 @@ const UserForm = () => {
           </Form.Item>
         </Form>
       )}
+      <Modal
+        title="Account Already Exists on Academy"
+        open={Boolean(conflictUser)}
+        destroyOnClose
+        onCancel={handleCancelConflict}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={handleCancelConflict}
+            data-testid="conflict-cancel-btn"
+          >
+            Cancel
+          </Button>,
+          <Button
+            key="grant"
+            type="primary"
+            loading={grantingConflict}
+            onClick={handleGrantConflict}
+            data-testid="conflict-grant-btn"
+          >
+            Yes, Grant IDC Access
+          </Button>,
+        ]}
+      >
+        {conflictUser && (
+          <div className="conflict-user-modal-content">
+            <p>
+              {`A user with email "${conflictUser.email}" (${
+                conflictUser.fullname
+              }) is currently registered on the Living Income Academy${
+                conflictUser.academy_company
+                  ? ` under "${conflictUser.academy_company}"`
+                  : ""
+              }.`}
+            </p>
+            <p>
+              Would you like to grant them access to the Income Driver
+              Calculator and link them to an official IDC Company?
+            </p>
+            <div style={{ marginTop: 16 }}>
+              <Select
+                showSearch
+                allowClear
+                style={{ width: "100%" }}
+                placeholder="Select an IDC Company"
+                data-testid="conflict-company-select"
+                filterOption={filterOption}
+                options={companyList}
+                value={conflictCompanyId}
+                onChange={setConflictCompanyId}
+              />
+            </div>
+          </div>
+        )}
+      </Modal>
     </ContentLayout>
   );
 };
