@@ -25,11 +25,17 @@ def clean_admin_tool_access(session: Session) -> Generator:
     created_user_ids = []
     created_company_ids = []
     created_profile_ids = []
+    created_case_ids = []
+    created_country_ids = []
+    created_commodity_ids = []
 
     def _track(
         user_id: int = None,
         company_id: int = None,
         profile_id: int = None,
+        case_id: int = None,
+        country_id: int = None,
+        commodity_id: int = None,
     ):
         if user_id and user_id not in created_user_ids:
             created_user_ids.append(user_id)
@@ -37,10 +43,23 @@ def clean_admin_tool_access(session: Session) -> Generator:
             created_company_ids.append(company_id)
         if profile_id and profile_id not in created_profile_ids:
             created_profile_ids.append(profile_id)
+        if case_id and case_id not in created_case_ids:
+            created_case_ids.append(case_id)
+        if country_id and country_id not in created_country_ids:
+            created_country_ids.append(country_id)
+        if commodity_id and commodity_id not in created_commodity_ids:
+            created_commodity_ids.append(commodity_id)
 
     yield _track
 
-    # 1. Clean profiles, users, and companies in reverse dependency order
+    # 1. Clean cases, profiles, users, companies, commodities, countries in reverse dependency order
+    for cid in reversed(created_case_ids):
+        from models.case import Case
+        case = session.query(Case).filter(Case.id == cid).first()
+        if case:
+            session.delete(case)
+    session.commit()
+
     for pid in reversed(created_profile_ids):
         p = session.query(UserProfile).filter(UserProfile.id == pid).first()
         if p:
@@ -62,6 +81,18 @@ def clean_admin_tool_access(session: Session) -> Generator:
         c = session.query(Company).filter(Company.id == cid).first()
         if c:
             session.delete(c)
+
+    for com_id in reversed(created_commodity_ids):
+        from models.commodity import Commodity
+        cm = session.query(Commodity).filter(Commodity.id == com_id).first()
+        if cm:
+            session.delete(cm)
+
+    for cou_id in reversed(created_country_ids):
+        from models.country import Country
+        co = session.query(Country).filter(Country.id == cou_id).first()
+        if co:
+            session.delete(co)
 
     session.commit()
 
@@ -753,3 +784,225 @@ class TestAdminToolAccessEndpoints:
         session.refresh(target_user)
         assert ToolType.idc.value in target_user.tools
         assert target_user.company == company.id
+
+
+class TestAdminRevokeIdcAccess:
+    """Test suite for POST /user/{user_id}/revoke-idc endpoint."""
+
+    @pytest.mark.asyncio
+    async def test_revoke_idc_access_success(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        clean_admin_tool_access,
+    ) -> None:
+        """Admin revokes IDC access: removes 'idc', unlinks company, clears all_cases."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.revoke.success@example.com",
+            fullname="Admin Revoke Success",
+            role=UserRole.admin,
+            tools=[ToolType.idc.value],
+        )
+        company = _create_test_company(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            name="Revoke Agro Partner",
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="target.revoke.success@example.com",
+            fullname="Target Revoke Success",
+            role=UserRole.user,
+            tools=[ToolType.idc.value, ToolType.academy.value],
+            company_id=company.id,
+        )
+        target_user.all_cases = 1
+        session.commit()
+
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{target_user.id}/revoke-idc",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert ToolType.idc.value not in data.get("tools", [])
+        assert ToolType.academy.value in data.get("tools", [])
+        assert data.get("company") is None
+
+        session.refresh(target_user)
+        assert ToolType.idc.value not in target_user.tools
+        assert ToolType.academy.value in target_user.tools
+        assert target_user.company is None
+        assert target_user.all_cases == 0
+
+    @pytest.mark.asyncio
+    async def test_revoke_idc_access_user_with_only_idc_retains_academy(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        clean_admin_tool_access,
+    ) -> None:
+        """Revoking IDC from user whose tools were only ['idc'] ensures ['academy'] remains."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.revoke.fallback@example.com",
+            fullname="Admin Revoke Fallback",
+            role=UserRole.admin,
+            tools=[ToolType.idc.value],
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="target.revoke.fallback@example.com",
+            fullname="Target Revoke Fallback",
+            role=UserRole.user,
+            tools=[ToolType.idc.value],
+        )
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{target_user.id}/revoke-idc",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 200
+        session.refresh(target_user)
+        assert target_user.tools == [ToolType.academy.value]
+
+    @pytest.mark.asyncio
+    async def test_revoke_idc_access_non_admin_returns_403(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        clean_admin_tool_access,
+    ) -> None:
+        """Non-admin user cannot revoke IDC access."""
+        regular_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="nonadmin.revoke@example.com",
+            fullname="Non Admin Revoke",
+            role=UserRole.user,
+            tools=[ToolType.idc.value],
+        )
+        user_token = generate_user_token(regular_user)
+        res = await client.post(
+            f"/user/{regular_user.id}/revoke-idc",
+            headers={"Authorization": f"Bearer {user_token}"},
+        )
+        assert res.status_code == 403
+
+    @pytest.mark.asyncio
+    async def test_revoke_idc_access_user_without_idc_returns_400(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        clean_admin_tool_access,
+    ) -> None:
+        """Revoking IDC from user without IDC access returns 400 Bad Request."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.revoke.no.idc@example.com",
+            fullname="Admin Revoke No IDC",
+            role=UserRole.admin,
+            tools=[ToolType.idc.value],
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="target.no.idc@example.com",
+            fullname="Target No IDC",
+            role=UserRole.user,
+            tools=[ToolType.academy.value],
+        )
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{target_user.id}/revoke-idc",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 400
+        assert "does not have IDC access" in res.json().get("detail", "")
+
+    @pytest.mark.asyncio
+    async def test_revoke_idc_access_user_with_owned_cases_returns_409(
+        self,
+        app: FastAPI,
+        session: Session,
+        client: AsyncClient,
+        clean_admin_tool_access,
+    ) -> None:
+        """Revoking IDC from user who owns cases returns 409 Conflict with cases list."""
+        from datetime import date
+        from models.case import Case
+        from models.country import Country
+        from models.commodity import Commodity
+
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.revoke.conflict@example.com",
+            fullname="Admin Revoke Conflict",
+            role=UserRole.admin,
+            tools=[ToolType.idc.value],
+        )
+        case_owner = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="owner.revoke.conflict@example.com",
+            fullname="Owner Revoke Conflict",
+            role=UserRole.user,
+            tools=[ToolType.idc.value, ToolType.academy.value],
+        )
+        country = Country(name="Conflict Country")
+        commodity = Commodity(name="Conflict Commodity")
+        session.add(country)
+        session.add(commodity)
+        session.commit()
+        session.refresh(country)
+        session.refresh(commodity)
+        clean_admin_tool_access(
+            country_id=country.id,
+            commodity_id=commodity.id,
+        )
+
+        test_case = Case(
+            name="Conflict Test Case",
+            description="Testing 409 conflict on revoke",
+            date=date.today(),
+            year=2024,
+            country=country.id,
+            focus_commodity=commodity.id,
+            currency="USD",
+            area_size_unit="ha",
+            volume_measurement_unit="kg",
+            cost_of_production_unit="Per-area",
+            reporting_period="Per-season",
+            segmentation=0,
+            living_income_study=None,
+            multiple_commodities=0,
+            logo=None,
+            created_by=case_owner.id,
+        )
+        session.add(test_case)
+        session.commit()
+        session.refresh(test_case)
+        clean_admin_tool_access(case_id=test_case.id)
+
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{case_owner.id}/revoke-idc",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 409
+        detail = res.json().get("detail", {})
+        assert detail.get("id") == case_owner.id
+        assert len(detail.get("cases", [])) > 0
+        assert any(c["value"] == test_case.id for c in detail.get("cases", []))

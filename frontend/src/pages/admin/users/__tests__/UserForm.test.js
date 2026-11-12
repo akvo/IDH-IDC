@@ -509,4 +509,108 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
       );
     });
   });
+
+  describe("Revoke IDC Tool Access Flow", () => {
+    it("renders 'Revoke IDC Access' button when editing user with idc in tools", async () => {
+      api.get.mockResolvedValueOnce({ data: idcUser });
+
+      renderComponent("/admin/user/102");
+
+      await waitFor(() => {
+        expect(screen.getByTestId("tool-access-card")).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId("revoke-idc-btn")).toBeInTheDocument();
+      expect(
+        screen.getByText("Revoke IDC Access", { selector: ".revoke-idc-label" })
+      ).toBeInTheDocument();
+      expect(screen.queryByTestId("grant-idc-switch")).not.toBeInTheDocument();
+    });
+
+    it("successfully revokes IDC access and transitions UI state", async () => {
+      api.get.mockResolvedValueOnce({ data: idcUser });
+      api.post.mockResolvedValueOnce({
+        data: {
+          ...idcUser,
+          tools: ["academy"],
+          company: null,
+        },
+      });
+
+      renderComponent("/admin/user/102");
+
+      const revokeBtn = await waitFor(() =>
+        screen.getByTestId("revoke-idc-btn")
+      );
+
+      act(() => {
+        fireEvent.click(revokeBtn);
+      });
+
+      // Confirm Popconfirm
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole("button", { name: "Yes" })
+      );
+      act(() => {
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith("user/102/revoke-idc");
+      });
+
+      // After revocation: IDC tag removed, Grant switch shown, Company section hidden
+      await waitFor(() => {
+        expect(screen.getByTestId("grant-idc-switch")).toBeInTheDocument();
+        expect(screen.queryByTestId("revoke-idc-btn")).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Company", { selector: ".ant-card-head-title" })
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it("handles 409 conflict when user owns cases and displays modal", async () => {
+      api.get.mockResolvedValueOnce({ data: idcUser });
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 409,
+          data: {
+            detail: {
+              id: 102,
+              email: "bob.idc@example.com",
+              cases: [
+                { label: "Cocoa Farm Study 2024", value: 10 },
+                { label: "Coffee Baseline 2023", value: 12 },
+              ],
+            },
+          },
+        },
+      });
+
+      renderComponent("/admin/user/102");
+
+      const revokeBtn = await waitFor(() =>
+        screen.getByTestId("revoke-idc-btn")
+      );
+
+      act(() => {
+        fireEvent.click(revokeBtn);
+      });
+
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole("button", { name: "Yes" })
+      );
+      act(() => {
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Cannot Revoke IDC Access")
+        ).toBeInTheDocument();
+        expect(screen.getByText("Cocoa Farm Study 2024")).toBeInTheDocument();
+        expect(screen.getByText("Coffee Baseline 2023")).toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -570,6 +570,53 @@ def grant_idc(
     return user.to_user_detail
 
 
+@user_route.post(
+    "/user/{user_id}/revoke-idc",
+    response_model=UserDetailDict,
+    summary="revoke IDC access from user",
+    name="user:revoke_idc",
+    tags=["User"],
+)
+def revoke_idc(
+    req: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    tools_list = list(user.tools or [])
+    if ToolType.idc.value not in tools_list:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User does not have IDC access",
+        )
+
+    # Check case ownership before allowing IDC access revocation
+    cases_owned_by_user = crud_case.get_case_by_created_by(
+        session=session, created_by=user.id
+    )
+    if cases_owned_by_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "id": user.id,
+                "email": user.email,
+                "cases": [case.to_dropdown for case in cases_owned_by_user],
+            },
+        )
+
+    new_tools = [t for t in tools_list if t != ToolType.idc.value]
+    if not new_tools:
+        new_tools = [ToolType.academy.value]
+    user.tools = new_tools
+    user.company = None
+    user.all_cases = 0
+    session.commit()
+    session.refresh(user)
+    return user.to_user_detail
+
+
 @user_route.get(
     "/user/{user_id:path}",
     response_model=UserDetailDict,

@@ -55,6 +55,21 @@
         }
       }
 
+      .revoke-idc-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px dashed #e8e8e8;
+        margin-top: 12px;
+
+        .revoke-idc-label {
+          font-weight: 500;
+          font-size: 14px;
+          color: #262626;
+        }
+      }
+
       .idc-linkage-panel {
         margin-top: 8px;
         animation: fadeIn 0.3s ease-in-out;

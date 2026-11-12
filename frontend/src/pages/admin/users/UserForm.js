@@ -16,8 +16,16 @@ import {
   Tag,
   Space,
   Divider,
+  Popconfirm,
+  Modal,
+  List,
 } from "antd";
-import { allUserRole, nonAdminRole, adminRole } from "../../../store/static";
+import {
+  allUserRole,
+  nonAdminRole,
+  adminRole,
+  LINK_TO_CASE_PROD,
+} from "../../../store/static";
 import upperFirst from "lodash/upperFirst";
 import { UserState, UIState } from "../../../store";
 import { api } from "../../../lib";
@@ -62,6 +70,8 @@ const UserForm = () => {
   const [userTools, setUserTools] = useState([]);
   const [grantIdc, setGrantIdc] = useState(false);
   const [baseUserSnapshot, setBaseUserSnapshot] = useState(null);
+
+  const [revokingIdc, setRevokingIdc] = useState(false);
 
   // const organisationOptions = UIState.useState((s) => s.organisationOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
@@ -143,6 +153,72 @@ const UserForm = () => {
       if (!form.getFieldValue("idc_user_type")) {
         form.setFieldsValue({ idc_user_type: "external_regular" });
       }
+    }
+  };
+
+  const handleRevokeIdc = async () => {
+    setRevokingIdc(true);
+    try {
+      await api.post(`user/${userId}/revoke-idc`);
+      setUserTools((prev) => prev.filter((t) => t !== "idc"));
+      setShowCompany(false);
+      setGrantIdc(false);
+      form.setFieldsValue({
+        company: null,
+      });
+      messageApi.open({
+        type: "success",
+        content: "IDC access revoked successfully.",
+      });
+    } catch (e) {
+      console.error(e);
+      if (e?.response?.status === 409) {
+        const cases = e.response.data?.detail?.cases || [];
+        Modal.confirm({
+          title: "Cannot Revoke IDC Access",
+          icon: null,
+          content: (
+            <div>
+              <p>
+                This user cannot be revoked from IDC because they are the owner
+                of the following cases:
+              </p>
+              <List
+                header={null}
+                footer={null}
+                size="small"
+                bordered
+                style={{ maxHeight: "200px", overflow: "auto" }}
+                dataSource={cases}
+                renderItem={(item) => <List.Item>{item.label}</List.Item>}
+              />
+              <p style={{ marginTop: 12 }}>
+                Please assign new owners for these cases before revoking IDC
+                access.
+              </p>
+            </div>
+          ),
+          okText: "Go to cases",
+          onOk: () => {
+            const userEmail = form.getFieldValue("email") || "";
+            const URL = `${LINK_TO_CASE_PROD}?owner=${userEmail}`;
+            window.open(URL, "_blank");
+          },
+          cancelText: "Cancel",
+        });
+      } else {
+        const detail = e?.response?.data?.detail;
+        let content = "Failed to revoke IDC access!";
+        if (typeof detail === "string") {
+          content = detail;
+        }
+        messageApi.open({
+          type: "error",
+          content,
+        });
+      }
+    } finally {
+      setRevokingIdc(false);
     }
   };
 
@@ -491,6 +567,32 @@ const UserForm = () => {
                       </p>
                     )}
                   </div>
+                  {userTools.includes("idc") && (
+                    <div className="revoke-idc-row">
+                      <span className="revoke-idc-label">
+                        Revoke IDC Access
+                      </span>
+                      <Popconfirm
+                        title="Revoke IDC Access"
+                        description="Are you sure you want to revoke IDC access for this user? Their company linkage will be removed."
+                        okText="Yes"
+                        cancelText="No"
+                        placement="leftBottom"
+                        onConfirm={handleRevokeIdc}
+                        disabled={revokingIdc}
+                      >
+                        <Button
+                          danger
+                          type="primary"
+                          size="small"
+                          loading={revokingIdc}
+                          data-testid="revoke-idc-btn"
+                        >
+                          Revoke IDC Access
+                        </Button>
+                      </Popconfirm>
+                    </div>
+                  )}
                   {!userTools.includes("idc") && (
                     <>
                       <div className="grant-idc-row">
