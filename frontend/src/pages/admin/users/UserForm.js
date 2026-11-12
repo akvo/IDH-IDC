@@ -12,6 +12,10 @@ import {
   Select,
   Spin,
   message,
+  Switch,
+  Tag,
+  Space,
+  Divider,
 } from "antd";
 import { allUserRole, nonAdminRole, adminRole } from "../../../store/static";
 import upperFirst from "lodash/upperFirst";
@@ -55,6 +59,9 @@ const UserForm = () => {
   const [isUserActive, setIsUserActive] = useState(null);
   const [showBusinessUnit, setShowBusinessUnit] = useState(false);
   const [showCompany, setShowCompany] = useState(false);
+  const [userTools, setUserTools] = useState([]);
+  const [grantIdc, setGrantIdc] = useState(false);
+  const [baseUserSnapshot, setBaseUserSnapshot] = useState(null);
 
   // const organisationOptions = UIState.useState((s) => s.organisationOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
@@ -76,6 +83,13 @@ const UserForm = () => {
           const { data } = res;
           setSelectedRole(data?.role || null);
           setIsUserActive(data.active);
+          const tools = Array.isArray(data?.tools) ? data.tools : [];
+          setUserTools(tools);
+          setBaseUserSnapshot({
+            fullname: data?.fullname || "",
+            email: data?.email || "",
+            role: data?.role || "",
+          });
           let userType = null;
 
           const businessUnits = data?.business_units?.length
@@ -91,10 +105,19 @@ const UserForm = () => {
             setShowCompany(true);
           }
 
+          if (
+            data?.role === "user" &&
+            !businessUnits.length &&
+            !data?.company
+          ) {
+            userType = data?.user_type || "external_regular";
+          }
+
           setInitValues({
             ...data,
             user_type: userType,
             business_units: businessUnits,
+            idc_user_type: "external_regular",
           });
         })
         .catch((e) => {
@@ -114,17 +137,95 @@ const UserForm = () => {
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
-  const onFinish = (values) => {
+  const handleToggleGrantIdc = (checked) => {
+    setGrantIdc(checked);
+    if (checked) {
+      if (!form.getFieldValue("idc_user_type")) {
+        form.setFieldsValue({ idc_user_type: "external_regular" });
+      }
+    }
+  };
+
+  const onFinish = async (values) => {
     setSubmitting(true);
-    const { fullname, email, role, business_units, company, user_type } =
-      values;
+    const {
+      fullname,
+      email,
+      role,
+      business_units,
+      company,
+      user_type,
+      idc_user_type,
+    } = values;
+
+    if (userId && grantIdc) {
+      try {
+        const idcUserType = idc_user_type || "external_regular";
+        const baseChanged =
+          !baseUserSnapshot ||
+          baseUserSnapshot.fullname !== fullname ||
+          baseUserSnapshot.role !== role ||
+          baseUserSnapshot.email !== email;
+
+        let approvedParam = "";
+        if (isUserActive !== null && !isUserActive) {
+          approvedParam = "?approved=true";
+        }
+
+        if (baseChanged || (isUserActive !== null && !isUserActive)) {
+          const basePayload = new FormData();
+          basePayload.append("fullname", fullname);
+          basePayload.append("email", email);
+          basePayload.append("role", role);
+          basePayload.append("user_type", idcUserType);
+          basePayload.append("is_active", true);
+          basePayload.append("all_cases", adminRole.includes(role));
+          await api.put(`user/${userId}${approvedParam}`, basePayload);
+        }
+
+        await api.post(`user/${userId}/grant-idc`, {
+          company_id: company,
+          user_type: idcUserType,
+        });
+
+        messageApi.open({
+          type: "success",
+          content: "User saved and IDC access granted.",
+        });
+        setTimeout(() => {
+          form.resetFields();
+          navigate("/admin/users");
+        }, 500);
+      } catch (e) {
+        console.error(e);
+        let content = "Failed! Something went wrong.";
+        const detail = e?.response?.data?.detail;
+        if (typeof detail === "string") {
+          content = detail;
+        } else if (
+          Array.isArray(detail) &&
+          detail.length > 0 &&
+          detail[0]?.msg
+        ) {
+          content = detail[0].msg;
+        }
+        messageApi.open({
+          type: "error",
+          content: content,
+        });
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
 
     const payload = new FormData();
     payload.append("fullname", fullname);
     payload.append("email", email);
     payload.append("role", role);
-    if (user_type) {
-      payload.append("user_type", user_type);
+    const resolvedUserType = user_type || initValues.user_type;
+    if (resolvedUserType) {
+      payload.append("user_type", resolvedUserType);
     }
     // payload.append("organisation", organisation);
 
@@ -261,7 +362,7 @@ const UserForm = () => {
         >
           <Row gutter={[16, 16]}>
             {/* User Information */}
-            <Col span={12}>
+            <Col xs={24} lg={12}>
               <Card title="User Information">
                 <Form.Item
                   label="Fullname"
@@ -329,44 +430,103 @@ const UserForm = () => {
                     options={organisationOptions}
                   />
                 </Form.Item> */}
-                {selectedRole === "user" && (
-                  <Form.Item
-                    label="User Type"
-                    name="user_type"
-                    rules={[
-                      {
-                        required: true,
-                        message: "User type is required",
-                      },
-                    ]}
-                  >
-                    <Select
-                      showSearch
-                      optionFilterProp="children"
-                      filterOption={filterOption}
-                      options={userRoleTypeOptions}
-                      onChange={handleOnChangeUserType}
-                    />
-                  </Form.Item>
-                  /*
-                  Old business unit TODO:: Delete
-                  <FormItem>
-                    <Checkbox
-                      checked={showBusinessUnit}
-                      onChange={() => setShowBusinessUnit(!showBusinessUnit)}
+                {selectedRole === "user" &&
+                  (!userId || userTools.includes("idc")) && (
+                    <Form.Item
+                      label="User Type"
+                      name="user_type"
+                      rules={[
+                        {
+                          required: true,
+                          message: "User type is required",
+                        },
+                      ]}
                     >
-                      IDH Internal User
-                    </Checkbox>
-                  </FormItem> */
-                )}
+                      <Select
+                        showSearch
+                        optionFilterProp="children"
+                        filterOption={filterOption}
+                        options={userRoleTypeOptions}
+                        onChange={handleOnChangeUserType}
+                      />
+                    </Form.Item>
+                  )}
               </Card>
             </Col>
             {/* EOL User Information */}
             {/* Other Inputs */}
-            <Col span={12}>
+            <Col xs={24} lg={12}>
+              {userId && !userTools.includes("idc") && (
+                <Card
+                  title="Tool Access"
+                  className={`tool-access-card${
+                    grantIdc ? " is-granting" : ""
+                  }`}
+                  data-testid="tool-access-card"
+                >
+                  <div className="current-tools-section">
+                    <span className="current-tools-label">Current Access:</span>{" "}
+                    {userTools.includes("academy") ||
+                    userTools.includes("idc") ? (
+                      <Space size={4} wrap>
+                        {userTools.includes("academy") && (
+                          <Tag color="blue">Academy</Tag>
+                        )}
+                        {userTools.includes("idc") && (
+                          <Tag color="green">IDC</Tag>
+                        )}
+                      </Space>
+                    ) : (
+                      "-"
+                    )}
+                    <p className="tool-access-desc">
+                      This user does not currently have access to the Income
+                      Driver Calculator (IDC).
+                    </p>
+                  </div>
+                  <div className="grant-idc-row">
+                    <span className="grant-idc-label">Grant IDC Access</span>
+                    <Switch
+                      checked={grantIdc}
+                      onChange={handleToggleGrantIdc}
+                      data-testid="grant-idc-switch"
+                      aria-label="Grant IDC Access"
+                    />
+                  </div>
+                  {grantIdc && (
+                    <div className="idc-linkage-panel">
+                      <Divider style={{ margin: "16px 0" }} />
+                      <Form.Item
+                        label="IDC User Type"
+                        name="idc_user_type"
+                        rules={[
+                          {
+                            required: true,
+                            message: "IDC User Type is required",
+                          },
+                        ]}
+                      >
+                        <Select
+                          options={[
+                            {
+                              label: "External Regular",
+                              value: "external_regular",
+                            },
+                            {
+                              label: "External Advanced",
+                              value: "external_advanced",
+                            },
+                          ]}
+                        />
+                      </Form.Item>
+                    </div>
+                  )}
+                </Card>
+              )}
               {/* Business Unit Selector */}
-              {useRoleWithBusinessUnitFieldByDefault.includes(selectedRole) ||
-              showBusinessUnit ? (
+              {!grantIdc &&
+              (useRoleWithBusinessUnitFieldByDefault.includes(selectedRole) ||
+                showBusinessUnit) ? (
                 <Card title="Business Units">
                   <Form.Item
                     label="Business Units"
@@ -390,7 +550,7 @@ const UserForm = () => {
                 ""
               )}
               {/* Company Selector */}
-              {showCompany ? (
+              {showCompany || grantIdc ? (
                 <Card title="Company">
                   <Form.Item
                     label="Company"

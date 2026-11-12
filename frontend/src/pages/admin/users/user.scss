@@ -9,5 +9,77 @@
     .ant-select {
       width: 100% !important;
     }
+
+    .tool-access-card {
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+
+      &.is-granting {
+        border-color: $secondary-color;
+        box-shadow: 0 0 0 1px $secondary-color;
+      }
+
+      .current-tools-section {
+        margin-bottom: 16px;
+
+        .current-tools-label {
+          font-weight: 500;
+          margin-right: 8px;
+        }
+
+        .tool-access-desc {
+          margin-top: 8px;
+          margin-bottom: 0;
+          color: #666666;
+          font-size: 13px;
+          line-height: 1.4;
+        }
+      }
+
+      .grant-idc-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+
+        .grant-idc-label {
+          font-weight: 500;
+          font-size: 14px;
+        }
+
+        .ant-switch-checked {
+          background-color: $primary-color;
+        }
+      }
+
+      .idc-linkage-panel {
+        margin-top: 8px;
+        animation: fadeIn 0.3s ease-in-out;
+        transition: opacity 0.3s ease;
+
+        @media (prefers-reduced-motion: reduce) {
+          animation: none;
+          transition: none;
+        }
+
+        .ant-divider {
+          margin: 16px 0;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

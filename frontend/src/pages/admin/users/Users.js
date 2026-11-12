@@ -13,6 +13,7 @@ import {
   Modal,
   List,
   message,
+  Tag,
 } from "antd";
 import { selectProps } from "../../../lib";
 import "./user.scss";
@@ -57,6 +58,11 @@ const userRoleOptions = [
   },
 ];
 
+const toolAccessOptions = [
+  { label: "IDC", value: "idc" },
+  { label: "Academy", value: "academy" },
+];
+
 const Users = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +71,7 @@ const Users = () => {
   const [showApprovedUser, setShowApprovedUser] = useState(true);
   const [role, setRole] = useState(null);
   const [company, setCompany] = useState(null);
+  const [toolAccess, setToolAccess] = useState(null);
   const [deleting, setDeleting] = useState([]);
   const [modal, contextHolder] = Modal.useModal();
   const [messageApi, messageContextHolder] = message.useMessage();
@@ -86,7 +93,7 @@ const Users = () => {
   );
 
   const fetchUser = useCallback(
-    ({ currentPage, search, showApprovedUser, role, company }) => {
+    ({ currentPage, search, showApprovedUser, role, company, toolAccess }) => {
       setLoading(true);
       let url = `user?page=${currentPage}&limit=${perPage}&approved=${showApprovedUser}`;
       if (search) {
@@ -97,6 +104,9 @@ const Users = () => {
       }
       if (company) {
         url = `${url}&company=${company}`;
+      }
+      if (toolAccess) {
+        url = `${url}&tool=${toolAccess}`;
       }
       api
         .get(url)
@@ -129,8 +139,23 @@ const Users = () => {
   );
 
   useEffect(() => {
-    fetchUser({ currentPage, search, showApprovedUser, role, company });
-  }, [currentPage, search, showApprovedUser, role, fetchUser, company]);
+    fetchUser({
+      currentPage,
+      search,
+      showApprovedUser,
+      role,
+      company,
+      toolAccess,
+    });
+  }, [
+    currentPage,
+    search,
+    showApprovedUser,
+    role,
+    company,
+    toolAccess,
+    fetchUser,
+  ]);
 
   const handleDeleteUser = (user) => {
     setDeleting((prev) => [...prev, user.id]);
@@ -141,7 +166,14 @@ const Users = () => {
           type: "success",
           content: "User deleted successfully.",
         });
-        fetchUser({ currentPage, search, showApprovedUser, role, company });
+        fetchUser({
+          currentPage,
+          search,
+          showApprovedUser,
+          role,
+          company,
+          toolAccess,
+        });
       })
       .catch((e) => {
         const { status, data } = e.response;
@@ -192,7 +224,7 @@ const Users = () => {
       title: "Fullname",
       dataIndex: "fullname",
       key: "fullname",
-      width: "35%",
+      width: "26%",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.fullname.localeCompare(b.fullname),
     },
@@ -232,6 +264,25 @@ const Users = () => {
       },
     },
     {
+      title: "Tool Access",
+      dataIndex: "tools",
+      key: "tools",
+      render: (tools) => {
+        const userTools = Array.isArray(tools) ? tools : [];
+        const hasIdc = userTools.includes("idc");
+        const hasAcademy = userTools.includes("academy");
+        if (!hasIdc && !hasAcademy) {
+          return "-";
+        }
+        return (
+          <Space size={4} wrap>
+            {hasIdc && <Tag color="green">IDC</Tag>}
+            {hasAcademy && <Tag color="blue">Academy</Tag>}
+          </Space>
+        );
+      },
+    },
+    {
       title: "Company",
       dataIndex: "companyName",
       key: "companyName",
@@ -267,7 +318,10 @@ const Users = () => {
     },
   ];
 
-  const onSearch = (value) => setSearch(value);
+  const onSearch = (value) => {
+    setCurrentPage(1);
+    setSearch(value);
+  };
 
   return (
     <ContentLayout
@@ -284,7 +338,10 @@ const Users = () => {
           <>
             <Checkbox
               checked={showApprovedUser}
-              onChange={(e) => setShowApprovedUser(e.target.checked)}
+              onChange={(e) => {
+                setCurrentPage(1);
+                setShowApprovedUser(e.target.checked);
+              }}
             >
               {" "}
               Show Approved User
@@ -313,17 +370,42 @@ const Users = () => {
           <>
             <Select
               {...filterProps(windowInnerHeight)}
+              allowClear
               options={userRoleOptions}
               placeholder="User Role"
               value={role}
-              onChange={setRole}
+              onChange={(value) => {
+                setCurrentPage(1);
+                setRole(value);
+              }}
+              aria-label="Filter by User Role"
+              data-testid="filter-user-role"
             />
             <Select
               {...filterProps(windowInnerHeight)}
+              allowClear
               options={companyWithUserOptions}
               placeholder="Company"
               value={company}
-              onChange={setCompany}
+              onChange={(value) => {
+                setCurrentPage(1);
+                setCompany(value);
+              }}
+              aria-label="Filter by Company"
+              data-testid="filter-company"
+            />
+            <Select
+              {...filterProps(windowInnerHeight)}
+              allowClear
+              options={toolAccessOptions}
+              placeholder="Tool Access"
+              value={toolAccess}
+              onChange={(value) => {
+                setCurrentPage(1);
+                setToolAccess(value);
+              }}
+              aria-label="Filter by Tool Access"
+              data-testid="filter-tool-access"
             />
           </>
         }
