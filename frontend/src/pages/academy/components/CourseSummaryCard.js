@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { memo, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "antd";
 import { sanitizeHtml } from "../utils";
 
@@ -8,6 +8,7 @@ const CourseSummaryCard = ({ totalModules, summaryHtml }) => {
   const summaryRef = useRef(null);
   const [expanded, setExpanded] = useState(false);
   const [clamped, setClamped] = useState(false);
+  const html = useMemo(() => sanitizeHtml(summaryHtml), [summaryHtml]);
 
   useLayoutEffect(() => {
     const node = summaryRef.current;
@@ -34,7 +35,7 @@ const CourseSummaryCard = ({ totalModules, summaryHtml }) => {
             expanded ? "" : " academy-course-summary-text--clamped"
           }`}
           // Sanitised: the summary is authored HTML from the API
-          dangerouslySetInnerHTML={{ __html: sanitizeHtml(summaryHtml) }}
+          dangerouslySetInnerHTML={{ __html: html }}
         />
       )}
       {(clamped || expanded) && (
@@ -52,4 +53,4 @@ const CourseSummaryCard = ({ totalModules, summaryHtml }) => {
   );
 };
 
-export default CourseSummaryCard;
+export default memo(CourseSummaryCard);

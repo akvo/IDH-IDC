@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Button, Empty, Input, Result, Skeleton, message } from "antd";
-import { FileSearchOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Empty, Result, Skeleton, message } from "antd";
+import { FileSearchOutlined } from "@ant-design/icons";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import TagFilterChips from "./components/TagFilterChips";
+import CourseSearchForm from "./components/CourseSearchForm";
 import CourseSummaryCard from "./components/CourseSummaryCard";
 import ModuleAccordion from "./components/ModuleAccordion";
 import academyService, { isRequestCancelled } from "./services/academy";
@@ -20,11 +21,24 @@ const POPULAR_TOPIC_COUNT = 5;
 
 const pluralise = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
-const mapChapters = (modules, update) =>
-  modules.map((module) => ({
-    ...module,
-    chapters: (module.chapters || []).map(update),
-  }));
+// Shared by modules with no pending chapter, so their props stay equal and
+// the memoised accordions skip re-rendering
+const NO_PENDING = [];
+
+// Copies only the module and chapter that change; the others keep their
+// identity so their memoised accordions and rows skip re-rendering
+const updateChapter = (modules, chapterId, update) =>
+  modules.map((module) =>
+    (module.chapters || []).some(({ id }) => id === chapterId)
+      ? {
+          ...module,
+          ...update.module?.(module),
+          chapters: module.chapters.map((chapter) =>
+            chapter.id === chapterId ? update.chapter(chapter) : chapter
+          ),
+        }
+      : module
+  );
 
 // Full course: open where the learner is. Results: open every module.
 const getInitialExpandedIds = (modules, isFiltered) => {
@@ -47,7 +61,6 @@ const CourseOverviewPage = () => {
   const chapterId = searchParams.get("chapter");
   const isFiltered = Boolean(search || tag);
 
-  const [searchInput, setSearchInput] = useState(search);
   const [tags, setTags] = useState([]);
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,9 +69,6 @@ const CourseOverviewPage = () => {
   const [expandedIds, setExpandedIds] = useState([]);
   const [pendingChapterIds, setPendingChapterIds] = useState([]);
   const [continuing, setContinuing] = useState(false);
-
-  // Keep the box in step with the URL (browser back/forward, chip clicks)
-  useEffect(() => setSearchInput(search), [search]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -137,74 +147,69 @@ const CourseOverviewPage = () => {
     [setSearchParams]
   );
 
-  // `course` can still be loading when the reader is opened from a link
-  const setChapterStatus = (id, status) =>
-    setCourse(
-      (current) =>
-        current && {
-          ...current,
-          modules: mapChapters(current.modules, (chapter) =>
-            chapter.id === id ? { ...chapter, status } : chapter
-          ),
-        }
-    );
+  const setChapterStatus = useCallback(
+    (id, status) =>
+      setCourse((current) => ({
+        ...current,
+        modules: updateChapter(current.modules, id, {
+          chapter: (chapter) => ({ ...chapter, status }),
+        }),
+      })),
+    []
+  );
 
   // Applies a POST /chapters/{id}/progress response: the chapter's status and
   // its module's recomputed progress
   const applyProgress = useCallback(
     (progress) =>
-      setCourse(
-        (current) =>
-          current && {
-            ...current,
-            modules: current.modules.map((module) =>
-              module.id === progress.module_id
-                ? {
-                    ...module,
-                    progress_pct: progress.module_progress_pct,
-                    status: progress.module_status,
-                    chapters: (module.chapters || []).map((chapter) =>
-                      chapter.id === progress.chapter_id
-                        ? { ...chapter, status: progress.status }
-                        : chapter
-                    ),
-                  }
-                : module
-            ),
-          }
-      ),
+      setCourse((current) => ({
+        ...current,
+        modules: updateChapter(current.modules, progress.chapter_id, {
+          module: () => ({
+            progress_pct: progress.module_progress_pct,
+            status: progress.module_status,
+          }),
+          chapter: (chapter) => ({ ...chapter, status: progress.status }),
+        }),
+      })),
     []
   );
 
-  // Optimistic completion toggle on a chapter row
-  const handleToggleComplete = (chapter, completed) => {
-    const previousStatus = chapter.status;
-    setChapterStatus(
-      chapter.id,
-      completed ? PROGRESS_STATUS.completed : PROGRESS_STATUS.inProgress
-    );
-    setPendingChapterIds((ids) => [...ids, chapter.id]);
-    const settle = () =>
-      setPendingChapterIds((ids) => ids.filter((id) => id !== chapter.id));
-
-    return academyService
-      .updateChapterProgress(
+  // Optimistic completion toggle on a chapter row. Stable (no state read),
+  // so the memoised accordions and rows are not re-rendered by it.
+  const handleToggleComplete = useCallback(
+    (chapter, completed) => {
+      const previousStatus = chapter.status;
+      setChapterStatus(
         chapter.id,
-        completed ? CHAPTER_API_STATUS.completed : CHAPTER_API_STATUS.inProgress
-      )
-      .then((progress) => {
-        settle();
-        applyProgress(progress);
-      })
-      .catch((err) => {
-        settle();
-        setChapterStatus(chapter.id, previousStatus);
-        // Server and network errors are already toasted by academyClient
-        if (err?.status && err.status < 500) {
-          message.error(err.message);
-        }
-      });
-  };
+        completed ? PROGRESS_STATUS.completed : PROGRESS_STATUS.inProgress
+      );
+      setPendingChapterIds((ids) => [...ids, chapter.id]);
+      const settle = () =>
+        setPendingChapterIds((ids) => ids.filter((id) => id !== chapter.id));
+
+      return academyService
+        .updateChapterProgress(
+          chapter.id,
+          completed
+            ? CHAPTER_API_STATUS.completed
+            : CHAPTER_API_STATUS.inProgress
+        )
+        .then((progress) => {
+          settle();
+          applyProgress(progress);
+        })
+        .catch((err) => {
+          settle();
+          setChapterStatus(chapter.id, previousStatus);
+          // Server and network errors are already toasted by academyClient
+          if (err?.status && err.status < 500) {
+            message.error(err.message);
+          }
+        });
+    },
+    [applyProgress, setChapterStatus]
+  );
 
   // Resume where the overview would: the backend picks the chapter from the
   // learner's reading history, which this page does not load
@@ -226,15 +231,23 @@ const CourseOverviewPage = () => {
       });
   };
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    updateParams({ search: searchInput.trim() });
-  };
+  const handleSearch = useCallback(
+    (term) => updateParams({ search: term }),
+    [updateParams]
+  );
 
-  const toggleModule = (id) =>
-    setExpandedIds((ids) =>
-      ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]
-    );
+  const handleTagSelect = useCallback(
+    (slug) => updateParams({ tag: slug, search: null }),
+    [updateParams]
+  );
+
+  const toggleModule = useCallback(
+    (id) =>
+      setExpandedIds((ids) =>
+        ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]
+      ),
+    []
+  );
 
   const tagChips = tags.map(({ slug, name }) => ({
     value: slug,
@@ -362,10 +375,14 @@ const CourseOverviewPage = () => {
                 onToggle={toggleModule}
                 highlight={search}
                 showTags={isFiltered}
-                onTagSelect={(slug) =>
-                  updateParams({ tag: slug, search: null })
+                onTagSelect={handleTagSelect}
+                pendingChapterIds={
+                  (module.chapters || []).some(({ id }) =>
+                    pendingChapterIds.includes(id)
+                  )
+                    ? pendingChapterIds
+                    : NO_PENDING
                 }
-                pendingChapterIds={pendingChapterIds}
                 onToggleComplete={handleToggleComplete}
               />
             ))}
@@ -393,27 +410,7 @@ const CourseOverviewPage = () => {
       </div>
 
       <div className="academy-courses-panel">
-        <form
-          className="academy-course-search"
-          role="search"
-          onSubmit={handleSearch}
-        >
-          <Input
-            allowClear
-            prefix={<SearchOutlined />}
-            placeholder="Search modules, chapters and tags..."
-            aria-label="Search modules, chapters and tags"
-            value={searchInput}
-            onChange={(event) => {
-              setSearchInput(event.target.value);
-              // Clearing the box (or its clear icon) shows the full course
-              if (!event.target.value && search) {
-                updateParams({ search: null });
-              }
-            }}
-          />
-          <Button htmlType="submit">Search</Button>
-        </form>
+        <CourseSearchForm search={search} onSearch={handleSearch} />
         {tagChips.length > 0 && (
           <TagFilterChips
             label="Browse by tag"

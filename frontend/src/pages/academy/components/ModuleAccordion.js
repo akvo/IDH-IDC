@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Progress } from "antd";
 import { ArrowRightOutlined, DownOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
@@ -9,7 +9,8 @@ import TagFilterChips from "./TagFilterChips";
 import { ACADEMY_PRIMARY_COLOR, getModulePath } from "../utils";
 
 // One collapsible curriculum module: progress header, chapter rows and, in
-// search results, the module's tags
+// search results, the module's tags. Memoised: the page passes stable
+// handlers, so only the module whose data or state changed re-renders.
 const ModuleAccordion = ({
   module,
   expanded,
@@ -96,7 +97,8 @@ const ModuleAccordion = ({
               {chapters.map((chapter) => (
                 <ChapterRow
                   key={chapter.id}
-                  chapter={{ ...chapter, module_id: id }}
+                  chapter={chapter}
+                  moduleId={id}
                   highlight={highlight}
                   pending={pendingChapterIds.includes(chapter.id)}
                   onToggleComplete={onToggleComplete}
@@ -124,4 +126,4 @@ const ModuleAccordion = ({
   );
 };
 
-export default ModuleAccordion;
+export default memo(ModuleAccordion);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal, Alert, Button, Pagination, Spin } from "antd";
 import ChapterRow from "./ChapterRow";
 import academyService, { isRequestCancelled } from "../services/academy";
@@ -57,6 +57,9 @@ const ChapterHistoryModal = ({
       });
     return () => controller.abort();
   }, [open, page, reloadKey]);
+
+  // Mapped once per response, so the memoised rows keep their props
+  const chapters = useMemo(() => history.data.map(toChapter), [history.data]);
 
   const setChapterStatus = (chapterId, status) =>
     setHistory((current) => ({
@@ -125,13 +128,13 @@ const ChapterHistoryModal = ({
         />
       )}
       <Spin spinning={loading}>
-        {history.data.length ? (
+        {chapters.length ? (
           <ul className="academy-chapter-list">
-            {history.data.map((item) => (
+            {chapters.map((chapter) => (
               <ChapterRow
-                key={item.chapter_id}
-                chapter={toChapter(item)}
-                pending={pendingChapterIds.includes(item.chapter_id)}
+                key={chapter.id}
+                chapter={chapter}
+                pending={pendingChapterIds.includes(chapter.id)}
                 onToggleComplete={handleToggleComplete}
               />
             ))}

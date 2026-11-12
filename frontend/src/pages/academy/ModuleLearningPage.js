@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button, ConfigProvider, Result, Skeleton, message } from "antd";
 import {
   DownloadOutlined,
@@ -37,6 +37,11 @@ const ModuleLearningPage = () => {
   const [content, setContent] = useState({ chapterId: null, html: null });
   const [contentError, setContentError] = useState(null);
   const [contentReloadKey, setContentReloadKey] = useState(0);
+  // Sanitised once per chapter, not on every footer/saving re-render
+  const contentHtml = useMemo(
+    () => (content.html ? sanitizeHtml(content.html) : ""),
+    [content.html]
+  );
   // Latest known status per chapter, updated by this page's own saves. The
   // progress API always writes the status it is sent, so recording a view
   // must send the current one or it would undo a completion.
@@ -249,7 +254,7 @@ const ModuleLearningPage = () => {
       <div
         className="academy-learning-content"
         // Sanitised: chapter content is authored HTML from the API
-        dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.html) }}
+        dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
     );
   };

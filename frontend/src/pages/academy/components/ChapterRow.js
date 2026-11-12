@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import ProgressStatusTag from "./ProgressStatusTag";
@@ -10,14 +10,16 @@ const formatChapterNumber = (number) => String(number ?? "").padStart(2, "0");
 
 // One chapter: number, title link to the chapter on the module learning
 // page, status and completion toggle. `highlight` marks the search term.
-const ChapterRow = ({ chapter, onToggleComplete, pending, highlight }) => {
-  const {
-    id,
-    module_id: moduleId,
-    chapter_number: chapterNumber,
-    title,
-    status,
-  } = chapter;
+// `moduleId` defaults to the chapter's own `module_id`. Memoised, so a row
+// re-renders only when its chapter, pending state or highlight changes.
+const ChapterRow = ({
+  chapter,
+  moduleId = chapter.module_id,
+  onToggleComplete,
+  pending,
+  highlight,
+}) => {
+  const { id, chapter_number: chapterNumber, title, status } = chapter;
   // Without a module id, Course Overview resolves the chapter's module
   const to = moduleId ? getModulePath(moduleId, id) : getChapterPath(id);
   const isCompleted = status === PROGRESS_STATUS.completed;
@@ -46,4 +48,4 @@ const ChapterRow = ({ chapter, onToggleComplete, pending, highlight }) => {
   );
 };
 
-export default ChapterRow;
+export default memo(ChapterRow);
