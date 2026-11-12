@@ -9,6 +9,7 @@ export const HISTORY_PAGE_SIZE = 10;
 // History items use chapter_* keys; the row card expects the overview shape
 const toChapter = (item) => ({
   id: item.chapter_id,
+  module_id: item.module_id,
   chapter_number: item.chapter_number,
   title: item.chapter_title,
   status: item.status,

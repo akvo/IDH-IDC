@@ -13,13 +13,17 @@ import {
 } from "react-router-dom";
 import ChatbotFloatButton from "./components/ChatbotFloatButton";
 import academyService, { isRequestCancelled } from "./services/academy";
-import { ACADEMY_THEME, CHAPTER_API_STATUS, PROGRESS_STATUS } from "./utils";
+import {
+  ACADEMY_THEME,
+  CHAPTER_API_STATUS,
+  PROGRESS_STATUS,
+  sanitizeHtml,
+} from "./utils";
 import { routePath } from "../../components/route";
 import "./ModuleLearningPage.scss";
 
-// Skeleton of the module learning page (Figma "learning module pages").
-// Each chapter of the module is one step. Chapter content is still being
-// written by the data team, so the card shows a placeholder for now.
+// Module learning page (Figma "learning module pages"), the Academy's chapter
+// reader. Each chapter of the module is one step; `?chapter=<id>` opens one.
 const ModuleLearningPage = () => {
   const { moduleId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,6 +33,10 @@ const ModuleLearningPage = () => {
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [saving, setSaving] = useState(false);
+  // Content of the current chapter (GET /chapters/{id})
+  const [content, setContent] = useState({ chapterId: null, html: null });
+  const [contentError, setContentError] = useState(null);
+  const [contentReloadKey, setContentReloadKey] = useState(0);
   // Latest known status per chapter, updated by this page's own saves. The
   // progress API always writes the status it is sent, so recording a view
   // must send the current one or it would undo a completion.
@@ -80,6 +88,25 @@ const ModuleLearningPage = () => {
       });
     return () => controller.abort();
   }, [moduleId, reloadKey]);
+
+  useEffect(() => {
+    if (!chapterId) {
+      return;
+    }
+    // Moving to another step aborts the previous chapter's request
+    const controller = new AbortController();
+    setContentError(null);
+    academyService
+      .getChapter(chapterId, { signal: controller.signal })
+      .then(({ content_html: html }) => setContent({ chapterId, html }))
+      .catch((err) => {
+        if (isRequestCancelled(err)) {
+          return;
+        }
+        setContentError(err.message);
+      });
+    return () => controller.abort();
+  }, [chapterId, contentReloadKey]);
 
   // Record every chapter step the learner views (Recently opened / history)
   useEffect(() => {
@@ -192,6 +219,41 @@ const ModuleLearningPage = () => {
       });
   };
 
+  const renderContent = () => {
+    if (contentError) {
+      return (
+        <div className="academy-learning-content-error">
+          <p>{contentError}</p>
+          <Button onClick={() => setContentReloadKey((key) => key + 1)}>
+            Try again
+          </Button>
+        </div>
+      );
+    }
+    if (content.chapterId !== chapter.id) {
+      return (
+        <div data-testid="academy-chapter-content-loading">
+          <Skeleton active paragraph={{ rows: 6 }} title={false} />
+        </div>
+      );
+    }
+    if (!content.html) {
+      return (
+        <p className="academy-learning-placeholder">
+          The content for this chapter is being prepared and will appear here
+          soon.
+        </p>
+      );
+    }
+    return (
+      <div
+        className="academy-learning-content"
+        // Sanitised: chapter content is authored HTML from the API
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(content.html) }}
+      />
+    );
+  };
+
   const breadcrumb = [
     {
       key: "home",
@@ -278,10 +340,7 @@ const ModuleLearningPage = () => {
           <h1 id="academy-learning-title" className="academy-learning-title">
             {chapter.title}
           </h1>
-          <p className="academy-learning-placeholder">
-            The content for this chapter is being prepared and will appear here
-            soon.
-          </p>
+          {renderContent()}
         </article>
       </div>
     </>,

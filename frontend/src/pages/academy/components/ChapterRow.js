@@ -3,16 +3,23 @@ import { Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import ProgressStatusTag from "./ProgressStatusTag";
 import HighlightedText from "./HighlightedText";
-import { PROGRESS_STATUS, getChapterPath } from "../utils";
+import { PROGRESS_STATUS, getChapterPath, getModulePath } from "../utils";
 import "./ChapterRow.scss";
 
 const formatChapterNumber = (number) => String(number ?? "").padStart(2, "0");
 
-// One chapter: number, title link to the reader, status and completion toggle.
-// `to` overrides the reader link (e.g. to keep the current filters);
-// `highlight` marks the search term in the title.
-const ChapterRow = ({ chapter, onToggleComplete, pending, to, highlight }) => {
-  const { id, chapter_number: chapterNumber, title, status } = chapter;
+// One chapter: number, title link to the chapter on the module learning
+// page, status and completion toggle. `highlight` marks the search term.
+const ChapterRow = ({ chapter, onToggleComplete, pending, highlight }) => {
+  const {
+    id,
+    module_id: moduleId,
+    chapter_number: chapterNumber,
+    title,
+    status,
+  } = chapter;
+  // Without a module id, Course Overview resolves the chapter's module
+  const to = moduleId ? getModulePath(moduleId, id) : getChapterPath(id);
   const isCompleted = status === PROGRESS_STATUS.completed;
 
   return (
@@ -20,7 +27,7 @@ const ChapterRow = ({ chapter, onToggleComplete, pending, to, highlight }) => {
       <span className="academy-chapter-number">
         {formatChapterNumber(chapterNumber)}
       </span>
-      <Link className="academy-chapter-title" to={to || getChapterPath(id)}>
+      <Link className="academy-chapter-title" to={to}>
         <HighlightedText text={title} highlight={highlight} />
       </Link>
       <ProgressStatusTag status={status} />

@@ -280,11 +280,11 @@ describe("CourseOverviewPage", () => {
       );
     });
 
-    it("links chapters to the reader, keeping the current filters", async () => {
+    it("links chapters to their step on the module learning page", async () => {
       await renderLoadedPage("/academy/courses?tag=benchmark");
       expect(
         screen.getByRole("link", { name: "Why living income matters" })
-      ).toHaveAttribute("href", "/academy/courses?tag=benchmark&chapter=101");
+      ).toHaveAttribute("href", "/academy/modules/11?chapter=101");
     });
 
     it("offers Read more only when the summary is cut off", async () => {
@@ -581,215 +581,48 @@ describe("CourseOverviewPage", () => {
     });
   });
 
-  describe("chapter reader", () => {
-    const dialog = () => screen.findByRole("dialog");
-    // The completion button unlocks once the view record has landed
-    const viewRecorded = () =>
-      waitFor(() =>
-        expect(
-          within(screen.getByRole("dialog")).getByRole("button", {
-            name: /(Mark as completed|Completed)$/,
-          })
-        ).toBeEnabled()
-      );
-
-    it("opens from the URL with sanitised content and records the view", async () => {
-      window.__xss = false;
+  describe("chapter links", () => {
+    it("opens ?chapter= on its module learning page", async () => {
       renderPage("/academy/courses?chapter=202");
-      const reader = within(await dialog());
-
-      expect(
-        await reader.findByRole("heading", {
-          name: "Choosing a living income benchmark",
-        })
-      ).toBeInTheDocument();
-      expect(
-        reader.getByText("Measuring & Analysis · Chapter 2 · 5 min read")
-      ).toBeInTheDocument();
-      expect(reader.getByText("Use a credible benchmark.")).toBeInTheDocument();
-      expect(
-        document.querySelector(".academy-reader-content script")
-      ).toBeNull();
-      expect(
-        document.querySelector(".academy-reader-content img")
-      ).not.toHaveAttribute("onerror");
-      expect(window.__xss).toBe(false);
+      await waitFor(() =>
+        expect(location()).toHaveTextContent("/academy/modules/12?chapter=202")
+      );
       expect(academyService.getChapter).toHaveBeenCalledWith(
         "202",
         expect.objectContaining({ signal: expect.anything() })
       );
-      await waitFor(() =>
-        expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
-          202,
-          "in_progress",
-          { markOpened: true }
-        )
-      );
-      await viewRecorded();
     });
 
-    it("keeps a completed chapter completed when recording the view", async () => {
-      academyService.getChapter.mockResolvedValue(
-        buildChapter({ status: "Completed" })
-      );
-      renderPage("/academy/courses?chapter=202");
-      await waitFor(() =>
-        expect(academyService.updateChapterProgress).toHaveBeenCalledWith(
-          202,
-          "completed",
-          { markOpened: true }
-        )
-      );
-      await viewRecorded();
-    });
-
-    it("updates the accordion row when the view is recorded", async () => {
-      academyService.updateChapterProgress.mockResolvedValueOnce(
-        progressResponse({
-          chapter_id: 301,
-          status: "In progress",
-          module_id: 13,
-          module_progress_pct: 0,
-          module_status: "In progress",
-        })
-      );
-      academyService.getChapter.mockResolvedValue(
-        buildChapter({ id: 301, module_id: 13, status: "Not started" })
-      );
-      await renderLoadedPage("/academy/courses?chapter=301");
-      await waitFor(() =>
-        expect(
-          within(accordion("Building the Business Case")).getByText(
-            "In progress"
-          )
-        ).toBeInTheDocument()
-      );
-      await viewRecorded();
-    });
-
-    it("marks the chapter completed once the view is recorded", async () => {
-      const view = deferred();
-      academyService.updateChapterProgress.mockReturnValueOnce(view.promise);
-      await renderLoadedPage("/academy/courses?chapter=202");
-      const reader = within(await dialog());
-      const complete = await reader.findByRole("button", {
-        name: "Mark as completed",
-      });
-      expect(complete).toBeDisabled();
-
-      view.resolve(
-        progressResponse({
-          status: "In progress",
-          module_progress_pct: 50,
-          module_status: "In progress",
-        })
-      );
-      await waitFor(() => expect(complete).toBeEnabled());
-      fireEvent.click(complete);
-
-      expect(academyService.updateChapterProgress).toHaveBeenLastCalledWith(
-        202,
-        "completed"
-      );
-      expect(
-        await reader.findByRole("button", { name: /Completed$/ })
-      ).toHaveAttribute("aria-pressed", "true");
-      expect(
-        chapterCheckbox("Choosing a living income benchmark")
-      ).toBeChecked();
-    });
-
-    it("keeps the reader unchanged when completing fails", async () => {
-      jest.spyOn(message, "error").mockImplementation(() => {});
-      await renderLoadedPage("/academy/courses?chapter=202");
-      const reader = within(await dialog());
-      const complete = await reader.findByRole("button", {
-        name: "Mark as completed",
-      });
-      await waitFor(() => expect(complete).toBeEnabled());
-      academyService.updateChapterProgress.mockRejectedValueOnce({
-        status: 400,
-        message: "Nope",
-      });
-
-      fireEvent.click(complete);
-      await waitFor(() => expect(message.error).toHaveBeenCalledWith("Nope"));
-      expect(
-        reader.getByRole("button", { name: "Mark as completed" })
-      ).toBeInTheDocument();
-      message.error.mockRestore();
-    });
-
-    it("moves between chapters and closes back to the filtered list", async () => {
-      await renderLoadedPage("/academy/courses?tag=benchmark&chapter=202");
-      const reader = within(await dialog());
-      await reader.findByRole("heading", {
-        name: "Choosing a living income benchmark",
-      });
-
-      fireEvent.click(reader.getByRole("button", { name: /Next chapter/ }));
-      expect(location()).toHaveTextContent("?tag=benchmark&chapter=301");
-      await waitFor(() =>
-        expect(academyService.getChapter).toHaveBeenLastCalledWith(
-          "301",
-          expect.anything()
-        )
-      );
-
-      fireEvent.click(
-        await reader.findByRole("button", { name: /Previous chapter/ })
-      );
-      expect(location()).toHaveTextContent("chapter=201");
-
-      fireEvent.click(screen.getByRole("button", { name: "Close" }));
-      expect(location()).toHaveTextContent(/\?tag=benchmark$/);
-    });
-
-    it("disables navigation at the ends of the course", async () => {
-      academyService.getChapter.mockResolvedValue(
-        buildChapter({
-          prev_chapter_id: null,
-          next_chapter_id: null,
-          content_html: null,
-        })
-      );
-      renderPage("/academy/courses?chapter=202");
-      const reader = within(await dialog());
-      expect(
-        await reader.findByRole("button", { name: /Previous chapter/ })
-      ).toBeDisabled();
-      expect(
-        reader.getByRole("button", { name: /Next chapter/ })
-      ).toBeDisabled();
-      expect(reader.getByText(/being prepared/)).toBeInTheDocument();
-      await viewRecorded();
-    });
-
-    it("shows not found for an unknown chapter", async () => {
+    it("drops an unknown chapter and shows the list", async () => {
+      const toast = jest.spyOn(message, "error").mockImplementation(() => {});
       academyService.getChapter.mockRejectedValue({
         status: 404,
         message: "Chapter not found",
       });
-      renderPage("/academy/courses?chapter=999");
-      const reader = within(await dialog());
-      expect(await reader.findByText("Chapter not found")).toBeInTheDocument();
-      expect(academyService.updateChapterProgress).not.toHaveBeenCalled();
+      renderPage("/academy/courses?tag=benchmark&chapter=999");
+
+      await waitFor(() =>
+        expect(location()).toHaveTextContent(/\?tag=benchmark$/)
+      );
+      expect(toast).toHaveBeenCalledWith("Chapter not found");
+      await settled();
+      toast.mockRestore();
     });
 
-    it("retries a chapter that failed to load", async () => {
-      academyService.getChapter
-        .mockRejectedValueOnce({ status: null, message: "Network Error" })
-        .mockResolvedValueOnce(buildChapter());
+    it("leaves server errors to the global toast", async () => {
+      const toast = jest.spyOn(message, "error").mockImplementation(() => {});
+      academyService.getChapter.mockRejectedValue({
+        status: 500,
+        message: "x",
+      });
       renderPage("/academy/courses?chapter=202");
-      const reader = within(await dialog());
 
-      fireEvent.click(await reader.findByRole("button", { name: "Try again" }));
-      expect(
-        await reader.findByRole("heading", {
-          name: "Choosing a living income benchmark",
-        })
-      ).toBeInTheDocument();
-      await viewRecorded();
+      await waitFor(() =>
+        expect(location()).toHaveTextContent(/^\/academy\/courses$/)
+      );
+      expect(toast).not.toHaveBeenCalled();
+      await settled();
+      toast.mockRestore();
     });
 
     it("continues learning from the backend's resume chapter", async () => {
@@ -802,9 +635,9 @@ describe("CourseOverviewPage", () => {
       expect(button).toHaveClass("ant-btn-loading");
       overview.resolve({ continue_chapter_id: 202 });
 
-      await waitFor(() => expect(location()).toHaveTextContent("?chapter=202"));
-      expect(await dialog()).toBeInTheDocument();
-      await viewRecorded();
+      await waitFor(() =>
+        expect(location()).toHaveTextContent("/academy/modules/12?chapter=202")
+      );
     });
 
     it("stays put when there is nothing to continue, or it fails", async () => {

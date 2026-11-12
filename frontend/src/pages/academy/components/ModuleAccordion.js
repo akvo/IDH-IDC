@@ -17,7 +17,6 @@ const ModuleAccordion = ({
   highlight,
   showTags = false,
   onTagSelect,
-  getChapterLink,
   pendingChapterIds = [],
   onToggleComplete,
 }) => {
@@ -97,8 +96,7 @@ const ModuleAccordion = ({
               {chapters.map((chapter) => (
                 <ChapterRow
                   key={chapter.id}
-                  chapter={chapter}
-                  to={getChapterLink(chapter.id)}
+                  chapter={{ ...chapter, module_id: id }}
                   highlight={highlight}
                   pending={pendingChapterIds.includes(chapter.id)}
                   onToggleComplete={onToggleComplete}

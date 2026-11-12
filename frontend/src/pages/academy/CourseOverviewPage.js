@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Empty, Input, Result, Skeleton, message } from "antd";
 import { FileSearchOutlined, SearchOutlined } from "@ant-design/icons";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import TagFilterChips from "./components/TagFilterChips";
 import CourseSummaryCard from "./components/CourseSummaryCard";
 import ModuleAccordion from "./components/ModuleAccordion";
-import ChapterReaderModal from "./components/ChapterReaderModal";
 import academyService, { isRequestCancelled } from "./services/academy";
-import { CHAPTER_API_STATUS, PROGRESS_STATUS } from "./utils";
-import { routePath } from "../../components/route";
+import { CHAPTER_API_STATUS, PROGRESS_STATUS, getModulePath } from "./utils";
 import "./CourseOverviewPage.scss";
 
 // "Try searching for" on the no-results state (Figma)
@@ -40,9 +38,10 @@ const getInitialExpandedIds = (modules, isFiltered) => {
 };
 
 const CourseOverviewPage = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  // The URL is the source of truth for filters and the open chapter, so
-  // filtered views and the reader can be shared, refreshed and navigated back
+  // The URL is the source of truth for the filters, so filtered views can be
+  // shared, refreshed and navigated back
   const search = (searchParams.get("search") || "").trim();
   const tag = searchParams.get("tag") || "";
   const chapterId = searchParams.get("chapter");
@@ -95,6 +94,37 @@ const CourseOverviewPage = () => {
     return () => controller.abort();
   }, [search, tag, reloadKey]);
 
+  // `?chapter=<id>` (Continue learning, older links) opens the chapter on its
+  // module learning page; the chapter's module comes from its details
+  useEffect(() => {
+    if (!chapterId) {
+      return;
+    }
+    const controller = new AbortController();
+    academyService
+      .getChapter(chapterId, { signal: controller.signal })
+      .then(({ id, module_id: moduleId }) =>
+        navigate(getModulePath(moduleId, id), { replace: true })
+      )
+      .catch((err) => {
+        if (isRequestCancelled(err)) {
+          return;
+        }
+        if (err?.status && err.status < 500) {
+          message.error(err.message);
+        }
+        setSearchParams(
+          (current) => {
+            const next = new URLSearchParams(current);
+            next.delete("chapter");
+            return next;
+          },
+          { replace: true }
+        );
+      });
+    return () => controller.abort();
+  }, [chapterId, navigate, setSearchParams]);
+
   const updateParams = useCallback(
     (changes) =>
       setSearchParams((current) => {
@@ -146,8 +176,7 @@ const CourseOverviewPage = () => {
     []
   );
 
-  // Optimistic toggle shared by the rows and the reader. Resolves to whether
-  // it was saved, so the reader can mirror the result.
+  // Optimistic completion toggle on a chapter row
   const handleToggleComplete = (chapter, completed) => {
     const previousStatus = chapter.status;
     setChapterStatus(
@@ -166,7 +195,6 @@ const CourseOverviewPage = () => {
       .then((progress) => {
         settle();
         applyProgress(progress);
-        return true;
       })
       .catch((err) => {
         settle();
@@ -175,7 +203,6 @@ const CourseOverviewPage = () => {
         if (err?.status && err.status < 500) {
           message.error(err.message);
         }
-        return false;
       });
   };
 
@@ -201,20 +228,13 @@ const CourseOverviewPage = () => {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    updateParams({ search: searchInput.trim(), chapter: null });
+    updateParams({ search: searchInput.trim() });
   };
 
   const toggleModule = (id) =>
     setExpandedIds((ids) =>
       ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]
     );
-
-  // Reader links keep the current filters, so closing it returns to them
-  const getChapterLink = (id) => {
-    const next = new URLSearchParams(searchParams);
-    next.set("chapter", id);
-    return `${routePath.academy.courses}?${next}`;
-  };
 
   const tagChips = tags.map(({ slug, name }) => ({
     value: slug,
@@ -276,17 +296,13 @@ const CourseOverviewPage = () => {
             value: term,
             label: term,
           }))}
-          onSelect={(term) =>
-            updateParams({ search: term, tag: null, chapter: null })
-          }
+          onSelect={(term) => updateParams({ search: term, tag: null })}
         />
         {popularTopics.length > 0 && (
           <TagFilterChips
             label="Popular topics"
             items={popularTopics}
-            onSelect={(slug) =>
-              updateParams({ tag: slug, search: null, chapter: null })
-            }
+            onSelect={(slug) => updateParams({ tag: slug, search: null })}
           />
         )}
       </div>
@@ -347,9 +363,8 @@ const CourseOverviewPage = () => {
                 highlight={search}
                 showTags={isFiltered}
                 onTagSelect={(slug) =>
-                  updateParams({ tag: slug, search: null, chapter: null })
+                  updateParams({ tag: slug, search: null })
                 }
-                getChapterLink={getChapterLink}
                 pendingChapterIds={pendingChapterIds}
                 onToggleComplete={handleToggleComplete}
               />
@@ -393,7 +408,7 @@ const CourseOverviewPage = () => {
               setSearchInput(event.target.value);
               // Clearing the box (or its clear icon) shows the full course
               if (!event.target.value && search) {
-                updateParams({ search: null, chapter: null });
+                updateParams({ search: null });
               }
             }}
           />
@@ -405,19 +420,11 @@ const CourseOverviewPage = () => {
             selectable
             activeValue={tag || null}
             items={[{ value: null, label: "All" }, ...tagChips]}
-            onSelect={(slug) => updateParams({ tag: slug, chapter: null })}
+            onSelect={(slug) => updateParams({ tag: slug })}
           />
         )}
         {renderCourse()}
       </div>
-
-      <ChapterReaderModal
-        chapterId={chapterId}
-        onClose={() => updateParams({ chapter: null })}
-        onNavigate={(id) => updateParams({ chapter: id })}
-        onToggleComplete={handleToggleComplete}
-        onViewed={applyProgress}
-      />
     </div>
   );
 };

@@ -167,6 +167,23 @@ describe("ChapterRow", () => {
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
   });
+
+  it("links to the chapter on its module learning page when the module is known", () => {
+    renderCard({
+      chapter: {
+        id: 7,
+        module_id: 3,
+        chapter_number: 2,
+        title: "Gap",
+        status: "Completed",
+      },
+      onToggleComplete: jest.fn(),
+    });
+    expect(screen.getByRole("link", { name: "Gap" })).toHaveAttribute(
+      "href",
+      "/academy/modules/3?chapter=7"
+    );
+  });
 });
 
 describe("RoadmapCtaBanner", () => {
