@@ -31,7 +31,7 @@ Provide a unified authenticated `/profile` account page across Living Income Aca
   - Security & Password Card: `current_password`, `new_password`, `confirm_password` + live `PasswordCriteria` (`checkPasswordCriteria`).
 - **`<IncompleteProfileAlert />` (`frontend/src/components/profile/IncompleteProfileAlert.js`)**:
   - Accepts optional `user` prop override or defaults to `UserState`.
-  - Shown when `!fullname?.trim() || (tools.includes("idc") ? !company && !company_name : !user_profile?.company_name?.trim() && !company_name?.trim())`.
+  - Shown when `!fullname?.trim() || (!company && !company_name?.trim() && !user_profile?.company_name?.trim() && !(internal_user && organisation_detail?.name?.trim()))`.
   - Dismissible via `localStorage` (`idc_profile_alert_dismissed_${userId} === "true"`).
   - Rendered on `Welcome.js`, `AcademyOverviewPage.js`, and `Profile.js`.
 
