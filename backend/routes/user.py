@@ -2,6 +2,7 @@ import os
 import secrets
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
+import db.crud_company as crud_company
 import db.crud_reset_password as crud_reset_pwd
 import db.crud_case as crud_case
 import db.crud_user_case_access as crud_uca
@@ -40,6 +41,7 @@ from db.connection import get_session
 from models.user import (
     User,
     ToolType,
+    UserType,
     UserDict,
     UserBase,
     UserResponse,
@@ -55,6 +57,7 @@ from models.user import (
     AcademyVerifyResponse,
     UserProfileUpdateRequest,
     ChangePasswordRequest,
+    GrantIdcAccessRequest,
 )
 from models.academy.academy_schemas import (
     ChangePasswordPayload,
@@ -137,6 +140,7 @@ def get_all(
     organisation: Optional[int] = Query(None),
     role: Optional[FilterUserRole] = Query(None),
     company: Optional[int] = Query(None),
+    tool: Optional[ToolType] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -159,6 +163,7 @@ def get_all(
         business_unit_users=business_unit_users,
         role=role,
         company=company,
+        tool=tool,
     )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
@@ -169,6 +174,9 @@ def get_all(
         organisation=organisation,
         approved=approved,
         business_unit_users=business_unit_users,
+        role=role,
+        company=company,
+        tool=tool,
     )
     user = [u.to_user_list for u in user]
     total_page = ceil(total / limit) if total > 0 else 0
@@ -506,6 +514,60 @@ def get_forgot_password(
         )
     user = crud_user.get_user_by_id(session=session, id=reset_password["user"])
     return user.to_user_invitation
+
+
+@user_route.post(
+    "/user/{user_id}/grant-idc",
+    response_model=UserDetailDict,
+    summary="grant IDC access to user",
+    name="user:grant_idc",
+    tags=["User"],
+)
+def grant_idc(
+    req: Request,
+    user_id: int,
+    payload: GrantIdcAccessRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    company = crud_company.get_company_by_id(
+        session=session, id=payload.company_id
+    )
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    if user.is_active != 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "User account must be verified/active before granting "
+                "IDC access"
+            ),
+        )
+    tools_list = list(user.tools or [])
+    if ToolType.idc.value not in tools_list:
+        user.tools = [*tools_list, ToolType.idc.value]
+    user.company = company.id
+    if user.role == UserRole.user:
+        user.user_type = payload.user_type or (
+            user.user_type
+            if user.user_type in (
+                UserType.external_regular,
+                UserType.external_advanced,
+            )
+            else UserType.external_regular
+        )
+    session.commit()
+    session.refresh(user)
+    email = Email(
+        recipients=[user.recipient],
+        email=MailTypeEnum.IDC_ACCESS_GRANTED,
+        body=(
+            f"An administrator has granted you access to the "
+            f"Income Driver Calculator under {company.name}."
+        ),
+    )
+    email.send
+    return user.to_user_detail
 
 
 @user_route.get(

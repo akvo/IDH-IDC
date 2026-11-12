@@ -634,3 +634,8 @@ class AcademyRegisterResponse(BaseModel):
 class AcademyVerifyResponse(BaseModel):
     message: str
     verified: bool
+
+
+class GrantIdcAccessRequest(BaseModel):
+    company_id: int
+    user_type: Optional[UserType] = None
