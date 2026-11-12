@@ -247,6 +247,7 @@ class TestUserAuthentication:
             "case_access": [],
             "internal_user": False,
             "company": None,
+            "company_name": None,
             "user_type": "external_regular",
             "user_profile": None,
             "tools": ["idc", "academy"],
