@@ -242,7 +242,10 @@ export const PageHeader = ({ isLoggedIn }) => {
         align="middle"
         style={{ width: "100%" }}
       >
-        <Col span={isMobile ? 18 : 6} align="start">
+        <Col
+          {...(isMobile ? { span: 18 } : { flex: "0 0 auto" })}
+          align="start"
+        >
           <Link to="/">
             <div className="header-logo-wrapper">
               <img
@@ -263,13 +266,14 @@ export const PageHeader = ({ isLoggedIn }) => {
 
         {/* Menu toggle (Mobile) or horizontal menu (Desktop) */}
         <Col
-          span={isMobile ? 6 : 18}
+          {...(isMobile ? { span: 6 } : { flex: "1 1 0" })}
           align="end"
           testid="nav-container"
           style={
             isMobile
               ? {}
               : {
+                  minWidth: 0,
                   display: "flex",
                   flexDirection: "row",
                   justifyContent: "flex-end",
@@ -429,6 +433,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                 style={{
                   borderBottom: "none",
                   flex: 1,
+                  minWidth: 0,
                   justifyContent: "flex-end",
                 }}
                 className="navigation-container"

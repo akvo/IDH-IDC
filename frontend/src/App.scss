@@ -210,6 +210,10 @@
 
           .ant-menu-title-content {
             padding: 8px 12px;
+
+            @media (max-width: 1440px) {
+              padding: 8px 8px;
+            }
           }
 
           &.ant-menu-item-active,

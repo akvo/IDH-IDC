@@ -129,6 +129,16 @@ class EmailBody(enum.Enum):
         """,
         "image": f"{image_url}/user.png",
     }
+    IDC_ACCESS_GRANTED = {
+        "title": "IDC Access Granted",
+        "subject": "Income Driver Calculator Access Granted",
+        "body": (
+            "An administrator has granted you access to the "
+            "Income Driver Calculator."
+        ),
+        "message": None,
+        "image": f"{image_url}/check-circle.png",
+    }
 
 
 # Recipients arrive as {"Email", "Name"} dicts -- the shape
@@ -164,6 +174,7 @@ class MailTypeEnum(enum.Enum):
     FORGOT_PASSWORD = "FORGOT_PASSWORD"
     INVITATION = "INVITATION"
     ACADEMY_VERIFY = "ACADEMY_REGISTRATION_VERIFY"
+    IDC_ACCESS_GRANTED = "IDC_ACCESS_GRANTED"
 
 
 class Email:
