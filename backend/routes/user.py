@@ -9,7 +9,7 @@ import db.crud_tag as crud_tag
 import db.crud_question as crud_question
 import db.crud_reference_data as crud_ref_data
 from db.crud_organisation import default_organisation
-from db.academy.crud_profile import get_or_create_user_profile
+from db.academy import crud_profile, crud_settings
 
 from math import ceil
 from middleware import (
@@ -17,6 +17,7 @@ from middleware import (
     authenticate_user,
     generate_user_token,
     verify_user,
+    verify_password,
     get_password_hash,
     verify_admin,
 )
@@ -52,7 +53,14 @@ from models.user import (
     UserRegisterAcademy,
     AcademyRegisterResponse,
     AcademyVerifyResponse,
+    UserProfileUpdateRequest,
+    ChangePasswordRequest,
 )
+from models.academy.academy_schemas import (
+    ChangePasswordPayload,
+    ChangePasswordResponse,
+)
+from models.user_profile import UserProfileUpdatePayload
 from models.user_business_unit import UserBusinessUnitRole
 from typing import Optional, List
 from pydantic import SecretStr
@@ -334,7 +342,9 @@ def register_academy(
     session.flush()
     session.refresh(user)
 
-    profile = get_or_create_user_profile(session=session, user=user)
+    profile = crud_profile.get_or_create_user_profile(
+        session=session, user=user
+    )
     profile.company_name = payload.company_name.strip()
     session.commit()
 
@@ -349,7 +359,8 @@ def register_academy(
 
     return {
         "message": (
-            "Registration successful. Please check your email to verify your account."
+            "Registration successful. Please check your email "
+            "to verify your account."
         )
     }
 
@@ -513,6 +524,103 @@ def get_user_by_id(
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
     return user.to_user_detail
+
+
+@user_route.put(
+    "/user/profile",
+    response_model=UserInfo,
+    summary="update user profile",
+    name="user:update_profile",
+    tags=["User"],
+)
+def update_profile(
+    req: Request,
+    payload: UserProfileUpdateRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    user = verify_user(
+        session=session, authenticated=req.state.authenticated
+    )
+
+    # Validate current password upfront so profile edits are never partially
+    # committed when a combined password change fails authentication.
+    if payload.new_password is not None:
+        if not payload.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is required to set a new password",
+            )
+        if not verify_password(payload.current_password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Incorrect current password",
+            )
+
+    profile_update_kwargs = {}
+
+    if payload.fullname is not None:
+        trimmed_name = payload.fullname.strip()
+        parts = trimmed_name.split(" ", 1)
+        profile_update_kwargs["first_name"] = parts[0]
+        profile_update_kwargs["last_name"] = (
+            parts[1] if len(parts) > 1 else ""
+        )
+        user.fullname = trimmed_name
+
+    tools_list = user.tools if user.tools is not None else []
+    if "idc" not in tools_list and payload.company_name is not None:
+        profile_update_kwargs["company_name"] = payload.company_name
+
+    if profile_update_kwargs:
+        crud_profile.update_user_profile(
+            session=session,
+            user=user,
+            payload=UserProfileUpdatePayload(**profile_update_kwargs),
+        )
+        if payload.fullname is not None:
+            user.fullname = payload.fullname.strip()
+
+    if payload.new_password is not None:
+        crud_settings.change_user_password(
+            session=session,
+            user=user,
+            payload=ChangePasswordPayload(
+                current_password=payload.current_password,
+                new_password=payload.new_password,
+            ),
+        )
+
+    session.commit()
+    session.refresh(user)
+    return user.to_user_info
+
+
+@user_route.post(
+    "/user/change-password",
+    response_model=ChangePasswordResponse,
+    summary="change user password",
+    name="user:change_password",
+    tags=["User"],
+)
+def change_user_password(
+    req: Request,
+    payload: ChangePasswordRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    user = verify_user(
+        session=session, authenticated=req.state.authenticated
+    )
+    crud_settings.change_user_password(
+        session=session,
+        user=user,
+        payload=ChangePasswordPayload(
+            current_password=payload.current_password,
+            new_password=payload.new_password,
+        ),
+    )
+    return ChangePasswordResponse(message="Password changed successfully")
 
 
 @user_route.put(
