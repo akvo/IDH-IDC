@@ -617,6 +617,53 @@ def revoke_idc(
     return user.to_user_detail
 
 
+@user_route.post(
+    "/user/{user_id}/deactivate",
+    response_model=UserDetailDict,
+    summary="deactivate user account",
+    name="user:deactivate",
+    tags=["User"],
+)
+def deactivate_user(
+    req: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    admin = verify_admin(session=session, authenticated=req.state.authenticated)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    if admin.id == user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot deactivate your own account",
+        )
+    user.is_active = 0
+    session.commit()
+    session.refresh(user)
+    return user.to_user_detail
+
+
+@user_route.post(
+    "/user/{user_id}/activate",
+    response_model=UserDetailDict,
+    summary="activate user account",
+    name="user:activate",
+    tags=["User"],
+)
+def activate_user(
+    req: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    user.is_active = 1
+    session.commit()
+    session.refresh(user)
+    return user.to_user_detail
+
+
 @user_route.get(
     "/user/{user_id:path}",
     response_model=UserDetailDict,

@@ -415,4 +415,166 @@ describe("Users page", () => {
       );
     });
   });
+
+  describe("Status column and Activate/Deactivate actions", () => {
+    const mockUsersWithInactive = {
+      current: 1,
+      data: [
+        {
+          id: 1,
+          organisation: 1,
+          email: "admin@akvo.org",
+          fullname: "John Doe",
+          role: "admin",
+          active: true,
+          tags_count: 0,
+          cases_count: 0,
+          tools: ["idc"],
+          company: null,
+        },
+        {
+          id: 2,
+          organisation: 1,
+          email: "active.user@example.com",
+          fullname: "Active User",
+          role: "user",
+          active: true,
+          tags_count: 0,
+          cases_count: 0,
+          tools: ["academy"],
+          company: null,
+        },
+        {
+          id: 3,
+          organisation: 1,
+          email: "inactive.user@example.com",
+          fullname: "Inactive User",
+          role: "user",
+          active: false,
+          tags_count: 0,
+          cases_count: 0,
+          tools: ["idc"],
+          company: null,
+        },
+      ],
+      total: 3,
+      total_page: 1,
+    };
+
+    it("renders Status column with Active and Inactive tags", async () => {
+      api.get.mockResolvedValue({ data: mockUsersWithInactive });
+
+      render(
+        <Router>
+          <Users />
+        </Router>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("All Users")).toBeInTheDocument();
+      });
+
+      // Status header exists
+      expect(screen.getByText("Status")).toBeInTheDocument();
+
+      // Active and Inactive tags exist
+      const activeTags = screen.getAllByText("Active");
+      expect(activeTags.length).toBeGreaterThanOrEqual(2);
+      expect(screen.getByText("Inactive")).toBeInTheDocument();
+    });
+
+    it("clicking Deactivate button calls api.post('user/{id}/deactivate') and refetches", async () => {
+      api.get.mockResolvedValue({ data: mockUsersWithInactive });
+      api.post.mockResolvedValue({
+        data: { ...mockUsersWithInactive.data[1], active: false },
+      });
+
+      render(
+        <Router>
+          <Users />
+        </Router>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("active.user@example.com")).toBeInTheDocument();
+      });
+
+      const deactBtn = screen.getByTestId("deactivate-user-2");
+      expect(deactBtn).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.click(deactBtn);
+      });
+
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole("button", { name: "Yes" })
+      );
+      act(() => {
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith("user/2/deactivate");
+      });
+    });
+
+    it("clicking Activate button calls api.post('user/{id}/activate') and refetches", async () => {
+      api.get.mockResolvedValue({ data: mockUsersWithInactive });
+      api.post.mockResolvedValue({
+        data: { ...mockUsersWithInactive.data[2], active: true },
+      });
+
+      render(
+        <Router>
+          <Users />
+        </Router>
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("inactive.user@example.com")
+        ).toBeInTheDocument();
+      });
+
+      const actBtn = screen.getByTestId("activate-user-3");
+      expect(actBtn).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.click(actBtn);
+      });
+
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole("button", { name: "Yes" })
+      );
+      act(() => {
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith("user/3/activate");
+      });
+    });
+
+    it("disables Deactivate button for logged-in user's own account", async () => {
+      api.get.mockResolvedValue({ data: mockUsersWithInactive });
+
+      render(
+        <Router>
+          <Users />
+        </Router>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText("admin@akvo.org")).toBeInTheDocument();
+      });
+
+      // Current user id is 1 (John Doe, admin@akvo.org)
+      const selfDeactBtn = screen.getByTestId("deactivate-user-1");
+      expect(selfDeactBtn).toBeDisabled();
+      expect(selfDeactBtn).toHaveAttribute(
+        "title",
+        "You cannot deactivate your own account"
+      );
+    });
+  });
 });

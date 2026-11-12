@@ -72,6 +72,9 @@ const UserForm = () => {
   const [baseUserSnapshot, setBaseUserSnapshot] = useState(null);
 
   const [revokingIdc, setRevokingIdc] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const currentUserId = UserState.useState((s) => s.id);
 
   // const organisationOptions = UIState.useState((s) => s.organisationOptions);
   const companyOptions = UIState.useState((s) => s.companyOptions);
@@ -219,6 +222,56 @@ const UserForm = () => {
       }
     } finally {
       setRevokingIdc(false);
+    }
+  };
+
+  const handleDeactivateUser = async () => {
+    setActionLoading(true);
+    try {
+      await api.post(`user/${userId}/deactivate`);
+      setIsUserActive(false);
+      messageApi.open({
+        type: "success",
+        content: "User deactivated successfully.",
+      });
+    } catch (e) {
+      console.error(e);
+      const detail = e?.response?.data?.detail;
+      let content = "Failed to deactivate user.";
+      if (typeof detail === "string") {
+        content = detail;
+      }
+      messageApi.open({
+        type: "error",
+        content,
+      });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleActivateUser = async () => {
+    setActionLoading(true);
+    try {
+      await api.post(`user/${userId}/activate`);
+      setIsUserActive(true);
+      messageApi.open({
+        type: "success",
+        content: "User reactivated successfully.",
+      });
+    } catch (e) {
+      console.error(e);
+      const detail = e?.response?.data?.detail;
+      let content = "Failed to reactivate user.";
+      if (typeof detail === "string") {
+        content = detail;
+      }
+      messageApi.open({
+        type: "error",
+        content,
+      });
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -439,7 +492,16 @@ const UserForm = () => {
           <Row gutter={[16, 16]}>
             {/* User Information */}
             <Col xs={24} lg={12}>
-              <Card title="User Information">
+              <Card
+                title="User Information"
+                extra={
+                  userId && isUserActive !== null ? (
+                    <Tag color={isUserActive ? "green" : "default"}>
+                      {isUserActive ? "Active" : "Inactive"}
+                    </Tag>
+                  ) : null
+                }
+              >
                 <Form.Item
                   label="Fullname"
                   name="fullname"
@@ -635,6 +697,67 @@ const UserForm = () => {
                         </div>
                       )}
                     </>
+                  )}
+                  {userId && isUserActive !== null && (
+                    <div className="account-status-action-row">
+                      <span className="account-status-label">
+                        Account Status
+                      </span>
+                      {isUserActive ? (
+                        <Popconfirm
+                          title="Deactivate Account"
+                          description={`Are you sure you want to deactivate ${
+                            form.getFieldValue("email") || "this user"
+                          }? The user will be unable to log in.`}
+                          okText="Yes"
+                          cancelText="No"
+                          placement="leftBottom"
+                          onConfirm={handleDeactivateUser}
+                          disabled={
+                            actionLoading ||
+                            (currentUserId && currentUserId === Number(userId))
+                          }
+                        >
+                          <Button
+                            danger
+                            type="primary"
+                            size="small"
+                            loading={actionLoading}
+                            disabled={
+                              actionLoading ||
+                              (currentUserId &&
+                                currentUserId === Number(userId))
+                            }
+                            data-testid="deactivate-account-btn"
+                          >
+                            Deactivate Account
+                          </Button>
+                        </Popconfirm>
+                      ) : (
+                        <Popconfirm
+                          title="Reactivate Account"
+                          description={`Are you sure you want to reactivate ${
+                            form.getFieldValue("email") || "this user"
+                          }?`}
+                          okText="Yes"
+                          cancelText="No"
+                          placement="leftBottom"
+                          onConfirm={handleActivateUser}
+                          disabled={actionLoading}
+                        >
+                          <Button
+                            type="primary"
+                            size="small"
+                            className="button-reactivate"
+                            loading={actionLoading}
+                            disabled={actionLoading}
+                            data-testid="reactivate-account-btn"
+                          >
+                            Reactivate Account
+                          </Button>
+                        </Popconfirm>
+                      )}
+                    </div>
                   )}
                 </Card>
               )}

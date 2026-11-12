@@ -613,4 +613,115 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
       });
     });
   });
+
+  describe("Account Status and Deactivate/Reactivate in UserForm", () => {
+    it("renders Active status tag and allows deactivation via Popconfirm", async () => {
+      api.get.mockResolvedValue({
+        data: {
+          ...academyOnlyUser,
+          id: 101,
+          active: true,
+        },
+      });
+      api.post.mockResolvedValue({
+        data: { ...academyOnlyUser, id: 101, active: false },
+      });
+
+      renderComponent("/admin/user/101");
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue("Alice Academy")).toBeInTheDocument();
+      });
+
+      // Active status tags (one in Card extra, one in current tools if applicable)
+      const activeTags = screen.getAllByText("Active");
+      expect(activeTags.length).toBeGreaterThanOrEqual(1);
+
+      // Deactivate Account button rendered
+      const deactBtn = screen.getByTestId("deactivate-account-btn");
+      expect(deactBtn).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.click(deactBtn);
+      });
+
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole("button", { name: "Yes" })
+      );
+      act(() => {
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith("user/101/deactivate");
+      });
+    });
+
+    it("renders Inactive status tag and allows reactivation via Popconfirm", async () => {
+      api.get.mockResolvedValue({
+        data: {
+          ...academyOnlyUser,
+          id: 101,
+          active: false,
+        },
+      });
+      api.post.mockResolvedValue({
+        data: { ...academyOnlyUser, id: 101, active: true },
+      });
+
+      renderComponent("/admin/user/101");
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue("Alice Academy")).toBeInTheDocument();
+      });
+
+      // Inactive tag rendered
+      expect(screen.getByText("Inactive")).toBeInTheDocument();
+
+      // Reactivate Account button rendered
+      const reactBtn = screen.getByTestId("reactivate-account-btn");
+      expect(reactBtn).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.click(reactBtn);
+      });
+
+      const confirmBtn = await waitFor(() =>
+        screen.getByRole("button", { name: "Yes" })
+      );
+      act(() => {
+        fireEvent.click(confirmBtn);
+      });
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith("user/101/activate");
+      });
+    });
+
+    it("disables Deactivate Account button when editing logged-in user's own profile", async () => {
+      // Set current user id to 101 in UserState
+      act(() => {
+        UserState.update((s) => {
+          s.id = 101;
+        });
+      });
+
+      api.get.mockResolvedValue({
+        data: {
+          ...academyOnlyUser,
+          id: 101,
+          active: true,
+        },
+      });
+
+      renderComponent("/admin/user/101");
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue("Alice Academy")).toBeInTheDocument();
+      });
+
+      const deactBtn = screen.getByTestId("deactivate-account-btn");
+      expect(deactBtn).toBeDisabled();
+    });
+  });
 });

@@ -1006,3 +1006,177 @@ class TestAdminRevokeIdcAccess:
         assert detail.get("id") == case_owner.id
         assert len(detail.get("cases", [])) > 0
         assert any(c["value"] == test_case.id for c in detail.get("cases", []))
+
+
+@pytest.mark.asyncio
+class TestAdminUserDeactivationReactivation:
+    """Hermetic test suite for Admin user deactivation and reactivation workflows."""
+
+    async def test_admin_deactivates_user_success(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Admin successfully deactivates a user: user.is_active becomes 0."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.deact.success@example.com",
+            fullname="Admin Deact Success",
+            role=UserRole.admin,
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="user.deact.target@example.com",
+            fullname="Target User Deact",
+            role=UserRole.user,
+        )
+        assert target_user.is_active == 1
+
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{target_user.id}/deactivate",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["active"] is False
+
+        session.refresh(target_user)
+        assert target_user.is_active == 0
+
+    async def test_deactivated_user_cannot_login(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Deactivated user cannot authenticate/login (POST /user/login returns 401/400)."""
+        user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="user.deact.login@example.com",
+            fullname="User Deact Login",
+            role=UserRole.user,
+        )
+        # Deactivate user
+        user.is_active = 0
+        session.commit()
+        session.refresh(user)
+
+        res = await client.post(
+            "/user/login",
+            data={
+                "grant_type": "password",
+                "username": user.email,
+                "password": "Password123!",
+                "client_id": os.environ.get("CLIENT_ID", ""),
+                "client_secret": os.environ.get("CLIENT_SECRET", ""),
+                "scope": "openid email",
+            },
+        )
+        assert res.status_code in (400, 401)
+        detail = res.json().get("detail", "")
+        assert "can't login" in detail or "Incorrect email or password" in detail
+
+    async def test_admin_cannot_deactivate_own_account(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Admin cannot deactivate their own account (returns 400)."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.self.deact@example.com",
+            fullname="Admin Self Deact",
+            role=UserRole.admin,
+        )
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{admin.id}/deactivate",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 400
+        assert "Cannot deactivate your own account" in res.json().get("detail", "")
+
+        session.refresh(admin)
+        assert admin.is_active == 1
+
+    async def test_non_admin_cannot_deactivate_user(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Non-admin user cannot deactivate any user (returns 403)."""
+        regular_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="regular.user.deact@example.com",
+            fullname="Regular User Deact",
+            role=UserRole.user,
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="target.user.deact.forbidden@example.com",
+            fullname="Target User Forbidden",
+            role=UserRole.user,
+        )
+        user_token = generate_user_token(regular_user)
+        res = await client.post(
+            f"/user/{target_user.id}/deactivate",
+            headers={"Authorization": f"Bearer {user_token}"},
+        )
+        assert res.status_code == 403
+
+        session.refresh(target_user)
+        assert target_user.is_active == 1
+
+    async def test_admin_reactivates_user_success(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Admin successfully reactivates a user: user.is_active becomes 1."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.react.success@example.com",
+            fullname="Admin React Success",
+            role=UserRole.admin,
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="user.react.target@example.com",
+            fullname="Target User React",
+            role=UserRole.user,
+        )
+        # Initially deactivated
+        target_user.is_active = 0
+        session.commit()
+        session.refresh(target_user)
+        assert target_user.is_active == 0
+
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            f"/user/{target_user.id}/activate",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 200
+        data = res.json()
+        assert data["active"] is True
+
+        session.refresh(target_user)
+        assert target_user.is_active == 1
