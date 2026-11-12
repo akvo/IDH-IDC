@@ -584,11 +584,15 @@ describe("CourseOverviewPage", () => {
       academyService.updateChapterProgress.mockResolvedValueOnce(null);
       await renderLoadedPage();
 
-      fireEvent.click(chapterCheckbox("Measuring actual income"));
+      fireEvent.click(chapterCheckbox("Choosing a living income benchmark"));
       await waitFor(() =>
-        expect(chapterCheckbox("Measuring actual income")).toBeEnabled()
+        expect(
+          chapterCheckbox("Choosing a living income benchmark")
+        ).toBeEnabled()
       );
-      expect(chapterCheckbox("Measuring actual income")).toBeChecked();
+      expect(
+        chapterCheckbox("Choosing a living income benchmark")
+      ).toBeChecked();
     });
   });
 
