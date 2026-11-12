@@ -104,7 +104,9 @@ const Login = () => {
             s.case_access = user.case_access;
             s.internal_user = user.internal_user;
             s.company = user.company;
+            s.company_name = user.company_name || null;
             s.user_type = user.user_type;
+            s.user_profile = user.user_profile || null;
             s.isExternalRegular = user.user_type === "external_regular";
             s.isCaseCreator =
               user.role === "admin" || user.user_type === "external_advanced";

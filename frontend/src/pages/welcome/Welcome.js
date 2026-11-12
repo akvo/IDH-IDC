@@ -16,6 +16,7 @@ import { MapViewHelpText, ViewSummaryModal } from "../../components/utils";
 import { routePath } from "../../components/route";
 import { IDCSubMenu } from "../cases/components";
 import { thousandFormatter } from "../../components/chart/options/common";
+import { IncompleteProfileAlert } from "../../components/profile";
 
 const perPage = 10;
 const defData = {
@@ -343,6 +344,7 @@ const Welcome = () => {
       {/* EOL IDC Submenu */}
 
       <div className="welcome-with-padding">
+        <IncompleteProfileAlert style={{ marginBottom: 24 }} />
         {/* Header */}
         <Col span={24} className="username-wrapper">
           Hello, {username}!

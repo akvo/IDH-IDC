@@ -1,0 +1,23 @@
+@import "../../variables.scss";
+
+.incomplete-profile-alert {
+  border-radius: 8px;
+
+  .ant-alert-message {
+    font-weight: 600;
+  }
+
+  .ant-alert-description {
+    font-size: 14px;
+
+    a {
+      font-weight: 600;
+      color: $primary-color;
+      text-decoration: underline;
+
+      &:hover {
+        color: darken($primary-color, 10%);
+      }
+    }
+  }
+}
