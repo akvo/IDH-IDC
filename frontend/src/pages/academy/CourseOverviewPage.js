@@ -27,13 +27,13 @@ const NO_PENDING = [];
 
 // Copies only the module and chapter that change; the others keep their
 // identity so their memoised accordions and rows skip re-rendering
-const updateChapter = (modules, chapterId, update) =>
-  modules.map((module) =>
+const updateChapter = (modules = [], chapterId, update) =>
+  (modules || []).map((module) =>
     (module.chapters || []).some(({ id }) => id === chapterId)
       ? {
           ...module,
           ...update.module?.(module),
-          chapters: module.chapters.map((chapter) =>
+          chapters: (module.chapters || []).map((chapter) =>
             chapter.id === chapterId ? update.chapter(chapter) : chapter
           ),
         }
@@ -149,12 +149,17 @@ const CourseOverviewPage = () => {
 
   const setChapterStatus = useCallback(
     (id, status) =>
-      setCourse((current) => ({
-        ...current,
-        modules: updateChapter(current.modules, id, {
-          chapter: (chapter) => ({ ...chapter, status }),
-        }),
-      })),
+      setCourse((current) => {
+        if (!current?.modules || !id) {
+          return current;
+        }
+        return {
+          ...current,
+          modules: updateChapter(current.modules, id, {
+            chapter: (chapter) => ({ ...chapter, status }),
+          }),
+        };
+      }),
     []
   );
 
@@ -162,16 +167,21 @@ const CourseOverviewPage = () => {
   // its module's recomputed progress
   const applyProgress = useCallback(
     (progress) =>
-      setCourse((current) => ({
-        ...current,
-        modules: updateChapter(current.modules, progress.chapter_id, {
-          module: () => ({
-            progress_pct: progress.module_progress_pct,
-            status: progress.module_status,
+      setCourse((current) => {
+        if (!current?.modules || !progress?.chapter_id) {
+          return current;
+        }
+        return {
+          ...current,
+          modules: updateChapter(current.modules, progress.chapter_id, {
+            module: () => ({
+              progress_pct: progress.module_progress_pct,
+              status: progress.module_status,
+            }),
+            chapter: (chapter) => ({ ...chapter, status: progress.status }),
           }),
-          chapter: (chapter) => ({ ...chapter, status: progress.status }),
-        }),
-      })),
+        };
+      }),
     []
   );
 

@@ -579,6 +579,17 @@ describe("CourseOverviewPage", () => {
       expect(toast).not.toHaveBeenCalled();
       toast.mockRestore();
     });
+
+    it("handles null progress gracefully without crashing", async () => {
+      academyService.updateChapterProgress.mockResolvedValueOnce(null);
+      await renderLoadedPage();
+
+      fireEvent.click(chapterCheckbox("Measuring actual income"));
+      await waitFor(() =>
+        expect(chapterCheckbox("Measuring actual income")).toBeEnabled()
+      );
+      expect(chapterCheckbox("Measuring actual income")).toBeChecked();
+    });
   });
 
   describe("chapter links", () => {
