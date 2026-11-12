@@ -104,6 +104,92 @@
     color: $academy-text-muted;
   }
 
+  // Authored chapter HTML (sanitised). Overrides the global `#root h2/h3/p`.
+  .academy-learning-content {
+    font-size: 16px;
+    line-height: 1.6;
+
+    h2,
+    h3 {
+      margin: 24px 0 8px;
+      font-weight: 700;
+      color: $academy-text-primary;
+    }
+
+    h2 {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    p,
+    li,
+    strong {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    p,
+    ul,
+    ol {
+      margin: 0 0 16px;
+    }
+
+    ul,
+    ol {
+      padding-left: 20px;
+    }
+
+    li + li {
+      margin-top: 4px;
+    }
+
+    .callout-box,
+    .key-takeaways {
+      margin: 0 0 16px;
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .callout-box {
+      border-left: 4px solid $academy-primary;
+      background: $academy-primary-tint;
+    }
+
+    .key-takeaways {
+      background: $academy-surface-muted;
+
+      h3 {
+        margin-top: 0;
+      }
+
+      ul {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .academy-learning-content-error {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      color: $academy-text-muted;
+    }
+  }
+
   .academy-learning-footer {
     display: grid;
     grid-template-columns: 1fr auto 1fr;

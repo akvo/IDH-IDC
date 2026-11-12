@@ -10,6 +10,7 @@ jest.mock("../services/academy", () => ({
   isRequestCancelled: (error) => Boolean(error?.__CANCEL__),
   default: {
     getModules: jest.fn(),
+    getChapter: jest.fn(),
     updateChapterProgress: jest.fn(),
   },
 }));
@@ -120,6 +121,9 @@ describe("ModuleLearningPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     academyService.getModules.mockResolvedValue(buildModules());
+    academyService.getChapter.mockImplementation((id) =>
+      Promise.resolve({ id, content_html: `<p>Content of chapter ${id}</p>` })
+    );
     academyService.updateChapterProgress.mockImplementation((id, status) =>
       Promise.resolve(saveResponse(id, status))
     );
@@ -133,7 +137,7 @@ describe("ModuleLearningPage", () => {
     expect(await screen.findByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  it("opens the first chapter with breadcrumb and placeholder content", async () => {
+  it("opens the first chapter with breadcrumb and its content", async () => {
     renderPage();
 
     expect(
@@ -146,7 +150,7 @@ describe("ModuleLearningPage", () => {
     expect(breadcrumb).toHaveTextContent(
       "Module 1 · The concept of living income"
     );
-    expect(screen.getByText(/being prepared/)).toBeInTheDocument();
+    expect(await screen.findByText("Content of chapter 101")).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Back to the overview" })
     ).toBeInTheDocument();
@@ -490,5 +494,74 @@ describe("ModuleLearningPage", () => {
 
     unmount();
     expect(signal.aborted).toBe(true);
+  });
+
+  describe("chapter content", () => {
+    it("renders the chapter's sanitised content", async () => {
+      window.__xss = false;
+      academyService.getChapter.mockResolvedValue({
+        id: 101,
+        content_html:
+          '<div class="callout-box">Key context</div><img src="x" onerror="window.__xss = true"><script>window.__xss = true</script>',
+      });
+      renderPage();
+
+      expect(await screen.findByText("Key context")).toBeInTheDocument();
+      expect(
+        document.querySelector(".academy-learning-content script")
+      ).toBeNull();
+      expect(
+        document.querySelector(".academy-learning-content img")
+      ).not.toHaveAttribute("onerror");
+      expect(window.__xss).toBe(false);
+      expect(academyService.getChapter).toHaveBeenCalledWith(
+        101,
+        expect.objectContaining({ signal: expect.anything() })
+      );
+    });
+
+    it("loads the next chapter's content when moving on", async () => {
+      renderPage();
+      expect(await screen.findByText("Content of chapter 101")).toBeVisible();
+
+      fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+      expect(
+        screen.getByTestId("academy-chapter-content-loading")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Content of chapter 102")).toBeVisible();
+      expect(screen.queryByText("Content of chapter 101")).toBeNull();
+    });
+
+    it("cancels the previous chapter's request when moving on", async () => {
+      const signals = [];
+      academyService.getChapter.mockImplementation((id, { signal }) => {
+        signals.push(signal);
+        return new Promise(() => {});
+      });
+      renderPage();
+      fireEvent.click(await screen.findByRole("button", { name: "Skip" }));
+      await waitFor(() => expect(signals).toHaveLength(2));
+      expect(signals[0].aborted).toBe(true);
+    });
+
+    it("shows a placeholder for a chapter without content", async () => {
+      academyService.getChapter.mockResolvedValue({
+        id: 101,
+        content_html: null,
+      });
+      renderPage();
+      expect(await screen.findByText(/being prepared/)).toBeInTheDocument();
+    });
+
+    it("shows a content error and retries", async () => {
+      academyService.getChapter
+        .mockRejectedValueOnce({ status: null, message: "Network Error" })
+        .mockResolvedValueOnce({ id: 101, content_html: "<p>Back again</p>" });
+      renderPage();
+
+      expect(await screen.findByText("Network Error")).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+      expect(await screen.findByText("Back again")).toBeInTheDocument();
+    });
   });
 });

@@ -1,5 +1,6 @@
 import React from "react";
 import { PROGRESS_STATUS } from "../utils";
+import "./ProgressStatusTag.scss";
 
 const statusModifier = {
   [PROGRESS_STATUS.completed]: "completed",

@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Modal, Alert, Button, Pagination, Spin } from "antd";
-import RecentlyOpenedChapterCard from "./RecentlyOpenedChapterCard";
+import ChapterRow from "./ChapterRow";
 import academyService, { isRequestCancelled } from "../services/academy";
 import { PROGRESS_STATUS } from "../utils";
 
@@ -9,6 +9,7 @@ export const HISTORY_PAGE_SIZE = 10;
 // History items use chapter_* keys; the row card expects the overview shape
 const toChapter = (item) => ({
   id: item.chapter_id,
+  module_id: item.module_id,
   chapter_number: item.chapter_number,
   title: item.chapter_title,
   status: item.status,
@@ -56,6 +57,9 @@ const ChapterHistoryModal = ({
       });
     return () => controller.abort();
   }, [open, page, reloadKey]);
+
+  // Mapped once per response, so the memoised rows keep their props
+  const chapters = useMemo(() => history.data.map(toChapter), [history.data]);
 
   const setChapterStatus = (chapterId, status) =>
     setHistory((current) => ({
@@ -124,13 +128,13 @@ const ChapterHistoryModal = ({
         />
       )}
       <Spin spinning={loading}>
-        {history.data.length ? (
+        {chapters.length ? (
           <ul className="academy-chapter-list">
-            {history.data.map((item) => (
-              <RecentlyOpenedChapterCard
-                key={item.chapter_id}
-                chapter={toChapter(item)}
-                pending={pendingChapterIds.includes(item.chapter_id)}
+            {chapters.map((chapter) => (
+              <ChapterRow
+                key={chapter.id}
+                chapter={chapter}
+                pending={pendingChapterIds.includes(chapter.id)}
                 onToggleComplete={handleToggleComplete}
               />
             ))}

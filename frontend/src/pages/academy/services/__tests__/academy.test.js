@@ -150,6 +150,29 @@ describe("academy service", () => {
     await expect(academyService.getModules()).resolves.toEqual(body);
   });
 
+  it("getModules sends only the filters that are set", async () => {
+    mock
+      .onGet("academy/modules", { params: { search: "gap", tag: "benchmark" } })
+      .reply(200, { modules: [] });
+    await expect(
+      academyService.getModules({ search: "gap", tag: "benchmark" })
+    ).resolves.toEqual({ modules: [] });
+
+    mock.onGet("academy/modules").reply((req) => [200, req.params]);
+    await expect(academyService.getModules({ search: "" })).resolves.toEqual(
+      {}
+    );
+  });
+
+  it("getTags and getChapter read their endpoints", async () => {
+    mock.onGet("academy/tags").reply(200, [{ id: 1, slug: "gap" }]);
+    mock.onGet("academy/chapters/5").reply(200, { id: 5 });
+    await expect(academyService.getTags()).resolves.toEqual([
+      { id: 1, slug: "gap" },
+    ]);
+    await expect(academyService.getChapter(5)).resolves.toEqual({ id: 5 });
+  });
+
   it("getHistory defaults to the first page of 10", async () => {
     const response = {
       total: 0,
