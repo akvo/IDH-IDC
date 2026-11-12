@@ -62,9 +62,28 @@ const academyService = {
   // Reads accept an AbortSignal so callers can cancel superseded requests
   getOverview: ({ signal } = {}) =>
     academyClient.get("academy/overview", { signal }).then((res) => res.data),
-  // Modules with their nested chapters, in curriculum order
-  getModules: ({ signal } = {}) =>
-    academyClient.get("academy/modules", { signal }).then((res) => res.data),
+  // Topic tags with module and chapter counts
+  getTags: ({ signal } = {}) =>
+    academyClient.get("academy/tags", { signal }).then((res) => res.data),
+  // Modules with their nested chapters, in curriculum order. `search` and
+  // `tag` (slug) filter server-side; blank filters are not sent.
+  getModules: ({ search, tag, signal } = {}) => {
+    const params = {};
+    if (search) {
+      params.search = search;
+    }
+    if (tag) {
+      params.tag = tag;
+    }
+    return academyClient
+      .get("academy/modules", { params, signal })
+      .then((res) => res.data);
+  },
+  // Chapter content with prev/next chapter ids; does not record the view
+  getChapter: (chapterId, { signal } = {}) =>
+    academyClient
+      .get(`academy/chapters/${chapterId}`, { signal })
+      .then((res) => res.data),
   // status: "not_started" | "in_progress" | "completed". The API always
   // writes `status`, so send the chapter's current one when only recording a
   // view (`markOpened` sets last_opened_at for Recently opened / history)

@@ -4,7 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import ProgressMetricCard from "../ProgressMetricCard";
 import ProgressStatusTag from "../ProgressStatusTag";
 import RoadmapModuleCard from "../RoadmapModuleCard";
-import RecentlyOpenedChapterCard from "../RecentlyOpenedChapterCard";
+import ChapterRow from "../ChapterRow";
+import HighlightedText from "../HighlightedText";
 import RoadmapCtaBanner from "../RoadmapCtaBanner";
 
 describe("ProgressMetricCard", () => {
@@ -114,12 +115,12 @@ describe("RoadmapModuleCard", () => {
   });
 });
 
-describe("RecentlyOpenedChapterCard", () => {
+describe("ChapterRow", () => {
   const renderCard = (props) =>
     render(
       <MemoryRouter>
         <ul>
-          <RecentlyOpenedChapterCard {...props} />
+          <ChapterRow {...props} />
         </ul>
       </MemoryRouter>
     );
@@ -166,6 +167,23 @@ describe("RecentlyOpenedChapterCard", () => {
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
   });
+
+  it("links to the chapter on its module learning page when the module is known", () => {
+    renderCard({
+      chapter: {
+        id: 7,
+        module_id: 3,
+        chapter_number: 2,
+        title: "Gap",
+        status: "Completed",
+      },
+      onToggleComplete: jest.fn(),
+    });
+    expect(screen.getByRole("link", { name: "Gap" })).toHaveAttribute(
+      "href",
+      "/academy/modules/3?chapter=7"
+    );
+  });
 });
 
 describe("RoadmapCtaBanner", () => {
@@ -184,5 +202,33 @@ describe("RoadmapCtaBanner", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Learn more" }));
     expect(onLearnMore).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("HighlightedText", () => {
+  it("marks every match, ignoring case and regex characters", () => {
+    const { container } = render(
+      <p>
+        <HighlightedText
+          text="Living income (gap) and living wage"
+          highlight="  LIVING "
+        />
+      </p>
+    );
+    expect(
+      Array.from(container.querySelectorAll("mark")).map((m) => m.textContent)
+    ).toEqual(["Living", "living"]);
+    expect(container).toHaveTextContent("Living income (gap) and living wage");
+
+    const { container: special } = render(
+      <HighlightedText text="Income (gap) check" highlight="(gap)" />
+    );
+    expect(special.querySelector("mark")).toHaveTextContent("(gap)");
+  });
+
+  it("renders plain text without a search term", () => {
+    const { container } = render(<HighlightedText text="Income gap" />);
+    expect(container.querySelector("mark")).toBeNull();
+    expect(container).toHaveTextContent("Income gap");
   });
 });

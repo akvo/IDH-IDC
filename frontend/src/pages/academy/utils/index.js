@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify";
 import { routePath } from "../../../components/route/paths";
 
 // Figma --color-primary-brand-100 (mirrors $academy-primary in SCSS)
@@ -67,3 +68,8 @@ export const getModulePath = (moduleId, chapterId) => {
   const path = `${routePath.academy.modules}/${encodeURIComponent(moduleId)}`;
   return chapterId ? `${path}?chapter=${encodeURIComponent(chapterId)}` : path;
 };
+
+// Academy HTML (course summary, chapter content) comes from the API as
+// authored markup; strip scripts, handlers and other unsafe markup before
+// rendering it
+export const sanitizeHtml = (html) => DOMPurify.sanitize(html || "");

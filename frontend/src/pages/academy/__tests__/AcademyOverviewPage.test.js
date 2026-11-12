@@ -309,7 +309,7 @@ describe("AcademyOverviewPage", () => {
     expect(within(rows[0]).getByText("01")).toBeInTheDocument();
     expect(
       within(rows[0]).getByRole("link", { name: "Why living income matters" })
-    ).toHaveAttribute("href", "/academy/courses?chapter=101");
+    ).toHaveAttribute("href", "/academy/modules/11?chapter=101");
     expect(getChapterCheckbox("Why living income matters")).not.toBeChecked();
     expect(getChapterCheckbox("Setting the baseline")).toBeChecked();
   });
@@ -611,7 +611,7 @@ describe("AcademyOverviewPage", () => {
       expect(within(row).getByText("In progress")).toBeInTheDocument();
       expect(
         within(row).getByRole("link", { name: "History chapter page 1" })
-      ).toHaveAttribute("href", "/academy/courses?chapter=100");
+      ).toHaveAttribute("href", "/academy/modules/11?chapter=100");
     });
 
     it("requests the next page from the pagination", async () => {

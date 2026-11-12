@@ -1,13 +1,27 @@
-import React from "react";
+import React, { memo } from "react";
 import { Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import ProgressStatusTag from "./ProgressStatusTag";
-import { PROGRESS_STATUS, getChapterPath } from "../utils";
+import HighlightedText from "./HighlightedText";
+import { PROGRESS_STATUS, getChapterPath, getModulePath } from "../utils";
+import "./ChapterRow.scss";
 
 const formatChapterNumber = (number) => String(number ?? "").padStart(2, "0");
 
-const RecentlyOpenedChapterCard = ({ chapter, onToggleComplete, pending }) => {
+// One chapter: number, title link to the chapter on the module learning
+// page, status and completion toggle. `highlight` marks the search term.
+// `moduleId` defaults to the chapter's own `module_id`. Memoised, so a row
+// re-renders only when its chapter, pending state or highlight changes.
+const ChapterRow = ({
+  chapter,
+  moduleId = chapter.module_id,
+  onToggleComplete,
+  pending,
+  highlight,
+}) => {
   const { id, chapter_number: chapterNumber, title, status } = chapter;
+  // Without a module id, Course Overview resolves the chapter's module
+  const to = moduleId ? getModulePath(moduleId, id) : getChapterPath(id);
   const isCompleted = status === PROGRESS_STATUS.completed;
 
   return (
@@ -15,8 +29,8 @@ const RecentlyOpenedChapterCard = ({ chapter, onToggleComplete, pending }) => {
       <span className="academy-chapter-number">
         {formatChapterNumber(chapterNumber)}
       </span>
-      <Link className="academy-chapter-title" to={getChapterPath(id)}>
-        {title}
+      <Link className="academy-chapter-title" to={to}>
+        <HighlightedText text={title} highlight={highlight} />
       </Link>
       <ProgressStatusTag status={status} />
       <Checkbox
@@ -34,4 +48,4 @@ const RecentlyOpenedChapterCard = ({ chapter, onToggleComplete, pending }) => {
   );
 };
 
-export default RecentlyOpenedChapterCard;
+export default memo(ChapterRow);
