@@ -1,0 +1,507 @@
+@import "../../variables.scss";
+@import "./styles/tokens";
+@import "./styles/mixins";
+
+// Scoped under #root to outrank the global `#root h1/h2/p/span` rules in
+// App.scss (RocGrotesk headings, 14px spans, 25px paragraph line-height)
+#root .academy-courses {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $academy-text-primary;
+
+  h1,
+  h2,
+  p {
+    margin: 0;
+  }
+
+  .academy-courses-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+
+    .ant-btn {
+      @include academy-button;
+    }
+  }
+
+  h1.academy-courses-title {
+    font-size: 32px;
+    font-weight: 600 !important;
+    line-height: 40px;
+  }
+
+  .academy-courses-subtitle {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    color: $academy-text-muted;
+  }
+
+  .academy-courses-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px;
+    background: $bg-color-white;
+  }
+
+  // Search box and button share one height (Figma)
+  .academy-course-search {
+    display: flex;
+    gap: 12px;
+
+    .ant-input-affix-wrapper {
+      flex: 1;
+      height: 44px;
+      border-radius: 8px;
+
+      .ant-input-prefix {
+        margin-inline-end: 8px;
+        color: $academy-text-muted;
+      }
+
+      .ant-input {
+        font-size: 14px;
+      }
+    }
+
+    .ant-btn {
+      @include academy-button;
+      @include academy-button-outline;
+      height: 44px;
+      padding: 0 18px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  // Chip rows: tag filter, matching tags, suggestions, popular topics
+  .academy-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .academy-chip-row-label {
+    margin-right: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    color: $academy-text-muted;
+  }
+
+  .academy-chip {
+    padding: 4px 12px;
+    border: 1px solid $academy-tag-stroke;
+    border-radius: 999px;
+    background: $bg-color-white;
+    font-size: 12px;
+    line-height: 18px;
+    color: $academy-tag-text;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      border-color: $academy-primary;
+      color: $academy-primary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $academy-primary;
+      outline-offset: 2px;
+    }
+
+    &--active,
+    &--active:hover {
+      border-color: $academy-primary;
+      background: $academy-primary;
+      color: $bg-color-white;
+    }
+  }
+
+  // Course summary (full course only)
+  .academy-course-summary {
+    margin-top: 8px;
+  }
+
+  h2.academy-course-summary-title,
+  h2.academy-results-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+  }
+
+  .academy-course-summary-text {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $academy-text-muted;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    &--clamped {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+    }
+  }
+
+  .academy-course-summary-toggle {
+    height: auto;
+    margin-top: 4px;
+    padding: 0;
+    font-size: 14px;
+  }
+
+  // Search results / no results heading
+  .academy-results-heading {
+    margin-top: 8px;
+  }
+
+  .academy-results-subtitle {
+    margin-top: 4px;
+    font-size: 16px;
+    line-height: 24px;
+    color: $academy-text-muted;
+  }
+
+  // Module accordions share one bordered card, divided by rules
+  .academy-accordion-list {
+    padding: 0 24px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px;
+  }
+
+  .academy-accordion + .academy-accordion {
+    border-top: 1px solid $academy-card-stroke;
+  }
+
+  .academy-accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+
+  .academy-accordion-trigger {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 200px) auto;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+
+    &:focus-visible {
+      border-radius: 8px;
+      outline: 2px solid $academy-primary;
+      outline-offset: 4px;
+    }
+  }
+
+  .academy-accordion-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .academy-accordion-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+    color: $academy-text-primary;
+  }
+
+  .academy-accordion-meta {
+    font-size: 14px;
+    line-height: 20px;
+    color: $academy-text-muted;
+  }
+
+  .academy-accordion-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .ant-progress {
+      flex: 1;
+      margin: 0;
+    }
+  }
+
+  .academy-accordion-percent {
+    min-width: 36px;
+    font-size: 12px;
+    line-height: 18px;
+    color: $academy-primary;
+  }
+
+  .academy-accordion-go {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: $academy-primary;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .academy-accordion-chevron {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: $academy-primary;
+    cursor: pointer;
+
+    .anticon {
+      transition: transform 0.2s ease;
+    }
+
+    &--open .anticon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .academy-accordion-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0 20px;
+    border-top: 1px solid $academy-card-stroke;
+  }
+
+  .academy-accordion-empty {
+    font-size: 14px;
+    color: $academy-text-muted;
+  }
+
+  // No results
+  .academy-no-results {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px;
+  }
+
+  .academy-no-results-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .academy-no-results-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: $academy-primary-tint;
+    font-size: 24px;
+    color: $academy-primary;
+  }
+
+  .academy-no-results-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+  }
+
+  .academy-no-results-text {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    color: $academy-text-muted;
+  }
+
+  @media (max-width: $academy-compact-breakpoint) {
+    h1.academy-courses-title {
+      font-size: 26px;
+      line-height: 34px;
+    }
+
+    h2.academy-course-summary-title,
+    h2.academy-results-title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .academy-results-subtitle {
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .academy-courses-panel {
+      padding: 16px;
+    }
+
+    .academy-accordion-list {
+      padding: 0 16px;
+    }
+
+    // Progress and status drop under the title
+    .academy-accordion-trigger {
+      grid-template-columns: minmax(0, 1fr) auto;
+
+      .academy-accordion-heading {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+}
+
+// Chapter reader (portal: outside #root, so fonts and buttons are set here)
+.academy-reader-modal {
+  font-family: $academy-font-family;
+
+  .ant-modal-content {
+    padding: 32px;
+    border-radius: 24px;
+  }
+
+  .academy-reader-eyebrow {
+    margin: 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: $academy-text-muted;
+  }
+
+  .academy-reader-title {
+    margin: 4px 0 24px;
+    font-family: $academy-font-family;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 32px;
+    color: $academy-text-primary;
+  }
+
+  .academy-reader-placeholder {
+    font-size: 14px;
+    color: $academy-text-muted;
+  }
+
+  // Authored chapter HTML
+  .academy-reader-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: $academy-text-primary;
+
+    h2,
+    h3 {
+      margin: 24px 0 8px;
+      font-family: $academy-font-family;
+      font-weight: 700;
+      color: $academy-text-primary;
+    }
+
+    h2 {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    > :first-child {
+      margin-top: 0;
+    }
+
+    p,
+    ul,
+    ol {
+      margin: 0 0 16px;
+    }
+
+    ul,
+    ol {
+      padding-left: 20px;
+    }
+
+    li + li {
+      margin-top: 4px;
+    }
+
+    .callout-box,
+    .key-takeaways {
+      margin: 0 0 16px;
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .callout-box {
+      border-left: 4px solid $academy-primary;
+      background: $academy-primary-tint;
+    }
+
+    .key-takeaways {
+      background: $academy-surface-muted;
+
+      h3 {
+        margin-top: 0;
+      }
+
+      ul {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .ant-modal-footer {
+    margin-top: 24px;
+  }
+
+  // Outranks App.scss `.ant-modal .ant-btn` (24px radius)
+  .academy-reader-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+
+    .ant-btn {
+      @include academy-button;
+      // antd spaces footer buttons with `.ant-btn + .ant-btn` margin
+      margin-inline-start: 0 !important;
+    }
+
+    .ant-btn-default:not(.academy-reader-complete--done) {
+      @include academy-button-outline;
+    }
+
+    .academy-reader-complete--done {
+      border-color: $academy-success;
+      color: $academy-status-completed-text;
+    }
+  }
+}

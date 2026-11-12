@@ -40,6 +40,7 @@ import {
   AcademyLanding,
   AcademyLayout,
   AcademyOverviewPage,
+  CourseOverviewPage,
   ModuleLearningPage,
 } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
@@ -71,7 +72,6 @@ const AcademyPagePlaceholder = ({ title }) => (
 );
 
 const academyChildRoutes = [
-  { path: routePath.academy.courses, title: "Course Overview" },
   { path: routePath.academy.resources, title: "Academy resources" },
   { path: routePath.academy.account, title: "Account" },
   { path: routePath.academy.settings, title: "Settings" },
@@ -240,6 +240,11 @@ const App = () => {
                 exact
                 path={routePath.academy.overview}
                 element={<AcademyOverviewPage />}
+              />
+              <Route
+                exact
+                path={routePath.academy.courses}
+                element={<CourseOverviewPage />}
               />
               {academyChildRoutes.map(({ path, title }) => (
                 <Route
