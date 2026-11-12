@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Modal, Alert, Button, Pagination, Spin } from "antd";
-import RecentlyOpenedChapterCard from "./RecentlyOpenedChapterCard";
+import ChapterRow from "./ChapterRow";
 import academyService, { isRequestCancelled } from "../services/academy";
 import { PROGRESS_STATUS } from "../utils";
 
@@ -127,7 +127,7 @@ const ChapterHistoryModal = ({
         {history.data.length ? (
           <ul className="academy-chapter-list">
             {history.data.map((item) => (
-              <RecentlyOpenedChapterCard
+              <ChapterRow
                 key={item.chapter_id}
                 chapter={toChapter(item)}
                 pending={pendingChapterIds.includes(item.chapter_id)}

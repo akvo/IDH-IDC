@@ -3,7 +3,7 @@ import { Button, Result, Skeleton, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import ProgressMetricCard from "./components/ProgressMetricCard";
 import RoadmapModuleCard from "./components/RoadmapModuleCard";
-import RecentlyOpenedChapterCard from "./components/RecentlyOpenedChapterCard";
+import ChapterRow from "./components/ChapterRow";
 import ChapterHistoryModal from "./components/ChapterHistoryModal";
 import RoadmapCtaBanner from "./components/RoadmapCtaBanner";
 import academyService, { isRequestCancelled } from "./services/academy";
@@ -287,7 +287,7 @@ const AcademyOverviewPage = () => {
         {recentlyOpened.length ? (
           <ul className="academy-chapter-list">
             {recentlyOpened.map((chapter) => (
-              <RecentlyOpenedChapterCard
+              <ChapterRow
                 key={chapter.id}
                 chapter={chapter}
                 pending={pendingChapterIds.includes(chapter.id)}

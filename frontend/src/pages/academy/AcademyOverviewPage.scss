@@ -1,5 +1,6 @@
 @import "../../variables.scss";
 @import "./styles/tokens";
+@import "./styles/mixins";
 
 // Module icon tiles, keyed by the API's `icon_theme`
 $academy-icon-themes: (
@@ -134,30 +135,14 @@ $academy-icon-themes: (
     color: $academy-text-muted;
   }
 
-  // Figma button: Components-Button corner radius, Shadow/xs
   .academy-section-header .ant-btn,
   .academy-overview-header .ant-btn,
   .academy-roadmap-cta .ant-btn {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: auto;
-    padding: 8px 14px;
-    border-radius: 8px;
-    box-shadow: $academy-shadow-xs;
-    font-weight: 500;
+    @include academy-button;
   }
 
-  // Primary fill and hover come from the shell's antd theme (colorPrimary)
   .academy-section-header .ant-btn-default {
-    border-color: $academy-primary;
-    color: $academy-primary;
-
-    &:not(:disabled):hover {
-      background: $academy-primary-tint;
-    }
+    @include academy-button-outline;
   }
 
   // Roadmap module grid: three per row (Figma); two at 1024px and below,
@@ -388,102 +373,6 @@ $academy-icon-themes: (
   }
 }
 
-// Status pills: on the page and inside the history modal portal (outside
-// #root). The #root selector outranks the global `#root span { 14px }`.
-.academy-status-tag,
-#root .academy-status-tag {
-  padding: 2px 6px;
-  border-radius: 8px; // --lg
-  font-size: 12px;
-  line-height: 16px;
-  white-space: nowrap;
-
-  &--completed {
-    background: $academy-status-completed-bg;
-    color: $academy-status-completed-text;
-  }
-
-  &--in-progress {
-    background: $academy-status-progress-bg;
-    color: $academy-status-progress-text;
-  }
-
-  &--not-started {
-    background: $academy-status-pending-bg;
-    color: $academy-status-pending-text;
-  }
-}
-
-// Chapter rows: "Recently opened" on the page and the history modal portal
-.academy-chapter-list,
-#root .academy-chapter-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  .academy-chapter-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border: 1px solid $academy-card-stroke;
-    border-radius: 12px;
-    background: $bg-color-white;
-
-    @media (max-width: 640px) {
-      padding: 10px 12px;
-      gap: 8px;
-    }
-  }
-
-  .academy-chapter-number {
-    flex-shrink: 0;
-    padding: 2px 6px;
-    border-radius: 6px;
-    background: $academy-chapter-number-bg;
-    font-size: 12px;
-    line-height: 18px;
-    color: $academy-text-muted;
-  }
-
-  .academy-chapter-title {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 14px;
-    line-height: 1.5;
-    color: $academy-text-primary;
-
-    &:hover,
-    &:focus-visible {
-      color: $academy-primary;
-    }
-  }
-
-  // Round completion toggle; green with a white tick once completed
-  .academy-chapter-check {
-    .ant-checkbox-inner {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-    }
-
-    .ant-checkbox-checked .ant-checkbox-inner {
-      border-color: $academy-success;
-      background: $academy-success;
-    }
-
-    .ant-checkbox-checked::after {
-      border-radius: 50%;
-    }
-  }
-}
-
 // View history modal (portal: outside #root, so the shell font is set here)
 .academy-history-modal {
   font-family: $academy-font-family;
@@ -551,12 +440,7 @@ $academy-icon-themes: (
     }
 
     .ant-btn-default {
-      border-color: $academy-primary;
-      color: $academy-primary;
-
-      &:not(:disabled):hover {
-        background: $academy-primary-tint;
-      }
+      @include academy-button-outline;
     }
   }
 }
