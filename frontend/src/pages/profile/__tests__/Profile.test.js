@@ -532,4 +532,26 @@ describe("Profile Page Component", () => {
     expect(screen.getByText("USER")).toBeInTheDocument();
     expect(getCompanyInput().value).toBe("Global Cooperative");
   });
+
+  it("FE-PROF-14: hides incomplete alert and displays organisation fallback for dual-tool internal user with company: null", () => {
+    setupUser({
+      fullname: "Wayan Galih Pratama",
+      email: "galih@akvo.org",
+      role: "super_admin",
+      internal_user: true,
+      tools: ["idc", "academy"],
+      company: null,
+      company_name: null,
+      organisation_detail: { id: 1, name: "Akvo" },
+      user_profile: null,
+    });
+
+    renderComponent();
+
+    expect(
+      screen.queryByTestId("incomplete-profile-alert")
+    ).not.toBeInTheDocument();
+    expect(getCompanyInput().value).toBe("Akvo");
+    expect(getCompanyInput()).toBeDisabled();
+  });
 });

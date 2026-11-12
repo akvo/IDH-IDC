@@ -174,6 +174,30 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           company_name: "Global Agro",
         })
       ).toBe(false);
+
+      expect(
+        isUserProfileIncomplete({
+          id: 5,
+          fullname: "Dual Tool Profile User",
+          tools: ["idc", "academy"],
+          company: null,
+          company_name: null,
+          user_profile: { company_name: "Akvo" },
+        })
+      ).toBe(false);
+
+      expect(
+        isUserProfileIncomplete({
+          id: 6,
+          fullname: "Internal Staff",
+          tools: ["idc", "academy"],
+          internal_user: true,
+          company: null,
+          company_name: null,
+          user_profile: null,
+          organisation_detail: { id: 1, name: "Akvo" },
+        })
+      ).toBe(false);
     });
   });
 
