@@ -456,7 +456,7 @@ const UserForm = () => {
             {/* EOL User Information */}
             {/* Other Inputs */}
             <Col xs={24} lg={12}>
-              {userId && !userTools.includes("idc") && (
+              {userId && (
                 <Card
                   title="Tool Access"
                   className={`tool-access-card${
@@ -479,47 +479,60 @@ const UserForm = () => {
                     ) : (
                       "-"
                     )}
-                    <p className="tool-access-desc">
-                      This user does not currently have access to the Income
-                      Driver Calculator (IDC).
-                    </p>
+                    {userTools.includes("idc") ? (
+                      <p className="tool-access-desc">
+                        This user already has access to the Income Driver
+                        Calculator (IDC).
+                      </p>
+                    ) : (
+                      <p className="tool-access-desc">
+                        This user does not currently have access to the Income
+                        Driver Calculator (IDC).
+                      </p>
+                    )}
                   </div>
-                  <div className="grant-idc-row">
-                    <span className="grant-idc-label">Grant IDC Access</span>
-                    <Switch
-                      checked={grantIdc}
-                      onChange={handleToggleGrantIdc}
-                      data-testid="grant-idc-switch"
-                      aria-label="Grant IDC Access"
-                    />
-                  </div>
-                  {grantIdc && (
-                    <div className="idc-linkage-panel">
-                      <Divider style={{ margin: "16px 0" }} />
-                      <Form.Item
-                        label="IDC User Type"
-                        name="idc_user_type"
-                        rules={[
-                          {
-                            required: true,
-                            message: "IDC User Type is required",
-                          },
-                        ]}
-                      >
-                        <Select
-                          options={[
-                            {
-                              label: "External Regular",
-                              value: "external_regular",
-                            },
-                            {
-                              label: "External Advanced",
-                              value: "external_advanced",
-                            },
-                          ]}
+                  {!userTools.includes("idc") && (
+                    <>
+                      <div className="grant-idc-row">
+                        <span className="grant-idc-label">
+                          Grant IDC Access
+                        </span>
+                        <Switch
+                          checked={grantIdc}
+                          onChange={handleToggleGrantIdc}
+                          data-testid="grant-idc-switch"
+                          aria-label="Grant IDC Access"
                         />
-                      </Form.Item>
-                    </div>
+                      </div>
+                      {grantIdc && (
+                        <div className="idc-linkage-panel">
+                          <Divider style={{ margin: "16px 0" }} />
+                          <Form.Item
+                            label="IDC User Type"
+                            name="idc_user_type"
+                            rules={[
+                              {
+                                required: true,
+                                message: "IDC User Type is required",
+                              },
+                            ]}
+                          >
+                            <Select
+                              options={[
+                                {
+                                  label: "External Regular",
+                                  value: "external_regular",
+                                },
+                                {
+                                  label: "External Advanced",
+                                  value: "external_advanced",
+                                },
+                              ]}
+                            />
+                          </Form.Item>
+                        </div>
+                      )}
+                    </>
                   )}
                 </Card>
               )}
