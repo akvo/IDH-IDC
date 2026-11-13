@@ -241,9 +241,8 @@ def register(
         else:
             raise HTTPException(status_code=403, detail="Forbidden access")
     # Check if user exist by email
-    payload.email = payload.email.strip().lower()
     check_user_exist = crud_user.get_user_by_email(
-        session=session, email=payload.email
+        session=session, email=payload.email.strip().lower()
     )
     if check_user_exist:
         if invitation_id and ToolType.idc.value not in (
