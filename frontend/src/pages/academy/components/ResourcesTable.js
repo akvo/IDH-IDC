@@ -9,8 +9,11 @@ import {
 import HighlightedText from "./HighlightedText";
 
 // Resource URLs are file paths on this site or external websites. Anything
-// else (e.g. `javascript:`) gets no link.
-export const getResourceLink = (url = "") => {
+// else (e.g. `javascript:`, a missing or non-string url) gets no link.
+export const getResourceLink = (url) => {
+  if (typeof url !== "string") {
+    return null;
+  }
   if (/^https?:\/\//i.test(url)) {
     return { href: url, external: true };
   }

@@ -29,6 +29,10 @@ const TABS = {
     typeOptions: toOptions(["Core", "Finance", "Additional"]),
   },
 };
+const TAB_OPTIONS = Object.entries(TABS).map(([value, { label }]) => ({
+  value,
+  label,
+}));
 const DEFAULT_TAB = "resources";
 const NO_ROWS = [];
 
@@ -153,10 +157,7 @@ const AcademyResourcesPage = () => {
           className="academy-resources-tabs"
           aria-label="Resources and glossary"
           value={tab}
-          options={Object.entries(TABS).map(([value, { label }]) => ({
-            value,
-            label,
-          }))}
+          options={TAB_OPTIONS}
           onChange={handleTab}
         />
         <TableToolbar

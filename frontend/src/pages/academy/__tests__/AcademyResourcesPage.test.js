@@ -176,6 +176,18 @@ describe("AcademyResourcesPage", () => {
       ).toBeNull();
     });
 
+    it("still renders when a resource has no url", async () => {
+      academyService.getResources.mockResolvedValue({
+        total: 1,
+        data: [{ ...resources[0], url: null }],
+      });
+      renderPage();
+      expect(await screen.findByText("Roadmap overview")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: /Roadmap overview/ })
+      ).toBeNull();
+    });
+
     it("falls back to resources for an unknown tab", async () => {
       renderPage("/academy/resources?tab=nope");
       expect(await screen.findByText("Roadmap overview")).toBeInTheDocument();
@@ -446,5 +458,11 @@ describe("getResourceLink", () => {
     expect(getResourceLink("//evil.example")).toBeNull();
     expect(getResourceLink("javascript:alert(1)")).toBeNull();
     expect(getResourceLink()).toBeNull();
+  });
+
+  it("returns no link for a missing or non-string url", () => {
+    expect(getResourceLink(null)).toBeNull();
+    expect(getResourceLink(42)).toBeNull();
+    expect(getResourceLink({ href: "/a.pdf" })).toBeNull();
   });
 });
