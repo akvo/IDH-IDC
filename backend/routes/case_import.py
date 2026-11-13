@@ -17,6 +17,7 @@ from pathlib import Path
 
 from middleware import (
     verify_case_creator,
+    verify_idc_access,
 )
 from io import BytesIO
 from db.crud_case_import import (
@@ -67,6 +68,7 @@ TEMPLATE_NAME = "data_upload_template.zip"
     summary="Upload case spreadsheet file",
     name="case_import:upload_file",
     tags=ROUTE_TAG_NAME,
+    dependencies=[Depends(verify_idc_access)],
 )
 def case_import(
     req: Request,
@@ -144,6 +146,7 @@ def case_import(
     summary="Generate prefilled segmentation splits",
     name="case_import:segmentation_preview",
     tags=ROUTE_TAG_NAME,
+    dependencies=[Depends(verify_idc_access)],
 )
 def segmentation_preview(
     req: Request,
@@ -209,6 +212,7 @@ def segmentation_preview(
     summary="Generate segment values for case commodities",
     name="case_import:generate_segment_values",
     tags=ROUTE_TAG_NAME,
+    dependencies=[Depends(verify_idc_access)],
 )
 def generate_segment_values(
     req: Request,
@@ -251,6 +255,7 @@ def download_upload_template():
     summary="Recalculate segmentation after user edits segment values",
     name="case_import:recalculate_segmentation",
     tags=ROUTE_TAG_NAME,
+    dependencies=[Depends(verify_idc_access)],
 )
 def recalculate_segmentation(
     req: Request,
@@ -331,6 +336,7 @@ def recalculate_segmentation(
     summary="Delete spreadsheet and import session",
     name="case_import:delete_import",
     tags=ROUTE_TAG_NAME,
+    dependencies=[Depends(verify_idc_access)],
 )
 def delete_import(
     req: Request,

@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import "./App.scss";
-import { Spin } from "antd";
+import { Spin, Empty } from "antd";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/income-driver-calculator";
-import { Login, ResetPassword } from "./pages/login";
+import { Login, ResetPassword, Register, VerifyAcademy } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
@@ -36,8 +36,16 @@ import {
   CocoaIncomeInventory,
   CocoaIncomeInventoryDashboard,
 } from "./pages/cocoa-income-inventory";
-import { AcademyLanding } from "./pages/academy";
+import {
+  AcademyLanding,
+  AcademyLayout,
+  AcademyOverviewPage,
+  AcademyResourcesPage,
+  CourseOverviewPage,
+  ModuleLearningPage,
+} from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
+import { Profile } from "./pages/profile";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
 
@@ -59,6 +67,16 @@ const ScrollToTop = () => {
 
   return null;
 };
+
+// TODO:: Replace with the real Academy pages (LIACD screens 2-6)
+const AcademyPagePlaceholder = ({ title }) => (
+  <Empty description={`${title} is coming soon`} />
+);
+
+const academyChildRoutes = [
+  { path: routePath.academy.account, title: "Account" },
+  { path: routePath.academy.settings, title: "Settings" },
+];
 
 const App = () => {
   const host = window.location.hostname;
@@ -141,7 +159,10 @@ const App = () => {
             s.case_access = data.case_access || [];
             s.internal_user = data.internal_user;
             s.company = data.company;
+            s.company_name = data.company_name || null;
             s.user_type = data.user_type;
+            s.user_profile = data.user_profile || null;
+            s.tools = Array.isArray(data.tools) ? data.tools : [];
             s.isExternalRegular = data.user_type === "external_regular";
             s.isCaseCreator =
               adminRole.includes(data.role) ||
@@ -174,6 +195,9 @@ const App = () => {
           <Route element={<PrivateRoutes />}>
             {/* IDC Dashboard after login */}
             <Route exact path={routePath.idc.dashboard} element={<Welcome />} />
+
+            {/* Profile */}
+            <Route exact path={routePath.profile} element={<Profile />} />
 
             {/* Case */}
             {/* Manage new cases step routes */}
@@ -215,6 +239,40 @@ const App = () => {
               path={routePath.idc.livingIncomeBenchmarkExplorer}
               element={<LivingIncomeBenchmarkExplorer />}
             />
+
+            {/* Academy (authenticated) */}
+            <Route element={<AcademyLayout />}>
+              <Route
+                exact
+                path={routePath.academy.overview}
+                element={<AcademyOverviewPage />}
+              />
+              <Route
+                exact
+                path={routePath.academy.courses}
+                element={<CourseOverviewPage />}
+              />
+              <Route
+                exact
+                path={routePath.academy.resources}
+                element={<AcademyResourcesPage />}
+              />
+              {academyChildRoutes.map(({ path, title }) => (
+                <Route
+                  key={path}
+                  exact
+                  path={path}
+                  element={<AcademyPagePlaceholder title={title} />}
+                />
+              ))}
+            </Route>
+            {/* Full-width learning frame, outside the sidebar shell */}
+            <Route
+              exact
+              path={`${routePath.academy.modules}/:moduleId`}
+              element={<ModuleLearningPage />}
+            />
+            {/* EOL Academy */}
           </Route>
           {/* ) : (
             ""
@@ -269,6 +327,7 @@ const App = () => {
           {/* IDC PAGE */}
           <Route exact path={routePath.idc.landing} element={<Landing />} />
           <Route exact path={routePath.idc.login} element={<Login />} />
+          <Route exact path="/login" element={<Login />} />
           <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}
           <Route
@@ -316,7 +375,8 @@ const App = () => {
             path="/procurement-library/intervention-library/:practiceId"
             element={<ProcurementPage.Practice />}
           />
-          {/* <Route exact path="/register" element={<Register />} /> */}
+          <Route exact path="/register" element={<Register />} />
+          <Route exact path="/verify-academy" element={<VerifyAcademy />} />
           <Route
             exact
             path="/invitation/:tokenId"

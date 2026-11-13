@@ -1,20 +1,34 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import AcademyHero from "./components/AcademyHero";
 import AcademyAbout from "./components/AcademyAbout";
 import AcademyRoadmap from "./components/AcademyRoadmap";
 import AcademyCta from "./components/AcademyCta";
 import AcademyToolsResources from "./components/AcademyToolsResources";
 import AcademyPartners from "./components/AcademyPartners";
+import { showIdcAccessRequestModal } from "../../components/utils";
+import { routePath } from "../../components/route";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import "./AcademyLanding.scss";
 
 const AcademyLanding = () => {
-  const handleExploreClick = useCallback(() => {
-    const aboutSection = document.getElementById("academy-about");
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const modalShownRef = useRef(false);
+
+  useEffect(() => {
+    if (location.state?.unauthorizedIDC && !modalShownRef.current) {
+      modalShownRef.current = true;
+      showIdcAccessRequestModal();
+      navigate(location.pathname, { replace: true, state: {} });
+    } else if (!location.state?.unauthorizedIDC) {
+      modalShownRef.current = false;
     }
-  }, []);
+  }, [location.pathname, location.state, navigate]);
+
+  const handleExploreClick = useCallback(() => {
+    navigate(routePath.academy.overview);
+  }, [navigate]);
 
   const handleStartLearningClick = useCallback(() => {
     const roadmapSection = document.getElementById("academy-roadmap");
