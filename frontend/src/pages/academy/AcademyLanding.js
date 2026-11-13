@@ -7,6 +7,7 @@ import AcademyCta from "./components/AcademyCta";
 import AcademyToolsResources from "./components/AcademyToolsResources";
 import AcademyPartners from "./components/AcademyPartners";
 import { showIdcAccessRequestModal } from "../../components/utils";
+import { routePath } from "../../components/route";
 import { FooterDisclaimer } from "../income-driver-calculator/components";
 import "./AcademyLanding.scss";
 
@@ -26,11 +27,8 @@ const AcademyLanding = () => {
   }, [location.pathname, location.state, navigate]);
 
   const handleExploreClick = useCallback(() => {
-    const aboutSection = document.getElementById("academy-about");
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
+    navigate(routePath.academy.overview);
+  }, [navigate]);
 
   const handleStartLearningClick = useCallback(() => {
     const roadmapSection = document.getElementById("academy-roadmap");

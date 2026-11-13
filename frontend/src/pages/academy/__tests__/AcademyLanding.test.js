@@ -1,6 +1,6 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { Modal } from "antd";
 import AcademyLanding from "../AcademyLanding";
 
@@ -126,5 +126,25 @@ describe("AcademyLanding Component", () => {
         className: "access-request-modal",
       })
     );
+  });
+
+  it("navigates to /academy/overview when Explore the Academy is clicked", () => {
+    render(
+      <MemoryRouter initialEntries={["/academy"]}>
+        <Routes>
+          <Route path="/academy" element={<AcademyLanding />} />
+          <Route
+            path="/academy/overview"
+            element={<div>Academy Overview Page</div>}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /explore the academy/i })
+    );
+
+    expect(screen.getByText("Academy Overview Page")).toBeInTheDocument();
   });
 });
