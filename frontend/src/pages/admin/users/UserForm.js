@@ -496,6 +496,7 @@ const UserForm = () => {
             email: detail.email,
             academy_company: detail.academy_company,
             user_type: conflictUserType,
+            has_form_company: Boolean(company),
           });
           setConflictCompanyId(company || null);
           return;
@@ -932,23 +933,37 @@ const UserForm = () => {
                   : ""
               }.`}
             </p>
-            <p>
-              Would you like to grant them access to the Income Driver
-              Calculator and link them to an official IDC Company?
-            </p>
-            <div style={{ marginTop: 16 }}>
-              <Select
-                showSearch
-                allowClear
-                style={{ width: "100%" }}
-                placeholder="Select an IDC Company"
-                data-testid="conflict-company-select"
-                filterOption={filterOption}
-                options={companyList}
-                value={conflictCompanyId}
-                onChange={setConflictCompanyId}
-              />
-            </div>
+            {conflictUser.has_form_company ? (
+              <p>
+                Would you like to grant them access to the Income Driver
+                Calculator and link them to{" "}
+                <strong>
+                  {companyList.find((c) => c.value === conflictCompanyId)
+                    ?.label || "the selected IDC Company"}
+                </strong>
+                ?
+              </p>
+            ) : (
+              <>
+                <p>
+                  Would you like to grant them access to the Income Driver
+                  Calculator and link them to an official IDC Company?
+                </p>
+                <div style={{ marginTop: 16 }}>
+                  <Select
+                    showSearch
+                    allowClear
+                    style={{ width: "100%" }}
+                    placeholder="Select an IDC Company"
+                    data-testid="conflict-company-select"
+                    filterOption={filterOption}
+                    options={companyList}
+                    value={conflictCompanyId}
+                    onChange={setConflictCompanyId}
+                  />
+                </div>
+              </>
+            )}
           </div>
         )}
       </Modal>

@@ -853,6 +853,15 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
       expect(screen.getByText(/jane@acme\.com/i)).toBeInTheDocument();
       expect(screen.getByText(/Jane Doe/i)).toBeInTheDocument();
       expect(screen.getByText(/Acme Corp/i)).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("conflict-company-select")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText(
+          (_, node) =>
+            node.tagName === "STRONG" && /Global Agro/i.test(node.textContent)
+        )
+      ).toBeInTheDocument();
 
       const cancelBtn =
         screen.queryByTestId("conflict-cancel-btn") ||
