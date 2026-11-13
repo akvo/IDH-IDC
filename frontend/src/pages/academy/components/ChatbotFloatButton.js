@@ -1,5 +1,6 @@
 import React from "react";
 import { Tooltip, message } from "antd";
+import { ACADEMY_TOOLTIP_CLASS } from "../utils";
 
 const defaultOnClick = () =>
   message.info("The Academy facilitator chat is coming soon.");
@@ -42,7 +43,11 @@ const ChatIcon = () => (
 );
 
 const ChatbotFloatButton = ({ onClick = defaultOnClick }) => (
-  <Tooltip title="Ask the Academy facilitator" placement="left">
+  <Tooltip
+    title="Ask the Academy facilitator"
+    placement="left"
+    overlayClassName={ACADEMY_TOOLTIP_CLASS}
+  >
     <button
       type="button"
       aria-label="Open Academy facilitator chat"

@@ -4,11 +4,17 @@ import { routePath } from "../../../components/route/paths";
 // Figma --color-primary-brand-100 (mirrors $academy-primary in SCSS)
 export const ACADEMY_PRIMARY_COLOR = "#005EA3";
 
+// Tooltips are portalled outside the shell; this class (AcademyLayout.scss)
+// keeps them on brand against the global green tooltip rule
+export const ACADEMY_TOOLTIP_CLASS = "academy-tooltip";
+
 // Academy brand colour and Inter font for antd, mirrored from the SCSS tokens
 // so antd components and portals match. Shared by every Academy page frame.
 export const ACADEMY_THEME = {
   token: {
     colorPrimary: ACADEMY_PRIMARY_COLOR,
+    // Tooltip background
+    colorBgSpotlight: ACADEMY_PRIMARY_COLOR,
     fontFamily:
       '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   },

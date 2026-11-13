@@ -56,6 +56,25 @@ academyClient.interceptors.response.use(
 // Cancelled requests reject with axios' Cancel, not a normalised error
 export const isRequestCancelled = (error) => axios.isCancel(error);
 
+// Query params for the resources/glossary lists; the type filter has a
+// different name per endpoint and blank values are not sent
+const listParams = ({ search, type, sortBy, sortOrder }, typeParam) => {
+  const params = {};
+  if (search) {
+    params.search = search;
+  }
+  if (type) {
+    params[typeParam] = type;
+  }
+  if (sortBy) {
+    params.sort_by = sortBy;
+  }
+  if (sortOrder) {
+    params.sort_order = sortOrder;
+  }
+  return params;
+};
+
 const academyService = {
   // Used to refresh UserState after the learner edits their profile
   getMe: () => academyClient.get("user/me").then((res) => res.data),
@@ -79,6 +98,27 @@ const academyService = {
       .get("academy/modules", { params, signal })
       .then((res) => res.data);
   },
+  // Technical resources: { total, data: [{ id, name, type, url, ... }] }.
+  // `type` is Guidance | Organisation | Template | Tool.
+  getResources: ({ search, type, sortBy, sortOrder, signal } = {}) =>
+    academyClient
+      .get("academy/resources", {
+        params: listParams(
+          { search, type, sortBy, sortOrder },
+          "resource_type"
+        ),
+        signal,
+      })
+      .then((res) => res.data),
+  // Glossary: { total, data: [{ id, term, type, definition, ... }] }.
+  // `type` is Core | Finance | Additional.
+  getGlossary: ({ search, type, sortBy, sortOrder, signal } = {}) =>
+    academyClient
+      .get("academy/glossary", {
+        params: listParams({ search, type, sortBy, sortOrder }, "term_type"),
+        signal,
+      })
+      .then((res) => res.data),
   // Chapter content with prev/next chapter ids; does not record the view
   getChapter: (chapterId, { signal } = {}) =>
     academyClient

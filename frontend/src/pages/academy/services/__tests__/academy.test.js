@@ -164,6 +164,36 @@ describe("academy service", () => {
     );
   });
 
+  it("getResources maps filters to the resource params", async () => {
+    mock
+      .onGet("academy/resources", {
+        params: {
+          search: "tool",
+          resource_type: "Template",
+          sort_by: "type",
+          sort_order: "desc",
+        },
+      })
+      .reply(200, { total: 0, data: [] });
+    await expect(
+      academyService.getResources({
+        search: "tool",
+        type: "Template",
+        sortBy: "type",
+        sortOrder: "desc",
+      })
+    ).resolves.toEqual({ total: 0, data: [] });
+  });
+
+  it("getGlossary maps the type filter to term_type and drops blanks", async () => {
+    mock
+      .onGet("academy/glossary", { params: { term_type: "Core" } })
+      .reply(200, { total: 1, data: [{ id: 1 }] });
+    await expect(
+      academyService.getGlossary({ search: "", type: "Core" })
+    ).resolves.toEqual({ total: 1, data: [{ id: 1 }] });
+  });
+
   it("getTags and getChapter read their endpoints", async () => {
     mock.onGet("academy/tags").reply(200, [{ id: 1, slug: "gap" }]);
     mock.onGet("academy/chapters/5").reply(200, { id: 5 });
