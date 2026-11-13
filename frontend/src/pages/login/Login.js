@@ -21,6 +21,7 @@ import ImageRight from "../../assets/images/login-right-img.png";
 import LogoWhite from "../../assets/images/logo-white.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../components/route";
+import { isIdcRestrictedPath } from "../../components/route/PrivateRoutes";
 import { useWindowDimensions } from "../../hooks";
 import { Blocker } from "../../components/utils";
 
@@ -123,16 +124,6 @@ const Login = () => {
           );
         };
 
-        const isIdcPath = (path) => {
-          return (
-            typeof path === "string" &&
-            (path.startsWith("/income-driver-calculator") ||
-              path.startsWith("/cases") ||
-              path.startsWith("/case") ||
-              path.startsWith("/admin"))
-          );
-        };
-
         const currentSearchParams = new URLSearchParams(location.search);
         const redirectParam = currentSearchParams.get("redirect");
         const fromState = location.state?.from?.pathname;
@@ -151,11 +142,11 @@ const Login = () => {
         if (hasIdc) {
           targetRoute = candidatePath || routePath.idc.dashboard;
         } else if (hasAcademy) {
-          if (candidatePath && !isIdcPath(candidatePath)) {
+          if (candidatePath && !isIdcRestrictedPath(candidatePath)) {
             targetRoute = candidatePath;
           } else {
             targetRoute = routePath.academy.landing;
-            if (candidatePath && isIdcPath(candidatePath)) {
+            if (candidatePath && isIdcRestrictedPath(candidatePath)) {
               navigationState.unauthorizedIDC = true;
             }
           }

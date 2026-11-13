@@ -13,7 +13,7 @@ const IDC_RESTRICTED_PREFIXES = [
   "/admin",
 ];
 
-const isIdcRestrictedPath = (pathname = "") =>
+export const isIdcRestrictedPath = (pathname = "") =>
   IDC_RESTRICTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );

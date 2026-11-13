@@ -81,6 +81,17 @@ if webdomain == "idc.akvo.org":
 if "https://" not in webdomain:
     webdomain = f"https://{webdomain}"
 
+ALLOWED_ORIGINS = {
+    webdomain,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+}
+
+
+def get_safe_base_url(req: Request) -> str:
+    origin = req.headers.get("origin")
+    return origin if origin in ALLOWED_ORIGINS else webdomain
+
 
 @user_route.post(
     "/user/login",
@@ -230,6 +241,7 @@ def register(
         else:
             raise HTTPException(status_code=403, detail="Forbidden access")
     # Check if user exist by email
+    payload.email = payload.email.strip().lower()
     check_user_exist = crud_user.get_user_by_email(
         session=session, email=payload.email
     )
@@ -376,7 +388,7 @@ def register_academy(
     profile.company_name = payload.company_name.strip()
     session.commit()
 
-    base_url = req.headers.get("origin") or webdomain
+    base_url = get_safe_base_url(req)
     verify_url = f"{base_url}/verify-academy?token={verification_token}"
     email = Email(
         recipients=[user.recipient],
@@ -428,7 +440,7 @@ def verify_academy(
 
     accept_header = req.headers.get("accept", "")
     if "text/html" in accept_header:
-        base_url = req.headers.get("origin") or webdomain
+        base_url = get_safe_base_url(req)
         return RedirectResponse(
             url=f"{base_url}/login?verified=true",
             status_code=status.HTTP_302_FOUND,
@@ -554,7 +566,15 @@ def grant_idc(
     company = crud_company.get_company_by_id(
         session=session, id=payload.company_id
     )
+    if not company:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Company not found"
+        )
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     if user.is_active != 1:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -605,6 +625,10 @@ def revoke_idc(
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     tools_list = list(user.tools or [])
     if ToolType.idc.value not in tools_list:
         raise HTTPException(
@@ -678,6 +702,10 @@ def activate_user(
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     user.is_active = 1
     session.commit()
     session.refresh(user)
@@ -699,6 +727,10 @@ def get_user_by_id(
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user.to_user_detail
 
 
@@ -844,6 +876,10 @@ def delete(
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
     # Make sure to check the case owner before allowing user deletion.
     cases_owned_by_user = crud_case.get_case_by_created_by(
@@ -935,9 +971,7 @@ def new_forgot_password(
     if not reset_password:
         raise HTTPException(status_code=404, detail="User Not found")
     # Send reset password email
-    allowed_origins = {webdomain, "http://localhost:3000", "http://127.0.0.1:3000"}
-    origin = req.headers.get("origin")
-    base_url = origin if origin in allowed_origins else webdomain
+    base_url = get_safe_base_url(req)
     url = f"{base_url}/reset-password/{reset_password['url']}"
     email = Email(
         recipients=[user.recipient],
