@@ -35,6 +35,10 @@ Empower IDH Administrators to filter toolkit users by tool access (`IDC`, `Acade
   - Enabling `"Grant IDC Access"` reveals optional `idc_user_type` (`external_regular` / `external_advanced`, defaulting to `external_regular`) and displays/requires the official IDC **Company** selector (`companyOptions`), hiding `Business Units` while granting partner company access.
   - Submitting with `Grant IDC Access` enabled saves updated user info if changed (or approves if inactive) via `PUT user/${userId}` and calls `POST user/${userId}/grant-idc` with `{ company_id, user_type }`.
 
+### 1.3 Architectural Note: Deactivation vs. Tool Revocation
+- **Account Deactivation**: Already fully supported via standard `PUT /user/{id}` updating `is_active=0` (or `?approved=false`), immediately revoking all session access across both tools.
+- **Tool-Level Revocation (`tools.remove("idc")`)**: Intentionally out-of-scope for TLSA-007 (KISS/YAGNI). Stripping IDC access from an established user introduces complex business risks around orphaned case ownership, shared datasets, and business unit memberships. If independent tool stripping is required in future releases, it should be designed as a dedicated RFC with explicit case ownership reassignment rules.
+
 ---
 
 ## 2. Parallel Execution Streams (`/bmad-parallel-dev`)

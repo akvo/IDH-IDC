@@ -12,6 +12,16 @@ import UserForm from "../UserForm";
 import { UserState, UIState } from "../../../../store";
 import { api } from "../../../../lib";
 
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => {
+  const actual = jest.requireActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 jest.mock("../../../../lib/api", () => ({
   get: jest.fn(),
   post: jest.fn(),
@@ -722,6 +732,300 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
 
       const deactBtn = screen.getByTestId("deactivate-account-btn");
       expect(deactBtn).toBeDisabled();
+    });
+  });
+
+  describe("TLSA-008 Invitation Deduplication & Conflict Modal", () => {
+    jest.setTimeout(30000);
+
+    const fillAndSubmitNewUserForm = async ({
+      fullname = "Jane Doe",
+      email = "jane@acme.com",
+      roleText = "User",
+      userTypeText = "External Regular",
+      companyText = "Global Agro",
+    } = {}) => {
+      act(() => {
+        fireEvent.change(screen.getByLabelText("Fullname"), {
+          target: { value: fullname },
+        });
+        fireEvent.change(screen.getByLabelText("Email"), {
+          target: { value: email },
+        });
+      });
+
+      // Select Role = user
+      const roleSelect = document
+        .querySelector("#user-form_role")
+        ?.closest(".ant-select");
+      if (roleSelect) {
+        fireEvent.mouseDown(roleSelect.querySelector(".ant-select-selector"));
+        const userRoleOpt = await waitFor(() =>
+          screen.getByText(roleText, {
+            selector: ".ant-select-item-option-content",
+          })
+        );
+        act(() => {
+          fireEvent.click(userRoleOpt);
+        });
+      }
+
+      // Select User Type = External Regular
+      const userTypeSelect = await waitFor(() => {
+        const el = document
+          .querySelector("#user-form_user_type")
+          ?.closest(".ant-select");
+        expect(el).toBeInTheDocument();
+        return el;
+      });
+      fireEvent.mouseDown(userTypeSelect.querySelector(".ant-select-selector"));
+      const extRegOpt = await waitFor(() =>
+        screen.getByText(userTypeText, {
+          selector: ".ant-select-item-option-content",
+        })
+      );
+      act(() => {
+        fireEvent.click(extRegOpt);
+      });
+
+      // Select Company
+      if (companyText) {
+        const companySelect = await waitFor(() => {
+          const el = document
+            .querySelector("#user-form_company")
+            ?.closest(".ant-select");
+          expect(el).toBeInTheDocument();
+          return el;
+        });
+        fireEvent.mouseDown(
+          companySelect.querySelector(".ant-select-selector")
+        );
+        const compOpt = await waitFor(() =>
+          screen.getByText(companyText, {
+            selector: ".ant-select-item-option-content",
+          })
+        );
+        act(() => {
+          fireEvent.click(compOpt);
+        });
+      }
+
+      const submitBtn =
+        screen.queryByRole("button", {
+          name: /save user|approve user|invite user/i,
+        }) || document.querySelector("button[type='submit']");
+      act(() => {
+        fireEvent.click(submitBtn);
+      });
+    };
+
+    it("opens conflict modal displaying user details when register returns 409 academy conflict", async () => {
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 409,
+          data: {
+            detail: {
+              is_academy_user: true,
+              user_id: 42,
+              fullname: "Jane Doe",
+              email: "jane@acme.com",
+              academy_company: "Acme Corp",
+            },
+          },
+        },
+      });
+
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      await fillAndSubmitNewUserForm({
+        fullname: "Jane Doe",
+        email: "jane@acme.com",
+        companyText: "Global Agro",
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Account Already Exists on Academy")
+        ).toBeInTheDocument();
+      });
+
+      expect(screen.getByText(/jane@acme\.com/i)).toBeInTheDocument();
+      expect(screen.getByText(/Jane Doe/i)).toBeInTheDocument();
+      expect(screen.getByText(/Acme Corp/i)).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("conflict-company-select")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText(
+          (_, node) =>
+            node.tagName === "STRONG" && /Global Agro/i.test(node.textContent)
+        )
+      ).toBeInTheDocument();
+
+      const cancelBtn =
+        screen.queryByTestId("conflict-cancel-btn") ||
+        screen.getByRole("button", { name: /cancel/i });
+      expect(cancelBtn).toBeInTheDocument();
+
+      const grantBtn =
+        screen.queryByTestId("conflict-grant-btn") ||
+        screen.getByRole("button", { name: /yes, grant idc access/i });
+      expect(grantBtn).toBeInTheDocument();
+    });
+
+    it("closes conflict modal when Cancel button is clicked without calling grant-idc", async () => {
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 409,
+          data: {
+            detail: {
+              is_academy_user: true,
+              user_id: 42,
+              fullname: "Jane Doe",
+              email: "jane@acme.com",
+              academy_company: "Acme Corp",
+            },
+          },
+        },
+      });
+
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      await fillAndSubmitNewUserForm({
+        fullname: "Jane Doe",
+        email: "jane@acme.com",
+        companyText: "Global Agro",
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Account Already Exists on Academy")
+        ).toBeInTheDocument();
+      });
+
+      const cancelBtn =
+        screen.queryByTestId("conflict-cancel-btn") ||
+        screen.getByRole("button", { name: /cancel/i });
+      expect(cancelBtn).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.click(cancelBtn);
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Account Already Exists on Academy")
+        ).not.toBeInTheDocument();
+      });
+
+      expect(api.post).not.toHaveBeenCalledWith(
+        expect.stringContaining("grant-idc"),
+        expect.anything()
+      );
+    });
+
+    it("calls api.post('user/42/grant-idc') with company and user_type, then navigates to /admin/users", async () => {
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 409,
+          data: {
+            detail: {
+              is_academy_user: true,
+              user_id: 42,
+              fullname: "Jane Doe",
+              email: "jane@acme.com",
+              academy_company: "Acme Corp",
+            },
+          },
+        },
+      });
+      api.post.mockResolvedValueOnce({
+        data: {
+          id: 42,
+          fullname: "Jane Doe",
+          email: "jane@acme.com",
+          tools: ["academy", "idc"],
+          company: 42,
+          user_type: "external_regular",
+        },
+      });
+
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      await fillAndSubmitNewUserForm({
+        fullname: "Jane Doe",
+        email: "jane@acme.com",
+        companyText: "Global Agro",
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Account Already Exists on Academy")
+        ).toBeInTheDocument();
+      });
+
+      const grantBtn =
+        screen.queryByTestId("conflict-grant-btn") ||
+        screen.getByRole("button", { name: /yes, grant idc access/i });
+      expect(grantBtn).toBeInTheDocument();
+
+      act(() => {
+        fireEvent.click(grantBtn);
+      });
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith(
+          expect.stringMatching(/user\/42\/grant-idc/),
+          expect.objectContaining({
+            company_id: 42,
+            user_type: "external_regular",
+          })
+        );
+      });
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/admin/users");
+      });
+    });
+
+    it("displays error message and does not open conflict modal when 409 returns plain string detail", async () => {
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 409,
+          data: {
+            detail: "User jane@acme.com already exist.",
+          },
+        },
+      });
+
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      await fillAndSubmitNewUserForm({
+        fullname: "Jane Doe",
+        email: "jane@acme.com",
+        companyText: "Global Agro",
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("User jane@acme.com already exist.")
+        ).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByText("Account Already Exists on Academy")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("conflict-grant-btn")
+      ).not.toBeInTheDocument();
+      expect(api.post).not.toHaveBeenCalledWith(
+        expect.stringContaining("grant-idc"),
+        expect.anything()
+      );
     });
   });
 });
