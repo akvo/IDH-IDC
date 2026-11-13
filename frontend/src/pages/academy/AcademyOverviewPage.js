@@ -16,6 +16,7 @@ import {
   getModulePath,
 } from "./utils";
 import { routePath } from "../../components/route";
+import { IncompleteProfileAlert } from "../../components/profile";
 import "./AcademyOverviewPage.scss";
 
 // `id` of the roadmap section on the public Academy landing page
@@ -212,6 +213,7 @@ const AcademyOverviewPage = () => {
 
   return (
     <div className="academy-overview" data-testid="academy-overview">
+      <IncompleteProfileAlert />
       {/* Not a <header>: App.scss styles every `#root header` as the site header */}
       <div className="academy-overview-header">
         <h1 className="academy-overview-greeting">

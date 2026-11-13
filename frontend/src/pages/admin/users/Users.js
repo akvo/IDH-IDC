@@ -1,7 +1,12 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { ContentLayout, TableContent } from "../../../components/layout";
 import { Link } from "react-router-dom";
-import { EditOutlined, DeleteTwoTone } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteTwoTone,
+  StopOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import upperFirst from "lodash/upperFirst";
 import { api } from "../../../lib";
 import {
@@ -13,13 +18,14 @@ import {
   Modal,
   List,
   message,
+  Tag,
 } from "antd";
 import { selectProps } from "../../../lib";
 import "./user.scss";
 import { LINK_TO_CASE_PROD } from "../../../store/static";
 import { routePath } from "../../../components/route";
 import { useWindowDimensions } from "../../../hooks";
-import { UIState } from "../../../store";
+import { UIState, UserState } from "../../../store";
 
 const perPage = 10;
 const defData = {
@@ -57,6 +63,11 @@ const userRoleOptions = [
   },
 ];
 
+const toolAccessOptions = [
+  { label: "IDC", value: "idc" },
+  { label: "Academy", value: "academy" },
+];
+
 const Users = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,9 +76,13 @@ const Users = () => {
   const [showApprovedUser, setShowApprovedUser] = useState(true);
   const [role, setRole] = useState(null);
   const [company, setCompany] = useState(null);
+  const [toolAccess, setToolAccess] = useState(null);
   const [deleting, setDeleting] = useState([]);
+  const [actionLoading, setActionLoading] = useState([]);
   const [modal, contextHolder] = Modal.useModal();
   const [messageApi, messageContextHolder] = message.useMessage();
+
+  const currentUserId = UserState.useState((s) => s.id);
 
   const { windowInnerHeight } = useWindowDimensions();
 
@@ -86,7 +101,7 @@ const Users = () => {
   );
 
   const fetchUser = useCallback(
-    ({ currentPage, search, showApprovedUser, role, company }) => {
+    ({ currentPage, search, showApprovedUser, role, company, toolAccess }) => {
       setLoading(true);
       let url = `user?page=${currentPage}&limit=${perPage}&approved=${showApprovedUser}`;
       if (search) {
@@ -97,6 +112,9 @@ const Users = () => {
       }
       if (company) {
         url = `${url}&company=${company}`;
+      }
+      if (toolAccess) {
+        url = `${url}&tool=${toolAccess}`;
       }
       api
         .get(url)
@@ -129,8 +147,23 @@ const Users = () => {
   );
 
   useEffect(() => {
-    fetchUser({ currentPage, search, showApprovedUser, role, company });
-  }, [currentPage, search, showApprovedUser, role, fetchUser, company]);
+    fetchUser({
+      currentPage,
+      search,
+      showApprovedUser,
+      role,
+      company,
+      toolAccess,
+    });
+  }, [
+    currentPage,
+    search,
+    showApprovedUser,
+    role,
+    company,
+    toolAccess,
+    fetchUser,
+  ]);
 
   const handleDeleteUser = (user) => {
     setDeleting((prev) => [...prev, user.id]);
@@ -141,7 +174,14 @@ const Users = () => {
           type: "success",
           content: "User deleted successfully.",
         });
-        fetchUser({ currentPage, search, showApprovedUser, role, company });
+        fetchUser({
+          currentPage,
+          search,
+          showApprovedUser,
+          role,
+          company,
+          toolAccess,
+        });
       })
       .catch((e) => {
         const { status, data } = e.response;
@@ -187,12 +227,82 @@ const Users = () => {
       });
   };
 
+  const handleDeactivateUser = (user) => {
+    setActionLoading((prev) => [...prev, user.id]);
+    api
+      .post(`user/${user.id}/deactivate`)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "User deactivated successfully.",
+        });
+        fetchUser({
+          currentPage,
+          search,
+          showApprovedUser,
+          role,
+          company,
+          toolAccess,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        const detail = e?.response?.data?.detail;
+        let content = "Failed to deactivate user.";
+        if (typeof detail === "string") {
+          content = detail;
+        }
+        messageApi.open({
+          type: "error",
+          content,
+        });
+      })
+      .finally(() => {
+        setActionLoading((prev) => prev.filter((id) => id !== user.id));
+      });
+  };
+
+  const handleActivateUser = (user) => {
+    setActionLoading((prev) => [...prev, user.id]);
+    api
+      .post(`user/${user.id}/activate`)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "User reactivated successfully.",
+        });
+        fetchUser({
+          currentPage,
+          search,
+          showApprovedUser,
+          role,
+          company,
+          toolAccess,
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+        const detail = e?.response?.data?.detail;
+        let content = "Failed to reactivate user.";
+        if (typeof detail === "string") {
+          content = detail;
+        }
+        messageApi.open({
+          type: "error",
+          content,
+        });
+      })
+      .finally(() => {
+        setActionLoading((prev) => prev.filter((id) => id !== user.id));
+      });
+  };
+
   const columns = [
     {
       title: "Fullname",
       dataIndex: "fullname",
       key: "fullname",
-      width: "35%",
+      width: "26%",
       defaultSortOrder: "descend",
       sorter: (a, b) => a.fullname.localeCompare(b.fullname),
     },
@@ -232,42 +342,138 @@ const Users = () => {
       },
     },
     {
+      title: "Tool Access",
+      dataIndex: "tools",
+      key: "tools",
+      render: (tools) => {
+        const userTools = Array.isArray(tools) ? tools : [];
+        const hasIdc = userTools.includes("idc");
+        const hasAcademy = userTools.includes("academy");
+        if (!hasIdc && !hasAcademy) {
+          return "-";
+        }
+        return (
+          <Space size={4} wrap>
+            {hasIdc && <Tag color="green">IDC</Tag>}
+            {hasAcademy && <Tag color="blue">Academy</Tag>}
+          </Space>
+        );
+      },
+    },
+    {
       title: "Company",
       dataIndex: "companyName",
       key: "companyName",
       sorter: (a, b) => a.companyName.localeCompare(b.companyName),
     },
     {
+      title: "Status",
+      key: "status",
+      width: "8%",
+      render: (text, record) => {
+        const isActive =
+          record.active === true ||
+          record.active === 1 ||
+          record.is_active === true ||
+          record.is_active === 1;
+        return isActive ? (
+          <Tag color="green">Active</Tag>
+        ) : (
+          <Tag color="default">Inactive</Tag>
+        );
+      },
+    },
+    {
       key: "action",
       width: "5%",
       align: "center",
-      render: (text, record) => (
-        <Space align="center">
-          <Link to={`/admin/user/${record.id}`}>
-            <EditOutlined style={{ marginTop: "5px" }} />
-          </Link>
-          <Popconfirm
-            title="Delete User"
-            description={`Are you sure you want to delete the user ${record.email}?`}
-            onConfirm={() => handleDeleteUser(record)}
-            okText="Yes"
-            cancelText="No"
-            placement="leftBottom"
-          >
-            <Button
-              size="small"
-              type="text"
-              icon={<DeleteTwoTone twoToneColor="#eb2f96" />}
-              loading={deleting.find((id) => id === record.id) ? true : false}
-              disabled={deleting.length ? true : false}
-            />
-          </Popconfirm>
-        </Space>
-      ),
+      render: (text, record) => {
+        const isActive =
+          record.active === true ||
+          record.active === 1 ||
+          record.is_active === true ||
+          record.is_active === 1;
+        const isSelf = currentUserId && currentUserId === record.id;
+        const isProcessing =
+          deleting.includes(record.id) || actionLoading.includes(record.id);
+
+        return (
+          <Space align="center">
+            <Link to={`/admin/user/${record.id}`}>
+              <EditOutlined style={{ marginTop: "5px" }} />
+            </Link>
+            {isActive ? (
+              <Popconfirm
+                title="Deactivate User"
+                description={`Are you sure you want to deactivate ${record.email}? The user will be unable to log in.`}
+                onConfirm={() => handleDeactivateUser(record)}
+                okText="Yes"
+                cancelText="No"
+                placement="leftBottom"
+                disabled={isSelf || isProcessing}
+              >
+                <Button
+                  size="small"
+                  type="text"
+                  danger
+                  icon={<StopOutlined />}
+                  loading={actionLoading.includes(record.id)}
+                  disabled={isSelf || isProcessing}
+                  title={
+                    isSelf
+                      ? "You cannot deactivate your own account"
+                      : "Deactivate user"
+                  }
+                  data-testid={`deactivate-user-${record.id}`}
+                />
+              </Popconfirm>
+            ) : (
+              <Popconfirm
+                title="Reactivate User"
+                description={`Are you sure you want to reactivate ${record.email}?`}
+                onConfirm={() => handleActivateUser(record)}
+                okText="Yes"
+                cancelText="No"
+                placement="leftBottom"
+                disabled={isProcessing}
+              >
+                <Button
+                  size="small"
+                  type="text"
+                  icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+                  loading={actionLoading.includes(record.id)}
+                  disabled={isProcessing}
+                  title="Reactivate user"
+                  data-testid={`activate-user-${record.id}`}
+                />
+              </Popconfirm>
+            )}
+            <Popconfirm
+              title="Delete User"
+              description={`Are you sure you want to delete the user ${record.email}?`}
+              onConfirm={() => handleDeleteUser(record)}
+              okText="Yes"
+              cancelText="No"
+              placement="leftBottom"
+            >
+              <Button
+                size="small"
+                type="text"
+                icon={<DeleteTwoTone twoToneColor="#eb2f96" />}
+                loading={deleting.find((id) => id === record.id) ? true : false}
+                disabled={deleting.length ? true : false}
+              />
+            </Popconfirm>
+          </Space>
+        );
+      },
     },
   ];
 
-  const onSearch = (value) => setSearch(value);
+  const onSearch = (value) => {
+    setCurrentPage(1);
+    setSearch(value);
+  };
 
   return (
     <ContentLayout
@@ -284,7 +490,10 @@ const Users = () => {
           <>
             <Checkbox
               checked={showApprovedUser}
-              onChange={(e) => setShowApprovedUser(e.target.checked)}
+              onChange={(e) => {
+                setCurrentPage(1);
+                setShowApprovedUser(e.target.checked);
+              }}
             >
               {" "}
               Show Approved User
@@ -313,17 +522,42 @@ const Users = () => {
           <>
             <Select
               {...filterProps(windowInnerHeight)}
+              allowClear
               options={userRoleOptions}
               placeholder="User Role"
               value={role}
-              onChange={setRole}
+              onChange={(value) => {
+                setCurrentPage(1);
+                setRole(value);
+              }}
+              aria-label="Filter by User Role"
+              data-testid="filter-user-role"
             />
             <Select
               {...filterProps(windowInnerHeight)}
+              allowClear
               options={companyWithUserOptions}
               placeholder="Company"
               value={company}
-              onChange={setCompany}
+              onChange={(value) => {
+                setCurrentPage(1);
+                setCompany(value);
+              }}
+              aria-label="Filter by Company"
+              data-testid="filter-company"
+            />
+            <Select
+              {...filterProps(windowInnerHeight)}
+              allowClear
+              options={toolAccessOptions}
+              placeholder="Tool Access"
+              value={toolAccess}
+              onChange={(value) => {
+                setCurrentPage(1);
+                setToolAccess(value);
+              }}
+              aria-label="Filter by Tool Access"
+              data-testid="filter-tool-access"
             />
           </>
         }

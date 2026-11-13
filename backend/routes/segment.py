@@ -7,7 +7,11 @@ from fastapi.security import HTTPBearer, HTTPBasicCredentials as credentials
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from http import HTTPStatus
-from middleware import verify_case_editor, verify_case_viewer
+from middleware import (
+    verify_case_editor,
+    verify_case_viewer,
+    verify_idc_access,
+)
 
 from db.connection import get_session
 from models.segment import (
@@ -18,7 +22,7 @@ from models.segment import (
 
 
 security = HTTPBearer()
-segment_route = APIRouter()
+segment_route = APIRouter(dependencies=[Depends(verify_idc_access)])
 
 
 @segment_route.post(

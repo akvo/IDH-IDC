@@ -276,6 +276,7 @@ class TestUserEndpoint:
             "cases": [],
             "company": None,
             "user_type": "internal",
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -343,6 +344,7 @@ class TestUserEndpoint:
             "active": True,
             "company": None,
             "user_type": "internal",
+            "tools": ["idc", "academy"],
         }
         user = get_user_by_email(session=session, email=user_payload["email"])
         assert user.invitation_id is not None
@@ -412,8 +414,10 @@ class TestUserEndpoint:
                 "case_access": [],
                 "internal_user": True,
                 "company": None,
+                "company_name": None,
                 "user_type": "internal",
                 "user_profile": None,
+                "tools": ["idc", "academy"],
             },
         }
 
@@ -461,6 +465,7 @@ class TestUserEndpoint:
             "cases": [],
             "company": None,
             "user_type": "internal",
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -507,6 +512,7 @@ class TestUserEndpoint:
             "cases": [],
             "company": None,
             "user_type": "internal",
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -638,6 +644,7 @@ class TestUserEndpoint:
                     "business_unit_count": 0,
                     "company": None,
                     "user_type": "internal",
+                    "tools": ["idc", "academy"],
                 },
                 {
                     "id": 4,
@@ -651,6 +658,7 @@ class TestUserEndpoint:
                     "business_unit_count": 0,
                     "company": None,
                     "user_type": "internal",
+                    "tools": ["idc", "academy"],
                 },
                 {
                     "id": 3,
@@ -664,6 +672,7 @@ class TestUserEndpoint:
                     "business_unit_count": 1,
                     "company": None,
                     "user_type": "internal",
+                    "tools": ["idc", "academy"],
                 },
                 {
                     "id": 2,
@@ -677,6 +686,7 @@ class TestUserEndpoint:
                     "business_unit_count": 0,
                     "company": None,
                     "user_type": "external_regular",
+                    "tools": ["idc", "academy"],
                 },
                 {
                     "id": 1,
@@ -690,6 +700,7 @@ class TestUserEndpoint:
                     "business_unit_count": 0,
                     "company": None,
                     "user_type": "internal",
+                    "tools": ["idc", "academy"],
                 },
             ],
             "total": 5,
@@ -834,6 +845,7 @@ class TestUserEndpoint:
                     "business_unit_count": 1,
                     "company": None,
                     "user_type": "internal",
+                    "tools": ["idc", "academy"],
                 },
             ],
             "total": 1,

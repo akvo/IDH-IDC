@@ -1,5 +1,6 @@
 export const passwordCheckBoxOptions = [
   { name: "Uppercase Character", re: /[A-Z]/ },
+  { name: "Lowercase Character", re: /[a-z]/ },
   { name: "Numbers", re: /\d/ },
   { name: "Special Character", re: /[-._!"`'#%&,:;<>=@{}~$()*+/?[\]^|]/ },
   { name: "Min 8 Character", re: /[^ ]{8}/ },
@@ -57,4 +58,5 @@ export { default as NewCpiForm } from "./NewCpiForm";
 export { default as OtherToolsAndResources } from "./other-tools-and-resources/OtherToolsAndResources";
 export { default as Blocker } from "./blocker/Blocker";
 export { default as ScrollToHash } from "./ScrollToHash";
+export { showIdcAccessRequestModal } from "./idcAccessModal";
 export { default as YouTubePlayer } from "./YouTubePlayer";

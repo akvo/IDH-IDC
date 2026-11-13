@@ -22,9 +22,11 @@ export const defaultUserState = {
   case_access: [],
   internal_user: false,
   company: null,
+  company_name: null,
   user_type: null,
   isExternalRegular: false,
   isCaseCreator: false,
+  tools: [],
   user_profile: null,
 };
 

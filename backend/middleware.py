@@ -2,15 +2,20 @@ import os
 
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, Request, status
+from fastapi.security import (
+    HTTPAuthorizationCredentials,
+    HTTPBearer,
+    OAuth2PasswordBearer,
+)
 from jose import JWTError, jwt, exceptions
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 
-from models.user import UserInfo, UserRole, UserType
+from db.connection import get_session
+from models.user import ToolType, UserInfo, UserRole, UserType
 from models.enum_type import PermissionType
 
 from db import crud_user
@@ -28,6 +33,7 @@ ACCESS_TOKEN_EXPIRE_DAYS = 1
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+idc_security = HTTPBearer()
 
 
 class Token(BaseModel):
@@ -38,6 +44,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+    role: Optional[UserRole] = None
+    tools: Optional[List[str]] = None
 
 
 def verify_password(plain_password, hashed_password):
@@ -62,6 +70,18 @@ def create_access_token(data: dict):
     data.update({"exp": expire})
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def generate_user_token(user) -> str:
+    role = user.role.value if hasattr(user.role, "value") else user.role
+    return create_access_token(
+        data={
+            "sub": user.email,
+            "email": user.email,
+            "role": role,
+            "tools": user.tools or [],
+        }
+    )
 
 
 def decode_token(token: str = Depends(oauth2_scheme)):
@@ -103,15 +123,35 @@ def verify_user(session: Session, authenticated):
     )
     authenticated = verify_token(authenticated)
     try:
-        email: str = authenticated.get("email")
+        email: str = authenticated.get("email") or authenticated.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = TokenData(email=email)
+        role = authenticated.get("role")
+        tools = authenticated.get("tools")
+        token_data = TokenData(email=email, role=role, tools=tools)
     except (JWTError, AttributeError):
         raise credentials_exception
     user = crud_user.get_user_by_email(session=session, email=token_data.email)
     if not user:
         raise credentials_exception
+    return user
+
+
+def verify_idc_access(
+    req: Request,
+    session: Session = Depends(get_session),
+    credentials: HTTPAuthorizationCredentials = Depends(idc_security),
+):
+    """Ensure authenticated user holds 'idc' tool access (authoritative DB)."""
+    authenticated = getattr(req.state, "authenticated", None)
+    if authenticated is None:
+        authenticated = decode_token(credentials.credentials)
+    user = verify_user(session=session, authenticated=authenticated)
+    if not user.tools or ToolType.idc.value not in user.tools:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Tool access required: idc",
+        )
     return user
 
 

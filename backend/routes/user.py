@@ -1,19 +1,24 @@
 import os
+import secrets
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
+import db.crud_company as crud_company
 import db.crud_reset_password as crud_reset_pwd
 import db.crud_case as crud_case
 import db.crud_user_case_access as crud_uca
 import db.crud_tag as crud_tag
 import db.crud_question as crud_question
 import db.crud_reference_data as crud_ref_data
+from db.crud_organisation import default_organisation
+from db.academy import crud_profile, crud_settings
 
 from math import ceil
 from middleware import (
     Token,
     authenticate_user,
-    create_access_token,
+    generate_user_token,
     verify_user,
+    verify_password,
     get_password_hash,
     verify_admin,
 )
@@ -30,10 +35,13 @@ from fastapi import Response
 from fastapi.security import HTTPBearer
 from fastapi.security import HTTPBasicCredentials as credentials
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from db.connection import get_session
 from models.user import (
+    User,
+    ToolType,
+    UserType,
     UserDict,
     UserBase,
     UserResponse,
@@ -44,7 +52,18 @@ from models.user import (
     UserRole,
     UserSearchDict,
     FilterUserRole,
+    UserRegisterAcademy,
+    AcademyRegisterResponse,
+    AcademyVerifyResponse,
+    UserProfileUpdateRequest,
+    ChangePasswordRequest,
+    GrantIdcAccessRequest,
 )
+from models.academy.academy_schemas import (
+    ChangePasswordPayload,
+    ChangePasswordResponse,
+)
+from models.user_profile import UserProfileUpdatePayload
 from models.user_business_unit import UserBusinessUnitRole
 from typing import Optional, List
 from pydantic import SecretStr
@@ -61,6 +80,17 @@ if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
 if "https://" not in webdomain:
     webdomain = f"https://{webdomain}"
+
+ALLOWED_ORIGINS = {
+    webdomain,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+}
+
+
+def get_safe_base_url(req: Request) -> str:
+    origin = req.headers.get("origin")
+    return origin if origin in ALLOWED_ORIGINS else webdomain
 
 
 @user_route.post(
@@ -97,7 +127,7 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"email": user.email})
+    access_token = generate_user_token(user)
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -121,6 +151,7 @@ def get_all(
     organisation: Optional[int] = Query(None),
     role: Optional[FilterUserRole] = Query(None),
     company: Optional[int] = Query(None),
+    tool: Optional[ToolType] = Query(None),
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
 ):
@@ -143,6 +174,7 @@ def get_all(
         business_unit_users=business_unit_users,
         role=role,
         company=company,
+        tool=tool,
     )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
@@ -153,6 +185,9 @@ def get_all(
         organisation=organisation,
         approved=approved,
         business_unit_users=business_unit_users,
+        role=role,
+        company=company,
+        tool=tool,
     )
     user = [u.to_user_list for u in user]
     total_page = ceil(total / limit) if total > 0 else 0
@@ -207,9 +242,29 @@ def register(
             raise HTTPException(status_code=403, detail="Forbidden access")
     # Check if user exist by email
     check_user_exist = crud_user.get_user_by_email(
-        session=session, email=payload.email
+        session=session, email=payload.email.strip().lower()
     )
     if check_user_exist:
+        if invitation_id and ToolType.idc.value not in (
+            check_user_exist.tools or []
+        ):
+            academy_company = (
+                check_user_exist.profile.company_name
+                if hasattr(check_user_exist, "profile")
+                and check_user_exist.profile
+                else None
+            )
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "message": "User already has an Academy account",
+                    "is_academy_user": True,
+                    "user_id": check_user_exist.id,
+                    "fullname": check_user_exist.fullname,
+                    "email": check_user_exist.email,
+                    "academy_company": academy_company,
+                },
+            )
         raise HTTPException(
             status_code=409, detail=f"User {payload.email} already exist."
         )
@@ -281,6 +336,121 @@ def register(
     return user
 
 
+@user_route.post(
+    "/user/register-academy",
+    response_model=AcademyRegisterResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Register new user for Living Income Academy",
+    name="user:register_academy",
+    tags=["User"],
+)
+def register_academy(
+    req: Request,
+    payload: UserRegisterAcademy,
+    session: Session = Depends(get_session),
+):
+    normalized_email = payload.email.strip().lower()
+    check_user_exist = crud_user.get_user_by_email(
+        session=session, email=normalized_email
+    )
+    if check_user_exist:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"User {normalized_email} already exists.",
+        )
+
+    verification_token = secrets.token_hex(32)
+    hashed_password = get_password_hash(payload.password)
+    def_org = default_organisation(session=session, name="IDH")
+    organisation_id = def_org.id if def_org else None
+
+    user = User(
+        fullname=payload.fullname.strip(),
+        email=normalized_email,
+        password=hashed_password,
+        role=UserRole.user,
+        organisation=organisation_id,
+        company=None,
+        is_active=0,
+        all_cases=0,
+        invitation_id=verification_token,
+        tools=[ToolType.academy.value],
+    )
+    session.add(user)
+    session.commit()
+    session.flush()
+    session.refresh(user)
+
+    profile = crud_profile.get_or_create_user_profile(
+        session=session, user=user
+    )
+    profile.company_name = payload.company_name.strip()
+    session.commit()
+
+    base_url = get_safe_base_url(req)
+    verify_url = f"{base_url}/verify-academy?token={verification_token}"
+    email = Email(
+        recipients=[user.recipient],
+        email=MailTypeEnum.ACADEMY_VERIFY,
+        url=verify_url,
+    )
+    email.send
+
+    return {
+        "message": (
+            "Registration successful. Please check your email "
+            "to verify your account."
+        )
+    }
+
+
+@user_route.get(
+    "/user/verify-academy",
+    response_model=AcademyVerifyResponse,
+    summary="Verify Living Income Academy registration token",
+    name="user:verify_academy",
+    tags=["User"],
+)
+def verify_academy(
+    req: Request,
+    token: str = Query(..., description="Verification token"),
+    session: Session = Depends(get_session),
+):
+    if not token or not token.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Verification token is required.",
+        )
+
+    user = (
+        session.query(User)
+        .filter(User.invitation_id == token.strip())
+        .first()
+    )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired verification token.",
+        )
+
+    user.is_active = 1
+    user.invitation_id = None
+    session.commit()
+
+    accept_header = req.headers.get("accept", "")
+    if "text/html" in accept_header:
+        base_url = get_safe_base_url(req)
+        return RedirectResponse(
+            url=f"{base_url}/login?verified=true",
+            status_code=status.HTTP_302_FOUND,
+        )
+
+    return {
+        "message": "Account verified successfully. You may now log in.",
+        "verified": True,
+    }
+
+
 @user_route.get(
     "/user/invitation/{invitation_id:path}",
     response_model=UserInvitation,
@@ -321,7 +491,7 @@ def change_password(
     )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
-    access_token = create_access_token(data={"email": user.email})
+    access_token = generate_user_token(user)
     return {
         "access_token": access_token,
         "token_type": "bearer",
@@ -377,6 +547,170 @@ def get_forgot_password(
     return user.to_user_invitation
 
 
+@user_route.post(
+    "/user/{user_id}/grant-idc",
+    response_model=UserDetailDict,
+    summary="grant IDC access to user",
+    name="user:grant_idc",
+    tags=["User"],
+)
+def grant_idc(
+    req: Request,
+    user_id: int,
+    payload: GrantIdcAccessRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    company = crud_company.get_company_by_id(
+        session=session, id=payload.company_id
+    )
+    if not company:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Company not found"
+        )
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    if user.is_active != 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "User account must be verified/active before granting "
+                "IDC access"
+            ),
+        )
+    tools_list = list(user.tools or [])
+    if ToolType.idc.value not in tools_list:
+        user.tools = [*tools_list, ToolType.idc.value]
+    user.company = company.id
+    if user.role == UserRole.user:
+        user.user_type = payload.user_type or (
+            user.user_type
+            if user.user_type in (
+                UserType.external_regular,
+                UserType.external_advanced,
+            )
+            else UserType.external_regular
+        )
+    session.commit()
+    session.refresh(user)
+    email = Email(
+        recipients=[user.recipient],
+        email=MailTypeEnum.IDC_ACCESS_GRANTED,
+        body=(
+            f"An administrator has granted you access to the "
+            f"Income Driver Calculator under {company.name}."
+        ),
+    )
+    email.send
+    return user.to_user_detail
+
+
+@user_route.post(
+    "/user/{user_id}/revoke-idc",
+    response_model=UserDetailDict,
+    summary="revoke IDC access from user",
+    name="user:revoke_idc",
+    tags=["User"],
+)
+def revoke_idc(
+    req: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    tools_list = list(user.tools or [])
+    if ToolType.idc.value not in tools_list:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User does not have IDC access",
+        )
+
+    # Check case ownership before allowing IDC access revocation
+    cases_owned_by_user = crud_case.get_case_by_created_by(
+        session=session, created_by=user.id
+    )
+    if cases_owned_by_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail={
+                "id": user.id,
+                "email": user.email,
+                "cases": [case.to_dropdown for case in cases_owned_by_user],
+            },
+        )
+
+    new_tools = [t for t in tools_list if t != ToolType.idc.value]
+    if not new_tools:
+        new_tools = [ToolType.academy.value]
+    user.tools = new_tools
+    user.company = None
+    user.all_cases = 0
+    session.commit()
+    session.refresh(user)
+    return user.to_user_detail
+
+
+@user_route.post(
+    "/user/{user_id}/deactivate",
+    response_model=UserDetailDict,
+    summary="deactivate user account",
+    name="user:deactivate",
+    tags=["User"],
+)
+def deactivate_user(
+    req: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    admin = verify_admin(session=session, authenticated=req.state.authenticated)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    if admin.id == user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot deactivate your own account",
+        )
+    user.is_active = 0
+    session.commit()
+    session.refresh(user)
+    return user.to_user_detail
+
+
+@user_route.post(
+    "/user/{user_id}/activate",
+    response_model=UserDetailDict,
+    summary="activate user account",
+    name="user:activate",
+    tags=["User"],
+)
+def activate_user(
+    req: Request,
+    user_id: int,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    user.is_active = 1
+    session.commit()
+    session.refresh(user)
+    return user.to_user_detail
+
+
 @user_route.get(
     "/user/{user_id:path}",
     response_model=UserDetailDict,
@@ -392,7 +726,108 @@ def get_user_by_id(
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return user.to_user_detail
+
+
+@user_route.put(
+    "/user/profile",
+    response_model=UserInfo,
+    summary="update user profile",
+    name="user:update_profile",
+    tags=["User"],
+)
+def update_profile(
+    req: Request,
+    payload: UserProfileUpdateRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    user = verify_user(
+        session=session, authenticated=req.state.authenticated
+    )
+
+    # Validate current password upfront so profile edits are never partially
+    # committed when a combined password change fails authentication.
+    if payload.new_password is not None:
+        if not payload.current_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is required to set a new password",
+            )
+        if not verify_password(payload.current_password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Incorrect current password",
+            )
+
+    profile_update_kwargs = {}
+
+    if payload.fullname is not None:
+        trimmed_name = payload.fullname.strip()
+        parts = trimmed_name.split(" ", 1)
+        profile_update_kwargs["first_name"] = parts[0]
+        profile_update_kwargs["last_name"] = (
+            parts[1] if len(parts) > 1 else ""
+        )
+        user.fullname = trimmed_name
+
+    tools_list = user.tools if user.tools is not None else []
+    if "idc" not in tools_list and payload.company_name is not None:
+        profile_update_kwargs["company_name"] = payload.company_name
+
+    if profile_update_kwargs:
+        crud_profile.update_user_profile(
+            session=session,
+            user=user,
+            payload=UserProfileUpdatePayload(**profile_update_kwargs),
+        )
+        if payload.fullname is not None:
+            user.fullname = payload.fullname.strip()
+
+    if payload.new_password is not None:
+        crud_settings.change_user_password(
+            session=session,
+            user=user,
+            payload=ChangePasswordPayload(
+                current_password=payload.current_password,
+                new_password=payload.new_password,
+            ),
+        )
+
+    session.commit()
+    session.refresh(user)
+    return user.to_user_info
+
+
+@user_route.post(
+    "/user/change-password",
+    response_model=ChangePasswordResponse,
+    summary="change user password",
+    name="user:change_password",
+    tags=["User"],
+)
+def change_user_password(
+    req: Request,
+    payload: ChangePasswordRequest,
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    user = verify_user(
+        session=session, authenticated=req.state.authenticated
+    )
+    crud_settings.change_user_password(
+        session=session,
+        user=user,
+        payload=ChangePasswordPayload(
+            current_password=payload.current_password,
+            new_password=payload.new_password,
+        ),
+    )
+    return ChangePasswordResponse(message="Password changed successfully")
 
 
 @user_route.put(
@@ -440,6 +875,10 @@ def delete(
 ):
     verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
     # Make sure to check the case owner before allowing user deletion.
     cases_owned_by_user = crud_case.get_case_by_created_by(
@@ -517,14 +956,22 @@ def new_forgot_password(
     email: str = Form(...),
     session: Session = Depends(get_session),
 ):
+    user = crud_user.get_user_by_email(session=session, email=email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User Not found")
+    if user.is_active != 1:
+        raise HTTPException(
+            status_code=400,
+            detail="User account is inactive or unverified",
+        )
     reset_password = crud_reset_pwd.new_reset_password(
         session=session, email=email
     )
     if not reset_password:
         raise HTTPException(status_code=404, detail="User Not found")
     # Send reset password email
-    user = crud_user.get_user_by_email(session=session, email=email)
-    url = f"{webdomain}/reset-password/{reset_password['url']}"
+    base_url = get_safe_base_url(req)
+    url = f"{base_url}/reset-password/{reset_password['url']}"
     email = Email(
         recipients=[user.recipient],
         email=MailTypeEnum.FORGOT_PASSWORD,
@@ -561,12 +1008,22 @@ def post_forgot_password(
             status_code=status.HTTP_410_GONE,
             content={"message": "url is expired"},
         )
+    target_user = crud_user.get_user_by_id(
+        session=session, id=reset_password["user"]
+    )
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User Not found")
+    if target_user.is_active != 1:
+        raise HTTPException(
+            status_code=400,
+            detail="User account is inactive or unverified",
+        )
     password = get_password_hash(password.get_secret_value())
     user = crud_user.update_password(
         session=session, id=reset_password["user"], password=password
     )
     crud_reset_pwd.delete_reset_password(session=session, url=url)
-    access_token = create_access_token(data={"email": user.email})
+    access_token = generate_user_token(user)
     return {
         "access_token": access_token,
         "token_type": "bearer",

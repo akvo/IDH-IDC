@@ -44,7 +44,7 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env_flag(
-    "EMAIL_USE_TLS", "false" if EMAIL_PORT == 465 else "true"
+    "EMAIL_USE_TLS", "false" if EMAIL_PORT in (465, 1025) else "true"
 )
 EMAIL_USE_SSL = env_flag(
     "EMAIL_USE_SSL", "true" if EMAIL_PORT == 465 else "false"
@@ -79,8 +79,8 @@ class EmailBody(enum.Enum):
         "image": f"{image_url}/user-switch.png",
     }
     FORGOT_PASSWORD = {
-        "title": "Forgot Password",
-        "subject": "Forgot Password",
+        "title": "Reset Password",
+        "subject": "Better Income Toolkit: Reset Your Password",
         "body": "You have requested to reset your password.",
         "message": """
             Please click
@@ -98,7 +98,11 @@ class EmailBody(enum.Enum):
     INVITATION = {
         "title": "Invitation",
         "subject": "Invitation",
-        "body": "You have been invited to the Income Driver Calculator.",
+        "body": (
+            "You have been invited to the Better Income Toolkit "
+            "(with access to the Income Driver Calculator and "
+            "Living Income Academy)."
+        ),
         "message": """
             Please click
             <a href="#url#" target="_blank" rel="noreferrer">
@@ -111,6 +115,33 @@ class EmailBody(enum.Enum):
             </a>
         """,
         "image": f"{image_url}/user.png",
+    }
+    ACADEMY_REGISTRATION_VERIFY = {
+        "title": "Verify Your Academy Account",
+        "subject": "Verify Your Living Income Academy Account",
+        "body": "Thank you for registering for the Living Income Academy.",
+        "message": """
+            Please click
+            <a href="#url#" target="_blank" rel="noreferrer">
+                here
+            </a> or the link below to verify your account and activate your access.
+            <br/>
+            <br/>
+            <a href="#url#" target="_blank" rel="noreferrer">
+                #url#
+            </a>
+        """,
+        "image": f"{image_url}/user.png",
+    }
+    IDC_ACCESS_GRANTED = {
+        "title": "IDC Access Granted",
+        "subject": "Income Driver Calculator Access Granted",
+        "body": (
+            "An administrator has granted you access to the "
+            "Income Driver Calculator."
+        ),
+        "message": None,
+        "image": f"{image_url}/check-circle.png",
     }
 
 
@@ -146,6 +177,8 @@ class MailTypeEnum(enum.Enum):
     REG_PASSWORD_CREATED = "USER_PASSWORD_CREATED"
     FORGOT_PASSWORD = "FORGOT_PASSWORD"
     INVITATION = "INVITATION"
+    ACADEMY_VERIFY = "ACADEMY_REGISTRATION_VERIFY"
+    IDC_ACCESS_GRANTED = "IDC_ACCESS_GRANTED"
 
 
 class Email:
@@ -183,7 +216,7 @@ class Email:
             message = message.replace("#url#", self.url)
         html = html_template.render(
             logo=f"{webdomain}/logo.png",
-            instance_name="Income Driver Calculator",
+            instance_name="Better Income Toolkit",
             webdomain=webdomain,
             title=email["title"],
             body=body,

@@ -1,12 +1,17 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { Modal } from "antd";
 import AcademyLanding from "../AcademyLanding";
 
 describe("AcademyLanding Component", () => {
-  const renderComponent = () =>
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const renderComponent = (initialEntry = "/academy") =>
     render(
-      <MemoryRouter initialEntries={["/academy"]}>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <AcademyLanding />
       </MemoryRouter>
     );
@@ -100,5 +105,46 @@ describe("AcademyLanding Component", () => {
     expect(
       screen.getByText(/the living income academy offers general guidance/i)
     ).toBeInTheDocument();
+  });
+
+  it("does not open unauthorized IDC access modal when navigation state is absent", () => {
+    const infoSpy = jest.spyOn(Modal, "info").mockImplementation(jest.fn());
+    renderComponent();
+    expect(infoSpy).not.toHaveBeenCalled();
+  });
+
+  it("opens IDH access request modal when redirected with unauthorizedIDC state", () => {
+    const infoSpy = jest.spyOn(Modal, "info").mockImplementation(jest.fn());
+    renderComponent({
+      pathname: "/academy",
+      state: { unauthorizedIDC: true },
+    });
+    expect(infoSpy).toHaveBeenCalledTimes(1);
+    expect(infoSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Income Driver Calculator Access",
+        className: "access-request-modal",
+      })
+    );
+  });
+
+  it("navigates to /academy/overview when Explore the Academy is clicked", () => {
+    render(
+      <MemoryRouter initialEntries={["/academy"]}>
+        <Routes>
+          <Route path="/academy" element={<AcademyLanding />} />
+          <Route
+            path="/academy/overview"
+            element={<div>Academy Overview Page</div>}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /explore the academy/i })
+    );
+
+    expect(screen.getByText("Academy Overview Page")).toBeInTheDocument();
   });
 });

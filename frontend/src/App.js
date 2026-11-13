@@ -7,7 +7,7 @@ import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/income-driver-calculator";
-import { Login, ResetPassword } from "./pages/login";
+import { Login, ResetPassword, Register, VerifyAcademy } from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
@@ -45,6 +45,7 @@ import {
   ModuleLearningPage,
 } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
+import { Profile } from "./pages/profile";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
 
@@ -158,8 +159,10 @@ const App = () => {
             s.case_access = data.case_access || [];
             s.internal_user = data.internal_user;
             s.company = data.company;
+            s.company_name = data.company_name || null;
             s.user_type = data.user_type;
             s.user_profile = data.user_profile || null;
+            s.tools = Array.isArray(data.tools) ? data.tools : [];
             s.isExternalRegular = data.user_type === "external_regular";
             s.isCaseCreator =
               adminRole.includes(data.role) ||
@@ -192,6 +195,9 @@ const App = () => {
           <Route element={<PrivateRoutes />}>
             {/* IDC Dashboard after login */}
             <Route exact path={routePath.idc.dashboard} element={<Welcome />} />
+
+            {/* Profile */}
+            <Route exact path={routePath.profile} element={<Profile />} />
 
             {/* Case */}
             {/* Manage new cases step routes */}
@@ -321,6 +327,7 @@ const App = () => {
           {/* IDC PAGE */}
           <Route exact path={routePath.idc.landing} element={<Landing />} />
           <Route exact path={routePath.idc.login} element={<Login />} />
+          <Route exact path="/login" element={<Login />} />
           <Route exact path={routePath.idc.faq} element={<FAQ />} />
           {/* EOL IDC PAGE */}
           <Route
@@ -368,7 +375,8 @@ const App = () => {
             path="/procurement-library/intervention-library/:practiceId"
             element={<ProcurementPage.Practice />}
           />
-          {/* <Route exact path="/register" element={<Register />} /> */}
+          <Route exact path="/register" element={<Register />} />
+          <Route exact path="/verify-academy" element={<VerifyAcademy />} />
           <Route
             exact
             path="/invitation/:tokenId"
