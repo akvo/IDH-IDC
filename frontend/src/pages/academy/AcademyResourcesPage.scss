@@ -1,0 +1,227 @@
+@import "../../variables.scss";
+@import "./styles/tokens";
+@import "./styles/mixins";
+
+// Scoped under #root to outrank the global `#root h1/p/span` rules in
+// App.scss (RocGrotesk headings, 14px spans, 25px paragraph line-height)
+#root .academy-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $academy-text-primary;
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  h1.academy-resources-title {
+    font-size: 32px;
+    font-weight: 600 !important;
+    line-height: 40px;
+  }
+
+  .academy-resources-subtitle {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 20px;
+    color: $academy-text-muted;
+  }
+
+  .academy-resources-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  // Figma segmented tabs: grey track, white active pill
+  .academy-resources-tabs {
+    padding: 3px;
+    border-radius: 8px;
+    background: $academy-chapter-number-bg;
+
+    .ant-segmented-item {
+      border-radius: 6px;
+      color: $academy-text-muted;
+    }
+
+    .ant-segmented-item-label {
+      min-height: 28px;
+      padding: 0 12px;
+      font-size: 12px;
+      line-height: 28px;
+    }
+
+    .ant-segmented-item-selected {
+      box-shadow: $academy-shadow-xs;
+      color: $academy-text-primary;
+      font-weight: 600;
+    }
+  }
+
+  // Icon toolbar: sort, filter, search
+  .academy-table-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .academy-table-search {
+    width: 260px;
+    height: 36px;
+    margin-right: 4px;
+    border-radius: 8px;
+
+    .ant-input-prefix {
+      color: $academy-text-muted;
+    }
+  }
+
+  .academy-toolbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: $academy-text-muted;
+
+    .academy-toolbar-icon {
+      display: block;
+    }
+
+    &:hover,
+    &--active {
+      color: $academy-primary;
+    }
+  }
+
+  .academy-resources-card {
+    padding: 24px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px;
+    background: $bg-color-white;
+  }
+
+  // Tables: grey rounded header row, ruled body rows
+  .academy-data-table {
+    .ant-table {
+      background: transparent;
+    }
+
+    .ant-table-thead > tr > th {
+      padding: 10px 12px;
+      border-bottom: none;
+      background: $academy-surface-muted;
+      font-size: 14px;
+      font-weight: 400;
+      color: $academy-text-muted;
+
+      &::before {
+        display: none;
+      }
+
+      &:first-child {
+        border-radius: 8px 0 0 8px;
+      }
+
+      &:last-child {
+        border-radius: 0 8px 8px 0;
+      }
+    }
+
+    .ant-table-tbody > tr > td {
+      height: 64px;
+      padding: 8px 12px;
+      border-bottom: 1px solid $academy-card-stroke;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background: $academy-surface-muted;
+    }
+  }
+
+  .academy-resource-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .academy-resource-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: $academy-primary-tint;
+    font-size: 12px;
+    color: $academy-primary;
+  }
+
+  .academy-type-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid $academy-tag-stroke;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 18px;
+    color: $academy-tag-text;
+  }
+
+  .academy-resource-action {
+    @include academy-button-outline;
+    border-radius: 8px;
+  }
+
+  .academy-glossary-term {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .academy-glossary-type,
+  .academy-glossary-definition {
+    font-size: 13px;
+    line-height: 1.5;
+    color: $academy-text-muted;
+  }
+
+  .academy-table-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    font-size: 14px;
+    color: $academy-text-muted;
+
+    p {
+      font-size: 14px;
+    }
+  }
+
+  @media (max-width: $academy-compact-breakpoint) {
+    h1.academy-resources-title {
+      font-size: 26px;
+      line-height: 34px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .academy-resources-card {
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    .academy-table-search {
+      width: 200px;
+    }
+  }
+}

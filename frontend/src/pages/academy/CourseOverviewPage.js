@@ -7,6 +7,7 @@ import CourseSearchForm from "./components/CourseSearchForm";
 import CourseSummaryCard from "./components/CourseSummaryCard";
 import ModuleAccordion from "./components/ModuleAccordion";
 import academyService, { isRequestCancelled } from "./services/academy";
+import useUpdateSearchParams from "./hooks/useUpdateSearchParams";
 import { CHAPTER_API_STATUS, PROGRESS_STATUS, getModulePath } from "./utils";
 import "./CourseOverviewPage.scss";
 
@@ -54,6 +55,7 @@ const getInitialExpandedIds = (modules, isFiltered) => {
 const CourseOverviewPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const updateParams = useUpdateSearchParams(setSearchParams);
   // The URL is the source of truth for the filters, so filtered views can be
   // shared, refreshed and navigated back
   const search = (searchParams.get("search") || "").trim();
@@ -123,29 +125,10 @@ const CourseOverviewPage = () => {
         if (err?.status && err.status < 500) {
           message.error(err.message);
         }
-        setSearchParams(
-          (current) => {
-            const next = new URLSearchParams(current);
-            next.delete("chapter");
-            return next;
-          },
-          { replace: true }
-        );
+        updateParams({ chapter: null }, { replace: true });
       });
     return () => controller.abort();
-  }, [chapterId, navigate, setSearchParams]);
-
-  const updateParams = useCallback(
-    (changes) =>
-      setSearchParams((current) => {
-        const next = new URLSearchParams(current);
-        Object.entries(changes).forEach(([key, value]) =>
-          value ? next.set(key, value) : next.delete(key)
-        );
-        return next;
-      }),
-    [setSearchParams]
-  );
+  }, [chapterId, navigate, updateParams]);
 
   const setChapterStatus = useCallback(
     (id, status) =>

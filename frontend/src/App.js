@@ -40,6 +40,7 @@ import {
   AcademyLanding,
   AcademyLayout,
   AcademyOverviewPage,
+  AcademyResourcesPage,
   CourseOverviewPage,
   ModuleLearningPage,
 } from "./pages/academy";
@@ -73,7 +74,6 @@ const AcademyPagePlaceholder = ({ title }) => (
 );
 
 const academyChildRoutes = [
-  { path: routePath.academy.resources, title: "Academy resources" },
   { path: routePath.academy.account, title: "Account" },
   { path: routePath.academy.settings, title: "Settings" },
 ];
@@ -251,6 +251,11 @@ const App = () => {
                 exact
                 path={routePath.academy.courses}
                 element={<CourseOverviewPage />}
+              />
+              <Route
+                exact
+                path={routePath.academy.resources}
+                element={<AcademyResourcesPage />}
               />
               {academyChildRoutes.map(({ path, title }) => (
                 <Route
