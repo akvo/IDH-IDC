@@ -5,6 +5,7 @@ import TableToolbar from "./components/TableToolbar";
 import ResourcesTable from "./components/ResourcesTable";
 import GlossaryTable from "./components/GlossaryTable";
 import academyService, { isRequestCancelled } from "./services/academy";
+import useUpdateSearchParams from "./hooks/useUpdateSearchParams";
 import "./AcademyResourcesPage.scss";
 
 const toOptions = (values) =>
@@ -59,11 +60,16 @@ const AcademyResourcesPage = () => {
   const sort = SORT_OPTIONS.some(({ key }) => key === searchParams.get("sort"))
     ? searchParams.get("sort")
     : DEFAULT_SORT;
-  const isFiltered = Boolean(search || type);
 
-  // Rows are kept with the tab they belong to, so switching tabs never
-  // renders one tab's rows with the other tab's columns
-  const [list, setList] = useState({ tab: null, rows: [] });
+  // Rows are kept with the tab and filters they came from: switching tabs
+  // never renders one tab's rows with the other tab's columns, and a filter
+  // change re-renders the rows once, when its own results arrive
+  const [list, setList] = useState({
+    tab: null,
+    rows: [],
+    search: "",
+    filtered: false,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -78,7 +84,12 @@ const AcademyResourcesPage = () => {
     TABS[tab]
       .load({ search, type, sortBy, sortOrder, signal: controller.signal })
       .then((data) => {
-        setList({ tab, rows: data?.data || [] });
+        setList({
+          tab,
+          rows: data?.data || [],
+          search,
+          filtered: Boolean(search || type),
+        });
         setLoading(false);
       })
       .catch((err) => {
@@ -91,17 +102,7 @@ const AcademyResourcesPage = () => {
     return () => controller.abort();
   }, [tab, search, type, sort, reloadKey]);
 
-  const updateParams = useCallback(
-    (changes) =>
-      setSearchParams((current) => {
-        const next = new URLSearchParams(current);
-        Object.entries(changes).forEach(([key, value]) =>
-          value ? next.set(key, value) : next.delete(key)
-        );
-        return next;
-      }),
-    [setSearchParams]
-  );
+  const updateParams = useUpdateSearchParams(setSearchParams);
 
   const handleSearch = useCallback(
     (term) => updateParams({ search: term }),
@@ -122,7 +123,7 @@ const AcademyResourcesPage = () => {
   const { Table, noun } = config;
   const emptyText = useMemo(
     () =>
-      isFiltered ? (
+      list.filtered ? (
         <div className="academy-table-empty">
           <p>No {noun} match your search or filter.</p>
           <Button onClick={() => updateParams({ search: null, type: null })}>
@@ -132,7 +133,7 @@ const AcademyResourcesPage = () => {
       ) : (
         <p className="academy-table-empty">No {noun} yet.</p>
       ),
-    [isFiltered, noun, updateParams]
+    [list.filtered, noun, updateParams]
   );
 
   return (
@@ -191,7 +192,7 @@ const AcademyResourcesPage = () => {
           <Table
             rows={list.tab === tab ? list.rows : NO_ROWS}
             loading={loading}
-            highlight={search}
+            highlight={list.search}
             emptyText={emptyText}
           />
         )}

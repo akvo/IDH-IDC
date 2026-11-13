@@ -267,6 +267,30 @@ describe("AcademyResourcesPage", () => {
       await settled();
     });
 
+    it("keeps what the learner is typing when the search applies", async () => {
+      renderPage();
+      await screen.findByText("Roadmap overview");
+      fireEvent.click(screen.getByRole("button", { name: "Search" }));
+      const box = screen.getByRole("textbox", { name: "Search resources" });
+
+      fireEvent.change(box, { target: { value: "road " } });
+      await waitFor(() =>
+        expect(location()).toHaveTextContent(/\?search=road$/)
+      );
+      // The trailing space survives, so "road map" can still be typed
+      expect(box).toHaveValue("road ");
+      await settled();
+    });
+
+    it("does not take focus on load when the URL has a search", async () => {
+      renderPage("/academy/resources?search=road");
+      const box = await screen.findByRole("textbox", {
+        name: "Search resources",
+      });
+      expect(box).not.toHaveFocus();
+      await settled();
+    });
+
     it("closes an empty search box with Escape", async () => {
       renderPage();
       await screen.findByText("Roadmap overview");

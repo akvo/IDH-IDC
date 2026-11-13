@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { Button, Table } from "antd";
 import {
   DownloadOutlined,
@@ -46,38 +46,42 @@ const ResourceAction = ({ resource }) => {
 };
 
 const ResourcesTable = ({ rows, loading, highlight, emptyText }) => {
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      render: (name, resource) => (
-        <span className="academy-resource-name">
-          <span className="academy-resource-icon" aria-hidden="true">
-            {getResourceLink(resource.url)?.external ? (
-              <GlobalOutlined />
-            ) : (
-              <FileTextOutlined />
-            )}
+  // Rebuilt only when the highlighted term changes
+  const columns = useMemo(
+    () => [
+      {
+        title: "Name",
+        dataIndex: "name",
+        key: "name",
+        render: (name, resource) => (
+          <span className="academy-resource-name">
+            <span className="academy-resource-icon" aria-hidden="true">
+              {getResourceLink(resource.url)?.external ? (
+                <GlobalOutlined />
+              ) : (
+                <FileTextOutlined />
+              )}
+            </span>
+            <HighlightedText text={name} highlight={highlight} />
           </span>
-          <HighlightedText text={name} highlight={highlight} />
-        </span>
-      ),
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-      width: 180,
-      render: (type) => <span className="academy-type-tag">{type}</span>,
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      width: 120,
-      render: (_, resource) => <ResourceAction resource={resource} />,
-    },
-  ];
+        ),
+      },
+      {
+        title: "Type",
+        dataIndex: "type",
+        key: "type",
+        width: 180,
+        render: (type) => <span className="academy-type-tag">{type}</span>,
+      },
+      {
+        title: "Actions",
+        key: "actions",
+        width: 120,
+        render: (_, resource) => <ResourceAction resource={resource} />,
+      },
+    ],
+    [highlight]
+  );
 
   return (
     <Table

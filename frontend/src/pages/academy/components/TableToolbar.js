@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { Button, Dropdown, Input, Tooltip } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { ACADEMY_TOOLTIP_CLASS } from "../utils";
@@ -7,7 +7,7 @@ import { ReactComponent as SortIcon } from "../../../assets/icons/academy/sort.s
 import { ReactComponent as FilterIcon } from "../../../assets/icons/academy/filter-lines.svg";
 import { ReactComponent as SearchIcon } from "../../../assets/icons/academy/search.svg";
 
-export const SEARCH_DEBOUNCE_MS = 300;
+const SEARCH_DEBOUNCE_MS = 300;
 
 // Icon toolbar above the resources/glossary tables (Figma): sort, type
 // filter and a search box that opens from its icon. The search draft is
@@ -27,10 +27,14 @@ const TableToolbar = ({
   const [draft, setDraft] = useState(search);
   const [searchOpen, setSearchOpen] = useState(Boolean(search));
   const inputRef = useRef(null);
+  // Only a click on the icon focuses the box, never a search from the URL
+  const focusOnOpen = useRef(false);
 
-  // Keep the box in step with the URL (tab switch, back/forward, clear)
+  // Keep the box in step with the URL (tab switch, back/forward, clear).
+  // A draft that already matches is kept as typed, so applying "road " as
+  // `road` does not swallow the space the learner is still typing after.
   useEffect(() => {
-    setDraft(search);
+    setDraft((current) => (current.trim() === search ? current : search));
     if (search) {
       setSearchOpen(true);
     }
@@ -46,12 +50,35 @@ const TableToolbar = ({
   }, [draft, search, onSearch]);
 
   useEffect(() => {
-    if (searchOpen) {
+    if (searchOpen && focusOnOpen.current) {
+      focusOnOpen.current = false;
       inputRef.current?.focus();
     }
   }, [searchOpen]);
 
-  const typeItems = [{ key: "", label: "All types" }, ...typeOptions];
+  // Stable menus: typing re-renders the toolbar, not the dropdowns' items
+  const typeItems = useMemo(
+    () => [{ key: "", label: "All types" }, ...typeOptions],
+    [typeOptions]
+  );
+  const sortMenu = useMemo(
+    () => ({
+      items: sortOptions,
+      selectable: true,
+      selectedKeys: [sortValue],
+      onClick: ({ key }) => onSort(key),
+    }),
+    [sortOptions, sortValue, onSort]
+  );
+  const typeMenu = useMemo(
+    () => ({
+      items: typeItems,
+      selectable: true,
+      selectedKeys: [typeValue || ""],
+      onClick: ({ key }) => onType(key || null),
+    }),
+    [typeItems, typeValue, onType]
+  );
   const activeSort = sortOptions.find(({ key }) => key === sortValue);
   const activeType = typeItems.find(({ key }) => key === (typeValue || ""));
 
@@ -75,15 +102,7 @@ const TableToolbar = ({
           }}
         />
       )}
-      <Dropdown
-        trigger={["click"]}
-        menu={{
-          items: sortOptions,
-          selectable: true,
-          selectedKeys: [sortValue],
-          onClick: ({ key }) => onSort(key),
-        }}
-      >
+      <Dropdown trigger={["click"]} menu={sortMenu}>
         <Tooltip
           overlayClassName={ACADEMY_TOOLTIP_CLASS}
           title={`Sort: ${activeSort?.label}`}
@@ -101,15 +120,7 @@ const TableToolbar = ({
           />
         </Tooltip>
       </Dropdown>
-      <Dropdown
-        trigger={["click"]}
-        menu={{
-          items: typeItems,
-          selectable: true,
-          selectedKeys: [typeValue || ""],
-          onClick: ({ key }) => onType(key || null),
-        }}
-      >
+      <Dropdown trigger={["click"]} menu={typeMenu}>
         <Tooltip
           overlayClassName={ACADEMY_TOOLTIP_CLASS}
           title={`Type: ${activeType?.label}`}
@@ -147,7 +158,9 @@ const TableToolbar = ({
           aria-label={searchOpen ? "Close search" : "Search"}
           aria-expanded={searchOpen}
           onClick={() => {
-            if (searchOpen) {
+            if (!searchOpen) {
+              focusOnOpen.current = true;
+            } else {
               // Closing clears the search, so nothing stays filtered unseen
               setDraft("");
               if (search) {
