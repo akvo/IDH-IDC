@@ -921,14 +921,24 @@ def new_forgot_password(
     email: str = Form(...),
     session: Session = Depends(get_session),
 ):
+    user = crud_user.get_user_by_email(session=session, email=email)
+    if not user:
+        raise HTTPException(status_code=404, detail="User Not found")
+    if user.is_active != 1:
+        raise HTTPException(
+            status_code=400,
+            detail="User account is inactive or unverified",
+        )
     reset_password = crud_reset_pwd.new_reset_password(
         session=session, email=email
     )
     if not reset_password:
         raise HTTPException(status_code=404, detail="User Not found")
     # Send reset password email
-    user = crud_user.get_user_by_email(session=session, email=email)
-    url = f"{webdomain}/reset-password/{reset_password['url']}"
+    allowed_origins = {webdomain, "http://localhost:3000", "http://127.0.0.1:3000"}
+    origin = req.headers.get("origin")
+    base_url = origin if origin in allowed_origins else webdomain
+    url = f"{base_url}/reset-password/{reset_password['url']}"
     email = Email(
         recipients=[user.recipient],
         email=MailTypeEnum.FORGOT_PASSWORD,
@@ -964,6 +974,16 @@ def post_forgot_password(
         return JSONResponse(
             status_code=status.HTTP_410_GONE,
             content={"message": "url is expired"},
+        )
+    target_user = crud_user.get_user_by_id(
+        session=session, id=reset_password["user"]
+    )
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User Not found")
+    if target_user.is_active != 1:
+        raise HTTPException(
+            status_code=400,
+            detail="User account is inactive or unverified",
         )
     password = get_password_hash(password.get_secret_value())
     user = crud_user.update_password(

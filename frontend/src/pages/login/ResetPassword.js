@@ -86,7 +86,7 @@ const ResetPassword = () => {
             "Password already set. Now you can login with your new password.",
         });
         setTimeout(() => {
-          navigate(routePath.idc.login);
+          navigate(routePath.public?.login || "/login");
         }, 300);
       })
       .catch(() => {
@@ -121,11 +121,11 @@ const ResetPassword = () => {
           <Col span={24} align="center" className="login-form">
             <div className="page-title-container">
               <Typography.Title>
-                Income Driver <br />
-                <span style={{ color: "#47d985" }}>Calculator</span>
+                Better Income <br />
+                <span style={{ color: "#47d985" }}>Toolkit</span>
               </Typography.Title>
             </div>
-            <h2>Set Password</h2>
+            <h2>{isInvitation ? "Set Password" : "Reset Password"}</h2>
             <PasswordCriteria values={passwordCheckList} className="white" />
             <Form
               form={form}
