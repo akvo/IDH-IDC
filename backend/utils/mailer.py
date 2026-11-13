@@ -79,8 +79,8 @@ class EmailBody(enum.Enum):
         "image": f"{image_url}/user-switch.png",
     }
     FORGOT_PASSWORD = {
-        "title": "Forgot Password",
-        "subject": "Forgot Password",
+        "title": "Reset Password",
+        "subject": "Better Income Toolkit: Reset Your Password",
         "body": "You have requested to reset your password.",
         "message": """
             Please click
@@ -98,7 +98,11 @@ class EmailBody(enum.Enum):
     INVITATION = {
         "title": "Invitation",
         "subject": "Invitation",
-        "body": "You have been invited to the Income Driver Calculator.",
+        "body": (
+            "You have been invited to the Better Income Toolkit "
+            "(with access to the Income Driver Calculator and "
+            "Living Income Academy)."
+        ),
         "message": """
             Please click
             <a href="#url#" target="_blank" rel="noreferrer">
@@ -212,7 +216,7 @@ class Email:
             message = message.replace("#url#", self.url)
         html = html_template.render(
             logo=f"{webdomain}/logo.png",
-            instance_name="Income Driver Calculator",
+            instance_name="Better Income Toolkit",
             webdomain=webdomain,
             title=email["title"],
             body=body,
