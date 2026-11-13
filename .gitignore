@@ -9,4 +9,11 @@ agent_docs
 backend/assets/academy/progress/
 .agent/
 agent_docs/
+.claude/
 task.md
+.env.*
+node_modules/
+test-results/
+playwright-report/
+.strix/
+*.log
