@@ -264,3 +264,15 @@
   line-height: 24px;
   color: $academy-text-primary;
 }
+
+// Academy tooltips (portal: outside the shell). App.scss forces every
+// `.ant-tooltip-inner` to the toolkit green with `!important`; the doubled
+// class outranks it. Pass `overlayClassName="academy-tooltip"`.
+.academy-tooltip.academy-tooltip {
+  --antd-arrow-background-color: #{$academy-primary};
+
+  .ant-tooltip-inner {
+    background-color: $academy-primary !important;
+    font-family: $academy-font-family !important;
+  }
+}
