@@ -788,4 +788,123 @@
       }
     }
   }
+
+  // Laptop compact scale (1280x720)
+  @media (max-width: 1366px) {
+    .section-title,
+    .section-title-light {
+      font-size: 28px;
+    }
+
+    .section-lead,
+    .section-subtitle,
+    .academy-partners-section .partners-header-block .partners-lead {
+      font-size: 16px;
+    }
+
+    .academy-hero {
+      min-height: 480px;
+      padding: 64px 0;
+
+      .hero-content-container {
+        .hero-text-block {
+          margin-bottom: 28px;
+
+          .hero-title {
+            font-size: 42px;
+            margin-bottom: 16px;
+          }
+
+          .hero-description {
+            font-size: 16px;
+          }
+        }
+
+        .hero-action .hero-cta-btn {
+          height: 42px;
+          font-size: 15px;
+        }
+      }
+    }
+
+    .academy-about-section {
+      padding: 64px 0;
+
+      .about-content-grid .about-steps-col .steps-list .step-card .step-body {
+        .step-title {
+          font-size: 20px;
+          line-height: 28px;
+        }
+
+        .step-text {
+          font-size: 14px;
+          line-height: 22px;
+        }
+      }
+    }
+
+    .academy-roadmap-section {
+      padding: 48px 0 36px;
+
+      .roadmap-header .section-title-light {
+        font-size: 32px;
+      }
+
+      .roadmap-visual-stage
+        .roadmap-nodes-container
+        .roadmap-step-group
+        .step-content-wrapper
+        .step-content {
+        .step-title {
+          font-size: 18px;
+          line-height: 24px;
+        }
+
+        .step-description {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      }
+    }
+
+    .academy-cta-section {
+      padding: 48px 0;
+
+      .cta-card {
+        padding: 36px 28px;
+
+        .cta-content {
+          gap: 24px;
+
+          .cta-text-group {
+            .cta-title {
+              font-size: 26px;
+              line-height: 34px;
+            }
+
+            .cta-subtitle {
+              font-size: 15px;
+              line-height: 22px;
+            }
+          }
+
+          .cta-action .cta-start-btn.ant-btn {
+            height: 42px;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    .academy-partners-section {
+      padding: 48px 0 64px;
+    }
+  }
+
+  #footer-disclaimer {
+    .footer-wrapper .page-footer-container.with-landing-padding {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 }

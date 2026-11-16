@@ -1,16 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Form,
-  Input,
-  Button,
-  Tag,
-  Avatar,
-  Alert,
-  message,
-} from "antd";
+import { Form, Input, Button, Tag, Alert, message } from "antd";
 import { UserState, UIState } from "../../store";
 import { api } from "../../lib";
 import { ContentLayout } from "../../components/layout";
@@ -230,20 +219,18 @@ const Profile = () => {
       hideIDCSubMenu={!isIdcUser}
       wrapperId="profile"
     >
-      <div className="profile-page">
-        <div className="profile-alert-wrapper">
-          <IncompleteProfileAlert showActionLink={false} />
-        </div>
-
-        <Row gutter={[24, 24]}>
-          <Col xs={24} md={8} lg={7}>
-            <Card className="profile-identity-card" bordered={false}>
-              <Avatar size={72} className="profile-avatar">
-                {avatarInitials}
-              </Avatar>
-              <h3 className="profile-fullname">
+      <div className="profile-page" data-testid="profile-page">
+        <section
+          className="profile-hero-banner"
+          data-testid="profile-hero-banner"
+        >
+          <div className="profile-hero-banner__graphic" aria-hidden="true" />
+          <div className="profile-hero-banner__body">
+            <div className="profile-hero-banner__avatar">{avatarInitials}</div>
+            <div className="profile-hero-banner__info">
+              <h2 className="profile-fullname">
                 {userState?.fullname || "Toolkit User"}
-              </h3>
+              </h2>
               <p className="profile-email">{userState?.email || ""}</p>
               <div className="profile-tags-wrapper">
                 <Tag color="geekblue">{roleDisplay}</Tag>
@@ -252,15 +239,23 @@ const Profile = () => {
                   <Tag color="blue">Academy</Tag>
                 )}
               </div>
-            </Card>
-          </Col>
+            </div>
+          </div>
+        </section>
 
-          <Col xs={24} md={16} lg={17} className="profile-right-column">
-            <Card
-              title="Profile Details"
-              className="profile-card"
-              bordered={false}
-            >
+        <div className="profile-main-container">
+          <div className="profile-alert-wrapper">
+            <IncompleteProfileAlert showActionLink={false} />
+          </div>
+
+          <div className="profile-cards-stack">
+            <div className="profile-card">
+              <div className="profile-card__header">
+                <h3 className="profile-card__title">Profile Details</h3>
+                <p className="profile-card__subtitle">
+                  Manage your personal information and organization details.
+                </p>
+              </div>
               <Form
                 data-testid="profile-details-form"
                 form={profileForm}
@@ -278,23 +273,53 @@ const Profile = () => {
                   />
                 )}
 
-                <Form.Item
-                  name="fullname"
-                  label="Full Name"
-                  rules={[
-                    { required: true, message: "Please enter your full name" },
-                    {
-                      whitespace: true,
-                      message: "Full name cannot be empty",
-                    },
-                  ]}
-                >
-                  <Input
-                    data-testid="input-fullname"
-                    maxLength={125}
-                    placeholder="Full Name"
-                  />
-                </Form.Item>
+                <div className="profile-form-grid">
+                  <Form.Item
+                    name="fullname"
+                    label="Full Name"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your full name",
+                      },
+                      {
+                        whitespace: true,
+                        message: "Full name cannot be empty",
+                      },
+                    ]}
+                  >
+                    <Input
+                      data-testid="input-fullname"
+                      maxLength={125}
+                      placeholder="Full Name"
+                    />
+                  </Form.Item>
+
+                  {isIdcUser ? (
+                    <Form.Item
+                      name="company_name"
+                      label="Organization / Company"
+                      extra={
+                        <span className="field-note">
+                          Assigned by IDH Admin
+                        </span>
+                      }
+                    >
+                      <Input data-testid="input-company-name" disabled />
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      name="company_name"
+                      label="Organization / Company"
+                    >
+                      <Input
+                        data-testid="input-company-name"
+                        maxLength={255}
+                        placeholder="Organization or Company"
+                      />
+                    </Form.Item>
+                  )}
+                </div>
 
                 <Form.Item
                   name="email"
@@ -308,26 +333,6 @@ const Profile = () => {
                   <Input data-testid="input-email" disabled />
                 </Form.Item>
 
-                {isIdcUser ? (
-                  <Form.Item
-                    name="company_name"
-                    label="Organization / Company"
-                    extra={
-                      <span className="field-note">Assigned by IDH Admin</span>
-                    }
-                  >
-                    <Input data-testid="input-company-name" disabled />
-                  </Form.Item>
-                ) : (
-                  <Form.Item name="company_name" label="Organization / Company">
-                    <Input
-                      data-testid="input-company-name"
-                      maxLength={255}
-                      placeholder="Organization or Company"
-                    />
-                  </Form.Item>
-                )}
-
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button
                     type="primary"
@@ -339,13 +344,15 @@ const Profile = () => {
                   </Button>
                 </Form.Item>
               </Form>
-            </Card>
+            </div>
 
-            <Card
-              title="Security & Password"
-              className="profile-card"
-              bordered={false}
-            >
+            <div className="profile-card">
+              <div className="profile-card__header">
+                <h3 className="profile-card__title">Security & Password</h3>
+                <p className="profile-card__subtitle">
+                  Update your password to keep your Toolkit account secure.
+                </p>
+              </div>
               <Form
                 data-testid="change-password-form"
                 form={passwordForm}
@@ -380,34 +387,66 @@ const Profile = () => {
                   />
                 </Form.Item>
 
-                <Form.Item
-                  name="new_password"
-                  label="New Password"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please enter your new password",
-                    },
-                    () => ({
-                      validator(_, value) {
-                        if (
-                          !value ||
-                          checkPasswordCriteria(value).length === 5
-                        ) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error("Please satisfy all password criteria")
-                        );
+                <div className="profile-form-grid">
+                  <Form.Item
+                    name="new_password"
+                    label="New Password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your new password",
                       },
-                    }),
-                  ]}
-                >
-                  <Input.Password
-                    data-testid="input-new-password"
-                    placeholder="New password"
-                  />
-                </Form.Item>
+                      () => ({
+                        validator(_, value) {
+                          if (
+                            !value ||
+                            checkPasswordCriteria(value).length === 5
+                          ) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject(
+                            new Error("Please satisfy all password criteria")
+                          );
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input.Password
+                      data-testid="input-new-password"
+                      placeholder="New password"
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="confirm_password"
+                    label="Confirm New Password"
+                    dependencies={["new_password"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please confirm your new password",
+                      },
+                      ({ getFieldValue }) => ({
+                        validator(_, value) {
+                          if (
+                            !value ||
+                            getFieldValue("new_password") === value
+                          ) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject(
+                            new Error("Passwords do not match!")
+                          );
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input.Password
+                      data-testid="input-confirm-password"
+                      placeholder="Confirm new password"
+                    />
+                  </Form.Item>
+                </div>
 
                 <div className="password-criteria-container">
                   <PasswordCriteria
@@ -415,33 +454,6 @@ const Profile = () => {
                     className="compact"
                   />
                 </div>
-
-                <Form.Item
-                  name="confirm_password"
-                  label="Confirm New Password"
-                  dependencies={["new_password"]}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please confirm your new password",
-                    },
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (!value || getFieldValue("new_password") === value) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error("Passwords do not match!")
-                        );
-                      },
-                    }),
-                  ]}
-                >
-                  <Input.Password
-                    data-testid="input-confirm-password"
-                    placeholder="Confirm new password"
-                  />
-                </Form.Item>
 
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button
@@ -454,9 +466,9 @@ const Profile = () => {
                   </Button>
                 </Form.Item>
               </Form>
-            </Card>
-          </Col>
-        </Row>
+            </div>
+          </div>
+        </div>
       </div>
     </ContentLayout>
   );

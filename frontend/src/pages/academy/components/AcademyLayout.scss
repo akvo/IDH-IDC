@@ -165,21 +165,67 @@
     background: $bg-color-white;
   }
 
+  .academy-footer {
+    #footer-disclaimer {
+      background-color: $academy-disclaimer-bg;
+
+      .footer-wrapper .page-footer-container.with-landing-padding {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+
   .academy-footer-partners {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 48px;
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 48px 32px;
+    width: 100%;
+    margin: 0;
+    padding: 48px var(--default-landing-padding);
     border-top: 1px solid $academy-stroke;
 
     .academy-footer-partner-logo {
       max-height: 56px;
       max-width: 220px;
       object-fit: contain;
+    }
+  }
+
+  // Laptop screens (1280-1366px wide, ~720px tall)
+  @media (max-width: $academy-compact-breakpoint) {
+    .academy-footer-partners {
+      padding: 32px var(--default-landing-padding);
+      gap: 32px;
+
+      .academy-footer-partner-logo {
+        max-height: 44px;
+        max-width: 170px;
+      }
+    }
+
+    .academy-sidebar.ant-layout-sider {
+      .academy-sidebar-inner {
+        padding: 12px 10px;
+        gap: 10px;
+      }
+
+      .academy-sidebar-menu li.ant-menu-item {
+        height: 32px;
+        font-size: 13px;
+      }
+
+      .academy-help-card {
+        gap: 10px;
+        padding: 10px;
+
+        .academy-help-button {
+          height: 32px;
+          font-size: 13px;
+        }
+      }
     }
   }
 
@@ -263,6 +309,11 @@
   font-weight: 400;
   line-height: 24px;
   color: $academy-text-primary;
+
+  @media (max-width: $academy-compact-breakpoint) {
+    font-size: 14px;
+    line-height: 20px;
+  }
 }
 
 // Academy tooltips (portal: outside the shell). App.scss forces every

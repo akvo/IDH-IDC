@@ -80,6 +80,10 @@ export const PageHeader = ({ isLoggedIn }) => {
     location.pathname.startsWith("/case");
   const isCurrentAcademy = location.pathname.startsWith("/academy");
   const isAdmin = adminRole.includes(userRole);
+  const profileTargetRoute =
+    isCurrentAcademy || !hasIdcAccess
+      ? routePath.academy.account
+      : routePath.profile;
 
   const handleLogout = useCallback(() => {
     signOut();
@@ -151,7 +155,7 @@ export const PageHeader = ({ isLoggedIn }) => {
         key: "profile",
         label: "My Profile",
         icon: <UserOutlined />,
-        onClick: () => navigate("/profile"),
+        onClick: () => navigate(profileTargetRoute),
       },
       { type: "divider" },
       {
@@ -220,6 +224,7 @@ export const PageHeader = ({ isLoggedIn }) => {
     isCurrentIdc,
     isCurrentAcademy,
     isAdmin,
+    profileTargetRoute,
     navigate,
     handleLogout,
   ]);
@@ -373,7 +378,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                       block
                       icon={<UserOutlined />}
                       onClick={() => {
-                        navigate("/profile");
+                        navigate(profileTargetRoute);
                         setDrawerVisible(false);
                       }}
                       style={{ textAlign: "left", marginBottom: 8 }}

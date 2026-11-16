@@ -208,9 +208,40 @@
   }
 
   @media (max-width: $academy-compact-breakpoint) {
+    gap: 16px;
+
     h1.academy-resources-title {
       font-size: 26px;
       line-height: 34px;
+    }
+
+    .academy-resources-subtitle {
+      font-size: 13px;
+      line-height: 19px;
+    }
+
+    .academy-resources-card {
+      padding: 20px;
+    }
+
+    .academy-data-table {
+      .ant-table-thead > tr > th {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      .ant-table-tbody > tr > td {
+        height: 52px;
+        padding: 6px 10px;
+        font-size: 12.5px;
+      }
+    }
+
+    .academy-resource-name,
+    .academy-glossary-term,
+    .academy-glossary-type,
+    .academy-glossary-definition {
+      font-size: 12.5px;
     }
   }
 

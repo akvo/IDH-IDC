@@ -440,4 +440,181 @@ describe("PageLayout header on Academy pages", () => {
     // A numeric `isLoggedIn` (user id 0) would render a stray "0"
     expect(screen.queryByText("0")).not.toBeInTheDocument();
   });
+
+  describe("Context-Aware My Profile Routing", () => {
+    it("routes desktop My Profile to /profile for IDC user on IDC route", () => {
+      act(() => {
+        UserState.update((s) => {
+          s.id = 1;
+          s.fullname = "Jane Doe";
+          s.email = "jane@example.com";
+          s.role = "user";
+          s.tools = ["idc", "academy"];
+        });
+      });
+
+      render(
+        <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
+          <Routes>
+            <Route
+              path={routePath.profile}
+              element={<div data-testid="target-profile">Profile Page</div>}
+            />
+            <Route
+              path={routePath.academy.account}
+              element={
+                <div data-testid="target-academy-account">
+                  Academy Account Page
+                </div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByText("My Profile"));
+      expect(screen.getByTestId("target-profile")).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("target-academy-account")
+      ).not.toBeInTheDocument();
+    });
+
+    it("routes desktop My Profile to /academy/account when inside /academy*", () => {
+      act(() => {
+        UserState.update((s) => {
+          s.id = 1;
+          s.fullname = "Jane Doe";
+          s.email = "jane@example.com";
+          s.role = "user";
+          s.tools = ["idc", "academy"];
+        });
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/academy/courses"]}>
+          <Routes>
+            <Route
+              path={routePath.profile}
+              element={<div data-testid="target-profile">Profile Page</div>}
+            />
+            <Route
+              path={routePath.academy.account}
+              element={
+                <div data-testid="target-academy-account">
+                  Academy Account Page
+                </div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByText("My Profile"));
+      expect(screen.getByTestId("target-academy-account")).toBeInTheDocument();
+      expect(screen.queryByTestId("target-profile")).not.toBeInTheDocument();
+    });
+
+    it("routes desktop My Profile to /academy/account for Academy-only user outside /academy*", () => {
+      act(() => {
+        UserState.update((s) => {
+          s.id = 2;
+          s.fullname = "Academy Only Learner";
+          s.email = "learner@example.com";
+          s.role = "user";
+          s.tools = ["academy"];
+        });
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/procurement-library"]}>
+          <Routes>
+            <Route
+              path={routePath.profile}
+              element={<div data-testid="target-profile">Profile Page</div>}
+            />
+            <Route
+              path={routePath.academy.account}
+              element={
+                <div data-testid="target-academy-account">
+                  Academy Account Page
+                </div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByText("My Profile"));
+      expect(screen.getByTestId("target-academy-account")).toBeInTheDocument();
+      expect(screen.queryByTestId("target-profile")).not.toBeInTheDocument();
+    });
+
+    it("routes mobile drawer My Profile to /academy/account for Academy-only or inside /academy*", () => {
+      window.innerWidth = 500;
+      act(() => {
+        UserState.update((s) => {
+          s.id = 2;
+          s.fullname = "Academy Mobile";
+          s.email = "mobile@academy.org";
+          s.role = "user";
+          s.tools = ["academy"];
+        });
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/"]}>
+          <Routes>
+            <Route
+              path={routePath.academy.account}
+              element={
+                <div data-testid="target-academy-account">
+                  Academy Account Page
+                </div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("button-mobile-menu"));
+      fireEvent.click(screen.getByTestId("button-drawer-profile"));
+      expect(screen.getByTestId("target-academy-account")).toBeInTheDocument();
+    });
+
+    it("routes mobile drawer My Profile to /profile for IDC user outside /academy*", () => {
+      window.innerWidth = 500;
+      act(() => {
+        UserState.update((s) => {
+          s.id = 1;
+          s.fullname = "IDC Mobile";
+          s.email = "idc.mobile@idhtrade.org";
+          s.role = "user";
+          s.tools = ["idc", "academy"];
+        });
+      });
+
+      render(
+        <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
+          <Routes>
+            <Route
+              path={routePath.profile}
+              element={<div data-testid="target-profile">Profile Page</div>}
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("button-mobile-menu"));
+      fireEvent.click(screen.getByTestId("button-drawer-profile"));
+      expect(screen.getByTestId("target-profile")).toBeInTheDocument();
+    });
+  });
 });
