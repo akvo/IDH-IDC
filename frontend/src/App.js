@@ -21,7 +21,7 @@ import {
   Company,
   CompanyForm,
 } from "./pages/admin";
-import { UserState, UIState, PLState } from "./store";
+import { UserState, UIState, PLState, syncUserState } from "./store";
 import { api } from "./lib";
 import { adminRole, PROD_HOST } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
@@ -43,6 +43,7 @@ import {
   AcademyResourcesPage,
   CourseOverviewPage,
   ModuleLearningPage,
+  AcademyAccountPage,
 } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
 import { Profile } from "./pages/profile";
@@ -74,7 +75,6 @@ const AcademyPagePlaceholder = ({ title }) => (
 );
 
 const academyChildRoutes = [
-  { path: routePath.academy.account, title: "Account" },
   { path: routePath.academy.settings, title: "Settings" },
 ];
 
@@ -145,30 +145,7 @@ const App = () => {
       api
         .get("user/me")
         .then((res) => {
-          const { data } = res;
-          UserState.update((s) => {
-            s.id = data.id;
-            s.fullname = data.fullname;
-            s.email = data.email;
-            s.role = data.role;
-            s.active = data.active;
-            s.organisation_detail = data.organisation_detail || [];
-            s.business_unit_detail = data.business_unit_detail || [];
-            s.tags_count = data.tags_count;
-            s.cases_count = data.cases_count;
-            s.case_access = data.case_access || [];
-            s.internal_user = data.internal_user;
-            s.company = data.company;
-            s.company_name = data.company_name || null;
-            s.user_type = data.user_type;
-            s.user_profile = data.user_profile || null;
-            s.tools = Array.isArray(data.tools) ? data.tools : [];
-            s.isExternalRegular = data.user_type === "external_regular";
-            s.isCaseCreator =
-              adminRole.includes(data.role) ||
-              data.internal_user ||
-              data.user_type === "external_advanced";
-          });
+          syncUserState(res?.data);
         })
         .catch(() => {
           signOut();
@@ -256,6 +233,11 @@ const App = () => {
                 exact
                 path={routePath.academy.resources}
                 element={<AcademyResourcesPage />}
+              />
+              <Route
+                exact
+                path={routePath.academy.account}
+                element={<AcademyAccountPage />}
               />
               {academyChildRoutes.map(({ path, title }) => (
                 <Route

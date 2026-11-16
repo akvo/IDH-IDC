@@ -1,0 +1,498 @@
+@import "../../variables.scss";
+@import "./styles/tokens";
+@import "./styles/mixins";
+
+// Scoped under #root to outrank global App.scss typography and button rules
+#root .academy-account {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $academy-text-primary;
+  font-family: $academy-font-family;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 0;
+    color: $academy-text-primary;
+  }
+
+  .academy-account-loading {
+    background: #ffffff;
+    border: 1px solid $academy-card-stroke;
+    border-radius: $academy-panel-radius;
+    padding: 32px;
+    box-shadow: $academy-shadow-xs;
+  }
+
+  .academy-account-save-error {
+    margin-bottom: 8px;
+    border-radius: 8px;
+  }
+
+  .academy-account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  // Hero Banner (Edge-to-edge full bleed inside .academy-shell-content, no card wrapper)
+  .account-hero-banner {
+    margin: -24px -32px 0 -32px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    position: relative;
+
+    .account-hero-banner__graphic {
+      height: 200px;
+      overflow: hidden;
+      border-top-left-radius: $academy-panel-radius;
+      border-top-right-radius: 0;
+      background: #d5ebfd;
+      position: relative;
+    }
+
+    .account-hero-banner__body,
+    .account-hero-banner__content {
+      padding: 24px 32px;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .account-hero-banner__avatar-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      position: relative;
+      width: 100%;
+    }
+
+    .account-hero-banner__avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 200px;
+      background: $academy-primary-tint;
+      border: 4px solid #ffffff;
+      box-shadow: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $academy-primary;
+      font-size: 60px;
+      line-height: 72px;
+      font-weight: 500;
+      letter-spacing: -1.2px;
+      margin-top: -64px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .account-hero-banner__info,
+    .account-hero-banner__names {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 200px;
+      padding-top: 0;
+
+      .account-hero-banner__name,
+      .account-hero-banner__fullname {
+        font-size: 32px;
+        line-height: 42px;
+        font-weight: 600 !important;
+        letter-spacing: -0.32px;
+        color: #000000;
+      }
+
+      .account-hero-banner__email {
+        font-size: 18px;
+        line-height: 28px;
+        color: $academy-text-muted;
+      }
+    }
+
+    .account-hero-banner__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 0;
+
+      .ant-btn {
+        @include academy-button;
+        font-size: 14px;
+        padding: 10px 16px;
+
+        &.account-hero-banner__edit-btn,
+        &.btn-outline {
+          @include academy-button-outline;
+        }
+
+        &.account-hero-banner__cancel-btn,
+        &.btn-cancel {
+          border-color: $academy-stroke;
+          color: $academy-text-primary;
+
+          &:hover {
+            background: $academy-surface-muted;
+          }
+        }
+
+        &.account-hero-banner__save-btn,
+        &.account-hero-banner__continue-btn {
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  // Cards Area (Personal Info + Additional Info)
+  .academy-account-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .academy-account-card {
+    background: #ffffff;
+    border: 1px solid $academy-stroke;
+    border-radius: $academy-panel-radius;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: $academy-shadow-xs;
+
+    .academy-account-card__header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .academy-account-card__title {
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 600;
+        color: #000000;
+      }
+
+      .academy-account-card__subtitle {
+        font-size: 16px;
+        line-height: 24px;
+        color: $academy-text-muted;
+      }
+    }
+
+    .academy-account-card__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-label > label {
+        font-size: 14px;
+        color: #444444;
+        font-weight: 500;
+        height: auto;
+      }
+
+      .ant-input,
+      .ant-select-selector {
+        border-radius: 8px !important;
+        border-color: #cbcbcb;
+      }
+    }
+
+    .academy-account-card__full-width {
+      display: flex;
+      flex-direction: column;
+
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-label > label {
+        font-size: 14px;
+        color: #444444;
+        font-weight: 500;
+      }
+
+      .ant-input {
+        border-radius: 8px;
+        border-color: #cbcbcb;
+      }
+
+      .academy-account-card__help-note {
+        margin-top: 6px;
+        font-size: 12px;
+        line-height: 18px;
+        color: $academy-text-muted;
+      }
+    }
+
+    .academy-account-card__commodities {
+      display: flex;
+      flex-direction: column;
+
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-label > label {
+        font-size: 16px;
+        line-height: 24px;
+        color: #000000;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Commodity Tag Selector
+  .commodity-tag-selector {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+
+    .commodity-tag {
+      background: #ffffff !important;
+      border: 1px solid $academy-tag-stroke !important;
+      border-radius: 6px !important;
+      padding: 3px 6px 3px 8px !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      line-height: 18px;
+      color: $academy-tag-text !important;
+      margin: 0 !important;
+
+      .ant-tag-close-icon {
+        font-size: 10px;
+        color: $academy-text-muted;
+        margin-left: 2px;
+
+        &:hover {
+          color: $academy-text-primary;
+        }
+      }
+    }
+
+    .commodity-empty-text {
+      font-size: 14px;
+      line-height: 20px;
+      color: $academy-text-muted;
+      font-style: italic;
+    }
+
+    .commodity-add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: #ffffff;
+      border: 1px solid $academy-tag-stroke;
+      border-radius: 6px;
+      font-size: 12px;
+      line-height: 18px;
+      color: $academy-tag-text;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: $academy-primary;
+        color: $academy-primary;
+      }
+
+      .anticon {
+        font-size: 12px;
+      }
+    }
+
+    .commodity-add-autocomplete {
+      min-width: 160px;
+
+      .ant-input {
+        border-radius: 6px;
+        font-size: 12px;
+        padding: 3px 8px;
+      }
+    }
+  }
+
+  // Responsive Breakpoints (1280-1366px laptop compact rhythm matching Overview)
+  @media (max-width: $academy-compact-breakpoint) {
+    gap: 16px;
+
+    .academy-account-form,
+    .academy-account-cards {
+      gap: 16px;
+    }
+
+    .account-hero-banner {
+      .account-hero-banner__graphic {
+        height: 156px;
+      }
+
+      .account-hero-banner__body,
+      .account-hero-banner__content {
+        padding: 18px 32px;
+      }
+
+      .account-hero-banner__avatar {
+        width: 112px;
+        height: 112px;
+        font-size: 42px;
+        line-height: 52px;
+        margin-top: -50px;
+      }
+
+      .account-hero-banner__info,
+      .account-hero-banner__names {
+        .account-hero-banner__name,
+        .account-hero-banner__fullname {
+          font-size: 26px !important;
+          line-height: 34px;
+        }
+
+        .account-hero-banner__email {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      }
+
+      .account-hero-banner__actions {
+        .ant-btn {
+          font-size: 13px;
+          padding: 8px 14px;
+        }
+      }
+    }
+
+    .academy-account-card {
+      padding: 20px;
+      gap: 16px;
+
+      .academy-account-card__header {
+        gap: 4px;
+
+        .academy-account-card__title {
+          font-size: 18px !important;
+          line-height: 26px;
+        }
+
+        .academy-account-card__subtitle {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      }
+
+      .academy-account-card__grid .ant-form-item-label > label,
+      .academy-account-card__full-width .ant-form-item-label > label,
+      .academy-account-card__commodities .ant-form-item-label > label {
+        font-size: 13px;
+        line-height: 18px;
+      }
+
+      .ant-input,
+      .ant-select-selection-item,
+      .ant-select-selection-placeholder {
+        font-size: 13px;
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .account-hero-banner {
+      margin: -20px -24px 0 -24px;
+
+      .account-hero-banner__body,
+      .account-hero-banner__content {
+        padding: 20px 24px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .account-hero-banner {
+      .account-hero-banner__body,
+      .account-hero-banner__content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .account-hero-banner__info,
+      .account-hero-banner__names {
+        width: 100%;
+      }
+
+      .account-hero-banner__actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    .academy-account-card {
+      .academy-account-card__grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+
+  @media (max-width: 640px) {
+    .account-hero-banner {
+      .account-hero-banner__graphic {
+        height: 140px;
+      }
+
+      .account-hero-banner__avatar {
+        width: 88px;
+        height: 88px;
+        font-size: 32px;
+        line-height: 40px;
+        margin-top: -44px;
+      }
+
+      .account-hero-banner__body,
+      .account-hero-banner__content {
+        padding: 16px 24px 20px 24px;
+      }
+
+      .account-hero-banner__info,
+      .account-hero-banner__names {
+        .account-hero-banner__name,
+        .account-hero-banner__fullname {
+          font-size: 22px;
+          line-height: 28px;
+        }
+
+        .account-hero-banner__email {
+          font-size: 14px;
+          line-height: 20px;
+        }
+      }
+
+      .account-hero-banner__actions {
+        .ant-btn {
+          flex: 1;
+        }
+      }
+    }
+
+    .academy-account-card {
+      padding: 16px;
+    }
+  }
+}

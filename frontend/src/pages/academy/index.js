@@ -4,3 +4,4 @@ export { default as AcademyOverviewPage } from "./AcademyOverviewPage";
 export { default as AcademyResourcesPage } from "./AcademyResourcesPage";
 export { default as CourseOverviewPage } from "./CourseOverviewPage";
 export { default as ModuleLearningPage } from "./ModuleLearningPage";
+export { default as AcademyAccountPage } from "./AcademyAccountPage";
