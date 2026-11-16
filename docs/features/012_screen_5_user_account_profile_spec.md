@@ -327,3 +327,20 @@ Both automatically inherit `Authorization: Bearer ${api.token}`, `401` token cle
 | **T-04** | **Page Assembly, Styling & Route Mounting**: Create `AcademyAccountPage.js` & `AcademyAccountPage.scss`, export in `pages/academy/index.js`, mount `/academy/account` in `App.js`. | 50m | 35m | 20m | **105m (1.8h)** | Must Have |
 | **T-05** | **Integration Tests, Lint & Responsive QA**: Write full `AcademyAccountPage.test.js`, run `yarn test:ci` (`>=80%` cov), `yarn lint`, `prettier-write`, and manual browser check. | 15m | 40m | 25m | **80m (1.3h)** | Must Have |
 | **TOTAL** | **Complete Screen 5 Delivery (`FE-07`)** | **180m (3.0h)** | **160m (2.7h)** | **90m (1.5h)** | **430m (7.2h)** | **Must Have** |
+
+---
+
+## 7. Follow-Up Enhancements & Shell Alignment
+
+### 7.1 Layout-Matched Skeleton Loading
+- Replaced basic spinner with Ant Design `<Skeleton>` loading state inside `AcademyAccountPage.js` and `AcademyAccountPage.scss`.
+- Mirrors the exact page layout: hero banner (`Skeleton.Avatar` + info + buttons) and two stacked cards with input skeleton placeholders and tag buttons.
+- Preserves `data-testid="account-loading"` for backward-compatible test assertions.
+
+### 7.2 IDC Profile Page Design Harmonization (`/profile`)
+- Redesigned `/profile` (`Profile.js` & `Profile.scss`) to inherit the Academy account visual system:
+  - Top `#d5ebfd` hero banner with overlapping `140px` circular avatar.
+  - Role (`Super Admin`, `Admin`, `User`) and tool access badges (`IDC`, `Academy`).
+  - Stacked `24px`-radius cards for User Information and Password Change with clean 2-column input grids.
+  - Full `1280x720` (`<= 1366px`) compact responsive support and full test suite pass (`14/14` tests, `89.89%` coverage).
+
