@@ -341,6 +341,21 @@ $academy-icon-themes: (
       line-height: 20px;
     }
 
+    .academy-metric-label,
+    .academy-module-description,
+    .academy-roadmap-cta-text,
+    .academy-module-progress-label {
+      font-size: 13px;
+      line-height: 19px;
+    }
+
+    .academy-overview-header .ant-btn,
+    .academy-section-header .ant-btn,
+    .academy-roadmap-cta .ant-btn {
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+
     .academy-module-title {
       font-size: 18px;
       line-height: 26px;

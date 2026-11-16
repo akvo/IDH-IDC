@@ -183,6 +183,31 @@
     }
   }
 
+  // Laptop screens (1280-1366px wide, ~720px tall)
+  @media (max-width: $academy-compact-breakpoint) {
+    .academy-sidebar.ant-layout-sider {
+      .academy-sidebar-inner {
+        padding: 12px 10px;
+        gap: 10px;
+      }
+
+      .academy-sidebar-menu li.ant-menu-item {
+        height: 32px;
+        font-size: 13px;
+      }
+
+      .academy-help-card {
+        gap: 10px;
+        padding: 10px;
+
+        .academy-help-button {
+          height: 32px;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+
   // FE-01: the shell must render cleanly down to 1024px
   @media (max-width: 1024px) {
     .academy-shell-content {
@@ -263,6 +288,11 @@
   font-weight: 400;
   line-height: 24px;
   color: $academy-text-primary;
+
+  @media (max-width: $academy-compact-breakpoint) {
+    font-size: 14px;
+    line-height: 20px;
+  }
 }
 
 // Academy tooltips (portal: outside the shell). App.scss forces every
