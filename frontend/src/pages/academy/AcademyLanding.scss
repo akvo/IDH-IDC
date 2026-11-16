@@ -900,4 +900,11 @@
       padding: 48px 0 64px;
     }
   }
+
+  #footer-disclaimer {
+    .footer-wrapper .page-footer-container.with-landing-padding {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
 }

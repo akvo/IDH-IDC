@@ -31,11 +31,8 @@ const AcademyLanding = () => {
   }, [navigate]);
 
   const handleStartLearningClick = useCallback(() => {
-    const roadmapSection = document.getElementById("academy-roadmap");
-    if (roadmapSection) {
-      roadmapSection.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
+    navigate(routePath.academy.overview);
+  }, [navigate]);
 
   return (
     <div className="academy-landing-page" data-testid="academy-landing-page">

@@ -147,4 +147,22 @@ describe("AcademyLanding Component", () => {
 
     expect(screen.getByText("Academy Overview Page")).toBeInTheDocument();
   });
+
+  it("navigates to /academy/overview when Start Learning is clicked", () => {
+    render(
+      <MemoryRouter initialEntries={["/academy"]}>
+        <Routes>
+          <Route path="/academy" element={<AcademyLanding />} />
+          <Route
+            path="/academy/overview"
+            element={<div>Academy Overview Page</div>}
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /start learning/i }));
+
+    expect(screen.getByText("Academy Overview Page")).toBeInTheDocument();
+  });
 });
