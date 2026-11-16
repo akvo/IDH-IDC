@@ -297,7 +297,70 @@ const AcademyAccountPage = () => {
     return (
       <div className="academy-account" data-testid="academy-account-page">
         <div className="academy-account-loading" data-testid="account-loading">
-          <Skeleton active avatar paragraph={{ rows: 6 }} />
+          <div className="account-hero-banner">
+            <div className="account-hero-banner__graphic" aria-hidden="true" />
+            <div className="account-hero-banner__body">
+              <div className="account-hero-banner__avatar account-hero-banner__avatar--skeleton">
+                <Skeleton.Avatar active size={152} shape="circle" />
+              </div>
+              <div className="account-hero-banner__info">
+                <Skeleton
+                  active
+                  title={{ width: 200 }}
+                  paragraph={{ rows: 1, width: 160 }}
+                />
+              </div>
+              <div className="account-hero-banner__actions">
+                <Skeleton.Button active />
+                <Skeleton.Button active />
+              </div>
+            </div>
+          </div>
+
+          <div className="academy-account-cards">
+            <div className="academy-account-card">
+              <div className="academy-account-card__header">
+                <Skeleton
+                  active
+                  title={{ width: 140 }}
+                  paragraph={{ rows: 1, width: 260 }}
+                />
+              </div>
+              <div className="academy-account-card__grid">
+                <Skeleton.Input active block />
+                <Skeleton.Input active block />
+              </div>
+              <div className="academy-account-card__full-width">
+                <Skeleton.Input active block />
+              </div>
+            </div>
+
+            <div className="academy-account-card">
+              <div className="academy-account-card__header">
+                <Skeleton
+                  active
+                  title={{ width: 150 }}
+                  paragraph={{ rows: 1, width: 260 }}
+                />
+              </div>
+              <div className="academy-account-card__grid">
+                <Skeleton.Input active block />
+                <Skeleton.Input active block />
+              </div>
+              <div className="academy-account-card__grid">
+                <Skeleton.Input active block />
+                <Skeleton.Input active block />
+              </div>
+              <div className="academy-account-card__commodities">
+                <div className="commodity-tag-selector">
+                  <Skeleton.Button active size="small" />
+                  <Skeleton.Button active size="small" />
+                  <Skeleton.Button active size="small" />
+                  <Skeleton.Button active size="small" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

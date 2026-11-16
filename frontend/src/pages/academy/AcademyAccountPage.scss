@@ -20,11 +20,25 @@
   }
 
   .academy-account-loading {
-    background: #ffffff;
-    border: 1px solid $academy-card-stroke;
-    border-radius: $academy-panel-radius;
-    padding: 32px;
-    box-shadow: $academy-shadow-xs;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+
+    .account-hero-banner__avatar--skeleton {
+      overflow: hidden;
+
+      .ant-skeleton,
+      .ant-skeleton-avatar {
+        width: 100% !important;
+        height: 100% !important;
+        display: block;
+      }
+    }
+
+    .account-hero-banner__info .ant-skeleton {
+      max-width: 280px;
+    }
   }
 
   .academy-account-save-error {
@@ -336,6 +350,7 @@
   @media (max-width: $academy-compact-breakpoint) {
     gap: 16px;
 
+    .academy-account-loading,
     .academy-account-form,
     .academy-account-cards {
       gap: 16px;
