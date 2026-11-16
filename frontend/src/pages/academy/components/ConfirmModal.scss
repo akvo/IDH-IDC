@@ -1,0 +1,80 @@
+@import "../styles/tokens";
+@import "../styles/mixins";
+
+// Portal: outside #root and the shell, so the font is set here. Outranks
+// App.scss `.ant-modal .ant-btn` (24px radius) with the modal class.
+.academy-confirm-modal {
+  font-family: $academy-font-family;
+
+  .ant-modal-content {
+    padding: 0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  // Header: title and close icon over a divider
+  .ant-modal-header {
+    margin: 0;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid $academy-card-stroke;
+  }
+
+  .ant-modal-title {
+    padding-right: 32px;
+    font-family: $academy-font-family;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 28px;
+    color: $academy-text-primary;
+  }
+
+  .ant-modal-close {
+    top: 24px;
+    right: 24px;
+    width: 28px;
+    height: 28px;
+    color: $academy-text-muted;
+  }
+
+  .ant-modal-body {
+    padding: 24px 24px 0;
+    font-size: 16px;
+    line-height: 24px;
+    color: $academy-text-primary;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .ant-modal-footer {
+    margin: 0;
+    padding: 24px;
+  }
+
+  // Two equal-width actions
+  .academy-confirm-actions {
+    display: flex;
+    gap: 12px;
+
+    .ant-btn {
+      @include academy-button;
+      flex: 1;
+      height: 44px;
+      // antd spaces footer buttons with `.ant-btn + .ant-btn` margin; the
+      // flex gap does that here
+      margin-inline-start: 0 !important;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .ant-btn-default {
+      @include academy-button-outline;
+    }
+  }
+
+  .academy-blocking-cases {
+    margin: 8px 0 0;
+    padding-left: 20px;
+  }
+}
