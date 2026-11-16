@@ -80,6 +80,53 @@ Open [http://localhost:3000](http://localhost:3000) and sign in!
 
 ---
 
+## 🧭 Core Domain & The 5-Step Calculator Journey
+
+The primary workflow of the calculator centers on **Cases**, leading users through five sequential analytical steps:
+
+| Step | Name | Core Purpose |
+| :---: | :--- | :--- |
+| **1** | **Set Income Target** | Select country, sub-region, currency, and Living Income Benchmark. |
+| **2** | **Enter Income Data** | Define farmer segments (up to 5), baseline yields, prices, COP, and off-farm income. |
+| **3** | **Compare Income Gap** | Visualize current farmer incomes against the living income benchmark across all segments. |
+| **4** | **Assess Impact of Mitigation Strategies** | Explore single, two, and three-driver sensitivity to see what changes close the gap. |
+| **5** | **Closing the Gap (Scenario Modelling & ROI)** | Model custom intervention scenarios, allocate intervention costs, and analyze ROI. |
+
+For mathematical formulas and calculation logic, refer to:
+- [`docs/INCOME_CALCULATION.md`](./docs/INCOME_CALCULATION.md) — Living income and farmer income gap calculations.
+- [`docs/INVESTMENT_CALCULATION.md`](./docs/INVESTMENT_CALCULATION.md) — Cost allocation and Return on Investment (ROI) models.
+- [`docs/LLD.md`](./docs/LLD.md) — Low-level technical architecture and ADRs.
+
+---
+
+## 📂 Repository Layout
+
+```text
+├── backend/
+│   ├── alembic/              # Database migration scripts
+│   ├── models/               # SQLAlchemy ORM entities (Case, User, Benchmark, etc.)
+│   ├── routes/               # FastAPI endpoints (/api/v1/...)
+│   ├── seeder/               # Database seed scripts for users and test data
+│   ├── source/               # Master benchmark source CSVs and data transformers
+│   └── tests/                # Pytest unit and integration test suite (220+ tests)
+├── frontend/
+│   ├── public/               # Static web assets
+│   └── src/
+│       ├── components/       # Reusable UI primitives, layouts, and ECharts wrappers
+│       ├── pages/
+│       │   ├── cases/        # Core 5-step calculator workflow, charts, and state
+│       │   ├── academy/      # Living Income Academy landing and player
+│       │   └── procurement-library/ # Procurement best-practices library
+│       └── store/            # Global UI and case state management
+├── db/                       # PostgreSQL container initialization scripts
+├── docs/                     # Domain specifications, calculation specs, and LLD
+│   └── features/             # Feature-specific technical designs and specs
+├── .agent/                   # Multi-agent engineering configs, rules, and workflows
+└── dc.sh                     # Docker Compose wrapper script
+```
+
+---
+
 ## 🔑 Environment Variables Reference
 
 Environment variables are defined in `.env` (copied from `.env.example`) and passed to Docker containers on startup.
@@ -146,11 +193,16 @@ Follow real-time container output:
 ./dc.sh logs -f frontend
 ```
 
-### Restarting Services
+### Restarting & Rebuilding Services
 
 ```bash
+# Restart individual services
 ./dc.sh restart backend
 ./dc.sh restart frontend
+
+# Rebuild containers after Dockerfile or dependency updates
+./dc.sh build
+./dc.sh up -d
 ```
 
 ### Database Migrations (Alembic)
@@ -159,8 +211,23 @@ Follow real-time container output:
 # Check current migration revision
 ./dc.sh exec backend alembic current
 
+# Generate a new migration revision from SQLAlchemy model changes
+./dc.sh exec backend alembic revision --autogenerate -m "describe_migration"
+
 # Run pending migrations
 ./dc.sh exec backend alembic upgrade head
+```
+
+### Managing Dependencies
+
+```bash
+# Add a frontend package
+./dc.sh exec frontend yarn add <package_name>
+
+# Add a backend package:
+# 1. Add package to backend/requirements.txt
+# 2. Rebuild the backend container:
+./dc.sh build backend && ./dc.sh up -d backend
 ```
 
 ### Stopping Services
@@ -175,9 +242,42 @@ Follow real-time container output:
 
 ---
 
-## 📚 Architecture & Documentation
+## 🤝 Git & Contribution Workflow (Akvo Standard)
 
-- **Frontend**: React application (Create React App, Ant Design, ECharts).
-- **Backend**: FastAPI service with SQLAlchemy ORM and Alembic migrations.
-- **Database**: PostgreSQL 14.
-- **Feature Documentation**: Standardized feature specifications and LLDs located under [`docs/features/`](./docs/features/).
+To maintain a clean and traceable Git history, all contributors must follow Akvo engineering guidelines:
+
+1. **Integration Branch (`staging`)**:
+   - Feature branches must always branch off from **`staging`** (never directly from `main`).
+   - Pull requests must target **`staging`** for QA verification before deployment.
+
+2. **Branch Naming Standard**:
+   - Format: `feature/<issue_number>-<short-description>` or `fix/<issue_number>-<short-description>`
+   - Examples: `feature/844-academy-landing-page`, `fix/832-zero-driver-input`
+
+3. **Commit Message Format**:
+   - Format: `[#issue_number] <type>(<scope>): <description>`
+   - Allowed Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+   - Example: `[#844] feat(academy): add responsive roadmap section`
+
+4. **Linear History Mandate**:
+   - Always use `git pull --rebase origin staging` instead of `git merge` to avoid merge commits.
+
+5. **Targeted File Staging**:
+   - Stage explicit touchpoint files only (`git add path/to/file.js`).
+   - Never run blanket `git add .` or `git add -A` at the repository root.
+
+---
+
+## ❓ Troubleshooting & FAQs
+
+- **Port `5432` Conflict**:
+  If Docker fails with `bind: address already in use` on port 5432, you likely have a local PostgreSQL server running. Stop the local service (`brew services stop postgresql` on macOS or `sudo service postgresql stop` on Linux) before running `./dc.sh up -d`.
+- **Database Connection Refused during Seeding**:
+  PostgreSQL takes a few seconds to initialize on a fresh volume. If `seed_master.sh` fails with `connection refused`, wait 10 seconds and re-run the command.
+- **Docker Sync Volume Missing**:
+  If `./dc.sh up` warns about a missing volume `idc-docker-sync`, run:
+  ```bash
+  docker volume create idc-docker-sync
+  ```
+- **File Changes Not Reflecting in Containers**:
+  Restart the respective container (`./dc.sh restart frontend` or `./dc.sh restart backend`).

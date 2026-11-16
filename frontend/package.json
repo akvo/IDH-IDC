@@ -9,6 +9,7 @@
     "axios-mock-adapter": "^1.21.1",
     "buffer": "^6.0.3",
     "dayjs": "^1.11.10",
+    "dompurify": "^3.1.6",
     "echarts": "^5.4.3",
     "echarts-for-react": "^3.0.2",
     "html-to-image": "^1.11.11",

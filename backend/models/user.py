@@ -1,5 +1,6 @@
 import enum
 import json
+import re
 from db.connection import Base
 from sqlalchemy import (
     Column,
@@ -10,11 +11,19 @@ from sqlalchemy import (
     SmallInteger,
     Enum,
 )
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from typing import Optional, List
 from typing_extensions import TypedDict
-from pydantic import BaseModel, SecretStr, field_validator, ValidationInfo
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    Field,
+    SecretStr,
+    field_validator,
+    ValidationInfo,
+)
 from models.organisation import OrganisationDict
 from fastapi import Form, HTTPException, status
 from models.user_tag import UserTag
@@ -23,6 +32,7 @@ from models.user_business_unit import (
     UserBusinessUnitDetailDict,
     UserBusinessUnitRoleDict,
 )
+from models.user_profile import UserProfileDict
 
 tags_desc = "JSON stringify of tag ids [1, 2, 3]"
 cases_desc = "JSON stringify of [{'case': 1, 'permission': 'edit/view'}]"
@@ -41,6 +51,11 @@ class UserType(enum.Enum):
     internal = "internal"
     external_regular = "external_regular"
     external_advanced = "external_advanced"
+
+
+class ToolType(str, enum.Enum):
+    idc = "idc"
+    academy = "academy"
 
 
 # only for user:get_all route
@@ -85,7 +100,10 @@ class UserInfo(TypedDict):
     case_access: Optional[List[UserCasePermissionDict]]
     internal_user: bool  # UserRole == user has business unit
     company: Optional[int]
+    company_name: Optional[str]
     user_type: UserType
+    user_profile: Optional[UserProfileDict]
+    tools: List[str]
 
 
 class UserDetailDict(TypedDict):
@@ -101,6 +119,7 @@ class UserDetailDict(TypedDict):
     business_units: Optional[List[UserBusinessUnitRoleDict]]
     cases: Optional[List[UserCasePermissionDict]]
     user_type: UserType
+    tools: List[str]
 
 
 class UserPageDict(TypedDict):
@@ -115,6 +134,7 @@ class UserPageDict(TypedDict):
     business_unit_count: int
     company: Optional[int] = None
     user_type: UserType
+    tools: List[str]
 
 
 class UserDict(TypedDict):
@@ -126,6 +146,7 @@ class UserDict(TypedDict):
     active: bool
     company: Optional[int]
     user_type: UserType
+    tools: List[str]
 
 
 class UserInvitation(TypedDict):
@@ -164,6 +185,12 @@ class User(Base):
     all_cases = Column(SmallInteger, nullable=False, default=0)
     is_active = Column(SmallInteger, nullable=False, default=0)
     invitation_id = Column(String, nullable=True)
+    tools = Column(
+        ARRAY(String),
+        nullable=False,
+        default=list,
+        server_default="{}",
+    )
     created_at = Column(DateTime, nullable=False, server_default=func.now())
     updated_at = Column(
         DateTime,
@@ -215,6 +242,7 @@ class User(Base):
         password: Optional[str] = None,
         all_cases: Optional[int] = 0,
         company: Optional[int] = None,
+        tools: Optional[List[str]] = None,
     ):
         self.id = id
         self.organisation = organisation
@@ -231,6 +259,11 @@ class User(Base):
         self.is_active = is_active
         self.invitation_id = invitation_id
         self.company = company
+        self.tools = (
+            [t.value if isinstance(t, enum.Enum) else str(t) for t in tools]
+            if tools is not None
+            else [ToolType.idc.value, ToolType.academy.value]
+        )
 
     def __repr__(self) -> int:
         return f"<User {self.id}>"
@@ -246,6 +279,7 @@ class User(Base):
             "role": self.role,
             "user_type": self.user_type,
             "active": self.is_active,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -260,6 +294,22 @@ class User(Base):
         case_access = []
         if self.user_case_access:
             case_access = [c.to_case_permission for c in self.user_case_access]
+
+        user_profile = None
+        if hasattr(self, "profile") and self.profile:
+            user_profile = self.profile.to_dict()
+
+        tools_list = self.tools if self.tools is not None else []
+        if "idc" in tools_list:
+            company_name = (
+                self.user_company.name if self.user_company else None
+            )
+        else:
+            company_name = (
+                self.profile.company_name
+                if (hasattr(self, "profile") and self.profile)
+                else None
+            )
 
         return {
             "id": self.id,
@@ -277,7 +327,10 @@ class User(Base):
                 True if self.user_type == UserType.internal else False
             ),
             "company": self.company,
+            "company_name": company_name,
             "user_type": self.user_type,
+            "user_profile": user_profile,
+            "tools": tools_list,
         }
 
     @property
@@ -306,6 +359,7 @@ class User(Base):
             "business_units": business_units,
             "cases": cases,
             "user_type": self.user_type,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -322,6 +376,7 @@ class User(Base):
             "business_unit_count": len(self.user_business_units),
             "company": self.company,
             "user_type": self.user_type,
+            "tools": self.tools if self.tools is not None else [],
         }
 
     @property
@@ -357,6 +412,7 @@ class UserBase(BaseModel):
     business_units: Optional[str] = None
     company: Optional[int] = None
     user_type: Optional[UserType] = None
+    tools: Optional[List[ToolType]] = None
 
     @field_validator("tags")
     @classmethod
@@ -388,6 +444,7 @@ class UserBase(BaseModel):
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
         user_type: Optional[UserType] = Form(None),
+        tools: Optional[List[ToolType]] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -401,6 +458,7 @@ class UserBase(BaseModel):
             cases=cases,
             business_units=business_units,
             user_type=user_type,
+            tools=tools,
         )
 
 
@@ -423,6 +481,7 @@ class UserUpdateBase(BaseModel):
     business_units: Optional[str] = None
     company: Optional[int] = None
     user_type: Optional[UserType] = None
+    tools: Optional[List[ToolType]] = None
 
     @field_validator("tags")
     @classmethod
@@ -454,6 +513,7 @@ class UserUpdateBase(BaseModel):
         cases: str = Form(None, description=cases_desc),
         business_units: str = Form(None, description=bus_desc),
         user_type: Optional[UserType] = Form(None),
+        tools: Optional[List[ToolType]] = Form(None),
     ):
         return cls(
             fullname=fullname,
@@ -467,4 +527,115 @@ class UserUpdateBase(BaseModel):
             cases=cases,
             business_units=business_units,
             user_type=user_type,
+            tools=tools,
         )
+
+
+def validate_password_strength(v: str) -> str:
+    if len(v) < 8:
+        raise ValueError("Password must be at least 8 characters long")
+    if not re.search(r"[A-Z]", v):
+        raise ValueError(
+            "Password must contain at least one uppercase letter"
+        )
+    if not re.search(r"[a-z]", v):
+        raise ValueError(
+            "Password must contain at least one lowercase letter"
+        )
+    if not re.search(r"\d", v):
+        raise ValueError("Password must contain at least one digit")
+    if not re.search(r"[-._!\"`'#%&,:;<>=@{}~$()*+/?[\]^|]", v):
+        raise ValueError(
+            "Password must contain at least one special character"
+        )
+    return v
+
+
+class UserProfileUpdateRequest(BaseModel):
+    fullname: Optional[str] = None
+    company_name: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+    @field_validator("fullname")
+    @classmethod
+    def validate_fullname(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if not v:
+                raise ValueError("Fullname cannot be empty")
+            if len(v) > 125:
+                raise ValueError("Fullname cannot exceed 125 characters")
+        return v
+
+    @field_validator("company_name")
+    @classmethod
+    def validate_company_name(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if len(v) > 255:
+                raise ValueError(
+                    "Company name cannot exceed 255 characters"
+                )
+        return v
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            return validate_password_strength(v)
+        return v
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=1)
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def validate_new_password(cls, v: str) -> str:
+        return validate_password_strength(v)
+
+
+class UserRegisterAcademy(BaseModel):
+    fullname: str
+    email: EmailStr
+    password: str
+    company_name: str
+
+    @field_validator("fullname")
+    @classmethod
+    def validate_fullname(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Fullname cannot be empty")
+        return v
+
+    @field_validator("company_name")
+    @classmethod
+    def validate_company_name(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Company name cannot be empty")
+        if len(v) > 255:
+            raise ValueError("Company name cannot exceed 255 characters")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_complexity(cls, v: str) -> str:
+        return validate_password_strength(v)
+
+
+class AcademyRegisterResponse(BaseModel):
+    message: str
+
+
+class AcademyVerifyResponse(BaseModel):
+    message: str
+    verified: bool
+
+
+class GrantIdcAccessRequest(BaseModel):
+    company_id: int
+    user_type: Optional[UserType] = None

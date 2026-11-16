@@ -10,11 +10,14 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from db.connection import get_session
+from middleware import verify_idc_access
 from models.segment_answer import SegmentAnswerBase, SegmentAnswerDict
 
 
 security = HTTPBearer()
-segment_answer_route = APIRouter()
+segment_answer_route = APIRouter(
+    dependencies=[Depends(verify_idc_access)]
+)
 
 
 @segment_answer_route.post(

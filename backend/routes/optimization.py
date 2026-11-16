@@ -13,12 +13,13 @@ from db.crud_question import (
     # get_loss_questions,
 )
 from db.connection import get_session
+from middleware import verify_idc_access
 
 # from models.case_commodity import CaseCommodityType
 
 from scipy.optimize import minimize
 
-optimization_route = APIRouter()
+optimization_route = APIRouter(dependencies=[Depends(verify_idc_access)])
 placeholder_pattern = re.compile(r"#(\d+)")
 
 

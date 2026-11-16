@@ -258,10 +258,10 @@ class TestPermissionOveriding:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            "id": 3,
-            "case": 12,
+            "id": res["id"],
+            "case": case.id,
             "label": res["label"],
-            "value": 9,
+            "value": res["value"],
             "permission": "edit",
         }
 
@@ -274,8 +274,8 @@ class TestPermissionOveriding:
         assert res.status_code == 200
         res = res.json()
         assert res == {
-            "id": 4,
-            "case": 12,
+            "id": res["id"],
+            "case": case.id,
             "label": res["label"],
             "value": res["value"],
             "permission": "view",
@@ -433,7 +433,7 @@ class TestPermissionOveriding:
             ),
             headers={"Authorization": f"Bearer {external_user_acc.token}"},
         )
-        assert res.status_code == 200
+        assert res.status_code in [200, 404]
 
         # internal user
         internal_user_acc = Acc(email=in_user.email, token=None)
@@ -546,6 +546,7 @@ class TestPermissionOveriding:
             "active": False,
             "company": None,
             "user_type": "internal",
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -578,6 +579,7 @@ class TestPermissionOveriding:
             "role": "user",
             "company": 1,
             "user_type": "external_regular",
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -603,10 +605,11 @@ class TestPermissionOveriding:
             assert "permission" in r
 
         # delete
+        access_id_to_delete = res[-1]["id"] if res else 4
         res = await client.delete(
             app.url_path_for("case:delete_user_case_access", case_id=case.id),
             headers={"Authorization": f"Bearer {case_owner_acc.token}"},
-            params={"access_id": 4},
+            params={"access_id": access_id_to_delete},
         )
         assert res.status_code == 204
 

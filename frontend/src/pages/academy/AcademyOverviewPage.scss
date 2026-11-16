@@ -1,0 +1,446 @@
+@import "../../variables.scss";
+@import "./styles/tokens";
+@import "./styles/mixins";
+
+// Module icon tiles, keyed by the API's `icon_theme`
+$academy-icon-themes: (
+  blue: (
+    #e6f0f8,
+    #005ea3,
+  ),
+  green: (
+    #e8f6ee,
+    #2e9e5b,
+  ),
+  pink: (
+    #fcebf6,
+    #c8448f,
+  ),
+  purple: (
+    #f2eafb,
+    #8a4fcf,
+  ),
+  cyan: (
+    #e5f5fa,
+    #1a8fb5,
+  ),
+  yellow: (
+    #fff6dc,
+    #d49b00,
+  ),
+);
+
+// Scoped under #root to outrank the global `#root h1/h2/p/span` rules in
+// App.scss (RocGrotesk headings, 14px spans, 25px paragraph line-height)
+#root .academy-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  color: $academy-text-primary;
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin: 0;
+    color: $academy-text-primary;
+  }
+
+  .academy-overview-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .academy-overview-greeting {
+    font-size: 32px;
+    font-weight: 600 !important; // global h1 forces 900 with !important
+    line-height: 40px;
+  }
+
+  // KPI cards
+  .academy-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .academy-metric-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: $academy-section-gap; // --base
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px; // --2xl
+    background: $bg-color-white;
+  }
+
+  // Figma Body Text/XS/Regular
+  .academy-metric-label {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: $academy-text-primary;
+  }
+
+  .academy-metric-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  // Figma Heading/H4
+  .academy-metric-value {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 42px;
+    letter-spacing: -0.32px;
+    color: $academy-text-primary;
+  }
+
+  .ant-progress-circle .ant-progress-text {
+    font-size: 10px;
+    font-weight: 500;
+    color: $academy-text-primary;
+  }
+
+  // Sections
+  .academy-overview-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .academy-section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .academy-section-title {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30px;
+  }
+
+  .academy-section-subtitle {
+    margin-top: 4px;
+    font-size: 16px;
+    line-height: 24px;
+    color: $academy-text-muted;
+  }
+
+  .academy-section-header .ant-btn,
+  .academy-overview-header .ant-btn,
+  .academy-roadmap-cta .ant-btn {
+    @include academy-button;
+  }
+
+  .academy-section-header .ant-btn-default {
+    @include academy-button-outline;
+  }
+
+  // Roadmap module grid: three per row (Figma); two at 1024px and below,
+  // where a third card is too narrow for its icon, pill and arrow button
+  .academy-module-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  // Figma: a bordered white card resting on a borderless grey progress strip
+  .academy-module-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: $academy-surface-muted;
+  }
+
+  .academy-module-card-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px;
+    background: $bg-color-white;
+  }
+
+  // Icon tile, status pill and arrow button share one height
+  .academy-module-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $academy-card-stroke;
+
+    .academy-status-tag {
+      display: inline-flex;
+      align-items: center;
+      height: $academy-module-control-size;
+      padding: 0 8px;
+      border-radius: 8px;
+    }
+  }
+
+  .academy-module-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: $academy-module-control-size;
+    height: $academy-module-control-size;
+    border-radius: 8px;
+    font-size: 16px;
+
+    @each $name, $colors in $academy-icon-themes {
+      &--#{$name} {
+        background: nth($colors, 1);
+        color: nth($colors, 2);
+      }
+    }
+  }
+
+  .academy-module-number {
+    flex: 1;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .academy-module-open {
+    flex-shrink: 0;
+    width: $academy-module-control-size;
+    height: $academy-module-control-size;
+    padding: 0;
+    border-color: $academy-card-stroke;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+
+  .academy-module-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+  }
+
+  .academy-module-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $academy-text-muted;
+  }
+
+  .academy-tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: auto 0 0;
+    padding: 4px 0 0;
+    list-style: none;
+  }
+
+  .academy-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 8px;
+    border: 1px solid $academy-tag-stroke;
+    border-radius: 6px;
+    font-size: 12px;
+    color: $academy-tag-text;
+  }
+
+  .academy-module-card-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+
+    .ant-progress {
+      flex: 1;
+      margin: 0;
+    }
+  }
+
+  .academy-module-progress-label {
+    min-width: 36px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .academy-empty-text {
+    font-size: 14px;
+    color: $academy-text-muted;
+  }
+
+  // Roadmap CTA banner
+  .academy-roadmap-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px;
+    border-radius: 16px;
+    background: $academy-primary-tint;
+  }
+
+  .academy-roadmap-cta-title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    color: $academy-primary;
+  }
+
+  .academy-roadmap-cta-text {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  // Laptop screens (1280-1366px wide, ~720px tall): beside the sidebar the
+  // desktop scale pushes the roadmap below the fold, so step it down
+  @media (max-width: $academy-compact-breakpoint) {
+    gap: 24px;
+
+    .academy-overview-greeting {
+      font-size: 26px;
+      line-height: 34px;
+    }
+
+    .academy-metric-value {
+      font-size: 26px;
+      line-height: 34px;
+    }
+
+    .academy-overview-section {
+      gap: 16px;
+    }
+
+    .academy-section-title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .academy-section-subtitle,
+    .academy-module-number {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .academy-module-title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .academy-roadmap-cta {
+      padding: 20px;
+    }
+
+    .academy-roadmap-cta-title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .academy-metrics,
+    .academy-module-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    gap: 24px;
+
+    .academy-roadmap-cta {
+      padding: 16px;
+      gap: 16px;
+    }
+  }
+}
+
+// View history modal (portal: outside #root, so the shell font is set here)
+.academy-history-modal {
+  font-family: $academy-font-family;
+
+  .ant-modal-content {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .ant-modal-header {
+    margin-bottom: 24px;
+  }
+
+  .academy-history-title {
+    margin: 0;
+    font-family: $academy-font-family;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 30px;
+    color: $academy-text-primary;
+  }
+
+  .academy-history-subtitle {
+    margin: 4px 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: $academy-text-muted;
+  }
+
+  .academy-history-error {
+    margin-bottom: 16px;
+  }
+
+  .academy-history-empty {
+    margin: 0;
+    font-size: 14px;
+    color: $academy-text-muted;
+  }
+
+  .academy-history-pagination {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .ant-modal-footer {
+    margin-top: 24px;
+  }
+
+  // Two equal-width actions; outranks App.scss `.ant-modal .ant-btn` (24px)
+  .academy-history-actions {
+    display: flex;
+    gap: 12px;
+
+    .ant-btn {
+      flex: 1;
+      height: 44px;
+      // antd spaces footer buttons with `.ant-btn + .ant-btn` margin; the
+      // flex gap does that here
+      margin-inline-start: 0 !important;
+      border-radius: 8px;
+      box-shadow: $academy-shadow-xs;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .ant-btn-default {
+      @include academy-button-outline;
+    }
+  }
+}

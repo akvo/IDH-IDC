@@ -1,0 +1,27 @@
+@import "../styles/tokens";
+
+// Status pills, on pages and inside modal portals (outside #root). The #root
+// selector outranks the global `#root span { 14px }`.
+.academy-status-tag,
+#root .academy-status-tag {
+  padding: 2px 6px;
+  border-radius: 8px; // --lg
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+
+  &--completed {
+    background: $academy-status-completed-bg;
+    color: $academy-status-completed-text;
+  }
+
+  &--in-progress {
+    background: $academy-status-progress-bg;
+    color: $academy-status-progress-text;
+  }
+
+  &--not-started {
+    background: $academy-status-pending-bg;
+    color: $academy-status-pending-text;
+  }
+}

@@ -10,6 +10,7 @@ const withPrefix = (prefix, path) =>
 
 // Route definitions
 const routePath = {
+  profile: "/profile",
   idc: {
     landing: withPrefix("idc"),
     login: withPrefix("idc", "/login"),
@@ -25,7 +26,24 @@ const routePath = {
   },
   academy: {
     landing: "/academy",
+    overview: "/academy/overview",
+    courses: "/academy/courses",
+    modules: "/academy/modules",
+    resources: "/academy/resources",
+    account: "/academy/account",
+    settings: "/academy/settings",
+    register: "/register",
+    verify: "/verify-academy",
   },
 };
 
-export { routePath, routePrefix };
+const paths = {
+  profile: "/profile",
+  casesWelcome: routePath.idc.dashboard,
+  academy: routePath.academy.landing,
+  login: "/login",
+  register: "/register",
+  verifyAcademy: "/verify-academy",
+};
+
+export { routePath, routePrefix, paths };

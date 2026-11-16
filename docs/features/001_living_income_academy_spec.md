@@ -215,6 +215,7 @@ erDiagram
         string status "Enum: not_started | in_progress | completed"
         datetime last_opened_at "Nullable, indexed for Recently Opened sorting"
         datetime completed_at "Nullable"
+        datetime created_at
         datetime updated_at
     }
 
@@ -238,11 +239,20 @@ erDiagram
 ```
 
 ### 1.3 Database Migration & Seeding
-**File**: `/backend/alembic/versions/[revision]_create_academy_and_user_profile_tables.py`
-- Reuses the existing `user` table and creates `user_profile` (1-to-1 with `user.id`), `academy_tag`, `academy_tag_relation` (single unified junction table linking `tag_id` with nullable `module_id` and nullable `chapter_id`, protected by `CheckConstraint('(module_id IS NOT NULL AND chapter_id IS NULL) OR (module_id IS NULL AND chapter_id IS NOT NULL)', name='chk_academy_tag_target')` and unique indexes `uq_academy_tag_module` / `uq_academy_tag_chapter`), `academy_module`, `academy_chapter`, `academy_user_chapter_progress` (with `UniqueConstraint('user_id', 'chapter_id', name='uq_academy_user_chapter')`), `academy_resource`, and `academy_glossary_term`.
-- **File**: `/backend/seeder/academy.py` (added to `/backend/seed_master.sh`):
-  - Truncates and seeds `academy_tag`, `academy_tag_relation`, `academy_module`, `academy_chapter`, `academy_resource`, and `academy_glossary_term` from `/backend/source/master/academy_*.csv`.
-  - Rich lesson content is stored strictly in `academy_chapter.content_html` (HTML format sanitized on the frontend with `DOMPurify`). Modules store plain text summaries in `description`.
+- **Alembic Migration Architecture Standard (1 Migration File Per Model)**:
+  To enforce strict schema modularity, isolate DDL lifecycles, and enable independent rollback/verification without cross-domain side effects, database migrations follow a **strictly 1 migration file per model** policy:
+  1. `2026_11_05_0429-413e4c18b8eb_create_user_profile_table.py` (`user_profile` table extending existing `user` table with 1:1 cascade and `commodities` JSONB)
+  2. `2026_11_05_0942-17ecb7685606_create_academy_tag_table.py` (`academy_tag` topic catalog table)
+  3. `2026_11_05_0943-cb28c82405a6_create_academy_resource_table.py` (`academy_resource` technical downloads and tools table, with `academy_resource_type` enum)
+  4. `2026_11_05_0945-cb29ec330c92_create_academy_glossary_term_table.py` (`academy_glossary_term` terminology dictionary table, with `academy_glossary_term_type` enum)
+  5. `[revision]_create_academy_module_table.py` (`academy_module` roadmap modules table with unique order_index 1-6)
+  6. `[revision]_create_academy_chapter_table.py` (`academy_chapter` lesson content table with FK to module, `content_html`, and unique module_id+chapter_number)
+  7. `[revision]_create_academy_tag_relation_table.py` (`academy_tag_relation` polymorphic junction table with XOR check constraint and FK cascades)
+  8. `[revision]_create_academy_user_chapter_progress_table.py` (`academy_user_chapter_progress` user tracking table with status enum, unique user_id+chapter_id, and last_opened_at index)
+- **Master Data Seeder**:
+  - **File**: `/backend/seeder/academy.py` (added to `/backend/seed_master.sh`):
+    - Truncates and seeds `academy_tag`, `academy_tag_relation`, `academy_module`, `academy_chapter`, `academy_resource`, and `academy_glossary_term` from `/backend/source/master/academy_*.csv`.
+    - Rich lesson content is stored strictly in `academy_chapter.content_html` (HTML format sanitized on the frontend with `DOMPurify`). Modules store plain text summaries in `description`.
 
 ### 1.4 API Routers
 **Files**: `/backend/routes/academy/course.py`, `/backend/routes/academy/resource.py`, `/backend/routes/academy/profile.py`
@@ -557,7 +567,7 @@ frontend/src/pages/academy/
   - [ ] `backend/models/user_profile.py` defines `UserProfile` with a 1:1 relation to `user.id` (`ForeignKey("user.id", ondelete="CASCADE")`, `unique=True`), columns `first_name`, `last_name`, `company_name`, `company_type`, `sector`, `region_id`, `region_name`, and `commodities` (`JSONB`).
   - [ ] `backend/models/academy/academy_models.py` defines `AcademyTag` (`id`, `name`, `slug`, `order_index`), `AcademyTagRelation` (unified junction table with `tag_id`, nullable `module_id`, nullable `chapter_id`, guarded by `CheckConstraint` ensuring exactly one target is set, plus unique indexes on `(tag_id, module_id)` and `(tag_id, chapter_id)`), `AcademyModule` (plain text `description`, no `content_html`), `AcademyChapter` (`content_html` for rich lesson text), `AcademyUserChapterProgress`, `AcademyResource`, and `AcademyGlossaryTerm`.
   - [ ] `backend/models/academy/academy_schemas.py` defines Pydantic v2 schemas for all payloads with field validations.
-  - [ ] Alembic migration applies cleanly (`alembic upgrade head`) and rolls back without error (`alembic downgrade -1`).
+  - [ ] Alembic migrations apply cleanly per model (individual revision files per table) and roll back without error (`alembic upgrade head` and `alembic downgrade -1`).
   - [ ] Linter pass: `./dc.sh exec backend flake8` returns 0 errors.
 
 ##### `BE-02`: Master CSVs (HTML Content) & Academy Seeder

@@ -11,7 +11,7 @@ from typing import List, Optional
 from typing_extensions import TypedDict
 
 from db.connection import get_session
-from middleware import verify_user
+from middleware import verify_idc_access, verify_user
 from models.user import UserRole, UserType
 
 security = HTTPBearer()
@@ -105,6 +105,7 @@ def serve_js():
     summary="Get map value for case by country",
     name="map:get_case_by_country",
     tags=["Map"],
+    dependencies=[Depends(verify_idc_access)],
 )
 def get_case_by_country(
     req: Request,
@@ -129,6 +130,7 @@ def get_case_by_country(
     summary="Get map value for case by country and company",
     name="map:get_case_by_country_and_company",
     tags=["Map"],
+    dependencies=[Depends(verify_idc_access)],
 )
 def get_case_by_country_and_company(
     req: Request,

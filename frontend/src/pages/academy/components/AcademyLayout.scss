@@ -1,0 +1,278 @@
+@import "../../../variables.scss";
+
+@import "../styles/tokens";
+
+.academy-shell {
+  font-family: $academy-font-family;
+  width: 100%;
+  // `clip`, not `hidden`: `hidden` makes the shell a scroll container, so the
+  // sticky sidebar would offset from the shell instead of the viewport
+  overflow-x: clip;
+  background: $bg-color-white;
+
+  // Grey canvas: the sidebar sits on it and page content floats on top in a
+  // white panel (Figma)
+  .academy-shell-body {
+    min-height: calc(100vh - #{$academy-header-height});
+    background: $academy-sidebar-bg;
+  }
+
+  .academy-sidebar.ant-layout-sider {
+    background: $academy-sidebar-bg;
+
+    // Fill the viewport below the header: navigation pinned to the top,
+    // help card + account links pinned to the bottom
+    .academy-sidebar-inner {
+      position: sticky;
+      top: $academy-header-height;
+      height: calc(100vh - #{$academy-header-height});
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 12px;
+      overflow-y: auto;
+    }
+
+    // Equal spacing around dividers comes from this gap alone
+    // (divider and menu margins are zeroed below)
+    .academy-sidebar-top,
+    .academy-sidebar-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: $academy-section-gap;
+    }
+
+    // Figma: radius --lg, Other-Stroke border, Base-White background
+    .academy-sidebar-search {
+      height: $academy-item-height;
+      padding: 0 $academy-item-inset;
+      border-radius: 8px;
+      border: 1px solid $academy-stroke;
+      background: $bg-color-white;
+
+      &:hover,
+      &.ant-input-affix-wrapper-focused {
+        border-color: $academy-primary;
+      }
+
+      .ant-input-prefix {
+        margin-inline-end: $academy-icon-gap;
+        color: #bdbdbd;
+        font-size: $academy-icon-size;
+      }
+
+      .ant-input {
+        font-size: 14px;
+      }
+    }
+
+    .academy-sidebar-menu {
+      padding-top: 0;
+      background: transparent;
+      border-inline-end: none;
+
+      // Figma: Body Text/XS/Regular. Flex-centred so icon and label align
+      // regardless of font metrics.
+      li.ant-menu-item {
+        display: flex;
+        align-items: center;
+        gap: $academy-icon-gap;
+        width: 100%;
+        height: $academy-item-height;
+        // antd adds 4px top/bottom margins, which skews the divider spacing
+        margin: 0;
+
+        & + li.ant-menu-item {
+          margin-top: $academy-item-spacing;
+        }
+        // antd sets an inline padding-left on inline menu items
+        padding: 0 $academy-item-inset !important;
+        border-radius: 8px;
+        color: $academy-text-primary;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.5;
+
+        &::after {
+          display: none;
+        }
+
+        .anticon {
+          display: inline-flex;
+          align-items: center;
+          font-size: $academy-icon-size;
+          line-height: 1;
+          color: inherit;
+        }
+
+        .ant-menu-title-content {
+          margin-inline-start: 0;
+          line-height: 1.5;
+        }
+      }
+    }
+
+    // Figma: padding --sm, gap --base, radius --2xl
+    .academy-help-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: stretch;
+      gap: 16px;
+      padding: 12px;
+      border: 1px solid $academy-stroke;
+      border-radius: 16px;
+
+      .academy-help-text {
+        margin: 0;
+        font-size: 12px;
+        line-height: 18px;
+        color: $academy-text-muted;
+      }
+
+      // Outlined at rest, filled on hover/focus
+      .academy-help-button {
+        height: $academy-item-height;
+        border-radius: 8px;
+        font-size: 14px;
+        border-color: $academy-primary;
+        background: transparent;
+        color: $academy-primary;
+        transition: background-color 0.2s ease, color 0.2s ease;
+
+        &:hover,
+        &:focus-visible {
+          background: $academy-primary;
+          color: $bg-color-white;
+        }
+      }
+    }
+
+    .academy-sidebar-divider {
+      margin: 0;
+    }
+  }
+
+  .academy-shell-content {
+    min-width: 0;
+    margin-top: $academy-section-gap;
+    padding: $default-space-size 32px;
+    border: 1px solid $academy-stroke;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: $academy-panel-radius;
+    background: $bg-color-white;
+  }
+
+  .academy-footer-partners {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 48px 32px;
+    border-top: 1px solid $academy-stroke;
+
+    .academy-footer-partner-logo {
+      max-height: 56px;
+      max-width: 220px;
+      object-fit: contain;
+    }
+  }
+
+  // FE-01: the shell must render cleanly down to 1024px
+  @media (max-width: 1024px) {
+    .academy-shell-content {
+      padding: 20px 24px;
+    }
+
+    .academy-footer-partners {
+      gap: 24px;
+
+      .academy-footer-partner-logo {
+        max-width: 170px;
+      }
+    }
+  }
+}
+
+.academy-chatbot-button {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  .academy-chatbot-blob {
+    position: absolute;
+    inset: 0;
+  }
+
+  .academy-chatbot-icon {
+    position: relative;
+    color: $bg-color-white;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $academy-primary;
+    outline-offset: 2px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Overrides for global `#root ...` rules in App.scss. An ID selector outranks
+// any number of classes, so these must also be scoped under #root.
+// ---------------------------------------------------------------------------
+
+// `#root aside li.ant-menu-item-selected`: blue background, bold, green border
+#root .academy-sidebar li.ant-menu-item.ant-menu-item-selected {
+  background: $bg-color-white;
+  color: $academy-text-primary;
+  font-weight: 400;
+  border-right: none;
+}
+
+// TabletGothic/RocGrotesk are forced with `!important` in many places
+// (headings, cards, ...). Academy sidebar and page content use Inter; the
+// shared footer keeps the global fonts. Code blocks keep their monospace font.
+#root .academy-shell .academy-shell-body,
+#root .academy-shell .academy-shell-body *:not(.anticon):not(code):not(pre) {
+  font-family: $academy-font-family !important;
+}
+
+// `#root h3`: 20px / 26px
+#root .academy-shell h3.academy-help-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: $academy-text-primary;
+}
+
+// Academy tooltips (portal: outside the shell). App.scss forces every
+// `.ant-tooltip-inner` to the toolkit green with `!important`; the doubled
+// class outranks it. Pass `overlayClassName="academy-tooltip"`.
+.academy-tooltip.academy-tooltip {
+  --antd-arrow-background-color: #{$academy-primary};
+
+  .ant-tooltip-inner {
+    background-color: $academy-primary !important;
+    font-family: $academy-font-family !important;
+  }
+}
