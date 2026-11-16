@@ -30,6 +30,53 @@ describe("academy service", () => {
     await expect(academyService.getMe()).resolves.toEqual(user);
   });
 
+  it("getProfile returns user profile", async () => {
+    const profile = {
+      id: 1,
+      user_id: 42,
+      first_name: "Kole",
+      last_name: "Johnson",
+      company_name: "IDH Partner Org",
+      company_type: "NGO",
+      sector: "Agriculture",
+      region_id: null,
+      region_name: "West Africa",
+      commodities: ["Cocoa", "Coffee"],
+    };
+    mock.onGet("academy/profile").reply(200, profile);
+    await expect(academyService.getProfile()).resolves.toEqual(profile);
+  });
+
+  it("getProfile forwards AbortSignal to academyClient", async () => {
+    const controller = new AbortController();
+    mock.onGet("academy/profile").reply(200, { id: 1 });
+    const spy = jest.spyOn(academyClient, "get");
+    await academyService.getProfile({ signal: controller.signal });
+    expect(spy).toHaveBeenCalledWith("academy/profile", {
+      signal: controller.signal,
+    });
+    spy.mockRestore();
+  });
+
+  it("updateProfile puts the payload and returns updated profile", async () => {
+    const payload = {
+      first_name: "Kole",
+      last_name: "Johnson",
+      commodities: ["Cocoa"],
+    };
+    const response = {
+      id: 1,
+      user_id: 42,
+      first_name: "Kole",
+      last_name: "Johnson",
+      commodities: ["Cocoa"],
+    };
+    mock.onPut("academy/profile", payload).reply(200, response);
+    await expect(academyService.updateProfile(payload)).resolves.toEqual(
+      response
+    );
+  });
+
   it("getOverview returns the learner overview", async () => {
     const overview = {
       greeting_name: "Wayan Galih",

@@ -78,6 +78,10 @@ const listParams = ({ search, type, sortBy, sortOrder }, typeParam) => {
 const academyService = {
   // Used to refresh UserState after the learner edits their profile
   getMe: () => academyClient.get("user/me").then((res) => res.data),
+  getProfile: ({ signal } = {}) =>
+    academyClient.get("academy/profile", { signal }).then((res) => res.data),
+  updateProfile: (payload) =>
+    academyClient.put("academy/profile", payload).then((res) => res.data),
   // Reads accept an AbortSignal so callers can cancel superseded requests
   getOverview: ({ signal } = {}) =>
     academyClient.get("academy/overview", { signal }).then((res) => res.data),
