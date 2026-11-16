@@ -226,6 +226,11 @@ class TestUserAuthentication:
     async def test_get_user_me(
         self, app: FastAPI, session: Session, client: AsyncClient
     ) -> None:
+        user = session.query(User).filter(User.email == "super_admin@akvo.org").first()
+        assert user is not None
+        user.is_active = 1
+        session.commit()
+
         account = Acc(email="super_admin@akvo.org", token=None)
         res = await client.get(
             app.url_path_for("user:me"),
@@ -237,7 +242,7 @@ class TestUserAuthentication:
             "id": 1,
             "fullname": "John Doe",
             "email": "super_admin@akvo.org",
-            "active": False,
+            "active": True,
             "role": UserRole.user.value,
             "all_cases": False,
             "business_unit_detail": None,
@@ -316,5 +321,5 @@ class TestUserAuthentication:
 
         # Restore original state of user
         user.tools = ["idc", "academy"]
-        user.is_active = 0
+        user.is_active = 1
         session.commit()

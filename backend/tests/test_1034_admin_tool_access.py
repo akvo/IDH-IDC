@@ -1048,6 +1048,76 @@ class TestAdminUserDeactivationReactivation:
         session.refresh(target_user)
         assert target_user.is_active == 0
 
+    async def test_deactivated_user_existing_jwt_rejected_by_verify_user(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Existing JWT session token is immediately rejected with 401 once user is deactivated."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.deact.jwt@example.com",
+            fullname="Admin Deact JWT",
+            role=UserRole.admin,
+        )
+        target_user = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="user.deact.jwt@example.com",
+            fullname="Target User JWT",
+            role=UserRole.user,
+        )
+        assert target_user.is_active == 1
+
+        # Generate token while active: verify /user/me returns 200
+        user_token = generate_user_token(target_user)
+        res_me = await client.get(
+            "/user/me",
+            headers={"Authorization": f"Bearer {user_token}"},
+        )
+        assert res_me.status_code == 200
+
+        # Admin deactivates target user
+        admin_token = generate_user_token(admin)
+        res_deact = await client.post(
+            f"/user/{target_user.id}/deactivate",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res_deact.status_code == 200
+
+        # Existing JWT token must now be rejected with 401 Unauthorized
+        res_after = await client.get(
+            "/user/me",
+            headers={"Authorization": f"Bearer {user_token}"},
+        )
+        assert res_after.status_code == 401
+
+    async def test_admin_deactivate_non_existent_user_returns_404(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        session: Session,
+        clean_admin_tool_access,
+    ):
+        """Deactivating a non-existent user returns 404 Not Found rather than 500 ISE."""
+        admin = _create_test_user(
+            session=session,
+            clean_tracker=clean_admin_tool_access,
+            email="admin.deact.404@example.com",
+            fullname="Admin Deact 404",
+            role=UserRole.admin,
+        )
+        admin_token = generate_user_token(admin)
+        res = await client.post(
+            "/user/999999/deactivate",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+        assert res.status_code == 404
+        assert "not found" in res.json().get("detail", "").lower()
+
     async def test_deactivated_user_cannot_login(
         self,
         app: FastAPI,

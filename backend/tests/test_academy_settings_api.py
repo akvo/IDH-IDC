@@ -50,6 +50,51 @@ def sync_sequences(session: Session, tables: list) -> None:
             pass
 
 
+@pytest.fixture(scope="module", autouse=True)
+def clean_academy_settings_data():
+    yield
+    from db.connection import get_db_url
+    from sqlalchemy import create_engine
+    engine = create_engine(get_db_url())
+    with engine.connect() as conn:
+        conn.execute(
+            text(
+                "DELETE FROM academy_user_chapter_progress WHERE user_id IN "
+                "(SELECT id FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@settings.test')"
+            )
+        )
+        conn.execute(
+            text(
+                "DELETE FROM user_case_access WHERE \"user\" IN "
+                "(SELECT id FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@settings.test')"
+            )
+        )
+        conn.execute(
+            text(
+                "DELETE FROM user_business_unit WHERE \"user\" IN "
+                "(SELECT id FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@settings.test')"
+            )
+        )
+        conn.execute(
+            text(
+                "DELETE FROM user_profile WHERE user_id IN "
+                "(SELECT id FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@settings.test')"
+            )
+        )
+        conn.execute(
+            text(
+                "DELETE FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@settings.test'"
+            )
+        )
+        conn.execute(
+            text(
+                "SELECT setval('user_id_seq', "
+                "(SELECT COALESCE(MAX(id), 1) FROM \"user\"))"
+            )
+        )
+        conn.commit()
+
+
 def get_or_create_org(session: Session, name: str = "Test Org") -> Organisation:
     org = session.query(Organisation).filter(Organisation.name == name).first()
     if not org:

@@ -132,7 +132,7 @@ def verify_user(session: Session, authenticated):
     except (JWTError, AttributeError):
         raise credentials_exception
     user = crud_user.get_user_by_email(session=session, email=token_data.email)
-    if not user:
+    if not user or user.is_active != 1:
         raise credentials_exception
     return user
 

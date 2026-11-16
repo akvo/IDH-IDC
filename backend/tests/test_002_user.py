@@ -876,6 +876,8 @@ class TestUserEndpoint:
             .first()
         )
         assert user.invitation_id is None
+        user.is_active = 1
+        session.commit()
         res = await client.post(
             app.url_path_for("user:forgot-password"),
             headers={"content-type": "application/x-www-form-urlencoded"},
@@ -915,6 +917,8 @@ class TestUserEndpoint:
             .first()
         )
         assert user.invitation_id is None
+        user.is_active = 1
+        session.commit()
         res = await client.post(
             app.url_path_for("user:forgot-password"),
             headers={"content-type": "application/x-www-form-urlencoded"},

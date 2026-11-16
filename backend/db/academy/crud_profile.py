@@ -10,7 +10,7 @@ from models.user_profile import UserProfile, UserProfileUpdatePayload
 
 
 def get_or_create_user_profile(
-    session: Session, user: User
+    session: Session, user: User, commit: bool = True
 ) -> UserProfile:
     """Retrieve existing user profile or auto-provision one from user info.
 
@@ -42,20 +42,28 @@ def get_or_create_user_profile(
         commodities=[],
     )
     session.add(profile)
-    session.commit()
-    session.refresh(profile)
+    if commit:
+        session.commit()
+        session.refresh(profile)
+    else:
+        session.flush()
     return profile
 
 
 def update_user_profile(
-    session: Session, user: User, payload: UserProfileUpdatePayload
+    session: Session,
+    user: User,
+    payload: UserProfileUpdatePayload,
+    commit: bool = True,
 ) -> UserProfile:
     """Update learner profile and sync display name to user.fullname.
 
     Preserves user.company foreign key while updating organizational
     attributes in user_profile. Validates region_id if provided.
     """
-    profile = get_or_create_user_profile(session=session, user=user)
+    profile = get_or_create_user_profile(
+        session=session, user=user, commit=commit
+    )
     update_data = payload.model_dump(exclude_unset=True)
 
     if "first_name" in update_data:
@@ -118,6 +126,9 @@ def update_user_profile(
         session.add(user)
 
     session.add(profile)
-    session.commit()
-    session.refresh(profile)
+    if commit:
+        session.commit()
+        session.refresh(profile)
+    else:
+        session.flush()
     return profile

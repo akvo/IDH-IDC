@@ -675,6 +675,10 @@ def deactivate_user(
 ):
     admin = verify_admin(session=session, authenticated=req.state.authenticated)
     user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     if admin.id == user.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -784,6 +788,7 @@ def update_profile(
             session=session,
             user=user,
             payload=UserProfileUpdatePayload(**profile_update_kwargs),
+            commit=False,
         )
         if payload.fullname is not None:
             user.fullname = payload.fullname.strip()
@@ -796,6 +801,7 @@ def update_profile(
                 current_password=payload.current_password,
                 new_password=payload.new_password,
             ),
+            commit=False,
         )
 
     session.commit()

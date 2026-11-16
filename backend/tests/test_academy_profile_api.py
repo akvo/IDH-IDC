@@ -3,6 +3,7 @@ from jose import jwt
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from db.academy import crud_profile
@@ -15,6 +16,39 @@ from models.user_profile import (
     UserProfile,
     UserProfileUpdatePayload,
 )
+
+
+@pytest.fixture(scope="module", autouse=True)
+def clean_academy_profile_users():
+    yield
+    from db.connection import get_db_url
+    from sqlalchemy import create_engine
+    engine = create_engine(get_db_url())
+    with engine.connect() as conn:
+        conn.execute(
+            text(
+                "DELETE FROM user_profile WHERE user_id IN "
+                "(SELECT id FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@example.com' OR email LIKE '%@attacker.com' OR email LIKE '%@victim.com')"
+            )
+        )
+        conn.execute(
+            text(
+                "DELETE FROM \"user\" WHERE email LIKE '%@test.org' OR email LIKE '%@example.com' OR email LIKE '%@attacker.com' OR email LIKE '%@victim.com'"
+            )
+        )
+        conn.execute(
+            text(
+                "SELECT setval('user_id_seq', "
+                "(SELECT COALESCE(MAX(id), 1) FROM \"user\"))"
+            )
+        )
+        conn.execute(
+            text(
+                "SELECT setval('user_profile_id_seq', "
+                "(SELECT COALESCE(MAX(id), 1) FROM user_profile))"
+            )
+        )
+        conn.commit()
 
 
 def get_or_create_test_user(

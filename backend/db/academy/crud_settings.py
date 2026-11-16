@@ -14,7 +14,10 @@ from models.user import User
 
 
 def change_user_password(
-    session: Session, user: User, payload: ChangePasswordPayload
+    session: Session,
+    user: User,
+    payload: ChangePasswordPayload,
+    commit: bool = True,
 ) -> bool:
     """Validate current password and set new hashed password."""
     if not verify_password(payload.current_password, user.password):
@@ -23,8 +26,11 @@ def change_user_password(
             detail="Incorrect current password",
         )
     user.password = get_password_hash(payload.new_password)
-    session.commit()
-    session.refresh(user)
+    if commit:
+        session.commit()
+        session.refresh(user)
+    else:
+        session.flush()
     return True
 
 
@@ -51,7 +57,7 @@ def delete_learner_account(session: Session, user: User) -> None:
     if cases_updated:
         for case in cases_updated:
             case.updated_by = case.created_by
-        session.commit()
+        session.flush()
 
     crud_uca.delete_case_access_by_user_id(session=session, user_id=user.id)
     crud_bu.delete_user_business_units_by_user_id(
@@ -62,7 +68,7 @@ def delete_learner_account(session: Session, user: User) -> None:
     if tags:
         for tag in tags:
             tag.created_by = None
-        session.commit()
+        session.flush()
 
     questions = crud_question.get_question_by_created_by(
         session=session, created_by=user.id
@@ -70,7 +76,7 @@ def delete_learner_account(session: Session, user: User) -> None:
     if questions:
         for question in questions:
             question.created_by = None
-        session.commit()
+        session.flush()
 
     references = crud_ref_data.get_reference_by_created_by(
         session=session, created_by=user.id
@@ -79,6 +85,5 @@ def delete_learner_account(session: Session, user: User) -> None:
         for reference in references:
             reference.created_by = None
             session.flush()
-            session.commit()
 
     crud_user.delete_user(session=session, id=user.id)

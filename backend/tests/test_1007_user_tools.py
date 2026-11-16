@@ -2,7 +2,7 @@ import pytest
 from typing import Generator
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy import inspect
+from sqlalchemy import inspect, text
 from models.user import User, UserRole, UserBase, UserUpdateBase, ToolType
 from pydantic import ValidationError
 from db.crud_user import add_user, update_user
@@ -23,6 +23,13 @@ def clean_test_users(session: Session) -> Generator:
         u = session.query(User).filter(User.id == uid).first()
         if u:
             session.delete(u)
+    session.commit()
+    session.execute(
+        text(
+            "SELECT setval('user_id_seq', "
+            "(SELECT COALESCE(MAX(id), 1) FROM \"user\"))"
+        )
+    )
     session.commit()
 
 

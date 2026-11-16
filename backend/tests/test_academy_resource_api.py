@@ -3,6 +3,7 @@ from jose import jwt
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from db.academy import crud_resource
@@ -19,6 +20,33 @@ from models.organisation import Organisation
 from models.user import User, UserRole
 from routes.academy.resource import get_glossary, get_resources
 from seeder.academy import seed_academy
+
+
+@pytest.fixture(scope="module", autouse=True)
+def clean_academy_resource_users():
+    yield
+    from db.connection import get_db_url
+    from sqlalchemy import create_engine
+    engine = create_engine(get_db_url())
+    with engine.connect() as conn:
+        conn.execute(
+            text(
+                "DELETE FROM user_profile WHERE user_id IN "
+                "(SELECT id FROM \"user\" WHERE email LIKE '%@test.org')"
+            )
+        )
+        conn.execute(
+            text(
+                "DELETE FROM \"user\" WHERE email LIKE '%@test.org'"
+            )
+        )
+        conn.execute(
+            text(
+                "SELECT setval('user_id_seq', "
+                "(SELECT COALESCE(MAX(id), 1) FROM \"user\"))"
+            )
+        )
+        conn.commit()
 
 
 @pytest.fixture(autouse=True)

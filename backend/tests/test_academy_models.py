@@ -9,6 +9,7 @@ from sqlalchemy import (
     Enum,
     CheckConstraint,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -1030,6 +1031,16 @@ class TestAcademyModelsLiveDatabaseIntegrity:
         with pytest.raises(IntegrityError):
             session.commit()
         session.rollback()
+        session.query(AcademyUserChapterProgress).filter_by(user_id=user.id).delete()
+        session.delete(user)
+        session.commit()
+        session.execute(
+            text(
+                "SELECT setval('user_id_seq', "
+                "(SELECT COALESCE(MAX(id), 1) FROM \"user\"))"
+            )
+        )
+        session.commit()
 
     def test_pydantic_schema_boundary_and_validation_errors(self):
         """Pydantic schemas enforce required fields, types, and enum validation boundaries."""
