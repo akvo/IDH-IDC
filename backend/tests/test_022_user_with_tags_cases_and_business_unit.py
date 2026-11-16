@@ -69,6 +69,7 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "business_unit_count": 1,
             "company": None,
             "user_type": UserType.internal,
+            "tools": ["idc", "academy"],
         }
 
     @pytest.mark.asyncio
@@ -124,5 +125,8 @@ class TestUserWithTagsCasesAndBusinessUnitEndpoint:
             "case_access": [{"case": 1, "permission": "view"}],
             "internal_user": False,
             "company": None,
+            "company_name": None,
             "user_type": UserType.external_regular.value,
+            "user_profile": None,
+            "tools": ["idc", "academy"],
         }

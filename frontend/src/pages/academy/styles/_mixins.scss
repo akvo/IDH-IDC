@@ -1,0 +1,26 @@
+// Shared Academy component styles; needs "tokens" imported first
+
+// Figma button: Components-Button corner radius, Shadow/xs. Primary fill and
+// hover come from the antd theme (colorPrimary).
+@mixin academy-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: auto;
+  padding: 8px 14px;
+  border-radius: 8px;
+  box-shadow: $academy-shadow-xs;
+  font-weight: 500;
+}
+
+// Outlined in the brand colour, tinted on hover
+@mixin academy-button-outline {
+  border-color: $academy-primary;
+  color: $academy-primary;
+
+  &:not(:disabled):hover {
+    background: $academy-primary-tint;
+  }
+}

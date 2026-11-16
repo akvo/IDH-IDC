@@ -12,10 +12,14 @@ from typing import List, Optional
 from db.connection import get_session
 from models.visualization import VisualizationDict
 from models.user import UserRole, UserType
-from middleware import verify_case_editor, verify_case_viewer
+from middleware import (
+    verify_case_editor,
+    verify_case_viewer,
+    verify_idc_access,
+)
 
 security = HTTPBearer()
-visualization_route = APIRouter()
+visualization_route = APIRouter(dependencies=[Depends(verify_idc_access)])
 
 
 @visualization_route.post(

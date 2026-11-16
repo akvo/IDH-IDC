@@ -1,3 +1,4 @@
+import enum
 from uuid import uuid4
 from fastapi import HTTPException, status
 from typing import Optional, List
@@ -12,6 +13,7 @@ from models.user import (
     UserRole,
     FilterUserRole,
     UserType,
+    ToolType,
 )
 from models.user_case_access import UserCaseAccess
 from models.user_tag import UserTag
@@ -43,6 +45,11 @@ def add_user(
     if not organisation:
         def_org = default_organisation(session=session, name="IDH")
         organisation = def_org.id
+    tools = (
+        payload.tools
+        if hasattr(payload, "tools") and payload.tools is not None
+        else [ToolType.idc.value, ToolType.academy.value]
+    )
     user = User(
         fullname=payload.fullname,
         email=payload.email,
@@ -53,6 +60,7 @@ def add_user(
         is_active=1 if invitation_id else 0,
         invitation_id=str(uuid4()) if invitation_id else None,
         company=payload.company,
+        tools=tools,
     )
     if role == UserRole.user:
         if payload.user_type:
@@ -103,6 +111,11 @@ def update_user(
         payload.organisation if payload.organisation else user.organisation
     )
     user.company = payload.company
+    if hasattr(payload, "tools") and payload.tools is not None:
+        user.tools = [
+            t.value if isinstance(t, enum.Enum) else str(t)
+            for t in payload.tools
+        ]
 
     role = payload.role if payload.role else user.role
 
@@ -241,6 +254,7 @@ def filter_user(
     business_unit_users: Optional[List[int]] = None,
     role: Optional[FilterUserRole] = None,
     company: Optional[int] = None,
+    tool: Optional[ToolType] = None,
 ):
     is_active = 1 if approved else 0
     user = session.query(User).filter(User.is_active == is_active)
@@ -282,6 +296,9 @@ def filter_user(
             user = user.filter(User.role == role.value)
     if company:
         user = user.filter(User.company == company)
+    if tool:
+        tool_val = tool.value if isinstance(tool, enum.Enum) else str(tool)
+        user = user.filter(User.tools.contains([tool_val]))
     return user
 
 
@@ -293,6 +310,7 @@ def get_all_user(
     business_unit_users: Optional[List[int]] = None,
     role: Optional[FilterUserRole] = None,
     company: Optional[int] = None,
+    tool: Optional[ToolType] = None,
     skip: int = 0,
     limit: int = 10,
 ) -> List[UserDict]:
@@ -304,6 +322,7 @@ def get_all_user(
         business_unit_users=business_unit_users,
         role=role,
         company=company,
+        tool=tool,
     )
     user = user.order_by(User.id.desc()).offset(skip).limit(limit).all()
     return user
@@ -315,6 +334,9 @@ def count(
     approved: Optional[bool] = True,
     organisation: Optional[int] = None,
     business_unit_users: Optional[List[int]] = None,
+    role: Optional[FilterUserRole] = None,
+    company: Optional[int] = None,
+    tool: Optional[ToolType] = None,
 ) -> int:
     user = filter_user(
         session=session,
@@ -322,6 +344,9 @@ def count(
         organisation=organisation,
         approved=approved,
         business_unit_users=business_unit_users,
+        role=role,
+        company=company,
+        tool=tool,
     )
     return user.count()
 

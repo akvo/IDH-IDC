@@ -1,0 +1,81 @@
+@import "../../../variables.scss";
+@import "../styles/tokens";
+
+// Chapter rows, on pages and inside modal portals (outside #root)
+.academy-chapter-list,
+#root .academy-chapter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  .academy-chapter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 12px;
+    background: $bg-color-white;
+
+    @media (max-width: 640px) {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+  }
+
+  .academy-chapter-number {
+    flex-shrink: 0;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: $academy-chapter-number-bg;
+    font-size: 12px;
+    line-height: 18px;
+    color: $academy-text-muted;
+  }
+
+  .academy-chapter-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    line-height: 1.5;
+    color: $academy-text-primary;
+
+    &:hover,
+    &:focus-visible {
+      color: $academy-primary;
+    }
+  }
+
+  // Round completion toggle; green with a white tick once completed
+  .academy-chapter-check {
+    .ant-checkbox-inner {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+    }
+
+    .ant-checkbox-checked .ant-checkbox-inner {
+      border-color: $academy-success;
+      background: $academy-success;
+    }
+
+    .ant-checkbox-checked::after {
+      border-radius: 50%;
+    }
+  }
+}
+
+// Search term matches in titles
+.academy-highlight,
+#root .academy-highlight {
+  padding: 0;
+  background: none;
+  color: $academy-primary;
+  font-weight: 600;
+}

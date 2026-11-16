@@ -29,6 +29,12 @@ from routes.procurement_library.procurement_process import (
 from routes.procurement_library_v2.practice import pl_practice_router_v2
 from routes.procurement_library_v2.category import pl_cat_router_v2
 from routes.case_import import case_import_route
+from routes.academy import (
+    academy_course_router,
+    academy_profile_router,
+    academy_resource_router,
+    academy_settings_router,
+)
 
 import os
 from jsmin import jsmin
@@ -150,6 +156,10 @@ app.include_router(practice_route)
 app.include_router(procurement_process_route)
 app.include_router(pl_cat_router_v2)
 app.include_router(pl_practice_router_v2)
+app.include_router(academy_course_router)
+app.include_router(academy_profile_router)
+app.include_router(academy_resource_router)
+app.include_router(academy_settings_router)
 
 
 @app.get("/", tags=["Dev"])
