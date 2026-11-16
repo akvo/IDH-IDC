@@ -85,6 +85,58 @@
     justify-content: flex-end;
   }
 
+  // Responsive Breakpoints (1280-1366px laptop compact rhythm matching Overview & Account)
+  @media (max-width: $academy-compact-breakpoint) {
+    gap: 16px;
+
+    .academy-settings-card {
+      padding: 20px;
+    }
+
+    h2.academy-settings-title {
+      margin-bottom: 16px;
+      font-size: 18px !important;
+      line-height: 26px;
+    }
+
+    .academy-settings-card--inline h2.academy-settings-title {
+      margin-bottom: 6px;
+    }
+
+    .academy-settings-text {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .academy-settings-row {
+      column-gap: 16px;
+    }
+
+    .ant-form-item-label > label {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .ant-input,
+    .ant-input-affix-wrapper input {
+      font-size: 13px;
+    }
+
+    .ant-input-affix-wrapper {
+      height: 38px;
+    }
+
+    .ant-form-item-extra {
+      margin-top: 4px;
+      font-size: 11.5px;
+    }
+
+    .ant-btn {
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+  }
+
   @media (max-width: 640px) {
     .academy-settings-row {
       grid-template-columns: minmax(0, 1fr);

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, message } from "antd";
+import { FileOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "./ConfirmModal";
 import academyService from "../services/academy";
@@ -91,13 +92,28 @@ const DeleteAccountCard = () => {
         onConfirm={closeBlocked}
         onCancel={closeBlocked}
       >
-        <p>{blocked.message}</p>
+        <p className="academy-blocking-message">{blocked.message}</p>
         {blocked.cases.length > 0 && (
-          <ul className="academy-blocking-cases">
-            {blocked.cases.map(({ value, label }) => (
-              <li key={value}>{label}</li>
-            ))}
-          </ul>
+          <div className="academy-blocking-cases-container">
+            <div className="academy-blocking-cases-header">
+              <span className="academy-blocking-cases-title">Active cases</span>
+              <span className="academy-blocking-cases-badge">
+                {blocked.cases.length}
+              </span>
+            </div>
+            <ul className="academy-blocking-cases academy-blocking-cases-list">
+              {blocked.cases.map(({ value, label }) => (
+                <li
+                  key={value}
+                  className="academy-blocking-case-item"
+                  title={label}
+                >
+                  <FileOutlined className="academy-blocking-case-icon" />
+                  <span className="academy-blocking-case-name">{label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </ConfirmModal>
     </section>
