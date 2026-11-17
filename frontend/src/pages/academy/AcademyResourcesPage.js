@@ -146,10 +146,6 @@ const AcademyResourcesPage = () => {
         <h1 className="academy-resources-title">
           Technical Resources &amp; Glossary
         </h1>
-        <p className="academy-resources-subtitle">
-          Everything referenced inside the modules, in one place, grouped by the
-          four kinds of resource.
-        </p>
       </div>
 
       <div className="academy-resources-controls">

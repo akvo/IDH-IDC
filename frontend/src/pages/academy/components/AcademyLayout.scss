@@ -109,6 +109,8 @@
         .ant-menu-title-content {
           margin-inline-start: 0;
           line-height: 1.5;
+          overflow: visible;
+          white-space: nowrap;
         }
       }
     }
@@ -181,15 +183,14 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 48px;
+    gap: 32px;
     width: 100%;
     margin: 0;
-    padding: 48px var(--default-landing-padding);
-    border-top: 1px solid $academy-stroke;
+    padding: 32px var(--default-landing-padding);
 
     .academy-footer-partner-logo {
-      max-height: 56px;
-      max-width: 220px;
+      max-height: 32px;
+      max-width: 140px;
       object-fit: contain;
     }
   }
@@ -197,12 +198,12 @@
   // Laptop screens (1280-1366px wide, ~720px tall)
   @media (max-width: $academy-compact-breakpoint) {
     .academy-footer-partners {
-      padding: 32px var(--default-landing-padding);
-      gap: 32px;
+      padding: 24px var(--default-landing-padding);
+      gap: 24px;
 
       .academy-footer-partner-logo {
-        max-height: 44px;
-        max-width: 170px;
+        max-height: 28px;
+        max-width: 120px;
       }
     }
 
@@ -239,7 +240,7 @@
       gap: 24px;
 
       .academy-footer-partner-logo {
-        max-width: 170px;
+        max-width: 120px;
       }
     }
   }
