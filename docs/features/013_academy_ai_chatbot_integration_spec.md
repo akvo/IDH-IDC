@@ -93,6 +93,19 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
   * **Brand Theming**: Expose `--akvo-primary` CSS custom property to dynamically inherit IDC's primary teal (`#007A78`).
   * **Quality & Release**: Add DOM unit tests for new options, verify webpack production bundle (`dist/`), and run `./release.sh patch`.
 * **Deliverable**: Published NPM package (or linked build) ready for IDC consumption.
+* **User Acceptance Criteria (UAC)**:
+  - [ ] **UAC-1.1 (Floating Launcher Button)**: By default (or when `startMinimized: true`), a floating circular launcher icon (`56x56px`) renders in the bottom-right corner of the host page (`bottom: 24px; right: 24px; z-index: 99998`), without obstructing the main content with an open chatbox.
+  - [ ] **UAC-1.2 (Toggle & Expand)**: Clicking the floating launcher smoothly reveals the chatbox container (`#akvo-rag`) and hides the floating button.
+  - [ ] **UAC-1.3 (Minimize / Close)**: Clicking the close/minimize button in the chat header hides the chatbox container and restores the floating launcher button.
+  - [ ] **UAC-1.4 (Custom Icon Support)**: When `launcherIcon` is passed, the launcher displays the custom SVG icon, image URL, or font icon; if omitted, it defaults to a clean comment bubble icon.
+  - [ ] **UAC-1.5 (Header Avatar / Icon)**: When `headerIcon` is passed, an icon or avatar is rendered in the chat header adjacent to the title text.
+  - [ ] **UAC-1.6 (Theme Color Harmonization)**: The launcher button and chat header background adapt to the provided primary color without hardcoded blue defaults.
+* **Technical Acceptance Criteria (TAC)**:
+  - [ ] **TAC-1.1 (Backward Compatibility)**: Existing `akvo-rag-js` consumers with standard options (`title`, `kb_id`, `wsURL`) continue functioning without breaking changes.
+  - [ ] **TAC-1.2 (Icon Prop Sanitization)**: `_renderIcon` safely renders SVG markup, image URLs (`.svg`, `.png`, `http...`), or CSS classes (`fa ...`), sanitizing any inline HTML via DOMPurify to prevent XSS (`[SEC]`).
+  - [ ] **TAC-1.3 (CSS Custom Variables)**: Uses `--akvo-primary` variable in SCSS for launcher, header, send button, and citation highlights; sets inline style on container when `options.primaryColor` is specified.
+  - [ ] **TAC-1.4 (Automated Unit Tests)**: Unit tests in `akvo-rag-js/tests/` verify DOM creation of `#akvo-rag-launcher`, visibility toggling when launcher and close button are clicked, `startMinimized: true` behavior, and SVG/image/font-icon rendering branches.
+  - [ ] **TAC-1.5 (Build & Release Gate)**: `npm test` passes 100%; `npm run build` generates valid `dist/akvo-rag.js` and `dist/akvo-rag.css`; patch version bumped in `package.json`.
 
 ---
 
@@ -104,6 +117,15 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
   * **Knowledge Base Creation & Upload**: Create `IDC Living Income Academy` KB in `akvo-rag`, upload documents to MinIO S3, and trigger async ingestion worker (`vector-kb-mcp`).
   * **Search & Retrieval Verification**: Validate that ChromaDB embeddings are indexed and test raw query retrieval via WebSocket or MCP endpoint.
 * **Deliverable**: Active, tested KB ID and connection credentials for IDC.
+* **User Acceptance Criteria (UAC)**:
+  - [ ] **UAC-2.1 (Domain-Accurate Knowledge Base)**: Chatbot answers questions accurately regarding IDC Living Income concepts, Benchmarks, the 6 curriculum modules, chapter takeaways, and glossary terms.
+  - [ ] **UAC-2.2 (Out-of-Scope Fallback)**: For questions not covered by the curriculum, the assistant responds politely without fabricating living income figures or external policies.
+  - [ ] **UAC-2.3 (Fast Streaming Feedback)**: User receives instant token-by-token streaming responses without timeout errors or dropped connections.
+* **Technical Acceptance Criteria (TAC)**:
+  - [ ] **TAC-2.1 (Tenant & App Security)**: An active record is created in `akvo-rag`'s `apps` table (`app_id`, `client_id`, `app_name: "IDC Academy"`, `domain`, `scopes: ["chat", "read:kb"]`). Access token generated and scoped securely (`[SEC]`).
+  - [ ] **TAC-2.2 (Curriculum Ingestion Pipeline)**: All 6 Modules, Chapters (including `content_html` converted to clean text/markdown), and Glossary terms from `backend/seeder/academy.py` are exported into structured Markdown documents.
+  - [ ] **TAC-2.3 (MinIO S3 & ChromaDB Sync)**: Documents are uploaded to MinIO bucket and processed through `mcp-vector-kb-ingestion`. Verify all chunks exist in `vkb_document_chunks` table and embeddings exist in ChromaDB collection `kb_<id>`.
+  - [ ] **TAC-2.4 (Hermetic Query Verification)**: Verify end-to-end retrieval via Redis RPC / WebSocket: querying *"What is Living Income Benchmark?"* returns top-3 relevant chunks with cosine similarity score $\ge 0.70$.
 
 ---
 
@@ -115,6 +137,16 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
   * **Asset & Style Harmonization**: Add IDC branded SVG/PNG bot icon asset. Set primary color to `#007A78`. Ensure z-index layering avoids conflicts with headers and notifications.
   * **Regression & Verification Pass**: Run `./dc.sh exec frontend yarn lint` and `yarn test:ci`. Perform full browser walkthrough across desktop and mobile viewports.
 * **Deliverable**: Live, production-ready AI chatbot in IDC Academy.
+* **User Acceptance Criteria (UAC)**:
+  - [ ] **UAC-3.1 (Global Academy Presence)**: The floating bot icon appears across all `/academy/*` routes (`/academy`, `/academy/modules/:id`, `/academy/resources`, `/academy/account`, `/academy/settings`).
+  - [ ] **UAC-3.2 (IDC Branding Alignment)**: The launcher icon displays the official IDC robot/chat icon in IDH brand teal (`#007A78`), perfectly matching the Academy layout tokens.
+  - [ ] **UAC-3.3 (Non-Intrusive Layout)**: Chat window and floating button do not overlap key Academy controls (like "Continue learning" buttons or mobile sidebar toggles) and maintain comfortable margin on mobile viewports ($\le 768px$).
+  - [ ] **UAC-3.4 (Session & Error Handling)**: If WebSocket connection disconnects or network fails, an inline reconnecting status is shown gracefully without crashing the React tree.
+* **Technical Acceptance Criteria (TAC)**:
+  - [ ] **TAC-3.1 (Hermetic Component Lifecycle)**: `AcademyChatbot.js` wraps `initChat` in `useEffect`. On unmount or route transition away from Academy (e.g. navigation to `/cases` or `/tool`), invokes `chat.destroy()`, closes WebSocket, and cleans up DOM nodes to eliminate memory leaks.
+  - [ ] **TAC-3.2 (Environment Configuration)**: Exposes `REACT_APP_AKVO_RAG_WS_URL` and `REACT_APP_AKVO_RAG_KB_ID` in `.env.example`. Throws a descriptive console warning (and fails closed safely) if env vars are missing.
+  - [ ] **TAC-3.3 (Z-Index & CSS Scoping)**: Styles are encapsulated inside `#akvo-rag` and `#akvo-rag-launcher`; z-index set to `9999` (under full-screen modal overlays, but above Academy sticky header).
+  - [ ] **TAC-3.4 (Automated Quality Gates)**: Frontend unit test (`AcademyChatbot.test.js`) verifies component mounting, props forwarding, and destroy cleanup call on unmount; `./dc.sh exec frontend yarn lint` passes with 0 ESLint errors/warnings; `./dc.sh exec frontend yarn test:ci` passes 100% across all suites.
 
 ---
 
