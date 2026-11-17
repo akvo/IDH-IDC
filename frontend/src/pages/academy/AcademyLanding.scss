@@ -70,16 +70,16 @@
   .academy-hero {
     position: relative;
     width: 100%;
-    min-height: 600px;
+    min-height: 32rem;
     display: flex;
     align-items: center;
-    padding: 96px 0;
+    padding: 48px 0;
     color: #ffffff;
     overflow: hidden;
 
     @media (max-width: 768px) {
-      min-height: 500px;
-      padding: 64px 20px;
+      min-height: auto;
+      padding: 40px 20px;
     }
 
     .hero-background-wrapper {
@@ -105,10 +105,21 @@
         height: 100%;
         background: linear-gradient(
           135deg,
-          rgba(1, 48, 47, 0.88) 0%,
-          rgba(1, 98, 95, 0.75) 50%,
-          rgba(2, 35, 34, 0.85) 100%
+          rgba(2, 35, 34, 0.85) 0%,
+          rgba(28, 62, 32, 0.68) 40%,
+          rgba(28, 62, 32, 0.35) 60%,
+          rgba(127, 127, 84, 0) 80%,
+          rgba(127, 127, 84, 0) 100%
         );
+
+        @media (max-width: 768px) {
+          background: linear-gradient(
+            180deg,
+            rgba(2, 35, 34, 0.88) 0%,
+            rgba(28, 62, 32, 0.75) 60%,
+            rgba(127, 127, 84, 0.35) 100%
+          );
+        }
       }
     }
 
@@ -803,8 +814,8 @@
     }
 
     .academy-hero {
-      min-height: 480px;
-      padding: 64px 0;
+      min-height: 28rem;
+      padding: 36px 0;
 
       .hero-content-container {
         .hero-text-block {

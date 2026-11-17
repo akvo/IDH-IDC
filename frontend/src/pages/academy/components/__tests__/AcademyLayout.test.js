@@ -53,7 +53,7 @@ describe("AcademyLayout", () => {
     [
       "My overview",
       "Course Overview",
-      "Academy resources",
+      "Resources & Glossary",
       "Account",
       "Settings",
     ].forEach((label) => {
@@ -73,7 +73,7 @@ describe("AcademyLayout", () => {
     [routePath.academy.overview, "My overview"],
     [routePath.academy.courses, "Course Overview"],
     [`${routePath.academy.courses}/chapter/5`, "Course Overview"],
-    [routePath.academy.resources, "Academy resources"],
+    [routePath.academy.resources, "Resources & Glossary"],
     [routePath.academy.account, "Account"],
     [routePath.academy.settings, "Settings"],
   ])("highlights only the active item for %s", (path, label) => {

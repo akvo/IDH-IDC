@@ -132,6 +132,9 @@ describe("AcademyResourcesPage", () => {
       expect(
         screen.getByRole("heading", { name: "Technical Resources & Glossary" })
       ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/Everything referenced inside the modules/i)
+      ).not.toBeInTheDocument();
       expect(screen.getByRole("radio", { name: "Resources" })).toBeChecked();
 
       expect(await screen.findByText("Roadmap overview")).toBeInTheDocument();
