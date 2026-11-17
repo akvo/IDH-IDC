@@ -24,7 +24,7 @@ const mainMenuItems = [
   },
   {
     key: routePath.academy.resources,
-    label: "Academy resources",
+    label: "Resources & Glossary",
     icon: <FolderOpenOutlined />,
   },
 ];
@@ -71,7 +71,7 @@ const AcademySidebar = ({ onGetHelp }) => {
 
   return (
     <Layout.Sider
-      width={220}
+      width={240}
       theme="light"
       className="academy-sidebar"
       data-testid="academy-sidebar"
