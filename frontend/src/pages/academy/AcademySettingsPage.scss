@@ -1,0 +1,149 @@
+@import "../../variables.scss";
+@import "./styles/tokens";
+@import "./styles/mixins";
+
+// Scoped under #root to outrank the global `#root h2/p/span` rules in
+// App.scss (RocGrotesk headings, 14px spans, 25px paragraph line-height)
+#root .academy-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: $academy-text-primary;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  .academy-settings-card {
+    padding: 24px;
+    border: 1px solid $academy-card-stroke;
+    border-radius: 16px;
+    background: $bg-color-white;
+
+    // Title and text on the left, action on the right (Delete account)
+    &--inline {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .ant-btn {
+      @include academy-button;
+      font-weight: 600;
+    }
+
+    // Brand outline for regular actions; destructive ones keep antd's red
+    .ant-btn:not(.ant-btn-dangerous) {
+      @include academy-button-outline;
+    }
+  }
+
+  h2.academy-settings-title {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+  }
+
+  .academy-settings-card--inline h2.academy-settings-title {
+    margin-bottom: 8px;
+  }
+
+  .academy-settings-text {
+    font-size: 16px;
+    line-height: 24px;
+    color: $academy-text-muted;
+  }
+
+  // New / confirm password side by side (Figma)
+  .academy-settings-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  .ant-form-item-label > label {
+    font-size: 14px;
+    color: $academy-text-primary;
+  }
+
+  .ant-input-affix-wrapper {
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  .ant-form-item-extra {
+    margin-top: 6px;
+    font-size: 12px;
+    color: $academy-text-muted;
+  }
+
+  .academy-settings-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  // Responsive Breakpoints (1280-1366px laptop compact rhythm matching Overview & Account)
+  @media (max-width: $academy-compact-breakpoint) {
+    gap: 16px;
+
+    .academy-settings-card {
+      padding: 20px;
+    }
+
+    h2.academy-settings-title {
+      margin-bottom: 16px;
+      font-size: 18px !important;
+      line-height: 26px;
+    }
+
+    .academy-settings-card--inline h2.academy-settings-title {
+      margin-bottom: 6px;
+    }
+
+    .academy-settings-text {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .academy-settings-row {
+      column-gap: 16px;
+    }
+
+    .ant-form-item-label > label {
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .ant-input,
+    .ant-input-affix-wrapper input {
+      font-size: 13px;
+    }
+
+    .ant-input-affix-wrapper {
+      height: 38px;
+    }
+
+    .ant-form-item-extra {
+      margin-top: 4px;
+      font-size: 11.5px;
+    }
+
+    .ant-btn {
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .academy-settings-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .academy-settings-card--inline {
+      flex-direction: column;
+    }
+  }
+}

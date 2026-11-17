@@ -211,6 +211,34 @@ describe("academy service", () => {
     );
   });
 
+  it("changePassword posts the API field names", async () => {
+    mock
+      .onPost("academy/settings/change-password", {
+        current_password: "old-secret",
+        new_password: "a-new-long-secret",
+      })
+      .reply(200, { message: "Password changed successfully" });
+    await expect(
+      academyService.changePassword({
+        currentPassword: "old-secret",
+        newPassword: "a-new-long-secret",
+      })
+    ).resolves.toEqual({ message: "Password changed successfully" });
+  });
+
+  it("deleteAccount keeps the blocking cases of a 409", async () => {
+    const detail = {
+      message: "Cannot delete account: user owns existing cases.",
+      cases: [{ value: 1, label: "Cocoa case" }],
+    };
+    mock.onDelete("academy/account").reply(409, { detail });
+    await expect(academyService.deleteAccount()).rejects.toEqual({
+      status: 409,
+      message: detail.message,
+      detail,
+    });
+  });
+
   it("getResources maps filters to the resource params", async () => {
     mock
       .onGet("academy/resources", {
@@ -282,6 +310,7 @@ describe("academy service", () => {
     await expect(academyService.getMe()).rejects.toEqual({
       status: 403,
       message: "Forbidden",
+      detail: "Forbidden",
     });
     expect(errorToast).not.toHaveBeenCalled();
   });
@@ -292,6 +321,7 @@ describe("academy service", () => {
     await expect(academyService.getMe()).rejects.toEqual({
       status: 401,
       message: "Not authenticated",
+      detail: "Not authenticated",
     });
     expect(api.token).toBeNull();
     expect(errorToast).not.toHaveBeenCalled();
@@ -332,18 +362,46 @@ describe("normaliseError", () => {
   it("uses a string API detail", () => {
     expect(
       normaliseError({ response: { status: 404, data: { detail: "Nope" } } })
-    ).toEqual({ status: 404, message: "Nope" });
+    ).toEqual({ status: 404, message: "Nope", detail: "Nope" });
   });
 
-  it("falls back to the axios message for validation error arrays", () => {
+  it("uses the message of an object detail and keeps the detail", () => {
+    const detail = {
+      message: "Cannot delete account: user owns existing cases.",
+      cases: [{ value: 1, label: "Cocoa case" }],
+    };
+    expect(
+      normaliseError({
+        message: "Request failed with status code 409",
+        response: { status: 409, data: { detail } },
+      })
+    ).toEqual({ status: 409, message: detail.message, detail });
+  });
+
+  it("uses the first message of a validation error array", () => {
+    const detail = [{ msg: "String should have at least 1 character" }];
     expect(
       normaliseError({
         message: "Request failed with status code 422",
-        response: { status: 422, data: { detail: [{ msg: "bad" }] } },
+        response: { status: 422, data: { detail } },
+      })
+    ).toEqual({
+      status: 422,
+      message: "String should have at least 1 character",
+      detail,
+    });
+  });
+
+  it("falls back to the axios message for an unreadable detail", () => {
+    expect(
+      normaliseError({
+        message: "Request failed with status code 422",
+        response: { status: 422, data: { detail: [{}] } },
       })
     ).toEqual({
       status: 422,
       message: "Request failed with status code 422",
+      detail: [{}],
     });
   });
 
@@ -351,6 +409,7 @@ describe("normaliseError", () => {
     expect(normaliseError({})).toEqual({
       status: null,
       message: DEFAULT_ERROR_MESSAGE,
+      detail: null,
     });
   });
 });

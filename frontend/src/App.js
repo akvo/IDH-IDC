@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import "./App.scss";
-import { Spin, Empty } from "antd";
+import { Spin } from "antd";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes, routePath } from "./components/route";
@@ -41,6 +41,7 @@ import {
   AcademyLayout,
   AcademyOverviewPage,
   AcademyResourcesPage,
+  AcademySettingsPage,
   CourseOverviewPage,
   ModuleLearningPage,
   AcademyAccountPage,
@@ -68,15 +69,6 @@ const ScrollToTop = () => {
 
   return null;
 };
-
-// TODO:: Replace with the real Academy pages (LIACD screens 2-6)
-const AcademyPagePlaceholder = ({ title }) => (
-  <Empty description={`${title} is coming soon`} />
-);
-
-const academyChildRoutes = [
-  { path: routePath.academy.settings, title: "Settings" },
-];
 
 const App = () => {
   const host = window.location.hostname;
@@ -239,14 +231,11 @@ const App = () => {
                 path={routePath.academy.account}
                 element={<AcademyAccountPage />}
               />
-              {academyChildRoutes.map(({ path, title }) => (
-                <Route
-                  key={path}
-                  exact
-                  path={path}
-                  element={<AcademyPagePlaceholder title={title} />}
-                />
-              ))}
+              <Route
+                exact
+                path={routePath.academy.settings}
+                element={<AcademySettingsPage />}
+              />
             </Route>
             {/* Full-width learning frame, outside the sidebar shell */}
             <Route
