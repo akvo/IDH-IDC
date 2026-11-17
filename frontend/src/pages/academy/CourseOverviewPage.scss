@@ -343,6 +343,8 @@
   }
 
   @media (max-width: $academy-compact-breakpoint) {
+    gap: 16px;
+
     h1.academy-courses-title {
       font-size: 26px;
       line-height: 34px;
@@ -354,9 +356,45 @@
       line-height: 26px;
     }
 
-    .academy-results-subtitle {
-      font-size: 14px;
-      line-height: 20px;
+    .academy-courses-subtitle,
+    .academy-results-subtitle,
+    .academy-course-summary-text,
+    .academy-course-summary-text p,
+    .academy-course-summary-toggle,
+    .academy-accordion-meta,
+    .academy-accordion-go,
+    .academy-chip-row-label {
+      font-size: 13px;
+      line-height: 19px;
+    }
+
+    .academy-courses-panel {
+      padding: 20px;
+      gap: 12px;
+    }
+
+    .academy-course-search {
+      .ant-input-affix-wrapper {
+        height: 38px;
+      }
+
+      .ant-btn {
+        height: 38px;
+        font-size: 14px;
+      }
+    }
+
+    .academy-accordion-list {
+      padding: 0 20px;
+    }
+
+    .academy-accordion-header {
+      padding: 14px 0;
+    }
+
+    .academy-accordion-title {
+      font-size: 15px;
+      line-height: 22px;
     }
   }
 

@@ -19,16 +19,30 @@ academyClient.interceptors.request.use((request) => {
   return request;
 });
 
-// Normalise errors to { status, message } so pages can render them directly
+// FastAPI `detail` is a string, an object with a `message` (e.g. the 409
+// for deleting an account that owns cases) or a validation error array
+const getDetailMessage = (detail) => {
+  if (typeof detail === "string") {
+    return detail;
+  }
+  if (typeof detail?.message === "string") {
+    return detail.message;
+  }
+  if (Array.isArray(detail) && typeof detail[0]?.msg === "string") {
+    return detail[0].msg;
+  }
+  return null;
+};
+
+// Normalise errors to { status, message, detail } so pages can render the
+// message directly; `detail` keeps any structured data (e.g. blocking cases)
 export const normaliseError = (error) => {
-  const status = error?.response?.status ?? null;
-  const detail = error?.response?.data?.detail;
+  const detail = error?.response?.data?.detail ?? null;
   return {
-    status,
+    status: error?.response?.status ?? null,
     message:
-      typeof detail === "string"
-        ? detail
-        : error?.message || DEFAULT_ERROR_MESSAGE,
+      getDetailMessage(detail) || error?.message || DEFAULT_ERROR_MESSAGE,
+    detail,
   };
 };
 
@@ -78,9 +92,24 @@ const listParams = ({ search, type, sortBy, sortOrder }, typeParam) => {
 const academyService = {
   // Used to refresh UserState after the learner edits their profile
   getMe: () => academyClient.get("user/me").then((res) => res.data),
+  getProfile: ({ signal } = {}) =>
+    academyClient.get("academy/profile", { signal }).then((res) => res.data),
+  updateProfile: (payload) =>
+    academyClient.put("academy/profile", payload).then((res) => res.data),
   // Reads accept an AbortSignal so callers can cancel superseded requests
   getOverview: ({ signal } = {}) =>
     academyClient.get("academy/overview", { signal }).then((res) => res.data),
+  // 400 "Incorrect current password" when the current password is wrong
+  changePassword: ({ currentPassword, newPassword }) =>
+    academyClient
+      .post("academy/settings/change-password", {
+        current_password: currentPassword,
+        new_password: newPassword,
+      })
+      .then((res) => res.data),
+  // 204 on success; 409 with detail { message, cases } when the learner
+  // still owns IDC cases
+  deleteAccount: () => academyClient.delete("academy/account"),
   // Topic tags with module and chapter counts
   getTags: ({ signal } = {}) =>
     academyClient.get("academy/tags", { signal }).then((res) => res.data),

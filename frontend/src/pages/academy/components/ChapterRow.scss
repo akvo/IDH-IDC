@@ -20,6 +20,10 @@
     border-radius: 12px;
     background: $bg-color-white;
 
+    @media (max-width: $academy-compact-breakpoint) {
+      padding: 8px 14px;
+    }
+
     @media (max-width: 640px) {
       padding: 10px 12px;
       gap: 8px;
@@ -45,6 +49,10 @@
     font-size: 14px;
     line-height: 1.5;
     color: $academy-text-primary;
+
+    @media (max-width: $academy-compact-breakpoint) {
+      font-size: 13px;
+    }
 
     &:hover,
     &:focus-visible {
