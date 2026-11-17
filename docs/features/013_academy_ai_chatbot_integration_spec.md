@@ -85,7 +85,7 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 
 ---
 
-### IAC-001: `akvo-rag-js` Package Enhancement (Launcher & Custom UI)
+### CHAT-001: `akvo-rag-js` Package Enhancement (Launcher & Custom UI)
 * **Goal**: Modernize the widget with a floating circular launcher button (FAB), dynamic theme colors, and custom icon support.
 * **Scope**:
   * **Floating Launcher (FAB)**: Add `#akvo-rag-launcher` circular bubble (`56x56px`) at bottom-right. Support `startMinimized: true` so the widget mounts as a discrete button rather than an intrusive 360x500 box.
@@ -96,7 +96,7 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 
 ---
 
-### IAC-002: `akvo-rag` Tenant Connection & Academy KB Ingestion
+### CHAT-002: `akvo-rag` Tenant Connection & Academy KB Ingestion
 * **Goal**: Prepare the knowledge base backend, register IDC as an authorized app, and ingest curriculum data.
 * **Scope**:
   * **App & Tenant Registration**: Register IDC in `akvo-rag` (`apps` table: `app_name: "IDC Academy"`, generate client ID/access tokens, configure domain whitelisting and WebSocket permissions).
@@ -107,7 +107,7 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 
 ---
 
-### IAC-003: IDC Frontend Integration & End-to-End Verification
+### CHAT-003: IDC Frontend Integration & End-to-End Verification
 * **Goal**: Mount the chatbot across IDC Academy, wire environment configurations, and verify user experience.
 * **Scope**:
   * **Package Setup & Config**: Install/update `akvo-rag-js` in `frontend/package.json`. Add `.env.example` configurations (`REACT_APP_AKVO_RAG_WS_URL`, `REACT_APP_AKVO_RAG_KB_ID`).
@@ -124,9 +124,9 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 
 | Task ID | Task Title (Asana Task) | Vibe Coding (Dev) | Automated Testing | QA & Review | Total Est. Time | Priority |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **IAC-001** | **`akvo-rag-js` Launcher & Custom UI Enhancement**<br>Add floating circular bubble, `startMinimized`, custom icon/avatar support, CSS `--akvo-primary`, unit tests & patch release. | 1.8h | 1.0h | 0.7h | **3.5h** | P0 (Must) |
-| **IAC-002** | **`akvo-rag` Tenant Connection & Academy KB Ingestion**<br>Register IDC app in `akvo-rag`, extract curriculum & glossary to markdown, create KB, upload/ingest into ChromaDB & verify. | 1.5h | 0.8h | 0.7h | **3.0h** | P0 (Must) |
-| **IAC-003** | **IDC Frontend Integration & End-to-End Verification**<br>Mount `AcademyChatbot.js` in `AcademyLayout.js`, wire env vars, apply IDC branding/assets, full test pass & browser smoke test. | 1.7h | 1.0h | 0.8h | **3.5h** | P0 (Must) |
+| **CHAT-001** | **`akvo-rag-js` Launcher & Custom UI Enhancement**<br>Add floating circular bubble, `startMinimized`, custom icon/avatar support, CSS `--akvo-primary`, unit tests & patch release. | 1.8h | 1.0h | 0.7h | **3.5h** | P0 (Must) |
+| **CHAT-002** | **`akvo-rag` Tenant Connection & Academy KB Ingestion**<br>Register IDC app in `akvo-rag`, extract curriculum & glossary to markdown, create KB, upload/ingest into ChromaDB & verify. | 1.5h | 0.8h | 0.7h | **3.0h** | P0 (Must) |
+| **CHAT-003** | **IDC Frontend Integration & End-to-End Verification**<br>Mount `AcademyChatbot.js` in `AcademyLayout.js`, wire env vars, apply IDC branding/assets, full test pass & browser smoke test. | 1.7h | 1.0h | 0.8h | **3.5h** | P0 (Must) |
 | **TOTAL** | **Full MVP AI Chatbot Integration** | **5.0h** | **2.8h** | **2.2h** | **10.0h (~1.25 days)** | |
 
 ---
