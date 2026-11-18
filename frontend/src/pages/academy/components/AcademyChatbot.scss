@@ -1,0 +1,30 @@
+@import "../../../variables.scss";
+@import "../styles/tokens";
+
+// When akvo-rag is minimized, hide it completely so only the IDH ChatbotFloatButton is shown
+#akvo-rag.minimized {
+  display: none !important;
+}
+
+// Ensure the chat container stays nicely positioned and styled
+#akvo-rag {
+  --akvo-primary: #007a78;
+  --akvo-offset-bottom: 24px;
+  --akvo-offset-side: 24px;
+  --akvo-z-index: 1000;
+
+  a {
+    color: #007a78;
+    text-decoration: underline;
+    font-weight: 500;
+
+    &:hover {
+      color: #005ea3;
+    }
+  }
+}
+
+// When chat is open, hide the floating blob button to avoid visual clutter
+.academy-chatbot-open .academy-chatbot-button {
+  display: none;
+}
