@@ -106,6 +106,48 @@ useEffect(() => {
 ### 3.4 Citation Popover Link (Level 2 — Optional Backlog)
 Hovering over citation tags (`<sup>[1]</sup>`) displays source file metadata (`Source: module-1-chapter-2.pdf, Page 3`). Extending the popover with an explicit clickable button can be handled in a future patch via an optional `citationLinkResolver(metadata)` prop.
 
+### 3.5 Curriculum File Naming Standard & Ingestion Protocol
+To ensure predictable downstream citation link generation, all curriculum PDFs ingested into `akvo-rag` must strictly follow the deterministic kebab-case naming standard.
+
+#### Standard Pattern & Syntax Rules
+```text
+module-{moduleId}-chapter-{chapterNumber}-{short-slug}.pdf
+```
+* **Lowercase Only**: No uppercase characters (`module-1`, not `Module-1`).
+* **Hyphen-Separated**: Use hyphens (`-`), never spaces or underscores (`_`).
+* **No Special Characters**: Avoid punctuation, ampersands, or brackets (`#`, `&`, `(`, `)`).
+* **Deterministic Regex**: `^module-\d+-chapter-\d+.*\.pdf$`
+
+#### Module 1 Curriculum File Mapping
+| Chapter | Curriculum Lesson Title | Target Ingestion File Name | Target IDC UI Deep-Link |
+| :---: | :--- | :--- | :--- |
+| **Combined** | Module 1: The Concept of Living Income (Full) | `module-1-the-concept-of-living-income.pdf` | `/academy/modules/1` |
+| **Ch. 1** | Why Living Income Matters to Farmers and Companies | `module-1-chapter-1-why-living-income-matters.pdf` | `/academy/modules/1?chapter=1` |
+| **Ch. 2** | Living Income vs Living Wage: Understanding Distinction | `module-1-chapter-2-living-income-vs-wage.pdf` | `/academy/modules/1?chapter=2` |
+| **Ch. 3** | Key Principles of the IDH Roadmap on Living Income | `module-1-chapter-3-idh-roadmap-principles.pdf` | `/academy/modules/1?chapter=3` |
+| **Ch. 4** | Setting Organizational Ambition and Scope | `module-1-chapter-4-setting-ambition-and-scope.pdf` | `/academy/modules/1?chapter=4` |
+
+### 3.6 A/B Benchmarking Protocol (Single PDF vs. Per-Chapter PDFs)
+To empirically determine the optimal ingestion strategy for IDC Academy, the team executes an A/B benchmark inside `akvo-rag`:
+
+1. **Test Knowledge Bases Setup**:
+   * **KB-A (Single Combined PDF)**: Create Knowledge Base named `IDC-Module-1-Combined` and upload `module-1-the-concept-of-living-income.pdf`.
+   * **KB-B (Per-Chapter PDFs)**: Create Knowledge Base named `IDC-Module-1-Chapters` and upload the 4 individual chapter PDFs (`module-1-chapter-[1-4]-*.pdf`).
+2. **Standard Evaluation Query Suite**:
+   * **Q1 (Core Concept)**: *"What is the definition of a Living Income Benchmark?"*  
+     *Evaluation*: Passage relevance and extraction accuracy.
+   * **Q2 (Distinction / Chapter 2)**: *"What is the main difference between living income and living wage?"*  
+     *Evaluation*: Verify if KB-B cites `module-1-chapter-2-living-income-vs-wage.pdf` and outputs link `/academy/modules/1?chapter=2`.
+   * **Q3 (Strategic Principles / Chapter 3)**: *"What are the primary principles of the IDH Roadmap?"*  
+     *Evaluation*: Check for vector drift and top-3 chunk cosine similarity scores.
+   * **Q4 (Holistic Summary)**: *"Can you give me an executive summary of Module 1?"*  
+     *Evaluation*: Compare cross-chapter synthesis between Single PDF and multi-chapter retrieval.
+3. **Selection Criteria**:
+   * **Citation Precision**: Does the citation pinpoint the exact chapter?
+   * **Answer Quality**: Are definitions and formulas free of noise and hallucination?
+   * **Deep-Link Reliability**: Does the model accurately output the target UI URL?
+   The winning format will be adopted for Modules 2 through 6.
+
 ---
 
 ## 4. Work Package Breakdown (Asana Tasks)
