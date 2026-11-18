@@ -159,6 +159,35 @@ describe("AcademyChatbot", () => {
     );
   });
 
+  it("resolves semantic topic fallback when citation filename is non-standard", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const container = document.getElementById("akvo-rag");
+    const sup = document.createElement("sup");
+    sup.className = "citation";
+    sup.setAttribute("data-source", "Fair Producer Prices.pdf");
+    sup.setAttribute("data-text", "living wage distinction from living income");
+    sup.textContent = "[2]";
+    container.appendChild(sup);
+
+    fireEvent.click(sup);
+    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
+  });
+
+  it("handles popover clicks and dismisses popover on navigation", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const popover = document.createElement("div");
+    popover.className = "citation-popover";
+    popover.dataset.target = "module-2-chapter-1-benchmarks.pdf";
+    popover.textContent = "Source: Living Income Benchmarks";
+    document.body.appendChild(popover);
+
+    fireEvent.click(popover);
+    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/2?chapter=1");
+    expect(document.querySelector(".citation-popover")).toBeNull();
+  });
+
   it("ignores links outside #akvo-rag", () => {
     render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
 

@@ -54,9 +54,13 @@ const ModuleLearningPage = () => {
   const hasLeft = useRef(false);
 
   const chapters = module?.chapters || [];
-  // `?chapter=` keeps the step in the URL so refresh and browser back work
+  const chapterParam = searchParams.get("chapter");
+  // `?chapter=` supports database id, curriculum chapter_number, or 1-based index
   const requestedIndex = chapters.findIndex(
-    ({ id }) => String(id) === searchParams.get("chapter")
+    ({ id, chapter_number }, idx) =>
+      String(id) === chapterParam ||
+      String(chapter_number) === chapterParam ||
+      String(idx + 1) === chapterParam
   );
   const stepIndex = Math.max(requestedIndex, 0);
   const chapter = chapters[stepIndex];

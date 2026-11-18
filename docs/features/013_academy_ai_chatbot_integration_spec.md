@@ -103,8 +103,17 @@ useEffect(() => {
 }, [history]);
 ```
 
-### 3.4 Citation Popover Link (Level 2 — Optional Backlog)
-Hovering over citation tags (`<sup>[1]</sup>`) displays source file metadata (`Source: module-1-chapter-2.pdf, Page 3`). Extending the popover with an explicit clickable button can be handled in a future patch via an optional `citationLinkResolver(metadata)` prop.
+### 3.4 Client-Side Citation & Chapter Resolution Architecture
+In `frontend/src/pages/academy/components/AcademyChatbot.js`, citation clicks (`sup.citation`, `.citation-popover`, or in-message markdown anchors) are routed using a **two-tier resolution architecture**:
+
+1. **Tier 1: Dynamic Regex Extraction (Primary — 100% Automated)**
+   - Filenames adhering to `module-{X}-chapter-{Y}-*.pdf` are dynamically parsed by regex (`/module-(\d+)-chapter-(\d+)/i`).
+   - Module ID and Chapter number are extracted directly from the string, constructing `/academy/modules/{X}?chapter={Y}` on the fly.
+   - **Zero manual code modification is required when adding Modules 3, 4, 5, or 6.**
+2. **Tier 2: Semantic Fallback (Secondary — Defensive Safety Net)**
+   - For legacy or external reference documents in the KB that lack curriculum naming conventions (e.g. `Fair Producer Prices.pdf`), semantic keyword rules map core concepts (e.g. "wage vs income distinction", "roadmap principles", "benchmarks") to their relevant chapters so clicks never silently fail.
+3. **Auto-Minimization on Navigation**:
+   - When a citation is clicked, the handler dismisses all `.citation-popover` DOM elements and calls `chatRef.current?.close()` to minimize the chat modal, immediately revealing the selected chapter to the learner.
 
 ### 3.5 Curriculum File Naming Standard & Ingestion Protocol
 To ensure predictable downstream citation link generation, all curriculum PDFs ingested into `akvo-rag` must strictly follow the deterministic kebab-case naming standard.

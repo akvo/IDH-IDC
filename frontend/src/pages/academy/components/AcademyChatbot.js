@@ -11,6 +11,64 @@ const DEFAULT_KB_ID = process.env.REACT_APP_AKVO_RAG_KB_ID || "753";
 
 const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7167 35.7756 46.5703 23.9215 47.7383" fill="#005EA3"/><g transform="translate(12, 12)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></g></svg>`;
 
+/**
+ * Resolves a citation or popover click into an Academy module & chapter URL.
+ *
+ * Tier 1 (Automated): Dynamically extracts module and chapter from standard filenames
+ * (e.g. `module-3-chapter-4-*.pdf`). No manual mapping needed for new modules/chapters.
+ *
+ * Tier 2 (Fallback): Provides a graceful fallback for legacy or reference PDFs uploaded
+ * without standard filenames (e.g. `Fair Producer Prices.pdf`), mapping common curriculum
+ * topics to their respective introductory chapters so clicks never silently fail.
+ */
+const resolveChapterTarget = (source = "", title = "", text = "") => {
+  const combined = `${source} ${title} ${text}`.toLowerCase();
+
+  // Tier 1: Automated extraction from standard filenames (supports any module/chapter dynamically)
+  const directMatch = combined.match(
+    /module[-_ ]?(\d+)[-_ ]?chapter[-_ ]?(\d+)/i
+  );
+  if (directMatch) {
+    return {
+      module: directMatch[1],
+      chapter: directMatch[2],
+      url: `/academy/modules/${directMatch[1]}?chapter=${directMatch[2]}`,
+    };
+  }
+
+  // Tier 2: Defensive topic fallback for legacy/external reference PDFs lacking standard filenames
+  if (
+    combined.includes("wage") &&
+    (combined.includes("living income") || combined.includes("distinction"))
+  ) {
+    return { module: "1", chapter: "2", url: "/academy/modules/1?chapter=2" };
+  }
+  if (combined.includes("roadmap") || combined.includes("principles")) {
+    return { module: "1", chapter: "3", url: "/academy/modules/1?chapter=3" };
+  }
+  if (combined.includes("ambition") || combined.includes("scope")) {
+    return { module: "1", chapter: "4", url: "/academy/modules/1?chapter=4" };
+  }
+  if (combined.includes("benchmark") || combined.includes("anker")) {
+    return { module: "2", chapter: "1", url: "/academy/modules/2?chapter=1" };
+  }
+  if (combined.includes("measuring") || combined.includes("actual income")) {
+    return { module: "2", chapter: "2", url: "/academy/modules/2?chapter=2" };
+  }
+  if (combined.includes("income gap") || combined.includes("gap")) {
+    return { module: "2", chapter: "3", url: "/academy/modules/2?chapter=3" };
+  }
+  if (
+    combined.includes("living income") ||
+    combined.includes("matters") ||
+    combined.includes("why living income")
+  ) {
+    return { module: "1", chapter: "1", url: "/academy/modules/1?chapter=1" };
+  }
+
+  return null;
+};
+
 const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
   const navigate = useNavigate();
   const chatRef = useRef(null);
@@ -60,21 +118,49 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
   useEffect(() => {
     const handleDocumentClick = (e) => {
       const container = document.getElementById("akvo-rag");
-      if (!container || !container.contains(e.target)) {
+      const popover = e.target.closest(".citation-popover");
+
+      if ((!container || !container.contains(e.target)) && !popover) {
         return;
       }
 
-      // 1. Direct citation click (<sup class="citation" data-source="...">)
+      const navigateToLesson = (url) => {
+        e.preventDefault();
+        document
+          .querySelectorAll(".citation-popover")
+          .forEach((p) => p.remove());
+        if (chatRef.current?.close) {
+          try {
+            chatRef.current.close();
+          } catch (err) {
+            // ignore cleanup errors
+          }
+        }
+        navigate(url);
+      };
+
+      // 1. Direct citation click (<sup class="citation" ...>)
       const citation = e.target.closest(".citation");
       if (citation) {
-        const source =
-          citation.getAttribute("data-source") ||
-          citation.getAttribute("data-title") ||
-          "";
-        const match = source.match(/module-(\d+)-chapter-(\d+)/i);
-        if (match) {
-          e.preventDefault();
-          navigate(`/academy/modules/${match[1]}?chapter=${match[2]}`);
+        const source = citation.getAttribute("data-source") || "";
+        const title = citation.getAttribute("data-title") || "";
+        const text = citation.getAttribute("data-text") || "";
+        const target = resolveChapterTarget(source, title, text);
+        if (target) {
+          navigateToLesson(target.url);
+          return;
+        }
+      }
+
+      // Popover click
+      if (popover) {
+        const target = resolveChapterTarget(
+          popover.dataset.target || "",
+          popover.innerText,
+          ""
+        );
+        if (target) {
+          navigateToLesson(target.url);
           return;
         }
       }
@@ -84,16 +170,13 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
       if (anchor) {
         const href = anchor.getAttribute("href") || "";
         if (href.startsWith("/academy")) {
-          e.preventDefault();
-          navigate(href);
+          navigateToLesson(href);
           return;
         }
 
-        const targetText = `${href} ${anchor.textContent}`;
-        const match = targetText.match(/module-(\d+)-chapter-(\d+)/i);
-        if (match) {
-          e.preventDefault();
-          navigate(`/academy/modules/${match[1]}?chapter=${match[2]}`);
+        const target = resolveChapterTarget(href, anchor.textContent, "");
+        if (target) {
+          navigateToLesson(target.url);
           return;
         }
 
@@ -125,15 +208,13 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
         const foundChapters = new Map();
         citations.forEach((cit) => {
           const source = cit.getAttribute("data-source") || "";
-          const match = source.match(/module-(\d+)-chapter-(\d+)/i);
-          if (match) {
-            const key = `m${match[1]}c${match[2]}`;
+          const title = cit.getAttribute("data-title") || "";
+          const text = cit.getAttribute("data-text") || "";
+          const target = resolveChapterTarget(source, title, text);
+          if (target) {
+            const key = `m${target.module}c${target.chapter}`;
             if (!foundChapters.has(key)) {
-              foundChapters.set(key, {
-                module: match[1],
-                chapter: match[2],
-                url: `/academy/modules/${match[1]}?chapter=${match[2]}`,
-              });
+              foundChapters.set(key, target);
             }
           }
         });
