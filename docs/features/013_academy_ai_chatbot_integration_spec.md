@@ -17,7 +17,7 @@
   * Customized with IDC brand palette (`#007A78`), custom bot launcher icon/avatar, and start-minimized state.
 * **Where (System Locations)**:
   1. `akvo-rag-js` (`~/Sites/akvo-rag-js`): UI enhancement for customizable floating launcher button, custom icon/avatar rendering, and dynamic brand coloring.
-  2. `akvo-rag` (`~/Sites/akvo-rag`): Tenant registration for IDC, dedicated Knowledge Base creation (`idc-academy-kb`), and curriculum document ingestion.
+  2. `akvo-rag` (`~/Sites/akvo-rag`): Dedicated Knowledge Base creation (`idc-academy-kb`), Module 1 PDF ingestion (Single vs. Per-Chapter A/B benchmarking), and embeddings verification in ChromaDB.
   3. `IDH-IDC` (`frontend/src/pages/academy`): React integration wrapper mounting the widget inside `AcademyLayout.js`.
 * **When (Timeline)**: MVP rollout for Living Income Academy.
 * **Why (User Value)**: 
@@ -25,7 +25,7 @@
   * MVP uses existing infrastructure without risking backend delays.
 * **How (Technical Flow)**:
   1. `akvo-rag-js` is patched with customizable launcher icon and theme support, built, and released.
-  2. IDC is registered as an app in `akvo-rag`, and Academy curriculum is uploaded to a dedicated KB.
+  2. Academy curriculum is uploaded to a dedicated Knowledge Base in `akvo-rag`, and the resulting KB ID is parameterized in IDC frontend (`.env`).
   3. IDC frontend initializes `initChat(...)` on `/academy/*` routes with IDC-specific bot icons and WebSocket URL.
   4. Learner clicks floating icon $\rightarrow$ widget expands $\rightarrow$ user chats via WebSocket to `akvo-rag`.
 
@@ -164,7 +164,7 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 ┌─────────────────────────┐  ┌─────────────────────────┐  ┌─────────────────────────┐
 │       PACKAGE 1         │  │       PACKAGE 2         │  │       PACKAGE 3         │
 │ akvo-rag-js Enhancement │  │ akvo-rag KB Ingestion & │  │ IDC Frontend Integration│
-│ (Launcher & Custom UI)  │  │ App Tenant Connection   │  │ & E2E Verification      │
+│ (Launcher & Custom UI)  │  │ Benchmark (Single vs Ch)│  │ & Citation Deep-Link    │
 │  [Est: 3.5 hrs]         │  │  [Est: 3.0 hrs]         │  │  [Est: 3.5 hrs]         │
 └─────────────────────────┘  └─────────────────────────┘  └─────────────────────────┘
 ```
