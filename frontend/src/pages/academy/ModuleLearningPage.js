@@ -146,7 +146,7 @@ const ModuleLearningPage = () => {
       <div className="academy-learning" data-testid="academy-module-learning">
         {content}
         {footer}
-        <AcademyChatbot />
+        <AcademyChatbot modules={module ? [module] : null} />
       </div>
     </ConfigProvider>
   );

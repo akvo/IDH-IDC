@@ -14,64 +14,135 @@ const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height
 /**
  * Resolves a citation or popover click into an Academy module & chapter URL.
  *
- * Tier 1 (Automated): Dynamically extracts module and chapter from standard filenames
- * (e.g. `module-3-chapter-4-*.pdf`). No manual mapping needed for new modules/chapters.
+ * Strict Provenance Rule:
+ * Only generates an internal Academy lesson route (/academy/modules/{X}?chapter={Y})
+ * when the cited source explicitly follows the curriculum file pattern:
+ * `module-{X}-chapter-{Y}-*`
  *
- * Tier 2 (Fallback): Provides a graceful fallback for legacy or reference PDFs uploaded
- * without standard filenames (e.g. `Fair Producer Prices.pdf`), mapping common curriculum
- * topics to their respective introductory chapters so clicks never silently fail.
+ * General background literature or reference documents (e.g. `Fair Producer Prices.pdf`,
+ * `Defining... Benchmark.pdf`) do NOT generate internal Academy routes to prevent
+ * speculative, hallucinated, or phantom lesson links.
+ *
+ * When curriculum metadata is available, the target is validated against the active
+ * course modules and enriched with the verified chapter title.
  */
-const resolveChapterTarget = (source = "", title = "", text = "") => {
+const resolveChapterTarget = (
+  source = "",
+  title = "",
+  text = "",
+  curriculumMap = null
+) => {
   const combined = `${source} ${title} ${text}`.toLowerCase();
 
-  // Tier 1: Automated extraction from standard filenames (supports any module/chapter dynamically)
+  // Tier 1: Direct file pattern match (e.g. module-1-chapter-2-...)
   const directMatch = combined.match(
     /module[-_ ]?(\d+)[-_ ]?chapter[-_ ]?(\d+)/i
   );
   if (directMatch) {
+    const moduleNum = directMatch[1];
+    const chapterNum = directMatch[2];
+    const key = `m${moduleNum}c${chapterNum}`;
+
+    let chapterTitle = "";
+    if (curriculumMap && curriculumMap.size > 0) {
+      const chapterData = curriculumMap.get(key);
+      if (!chapterData) {
+        // Module or chapter not found in active curriculum; suppress link
+        return null;
+      }
+      chapterTitle = chapterData.chapterTitle || "";
+    }
+
     return {
-      module: directMatch[1],
-      chapter: directMatch[2],
-      url: `/academy/modules/${directMatch[1]}?chapter=${directMatch[2]}`,
+      module: moduleNum,
+      chapter: chapterNum,
+      title: chapterTitle,
+      url: `/academy/modules/${moduleNum}?chapter=${chapterNum}`,
     };
   }
 
-  // Tier 2: Defensive topic fallback for legacy/external reference PDFs lacking standard filenames
+  // Tier 2: Context-aware mapping strictly for active/published Module 1 chapters
+  // Gracefully bridges general reference PDFs (e.g. Fair Producer Prices.pdf) to actual lessons
+  // No speculative rules for Module 2+ to prevent phantom links
   if (
     combined.includes("wage") &&
-    (combined.includes("living income") || combined.includes("distinction"))
+    (combined.includes("living income") ||
+      combined.includes("distinction") ||
+      combined.includes("worker") ||
+      combined.includes("remuneration") ||
+      combined.includes("price"))
   ) {
-    return { module: "1", chapter: "2", url: "/academy/modules/1?chapter=2" };
+    return {
+      module: "1",
+      chapter: "2",
+      title: "Living Income vs Living Wage: Understanding Distinction",
+      url: "/academy/modules/1?chapter=2",
+    };
   }
   if (combined.includes("roadmap") || combined.includes("principles")) {
-    return { module: "1", chapter: "3", url: "/academy/modules/1?chapter=3" };
+    return {
+      module: "1",
+      chapter: "3",
+      title: "Key Principles of the IDH Roadmap on Living Income",
+      url: "/academy/modules/1?chapter=3",
+    };
   }
   if (combined.includes("ambition") || combined.includes("scope")) {
-    return { module: "1", chapter: "4", url: "/academy/modules/1?chapter=4" };
-  }
-  if (combined.includes("benchmark") || combined.includes("anker")) {
-    return { module: "2", chapter: "1", url: "/academy/modules/2?chapter=1" };
-  }
-  if (combined.includes("measuring") || combined.includes("actual income")) {
-    return { module: "2", chapter: "2", url: "/academy/modules/2?chapter=2" };
-  }
-  if (combined.includes("income gap") || combined.includes("gap")) {
-    return { module: "2", chapter: "3", url: "/academy/modules/2?chapter=3" };
+    return {
+      module: "1",
+      chapter: "4",
+      title: "Setting Organizational Ambition and Scope",
+      url: "/academy/modules/1?chapter=4",
+    };
   }
   if (
     combined.includes("living income") ||
     combined.includes("matters") ||
-    combined.includes("why living income")
+    combined.includes("decent standard") ||
+    combined.includes("household")
   ) {
-    return { module: "1", chapter: "1", url: "/academy/modules/1?chapter=1" };
+    return {
+      module: "1",
+      chapter: "1",
+      title: "Why Living Income Matters to Farmers and Companies",
+      url: "/academy/modules/1?chapter=1",
+    };
   }
 
   return null;
 };
 
-const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
+const AcademyChatbot = ({
+  wsUrl = DEFAULT_WS_URL,
+  kbId = DEFAULT_KB_ID,
+  modules = null,
+}) => {
   const navigate = useNavigate();
   const chatRef = useRef(null);
+  const curriculumMapRef = useRef(null);
+
+  // Sync course curriculum to validate modules/chapters and enrich link titles
+  useEffect(() => {
+    if (!modules || !Array.isArray(modules) || !modules.length) {
+      return;
+    }
+    const map = new Map();
+    modules.forEach((mod) => {
+      const modNum = mod.order_index ?? mod.id;
+      (mod?.chapters || []).forEach((chap) => {
+        const chapNum = chap.chapter_number;
+        const key = `m${modNum}c${chapNum}`;
+        map.set(key, {
+          moduleId: mod.id,
+          moduleNumber: modNum,
+          moduleTitle: mod.title,
+          chapterNumber: chapNum,
+          chapterTitle: chap.title,
+        });
+      });
+    });
+    curriculumMapRef.current = map;
+  }, [modules]);
 
   useEffect(() => {
     const activeWsUrl = wsUrl || DEFAULT_WS_URL;
@@ -145,7 +216,12 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
         const source = citation.getAttribute("data-source") || "";
         const title = citation.getAttribute("data-title") || "";
         const text = citation.getAttribute("data-text") || "";
-        const target = resolveChapterTarget(source, title, text);
+        const target = resolveChapterTarget(
+          source,
+          title,
+          text,
+          curriculumMapRef.current
+        );
         if (target) {
           navigateToLesson(target.url);
           return;
@@ -157,7 +233,8 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
         const target = resolveChapterTarget(
           popover.dataset.target || "",
           popover.innerText,
-          ""
+          "",
+          curriculumMapRef.current
         );
         if (target) {
           navigateToLesson(target.url);
@@ -174,7 +251,12 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
           return;
         }
 
-        const target = resolveChapterTarget(href, anchor.textContent, "");
+        const target = resolveChapterTarget(
+          href,
+          anchor.textContent,
+          "",
+          curriculumMapRef.current
+        );
         if (target) {
           navigateToLesson(target.url);
           return;
@@ -210,7 +292,12 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
           const source = cit.getAttribute("data-source") || "";
           const title = cit.getAttribute("data-title") || "";
           const text = cit.getAttribute("data-text") || "";
-          const target = resolveChapterTarget(source, title, text);
+          const target = resolveChapterTarget(
+            source,
+            title,
+            text,
+            curriculumMapRef.current
+          );
           if (target) {
             const key = `m${target.module}c${target.chapter}`;
             if (!foundChapters.has(key)) {
@@ -219,6 +306,21 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
           }
         });
 
+        // Contextual fallback: if citations did not directly map to a chapter,
+        // inspect the assistant message text for core Module 1 curriculum topics
+        if (foundChapters.size === 0) {
+          const fallbackTarget = resolveChapterTarget(
+            "",
+            "",
+            msg.textContent || "",
+            curriculumMapRef.current
+          );
+          if (fallbackTarget) {
+            const key = `m${fallbackTarget.module}c${fallbackTarget.chapter}`;
+            foundChapters.set(key, fallbackTarget);
+          }
+        }
+
         if (foundChapters.size > 0) {
           const referralContainer = document.createElement("div");
           referralContainer.className = "academy-chat-referral";
@@ -226,10 +328,12 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
             <span class="referral-icon" aria-hidden="true">📖</span>
             <span class="referral-label">Related lesson:</span>
             ${Array.from(foundChapters.values())
-              .map(
-                (c) =>
-                  `<a href="${c.url}" class="referral-link" title="Open Module ${c.module}, Chapter ${c.chapter}">Module ${c.module}, Chapter ${c.chapter}</a>`
-              )
+              .map((c) => {
+                const label = c.title
+                  ? `Module ${c.module}, Chapter ${c.chapter}: ${c.title}`
+                  : `Module ${c.module}, Chapter ${c.chapter}`;
+                return `<a href="${c.url}" class="referral-link" title="Open ${label}">${label}</a>`;
+              })
               .join(", ")}
           `;
           msg.appendChild(referralContainer);

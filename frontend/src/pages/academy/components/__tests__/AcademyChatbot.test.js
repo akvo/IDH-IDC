@@ -14,6 +14,43 @@ jest.mock("akvo-rag-js", () => ({
   initChat: jest.fn(),
 }));
 
+const mockCurriculum = [
+  {
+    id: 1,
+    order_index: 1,
+    title: "The Concept of Living Income",
+    chapters: [
+      {
+        id: 1,
+        chapter_number: 1,
+        title: "Why Living Income Matters to Farmers and Companies",
+      },
+      {
+        id: 2,
+        chapter_number: 2,
+        title: "Living Income vs Living Wage: Understanding Distinction",
+      },
+      {
+        id: 4,
+        chapter_number: 4,
+        title: "Setting Organizational Ambition and Scope",
+      },
+    ],
+  },
+  {
+    id: 2,
+    order_index: 2,
+    title: "Measuring & Analysis",
+    chapters: [
+      {
+        id: 5,
+        chapter_number: 1,
+        title: "Calculating the Living Income Benchmark",
+      },
+    ],
+  },
+];
+
 describe("AcademyChatbot", () => {
   let mockChatInstance;
 
@@ -136,8 +173,14 @@ describe("AcademyChatbot", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
   });
 
-  it("auto-attaches related lesson box when citations are present in assistant messages", async () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+  it("auto-attaches related lesson box with verified chapter title from curriculum", async () => {
+    render(
+      <AcademyChatbot
+        wsUrl="wss://test-rag.org/ws/chat"
+        kbId="753"
+        modules={mockCurriculum}
+      />
+    );
 
     const container = document.getElementById("akvo-rag");
     const msg = document.createElement("div");
@@ -155,23 +198,80 @@ describe("AcademyChatbot", () => {
     const referral = msg.querySelector(".academy-chat-referral");
     expect(referral).toBeInTheDocument();
     expect(referral).toHaveTextContent(
-      /Related lesson:\s*Module 1, Chapter 4/i
+      /Related lesson:\s*Module 1, Chapter 4: Setting Organizational Ambition and Scope/i
     );
   });
 
-  it("resolves semantic topic fallback when citation filename is non-standard", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+  it("does not navigate or generate referral links when citation source is an unrelated reference document", () => {
+    render(
+      <AcademyChatbot
+        wsUrl="wss://test-rag.org/ws/chat"
+        kbId="753"
+        modules={mockCurriculum}
+      />
+    );
+
+    const container = document.getElementById("akvo-rag");
+    const sup = document.createElement("sup");
+    sup.className = "citation";
+    sup.setAttribute(
+      "data-source",
+      "General_Agronomy_Soil_Report.pdf"
+    );
+    sup.setAttribute(
+      "data-text",
+      "nitrogen fertilizer and potassium levels in soil"
+    );
+    sup.textContent = "[7]";
+    container.appendChild(sup);
+
+    fireEvent.click(sup);
+    // Unrelated documents MUST NOT trigger navigation
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("navigates to context-aware Module 1 chapter for living wage reference document", () => {
+    render(
+      <AcademyChatbot
+        wsUrl="wss://test-rag.org/ws/chat"
+        kbId="753"
+        modules={mockCurriculum}
+      />
+    );
 
     const container = document.getElementById("akvo-rag");
     const sup = document.createElement("sup");
     sup.className = "citation";
     sup.setAttribute("data-source", "Fair Producer Prices.pdf");
-    sup.setAttribute("data-text", "living wage distinction from living income");
+    sup.setAttribute(
+      "data-text",
+      "worker remuneration and minimum living wage distinction"
+    );
     sup.textContent = "[2]";
     container.appendChild(sup);
 
     fireEvent.click(sup);
     expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
+  });
+
+  it("suppresses links when module does not exist in active curriculum", () => {
+    render(
+      <AcademyChatbot
+        wsUrl="wss://test-rag.org/ws/chat"
+        kbId="753"
+        modules={mockCurriculum}
+      />
+    );
+
+    const container = document.getElementById("akvo-rag");
+    const sup = document.createElement("sup");
+    sup.className = "citation";
+    sup.setAttribute("data-source", "module-9-chapter-1-unreleased.pdf");
+    sup.textContent = "[9]";
+    container.appendChild(sup);
+
+    fireEvent.click(sup);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("handles popover clicks and dismisses popover on navigation", () => {
