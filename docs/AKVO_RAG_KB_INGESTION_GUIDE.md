@@ -103,14 +103,14 @@ Before uploading any file to `akvo-rag`:
 
 ---
 
-## 6. How Deep-Link Chapter Resolution Works (Dynamic vs. Fallback)
+## 6. How Deep-Link Chapter Resolution Works (Strict Provenance & Title Context)
 
 ### Question: Do we have to manually map every new module and chapter in the code?
 **No.** New modules and chapters do **not** require code updates as long as uploaded documents adhere to the filename standard.
 
-### Two-Tier Resolution Architecture
+### Strict Provenance & Curriculum Validation Architecture
 
-The chatbot UI in `AcademyChatbot.js` resolves citation clicks using a two-tier mechanism:
+The chatbot UI in `AcademyChatbot.js` resolves citation clicks using a strict provenance model with curriculum title enrichment:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -120,7 +120,7 @@ The chatbot UI in `AcademyChatbot.js` resolves citation clicks using a two-tier 
                                        │
                                        ▼
                      ┌───────────────────────────────────┐
-                     │ Tier 1: Dynamic Regex Extraction  │
+                     │    Strict Provenance Filter       │
                      │  /module-(\d+)-chapter-(\d+)/i    │
                      └─────────────────┬─────────────────┘
                                        │
@@ -130,33 +130,33 @@ The chatbot UI in `AcademyChatbot.js` resolves citation clicks using a two-tier 
                   YES│                                 NO│
                      ▼                                   ▼
        ┌───────────────────────────┐       ┌───────────────────────────┐
-       │ ✅ Dynamic Routing        │       │ 🛡️ Semantic Fallback      │
-       │ Extracts Module X & Ch. Y │       │ Checks core curriculum    │
-       │ -> /academy/modules/X?ch=Y│       │ keywords (wage vs income, │
-       │                           │       │ benchmark, roadmap, etc.) │
-       │ **100% AUTOMATIC FOR ALL  │       │                           │
-       │ NEW MODULES & CHAPTERS**  │       │ (Graceful fallback for    │
-       │ Zero code changes needed! │       │ legacy/external PDFs)     │
-       └───────────────────────────┘       └─────────────┬─────────────┘
-                                                         │
-                                        Keyword matched? │
-                                        ┌────────────────┴───────────────┐
-                                     YES│                              NO│
-                                        ▼                                ▼
-                          ┌───────────────────────────┐    ┌───────────────────────────┐
-                          │ Routes to mapped chapter  │    │ Non-curriculum citation   │
-                          │ e.g. Module 1, Chapter 2  │    │ (No navigation triggered) │
-                          └───────────────────────────┘    └───────────────────────────┘
+       │ Curriculum Validation     │       │ 🛡️ External Reference     │
+       │ Check against loaded      │       │ Document (e.g. Benchmark  │
+       │ modules & chapters        │       │ Report, Fair Prices PDF)  │
+       └─────────────┬─────────────┘       │                           │
+                     │                     │ Popover shows real title; │
+        Valid module?│                     │ **Zero phantom links!**   │
+        ┌────────────┴────────────┐        └───────────────────────────┘
+     YES│                       NO│
+        ▼                         ▼
+┌─────────────────────────┐  ┌─────────────────────────┐
+│ ✅ Contextual Link      │  │ 🚫 Suppress Phantom     │
+│ Enriched with real      │  │ Unreleased module       │
+│ chapter title:          │  │ (No broken link)        │
+│ "Module 1, Chapter 1:   │  └─────────────────────────┘
+│  Why Living Income..."  │
+└─────────────────────────┘
 ```
 
-1. **Tier 1: Dynamic Regex Extraction (Primary — Fully Automated)**
+1. **Strict Provenance (No Speculative Guessing)**
    - When a document is named `module-3-chapter-4-cost-allocation.pdf`, regex instantly extracts `module = 3` and `chapter = 4` without touching any code.
    - When Module 3, 4, 5, or 6 are launched, simply name the uploaded PDFs following `module-{X}-chapter-{Y}-*.pdf`. The frontend automatically handles navigation.
+   - General literature or reference PDFs (`Fair Producer Prices.pdf`, `Defining... Benchmark.pdf`) do **NOT** generate `/academy/modules/` links, preventing phantom links to unreleased modules.
 
-2. **Tier 2: Semantic Topic Fallback (Secondary — Defensive Safety Net)**
-   - Why was this added? In development KB `753`, general reference PDFs were uploaded with legacy names (e.g. `Fair Producer Prices.pdf`, `Defining, Calculating and Using a Living Income Benchmark...pdf`).
-   - When learners asked questions like *"what is living wage?"*, vector search matched these legacy PDFs. Because they lacked `module-X-chapter-Y` in their filenames, regex alone returned `null`.
-   - The semantic fallback ensures that even if an administrator uploads an unformatted reference PDF or external paper, clicks on topics like "wage distinction", "roadmap principles", or "benchmarks" still guide the learner to the relevant Academy lesson instead of failing silently.
+2. **Context-Aware Title Enrichment**
+   - When curriculum data is loaded, referral links are enriched with the real chapter title:  
+     `📖 Related lesson: Module 1, Chapter 1: Why Living Income Matters to Farmers and Companies`
+   - Unreleased modules that do not exist in the curriculum are automatically suppressed.
 
 
 After ingesting the documents into the Knowledge Base:

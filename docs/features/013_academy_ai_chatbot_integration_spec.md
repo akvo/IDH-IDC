@@ -104,15 +104,18 @@ useEffect(() => {
 ```
 
 ### 3.4 Client-Side Citation & Chapter Resolution Architecture
-In `frontend/src/pages/academy/components/AcademyChatbot.js`, citation clicks (`sup.citation`, `.citation-popover`, or in-message markdown anchors) are routed using a **two-tier resolution architecture**:
+In `frontend/src/pages/academy/components/AcademyChatbot.js`, citation clicks (`sup.citation`, `.citation-popover`, or in-message markdown anchors) are routed using a **strict provenance architecture with title context awareness**:
 
-1. **Tier 1: Dynamic Regex Extraction (Primary — 100% Automated)**
+1. **Strict Provenance Extraction (100% Automated & Phantom-Proof)**:
    - Filenames adhering to `module-{X}-chapter-{Y}-*.pdf` are dynamically parsed by regex (`/module-(\d+)-chapter-(\d+)/i`).
    - Module ID and Chapter number are extracted directly from the string, constructing `/academy/modules/{X}?chapter={Y}` on the fly.
    - **Zero manual code modification is required when adding Modules 3, 4, 5, or 6.**
-2. **Tier 2: Semantic Fallback (Secondary — Defensive Safety Net)**
-   - For legacy or external reference documents in the KB that lack curriculum naming conventions (e.g. `Fair Producer Prices.pdf`), semantic keyword rules map core concepts (e.g. "wage vs income distinction", "roadmap principles", "benchmarks") to their relevant chapters so clicks never silently fail.
-3. **Auto-Minimization on Navigation**:
+2. **External Reference Isolation**:
+   - General background literature or reference documents in the KB (e.g. `Fair Producer Prices.pdf`, `Defining, Calculating and Using a Living Income Benchmark...pdf`) do **NOT** generate `/academy/modules/` links. Their source titles are preserved in citation popovers (`Source: Defining...pdf`), eliminating false links to unreleased modules.
+3. **Curriculum Title Enrichment & Gating**:
+   - When curriculum data is available, referral links display the verified chapter title (e.g. `📖 Related lesson: Module 1, Chapter 1: Why Living Income Matters to Farmers and Companies`).
+   - Unreleased modules that do not exist in the active curriculum are automatically suppressed.
+4. **Auto-Minimization on Navigation**:
    - When a citation is clicked, the handler dismisses all `.citation-popover` DOM elements and calls `chatRef.current?.close()` to minimize the chat modal, immediately revealing the selected chapter to the learner.
 
 ### 3.5 Curriculum File Naming Standard & Ingestion Protocol
