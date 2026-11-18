@@ -204,6 +204,35 @@ The benchmark was executed using live WebSocket sessions (`wss://akvo-rag.akvote
   3. Ingest into `akvo-rag` under dedicated per-chapter knowledge bases.
   4. Client-side deep-linking intercepts citation source strings to generate direct `/academy/modules/:moduleId?chapter=:chapterNumber` routes.
 
+### 3.8 Prompt Safety & Cross-KB Compatibility (General Usage vs. Academy KB)
+
+When configuring prompt instructions to generate referral links, cross-tenant isolation and backward compatibility across `akvo-rag` must be preserved:
+
+#### 1. The Risk of Global Prompt Modifications
+`akvo-rag` is a multi-tenant RAG service shared by multiple projects (e.g., Akvo Flow, WASH, external partner datasets). If an instruction such as `"Always append [Module X, Chapter Y](/academy/modules/...)"` is applied to the **global/default** prompt in `akvo-rag`:
+* Non-Academy Knowledge Bases would generate nonsensical `/academy/` links when answering questions about unrelated documents.
+* It violates multi-tenant isolation and creates broken user experiences across other applications.
+
+#### 2. Isolation Strategy: KB-Level Custom Prompts
+* **Per-KB Configuration**: `akvo-rag` supports custom system prompts per Knowledge Base (`custom_prompt` on the KB model). Prompt instructions for `/academy/modules/...` links **MUST** be placed only inside the specific Academy KB settings (e.g. KB `753` and subsequent Academy KBs).
+* **Defensive / Conditional Phrasing**: Even within the Academy KB, the prompt must be phrased conditionally based on document metadata (using `<...>` or `{{...}}` to avoid LangChain `ChatPromptTemplate` variable collision):
+  ```text
+  If and only if the retrieved context filename matches the pattern 'module-<X>-chapter-<Y>-*', you may cite the source chapter at the end of your response using:
+  '📖 You can find this in [Module <X>, Chapter <Y>: <Title>](/academy/modules/<X>?chapter=<Y>)'
+  Example: [Module 1, Chapter 2: Living Income vs Wage](/academy/modules/1?chapter=2)
+  If the retrieved context does not follow this curriculum file naming pattern, do not generate '/academy/' links.
+  ```
+  This guarantees that generic documents (e.g. global living income benchmarks, FAQ sheets, or general methodology papers) ingested into the same KB do not trigger invalid module links.
+
+#### 3. Client-Side Non-Intrusive Fallback (Zero-Prompt Mutation)
+To eliminate RAG prompt dependencies entirely, the IDC frontend can resolve links dynamically from the citation metadata that `akvo-rag` already returns:
+1. `akvo-rag` sends `citations: [{ id: 1, metadata: { source: "module-1-chapter-2-living-income-vs-wage.pdf" } }]`.
+2. The frontend matches `module-(\d+)-chapter-(\d+)` directly from the citation's `data-source` attribute.
+3. If a match is found, the citation tag `<sup>[1]</sup>` or popover renders a clickable button: `View Chapter 2 →`.
+This approach requires **zero prompt modifications in `akvo-rag`**, ensuring 100% safety for all existing and future Knowledge Bases.
+
+> 📖 **Operational Document**: For the complete ingestion checklist, global prompt snippet, and naming standards, see [Akvo RAG KB Ingestion Guide](file:///Users/galihpratama/Sites/IDH-IDC/docs/AKVO_RAG_KB_INGESTION_GUIDE.md).
+
 ---
 
 ## 4. Work Package Breakdown (Asana Tasks)
