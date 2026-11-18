@@ -49,22 +49,68 @@ sequenceDiagram
     
     Learner->>Widget: Clicks launcher icon
     Widget->>Widget: Expands chat window (#akvo-rag)
-    Widget->>WS: WebSocket connect (auth / visitor ID)
+    Widget->>WS: WebSocket connect (auth / visitor ID + kb_id)
     WS-->>Widget: Connection established
     
     Learner->>Widget: Sends question: "What is Living Income Benchmark?"
     Widget->>WS: Send message payload
     WS->>RAG: LangGraph query workflow
     RAG->>RAG: ChromaDB similarity search (Academy KB)
-    RAG->>LLM: Stream completion with context
-    LLM-->>WS: Token stream
-    WS-->>Widget: WebSocket text chunks
-    Widget-->>Learner: Real-time streamed answer with citations
+    RAG->>LLM: Stream completion with context (including file_name metadata)
+    LLM-->>WS: Token stream with markdown citation
+    WS-->>Widget: WebSocket text chunks + context citations
+    Widget-->>Learner: Real-time streamed answer + Citation popover with UI Deep-Link
+    Learner->>Widget: Clicks "Open in Academy" link
+    Widget->>UI: Navigates React Router to /academy/modules/:moduleId?chapter=:chapterId
 ```
 
 ---
 
-## 3. Work Package Breakdown (Asana Tasks)
+## 3. Citation & UI Deep-Linking Architecture 🔗
+
+To satisfy the requirement where the chatbot points the user to the specific module/chapter in the UI (*"You can find this on this module [Link]"*), we employ a deterministic, multi-layered linking strategy that does not require heavy backend changes:
+
+### 3.1 Deterministic File Naming Convention
+Curriculum PDFs must be named following a standard pattern:
+```
+module-{moduleId}-chapter-{chapterId}-{slug}.pdf
+```
+* **Example**: `module-1-chapter-1-introduction-to-living-income.pdf`
+* **Example**: `module-1-chapter-2-measuring-the-income-gap.pdf`
+
+Because `akvo-rag` automatically attaches `file_name` to every retrieved chunk's metadata, every citation payload contains `metadata.file_name`.
+
+### 3.2 Citation Popover Deep-Link (`akvo-rag-js`)
+In `citations-popover.js`, if `metadata.file_name` matches the `module-{m}-chapter-{c}` pattern, the popover dynamically renders a prominent navigation link:
+```html
+<div class="citation-popover">
+  <strong>Module 1: Measuring the Income Gap</strong>
+  <small>Source: module-1-chapter-2.pdf, Page 3</small>
+  <p>Preview snippet...</p>
+  <div class="citation-action">
+    <a href="/academy/modules/1?chapter=2" class="citation-academy-link">
+      📖 Open Lesson in Academy &rarr;
+    </a>
+  </div>
+</div>
+```
+
+### 3.3 SPA Navigation Interceptor (IDC Frontend)
+To prevent a full browser page reload when clicking an internal `/academy/...` link inside the chat widget, the IDC wrapper component (`AcademyChatbot.js`) attaches an event listener:
+```javascript
+// Intercept clicks on links pointing to /academy/* and route via React Router
+document.getElementById("akvo-rag").addEventListener("click", (e) => {
+  const target = e.target.closest("a");
+  if (target && target.getAttribute("href")?.startsWith("/academy/")) {
+    e.preventDefault();
+    history.push(target.getAttribute("href"));
+  }
+});
+```
+
+---
+
+## 4. Work Package Breakdown (Asana Tasks)
 
 Instead of micro-tasks, the implementation is organized into **3 high-level, cohesive work packages**:
 
@@ -110,61 +156,69 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 
 ---
 
-### CHAT-002: `akvo-rag` Tenant Connection & Academy KB Ingestion
-* **Goal**: Prepare the knowledge base backend, register IDC as an authorized app, and ingest curriculum data.
+### CHAT-002: Module 1 PDF Ingestion, A/B Benchmark & Academy KB Setup
+* **Goal**: Ingest Module 1 curriculum PDFs into `akvo-rag`, run an A/B benchmark between Single PDF vs. Per-Chapter PDFs, and establish the production KB with citation deep-linking metadata.
 * **Scope**:
-  * **App & Tenant Registration**: Register IDC in `akvo-rag` (`apps` table: `app_name: "IDC Academy"`, generate client ID/access tokens, configure domain whitelisting and WebSocket permissions).
-  * **Curriculum Content Extraction**: Export IDC Academy curriculum (all active Modules, Chapters, and Glossary terms from `backend/seeder/academy.py` and course content) into structured Markdown / Text documents.
-  * **Knowledge Base Creation & Upload**: Create `IDC Living Income Academy` KB in `akvo-rag`, upload documents to MinIO S3, and trigger async ingestion worker (`vector-kb-mcp`).
-  * **Search & Retrieval Verification**: Validate that ChromaDB embeddings are indexed and test raw query retrieval via WebSocket or MCP endpoint.
-* **Deliverable**: Active, tested KB ID and connection credentials for IDC.
+  * **A/B Ingestion Setup**:
+    * Create **KB A** (`IDC-Mod1-Single`): Upload the complete Module 1 combined PDF.
+    * Create **KB B** (`IDC-Mod1-Chapters`): Upload individual chapter PDFs structured with standard naming convention (`module-1-chapter-{id}-{slug}.pdf`).
+  * **Comparative Benchmark**:
+    * Execute 4 evaluation queries (core definition, specific calculation, chapter takeaways, and overall summary).
+    * Compare semantic retrieval accuracy, cosine similarity, and citation readability.
+  * **Knowledge Base Finalization**:
+    * Finalize the optimal KB structure and capture the active `KB_ID` for frontend environment wiring.
+* **Deliverable**: Active, benchmarked Knowledge Base ID in `akvo-rag` with validated chapter citations.
 * **User Acceptance Criteria (UAC)**:
-  - [ ] **UAC-2.1 (Domain-Accurate Knowledge Base)**: Chatbot answers questions accurately regarding IDC Living Income concepts, Benchmarks, the 6 curriculum modules, chapter takeaways, and glossary terms.
-  - [ ] **UAC-2.2 (Out-of-Scope Fallback)**: For questions not covered by the curriculum, the assistant responds politely without fabricating living income figures or external policies.
-  - [ ] **UAC-2.3 (Fast Streaming Feedback)**: User receives instant token-by-token streaming responses without timeout errors or dropped connections.
+  - [ ] **UAC-2.1 (Domain-Accurate Answers)**: Chatbot accurately answers questions regarding Module 1 concepts, Living Income definitions, Benchmarks, and core methodologies.
+  - [ ] **UAC-2.2 (Clear Citation Source)**: Citation popovers and reference badges clearly display the source document title and chapter (e.g. `module-1-chapter-2.pdf`, Page X).
+  - [ ] **UAC-2.3 (Out-of-Scope Fallback)**: For questions not covered by the curriculum, the assistant responds politely without fabricating living income figures.
+  - [ ] **UAC-2.4 (Fast Streaming Feedback)**: User receives instant token-by-token streaming responses without timeout errors or dropped connections.
 * **Technical Acceptance Criteria (TAC)**:
-  - [ ] **TAC-2.1 (Tenant & App Security)**: An active record is created in `akvo-rag`'s `apps` table (`app_id`, `client_id`, `app_name: "IDC Academy"`, `domain`, `scopes: ["chat", "read:kb"]`). Access token generated and scoped securely (`[SEC]`).
-  - [ ] **TAC-2.2 (Curriculum Ingestion Pipeline)**: All 6 Modules, Chapters (including `content_html` converted to clean text/markdown), and Glossary terms from `backend/seeder/academy.py` are exported into structured Markdown documents.
-  - [ ] **TAC-2.3 (MinIO S3 & ChromaDB Sync)**: Documents are uploaded to MinIO bucket and processed through `mcp-vector-kb-ingestion`. Verify all chunks exist in `vkb_document_chunks` table and embeddings exist in ChromaDB collection `kb_<id>`.
-  - [ ] **TAC-2.4 (Hermetic Query Verification)**: Verify end-to-end retrieval via Redis RPC / WebSocket: querying *"What is Living Income Benchmark?"* returns top-3 relevant chunks with cosine similarity score $\ge 0.70$.
+  - [ ] **TAC-2.1 (Hermetic Ingestion Pipeline)**: All uploaded PDFs are successfully processed through MinIO S3 and `mcp-vector-kb-ingestion`, verifying chunk records in `vkb_document_chunks` and embeddings in ChromaDB collection `kb_<id>`.
+  - [ ] **TAC-2.2 (Deterministic Filename Mapping)**: Per-chapter PDFs follow the strict naming regex `^module-\d+-chapter-\d+.*\.pdf$` to ensure predictable downstream citation link parsing.
+  - [ ] **TAC-2.3 (A/B Evaluation Scorecard)**: Comparative analysis between Single PDF and Per-Chapter PDFs is documented with retrieval latency, top-k chunk relevance, and citation granularity.
+  - [ ] **TAC-2.4 (Query Retrieval Benchmark)**: Verify that querying *"What is Living Income Benchmark?"* returns top-3 relevant chunks with cosine similarity score $\ge 0.70$.
 
 ---
 
-### CHAT-003: IDC Frontend Integration & End-to-End Verification
-* **Goal**: Mount the chatbot across IDC Academy, wire environment configurations, and verify user experience.
+### CHAT-003: IDC Frontend Integration, Citation Deep-Linking & E2E Verification
+* **Goal**: Mount `akvo-rag-js` across IDC Academy, wire environment configurations, enable seamless React Router deep-linking for citations, and verify user experience.
 * **Scope**:
-  * **Package Setup & Config**: Install/update `akvo-rag-js` in `frontend/package.json`. Add `.env.example` configurations (`REACT_APP_AKVO_RAG_WS_URL`, `REACT_APP_AKVO_RAG_KB_ID`).
+  * **Package Setup & Config**: Install `akvo-rag-js@^1.3.0` in `frontend/package.json`. Add `.env.example` configurations (`REACT_APP_AKVO_RAG_WS_URL`, `REACT_APP_AKVO_RAG_KB_ID`).
   * **React Wrapper Component**: Create `frontend/src/pages/academy/components/AcademyChatbot.js`. Integrate into `AcademyLayout.js` with clean mounting and unmount cleanup (`chat.destroy()`).
+  * **Citation & In-Text Deep-Linking**: Attach click handler to intercept `/academy/modules/...` links in the chat widget and route via React Router (`history.push`), allowing learners to click a citation and jump straight to that lesson without page reloads.
   * **Asset & Style Harmonization**: Add IDC branded SVG/PNG bot icon asset. Set primary color to `#007A78`. Ensure z-index layering avoids conflicts with headers and notifications.
   * **Regression & Verification Pass**: Run `./dc.sh exec frontend yarn lint` and `yarn test:ci`. Perform full browser walkthrough across desktop and mobile viewports.
-* **Deliverable**: Live, production-ready AI chatbot in IDC Academy.
+* **Deliverable**: Live, production-ready AI chatbot in IDC Academy with clickable lesson deep-links.
 * **User Acceptance Criteria (UAC)**:
   - [ ] **UAC-3.1 (Global Academy Presence)**: The floating bot icon appears across all `/academy/*` routes (`/academy`, `/academy/modules/:id`, `/academy/resources`, `/academy/account`, `/academy/settings`).
-  - [ ] **UAC-3.2 (IDC Branding Alignment)**: The launcher icon displays the official IDC robot/chat icon in IDH brand teal (`#007A78`), perfectly matching the Academy layout tokens.
-  - [ ] **UAC-3.3 (Non-Intrusive Layout)**: Chat window and floating button do not overlap key Academy controls (like "Continue learning" buttons or mobile sidebar toggles) and maintain comfortable margin on mobile viewports ($\le 768px$).
-  - [ ] **UAC-3.4 (Session & Error Handling)**: If WebSocket connection disconnects or network fails, an inline reconnecting status is shown gracefully without crashing the React tree.
+  - [ ] **UAC-3.2 (Clickable Lesson Links)**: When the chatbot references a module or chapter (e.g. *"You can find this in Module 1, Chapter 2"* or citation link), clicking the link navigates directly to `/academy/modules/1?chapter=2` inside the Academy UI.
+  - [ ] **UAC-3.3 (IDC Branding Alignment)**: The launcher icon displays the official IDC robot/chat icon in IDH brand teal (`#007A78`), perfectly matching the Academy layout tokens.
+  - [ ] **UAC-3.4 (Non-Intrusive Layout)**: Chat window and floating button do not overlap key Academy controls (like "Continue learning" buttons or mobile sidebar toggles) and maintain comfortable margin on mobile viewports ($\le 768px$).
+  - [ ] **UAC-3.5 (Session & Error Handling)**: If WebSocket connection disconnects or network fails, an inline reconnecting status is shown gracefully without crashing the React tree.
 * **Technical Acceptance Criteria (TAC)**:
   - [ ] **TAC-3.1 (Hermetic Component Lifecycle)**: `AcademyChatbot.js` wraps `initChat` in `useEffect`. On unmount or route transition away from Academy (e.g. navigation to `/cases` or `/tool`), invokes `chat.destroy()`, closes WebSocket, and cleans up DOM nodes to eliminate memory leaks.
-  - [ ] **TAC-3.2 (Environment Configuration)**: Exposes `REACT_APP_AKVO_RAG_WS_URL` and `REACT_APP_AKVO_RAG_KB_ID` in `.env.example`. Throws a descriptive console warning (and fails closed safely) if env vars are missing.
-  - [ ] **TAC-3.3 (Z-Index & CSS Scoping)**: Styles are encapsulated inside `#akvo-rag` and `#akvo-rag-launcher`; z-index set to `9999` (under full-screen modal overlays, but above Academy sticky header).
-  - [ ] **TAC-3.4 (Automated Quality Gates)**: Frontend unit test (`AcademyChatbot.test.js`) verifies component mounting, props forwarding, and destroy cleanup call on unmount; `./dc.sh exec frontend yarn lint` passes with 0 ESLint errors/warnings; `./dc.sh exec frontend yarn test:ci` passes 100% across all suites.
+  - [ ] **TAC-3.2 (SPA Link Interception)**: Chat container intercepts clicks on anchor tags matching `^/academy/.*` and delegates to React Router `history.push(...)` instead of triggering a full browser refresh.
+  - [ ] **TAC-3.3 (Environment Configuration)**: Exposes `REACT_APP_AKVO_RAG_WS_URL` and `REACT_APP_AKVO_RAG_KB_ID` in `.env.example`. Throws a descriptive console warning (and fails closed safely) if env vars are missing.
+  - [ ] **TAC-3.4 (Z-Index & CSS Scoping)**: Styles are encapsulated inside `#akvo-rag` and `#akvo-rag-launcher`; z-index set to `9999` (under full-screen modal overlays, but above Academy sticky header).
+  - [ ] **TAC-3.5 (Automated Quality Gates)**: Frontend unit test (`AcademyChatbot.test.js`) verifies component mounting, props forwarding, and destroy cleanup call on unmount; `./dc.sh exec frontend yarn lint` passes with 0 ESLint errors/warnings; `./dc.sh exec frontend yarn test:ci` passes 100% across all suites.
 
 ---
 
-## 4. Estimation Table for Asana ⏱️
+## 5. Estimation Table for Asana ⏱️
 
 > Tasks follow the 3-part Vibe Coding breakdown: **Vibe Coding (Dev)** + **Automated Testing** + **QA & Review** = **Total Est. Time**.
 
 | Task ID | Task Title (Asana Task) | Vibe Coding (Dev) | Automated Testing | QA & Review | Total Est. Time | Status / Priority |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **CHAT-001** | **`akvo-rag-js` Launcher & Custom UI Enhancement**<br>Add floating circular bubble, `startMinimized`, custom icon/avatar support, CSS `--akvo-primary`, unit tests & patch release. | 1.8h | 1.0h | 0.7h | **3.5h** | **✅ DONE** (v1.3.0) |
-| **CHAT-002** | **`akvo-rag` Tenant Connection & Academy KB Ingestion**<br>Register IDC app in `akvo-rag`, extract curriculum & glossary to markdown, create KB, upload/ingest into ChromaDB & verify. | 1.5h | 0.8h | 0.7h | **3.0h** | P0 (Must) |
-| **CHAT-003** | **IDC Frontend Integration & End-to-End Verification**<br>Mount `AcademyChatbot.js` in `AcademyLayout.js`, wire env vars, apply IDC branding/assets, full test pass & browser smoke test. | 1.7h | 1.0h | 0.8h | **3.5h** | P0 (Must) |
+| **CHAT-002** | **Module 1 PDF Ingestion, A/B Benchmark & KB Setup**<br>Ingest Single PDF vs. Per-Chapter PDFs in `akvo-rag`, benchmark retrieval quality, verify citation filenames & establish KB ID. | 1.5h | 0.8h | 0.7h | **3.0h** | P0 (Must) |
+| **CHAT-003** | **IDC Frontend Integration & Citation Deep-Linking**<br>Mount `AcademyChatbot.js`, wire env vars, add SPA citation link routing to `/academy/modules/:id?chapter=:id`, lint & test pass. | 1.7h | 1.0h | 0.8h | **3.5h** | P0 (Must) |
 | **TOTAL** | **Full MVP AI Chatbot Integration** | **5.0h** | **2.8h** | **2.2h** | **10.0h (~1.25 days)** | *(3.5h Completed)* |
 
 ---
 
-## 5. Post-MVP Backlog (Phase 2 - ToC RAG & Deep Links)
+## 6. Post-MVP Backlog (Phase 2 - ToC RAG & Dynamic Tree Traversal)
 * `[BACKLOG-01]` Generic Markdown header chunker in `vector-kb-mcp`.
 * `[BACKLOG-02]` `source_url` metadata passthrough in `query_answering_workflow.py`.
 * `[BACKLOG-03]` Clickable module/chapter link rendering in `akvo-rag-js` markdown parser (`/academy/modules/:id?chapter=:id`).
