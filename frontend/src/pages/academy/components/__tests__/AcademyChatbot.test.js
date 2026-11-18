@@ -1,6 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { message } from "antd";
+import { render, fireEvent } from "@testing-library/react";
 import { initChat } from "akvo-rag-js";
 import AcademyChatbot from "../AcademyChatbot";
 
@@ -43,80 +42,40 @@ describe("AcademyChatbot", () => {
     }
   });
 
-  it("renders the floating button and shows coming soon notice when unconfigured", () => {
-    const infoSpy = jest.spyOn(message, "info").mockImplementation(() => {});
-
-    render(<AcademyChatbot wsUrl={null} kbId={null} />);
-
-    const button = screen.getByTestId("academy-chatbot-button");
-    expect(button).toBeInTheDocument();
-
-    fireEvent.click(button);
-    expect(infoSpy).toHaveBeenCalledWith(
-      "The Academy facilitator chat is coming soon."
-    );
-    expect(initChat).not.toHaveBeenCalled();
-  });
-
-  it("initializes akvo-rag-js with configured options when wsUrl and kbId are set", () => {
+  it("initializes akvo-rag-js with native launcher and IDH branding", () => {
     const { unmount } = render(
       <AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />
     );
 
-    expect(initChat).toHaveBeenCalledWith({
-      ws_url: "wss://test-rag.org/ws/chat",
-      kb_id: 753,
-      botName: "Living Income AI",
-      primaryColor: "#007A78",
-      startMinimized: true,
-      showLauncher: false,
-    });
+    expect(initChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        wsURL: "wss://test-rag.org/ws/chat",
+        wsUrl: "wss://test-rag.org/ws/chat",
+        kb_id: 753,
+        botName: "Living Income AI",
+        title: "Living Income AI",
+        primaryColor: "#005EA3",
+        showLauncher: true,
+        startMinimized: true,
+        launcherIcon: expect.stringContaining("<svg"),
+      })
+    );
 
     unmount();
     expect(mockChatInstance.destroy).toHaveBeenCalled();
   });
 
-  it("toggles chat window open and closed when the button is clicked", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+  it("falls back to default configurations when props are omitted", () => {
+    render(<AcademyChatbot />);
 
-    const button = screen.getByTestId("academy-chatbot-button");
-
-    // First click: opens chat
-    fireEvent.click(button);
-    expect(mockChatInstance.open).toHaveBeenCalledTimes(1);
-    expect(screen.getByTestId("academy-chatbot-wrapper")).toHaveClass(
-      "academy-chatbot-open"
-    );
-
-    // Second click: closes chat
-    fireEvent.click(button);
-    expect(mockChatInstance.close).toHaveBeenCalledTimes(1);
-    expect(screen.getByTestId("academy-chatbot-wrapper")).not.toHaveClass(
-      "academy-chatbot-open"
-    );
-  });
-
-  it("closes the chat when clicking the header close button (#akvo-rag-close-btn)", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    // Open first
-    const button = screen.getByTestId("academy-chatbot-button");
-    fireEvent.click(button);
-    expect(screen.getByTestId("academy-chatbot-wrapper")).toHaveClass(
-      "academy-chatbot-open"
-    );
-
-    // Create mock DOM for #akvo-rag with #akvo-rag-close-btn
-    const container = document.createElement("div");
-    container.id = "akvo-rag";
-    const closeBtn = document.createElement("button");
-    closeBtn.id = "akvo-rag-close-btn";
-    container.appendChild(closeBtn);
-    document.body.appendChild(container);
-
-    fireEvent.click(closeBtn);
-    expect(screen.getByTestId("academy-chatbot-wrapper")).not.toHaveClass(
-      "academy-chatbot-open"
+    expect(initChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        wsURL: expect.any(String),
+        wsUrl: expect.any(String),
+        kb_id: expect.any(Number),
+        primaryColor: "#005EA3",
+        showLauncher: true,
+      })
     );
   });
 
@@ -164,18 +123,13 @@ describe("AcademyChatbot", () => {
     outsideLink.remove();
   });
 
-  it("handles initChat error gracefully", () => {
+  it("handles initChat error gracefully without crashing", () => {
     initChat.mockImplementation(() => {
       throw new Error("Init failed");
     });
-    const infoSpy = jest.spyOn(message, "info").mockImplementation(() => {});
 
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const button = screen.getByTestId("academy-chatbot-button");
-    fireEvent.click(button);
-    expect(infoSpy).toHaveBeenCalledWith(
-      "The Academy facilitator chat is coming soon."
-    );
+    expect(() => {
+      render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+    }).not.toThrow();
   });
 });

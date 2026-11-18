@@ -1,32 +1,45 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from "antd";
 import { initChat } from "akvo-rag-js";
-import ChatbotFloatButton from "./ChatbotFloatButton";
+import "akvo-rag-js/dist/akvo-rag.css";
 import "./AcademyChatbot.scss";
 
-const DEFAULT_WS_URL = process.env.REACT_APP_AKVO_RAG_WS_URL;
-const DEFAULT_KB_ID = process.env.REACT_APP_AKVO_RAG_KB_ID;
+const DEFAULT_WS_URL =
+  process.env.REACT_APP_AKVO_RAG_WS_URL ||
+  "wss://akvo-rag.akvotest.org/ws/chat";
+const DEFAULT_KB_ID = process.env.REACT_APP_AKVO_RAG_KB_ID || "753";
+
+const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7167 35.7756 46.5703 23.9215 47.7383" fill="#005EA3"/><g transform="translate(12, 12)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></g></svg>`;
 
 const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
   const navigate = useNavigate();
   const chatRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!wsUrl || !kbId) {
+    const activeWsUrl = wsUrl || DEFAULT_WS_URL;
+    const activeKbId = Number(kbId) || Number(DEFAULT_KB_ID);
+
+    if (!activeWsUrl || !activeKbId) {
       return;
     }
 
     try {
       chatRef.current = initChat({
-        ws_url: wsUrl,
-        kb_id: Number(kbId),
+        wsURL: activeWsUrl,
+        wsUrl: activeWsUrl,
+        kb_id: activeKbId,
         botName: "Living Income AI",
-        primaryColor: "#007A78",
+        title: "Living Income AI",
+        primaryColor: "#005EA3",
+        showLauncher: true,
         startMinimized: true,
-        showLauncher: false,
+        launcherIcon: CHAT_ICON_SVG,
       });
+
+      const launcherEl = document.getElementById("akvo-rag-launcher");
+      if (launcherEl) {
+        launcherEl.setAttribute("title", "Ask the Academy facilitator");
+      }
     } catch (err) {
       chatRef.current = null;
     }
@@ -48,13 +61,6 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
     const handleDocumentClick = (e) => {
       const container = document.getElementById("akvo-rag");
       if (!container || !container.contains(e.target)) {
-        return;
-      }
-
-      // Sync state if user clicked the close button inside the chat header
-      const closeBtn = e.target.closest("#akvo-rag-close-btn");
-      if (closeBtn) {
-        setIsOpen(false);
         return;
       }
 
@@ -82,31 +88,7 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
     };
   }, [navigate]);
 
-  const handleToggle = useCallback(() => {
-    if (!chatRef.current) {
-      message.info("The Academy facilitator chat is coming soon.");
-      return;
-    }
-
-    if (isOpen) {
-      chatRef.current.close();
-      setIsOpen(false);
-    } else {
-      chatRef.current.open();
-      setIsOpen(true);
-    }
-  }, [isOpen]);
-
-  return (
-    <div
-      className={`academy-chatbot-wrapper ${
-        isOpen ? "academy-chatbot-open" : ""
-      }`}
-      data-testid="academy-chatbot-wrapper"
-    >
-      <ChatbotFloatButton onClick={handleToggle} />
-    </div>
-  );
+  return <div data-testid="academy-chatbot" id="academy-chatbot-root" />;
 };
 
 export default AcademyChatbot;

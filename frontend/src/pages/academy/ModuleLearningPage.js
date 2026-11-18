@@ -11,7 +11,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import ChatbotFloatButton from "./components/ChatbotFloatButton";
+import AcademyChatbot from "./components/AcademyChatbot";
 import academyService, { isRequestCancelled } from "./services/academy";
 import {
   ACADEMY_THEME,
@@ -142,7 +142,7 @@ const ModuleLearningPage = () => {
       <div className="academy-learning" data-testid="academy-module-learning">
         {content}
         {footer}
-        <ChatbotFloatButton />
+        <AcademyChatbot />
       </div>
     </ConfigProvider>
   );
