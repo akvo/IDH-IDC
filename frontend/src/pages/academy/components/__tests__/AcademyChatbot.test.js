@@ -23,10 +23,23 @@ describe("AcademyChatbot", () => {
     mockChatInstance = {
       open: jest.fn(),
       close: jest.fn(),
-      destroy: jest.fn(),
+      destroy: jest.fn(() => {
+        const el = document.getElementById("akvo-rag");
+        if (el) {
+          el.remove();
+        }
+      }),
     };
 
-    initChat.mockImplementation(() => mockChatInstance);
+    initChat.mockImplementation(() => {
+      let el = document.getElementById("akvo-rag");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "akvo-rag";
+        document.body.appendChild(el);
+      }
+      return mockChatInstance;
+    });
 
     const existing = document.getElementById("akvo-rag");
     if (existing) {
@@ -82,14 +95,12 @@ describe("AcademyChatbot", () => {
   it("intercepts /academy links clicked inside #akvo-rag and navigates via React Router", () => {
     render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
 
-    const container = document.createElement("div");
-    container.id = "akvo-rag";
+    const container = document.getElementById("akvo-rag");
     const link = document.createElement("a");
     link.href = "/academy/modules/1?chapter=2";
     link.setAttribute("href", "/academy/modules/1?chapter=2");
     link.textContent = "Go to Chapter 2";
     container.appendChild(link);
-    document.body.appendChild(container);
 
     fireEvent.click(link);
     expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
@@ -98,16 +109,54 @@ describe("AcademyChatbot", () => {
   it("detects module-chapter filename patterns in citation anchors and deep-links", () => {
     render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
 
-    const container = document.createElement("div");
-    container.id = "akvo-rag";
+    const container = document.getElementById("akvo-rag");
     const link = document.createElement("a");
     link.setAttribute("href", "#");
     link.textContent = "Source: module-2-chapter-3-assessment.pdf";
     container.appendChild(link);
-    document.body.appendChild(container);
 
     fireEvent.click(link);
     expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/2?chapter=3");
+  });
+
+  it("navigates to chapter when clicking a <sup class='citation'> element", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const container = document.getElementById("akvo-rag");
+    const sup = document.createElement("sup");
+    sup.className = "citation";
+    sup.setAttribute(
+      "data-source",
+      "module-1-chapter-2-living-income-vs-wage.pdf"
+    );
+    sup.textContent = "[1]";
+    container.appendChild(sup);
+
+    fireEvent.click(sup);
+    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
+  });
+
+  it("auto-attaches related lesson box when citations are present in assistant messages", async () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const container = document.getElementById("akvo-rag");
+    const msg = document.createElement("div");
+    msg.className = "akvo-msg-assistant";
+    const sup = document.createElement("sup");
+    sup.className = "citation";
+    sup.setAttribute("data-source", "module-1-chapter-4-setting-ambition.pdf");
+    sup.textContent = "[4]";
+    msg.appendChild(sup);
+    container.appendChild(msg);
+
+    // Give MutationObserver a moment to fire
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const referral = msg.querySelector(".academy-chat-referral");
+    expect(referral).toBeInTheDocument();
+    expect(referral).toHaveTextContent(
+      /Related lesson:\s*Module 1, Chapter 4/i
+    );
   });
 
   it("ignores links outside #akvo-rag", () => {

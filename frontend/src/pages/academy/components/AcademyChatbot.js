@@ -56,7 +56,7 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
     };
   }, [wsUrl, kbId]);
 
-  // Click delegation for SPA deep-linking
+  // Click delegation & Citation linkification for SPA deep-linking
   useEffect(() => {
     const handleDocumentClick = (e) => {
       const container = document.getElementById("akvo-rag");
@@ -64,6 +64,22 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
         return;
       }
 
+      // 1. Direct citation click (<sup class="citation" data-source="...">)
+      const citation = e.target.closest(".citation");
+      if (citation) {
+        const source =
+          citation.getAttribute("data-source") ||
+          citation.getAttribute("data-title") ||
+          "";
+        const match = source.match(/module-(\d+)-chapter-(\d+)/i);
+        if (match) {
+          e.preventDefault();
+          navigate(`/academy/modules/${match[1]}?chapter=${match[2]}`);
+          return;
+        }
+      }
+
+      // 2. Direct anchor click
       const anchor = e.target.closest("a");
       if (anchor) {
         const href = anchor.getAttribute("href") || "";
@@ -78,13 +94,82 @@ const AcademyChatbot = ({ wsUrl = DEFAULT_WS_URL, kbId = DEFAULT_KB_ID }) => {
         if (match) {
           e.preventDefault();
           navigate(`/academy/modules/${match[1]}?chapter=${match[2]}`);
+          return;
+        }
+
+        if (href.startsWith("http://") || href.startsWith("https://")) {
+          anchor.setAttribute("target", "_blank");
+          anchor.setAttribute("rel", "noopener noreferrer");
         }
       }
     };
 
+    // Auto-attach related lesson links from citation metadata
+    const attachReferralLinks = () => {
+      const container = document.getElementById("akvo-rag");
+      if (!container) {
+        return;
+      }
+
+      const assistantMsgs = container.querySelectorAll(".akvo-msg-assistant");
+      assistantMsgs.forEach((msg) => {
+        if (msg.querySelector(".academy-chat-referral")) {
+          return;
+        }
+
+        const citations = msg.querySelectorAll(".citation");
+        if (!citations.length) {
+          return;
+        }
+
+        const foundChapters = new Map();
+        citations.forEach((cit) => {
+          const source = cit.getAttribute("data-source") || "";
+          const match = source.match(/module-(\d+)-chapter-(\d+)/i);
+          if (match) {
+            const key = `m${match[1]}c${match[2]}`;
+            if (!foundChapters.has(key)) {
+              foundChapters.set(key, {
+                module: match[1],
+                chapter: match[2],
+                url: `/academy/modules/${match[1]}?chapter=${match[2]}`,
+              });
+            }
+          }
+        });
+
+        if (foundChapters.size > 0) {
+          const referralContainer = document.createElement("div");
+          referralContainer.className = "academy-chat-referral";
+          referralContainer.innerHTML = `
+            <span class="referral-icon" aria-hidden="true">📖</span>
+            <span class="referral-label">Related lesson:</span>
+            ${Array.from(foundChapters.values())
+              .map(
+                (c) =>
+                  `<a href="${c.url}" class="referral-link" title="Open Module ${c.module}, Chapter ${c.chapter}">Module ${c.module}, Chapter ${c.chapter}</a>`
+              )
+              .join(", ")}
+          `;
+          msg.appendChild(referralContainer);
+        }
+      });
+    };
+
     document.addEventListener("click", handleDocumentClick);
+
+    let observer = null;
+    const chatContainer = document.getElementById("akvo-rag");
+    if (chatContainer) {
+      observer = new MutationObserver(attachReferralLinks);
+      observer.observe(chatContainer, { childList: true, subtree: true });
+    }
+
     return () => {
       document.removeEventListener("click", handleDocumentClick);
+      if (observer) {
+        observer.disconnect();
+      }
     };
   }, [navigate]);
 
