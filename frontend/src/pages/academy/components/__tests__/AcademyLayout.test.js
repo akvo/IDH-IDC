@@ -1,10 +1,14 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
-import { message } from "antd";
 import AcademyLayout from "../AcademyLayout";
 import { getActiveMenuKey } from "../AcademySidebar";
 import { routePath } from "../../../../components/route";
+
+jest.mock("../AcademyChatbot", () => {
+  const MockAcademyChatbot = () => <div data-testid="academy-chatbot" />;
+  return MockAcademyChatbot;
+});
 
 const LocationDisplay = () => {
   const location = useLocation();
@@ -65,7 +69,7 @@ describe("AcademyLayout", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("academy-footer")).toBeInTheDocument();
     expect(screen.getByAltText("IDH logo")).toBeInTheDocument();
-    expect(screen.getByTestId("academy-chatbot-button")).toBeInTheDocument();
+    expect(screen.getByTestId("academy-chatbot")).toBeInTheDocument();
     expect(screen.getByTestId("academy-child")).toBeInTheDocument();
   });
 
@@ -117,15 +121,9 @@ describe("AcademyLayout", () => {
     expect(screen.getByTestId("location")).toHaveTextContent(routePath.idc.faq);
   });
 
-  it("shows a coming-soon notice from the chatbot button", () => {
-    const info = jest.spyOn(message, "info").mockImplementation(() => {});
+  it("mounts the academy chatbot component", () => {
     renderLayout();
-    fireEvent.click(
-      screen.getByRole("button", { name: /open academy facilitator chat/i })
-    );
-    expect(info).toHaveBeenCalledWith(
-      "The Academy facilitator chat is coming soon."
-    );
+    expect(screen.getByTestId("academy-chatbot")).toBeInTheDocument();
   });
 });
 

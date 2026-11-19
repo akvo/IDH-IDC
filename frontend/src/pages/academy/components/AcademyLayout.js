@@ -3,7 +3,7 @@ import { Layout, ConfigProvider } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import AcademySidebar from "./AcademySidebar";
 import AcademyFooter from "./AcademyFooter";
-import ChatbotFloatButton from "./ChatbotFloatButton";
+import AcademyChatbot from "./AcademyChatbot";
 import { routePath } from "../../../components/route";
 import { ACADEMY_THEME } from "../utils";
 import "./AcademyLayout.scss";
@@ -31,7 +31,7 @@ const AcademyLayout = () => {
           </Layout.Content>
         </Layout>
         <AcademyFooter />
-        <ChatbotFloatButton />
+        <AcademyChatbot />
       </div>
     </ConfigProvider>
   );

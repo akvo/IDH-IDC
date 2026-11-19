@@ -11,7 +11,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import ChatbotFloatButton from "./components/ChatbotFloatButton";
+import AcademyChatbot from "./components/AcademyChatbot";
 import academyService, { isRequestCancelled } from "./services/academy";
 import {
   ACADEMY_THEME,
@@ -54,9 +54,13 @@ const ModuleLearningPage = () => {
   const hasLeft = useRef(false);
 
   const chapters = module?.chapters || [];
-  // `?chapter=` keeps the step in the URL so refresh and browser back work
+  const chapterParam = searchParams.get("chapter");
+  // `?chapter=` supports database id, curriculum chapter_number, or 1-based index
   const requestedIndex = chapters.findIndex(
-    ({ id }) => String(id) === searchParams.get("chapter")
+    ({ id, chapter_number }, idx) =>
+      String(id) === chapterParam ||
+      String(chapter_number) === chapterParam ||
+      String(idx + 1) === chapterParam
   );
   const stepIndex = Math.max(requestedIndex, 0);
   const chapter = chapters[stepIndex];
@@ -142,7 +146,7 @@ const ModuleLearningPage = () => {
       <div className="academy-learning" data-testid="academy-module-learning">
         {content}
         {footer}
-        <ChatbotFloatButton />
+        <AcademyChatbot modules={module ? [module] : null} />
       </div>
     </ConfigProvider>
   );

@@ -51,6 +51,9 @@ jobs:
         with:
           node-version: "18"
           node-command: "yarn install --no-progress --frozen-lock && yarn build && rm -rf node_modules"
+        env:
+          REACT_APP_AKVO_RAG_WS_URL: ${{ vars.REACT_APP_AKVO_RAG_WS_URL }}
+          REACT_APP_AKVO_RAG_KB_ID: ${{ vars.REACT_APP_AKVO_RAG_KB_ID }}
 
       - name: Docker Build Frontend
         uses: ./composite-actions/.github/actions/docker-build
