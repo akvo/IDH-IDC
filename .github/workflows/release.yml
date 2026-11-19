@@ -26,7 +26,7 @@ jobs:
         uses: ./composite-actions/.github/actions/node-operation
         with:
           node-version: "18"
-          node-command: "yarn install --no-progress --frozen-lock && yarn build && rm -rf node_modules"
+          node-command: "echo 'PUBLIC_URL=/' > .env && echo 'REACT_APP_AKVO_RAG_WS_URL=${{ vars.REACT_APP_AKVO_RAG_WS_URL }}' >> .env && echo 'REACT_APP_AKVO_RAG_KB_ID=${{ vars.REACT_APP_AKVO_RAG_KB_ID }}' >> .env && yarn install --no-progress --frozen-lock && yarn build && rm -rf node_modules"
         env:
           REACT_APP_AKVO_RAG_WS_URL: ${{ vars.REACT_APP_AKVO_RAG_WS_URL }}
           REACT_APP_AKVO_RAG_KB_ID: ${{ vars.REACT_APP_AKVO_RAG_KB_ID }}
