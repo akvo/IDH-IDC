@@ -382,27 +382,31 @@ This section documents where and how to update the Akvo RAG WebSocket URL and Kn
   * **No Vault Secrets Needed**: `test/idh-idc-staging` and `production/idh-idc` in HashiCorp Vault do not need RAG variables because the backend container is not involved.
   * **No Manifest Edits Needed**: `k8s-manifests/test/idh-idc-staging/2-deployment.yml` does not require frontend `env` entries since runtime container variables are not evaluated by static Nginx assets.
 
-### 5.3 Fallback Mechanism in Code
+### 5.3 Zero Hardcoded Fallbacks Guard
 In `frontend/src/pages/academy/components/AcademyChatbot.js`:
+The component resolves the active WebSocket URL and Knowledge Base ID strictly from environment variables or component props:
 ```javascript
-const DEFAULT_WS_URL =
-  process.env.REACT_APP_AKVO_RAG_WS_URL ||
-  "wss://akvo-rag.akvotest.org/ws/chat";
-const DEFAULT_KB_ID = process.env.REACT_APP_AKVO_RAG_KB_ID || "753";
+const activeWsUrl = wsUrl || process.env.REACT_APP_AKVO_RAG_WS_URL || "";
+const activeKbId =
+  Number(kbId) || Number(process.env.REACT_APP_AKVO_RAG_KB_ID) || 0;
+
+if (!activeWsUrl || !activeKbId) {
+  return;
+}
 ```
-If no environment variables are present during the build, the application automatically uses these defaults. **Deploying to staging works out-of-the-box with zero configuration.**
+If environment variables are not supplied during the build, the application safely halts chatbot initialization, preventing accidental connections to test servers in production or unconfigured environments.
 
 ### 5.4 How to Update the Knowledge Base ID or RAG URL
 
 When new curriculum modules are ingested into a new Knowledge Base (e.g., KB `754` for Modules 1–6) or when promoting to production:
 
-#### Method A: GitHub Actions Variables (Recommended for Multi-Environment CI)
-1. In the GitHub repository (`akvo/IDH-IDC`), navigate to:
+#### Method A: GitHub Actions Variables (Staging & Production CI/CD)
+1. In the GitHub repository (`akvo/IDH-IDC`), navigate to:  
    **Settings $\rightarrow$ Secrets and variables $\rightarrow$ Actions $\rightarrow$ Variables**.
 2. Add or update:
    * `REACT_APP_AKVO_RAG_WS_URL`: `wss://akvo-rag.akvotest.org/ws/chat` (or production endpoint)
    * `REACT_APP_AKVO_RAG_KB_ID`: `{NEW_KB_ID}`
-3. In `.github/workflows/deploy.yml` (and `release.yml`), supply the variables to the `Node Operations` step:
+3. Both `.github/workflows/deploy.yml` (staging) and `.github/workflows/release.yml` (production) supply the repository variables to the `Node Operations` step:
    ```yaml
    - name: Node Operations
      uses: ./composite-actions/.github/actions/node-operation
@@ -413,17 +417,15 @@ When new curriculum modules are ingested into a new Knowledge Base (e.g., KB `75
        REACT_APP_AKVO_RAG_WS_URL: ${{ vars.REACT_APP_AKVO_RAG_WS_URL }}
        REACT_APP_AKVO_RAG_KB_ID: ${{ vars.REACT_APP_AKVO_RAG_KB_ID }}
    ```
+   `ci/build.sh` writes these variables into `frontend/.env` before running `yarn build`.
 
-#### Method B: Code-Level Defaults Update
-Update `DEFAULT_WS_URL` and `DEFAULT_KB_ID` in `frontend/src/pages/academy/components/AcademyChatbot.js` directly on your feature or release branch.
-
-#### Method C: Local Docker Development
+#### Method B: Local Docker Development
 Set the values in your local root `.env` file (copied from `.env.example`):
 ```bash
 REACT_APP_AKVO_RAG_WS_URL=wss://akvo-rag.akvotest.org/ws/chat
 REACT_APP_AKVO_RAG_KB_ID=753
 ```
-Running `./dc.sh up -d` dynamically passes these into `frontend/start.sh`, writing them into container `.env` at startup.
+Running `./dc.sh up -d frontend` dynamically passes these into `frontend/start.sh`, writing them into container `frontend/.env` at startup.
 
 ---
 

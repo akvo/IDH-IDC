@@ -103,7 +103,7 @@ Before uploading any file to `akvo-rag`:
 
 ---
 
-## 6. How Deep-Link Chapter Resolution Works (Strict Provenance & Title Context)
+## 5. How Deep-Link Chapter Resolution Works (Strict Provenance & Title Context)
 
 ### Question: Do we have to manually map every new module and chapter in the code?
 **No.** New modules and chapters do **not** require code updates as long as uploaded documents adhere to the filename standard.
@@ -158,10 +158,9 @@ The chatbot UI in `AcademyChatbot.js` resolves citation clicks using a strict pr
      `📖 Related lesson: Module 1, Chapter 1: Why Living Income Matters to Farmers and Companies`
    - Unreleased modules that do not exist in the curriculum are automatically suppressed.
 
-
 ---
 
-## 3. Post-Ingestion Verification Protocol
+## 6. Post-Ingestion Verification Protocol
 
 After ingesting the documents into the Knowledge Base:
 
@@ -181,24 +180,37 @@ After ingesting the documents into the Knowledge Base:
 
 ---
 
-## 4. Updating Knowledge Base ID & RAG URL Across Environments
+## 7. Configuring Knowledge Base ID & RAG URL Across Environments
 
 When new curriculum modules are ingested into a new Knowledge Base ID (or pointing to a different RAG server):
 
 ### Environment Variables
-* `REACT_APP_AKVO_RAG_WS_URL`: WebSocket endpoint (Default: `wss://akvo-rag.akvotest.org/ws/chat`)
-* `REACT_APP_AKVO_RAG_KB_ID`: Target Knowledge Base ID (Default: `753`)
+* `REACT_APP_AKVO_RAG_WS_URL`: WebSocket endpoint (e.g. `wss://akvo-rag.akvotest.org/ws/chat`)
+* `REACT_APP_AKVO_RAG_KB_ID`: Target Knowledge Base ID (e.g. `753`)
 
-### Deployment Environments
-1. **Local Development (Docker Compose)**:
-   - Update `.env`:
-     ```bash
-     REACT_APP_AKVO_RAG_WS_URL=wss://akvo-rag.akvotest.org/ws/chat
-     REACT_APP_AKVO_RAG_KB_ID=753
-     ```
-   - Restart frontend: `./dc.sh up -d frontend` (injected via `frontend/start.sh`).
+> [!IMPORTANT]
+> **Zero Hardcoded Fallbacks**: The frontend component (`AcademyChatbot.js`) does **not** hardcode any default WebSocket URL or KB ID. If either variable is missing, the chatbot safely halts initialization to prevent connecting to incorrect or unconfigured servers.
 
-2. **Staging & Production**:
-   - **Default Behavior**: `AcademyChatbot.js` contains fallback defaults (`wss://akvo-rag.akvotest.org/ws/chat` and KB `753`). No variables are strictly required for initial staging deployment.
-   - **HashiCorp Vault & Kubernetes Manifests**: **Not needed**. The chatbot runs purely in the client's browser over WebSocket, and the frontend container is a static Nginx image (`COPY ./build /usr/share/nginx/html`).
-   - **Explicit Configuration in CI/CD**: To override the KB ID during automated deployment, add `REACT_APP_AKVO_RAG_WS_URL` and `REACT_APP_AKVO_RAG_KB_ID` to **GitHub Repo Settings $\rightarrow$ Secrets and variables $\rightarrow$ Actions $\rightarrow$ Variables**, and pass them in `.github/workflows/deploy.yml` during the `Node Operations` (`yarn build`) step.
+### Where to Add / Update Configuration
+
+#### 1. Staging & Production (GitHub Actions CI/CD)
+The deployment pipelines (`.github/workflows/deploy.yml` and `.github/workflows/release.yml`) inject these environment variables during the frontend build step (`yarn build`), which `ci/build.sh` writes into `frontend/.env`.
+
+To configure or update the RAG endpoint or KB ID:
+1. In the GitHub repository (`akvo/IDH-IDC`), navigate to:  
+   **Settings $\rightarrow$ Secrets and variables $\rightarrow$ Actions $\rightarrow$ Variables**.
+2. Add or update repository variables:
+   * `REACT_APP_AKVO_RAG_WS_URL`: e.g. `wss://akvo-rag.akvotest.org/ws/chat`
+   * `REACT_APP_AKVO_RAG_KB_ID`: e.g. `753`
+3. Trigger a deployment (`deploy.yml` on push to `main`/staging, or `release.yml` on release tag).
+
+#### 2. Local Development (Docker Compose)
+Add the variables to your local root `.env` file (based on `.env.example`):
+```bash
+REACT_APP_AKVO_RAG_WS_URL=wss://akvo-rag.akvotest.org/ws/chat
+REACT_APP_AKVO_RAG_KB_ID=753
+```
+Running `./dc.sh up -d frontend` automatically passes these into `frontend/start.sh`, writing them into container `frontend/.env` at runtime.
+
+#### 3. HashiCorp Vault & Kubernetes Manifests (`akvo-config`)
+* **Not Needed / Not Applicable**: The chatbot runs entirely client-side in the user's browser over WebSocket, and the frontend container is a static Nginx image (`COPY ./build /usr/share/nginx/html`). You do **not** need to touch HashiCorp Vault or `k8s-manifests` for Akvo RAG configuration.
