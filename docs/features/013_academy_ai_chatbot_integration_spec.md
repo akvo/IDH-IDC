@@ -139,24 +139,28 @@ module-{moduleId}-chapter-{chapterNumber}-{short-slug}.pdf
 | **Ch. 3** | Key Principles of the IDH Roadmap on Living Income | `module-1-chapter-3-idh-roadmap-principles.pdf` | `/academy/modules/1?chapter=3` |
 | **Ch. 4** | Setting Organizational Ambition and Scope | `module-1-chapter-4-setting-ambition-and-scope.pdf` | `/academy/modules/1?chapter=4` |
 
-### 3.6 Draggable Floating Launcher & Window Position Synchronization
-To ensure the chatbot interface never obstructs essential lesson content, calculation tables, or navigation controls, both the floating launcher button and open chat window are draggable:
+### 3.6 Draggable Floating Launcher, Window Anchoring & Auto-Expanding Multiline Input (akvo-rag-js v1.4.0)
+To ensure the chatbot interface never obstructs essential lesson content, calculation tables, or navigation controls, and allows learners to comfortably review long multi-sentence questions, `akvo-rag-js` v1.4.0 provides native dragging, positioning, and auto-expanding textarea support:
 
-1. **Draggable Launcher Button (`setupDraggableLauncher`)**:
+1. **Draggable Launcher Button (`options.draggable = true`)**:
    - Uses unified Pointer/Mouse/Touch listeners on window boundaries with `touch-action: none`.
    - Employs a 6px drag threshold to distinguish intentional movement from quick clicks (preventing accidental drawer opening).
    - Clamps coordinates to keep the launcher safely within a 16px viewport margin.
-   - Persists coordinates to `localStorage` under key `academy_chat_launcher_pos`.
-2. **Quadrant-Aware Window Anchoring (`syncChatWindowPosition`)**:
+   - Persists coordinates to `localStorage` under key `academy_chat_launcher_pos` (`options.storageKey`).
+2. **Quadrant-Aware Window Anchoring**:
    - When the chatbot window opens, its position dynamically respects the launcher button:
      - **Left Half (`x ≤ viewportWidth / 2`)**: Chat window left edge aligns with the launcher.
      - **Right Half (`x > viewportWidth / 2`)**: Chat window right edge aligns with the launcher.
      - **Top Half (`y ≤ viewportHeight / 2`)**: Chat window top edge aligns with the launcher.
      - **Bottom Half (`y > viewportHeight / 2`)**: Chat window bottom edge aligns with the launcher.
    - Enforces strict viewport clamping so the window never overflows the visible screen.
-3. **Draggable Chat Window Header (`setupDraggableWindow`)**:
+3. **Draggable Chat Window Header**:
    - The open window can be dragged via `#akvo-rag-header` (ignoring close button clicks).
    - Upon release, the launcher button position is bidirectionally updated and persisted, ensuring the launcher reappears where the window was moved when minimized.
+4. **Auto-Expanding Multiline Textarea**:
+   - Replaces single-line input with an auto-resizing `<textarea id="akvo-rag-input">` that dynamically grows between 1 line (~38px) and a max height of 120px with internal scrolling.
+   - Supports `Enter` to submit and `Shift+Enter` for newlines.
+   - Automatically resets height upon message dispatch.
 
 ### 3.7 A/B Benchmarking Protocol (Single PDF vs. Per-Chapter PDFs)
 To empirically determine the optimal ingestion strategy for IDC Academy, the team executes an A/B benchmark inside `akvo-rag`:
