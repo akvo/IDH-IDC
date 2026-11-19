@@ -139,7 +139,26 @@ module-{moduleId}-chapter-{chapterNumber}-{short-slug}.pdf
 | **Ch. 3** | Key Principles of the IDH Roadmap on Living Income | `module-1-chapter-3-idh-roadmap-principles.pdf` | `/academy/modules/1?chapter=3` |
 | **Ch. 4** | Setting Organizational Ambition and Scope | `module-1-chapter-4-setting-ambition-and-scope.pdf` | `/academy/modules/1?chapter=4` |
 
-### 3.6 A/B Benchmarking Protocol (Single PDF vs. Per-Chapter PDFs)
+### 3.6 Draggable Floating Launcher & Window Position Synchronization
+To ensure the chatbot interface never obstructs essential lesson content, calculation tables, or navigation controls, both the floating launcher button and open chat window are draggable:
+
+1. **Draggable Launcher Button (`setupDraggableLauncher`)**:
+   - Uses unified Pointer/Mouse/Touch listeners on window boundaries with `touch-action: none`.
+   - Employs a 6px drag threshold to distinguish intentional movement from quick clicks (preventing accidental drawer opening).
+   - Clamps coordinates to keep the launcher safely within a 16px viewport margin.
+   - Persists coordinates to `localStorage` under key `academy_chat_launcher_pos`.
+2. **Quadrant-Aware Window Anchoring (`syncChatWindowPosition`)**:
+   - When the chatbot window opens, its position dynamically respects the launcher button:
+     - **Left Half (`x ≤ viewportWidth / 2`)**: Chat window left edge aligns with the launcher.
+     - **Right Half (`x > viewportWidth / 2`)**: Chat window right edge aligns with the launcher.
+     - **Top Half (`y ≤ viewportHeight / 2`)**: Chat window top edge aligns with the launcher.
+     - **Bottom Half (`y > viewportHeight / 2`)**: Chat window bottom edge aligns with the launcher.
+   - Enforces strict viewport clamping so the window never overflows the visible screen.
+3. **Draggable Chat Window Header (`setupDraggableWindow`)**:
+   - The open window can be dragged via `#akvo-rag-header` (ignoring close button clicks).
+   - Upon release, the launcher button position is bidirectionally updated and persisted, ensuring the launcher reappears where the window was moved when minimized.
+
+### 3.7 A/B Benchmarking Protocol (Single PDF vs. Per-Chapter PDFs)
 To empirically determine the optimal ingestion strategy for IDC Academy, the team executes an A/B benchmark inside `akvo-rag`:
 
 1. **Test Knowledge Bases Setup**:
