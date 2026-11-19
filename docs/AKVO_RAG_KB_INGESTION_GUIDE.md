@@ -159,6 +159,10 @@ The chatbot UI in `AcademyChatbot.js` resolves citation clicks using a strict pr
    - Unreleased modules that do not exist in the curriculum are automatically suppressed.
 
 
+---
+
+## 3. Post-Ingestion Verification Protocol
+
 After ingesting the documents into the Knowledge Base:
 
 1. **Test Academy Question**:
@@ -174,3 +178,27 @@ After ingesting the documents into the Knowledge Base:
      *"What is the procedure for water point maintenance?"*
    - **Expected Output**:  
      The bot answers without any `/academy/` links or module mentions.
+
+---
+
+## 4. Updating Knowledge Base ID & RAG URL Across Environments
+
+When new curriculum modules are ingested into a new Knowledge Base ID (or pointing to a different RAG server):
+
+### Environment Variables
+* `REACT_APP_AKVO_RAG_WS_URL`: WebSocket endpoint (Default: `wss://akvo-rag.akvotest.org/ws/chat`)
+* `REACT_APP_AKVO_RAG_KB_ID`: Target Knowledge Base ID (Default: `753`)
+
+### Deployment Environments
+1. **Local Development (Docker Compose)**:
+   - Update `.env`:
+     ```bash
+     REACT_APP_AKVO_RAG_WS_URL=wss://akvo-rag.akvotest.org/ws/chat
+     REACT_APP_AKVO_RAG_KB_ID=753
+     ```
+   - Restart frontend: `./dc.sh up -d frontend` (injected via `frontend/start.sh`).
+
+2. **Staging & Production**:
+   - **Default Behavior**: `AcademyChatbot.js` contains fallback defaults (`wss://akvo-rag.akvotest.org/ws/chat` and KB `753`). No variables are strictly required for initial staging deployment.
+   - **HashiCorp Vault & Kubernetes Manifests**: **Not needed**. The chatbot runs purely in the client's browser over WebSocket, and the frontend container is a static Nginx image (`COPY ./build /usr/share/nginx/html`).
+   - **Explicit Configuration in CI/CD**: To override the KB ID during automated deployment, add `REACT_APP_AKVO_RAG_WS_URL` and `REACT_APP_AKVO_RAG_KB_ID` to **GitHub Repo Settings $\rightarrow$ Secrets and variables $\rightarrow$ Actions $\rightarrow$ Variables**, and pass them in `.github/workflows/deploy.yml` during the `Node Operations` (`yarn build`) step.
