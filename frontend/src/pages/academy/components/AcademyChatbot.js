@@ -4,10 +4,6 @@ import { initChat } from "akvo-rag-js";
 import "akvo-rag-js/dist/akvo-rag.css";
 import "./AcademyChatbot.scss";
 
-const DEFAULT_WS_URL =
-  process.env.REACT_APP_AKVO_RAG_WS_URL ||
-  "wss://akvo-rag.akvotest.org/ws/chat";
-const DEFAULT_KB_ID = process.env.REACT_APP_AKVO_RAG_KB_ID || "753";
 const LAUNCHER_STORAGE_KEY = "academy_chat_launcher_pos";
 
 const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7167 35.7756 46.5703 23.9215 47.7383" fill="#005EA3"/><g transform="translate(12, 12)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></g></svg>`;
@@ -187,11 +183,7 @@ const renderCitationReferralBox = (
   msgElement.appendChild(referralContainer);
 };
 
-const AcademyChatbot = ({
-  wsUrl = DEFAULT_WS_URL,
-  kbId = DEFAULT_KB_ID,
-  modules = null,
-}) => {
+const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
   const navigate = useNavigate();
   const chatRef = useRef(null);
   const curriculumMapRef = useRef(null);
@@ -220,8 +212,9 @@ const AcademyChatbot = ({
   }, [modules]);
 
   useEffect(() => {
-    const activeWsUrl = wsUrl || DEFAULT_WS_URL;
-    const activeKbId = Number(kbId) || Number(DEFAULT_KB_ID);
+    const activeWsUrl = wsUrl || process.env.REACT_APP_AKVO_RAG_WS_URL || "";
+    const activeKbId =
+      Number(kbId) || Number(process.env.REACT_APP_AKVO_RAG_KB_ID) || 0;
 
     if (!activeWsUrl || !activeKbId) {
       return;

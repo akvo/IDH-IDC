@@ -17,6 +17,12 @@ dc() {
 frontend_build() {
 
     echo "PUBLIC_URL=/" >frontend/.env
+    if [ -n "${REACT_APP_AKVO_RAG_WS_URL:-}" ]; then
+        echo "REACT_APP_AKVO_RAG_WS_URL=${REACT_APP_AKVO_RAG_WS_URL}" >>frontend/.env
+    fi
+    if [ -n "${REACT_APP_AKVO_RAG_KB_ID:-}" ]; then
+        echo "REACT_APP_AKVO_RAG_KB_ID=${REACT_APP_AKVO_RAG_KB_ID}" >>frontend/.env
+    fi
 
     # Code Quality and Build Folder
     sed 's/"warn"/"error"/g' <frontend/.eslintrc.json >frontend/.eslintrc.prod.json

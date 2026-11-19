@@ -141,21 +141,46 @@ describe("AcademyChatbot", () => {
     expect(mockChatInstance.destroy).toHaveBeenCalled();
   });
 
-  it("falls back to default configurations when props are omitted", () => {
-    render(<AcademyChatbot />);
+  it("falls back to environment variables when props are omitted", () => {
+    const origWs = process.env.REACT_APP_AKVO_RAG_WS_URL;
+    const origKb = process.env.REACT_APP_AKVO_RAG_KB_ID;
+    process.env.REACT_APP_AKVO_RAG_WS_URL = "wss://env-rag.org/ws/chat";
+    process.env.REACT_APP_AKVO_RAG_KB_ID = "753";
 
-    expect(initChat).toHaveBeenCalledWith(
-      expect.objectContaining({
-        wsURL: expect.any(String),
-        wsUrl: expect.any(String),
-        kb_id: expect.any(Number),
-        primaryColor: "#005EA3",
-        showLauncher: true,
-        draggable: true,
-        persistPosition: true,
-        storageKey: "academy_chat_launcher_pos",
-      })
-    );
+    try {
+      render(<AcademyChatbot />);
+
+      expect(initChat).toHaveBeenCalledWith(
+        expect.objectContaining({
+          wsURL: "wss://env-rag.org/ws/chat",
+          wsUrl: "wss://env-rag.org/ws/chat",
+          kb_id: 753,
+          primaryColor: "#005EA3",
+          showLauncher: true,
+          draggable: true,
+          persistPosition: true,
+          storageKey: "academy_chat_launcher_pos",
+        })
+      );
+    } finally {
+      process.env.REACT_APP_AKVO_RAG_WS_URL = origWs;
+      process.env.REACT_APP_AKVO_RAG_KB_ID = origKb;
+    }
+  });
+
+  it("does not initialize when wsUrl or kbId are missing", () => {
+    const origWs = process.env.REACT_APP_AKVO_RAG_WS_URL;
+    const origKb = process.env.REACT_APP_AKVO_RAG_KB_ID;
+    delete process.env.REACT_APP_AKVO_RAG_WS_URL;
+    delete process.env.REACT_APP_AKVO_RAG_KB_ID;
+
+    try {
+      render(<AcademyChatbot wsUrl="" kbId="" />);
+      expect(initChat).not.toHaveBeenCalled();
+    } finally {
+      process.env.REACT_APP_AKVO_RAG_WS_URL = origWs;
+      process.env.REACT_APP_AKVO_RAG_KB_ID = origKb;
+    }
   });
 
   it("intercepts /academy links clicked inside #akvo-rag and navigates via React Router", () => {
