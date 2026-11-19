@@ -112,6 +112,414 @@ const resolveChapterTarget = (
   return null;
 };
 
+const LAUNCHER_STORAGE_KEY = "academy_chat_launcher_pos";
+const MARGIN = 16;
+const DRAG_THRESHOLD = 6;
+
+/**
+ * Attaches draggable behavior to the floating launcher button.
+ * - Supports mouse, trackpad, and touch events with window-level move tracking.
+ * - Distinguishes between click (< 6px movement) and drag (>= 6px movement).
+ * - Suppresses the click event on release when dragged so the chat doesn't accidentally open.
+ * - Enforces viewport boundaries with padding.
+ * - Persists custom position in localStorage across page reloads.
+ */
+const setupDraggableLauncher = (launcherEl) => {
+  if (!launcherEl) {
+    return () => {};
+  }
+
+  const restorePosition = () => {
+    try {
+      const saved = localStorage.getItem(LAUNCHER_STORAGE_KEY);
+      if (saved) {
+        const { x, y } = JSON.parse(saved);
+        const btnWidth = launcherEl.offsetWidth || 48;
+        const btnHeight = launcherEl.offsetHeight || 48;
+        const maxX = Math.max(MARGIN, window.innerWidth - btnWidth - MARGIN);
+        const maxY = Math.max(MARGIN, window.innerHeight - btnHeight - MARGIN);
+        const clampedX = Math.max(MARGIN, Math.min(maxX, x));
+        const clampedY = Math.max(MARGIN, Math.min(maxY, y));
+
+        launcherEl.style.left = `${clampedX}px`;
+        launcherEl.style.top = `${clampedY}px`;
+        launcherEl.style.right = "auto";
+        launcherEl.style.bottom = "auto";
+      }
+    } catch (e) {
+      // ignore storage error
+    }
+  };
+
+  restorePosition();
+
+  let startX = 0;
+  let startY = 0;
+  let initialLeft = 0;
+  let initialTop = 0;
+  let isDragging = false;
+  let hasMoved = false;
+
+  const getCoordinates = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+    }
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      return {
+        clientX: e.changedTouches[0].clientX,
+        clientY: e.changedTouches[0].clientY,
+      };
+    }
+    return { clientX: e.clientX ?? 0, clientY: e.clientY ?? 0 };
+  };
+
+  const onMove = (e) => {
+    if (!isDragging) {
+      return;
+    }
+
+    const coords = getCoordinates(e);
+    const dx = coords.clientX - startX;
+    const dy = coords.clientY - startY;
+
+    if (!hasMoved) {
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD) {
+        return;
+      }
+      hasMoved = true;
+      launcherEl.classList.add("is-dragging");
+    }
+
+    if (e.cancelable && e.type === "touchmove") {
+      e.preventDefault();
+    }
+
+    const btnWidth = launcherEl.offsetWidth || 48;
+    const btnHeight = launcherEl.offsetHeight || 48;
+    const maxX = Math.max(MARGIN, window.innerWidth - btnWidth - MARGIN);
+    const maxY = Math.max(MARGIN, window.innerHeight - btnHeight - MARGIN);
+
+    const nextX = Math.max(MARGIN, Math.min(maxX, initialLeft + dx));
+    const nextY = Math.max(MARGIN, Math.min(maxY, initialTop + dy));
+
+    launcherEl.style.left = `${nextX}px`;
+    launcherEl.style.top = `${nextY}px`;
+    launcherEl.style.right = "auto";
+    launcherEl.style.bottom = "auto";
+  };
+
+  const onEnd = () => {
+    if (!isDragging) {
+      return;
+    }
+    isDragging = false;
+
+    window.removeEventListener("mousemove", onMove);
+    window.removeEventListener("mouseup", onEnd);
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend", onEnd);
+    window.removeEventListener("touchcancel", onEnd);
+
+    launcherEl.classList.remove("is-dragging");
+
+    if (hasMoved) {
+      try {
+        const rect = launcherEl.getBoundingClientRect();
+        localStorage.setItem(
+          LAUNCHER_STORAGE_KEY,
+          JSON.stringify({ x: Math.round(rect.left), y: Math.round(rect.top) })
+        );
+      } catch (err) {
+        // ignore
+      }
+
+      const suppressClick = (clickEvent) => {
+        clickEvent.preventDefault();
+        clickEvent.stopPropagation();
+        clickEvent.stopImmediatePropagation();
+      };
+      launcherEl.addEventListener("click", suppressClick, {
+        capture: true,
+        once: true,
+      });
+      setTimeout(() => {
+        launcherEl.removeEventListener("click", suppressClick, {
+          capture: true,
+        });
+      }, 300);
+    }
+  };
+
+  const onStart = (e) => {
+    if (isDragging) {
+      return;
+    }
+    if (typeof e.button === "number" && e.button !== 0) {
+      return;
+    }
+
+    const coords = getCoordinates(e);
+    const rect = launcherEl.getBoundingClientRect();
+    startX = coords.clientX;
+    startY = coords.clientY;
+    initialLeft = rect.left;
+    initialTop = rect.top;
+    isDragging = true;
+    hasMoved = false;
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onEnd);
+    window.addEventListener("touchcancel", onEnd);
+  };
+
+  const onWindowResize = () => {
+    if (launcherEl.style.left && launcherEl.style.left !== "auto") {
+      restorePosition();
+    }
+    const chatEl = document.getElementById("akvo-rag");
+    if (chatEl && chatEl.style.display && chatEl.style.display !== "none") {
+      syncChatWindowPosition(chatEl, launcherEl);
+    }
+  };
+
+  launcherEl.addEventListener("mousedown", onStart);
+  launcherEl.addEventListener("touchstart", onStart, { passive: true });
+  window.addEventListener("resize", onWindowResize);
+
+  return () => {
+    launcherEl.removeEventListener("mousedown", onStart);
+    launcherEl.removeEventListener("touchstart", onStart);
+    window.removeEventListener("mousemove", onMove);
+    window.removeEventListener("mouseup", onEnd);
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend", onEnd);
+    window.removeEventListener("touchcancel", onEnd);
+    window.removeEventListener("resize", onWindowResize);
+  };
+};
+
+/**
+ * Synchronizes the chat window's open position to anchor near the floating launcher button.
+ * - Anchors to top/bottom and left/right based on screen quadrant.
+ * - Clamps strictly within viewport margins.
+ */
+const syncChatWindowPosition = (chatEl, launcherEl) => {
+  if (!chatEl) {
+    return;
+  }
+
+  let launcherX = null;
+  let launcherY = null;
+  try {
+    const saved = localStorage.getItem(LAUNCHER_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      launcherX = parsed.x;
+      launcherY = parsed.y;
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  if (launcherX === null && launcherEl) {
+    if (launcherEl.style.left && launcherEl.style.left !== "auto") {
+      launcherX = parseFloat(launcherEl.style.left);
+      launcherY = parseFloat(launcherEl.style.top);
+    } else {
+      const r = launcherEl.getBoundingClientRect();
+      launcherX = r.left;
+      launcherY = r.top;
+    }
+  }
+
+  if (launcherX === null) {
+    return;
+  }
+
+  const launcherWidth = launcherEl?.offsetWidth || 48;
+  const launcherHeight = launcherEl?.offsetHeight || 48;
+  const chatWidth = chatEl.offsetWidth || 360;
+  const chatHeight = chatEl.offsetHeight || 500;
+
+  let idealLeft = 0;
+  if (launcherX + launcherWidth / 2 <= window.innerWidth / 2) {
+    idealLeft = launcherX;
+  } else {
+    idealLeft = launcherX + launcherWidth - chatWidth;
+  }
+
+  let idealTop = 0;
+  if (launcherY + launcherHeight / 2 <= window.innerHeight / 2) {
+    idealTop = launcherY;
+  } else {
+    idealTop = launcherY + launcherHeight - chatHeight;
+  }
+
+  const minLeft = MARGIN;
+  const maxLeft = Math.max(MARGIN, window.innerWidth - chatWidth - MARGIN);
+  const minTop = MARGIN;
+  const maxTop = Math.max(MARGIN, window.innerHeight - chatHeight - MARGIN);
+
+  const clampedLeft = Math.max(minLeft, Math.min(maxLeft, idealLeft));
+  const clampedTop = Math.max(minTop, Math.min(maxTop, idealTop));
+
+  chatEl.style.left = `${clampedLeft}px`;
+  chatEl.style.top = `${clampedTop}px`;
+  chatEl.style.right = "auto";
+  chatEl.style.bottom = "auto";
+};
+
+/**
+ * Attaches draggable behavior to the chat window's header so users can freely reposition
+ * the opened chat window, updating the saved position and keeping the launcher synchronized.
+ */
+const setupDraggableWindow = (chatEl, launcherEl) => {
+  if (!chatEl) {
+    return () => {};
+  }
+  const headerEl = chatEl.querySelector("#akvo-rag-header");
+  if (!headerEl) {
+    return () => {};
+  }
+
+  let startX = 0;
+  let startY = 0;
+  let initialLeft = 0;
+  let initialTop = 0;
+  let isDragging = false;
+
+  const getCoordinates = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+    }
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      return {
+        clientX: e.changedTouches[0].clientX,
+        clientY: e.changedTouches[0].clientY,
+      };
+    }
+    return { clientX: e.clientX ?? 0, clientY: e.clientY ?? 0 };
+  };
+
+  const onMove = (e) => {
+    if (!isDragging) {
+      return;
+    }
+
+    const coords = getCoordinates(e);
+    const dx = coords.clientX - startX;
+    const dy = coords.clientY - startY;
+
+    if (e.cancelable && e.type === "touchmove") {
+      e.preventDefault();
+    }
+
+    const chatWidth = chatEl.offsetWidth || 360;
+    const chatHeight = chatEl.offsetHeight || 500;
+    const maxX = Math.max(MARGIN, window.innerWidth - chatWidth - MARGIN);
+    const maxY = Math.max(MARGIN, window.innerHeight - chatHeight - MARGIN);
+
+    const nextX = Math.max(MARGIN, Math.min(maxX, initialLeft + dx));
+    const nextY = Math.max(MARGIN, Math.min(maxY, initialTop + dy));
+
+    chatEl.style.left = `${nextX}px`;
+    chatEl.style.top = `${nextY}px`;
+    chatEl.style.right = "auto";
+    chatEl.style.bottom = "auto";
+  };
+
+  const onEnd = () => {
+    if (!isDragging) {
+      return;
+    }
+    isDragging = false;
+
+    window.removeEventListener("mousemove", onMove);
+    window.removeEventListener("mouseup", onEnd);
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend", onEnd);
+    window.removeEventListener("touchcancel", onEnd);
+
+    chatEl.classList.remove("is-window-dragging");
+
+    const chatRect = chatEl.getBoundingClientRect();
+    const launcherWidth = launcherEl?.offsetWidth || 48;
+    const launcherHeight = launcherEl?.offsetHeight || 48;
+    let lX = 0;
+    if (chatRect.left + chatRect.width / 2 <= window.innerWidth / 2) {
+      lX = chatRect.left;
+    } else {
+      lX = chatRect.right - launcherWidth;
+    }
+    let lY = 0;
+    if (chatRect.top + chatRect.height / 2 <= window.innerHeight / 2) {
+      lY = chatRect.top;
+    } else {
+      lY = chatRect.bottom - launcherHeight;
+    }
+    const finalX = Math.round(lX);
+    const finalY = Math.round(lY);
+
+    try {
+      localStorage.setItem(
+        LAUNCHER_STORAGE_KEY,
+        JSON.stringify({ x: finalX, y: finalY })
+      );
+    } catch (err) {
+      // ignore
+    }
+
+    if (launcherEl) {
+      launcherEl.style.left = `${finalX}px`;
+      launcherEl.style.top = `${finalY}px`;
+      launcherEl.style.right = "auto";
+      launcherEl.style.bottom = "auto";
+    }
+  };
+
+  const onStart = (e) => {
+    if (isDragging) {
+      return;
+    }
+    if (e.target.closest("button") || e.target.closest("a")) {
+      return;
+    }
+    if (typeof e.button === "number" && e.button !== 0) {
+      return;
+    }
+
+    const coords = getCoordinates(e);
+    const rect = chatEl.getBoundingClientRect();
+    startX = coords.clientX;
+    startY = coords.clientY;
+    initialLeft = rect.left;
+    initialTop = rect.top;
+    isDragging = true;
+    chatEl.classList.add("is-window-dragging");
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onEnd);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onEnd);
+    window.addEventListener("touchcancel", onEnd);
+  };
+
+  headerEl.addEventListener("mousedown", onStart);
+  headerEl.addEventListener("touchstart", onStart, { passive: true });
+
+  return () => {
+    headerEl.removeEventListener("mousedown", onStart);
+    headerEl.removeEventListener("touchstart", onStart);
+    window.removeEventListener("mousemove", onMove);
+    window.removeEventListener("mouseup", onEnd);
+    window.removeEventListener("touchmove", onMove);
+    window.removeEventListener("touchend", onEnd);
+    window.removeEventListener("touchcancel", onEnd);
+  };
+};
+
 const AcademyChatbot = ({
   wsUrl = DEFAULT_WS_URL,
   kbId = DEFAULT_KB_ID,
@@ -152,6 +560,10 @@ const AcademyChatbot = ({
       return;
     }
 
+    let cleanupDraggable = () => {};
+    let cleanupWindowDraggable = () => {};
+    let chatObserver = null;
+
     try {
       chatRef.current = initChat({
         wsURL: activeWsUrl,
@@ -166,14 +578,42 @@ const AcademyChatbot = ({
       });
 
       const launcherEl = document.getElementById("akvo-rag-launcher");
+      const chatEl = document.getElementById("akvo-rag");
+
       if (launcherEl) {
         launcherEl.setAttribute("title", "Ask the Academy facilitator");
+        cleanupDraggable = setupDraggableLauncher(launcherEl);
+        launcherEl.addEventListener("click", () => {
+          syncChatWindowPosition(chatEl, launcherEl);
+        });
+      }
+
+      if (chatEl) {
+        cleanupWindowDraggable = setupDraggableWindow(chatEl, launcherEl);
+
+        let lastDisplay = chatEl.style.display || "none";
+        chatObserver = new MutationObserver(() => {
+          const currentDisplay = chatEl.style.display || "none";
+          if (currentDisplay !== "none" && lastDisplay === "none") {
+            syncChatWindowPosition(chatEl, launcherEl);
+          }
+          lastDisplay = currentDisplay;
+        });
+        chatObserver.observe(chatEl, {
+          attributes: true,
+          attributeFilter: ["style"],
+        });
       }
     } catch (err) {
       chatRef.current = null;
     }
 
     return () => {
+      cleanupDraggable();
+      cleanupWindowDraggable();
+      if (chatObserver) {
+        chatObserver.disconnect();
+      }
       if (chatRef.current) {
         try {
           chatRef.current.destroy();
@@ -361,4 +801,10 @@ const AcademyChatbot = ({
   return <div data-testid="academy-chatbot" id="academy-chatbot-root" />;
 };
 
+export {
+  setupDraggableLauncher,
+  setupDraggableWindow,
+  syncChatWindowPosition,
+  LAUNCHER_STORAGE_KEY,
+};
 export default AcademyChatbot;

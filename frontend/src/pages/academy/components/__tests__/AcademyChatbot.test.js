@@ -1,7 +1,10 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { initChat } from "akvo-rag-js";
-import AcademyChatbot from "../AcademyChatbot";
+import AcademyChatbot, {
+  syncChatWindowPosition,
+  setupDraggableWindow,
+} from "../AcademyChatbot";
 
 const mockNavigate = jest.fn();
 
@@ -75,6 +78,12 @@ describe("AcademyChatbot", () => {
         el.id = "akvo-rag";
         document.body.appendChild(el);
       }
+      let launcher = document.getElementById("akvo-rag-launcher");
+      if (!launcher) {
+        launcher = document.createElement("button");
+        launcher.id = "akvo-rag-launcher";
+        document.body.appendChild(launcher);
+      }
       return mockChatInstance;
     });
 
@@ -82,13 +91,22 @@ describe("AcademyChatbot", () => {
     if (existing) {
       existing.remove();
     }
+    const existingLauncher = document.getElementById("akvo-rag-launcher");
+    if (existingLauncher) {
+      existingLauncher.remove();
+    }
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    localStorage.clear();
     const existing = document.getElementById("akvo-rag");
     if (existing) {
       existing.remove();
+    }
+    const existingLauncher = document.getElementById("akvo-rag-launcher");
+    if (existingLauncher) {
+      existingLauncher.remove();
     }
   });
 
@@ -214,10 +232,7 @@ describe("AcademyChatbot", () => {
     const container = document.getElementById("akvo-rag");
     const sup = document.createElement("sup");
     sup.className = "citation";
-    sup.setAttribute(
-      "data-source",
-      "General_Agronomy_Soil_Report.pdf"
-    );
+    sup.setAttribute("data-source", "General_Agronomy_Soil_Report.pdf");
     sup.setAttribute(
       "data-text",
       "nitrogen fertilizer and potassium levels in soil"
@@ -309,5 +324,152 @@ describe("AcademyChatbot", () => {
     expect(() => {
       render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
     }).not.toThrow();
+  });
+
+  it("makes the floating launcher button draggable and clamps position within window bounds", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const launcher = document.getElementById("akvo-rag-launcher");
+    expect(launcher).toBeInTheDocument();
+    expect(launcher.getAttribute("title")).toBe("Ask the Academy facilitator");
+
+    launcher.getBoundingClientRect = () => ({
+      left: 100,
+      top: 200,
+      width: 48,
+      height: 48,
+      right: 148,
+      bottom: 248,
+    });
+
+    fireEvent.mouseDown(launcher, { clientX: 110, clientY: 210, button: 0 });
+    fireEvent.mouseMove(window, { clientX: 160, clientY: 270 });
+
+    expect(launcher.classList.contains("is-dragging")).toBe(true);
+    expect(launcher.style.left).toBe("150px");
+    expect(launcher.style.top).toBe("260px");
+
+    fireEvent.mouseUp(window, { clientX: 160, clientY: 270 });
+    expect(launcher.classList.contains("is-dragging")).toBe(false);
+
+    const saved = JSON.parse(localStorage.getItem("academy_chat_launcher_pos"));
+    expect(saved).toEqual({ x: 100, y: 200 });
+  });
+
+  it("suppresses click handler when launcher is dragged", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const launcher = document.getElementById("akvo-rag-launcher");
+    const clickSpy = jest.fn();
+    launcher.addEventListener("click", clickSpy);
+
+    launcher.getBoundingClientRect = () => ({
+      left: 100,
+      top: 200,
+      width: 48,
+      height: 48,
+      right: 148,
+      bottom: 248,
+    });
+
+    fireEvent.mouseDown(launcher, { clientX: 110, clientY: 210, button: 0 });
+    fireEvent.mouseMove(window, { clientX: 150, clientY: 250 });
+    fireEvent.mouseUp(window, { clientX: 150, clientY: 250 });
+
+    fireEvent.click(launcher);
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it("allows normal click when pointer movement is below threshold", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const launcher = document.getElementById("akvo-rag-launcher");
+    const clickSpy = jest.fn();
+    launcher.addEventListener("click", clickSpy);
+
+    launcher.getBoundingClientRect = () => ({
+      left: 100,
+      top: 200,
+      width: 48,
+      height: 48,
+      right: 148,
+      bottom: 248,
+    });
+
+    fireEvent.mouseDown(launcher, { clientX: 110, clientY: 210, button: 0 });
+    fireEvent.mouseMove(window, { clientX: 112, clientY: 211 });
+    fireEvent.mouseUp(window, { clientX: 112, clientY: 211 });
+
+    expect(launcher.classList.contains("is-dragging")).toBe(false);
+
+    fireEvent.click(launcher);
+    expect(clickSpy).toHaveBeenCalled();
+  });
+
+  it("restores saved launcher position from localStorage on mount", () => {
+    localStorage.setItem(
+      "academy_chat_launcher_pos",
+      JSON.stringify({ x: 300, y: 400 })
+    );
+
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const launcher = document.getElementById("akvo-rag-launcher");
+    expect(launcher.style.left).toBe("300px");
+    expect(launcher.style.top).toBe("400px");
+  });
+
+  it("synchronizes the chat window position to anchor near launcher button", () => {
+    localStorage.setItem(
+      "academy_chat_launcher_pos",
+      JSON.stringify({ x: 50, y: 300 })
+    );
+
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const chatEl = document.getElementById("akvo-rag");
+    const launcherEl = document.getElementById("akvo-rag-launcher");
+
+    syncChatWindowPosition(chatEl, launcherEl);
+
+    expect(chatEl.style.left).toBe("50px");
+  });
+
+  it("makes the chat window draggable via its header and updates launcher position", () => {
+    const chatEl = document.createElement("div");
+    chatEl.id = "akvo-rag";
+    const headerEl = document.createElement("div");
+    headerEl.id = "akvo-rag-header";
+    chatEl.appendChild(headerEl);
+    document.body.appendChild(chatEl);
+
+    const launcherEl = document.createElement("button");
+    launcherEl.id = "akvo-rag-launcher";
+    document.body.appendChild(launcherEl);
+
+    chatEl.getBoundingClientRect = () => ({
+      left: 100,
+      top: 100,
+      width: 360,
+      height: 500,
+      right: 460,
+      bottom: 600,
+    });
+
+    const cleanup = setupDraggableWindow(chatEl, launcherEl);
+
+    fireEvent.mouseDown(headerEl, { clientX: 120, clientY: 120, button: 0 });
+    expect(chatEl.classList.contains("is-window-dragging")).toBe(true);
+
+    fireEvent.mouseMove(window, { clientX: 220, clientY: 150 });
+    expect(chatEl.style.left).toBe("200px");
+    expect(chatEl.style.top).toBe("130px");
+
+    fireEvent.mouseUp(window, { clientX: 220, clientY: 150 });
+    expect(chatEl.classList.contains("is-window-dragging")).toBe(false);
+
+    cleanup();
+    chatEl.remove();
+    launcherEl.remove();
   });
 });
