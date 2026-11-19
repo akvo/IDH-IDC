@@ -8,6 +8,7 @@ const DEFAULT_WS_URL =
   process.env.REACT_APP_AKVO_RAG_WS_URL ||
   "wss://akvo-rag.akvotest.org/ws/chat";
 const DEFAULT_KB_ID = process.env.REACT_APP_AKVO_RAG_KB_ID || "753";
+const LAUNCHER_STORAGE_KEY = "academy_chat_launcher_pos";
 
 const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7167 35.7756 46.5703 23.9215 47.7383" fill="#005EA3"/><g transform="translate(12, 12)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></g></svg>`;
 
@@ -98,8 +99,7 @@ const resolveChapterTarget = (
   if (
     combined.includes("living income") ||
     combined.includes("matters") ||
-    combined.includes("decent standard") ||
-    combined.includes("household")
+    combined.includes("concept")
   ) {
     return {
       module: "1",
@@ -109,415 +109,82 @@ const resolveChapterTarget = (
     };
   }
 
+  // Non-curriculum literature (e.g. general reports) returns null (no internal Academy link)
   return null;
 };
 
-const LAUNCHER_STORAGE_KEY = "academy_chat_launcher_pos";
-const MARGIN = 16;
-const DRAG_THRESHOLD = 6;
-
 /**
- * Attaches draggable behavior to the floating launcher button.
- * - Supports mouse, trackpad, and touch events with window-level move tracking.
- * - Distinguishes between click (< 6px movement) and drag (>= 6px movement).
- * - Suppresses the click event on release when dragged so the chat doesn't accidentally open.
- * - Enforces viewport boundaries with padding.
- * - Persists custom position in localStorage across page reloads.
+ * Renders an inline lesson referral card beneath assistant messages that cite curriculum chapters.
  */
-const setupDraggableLauncher = (launcherEl) => {
-  if (!launcherEl) {
-    return () => {};
-  }
-
-  const restorePosition = () => {
-    try {
-      const saved = localStorage.getItem(LAUNCHER_STORAGE_KEY);
-      if (saved) {
-        const { x, y } = JSON.parse(saved);
-        const btnWidth = launcherEl.offsetWidth || 48;
-        const btnHeight = launcherEl.offsetHeight || 48;
-        const maxX = Math.max(MARGIN, window.innerWidth - btnWidth - MARGIN);
-        const maxY = Math.max(MARGIN, window.innerHeight - btnHeight - MARGIN);
-        const clampedX = Math.max(MARGIN, Math.min(maxX, x));
-        const clampedY = Math.max(MARGIN, Math.min(maxY, y));
-
-        launcherEl.style.left = `${clampedX}px`;
-        launcherEl.style.top = `${clampedY}px`;
-        launcherEl.style.right = "auto";
-        launcherEl.style.bottom = "auto";
-      }
-    } catch (e) {
-      // ignore storage error
-    }
-  };
-
-  restorePosition();
-
-  let startX = 0;
-  let startY = 0;
-  let initialLeft = 0;
-  let initialTop = 0;
-  let isDragging = false;
-  let hasMoved = false;
-
-  const getCoordinates = (e) => {
-    if (e.touches && e.touches.length > 0) {
-      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
-    }
-    if (e.changedTouches && e.changedTouches.length > 0) {
-      return {
-        clientX: e.changedTouches[0].clientX,
-        clientY: e.changedTouches[0].clientY,
-      };
-    }
-    return { clientX: e.clientX ?? 0, clientY: e.clientY ?? 0 };
-  };
-
-  const onMove = (e) => {
-    if (!isDragging) {
-      return;
-    }
-
-    const coords = getCoordinates(e);
-    const dx = coords.clientX - startX;
-    const dy = coords.clientY - startY;
-
-    if (!hasMoved) {
-      if (Math.hypot(dx, dy) < DRAG_THRESHOLD) {
-        return;
-      }
-      hasMoved = true;
-      launcherEl.classList.add("is-dragging");
-    }
-
-    if (e.cancelable && e.type === "touchmove") {
-      e.preventDefault();
-    }
-
-    const btnWidth = launcherEl.offsetWidth || 48;
-    const btnHeight = launcherEl.offsetHeight || 48;
-    const maxX = Math.max(MARGIN, window.innerWidth - btnWidth - MARGIN);
-    const maxY = Math.max(MARGIN, window.innerHeight - btnHeight - MARGIN);
-
-    const nextX = Math.max(MARGIN, Math.min(maxX, initialLeft + dx));
-    const nextY = Math.max(MARGIN, Math.min(maxY, initialTop + dy));
-
-    launcherEl.style.left = `${nextX}px`;
-    launcherEl.style.top = `${nextY}px`;
-    launcherEl.style.right = "auto";
-    launcherEl.style.bottom = "auto";
-  };
-
-  const onEnd = () => {
-    if (!isDragging) {
-      return;
-    }
-    isDragging = false;
-
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onEnd);
-    window.removeEventListener("touchmove", onMove);
-    window.removeEventListener("touchend", onEnd);
-    window.removeEventListener("touchcancel", onEnd);
-
-    launcherEl.classList.remove("is-dragging");
-
-    if (hasMoved) {
-      try {
-        const rect = launcherEl.getBoundingClientRect();
-        localStorage.setItem(
-          LAUNCHER_STORAGE_KEY,
-          JSON.stringify({ x: Math.round(rect.left), y: Math.round(rect.top) })
-        );
-      } catch (err) {
-        // ignore
-      }
-
-      const suppressClick = (clickEvent) => {
-        clickEvent.preventDefault();
-        clickEvent.stopPropagation();
-        clickEvent.stopImmediatePropagation();
-      };
-      launcherEl.addEventListener("click", suppressClick, {
-        capture: true,
-        once: true,
-      });
-      setTimeout(() => {
-        launcherEl.removeEventListener("click", suppressClick, {
-          capture: true,
-        });
-      }, 300);
-    }
-  };
-
-  const onStart = (e) => {
-    if (isDragging) {
-      return;
-    }
-    if (typeof e.button === "number" && e.button !== 0) {
-      return;
-    }
-
-    const coords = getCoordinates(e);
-    const rect = launcherEl.getBoundingClientRect();
-    startX = coords.clientX;
-    startY = coords.clientY;
-    initialLeft = rect.left;
-    initialTop = rect.top;
-    isDragging = true;
-    hasMoved = false;
-
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onEnd);
-    window.addEventListener("touchmove", onMove, { passive: false });
-    window.addEventListener("touchend", onEnd);
-    window.addEventListener("touchcancel", onEnd);
-  };
-
-  const onWindowResize = () => {
-    if (launcherEl.style.left && launcherEl.style.left !== "auto") {
-      restorePosition();
-    }
-    const chatEl = document.getElementById("akvo-rag");
-    if (chatEl && chatEl.style.display && chatEl.style.display !== "none") {
-      syncChatWindowPosition(chatEl, launcherEl);
-    }
-  };
-
-  launcherEl.addEventListener("mousedown", onStart);
-  launcherEl.addEventListener("touchstart", onStart, { passive: true });
-  window.addEventListener("resize", onWindowResize);
-
-  return () => {
-    launcherEl.removeEventListener("mousedown", onStart);
-    launcherEl.removeEventListener("touchstart", onStart);
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onEnd);
-    window.removeEventListener("touchmove", onMove);
-    window.removeEventListener("touchend", onEnd);
-    window.removeEventListener("touchcancel", onEnd);
-    window.removeEventListener("resize", onWindowResize);
-  };
-};
-
-/**
- * Synchronizes the chat window's open position to anchor near the floating launcher button.
- * - Anchors to top/bottom and left/right based on screen quadrant.
- * - Clamps strictly within viewport margins.
- */
-const syncChatWindowPosition = (chatEl, launcherEl) => {
-  if (!chatEl) {
+const renderCitationReferralBox = (
+  msgElement,
+  curriculumMap = null,
+  navigate = null,
+  chatInstance = null
+) => {
+  if (
+    !msgElement ||
+    msgElement.querySelector(".academy-chat-referral") ||
+    !msgElement.classList.contains("akvo-msg-assistant")
+  ) {
     return;
   }
 
-  let launcherX = null;
-  let launcherY = null;
-  try {
-    const saved = localStorage.getItem(LAUNCHER_STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      launcherX = parsed.x;
-      launcherY = parsed.y;
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  if (launcherX === null && launcherEl) {
-    if (launcherEl.style.left && launcherEl.style.left !== "auto") {
-      launcherX = parseFloat(launcherEl.style.left);
-      launcherY = parseFloat(launcherEl.style.top);
-    } else {
-      const r = launcherEl.getBoundingClientRect();
-      launcherX = r.left;
-      launcherY = r.top;
-    }
-  }
-
-  if (launcherX === null) {
+  const citations = msgElement.querySelectorAll(".citation");
+  if (!citations.length) {
     return;
   }
 
-  const launcherWidth = launcherEl?.offsetWidth || 48;
-  const launcherHeight = launcherEl?.offsetHeight || 48;
-  const chatWidth = chatEl.offsetWidth || 360;
-  const chatHeight = chatEl.offsetHeight || 500;
-
-  let idealLeft = 0;
-  if (launcherX + launcherWidth / 2 <= window.innerWidth / 2) {
-    idealLeft = launcherX;
-  } else {
-    idealLeft = launcherX + launcherWidth - chatWidth;
-  }
-
-  let idealTop = 0;
-  if (launcherY + launcherHeight / 2 <= window.innerHeight / 2) {
-    idealTop = launcherY;
-  } else {
-    idealTop = launcherY + launcherHeight - chatHeight;
-  }
-
-  const minLeft = MARGIN;
-  const maxLeft = Math.max(MARGIN, window.innerWidth - chatWidth - MARGIN);
-  const minTop = MARGIN;
-  const maxTop = Math.max(MARGIN, window.innerHeight - chatHeight - MARGIN);
-
-  const clampedLeft = Math.max(minLeft, Math.min(maxLeft, idealLeft));
-  const clampedTop = Math.max(minTop, Math.min(maxTop, idealTop));
-
-  chatEl.style.left = `${clampedLeft}px`;
-  chatEl.style.top = `${clampedTop}px`;
-  chatEl.style.right = "auto";
-  chatEl.style.bottom = "auto";
-};
-
-/**
- * Attaches draggable behavior to the chat window's header so users can freely reposition
- * the opened chat window, updating the saved position and keeping the launcher synchronized.
- */
-const setupDraggableWindow = (chatEl, launcherEl) => {
-  if (!chatEl) {
-    return () => {};
-  }
-  const headerEl = chatEl.querySelector("#akvo-rag-header");
-  if (!headerEl) {
-    return () => {};
-  }
-
-  let startX = 0;
-  let startY = 0;
-  let initialLeft = 0;
-  let initialTop = 0;
-  let isDragging = false;
-
-  const getCoordinates = (e) => {
-    if (e.touches && e.touches.length > 0) {
-      return { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY };
+  const discoveredTargets = new Map();
+  citations.forEach((cit) => {
+    const src = cit.getAttribute("data-source") || "";
+    const ttl = cit.getAttribute("data-title") || "";
+    const txt = cit.getAttribute("data-text") || "";
+    const target = resolveChapterTarget(src, ttl, txt, curriculumMap);
+    if (target && !discoveredTargets.has(target.url)) {
+      discoveredTargets.set(target.url, target);
     }
-    if (e.changedTouches && e.changedTouches.length > 0) {
-      return {
-        clientX: e.changedTouches[0].clientX,
-        clientY: e.changedTouches[0].clientY,
-      };
-    }
-    return { clientX: e.clientX ?? 0, clientY: e.clientY ?? 0 };
-  };
+  });
 
-  const onMove = (e) => {
-    if (!isDragging) {
-      return;
-    }
+  if (!discoveredTargets.size) {
+    return;
+  }
 
-    const coords = getCoordinates(e);
-    const dx = coords.clientX - startX;
-    const dy = coords.clientY - startY;
+  const referralContainer = document.createElement("div");
+  referralContainer.className = "academy-chat-referral";
 
-    if (e.cancelable && e.type === "touchmove") {
+  const label = document.createElement("span");
+  label.className = "referral-label";
+  label.textContent = "Related Lesson:";
+  referralContainer.appendChild(label);
+
+  discoveredTargets.forEach((target) => {
+    const link = document.createElement("a");
+    link.className = "referral-link";
+    link.href = target.url;
+    link.textContent = target.title
+      ? `Module ${target.module}, Chapter ${target.chapter}: ${target.title}`
+      : `Module ${target.module}, Chapter ${target.chapter}`;
+
+    link.addEventListener("click", (e) => {
       e.preventDefault();
-    }
+      document.querySelectorAll(".citation-popover").forEach((p) => p.remove());
+      if (chatInstance?.close) {
+        try {
+          chatInstance.close();
+        } catch (err) {
+          // ignore cleanup errors
+        }
+      }
+      if (navigate) {
+        navigate(target.url);
+      }
+    });
 
-    const chatWidth = chatEl.offsetWidth || 360;
-    const chatHeight = chatEl.offsetHeight || 500;
-    const maxX = Math.max(MARGIN, window.innerWidth - chatWidth - MARGIN);
-    const maxY = Math.max(MARGIN, window.innerHeight - chatHeight - MARGIN);
+    referralContainer.appendChild(link);
+  });
 
-    const nextX = Math.max(MARGIN, Math.min(maxX, initialLeft + dx));
-    const nextY = Math.max(MARGIN, Math.min(maxY, initialTop + dy));
-
-    chatEl.style.left = `${nextX}px`;
-    chatEl.style.top = `${nextY}px`;
-    chatEl.style.right = "auto";
-    chatEl.style.bottom = "auto";
-  };
-
-  const onEnd = () => {
-    if (!isDragging) {
-      return;
-    }
-    isDragging = false;
-
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onEnd);
-    window.removeEventListener("touchmove", onMove);
-    window.removeEventListener("touchend", onEnd);
-    window.removeEventListener("touchcancel", onEnd);
-
-    chatEl.classList.remove("is-window-dragging");
-
-    const chatRect = chatEl.getBoundingClientRect();
-    const launcherWidth = launcherEl?.offsetWidth || 48;
-    const launcherHeight = launcherEl?.offsetHeight || 48;
-    let lX = 0;
-    if (chatRect.left + chatRect.width / 2 <= window.innerWidth / 2) {
-      lX = chatRect.left;
-    } else {
-      lX = chatRect.right - launcherWidth;
-    }
-    let lY = 0;
-    if (chatRect.top + chatRect.height / 2 <= window.innerHeight / 2) {
-      lY = chatRect.top;
-    } else {
-      lY = chatRect.bottom - launcherHeight;
-    }
-    const finalX = Math.round(lX);
-    const finalY = Math.round(lY);
-
-    try {
-      localStorage.setItem(
-        LAUNCHER_STORAGE_KEY,
-        JSON.stringify({ x: finalX, y: finalY })
-      );
-    } catch (err) {
-      // ignore
-    }
-
-    if (launcherEl) {
-      launcherEl.style.left = `${finalX}px`;
-      launcherEl.style.top = `${finalY}px`;
-      launcherEl.style.right = "auto";
-      launcherEl.style.bottom = "auto";
-    }
-  };
-
-  const onStart = (e) => {
-    if (isDragging) {
-      return;
-    }
-    if (e.target.closest("button") || e.target.closest("a")) {
-      return;
-    }
-    if (typeof e.button === "number" && e.button !== 0) {
-      return;
-    }
-
-    const coords = getCoordinates(e);
-    const rect = chatEl.getBoundingClientRect();
-    startX = coords.clientX;
-    startY = coords.clientY;
-    initialLeft = rect.left;
-    initialTop = rect.top;
-    isDragging = true;
-    chatEl.classList.add("is-window-dragging");
-
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onEnd);
-    window.addEventListener("touchmove", onMove, { passive: false });
-    window.addEventListener("touchend", onEnd);
-    window.addEventListener("touchcancel", onEnd);
-  };
-
-  headerEl.addEventListener("mousedown", onStart);
-  headerEl.addEventListener("touchstart", onStart, { passive: true });
-
-  return () => {
-    headerEl.removeEventListener("mousedown", onStart);
-    headerEl.removeEventListener("touchstart", onStart);
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onEnd);
-    window.removeEventListener("touchmove", onMove);
-    window.removeEventListener("touchend", onEnd);
-    window.removeEventListener("touchcancel", onEnd);
-  };
+  msgElement.appendChild(referralContainer);
 };
 
 const AcademyChatbot = ({
@@ -560,10 +227,6 @@ const AcademyChatbot = ({
       return;
     }
 
-    let cleanupDraggable = () => {};
-    let cleanupWindowDraggable = () => {};
-    let chatObserver = null;
-
     try {
       chatRef.current = initChat({
         wsURL: activeWsUrl,
@@ -575,45 +238,20 @@ const AcademyChatbot = ({
         showLauncher: true,
         startMinimized: true,
         launcherIcon: CHAT_ICON_SVG,
+        draggable: true,
+        persistPosition: true,
+        storageKey: LAUNCHER_STORAGE_KEY,
       });
 
       const launcherEl = document.getElementById("akvo-rag-launcher");
-      const chatEl = document.getElementById("akvo-rag");
-
       if (launcherEl) {
         launcherEl.setAttribute("title", "Ask the Academy facilitator");
-        cleanupDraggable = setupDraggableLauncher(launcherEl);
-        launcherEl.addEventListener("click", () => {
-          syncChatWindowPosition(chatEl, launcherEl);
-        });
-      }
-
-      if (chatEl) {
-        cleanupWindowDraggable = setupDraggableWindow(chatEl, launcherEl);
-
-        let lastDisplay = chatEl.style.display || "none";
-        chatObserver = new MutationObserver(() => {
-          const currentDisplay = chatEl.style.display || "none";
-          if (currentDisplay !== "none" && lastDisplay === "none") {
-            syncChatWindowPosition(chatEl, launcherEl);
-          }
-          lastDisplay = currentDisplay;
-        });
-        chatObserver.observe(chatEl, {
-          attributes: true,
-          attributeFilter: ["style"],
-        });
       }
     } catch (err) {
       chatRef.current = null;
     }
 
     return () => {
-      cleanupDraggable();
-      cleanupWindowDraggable();
-      if (chatObserver) {
-        chatObserver.disconnect();
-      }
       if (chatRef.current) {
         try {
           chatRef.current.destroy();
@@ -682,116 +320,64 @@ const AcademyChatbot = ({
         }
       }
 
-      // 2. Direct anchor click
-      const anchor = e.target.closest("a");
-      if (anchor) {
-        const href = anchor.getAttribute("href") || "";
-        if (href.startsWith("/academy")) {
-          navigateToLesson(href);
-          return;
-        }
-
-        const target = resolveChapterTarget(
-          href,
-          anchor.textContent,
-          "",
-          curriculumMapRef.current
-        );
-        if (target) {
-          navigateToLesson(target.url);
-          return;
-        }
-
-        if (href.startsWith("http://") || href.startsWith("https://")) {
-          anchor.setAttribute("target", "_blank");
-          anchor.setAttribute("rel", "noopener noreferrer");
-        }
-      }
-    };
-
-    // Auto-attach related lesson links from citation metadata
-    const attachReferralLinks = () => {
-      const container = document.getElementById("akvo-rag");
-      if (!container) {
+      // Referral card link click fallback
+      const referralLink = e.target.closest(
+        ".academy-chat-referral .referral-link"
+      );
+      if (referralLink && referralLink.getAttribute("href")) {
+        navigateToLesson(referralLink.getAttribute("href"));
         return;
       }
 
-      const assistantMsgs = container.querySelectorAll(".akvo-msg-assistant");
-      assistantMsgs.forEach((msg) => {
-        if (msg.querySelector(".academy-chat-referral")) {
-          return;
-        }
+      // General link interception
+      const link = e.target.closest("a");
+      if (!link) {
+        return;
+      }
 
-        const citations = msg.querySelectorAll(".citation");
-        if (!citations.length) {
-          return;
-        }
+      const href = link.getAttribute("href");
+      if (!href) {
+        return;
+      }
 
-        const foundChapters = new Map();
-        citations.forEach((cit) => {
-          const source = cit.getAttribute("data-source") || "";
-          const title = cit.getAttribute("data-title") || "";
-          const text = cit.getAttribute("data-text") || "";
-          const target = resolveChapterTarget(
-            source,
-            title,
-            text,
-            curriculumMapRef.current
-          );
-          if (target) {
-            const key = `m${target.module}c${target.chapter}`;
-            if (!foundChapters.has(key)) {
-              foundChapters.set(key, target);
-            }
-          }
-        });
-
-        // Contextual fallback: if citations did not directly map to a chapter,
-        // inspect the assistant message text for core Module 1 curriculum topics
-        if (foundChapters.size === 0) {
-          const fallbackTarget = resolveChapterTarget(
-            "",
-            "",
-            msg.textContent || "",
-            curriculumMapRef.current
-          );
-          if (fallbackTarget) {
-            const key = `m${fallbackTarget.module}c${fallbackTarget.chapter}`;
-            foundChapters.set(key, fallbackTarget);
-          }
+      if (
+        href.startsWith("/academy") ||
+        href.startsWith("http://localhost:3000/academy") ||
+        href.startsWith("https://idc.akvotest.org/academy") ||
+        href.startsWith("https://idc.idhsustainabletrade.com/academy")
+      ) {
+        let route = href;
+        if (href.startsWith("http")) {
+          const parsed = new URL(href);
+          route = parsed.pathname + parsed.search;
         }
-
-        if (foundChapters.size > 0) {
-          const referralContainer = document.createElement("div");
-          referralContainer.className = "academy-chat-referral";
-          referralContainer.innerHTML = `
-            <span class="referral-icon" aria-hidden="true">📖</span>
-            <span class="referral-label">Related lesson:</span>
-            ${Array.from(foundChapters.values())
-              .map((c) => {
-                const label = c.title
-                  ? `Module ${c.module}, Chapter ${c.chapter}: ${c.title}`
-                  : `Module ${c.module}, Chapter ${c.chapter}`;
-                return `<a href="${c.url}" class="referral-link" title="Open ${label}">${label}</a>`;
-              })
-              .join(", ")}
-          `;
-          msg.appendChild(referralContainer);
-        }
-      });
+        navigateToLesson(route);
+      }
     };
 
-    document.addEventListener("click", handleDocumentClick);
+    document.addEventListener("click", handleDocumentClick, true);
 
-    let observer = null;
     const chatContainer = document.getElementById("akvo-rag");
+    let observer = null;
     if (chatContainer) {
-      observer = new MutationObserver(attachReferralLinks);
+      observer = new MutationObserver(() => {
+        const assistantMsgs = chatContainer.querySelectorAll(
+          ".akvo-msg-assistant"
+        );
+        assistantMsgs.forEach((msg) =>
+          renderCitationReferralBox(
+            msg,
+            curriculumMapRef.current,
+            navigate,
+            chatRef.current
+          )
+        );
+      });
       observer.observe(chatContainer, { childList: true, subtree: true });
     }
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick);
+      document.removeEventListener("click", handleDocumentClick, true);
       if (observer) {
         observer.disconnect();
       }
@@ -802,9 +388,8 @@ const AcademyChatbot = ({
 };
 
 export {
-  setupDraggableLauncher,
-  setupDraggableWindow,
-  syncChatWindowPosition,
+  resolveChapterTarget,
+  renderCitationReferralBox,
   LAUNCHER_STORAGE_KEY,
 };
 export default AcademyChatbot;

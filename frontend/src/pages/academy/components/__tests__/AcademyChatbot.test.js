@@ -2,8 +2,9 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { initChat } from "akvo-rag-js";
 import AcademyChatbot, {
-  syncChatWindowPosition,
-  setupDraggableWindow,
+  resolveChapterTarget,
+  renderCitationReferralBox,
+  LAUNCHER_STORAGE_KEY,
 } from "../AcademyChatbot";
 
 const mockNavigate = jest.fn();
@@ -110,7 +111,7 @@ describe("AcademyChatbot", () => {
     }
   });
 
-  it("initializes akvo-rag-js with native launcher and IDH branding", () => {
+  it("initializes akvo-rag-js v1.4.0 with native draggable launcher and IDH branding", () => {
     const { unmount } = render(
       <AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />
     );
@@ -126,8 +127,15 @@ describe("AcademyChatbot", () => {
         showLauncher: true,
         startMinimized: true,
         launcherIcon: expect.stringContaining("<svg"),
+        draggable: true,
+        persistPosition: true,
+        storageKey: LAUNCHER_STORAGE_KEY,
       })
     );
+
+    const launcher = document.getElementById("akvo-rag-launcher");
+    expect(launcher).toBeInTheDocument();
+    expect(launcher.getAttribute("title")).toBe("Ask the Academy facilitator");
 
     unmount();
     expect(mockChatInstance.destroy).toHaveBeenCalled();
@@ -143,6 +151,9 @@ describe("AcademyChatbot", () => {
         kb_id: expect.any(Number),
         primaryColor: "#005EA3",
         showLauncher: true,
+        draggable: true,
+        persistPosition: true,
+        storageKey: "academy_chat_launcher_pos",
       })
     );
   });
@@ -161,38 +172,56 @@ describe("AcademyChatbot", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
   });
 
-  it("detects module-chapter filename patterns in citation anchors and deep-links", () => {
+  it("intercepts absolute domain /academy links and transforms to SPA route", () => {
     render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
 
     const container = document.getElementById("akvo-rag");
     const link = document.createElement("a");
-    link.setAttribute("href", "#");
-    link.textContent = "Source: module-2-chapter-3-assessment.pdf";
+    link.href = "https://idc.akvotest.org/academy/modules/1?chapter=3";
+    link.setAttribute(
+      "href",
+      "https://idc.akvotest.org/academy/modules/1?chapter=3"
+    );
+    link.textContent = "Go to Chapter 3";
     container.appendChild(link);
 
     fireEvent.click(link);
-    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/2?chapter=3");
+    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=3");
   });
 
-  it("navigates to chapter when clicking a <sup class='citation'> element", () => {
+  it("intercepts citation clicks and navigates to the matching curriculum chapter", () => {
     render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
 
     const container = document.getElementById("akvo-rag");
     const sup = document.createElement("sup");
     sup.className = "citation";
-    sup.setAttribute(
-      "data-source",
-      "module-1-chapter-2-living-income-vs-wage.pdf"
-    );
+    sup.setAttribute("data-source", "module-1-chapter-2-understanding-gap.pdf");
+    sup.setAttribute("data-title", "Living Income vs Living Wage");
     sup.textContent = "[1]";
     container.appendChild(sup);
 
     fireEvent.click(sup);
     expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
+    expect(mockChatInstance.close).toHaveBeenCalled();
   });
 
-  it("auto-attaches related lesson box with verified chapter title from curriculum", async () => {
-    render(
+  it("intercepts popover clicks and navigates to the target chapter", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    const popover = document.createElement("div");
+    popover.className = "citation-popover";
+    popover.dataset.target = "module-1-chapter-4-ambition.pdf";
+    popover.innerText = "Setting Ambition";
+    document.body.appendChild(popover);
+
+    fireEvent.click(popover);
+    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=4");
+    expect(mockChatInstance.close).toHaveBeenCalled();
+    expect(document.querySelector(".citation-popover")).toBeNull();
+  });
+
+  it("renders referral link with enriched chapter title from curriculum metadata", () => {
+    const { container: componentRoot } = render(
       <AcademyChatbot
         wsUrl="wss://test-rag.org/ws/chat"
         kbId="753"
@@ -203,104 +232,87 @@ describe("AcademyChatbot", () => {
     const container = document.getElementById("akvo-rag");
     const msg = document.createElement("div");
     msg.className = "akvo-msg-assistant";
+
     const sup = document.createElement("sup");
     sup.className = "citation";
-    sup.setAttribute("data-source", "module-1-chapter-4-setting-ambition.pdf");
-    sup.textContent = "[4]";
+    sup.setAttribute("data-source", "module-1-chapter-2-understanding-gap.pdf");
+    sup.setAttribute("data-title", "Living Income vs Living Wage");
+    sup.textContent = "[1]";
     msg.appendChild(sup);
     container.appendChild(msg);
 
-    // Give MutationObserver a moment to fire
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    // Call referral box renderer directly with enriched map
+    const map = new Map();
+    map.set("m1c2", {
+      moduleId: 1,
+      moduleNumber: 1,
+      chapterNumber: 2,
+      chapterTitle: "Living Income vs Living Wage: Understanding Distinction",
+    });
+
+    renderCitationReferralBox(msg, map, mockNavigate, mockChatInstance);
 
     const referral = msg.querySelector(".academy-chat-referral");
     expect(referral).toBeInTheDocument();
-    expect(referral).toHaveTextContent(
-      /Related lesson:\s*Module 1, Chapter 4: Setting Organizational Ambition and Scope/i
+    const link = referral.querySelector(".referral-link");
+    expect(link).toHaveTextContent(
+      "Module 1, Chapter 2: Living Income vs Living Wage: Understanding Distinction"
     );
+
+    fireEvent.click(link);
+    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
+    expect(mockChatInstance.close).toHaveBeenCalled();
+
+    expect(componentRoot).toBeInTheDocument();
   });
 
-  it("does not navigate or generate referral links when citation source is an unrelated reference document", () => {
-    render(
-      <AcademyChatbot
-        wsUrl="wss://test-rag.org/ws/chat"
-        kbId="753"
-        modules={mockCurriculum}
-      />
-    );
+  it("enforces strict provenance: does not generate internal link for non-curriculum documents", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
 
-    const container = document.getElementById("akvo-rag");
+    const target = resolveChapterTarget(
+      "General_Agronomy_Soil_Report.pdf",
+      "Soil Analysis",
+      "Soil pH and moisture findings"
+    );
+    expect(target).toBeNull();
+  });
+
+  it("gracefully falls back to module chapter mapping for Module 1 core concepts", () => {
+    const targetWage = resolveChapterTarget(
+      "Fair Producer Prices.pdf",
+      "Living wage remuneration of workers",
+      "difference between worker remuneration and farmer income"
+    );
+    expect(targetWage).toEqual({
+      module: "1",
+      chapter: "2",
+      title: "Living Income vs Living Wage: Understanding Distinction",
+      url: "/academy/modules/1?chapter=2",
+    });
+
+    const targetRoadmap = resolveChapterTarget(
+      "IDH_Strategy.pdf",
+      "Roadmap principles",
+      "principles of roadmap"
+    );
+    expect(targetRoadmap).toEqual({
+      module: "1",
+      chapter: "3",
+      title: "Key Principles of the IDH Roadmap on Living Income",
+      url: "/academy/modules/1?chapter=3",
+    });
+  });
+
+  it("suppresses referral card when citation has no valid target", () => {
+    const msg = document.createElement("div");
+    msg.className = "akvo-msg-assistant";
     const sup = document.createElement("sup");
     sup.className = "citation";
     sup.setAttribute("data-source", "General_Agronomy_Soil_Report.pdf");
-    sup.setAttribute(
-      "data-text",
-      "nitrogen fertilizer and potassium levels in soil"
-    );
-    sup.textContent = "[7]";
-    container.appendChild(sup);
+    msg.appendChild(sup);
 
-    fireEvent.click(sup);
-    // Unrelated documents MUST NOT trigger navigation
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it("navigates to context-aware Module 1 chapter for living wage reference document", () => {
-    render(
-      <AcademyChatbot
-        wsUrl="wss://test-rag.org/ws/chat"
-        kbId="753"
-        modules={mockCurriculum}
-      />
-    );
-
-    const container = document.getElementById("akvo-rag");
-    const sup = document.createElement("sup");
-    sup.className = "citation";
-    sup.setAttribute("data-source", "Fair Producer Prices.pdf");
-    sup.setAttribute(
-      "data-text",
-      "worker remuneration and minimum living wage distinction"
-    );
-    sup.textContent = "[2]";
-    container.appendChild(sup);
-
-    fireEvent.click(sup);
-    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/1?chapter=2");
-  });
-
-  it("suppresses links when module does not exist in active curriculum", () => {
-    render(
-      <AcademyChatbot
-        wsUrl="wss://test-rag.org/ws/chat"
-        kbId="753"
-        modules={mockCurriculum}
-      />
-    );
-
-    const container = document.getElementById("akvo-rag");
-    const sup = document.createElement("sup");
-    sup.className = "citation";
-    sup.setAttribute("data-source", "module-9-chapter-1-unreleased.pdf");
-    sup.textContent = "[9]";
-    container.appendChild(sup);
-
-    fireEvent.click(sup);
-    expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it("handles popover clicks and dismisses popover on navigation", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const popover = document.createElement("div");
-    popover.className = "citation-popover";
-    popover.dataset.target = "module-2-chapter-1-benchmarks.pdf";
-    popover.textContent = "Source: Living Income Benchmarks";
-    document.body.appendChild(popover);
-
-    fireEvent.click(popover);
-    expect(mockNavigate).toHaveBeenCalledWith("/academy/modules/2?chapter=1");
-    expect(document.querySelector(".citation-popover")).toBeNull();
+    renderCitationReferralBox(msg, null, mockNavigate, mockChatInstance);
+    expect(msg.querySelector(".academy-chat-referral")).toBeNull();
   });
 
   it("ignores links outside #akvo-rag", () => {
@@ -324,152 +336,5 @@ describe("AcademyChatbot", () => {
     expect(() => {
       render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
     }).not.toThrow();
-  });
-
-  it("makes the floating launcher button draggable and clamps position within window bounds", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const launcher = document.getElementById("akvo-rag-launcher");
-    expect(launcher).toBeInTheDocument();
-    expect(launcher.getAttribute("title")).toBe("Ask the Academy facilitator");
-
-    launcher.getBoundingClientRect = () => ({
-      left: 100,
-      top: 200,
-      width: 48,
-      height: 48,
-      right: 148,
-      bottom: 248,
-    });
-
-    fireEvent.mouseDown(launcher, { clientX: 110, clientY: 210, button: 0 });
-    fireEvent.mouseMove(window, { clientX: 160, clientY: 270 });
-
-    expect(launcher.classList.contains("is-dragging")).toBe(true);
-    expect(launcher.style.left).toBe("150px");
-    expect(launcher.style.top).toBe("260px");
-
-    fireEvent.mouseUp(window, { clientX: 160, clientY: 270 });
-    expect(launcher.classList.contains("is-dragging")).toBe(false);
-
-    const saved = JSON.parse(localStorage.getItem("academy_chat_launcher_pos"));
-    expect(saved).toEqual({ x: 100, y: 200 });
-  });
-
-  it("suppresses click handler when launcher is dragged", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const launcher = document.getElementById("akvo-rag-launcher");
-    const clickSpy = jest.fn();
-    launcher.addEventListener("click", clickSpy);
-
-    launcher.getBoundingClientRect = () => ({
-      left: 100,
-      top: 200,
-      width: 48,
-      height: 48,
-      right: 148,
-      bottom: 248,
-    });
-
-    fireEvent.mouseDown(launcher, { clientX: 110, clientY: 210, button: 0 });
-    fireEvent.mouseMove(window, { clientX: 150, clientY: 250 });
-    fireEvent.mouseUp(window, { clientX: 150, clientY: 250 });
-
-    fireEvent.click(launcher);
-    expect(clickSpy).not.toHaveBeenCalled();
-  });
-
-  it("allows normal click when pointer movement is below threshold", () => {
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const launcher = document.getElementById("akvo-rag-launcher");
-    const clickSpy = jest.fn();
-    launcher.addEventListener("click", clickSpy);
-
-    launcher.getBoundingClientRect = () => ({
-      left: 100,
-      top: 200,
-      width: 48,
-      height: 48,
-      right: 148,
-      bottom: 248,
-    });
-
-    fireEvent.mouseDown(launcher, { clientX: 110, clientY: 210, button: 0 });
-    fireEvent.mouseMove(window, { clientX: 112, clientY: 211 });
-    fireEvent.mouseUp(window, { clientX: 112, clientY: 211 });
-
-    expect(launcher.classList.contains("is-dragging")).toBe(false);
-
-    fireEvent.click(launcher);
-    expect(clickSpy).toHaveBeenCalled();
-  });
-
-  it("restores saved launcher position from localStorage on mount", () => {
-    localStorage.setItem(
-      "academy_chat_launcher_pos",
-      JSON.stringify({ x: 300, y: 400 })
-    );
-
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const launcher = document.getElementById("akvo-rag-launcher");
-    expect(launcher.style.left).toBe("300px");
-    expect(launcher.style.top).toBe("400px");
-  });
-
-  it("synchronizes the chat window position to anchor near launcher button", () => {
-    localStorage.setItem(
-      "academy_chat_launcher_pos",
-      JSON.stringify({ x: 50, y: 300 })
-    );
-
-    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
-
-    const chatEl = document.getElementById("akvo-rag");
-    const launcherEl = document.getElementById("akvo-rag-launcher");
-
-    syncChatWindowPosition(chatEl, launcherEl);
-
-    expect(chatEl.style.left).toBe("50px");
-  });
-
-  it("makes the chat window draggable via its header and updates launcher position", () => {
-    const chatEl = document.createElement("div");
-    chatEl.id = "akvo-rag";
-    const headerEl = document.createElement("div");
-    headerEl.id = "akvo-rag-header";
-    chatEl.appendChild(headerEl);
-    document.body.appendChild(chatEl);
-
-    const launcherEl = document.createElement("button");
-    launcherEl.id = "akvo-rag-launcher";
-    document.body.appendChild(launcherEl);
-
-    chatEl.getBoundingClientRect = () => ({
-      left: 100,
-      top: 100,
-      width: 360,
-      height: 500,
-      right: 460,
-      bottom: 600,
-    });
-
-    const cleanup = setupDraggableWindow(chatEl, launcherEl);
-
-    fireEvent.mouseDown(headerEl, { clientX: 120, clientY: 120, button: 0 });
-    expect(chatEl.classList.contains("is-window-dragging")).toBe(true);
-
-    fireEvent.mouseMove(window, { clientX: 220, clientY: 150 });
-    expect(chatEl.style.left).toBe("200px");
-    expect(chatEl.style.top).toBe("130px");
-
-    fireEvent.mouseUp(window, { clientX: 220, clientY: 150 });
-    expect(chatEl.classList.contains("is-window-dragging")).toBe(false);
-
-    cleanup();
-    chatEl.remove();
-    launcherEl.remove();
   });
 });

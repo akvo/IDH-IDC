@@ -8,20 +8,8 @@
   --akvo-offset-side: 24px;
 
   #akvo-rag-header {
-    cursor: grab !important;
-    touch-action: none !important;
-
     button {
       cursor: pointer !important;
-    }
-  }
-
-  &.is-window-dragging {
-    user-select: none !important;
-    transition: none !important;
-
-    #akvo-rag-header {
-      cursor: grabbing !important;
     }
   }
 
@@ -95,8 +83,6 @@
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  cursor: grab !important;
-  touch-action: none !important;
   transition: transform 0.15s ease !important;
 
   &:hover {
@@ -106,16 +92,7 @@
   }
 
   &:active {
-    cursor: grabbing !important;
     transform: scale(0.95) !important;
-  }
-
-  &.is-dragging {
-    cursor: grabbing !important;
-    user-select: none !important;
-    transition: none !important;
-    transform: scale(1.08) !important;
-    opacity: 0.92 !important;
   }
 
   &:focus-visible {
