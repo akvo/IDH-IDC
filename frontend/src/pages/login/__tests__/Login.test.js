@@ -459,5 +459,19 @@ describe("Login Component (Better Income Toolkit)", () => {
         )
       ).toBeInTheDocument();
     });
+
+    it("redirects authenticated user to dashboard immediately with replace: true", () => {
+      UserState.update((s) => {
+        s.isAuthenticated = true;
+        s.authInitializing = false;
+        s.tools = ["idc"];
+      });
+
+      renderComponent();
+
+      expect(mockNavigate).toHaveBeenCalledWith(routePath.idc.dashboard, {
+        replace: true,
+      });
+    });
   });
 });

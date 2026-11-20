@@ -9,6 +9,9 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import { api } from "../../lib";
+import { useAuthInitializing } from "../../lib/authRefresh";
+import UserState from "../../store/user";
+import { getAuthenticatedHomeRoute } from "../../components/route";
 import ImageRight from "../../assets/images/reset-password-right-img.jpg";
 import PasswordChangedIllustration from "../../assets/images/password-changed-illustration.svg";
 import Logo from "../../assets/images/logo.png";
@@ -41,6 +44,29 @@ const ResetPassword = () => {
   const [agreeDataSecurityProvision, setAgreeDataSecurityProvision] = useState(
     isInvitation ? false : true
   );
+
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
+  const storeAuthInitializing = UserState.useState((s) => s.authInitializing);
+  const contextAuthInitializing = useAuthInitializing();
+  const userId = UserState.useState((s) => s.id);
+  const userActive = UserState.useState((s) => s.active);
+  const rawTools = UserState.useState((s) => s.tools);
+
+  const authInitializing = contextAuthInitializing || storeAuthInitializing;
+  const isAuthenticated = Boolean(storeIsAuth || (userId && userActive));
+
+  useEffect(() => {
+    if (!authInitializing && isAuthenticated && tokenExpiredOrInvalid) {
+      const destination = getAuthenticatedHomeRoute(rawTools);
+      navigate(destination, { replace: true });
+    }
+  }, [
+    authInitializing,
+    isAuthenticated,
+    tokenExpiredOrInvalid,
+    rawTools,
+    navigate,
+  ]);
 
   const trackEventOnClickLivingIncomeEmail = () => {
     CustomEvent.trackEvent(

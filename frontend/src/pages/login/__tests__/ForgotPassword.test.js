@@ -3,6 +3,17 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import ForgotPassword from "../ForgotPassword";
 import { api } from "../../../lib";
+import UserState from "../../../store/user";
+
+const mockNavigate = jest.fn();
+
+jest.mock("react-router-dom", () => {
+  const actual = jest.requireActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 jest.mock("../../../lib/api", () => ({
   post: jest.fn(),
@@ -11,6 +22,13 @@ jest.mock("../../../lib/api", () => ({
 describe("ForgotPassword Component (Better Income Toolkit)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    UserState.update((s) => {
+      s.id = null;
+      s.active = null;
+      s.isAuthenticated = false;
+      s.authInitializing = false;
+      s.tools = [];
+    });
   });
 
   const renderComponent = () =>
@@ -139,5 +157,20 @@ describe("ForgotPassword Component (Better Income Toolkit)", () => {
       expect(screen.getByTestId("check-email-container")).toBeInTheDocument();
       expect(screen.getByText("unknown@example.com")).toBeInTheDocument();
     });
+  });
+
+  it("redirects authenticated users to their dashboard", () => {
+    UserState.update((s) => {
+      s.isAuthenticated = true;
+      s.authInitializing = false;
+      s.tools = ["idc"];
+    });
+
+    renderComponent();
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "/income-driver-calculator/welcome",
+      { replace: true }
+    );
   });
 });

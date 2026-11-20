@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./login.scss";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
@@ -6,11 +6,12 @@ import { Form, Input, Button, Checkbox, message } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import { useCookies } from "react-cookie";
 import { api } from "../../lib";
+import { useAuthInitializing } from "../../lib/authRefresh";
 import UserState from "../../store/user";
 import ImageRight from "../../assets/images/login-right-img.jpg";
 import Logo from "../../assets/images/logo.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
-import { routePath } from "../../components/route";
+import { routePath, getAuthenticatedHomeRoute } from "../../components/route";
 import { isIdcRestrictedPath } from "../../components/route/PrivateRoutes";
 import LoginAlertToast from "./components/LoginAlertToast";
 import VerifiedSuccessCard from "./components/VerifiedSuccessCard";
@@ -28,6 +29,48 @@ const Login = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSent, setResendSent] = useState(false);
   const [inputError, setInputError] = useState(false);
+
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
+  const storeAuthInitializing = UserState.useState((s) => s.authInitializing);
+  const contextAuthInitializing = useAuthInitializing();
+  const userId = UserState.useState((s) => s.id);
+  const userActive = UserState.useState((s) => s.active);
+  const rawTools = UserState.useState((s) => s.tools);
+
+  const authInitializing = contextAuthInitializing || storeAuthInitializing;
+  const isAuthenticated = Boolean(storeIsAuth || (userId && userActive));
+
+  useEffect(() => {
+    if (!authInitializing && isAuthenticated) {
+      const currentSearchParams = new URLSearchParams(location.search);
+      const redirectParam = currentSearchParams.get("redirect");
+      const fromState = location.state?.from?.pathname;
+      const tools = Array.isArray(rawTools) ? rawTools : [];
+      const hasIdc = tools.includes("idc");
+
+      let target = getAuthenticatedHomeRoute(tools);
+      if (
+        typeof redirectParam === "string" &&
+        redirectParam.startsWith("/") &&
+        !redirectParam.startsWith("//") &&
+        !redirectParam.includes("\\")
+      ) {
+        if (!isIdcRestrictedPath(redirectParam) || hasIdc) {
+          target = redirectParam;
+        }
+      } else if (
+        typeof fromState === "string" &&
+        fromState.startsWith("/") &&
+        !fromState.startsWith("//") &&
+        !fromState.includes("\\")
+      ) {
+        if (!isIdcRestrictedPath(fromState) || hasIdc) {
+          target = fromState;
+        }
+      }
+      navigate(target, { replace: true });
+    }
+  }, [authInitializing, isAuthenticated, rawTools, navigate, location]);
 
   const searchParams = new URLSearchParams(location.search);
   const isVerifiedParam = searchParams.get("verified") === "true";

@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import ResetPassword from "../ResetPassword";
 import { api } from "../../../lib";
+import UserState from "../../../store/user";
 
 const mockNavigate = jest.fn();
 
@@ -24,6 +25,13 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    UserState.update((s) => {
+      s.id = null;
+      s.active = null;
+      s.isAuthenticated = false;
+      s.authInitializing = false;
+      s.tools = [];
+    });
     delete window.location;
     window.location = new URL(
       "http://localhost/reset-password/sample-token-123"
@@ -228,6 +236,25 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith("/not-found");
+    });
+  });
+
+  it("FE-RST-05C: redirects authenticated users to dashboard when accessing expired/used reset token", async () => {
+    UserState.update((s) => {
+      s.isAuthenticated = true;
+      s.authInitializing = false;
+      s.tools = ["idc"];
+    });
+
+    api.get.mockRejectedValueOnce(new Error("Token used"));
+
+    renderComponent();
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/income-driver-calculator/welcome",
+        { replace: true }
+      );
     });
   });
 

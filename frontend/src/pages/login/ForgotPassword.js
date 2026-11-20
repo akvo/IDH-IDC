@@ -1,20 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./login.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
 import { Form, Input, Button } from "antd";
 import { MailOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { api } from "../../lib";
+import { useAuthInitializing } from "../../lib/authRefresh";
+import UserState from "../../store/user";
+import { getAuthenticatedHomeRoute } from "../../components/route";
 import ImageRight from "../../assets/images/reset-password-right-img.jpg";
 import CheckEmailIllustration from "../../assets/images/check-email-illustration.svg";
 import Logo from "../../assets/images/logo.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState(null);
   const [resendLoading, setResendLoading] = useState(false);
+
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
+  const storeAuthInitializing = UserState.useState((s) => s.authInitializing);
+  const contextAuthInitializing = useAuthInitializing();
+  const userId = UserState.useState((s) => s.id);
+  const userActive = UserState.useState((s) => s.active);
+  const rawTools = UserState.useState((s) => s.tools);
+
+  const authInitializing = contextAuthInitializing || storeAuthInitializing;
+  const isAuthenticated = Boolean(storeIsAuth || (userId && userActive));
+
+  useEffect(() => {
+    if (!authInitializing && isAuthenticated) {
+      const destination = getAuthenticatedHomeRoute(rawTools);
+      navigate(destination, { replace: true });
+    }
+  }, [authInitializing, isAuthenticated, rawTools, navigate]);
 
   const trackEventOnClickLivingIncomeEmail = () => {
     CustomEvent.trackEvent(
