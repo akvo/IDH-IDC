@@ -198,6 +198,29 @@ class TestRefreshTokenAuthEndpoints:
         assert row.remember_me is False
 
     @pytest.mark.asyncio
+    async def test_login_swagger_simplified_omitted_client_credentials(
+        self,
+        app: FastAPI,
+        client: AsyncClient,
+        refresh_test_users,
+    ) -> None:
+        user = refresh_test_users("login.swagger@example.com")
+        # Simulates Swagger UI "Try it out": only username and password provided
+        res = await client.post(
+            app.url_path_for("user:login"),
+            headers={"content-type": "application/x-www-form-urlencoded"},
+            data={
+                "username": user.email,
+                "password": "StrongPass123!",
+            },
+        )
+        assert res.status_code == 200
+        body = res.json()
+        assert body["token_type"] == "bearer"
+        assert body["user"]["email"] == user.email
+        assert body["access_token"] != ""
+
+    @pytest.mark.asyncio
     async def test_login_remember_me_persistent_cookie_and_https_secure_flag(
         self,
         app: FastAPI,

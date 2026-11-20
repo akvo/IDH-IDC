@@ -69,7 +69,7 @@ from models.academy.academy_schemas import (
 )
 from models.user_profile import UserProfileUpdatePayload
 from models.user_business_unit import UserBusinessUnitRole
-from typing import Optional, List
+from typing import Annotated, List, Optional, Union
 from pydantic import SecretStr
 from http import HTTPStatus
 from utils.mailer import Email, MailTypeEnum
@@ -79,6 +79,37 @@ user_route = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 oauth2_scopes = ["openid", "email"]
+
+
+class OAuth2PasswordRequestFormMasked(OAuth2PasswordRequestForm):
+    """OAuth2 password form with format='password' to mask sensitive fields in Swagger UI."""
+
+    def __init__(
+        self,
+        *,
+        grant_type: Annotated[
+            Union[str, None], Form(pattern="password")
+        ] = None,
+        username: Annotated[str, Form()],
+        password: Annotated[
+            str, Form(json_schema_extra={"format": "password"})
+        ],
+        scope: Annotated[str, Form()] = "",
+        client_id: Annotated[Union[str, None], Form()] = None,
+        client_secret: Annotated[
+            Union[str, None], Form(json_schema_extra={"format": "password"})
+        ] = None,
+    ):
+        super().__init__(
+            grant_type=grant_type,
+            username=username,
+            password=password,
+            scope=scope,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+
+
 webdomain = os.environ["WEBDOMAIN"]
 if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
@@ -107,15 +138,18 @@ def get_safe_base_url(req: Request) -> str:
 def login(
     req: Request,
     response: Response,
-    payload: OAuth2PasswordRequestForm = Depends(),
+    payload: OAuth2PasswordRequestFormMasked = Depends(),
     remember_me: bool = Form(False),
     session: Session = Depends(get_session),
 ):
-    if not payload.grant_type == "password":
+    if payload.grant_type and payload.grant_type != "password":
         raise HTTPException(status_code=404, detail="Invalid Grant Type")
-    if payload.client_id != os.environ["CLIENT_ID"]:
+    if payload.client_id and payload.client_id != os.environ["CLIENT_ID"]:
         raise HTTPException(status_code=404, detail="Invalid Client ID")
-    if payload.client_secret != os.environ["CLIENT_SECRET"]:
+    if (
+        payload.client_secret
+        and payload.client_secret != os.environ["CLIENT_SECRET"]
+    ):
         raise HTTPException(status_code=404, detail="Invalid Client Secret")
     for scope in payload.scopes:
         if scope not in oauth2_scopes:
