@@ -2,7 +2,7 @@ import os
 
 from datetime import datetime, timedelta
 
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, HTTPException, Request, Response, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBearer,
@@ -27,8 +27,10 @@ from db.crud_case import check_case_owner, get_case_by_id
 # openssl rand -hex 32
 SECRET_KEY = os.environ.get("SECRET_KEY", None)
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ACCESS_TOKEN_EXPIRE_DAYS = 1
+REFRESH_COOKIE_NAME = "REFRESH_TOKEN"
+REFRESH_COOKIE_REMEMBER_MAX_AGE = 30 * 24 * 60 * 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -65,8 +67,12 @@ def authenticate_user(session: Session, email: str, password: str):
     return user
 
 
-def create_access_token(data: dict):
-    expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+def create_access_token(
+    data: dict, expires_delta: Optional[timedelta] = None
+):
+    expire = datetime.utcnow() + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     data.update({"exp": expire})
     encoded_jwt = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -81,6 +87,41 @@ def generate_user_token(user) -> str:
             "role": role,
             "tools": user.tools or [],
         }
+    )
+
+
+def is_secure_request(req: Request) -> bool:
+    """Return True when the incoming request arrived over HTTPS."""
+    forwarded = req.headers.get("x-forwarded-proto", "").lower()
+    return req.url.scheme == "https" or forwarded == "https"
+
+
+def set_refresh_cookie(
+    response: Response,
+    req: Request,
+    raw_token: str,
+    remember_me: bool = False,
+) -> None:
+    """Attach the HttpOnly refresh token cookie scoped to path=/."""
+    response.set_cookie(
+        key=REFRESH_COOKIE_NAME,
+        value=raw_token,
+        httponly=True,
+        samesite="lax",
+        path="/",
+        secure=is_secure_request(req),
+        max_age=REFRESH_COOKIE_REMEMBER_MAX_AGE if remember_me else None,
+    )
+
+
+def clear_refresh_cookie(response: Response, req: Request) -> None:
+    """Expire and remove the HttpOnly refresh token cookie at path=/."""
+    response.delete_cookie(
+        key=REFRESH_COOKIE_NAME,
+        path="/",
+        httponly=True,
+        samesite="lax",
+        secure=is_secure_request(req),
     )
 
 
