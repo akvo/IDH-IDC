@@ -80,18 +80,18 @@ class EmailBody(enum.Enum):
     }
     FORGOT_PASSWORD = {
         "title": "Reset Password",
-        "subject": "Better Income Toolkit: Reset Your Password",
-        "body": "You have requested to reset your password.",
+        "subject": "Reset your Better Income Toolkit password",
+        "body": "You have requested to reset your Better Income Toolkit password.",
         "message": """
-            Please click
-            <a href="#url#" target="_blank" rel="noreferrer">
-                here
-            </a> or the link below to reset your password.
+            Please click the button below to set a new password:
+            <br/><br/>
+            <div style="text-align: center; margin: 24px 0;">
+                <a href="#url#" target="_blank" rel="noreferrer" style="background-color: #01625f; color: #ffffff; padding: 12px 28px; border-radius: 9999px; text-decoration: none; font-weight: bold; display: inline-block;">
+                    Set a new password
+                </a>
+            </div>
             <br/>
-            <br/>
-            <a href="#url#" target="_blank" rel="noreferrer">
-                #url#
-            </a>
+            The link is valid for 30 minutes. Didn’t ask for this? You can safely ignore this email.
         """,
         "image": f"{image_url}/info-circle.png",
     }

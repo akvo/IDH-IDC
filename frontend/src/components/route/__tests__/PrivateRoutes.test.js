@@ -1,8 +1,8 @@
 import React from "react";
 import { render, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
-import { Cookies } from "react-cookie";
 import { UserState, defaultUserState } from "../../../store";
+import { AuthInitContext } from "../../../lib/authRefresh";
 import PrivateRoutes from "../PrivateRoutes";
 import { routePath, paths } from "../paths";
 
@@ -20,11 +20,27 @@ const LocationCapture = () => {
 
 describe("PrivateRoutes Component", () => {
   beforeEach(() => {
-    const cookies = new Cookies();
-    cookies.remove("AUTH_TOKEN", { path: "/" });
     act(() => {
       UserState.update(() => ({ ...defaultUserState }));
     });
+  });
+
+  it("renders loading spinner without redirecting while auth is initializing", () => {
+    const { getByTestId, queryByText } = render(
+      <AuthInitContext.Provider value={true}>
+        <MemoryRouter initialEntries={["/private"]}>
+          <Routes>
+            <Route element={<PrivateRoutes />}>
+              <Route path="/private" element={<div>Mock Private Route</div>} />
+            </Route>
+            <Route path={paths.login} element={<div>Mock Login Page</div>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthInitContext.Provider>
+    );
+
+    expect(getByTestId("auth-loading")).toBeInTheDocument();
+    expect(queryByText("Mock Login Page")).not.toBeInTheDocument();
   });
 
   it("redirects unauthenticated visitors to /login preserving state.from", () => {
@@ -56,13 +72,12 @@ describe("PrivateRoutes Component", () => {
     expect(getByTestId("login-from")).toHaveTextContent("/private");
   });
 
-  it("renders Outlet when authToken and user info are available on non-IDC private route", () => {
-    const cookies = new Cookies();
+  it("renders Outlet when authenticated user info is available on non-IDC private route", () => {
     act(() => {
-      cookies.set("AUTH_TOKEN", "yourAuthToken", { path: "/" });
       UserState.update((s) => {
         s.id = 1;
         s.active = true;
+        s.isAuthenticated = true;
       });
     });
 
@@ -90,12 +105,11 @@ describe("PrivateRoutes Component", () => {
   ])(
     "redirects Academy-only user from IDC route (%s) to /academy with unauthorizedIDC state",
     (idcUrl) => {
-      const cookies = new Cookies();
       act(() => {
-        cookies.set("AUTH_TOKEN", "academyToken", { path: "/" });
         UserState.update((s) => {
           s.id = 2;
           s.active = true;
+          s.isAuthenticated = true;
           s.role = "user";
           s.tools = ["academy"];
         });
@@ -129,12 +143,11 @@ describe("PrivateRoutes Component", () => {
   );
 
   it("denies access on IDC route when user has empty tools array", () => {
-    const cookies = new Cookies();
     act(() => {
-      cookies.set("AUTH_TOKEN", "emptyToolsToken", { path: "/" });
       UserState.update((s) => {
         s.id = 3;
         s.active = true;
+        s.isAuthenticated = true;
         s.tools = [];
       });
     });
@@ -162,12 +175,11 @@ describe("PrivateRoutes Component", () => {
   });
 
   it("allows Academy-only user onto authenticated /academy/* routes", () => {
-    const cookies = new Cookies();
     act(() => {
-      cookies.set("AUTH_TOKEN", "academyToken", { path: "/" });
       UserState.update((s) => {
         s.id = 4;
         s.active = true;
+        s.isAuthenticated = true;
         s.tools = ["academy"];
       });
     });
@@ -193,12 +205,11 @@ describe("PrivateRoutes Component", () => {
   });
 
   it("allows authorized IDC / dual-access user onto IDC routes without interruption", () => {
-    const cookies = new Cookies();
     act(() => {
-      cookies.set("AUTH_TOKEN", "idcToken", { path: "/" });
       UserState.update((s) => {
         s.id = 5;
         s.active = true;
+        s.isAuthenticated = true;
         s.tools = ["idc", "academy"];
       });
     });
@@ -226,12 +237,11 @@ describe("PrivateRoutes Component", () => {
   it.each([[["IDC"]], [["academy", "idc_admin"]]])(
     "rejects case-mismatched or partial tool claims (%j) from IDC routes",
     (malformedTools) => {
-      const cookies = new Cookies();
       act(() => {
-        cookies.set("AUTH_TOKEN", "malformedToolsToken", { path: "/" });
         UserState.update((s) => {
           s.id = 6;
           s.active = true;
+          s.isAuthenticated = true;
           s.tools = malformedTools;
         });
       });

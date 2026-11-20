@@ -65,7 +65,7 @@ describe("VerifyAcademy Component", () => {
     await waitFor(() => {
       expect(screen.getByTestId("verify-success")).toBeInTheDocument();
       expect(
-        screen.getByText("Account Verified Successfully!")
+        screen.getByRole("heading", { name: "Your account is verified" })
       ).toBeInTheDocument();
       expect(screen.getByTestId("button-go-login")).toBeInTheDocument();
     });

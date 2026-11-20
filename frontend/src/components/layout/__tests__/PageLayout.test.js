@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { Cookies } from "react-cookie";
 import { Modal } from "antd";
 import { UserState } from "../../../store";
 import PageLayout, { PageHeader, getInitials } from "../PageLayout";
@@ -62,7 +61,7 @@ describe("PageLayout Component & Header Navigation", () => {
 
       const signInLink = screen.getByTestId("button-signin");
       expect(signInLink).toBeInTheDocument();
-      expect(signInLink).toHaveAttribute("href", paths.login);
+      expect(signInLink).toHaveAttribute("href", `${paths.login}?from=%2F`);
       expect(screen.queryByTestId("header-avatar-btn")).not.toBeInTheDocument();
       expect(screen.getByText("Tools & Resources")).toBeInTheDocument();
     });
@@ -200,11 +199,35 @@ describe("PageLayout Component & Header Navigation", () => {
 
       expect(modalSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: "Income Driver Calculator Access",
           className: "access-request-modal",
           okText: "Got it",
         })
       );
+
+      modalSpy.mockRestore();
+    });
+
+    it("does not select or highlight Income Driver Calculator in header menu when clicked by unauthorized user on /", () => {
+      const modalSpy = jest.spyOn(Modal, "info").mockImplementation(() => {
+        return { destroy: jest.fn() };
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/"]}>
+          <PageHeader isLoggedIn={true} />
+        </MemoryRouter>
+      );
+
+      const idcNav = screen.getByText("Income Driver Calculator");
+      const idcNavItem = idcNav.closest("li");
+
+      expect(idcNavItem).not.toHaveClass("ant-menu-item-selected");
+
+      fireEvent.click(idcNav);
+
+      expect(modalSpy).toHaveBeenCalled();
+      expect(idcNavItem).not.toHaveClass("ant-menu-item-selected");
+      expect(idcNavItem).not.toHaveClass("ant-menu-item-active");
 
       modalSpy.mockRestore();
     });
@@ -311,7 +334,7 @@ describe("PageLayout Component & Header Navigation", () => {
 
       expect(modalSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: "Income Driver Calculator Access",
+          className: "access-request-modal",
         })
       );
 
@@ -355,6 +378,19 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(screen.queryByTestId("layout-header")).not.toBeInTheDocument();
     });
 
+    it("renders layout content and suppresses header on /verify-academy route", () => {
+      render(
+        <MemoryRouter initialEntries={["/verify-academy"]}>
+          <PageLayout>
+            <div data-testid="child-content">Verify Academy Content</div>
+          </PageLayout>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByTestId("child-content")).toBeInTheDocument();
+      expect(screen.queryByTestId("layout-header")).not.toBeInTheDocument();
+    });
+
     it("renders header on standard application pages", () => {
       render(
         <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
@@ -371,8 +407,6 @@ describe("PageLayout Component & Header Navigation", () => {
 });
 
 describe("PageLayout header on Academy pages", () => {
-  const cookies = new Cookies();
-
   const renderAt = (path) =>
     render(
       <MemoryRouter initialEntries={[path]}>
@@ -390,10 +424,10 @@ describe("PageLayout header on Academy pages", () => {
   beforeEach(() => {
     window.innerWidth = 1024;
     act(() => {
-      cookies.set("AUTH_TOKEN", "token", { path: "/" });
       UserState.update((s) => {
         s.id = 1;
         s.active = true;
+        s.isAuthenticated = true;
         s.fullname = "Kole Johnson";
         s.user_profile = null;
       });
@@ -402,10 +436,10 @@ describe("PageLayout header on Academy pages", () => {
 
   afterEach(() => {
     act(() => {
-      cookies.remove("AUTH_TOKEN", { path: "/" });
       UserState.update((s) => {
         s.id = 0;
         s.active = false;
+        s.isAuthenticated = false;
         s.fullname = null;
         s.user_profile = null;
       });
@@ -429,10 +463,10 @@ describe("PageLayout header on Academy pages", () => {
 
   it("does not show the avatar or a stray '0' when signed out", () => {
     act(() => {
-      cookies.remove("AUTH_TOKEN", { path: "/" });
       UserState.update((s) => {
         s.id = 0;
         s.active = false;
+        s.isAuthenticated = false;
       });
     });
     renderAt(routePath.academy.overview);

@@ -1,6 +1,7 @@
 import "./home.scss";
+import React, { useEffect } from "react";
 import { Card, Row, Col, Image, Space } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LandingInfoDriversIcon,
   HomeExploreToolkitIcon,
@@ -16,12 +17,24 @@ import PizzaDiagram from "./PizzaDiagram";
 import LivingIncomeSteps from "./LivingIncomeSteps";
 import { useWindowDimensions } from "../../hooks";
 import { YOUTUBE_VIDEOS } from "../../constants/videos";
-import { YouTubePlayer } from "../../components/utils";
+import {
+  YouTubePlayer,
+  showIdcAccessRequestModal,
+} from "../../components/utils";
 
 const showWatchVideoBtn = false;
 
 const Home = () => {
   const { isMobile } = useWindowDimensions();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.unauthorizedIDC) {
+      showIdcAccessRequestModal({ navigate });
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.pathname, location.state, navigate]);
 
   const scrollToSection = (id = null, offset = 80) => {
     if (!id) {

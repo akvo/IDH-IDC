@@ -73,7 +73,7 @@ const Jumbotron = () => {
             </Link>
           ) : (
             <Link
-              to={routePath.idc.login}
+              to={`${routePath.idc.login}?from=idc_landing`}
               data-testid="button-learn-more"
               className="button button-yellow"
             >
