@@ -1,0 +1,192 @@
+@import "../../variables.scss";
+
+.access-request-modal {
+  max-width: 90vw;
+  width: 654px;
+
+  .ant-modal-content {
+    border-radius: 24px;
+    padding: 32px 36px;
+    background: #ffffff;
+    box-shadow: 0 20px 45px rgba(6, 27, 26, 0.2);
+    overflow: hidden;
+
+    @media (max-width: 1366px), (max-height: 800px) {
+      padding: 24px 28px;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 0;
+  }
+
+  .ant-modal-confirm-body {
+    .ant-modal-confirm-content {
+      margin: 0 !important;
+      max-width: 100% !important;
+    }
+  }
+
+  .idc-access-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    .modal-icon-badge {
+      margin-bottom: 16px;
+
+      .icon-circle {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-color: rgba(1, 98, 95, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .badge-icon {
+          font-size: 28px;
+          color: #01625f;
+        }
+
+        @media (max-width: 1366px), (max-height: 800px) {
+          width: 48px;
+          height: 48px;
+
+          .badge-icon {
+            font-size: 24px;
+          }
+        }
+      }
+    }
+
+    .modal-title {
+      font-family: "RocGroteskBold", sans-serif;
+      font-size: 20px;
+      line-height: 28px;
+      color: #0c2d2a;
+      margin-bottom: 16px;
+      max-width: 540px;
+
+      @media (max-width: 1366px), (max-height: 800px) {
+        font-size: 17px;
+        line-height: 24px;
+        margin-bottom: 12px;
+      }
+    }
+
+    .modal-body-text {
+      font-family: "TabletGothic", sans-serif;
+      font-size: 14px;
+      line-height: 22px;
+      color: #4a5568;
+      margin-bottom: 20px;
+      text-align: center;
+
+      @media (max-width: 1366px), (max-height: 800px) {
+        font-size: 13px;
+        line-height: 19px;
+        margin-bottom: 16px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .modal-email-link {
+        color: #01625f;
+        font-weight: 700;
+        text-decoration: underline;
+
+        &:hover {
+          color: lighten(#01625f, 10%);
+        }
+      }
+    }
+
+    .modal-checkbox-row {
+      margin-bottom: 24px;
+      align-self: flex-start;
+
+      @media (max-width: 1366px), (max-height: 800px) {
+        margin-bottom: 18px;
+      }
+
+      .ant-checkbox-wrapper {
+        font-family: "TabletGothic", sans-serif;
+        font-size: 13px;
+        color: #4a5568;
+
+        .ant-checkbox-inner {
+          border-radius: 4px;
+          border-color: #a0aec0;
+        }
+
+        .ant-checkbox-checked .ant-checkbox-inner {
+          background-color: #01625f;
+          border-color: #01625f;
+        }
+      }
+    }
+
+    .modal-actions-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+
+      .button-modal-discard {
+        border-radius: 999px;
+        padding: 0 24px;
+        height: 42px;
+        font-family: "TabletGothicBold", sans-serif;
+        font-size: 14px;
+        color: #01625f;
+        border: 1.5px solid #01625f;
+        background: transparent;
+
+        &:hover {
+          background: rgba(1, 98, 95, 0.05);
+          color: #01625f;
+          border-color: #01625f;
+        }
+
+        @media (max-width: 1366px), (max-height: 800px) {
+          height: 38px;
+          font-size: 13px;
+        }
+      }
+
+      .button-modal-explore {
+        border-radius: 999px;
+        padding: 0 28px;
+        height: 42px;
+        font-family: "TabletGothicBold", sans-serif;
+        font-size: 14px;
+        background-color: #01625f;
+        color: #ffffff;
+        border: none;
+        box-shadow: none;
+
+        &:hover {
+          background-color: lighten(#01625f, 5%) !important;
+          color: #ffffff !important;
+        }
+
+        @media (max-width: 1366px), (max-height: 800px) {
+          height: 38px;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+// Global modal backdrop blur
+.ant-modal-wrap:has(.access-request-modal) {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background-color: rgba(6, 27, 26, 0.4);
+}

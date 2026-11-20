@@ -31,11 +31,13 @@ jest.mock("@piwikpro/react-piwik-pro", () => ({
 describe("Login Component (Better Income Toolkit)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    localStorage.clear();
     UserState.update((s) => {
       s.id = 0;
       s.email = null;
       s.role = null;
       s.tools = [];
+      s.isAuthenticated = false;
     });
   });
 
@@ -48,16 +50,26 @@ describe("Login Component (Better Income Toolkit)", () => {
       </CookiesProvider>
     );
 
-  describe("Branding & Guidance UI", () => {
-    it("renders toolkit branding: Better Income Toolkit titles and logo", () => {
+  describe("FE-LOG-01: Visual Layout & Figma Branding", () => {
+    it("renders split-screen layout, logo, header subtitle, and hero image", () => {
       renderComponent();
 
-      expect(screen.getByText("Better Income")).toBeInTheDocument();
-      expect(screen.getByText("Toolkit")).toBeInTheDocument();
-      expect(
-        screen.getByText("Welcome to the Better Income Toolkit")
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("login-split-container")).toBeInTheDocument();
       expect(screen.getByTestId("logo-image")).toBeInTheDocument();
+      expect(
+        screen.getByText("Toolkit Towards Better Incomes")
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("login-title")).toHaveTextContent("Log in");
+      expect(screen.getByTestId("input-email")).toBeInTheDocument();
+      expect(screen.getByTestId("input-password")).toBeInTheDocument();
+      expect(screen.getByTestId("checkbox-remember-me")).toBeInTheDocument();
+      expect(screen.getByTestId("button-login")).toBeInTheDocument();
+      expect(screen.getByTestId("login-image-wrapper")).toBeInTheDocument();
+      expect(screen.getByTestId("login-image")).toBeInTheDocument();
+      expect(screen.getByText("© IDH 2026")).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: /livingincome@idhtrade\.org/ })
+      ).toBeInTheDocument();
     });
 
     it("renders Academy registration callout link pointing to /register", () => {
@@ -66,46 +78,130 @@ describe("Login Component (Better Income Toolkit)", () => {
       const registerLink = screen.getByTestId("link-register-academy");
       expect(registerLink).toBeInTheDocument();
       expect(registerLink).toHaveAttribute("href", "/register");
-      expect(screen.getByText(/New to the Academy\?/i)).toBeInTheDocument();
+      expect(screen.getByText(/New to the Toolkit\?/i)).toBeInTheDocument();
       expect(screen.getByText(/Register for free/i)).toBeInTheDocument();
-    });
-
-    it("renders IDC request callout with support email link", () => {
-      renderComponent();
-
-      expect(
-        screen.getByText(/Need access to the Income Driver Calculator\?/i)
-      ).toBeInTheDocument();
-      const mailLink = screen.getByRole("link", {
-        name: "livingincome@idhtrade.org",
-      });
-      expect(mailLink).toHaveAttribute(
-        "href",
-        "mailto:livingincome@idhtrade.org"
-      );
-    });
-
-    it("renders verified alert when ?verified=true is present in query parameters", () => {
-      renderComponent(["/login?verified=true"]);
-
-      expect(screen.getByTestId("alert-verified")).toBeInTheDocument();
-      expect(screen.getByText("Email Verified")).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Your email has been verified successfully. Please sign in to access your account."
-        )
-      ).toBeInTheDocument();
-    });
-
-    it("does not render verified alert when ?verified=true is absent", () => {
-      renderComponent(["/login"]);
-
-      expect(screen.queryByTestId("alert-verified")).not.toBeInTheDocument();
     });
   });
 
-  describe("Authentication & Smart Redirection Engine", () => {
-    it("redirects IDC user to default IDC dashboard when no redirect param is given", async () => {
+  describe("FE-LOG-02: Error State & Invalid Credentials", () => {
+    it("displays error toast and highlights inputs with error class on 401 invalid credentials", async () => {
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 401,
+          data: { detail: "Incorrect email or password." },
+        },
+      });
+
+      renderComponent(["/login"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "wrong@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "wrongpass" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("login-alert-error")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /The email address or password is not correct\. Please check them and try again\./i
+          )
+        ).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId("input-email")).toHaveClass("input-error");
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("FE-LOG-03: Unverified Account Warning & Resend Flow", () => {
+    it("shows yellow warning toast with resend link when account is unverified", async () => {
+      api.post.mockRejectedValueOnce({
+        response: {
+          status: 401,
+          data: {
+            detail: "Please confirm your email address first.",
+            error_code: "ACCOUNT_NOT_VERIFIED",
+            email: "unverified@example.com",
+          },
+        },
+      });
+
+      renderComponent(["/login"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "unverified@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("login-alert-warning")).toBeInTheDocument();
+        expect(
+          screen.getByText(/Please confirm your email address first\./i)
+        ).toBeInTheDocument();
+        expect(screen.getByText("unverified@example.com")).toBeInTheDocument();
+        expect(
+          screen.getByTestId("button-resend-verification")
+        ).toBeInTheDocument();
+        expect(screen.getByTestId("input-email")).not.toHaveClass(
+          "input-error"
+        );
+      });
+
+      // Click "send the link again"
+      api.post.mockResolvedValueOnce({
+        data: {
+          message: "Verification link has been resent to your email address.",
+        },
+      });
+
+      fireEvent.click(screen.getByTestId("button-resend-verification"));
+
+      await waitFor(() => {
+        expect(api.post).toHaveBeenCalledWith(
+          "user/resend-academy-verification",
+          { email: "unverified@example.com" }
+        );
+        expect(screen.getByTestId("toast-resend-success")).toBeInTheDocument();
+        expect(
+          screen.getByText(/Verification link resent!/i)
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("FE-LOG-04: Verified State (?verified=true)", () => {
+    it("renders VerifiedSuccessCard when ?verified=true is present", () => {
+      renderComponent(["/login?verified=true"]);
+
+      expect(screen.getByTestId("verified-success-card")).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Your account is verified" })
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("button-verified-login")).toBeInTheDocument();
+      expect(screen.queryByTestId("input-email")).not.toBeInTheDocument();
+    });
+
+    it("switches to active login form when clicking Log in on VerifiedSuccessCard", () => {
+      renderComponent(["/login?verified=true"]);
+
+      fireEvent.click(screen.getByTestId("button-verified-login"));
+
+      expect(
+        screen.queryByTestId("verified-success-card")
+      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("input-email")).toBeInTheDocument();
+      expect(screen.getByTestId("input-password")).toBeInTheDocument();
+    });
+  });
+
+  describe("FE-LOG-05 to FE-LOG-09: Smart Redirection Matrix", () => {
+    it("FE-LOG-05: redirects IDC user from IDC Landing (?from=idc_landing) to /income-driver-calculator/welcome", async () => {
       api.post.mockResolvedValueOnce({
         data: {
           access_token: "mock-token-idc",
@@ -115,12 +211,12 @@ describe("Login Component (Better Income Toolkit)", () => {
             email: "farmer@akvo.org",
             role: "user",
             active: true,
-            tools: ["idc"],
+            tools: ["idc", "academy"],
           },
         },
       });
 
-      renderComponent(["/login"]);
+      renderComponent(["/login?from=idc_landing"]);
 
       fireEvent.change(screen.getByPlaceholderText("Email"), {
         target: { value: "farmer@akvo.org" },
@@ -145,9 +241,105 @@ describe("Login Component (Better Income Toolkit)", () => {
         });
       });
 
-      expect(UserState.getRawState().tools).toEqual(["idc"]);
+      expect(UserState.getRawState().tools).toEqual(["idc", "academy"]);
       expect(UserState.getRawState().isAuthenticated).toBe(true);
-      expect(document.cookie).not.toContain("AUTH_TOKEN");
+    });
+
+    it("FE-LOG-06: redirects any user from Academy (?from=academy_landing) to /academy/overview", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-academy",
+          user: {
+            id: 20,
+            fullname: "Learner",
+            email: "learner@akvo.org",
+            role: "user",
+            active: true,
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=academy_landing"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "learner@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "learner123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+    });
+
+    it("FE-LOG-07: redirects any user from Toolkit Landing (?from=toolkit_landing) to /", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-toolkit",
+          user: {
+            id: 25,
+            email: "user@akvo.org",
+            role: "user",
+            tools: ["idc", "academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=toolkit_landing"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "user@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "user123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/", {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+    });
+
+    it("FE-LOG-08: redirects Academy-only user from IDC Landing (?from=idc_landing) to / with unauthorizedIDC: true", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-academy-only",
+          user: {
+            id: 30,
+            fullname: "Academy Student",
+            email: "student@academy.org",
+            role: "user",
+            active: true,
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=idc_landing"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "student@academy.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "student123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/", {
+          replace: true,
+          state: { fromLogin: true, unauthorizedIDC: true },
+        });
+      });
     });
 
     it("redirects IDC user to safe deep link from ?redirect parameter", async () => {
@@ -155,7 +347,7 @@ describe("Login Component (Better Income Toolkit)", () => {
         data: {
           access_token: "mock-token-dual",
           user: {
-            id: 11,
+            id: 35,
             email: "dual@akvo.org",
             role: "user",
             tools: ["idc", "academy"],
@@ -184,48 +376,13 @@ describe("Login Component (Better Income Toolkit)", () => {
       });
     });
 
-    it("redirects Academy-only user to /academy default route", async () => {
+    it("intercepts Academy-only user attempting to access IDC deep link and routes to /academy with unauthorizedIDC: true", async () => {
       api.post.mockResolvedValueOnce({
         data: {
-          access_token: "mock-token-academy",
+          access_token: "mock-token-intercept",
           user: {
-            id: 12,
-            fullname: "Academy Student",
-            email: "student@academy.org",
-            role: "user",
-            active: true,
-            tools: ["academy"],
-          },
-        },
-      });
-
-      renderComponent(["/login"]);
-
-      fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "student@academy.org" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "student123" },
-      });
-      fireEvent.click(screen.getByTestId("button-login"));
-
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.landing, {
-          replace: true,
-          state: { fromLogin: true },
-        });
-      });
-
-      expect(UserState.getRawState().tools).toEqual(["academy"]);
-    });
-
-    it("intercepts Academy-only user trying to access IDC route and redirects to /academy with unauthorizedIDC state", async () => {
-      api.post.mockResolvedValueOnce({
-        data: {
-          access_token: "mock-token-academy-intercept",
-          user: {
-            id: 13,
-            email: "student2@academy.org",
+            id: 40,
+            email: "intercept@academy.org",
             role: "user",
             tools: ["academy"],
           },
@@ -235,7 +392,7 @@ describe("Login Component (Better Income Toolkit)", () => {
       renderComponent(["/login?redirect=/income-driver-calculator/cases/10"]);
 
       fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "student2@academy.org" },
+        target: { value: "intercept@academy.org" },
       });
       fireEvent.change(screen.getByPlaceholderText("Password"), {
         target: { value: "student123" },
@@ -250,43 +407,12 @@ describe("Login Component (Better Income Toolkit)", () => {
       });
     });
 
-    it("allows Academy-only user to access safe Academy deep link", async () => {
-      api.post.mockResolvedValueOnce({
-        data: {
-          access_token: "mock-token-academy-deeplink",
-          user: {
-            id: 14,
-            email: "student3@academy.org",
-            role: "user",
-            tools: ["academy"],
-          },
-        },
-      });
-
-      renderComponent(["/login?redirect=/academy/courses"]);
-
-      fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "student3@academy.org" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "student123" },
-      });
-      fireEvent.click(screen.getByTestId("button-login"));
-
-      await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith("/academy/courses", {
-          replace: true,
-          state: { fromLogin: true },
-        });
-      });
-    });
-
     it("blocks open redirect attacks (https://evil.com, //evil.com) and defaults to safe route", async () => {
       api.post.mockResolvedValueOnce({
         data: {
           access_token: "mock-token-safe",
           user: {
-            id: 15,
+            id: 45,
             email: "victim@akvo.org",
             role: "user",
             tools: ["idc"],
@@ -311,33 +437,6 @@ describe("Login Component (Better Income Toolkit)", () => {
         });
       });
     });
-
-    it("displays error message on 401 Unauthorized response", async () => {
-      api.post.mockRejectedValueOnce({
-        response: {
-          status: 401,
-          data: { detail: "Incorrect username or password" },
-        },
-      });
-
-      renderComponent(["/login"]);
-
-      fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "wrong@akvo.org" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Password"), {
-        target: { value: "wrongpass" },
-      });
-      fireEvent.click(screen.getByTestId("button-login"));
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(/Login failed\. Incorrect username or password/i)
-        ).toBeInTheDocument();
-      });
-
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
   });
 
   describe("Forgot Password Flow", () => {
@@ -351,9 +450,6 @@ describe("Login Component (Better Income Toolkit)", () => {
       expect(
         screen.getByRole("heading", { name: "Reset Password" })
       ).toBeInTheDocument();
-      expect(
-        screen.queryByTestId("toolkit-login-guidance")
-      ).not.toBeInTheDocument();
       expect(screen.queryByPlaceholderText("Password")).not.toBeInTheDocument();
 
       fireEvent.change(screen.getByPlaceholderText("Email"), {

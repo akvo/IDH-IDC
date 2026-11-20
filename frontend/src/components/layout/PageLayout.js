@@ -39,7 +39,13 @@ export const getInitials = (name, mail) => {
   return "U";
 };
 
-const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
+const pagesWithNoSider = [
+  "/",
+  "/login",
+  "/welcome",
+  "/register",
+  "/verify-academy",
+];
 const { Header, Content } = Layout;
 
 // Keep the top-level menu item active on nested pages, e.g. /academy/courses
@@ -126,7 +132,7 @@ export const PageHeader = ({ isLoggedIn }) => {
   const handleMenuClick = ({ key }) => {
     if (key === routePath.idc.dashboard || key === routePath.idc.landing) {
       if (isLoggedIn && !hasIdcAccess) {
-        showIdcAccessRequestModal();
+        showIdcAccessRequestModal({ force: true, navigate });
         setDrawerVisible(false);
         return;
       }
@@ -175,7 +181,7 @@ export const PageHeader = ({ isLoggedIn }) => {
             ),
             onClick: () => {
               if (!hasIdcAccess) {
-                showIdcAccessRequestModal();
+                showIdcAccessRequestModal({ force: true, navigate });
                 return;
               }
               navigate(routePath.idc.dashboard);
@@ -417,7 +423,11 @@ export const PageHeader = ({ isLoggedIn }) => {
                       block
                       className="button-green"
                       onClick={() => {
-                        navigate(paths.login);
+                        navigate(
+                          `${paths.login}?from=${encodeURIComponent(
+                            location.pathname
+                          )}`
+                        );
                         setDrawerVisible(false);
                       }}
                       data-testid="button-drawer-login"
@@ -476,7 +486,13 @@ export const PageHeader = ({ isLoggedIn }) => {
                 </Dropdown>
               ) : (
                 <Link
-                  to={paths.login}
+                  to={
+                    location.pathname && location.pathname !== "/"
+                      ? `${paths.login}?from=${encodeURIComponent(
+                          location.pathname
+                        )}`
+                      : paths.login
+                  }
                   className="nav-sign-in"
                   data-testid="button-signin"
                 >
@@ -501,9 +517,9 @@ const PageLayout = ({ children }) => {
 
   const pagesWithNoHeader = useMemo(() => {
     if (isMobile) {
-      return ["/register"];
+      return ["/register", "/verify-academy"];
     }
-    return ["/login", "/register"];
+    return ["/login", "/register", "/verify-academy"];
   }, [isMobile]);
 
   const isLoggedIn = useMemo(

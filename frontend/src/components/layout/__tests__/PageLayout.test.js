@@ -354,6 +354,19 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(screen.queryByTestId("layout-header")).not.toBeInTheDocument();
     });
 
+    it("renders layout content and suppresses header on /verify-academy route", () => {
+      render(
+        <MemoryRouter initialEntries={["/verify-academy"]}>
+          <PageLayout>
+            <div data-testid="child-content">Verify Academy Content</div>
+          </PageLayout>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByTestId("child-content")).toBeInTheDocument();
+      expect(screen.queryByTestId("layout-header")).not.toBeInTheDocument();
+    });
+
     it("renders header on standard application pages", () => {
       render(
         <MemoryRouter initialEntries={[routePath.idc.dashboard]}>

@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
-import { Row, Col, Typography, Image, Spin, Button } from "antd";
-import { CheckCircleFilled, CloseCircleFilled } from "@ant-design/icons";
+import { Spin, Button } from "antd";
+import { CloseCircleFilled, MailOutlined } from "@ant-design/icons";
 import { api } from "../../lib";
-import ImageRight from "../../assets/images/login-right-img.png";
-import LogoWhite from "../../assets/images/logo-white.png";
+import ImageRight from "../../assets/images/login-right-img.jpg";
+import Logo from "../../assets/images/logo.png";
+import VerifiedIllustration from "../../assets/images/account-verified-illustration.png";
 import { routePath } from "../../components/route";
 import "./login.scss";
 
 const VerifyAcademy = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [status, setStatus] = useState("loading"); // "loading" | "success" | "error"
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -40,34 +42,42 @@ const VerifyAcademy = () => {
 
   return (
     <ContentLayout wrapperId="login">
-      <Row align="middle" className="login-container">
-        <Col span={12} align="start" className="login-form-wrapper">
-          <Image
-            src={LogoWhite}
-            height={55}
-            preview={false}
-            data-testid="logo-image"
-          />
-          <Col span={24} align="center" className="login-form">
-            <div className="page-title-container">
-              <Typography.Title>
-                Living Income <br />
-                <span style={{ color: "#47d985", fontSize: "2.5rem" }}>
-                  Academy
-                </span>
-              </Typography.Title>
-              <Typography.Title level={3}>
-                Account Verification
-              </Typography.Title>
-            </div>
+      <div
+        className="login-split-container"
+        data-testid="login-split-container"
+      >
+        {/* Left Pane: Onboarding Container */}
+        <div className="login-left-pane">
+          {/* Header */}
+          <div className="login-pane-header">
+            <img
+              src={Logo}
+              alt="IDH Logo"
+              className="header-logo"
+              data-testid="logo-image"
+            />
+            <div className="header-divider" />
+            <span className="header-subtitle">
+              Toolkit Towards Better Incomes
+            </span>
+          </div>
 
+          {/* Body Content */}
+          <div className="login-pane-body">
             {status === "loading" && (
               <div
                 style={{ padding: "40px 0", textAlign: "center" }}
                 data-testid="verify-loading"
               >
                 <Spin size="large" />
-                <p style={{ marginTop: 16, color: "#fff", fontSize: 16 }}>
+                <p
+                  style={{
+                    marginTop: 16,
+                    color: "#01625f",
+                    fontSize: 16,
+                    fontFamily: "TabletGothic, sans-serif",
+                  }}
+                >
                   Verifying your Living Income Academy account...
                 </p>
               </div>
@@ -75,50 +85,60 @@ const VerifyAcademy = () => {
 
             {status === "success" && (
               <div
-                className="registration-feedback-view"
+                className="verified-success-card"
                 data-testid="verify-success"
               >
-                <CheckCircleFilled
-                  style={{
-                    fontSize: 54,
-                    color: "#47d985",
-                    marginBottom: 20,
-                  }}
-                />
-                <h2>Account Verified Successfully!</h2>
-                <p className="feedback-description">
-                  Your Living Income Academy account is now active. You may now
-                  sign in to begin learning.
-                </p>
-                <Link to={`${routePath.idc.login}?verified=true`}>
-                  <Button
-                    size="large"
-                    type="primary"
-                    className="button-login"
-                    data-testid="button-go-login"
-                    block
-                  >
-                    Sign In Now
-                  </Button>
-                </Link>
+                <div className="verified-illustration-wrapper">
+                  <img
+                    src={VerifiedIllustration}
+                    alt="Your account is verified"
+                    className="verified-illustration"
+                    data-testid="verified-illustration"
+                  />
+                </div>
+                <h1 className="verified-title" data-testid="verified-title">
+                  Your account <br />
+                  is verified
+                </h1>
+                <Button
+                  size="large"
+                  type="primary"
+                  className="button-login button-verified"
+                  data-testid="button-go-login"
+                  onClick={() => navigate(routePath.idc.login)}
+                  block
+                >
+                  Log in
+                </Button>
               </div>
             )}
 
             {status === "error" && (
               <div
-                className="registration-feedback-view"
+                className="verified-success-card verified-error-card"
                 data-testid="verify-error"
               >
                 <CloseCircleFilled
                   style={{
                     fontSize: 54,
-                    color: "#ff4d4f",
+                    color: "#ff010e",
                     marginBottom: 20,
                   }}
                 />
-                <h2>Verification Failed</h2>
-                <p className="feedback-description">{errorMessage}</p>
-                <Link to="/register">
+                <h1 className="verified-title" style={{ fontSize: 28 }}>
+                  Verification Failed
+                </h1>
+                <p
+                  style={{
+                    fontFamily: "TabletGothic, sans-serif",
+                    fontSize: 14,
+                    color: "#666",
+                    marginBottom: 24,
+                  }}
+                >
+                  {errorMessage}
+                </p>
+                <Link to="/register" style={{ width: "100%" }}>
                   <Button
                     size="large"
                     type="primary"
@@ -129,42 +149,50 @@ const VerifyAcademy = () => {
                     Register Again
                   </Button>
                 </Link>
-                <div style={{ marginTop: 14 }}>
-                  <Link to={routePath.idc.login}>
+                <div style={{ marginTop: 14, width: "100%" }}>
+                  <Link to={routePath.idc.login} style={{ width: "100%" }}>
                     <Button
                       size="large"
-                      className="button-secondary"
+                      className="button-login"
                       data-testid="button-back-login"
                       block
                       style={{
                         background: "transparent",
-                        borderColor: "rgba(255, 255, 255, 0.4)",
-                        color: "#fff",
-                        borderRadius: 20,
+                        borderColor: "#01625f",
+                        color: "#01625f",
                       }}
                     >
-                      Return to Sign In
+                      Return to Log in
                     </Button>
                   </Link>
                 </div>
               </div>
             )}
-          </Col>
-        </Col>
-        <Col
-          span={12}
-          align="end"
-          data-testid="login-image-wrapper"
-          className="login-image-wrapper"
-        >
-          <Image
+          </div>
+
+          {/* Footer */}
+          <div className="login-pane-footer">
+            <span className="footer-copyright">© IDH 2026</span>
+            <a
+              href="mailto:livingincome@idhtrade.org"
+              className="footer-email-link"
+            >
+              <MailOutlined className="footer-email-icon" />
+              <span>livingincome@idhtrade.org</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Right Pane: Hero Imagery */}
+        <div className="login-right-pane" data-testid="login-image-wrapper">
+          <img
             src={ImageRight}
-            preview={false}
-            className="login-image"
+            alt="Living Income Academy & Toolkit collaboration"
+            className="login-hero-image"
             data-testid="login-image"
           />
-        </Col>
-      </Row>
+        </div>
+      </div>
     </ContentLayout>
   );
 };
