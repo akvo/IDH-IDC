@@ -1,6 +1,7 @@
 import axios from "axios";
 import { message } from "antd";
 import api, { config } from "../../../lib/api";
+import { isAuthBypassUrl, refreshAccessToken } from "../../../lib/authRefresh";
 
 export const DEFAULT_ERROR_MESSAGE = "Something went wrong. Please try again.";
 // Shared key so a burst of failing requests shows a single toast
@@ -9,6 +10,7 @@ const GLOBAL_ERROR_KEY = "academy-api-error";
 export const academyClient = axios.create({
   baseURL: config.baseURL,
   headers: config.headers,
+  withCredentials: true,
 });
 
 // Attach the session token set by App via api.setToken
@@ -48,10 +50,29 @@ export const normaliseError = (error) => {
 
 academyClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     // Deliberately cancelled requests are not failures
     if (axios.isCancel(error)) {
       return Promise.reject(error);
+    }
+    const originalRequest = error?.config;
+    if (
+      error?.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !isAuthBypassUrl(originalRequest.url)
+    ) {
+      originalRequest._retry = true;
+      try {
+        const freshToken = await refreshAccessToken();
+        originalRequest.headers = {
+          ...(originalRequest.headers || {}),
+          Authorization: `Bearer ${freshToken}`,
+        };
+        return academyClient(originalRequest);
+      } catch {
+        api.setToken(null);
+      }
     }
     const normalised = normaliseError(error);
     // Expired or revoked session: stop sending the stale token

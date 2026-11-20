@@ -33,7 +33,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const [, setCookie, removeCookie] = useCookies(["AUTH_TOKEN"]);
+  const [, , removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isResetPassword, setIsResetPassword] = useState(false);
   const { isMobile } = useWindowDimensions();
@@ -87,8 +87,7 @@ const Login = () => {
         const token = data?.access_token;
         const user = data?.user;
 
-        removeCookie("AUTH_TOKEN");
-        setCookie("AUTH_TOKEN", token, { path: "/" });
+        removeCookie("AUTH_TOKEN", { path: "/" });
         api.setToken(token);
 
         if (user) {
@@ -112,6 +111,13 @@ const Login = () => {
             s.isCaseCreator =
               user.role === "admin" || user.user_type === "external_advanced";
             s.tools = user.tools || [];
+            s.isAuthenticated = true;
+            s.authInitializing = false;
+          });
+        } else {
+          UserState.update((s) => {
+            s.isAuthenticated = true;
+            s.authInitializing = false;
           });
         }
 

@@ -8,12 +8,13 @@ const useSignOut = () => {
   const [, , removeCookie] = useCookies(["AUTH_TOKEN"]);
 
   const signOut = useCallback(() => {
-    removeCookie("AUTH_TOKEN");
+    api.post("user/logout").catch(() => {});
+    removeCookie("AUTH_TOKEN", { path: "/" });
 
     // Drop the in-memory bearer token too, or clients that read api.token
     // keep sending the previous user's token until a full reload
     api.setToken(null);
-    UserState.replace(defaultUserState);
+    UserState.replace({ ...defaultUserState, authInitializing: false });
   }, [removeCookie]);
 
   return signOut;

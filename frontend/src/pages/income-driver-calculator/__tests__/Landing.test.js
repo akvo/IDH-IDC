@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import Landing from "../Landing";
+import { AuthInitContext } from "../../../lib/authRefresh";
 import { UserState } from "../../../store";
 import { defaultUserState } from "../../../store/user";
 import { routePath } from "../../../components/route";
@@ -42,24 +43,24 @@ const AcademyRedirectProbe = () => {
 
 describe("IDC Landing Tool Guard", () => {
   beforeEach(() => {
-    document.cookie =
-      "AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     UserState.update(() => ({ ...defaultUserState }));
   });
 
-  const renderLanding = () =>
+  const renderLanding = (authInitializing = false) =>
     render(
-      <CookiesProvider>
-        <MemoryRouter initialEntries={[routePath.idc.landing]}>
-          <Routes>
-            <Route path={routePath.idc.landing} element={<Landing />} />
-            <Route
-              path={routePath.academy.landing}
-              element={<AcademyRedirectProbe />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </CookiesProvider>
+      <AuthInitContext.Provider value={authInitializing}>
+        <CookiesProvider>
+          <MemoryRouter initialEntries={[routePath.idc.landing]}>
+            <Routes>
+              <Route path={routePath.idc.landing} element={<Landing />} />
+              <Route
+                path={routePath.academy.landing}
+                element={<AcademyRedirectProbe />}
+              />
+            </Routes>
+          </MemoryRouter>
+        </CookiesProvider>
+      </AuthInitContext.Provider>
     );
 
   it("allows unauthenticated public visitors to view IDC landing page", () => {
@@ -90,5 +91,19 @@ describe("IDC Landing Tool Guard", () => {
 
     renderLanding();
     expect(screen.getByTestId("idc-jumbotron")).toBeInTheDocument();
+  });
+
+  it("defers tool redirect while authInitializing is true", () => {
+    UserState.update((s) => {
+      s.id = 203;
+      s.active = 1;
+      s.tools = ["academy"];
+    });
+
+    renderLanding(true);
+    expect(screen.getByTestId("idc-jumbotron")).toBeInTheDocument();
+    expect(
+      screen.queryByTestId("academy-redirect-probe")
+    ).not.toBeInTheDocument();
   });
 });

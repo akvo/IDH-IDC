@@ -10,7 +10,6 @@ import {
   Dropdown,
   Tag,
 } from "antd";
-import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
@@ -495,7 +494,7 @@ export const PageHeader = ({ isLoggedIn }) => {
 const PageLayout = ({ children }) => {
   const location = useLocation();
   const pathname = location?.pathname;
-  const [cookies] = useCookies(["AUTH_TOKEN"]);
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
   const userId = UserState.useState((s) => s.id);
   const userActive = UserState.useState((s) => s.active);
   const { isMobile } = useWindowDimensions();
@@ -507,14 +506,9 @@ const PageLayout = ({ children }) => {
     return ["/login", "/register"];
   }, [isMobile]);
 
-  const authTokenAvailable = useMemo(() => {
-    const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
-    return res;
-  }, [cookies?.AUTH_TOKEN]);
-
   const isLoggedIn = useMemo(
-    () => Boolean(authTokenAvailable || (userId && userActive)),
-    [authTokenAvailable, userId, userActive]
+    () => Boolean(storeIsAuth || (userId && userActive)),
+    [storeIsAuth, userId, userActive]
   );
 
   const isResetPasswordPage =
