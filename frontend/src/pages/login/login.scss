@@ -407,6 +407,11 @@
             line-height: 34px;
             margin-bottom: 16px;
           }
+
+          @media (max-width: 480px) {
+            font-size: 24px;
+            line-height: 32px;
+          }
         }
 
         .split-form-login {
@@ -762,6 +767,13 @@
         .login-pane-body {
           padding: 20px;
           max-width: 100%;
+
+          .split-form-login {
+            .ant-input:not(.ant-input-affix-wrapper input),
+            .ant-input-affix-wrapper input {
+              font-size: 16px !important;
+            }
+          }
         }
 
         .login-pane-footer {
@@ -789,6 +801,11 @@
     box-sizing: border-box;
     width: 100%;
 
+    @media (max-width: 1366px), (max-height: 800px) {
+      padding: 12px 14px;
+      border-radius: 12px;
+    }
+
     .toast-icon {
       flex-shrink: 0;
       padding: 2px 0 0 0;
@@ -799,6 +816,10 @@
       .anticon {
         font-size: 20px;
         line-height: 1;
+
+        @media (max-width: 1366px), (max-height: 800px) {
+          font-size: 18px;
+        }
       }
     }
 
@@ -816,6 +837,11 @@
         margin: 0;
         color: #000000;
         word-break: break-word;
+
+        @media (max-width: 1366px), (max-height: 800px) {
+          font-size: 13px;
+          line-height: 1.45;
+        }
 
         .toast-link {
           color: #01625f;
@@ -860,6 +886,10 @@
         cursor: pointer;
         display: inline-block;
 
+        @media (max-width: 1366px), (max-height: 800px) {
+          font-size: 13px;
+        }
+
         &:hover {
           text-decoration: underline;
           color: darken(#ff010e, 10%) !important;
@@ -896,6 +926,10 @@
         background: none;
         border: none;
         align-self: flex-start;
+
+        @media (max-width: 1366px), (max-height: 800px) {
+          font-size: 13px;
+        }
 
         &:hover {
           text-decoration: underline;
@@ -956,6 +990,11 @@
         line-height: 34px;
         margin-bottom: 20px;
       }
+
+      @media (max-width: 480px) {
+        font-size: 22px;
+        line-height: 28px;
+      }
     }
 
     .button-verified {
@@ -974,6 +1013,11 @@
       &:hover {
         background-color: lighten(#01625f, 5%) !important;
         color: #ffffff !important;
+      }
+
+      @media (max-width: 1366px), (max-height: 800px) {
+        height: 42px;
+        font-size: 14px;
       }
     }
   }
