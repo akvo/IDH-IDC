@@ -440,33 +440,24 @@ describe("Login Component (Better Income Toolkit)", () => {
     });
   });
 
-  describe("Forgot Password Flow", () => {
-    it("toggles to Reset Password mode and submits reset email request", async () => {
-      api.post.mockResolvedValueOnce({ data: { message: "Reset email sent" } });
-
+  describe("Forgot Password & Password Changed Flow", () => {
+    it("renders Forgot password link pointing to /forgot-password", () => {
       renderComponent();
 
-      fireEvent.click(screen.getByTestId("link-forgot-password"));
+      const forgotLink = screen.getByTestId("link-forgot-password");
+      expect(forgotLink).toBeInTheDocument();
+      expect(forgotLink.getAttribute("href")).toBe("/forgot-password");
+    });
 
+    it("renders green success banner when ?passwordChanged=true is present", () => {
+      renderComponent(["/login?passwordChanged=true"]);
+
+      expect(screen.getByTestId("login-alert-success")).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: "Reset Password" })
+        screen.getByText(
+          "Your password has been changed. Log in with your new password."
+        )
       ).toBeInTheDocument();
-      expect(screen.queryByPlaceholderText("Password")).not.toBeInTheDocument();
-
-      fireEvent.change(screen.getByPlaceholderText("Email"), {
-        target: { value: "forgot@akvo.org" },
-      });
-      fireEvent.click(screen.getByTestId("button-login"));
-
-      await waitFor(() => {
-        expect(api.post).toHaveBeenCalledWith(
-          "user/forgot-password",
-          expect.any(FormData)
-        );
-        expect(
-          screen.getByText(/Reset Password link has been sent to your email/i)
-        ).toBeInTheDocument();
-      });
     });
   });
 });

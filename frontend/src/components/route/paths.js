@@ -44,6 +44,8 @@ const paths = {
   login: "/login",
   register: "/register",
   verifyAcademy: "/verify-academy",
+  forgotPassword: "/forgot-password",
+  resetPassword: "/reset-password",
 };
 
 export { routePath, routePrefix, paths };

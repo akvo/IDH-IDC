@@ -1,15 +1,43 @@
 import React from "react";
-import { WarningOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import {
+  WarningOutlined,
+  InfoCircleOutlined,
+  CheckCircleOutlined,
+} from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 const LoginAlertToast = ({
   type = "error",
   email,
+  message,
   onResendLink,
   resendLoading = false,
   resendSent = false,
   onForgotPasswordClick,
 }) => {
+  if (type === "success") {
+    return (
+      <div
+        className="login-alert-toast toast-success"
+        data-testid="login-alert-success"
+        role="alert"
+      >
+        <div className="toast-icon">
+          <CheckCircleOutlined style={{ color: "#49d985", fontSize: 20 }} />
+        </div>
+        <div className="toast-content">
+          <p
+            className="toast-message"
+            data-testid="toast-password-changed-message"
+          >
+            {message ||
+              "Your password has been changed. Log in with your new password."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (type === "warning") {
     return (
       <div
@@ -65,7 +93,7 @@ const LoginAlertToast = ({
           try again.
         </p>
         <Link
-          to="/reset-password"
+          to="/forgot-password"
           onClick={(e) => {
             if (onForgotPasswordClick) {
               e.preventDefault();

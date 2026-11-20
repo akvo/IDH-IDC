@@ -52,16 +52,13 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
       </MemoryRouter>
     );
 
-  it("FE-RST-01: renders Better Income Toolkit branding and Reset Password heading", async () => {
+  it("FE-RST-01: renders Better Income Toolkit branding and Set a new password heading", async () => {
     renderComponent();
 
-    expect(screen.getByText("Better Income")).toBeInTheDocument();
-    expect(screen.getByText("Toolkit")).toBeInTheDocument();
-    expect(screen.getByText("Reset Password")).toBeInTheDocument();
-    expect(screen.queryByText("Income Driver")).not.toBeInTheDocument();
     expect(
-      screen.queryByText("Income Drive Calculator")
-    ).not.toBeInTheDocument();
+      screen.getByText("Toolkit Towards Better Incomes")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Set a new password")).toBeInTheDocument();
     expect(screen.getByTestId("logo-image")).toBeInTheDocument();
 
     await waitFor(() => {
@@ -72,6 +69,7 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
   });
 
   it("FE-RST-01B: renders Set Password heading on invitation route", async () => {
+    delete window.location;
     window.location = new URL("http://localhost/invitation/sample-token-123");
     renderComponent(["/invitation/sample-token-123"]);
 
@@ -107,7 +105,7 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
     expect(checkboxes.length).toBeGreaterThan(0);
   });
 
-  it("FE-RST-03: submits reset password on valid match, shows success toast, and navigates to /login", async () => {
+  it("FE-RST-03: submits reset password on valid match and renders Figma Password changed confirmation screen", async () => {
     api.post.mockResolvedValueOnce({
       data: {
         access_token: "mock-jwt-token",
@@ -153,18 +151,19 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "Password already set. Now you can login with your new password."
-        )
+        screen.getByTestId("password-changed-container")
+      ).toBeInTheDocument();
+      expect(screen.getByTestId("password-changed-title")).toHaveTextContent(
+        "Password changed"
+      );
+      expect(screen.getByTestId("password-changed-copy")).toHaveTextContent(
+        "Your password has been changed. Log in with your new password."
+      );
+      expect(screen.getByTestId("button-back-to-login")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("password-changed-illustration")
       ).toBeInTheDocument();
     });
-
-    await waitFor(
-      () => {
-        expect(mockNavigate).toHaveBeenCalledWith("/login");
-      },
-      { timeout: 2000 }
-    );
   });
 
   it("FE-RST-04: shows error notification when password reset submission fails", async () => {
@@ -203,10 +202,29 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it("FE-RST-05: redirects to /not-found when token verification fails", async () => {
+  it("FE-RST-05: renders inline orange warning card with Ask for a new link when reset token verification fails", async () => {
     api.get.mockRejectedValueOnce(new Error("Invalid token"));
 
     renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("toast-reset-expired")).toBeInTheDocument();
+      expect(screen.getByText("30 minutes")).toBeInTheDocument();
+      expect(screen.getByTestId("link-ask-new-link")).toHaveAttribute(
+        "href",
+        "/forgot-password"
+      );
+    });
+
+    expect(mockNavigate).not.toHaveBeenCalledWith("/not-found");
+  });
+
+  it("FE-RST-05B: redirects to /not-found on invitation route when token verification fails", async () => {
+    delete window.location;
+    window.location = new URL("http://localhost/invitation/invalid-invite");
+    api.get.mockRejectedValueOnce(new Error("Invalid invitation token"));
+
+    renderComponent(["/invitation/invalid-invite"]);
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith("/not-found");
@@ -239,9 +257,7 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
     fireEvent.click(screen.getByTestId("button-login"));
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Confirm Password that you entered do not match!")
-      ).toBeInTheDocument();
+      expect(screen.getByText("The passwords don’t match")).toBeInTheDocument();
     });
 
     expect(api.post).not.toHaveBeenCalled();
@@ -276,5 +292,40 @@ describe("ResetPassword Component (Better Income Toolkit)", () => {
     fireEvent.click(securityCheckbox);
     expect(securityCheckbox).toBeChecked();
     expect(submitBtn).not.toBeDisabled();
+  });
+
+  it("FE-RST-08: rejects submission when password does not meet complexity rules", async () => {
+    renderComponent();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("input-password")).not.toBeDisabled();
+    });
+
+    const passwordInput = screen.getByTestId("input-password");
+    const confirmInput = screen.getByTestId("input-confirm-password");
+
+    // Weak password missing number and special char
+    fireEvent.change(passwordInput, {
+      target: {
+        id: "form-reset-password_password",
+        value: "weakpassword",
+      },
+    });
+    fireEvent.change(confirmInput, {
+      target: {
+        id: "form-reset-password_confirm",
+        value: "weakpassword",
+      },
+    });
+
+    fireEvent.click(screen.getByTestId("button-login"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("The password doesn’t meet the rules")
+      ).toBeInTheDocument();
+    });
+
+    expect(api.post).not.toHaveBeenCalled();
   });
 });

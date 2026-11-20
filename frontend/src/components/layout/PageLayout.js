@@ -45,6 +45,7 @@ const pagesWithNoSider = [
   "/welcome",
   "/register",
   "/verify-academy",
+  "/forgot-password",
 ];
 const { Header, Content } = Layout;
 
@@ -558,9 +559,9 @@ const PageLayout = ({ children }) => {
 
   const pagesWithNoHeader = useMemo(() => {
     if (isMobile) {
-      return ["/register", "/verify-academy"];
+      return ["/register", "/verify-academy", "/forgot-password"];
     }
-    return ["/login", "/register", "/verify-academy"];
+    return ["/login", "/register", "/verify-academy", "/forgot-password"];
   }, [isMobile]);
 
   const isLoggedIn = useMemo(

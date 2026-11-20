@@ -6,7 +6,13 @@ import { PrivateRoutes, routePath } from "./components/route";
 import { PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/income-driver-calculator";
-import { Login, ResetPassword, Register, VerifyAcademy } from "./pages/login";
+import {
+  Login,
+  ResetPassword,
+  Register,
+  VerifyAcademy,
+  ForgotPassword,
+} from "./pages/login";
 import { Cases as OldCases, Case as OldCase } from "./pages/old-cases";
 import { Cases, Case } from "./pages/cases";
 import { NotFound } from "./pages/not-found";
@@ -371,6 +377,7 @@ const App = () => {
           />
           <Route exact path="/register" element={<Register />} />
           <Route exact path="/verify-academy" element={<VerifyAcademy />} />
+          <Route exact path="/forgot-password" element={<ForgotPassword />} />
           <Route
             exact
             path="/invitation/:tokenId"
