@@ -529,7 +529,7 @@ export const PageHeader = ({ isLoggedIn }) => {
               ) : (
                 <Link
                   to={
-                    location.pathname && location.pathname !== "/"
+                    location.pathname
                       ? `${paths.login}?from=${encodeURIComponent(
                           location.pathname
                         )}`

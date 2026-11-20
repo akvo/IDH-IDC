@@ -56,7 +56,7 @@ const getAuthenticatedHomeRoute = (userOrTools) => {
     return routePath.idc.dashboard;
   }
   if (tools.includes("academy")) {
-    return routePath.academy.landing;
+    return routePath.academy.overview;
   }
   return "/";
 };

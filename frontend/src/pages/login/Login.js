@@ -44,12 +44,35 @@ const Login = () => {
     if (!authInitializing && isAuthenticated) {
       const currentSearchParams = new URLSearchParams(location.search);
       const redirectParam = currentSearchParams.get("redirect");
+      const originParam = currentSearchParams.get("from");
       const fromState = location.state?.from?.pathname;
       const tools = Array.isArray(rawTools) ? rawTools : [];
       const hasIdc = tools.includes("idc");
 
-      let target = getAuthenticatedHomeRoute(tools);
-      if (
+      let target;
+
+      const isFromAcademy =
+        originParam === "academy_landing" ||
+        originParam === "/academy" ||
+        (typeof originParam === "string" &&
+          originParam.startsWith("/academy/")) ||
+        redirectParam === "/academy" ||
+        (typeof redirectParam === "string" &&
+          redirectParam.startsWith("/academy/")) ||
+        (typeof fromState === "string" &&
+          (fromState === "/academy" || fromState.startsWith("/academy/")));
+
+      const isFromToolkitLanding =
+        originParam === "toolkit_landing" ||
+        originParam === "/" ||
+        redirectParam === "/" ||
+        fromState === "/";
+
+      if (isFromAcademy) {
+        target = routePath.academy.overview;
+      } else if (isFromToolkitLanding) {
+        target = "/";
+      } else if (
         typeof redirectParam === "string" &&
         redirectParam.startsWith("/") &&
         !redirectParam.startsWith("//") &&
@@ -57,6 +80,8 @@ const Login = () => {
       ) {
         if (!isIdcRestrictedPath(redirectParam) || hasIdc) {
           target = redirectParam;
+        } else {
+          target = getAuthenticatedHomeRoute(tools);
         }
       } else if (
         typeof fromState === "string" &&
@@ -66,7 +91,11 @@ const Login = () => {
       ) {
         if (!isIdcRestrictedPath(fromState) || hasIdc) {
           target = fromState;
+        } else {
+          target = getAuthenticatedHomeRoute(tools);
         }
+      } else {
+        target = getAuthenticatedHomeRoute(tools);
       }
       navigate(target, { replace: true });
     }
@@ -251,14 +280,14 @@ const Login = () => {
           redirectParam !== routePath.idc.landing &&
           redirectParam !== "/income-driver-calculator" &&
           redirectParam !== "/" &&
-          redirectParam !== "/academy"
+          !redirectParam.startsWith("/academy")
             ? redirectParam
             : null) ||
           (isSafeRedirect(fromState) &&
           fromState !== routePath.idc.landing &&
           fromState !== "/income-driver-calculator" &&
           fromState !== "/" &&
-          fromState !== "/academy"
+          !fromState.startsWith("/academy")
             ? fromState
             : null);
 
@@ -268,7 +297,7 @@ const Login = () => {
             targetRoute = candidateDeepLink;
           } else if (isIdcRestrictedPath(candidateDeepLink)) {
             // Academy-only user attempting to access restricted IDC path
-            targetRoute = routePath.academy.landing;
+            targetRoute = routePath.academy.overview;
             navigationState.unauthorizedIDC = true;
           } else {
             targetRoute = candidateDeepLink;
@@ -290,7 +319,7 @@ const Login = () => {
           if (hasIdc) {
             targetRoute = routePath.idc.dashboard;
           } else if (hasAcademy) {
-            targetRoute = routePath.academy.landing;
+            targetRoute = routePath.academy.overview;
           } else {
             targetRoute = "/";
           }

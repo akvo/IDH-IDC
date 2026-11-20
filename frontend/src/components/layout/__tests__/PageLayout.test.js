@@ -61,7 +61,7 @@ describe("PageLayout Component & Header Navigation", () => {
 
       const signInLink = screen.getByTestId("button-signin");
       expect(signInLink).toBeInTheDocument();
-      expect(signInLink).toHaveAttribute("href", paths.login);
+      expect(signInLink).toHaveAttribute("href", `${paths.login}?from=%2F`);
       expect(screen.queryByTestId("header-avatar-btn")).not.toBeInTheDocument();
       expect(screen.getByText("Tools & Resources")).toBeInTheDocument();
     });

@@ -279,6 +279,105 @@ describe("Login Component (Better Income Toolkit)", () => {
       });
     });
 
+    it("FE-LOG-06B: redirects IDC user from Academy (?from=/academy) to /academy/overview (Row 2)", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-idc-academy",
+          user: {
+            id: 21,
+            fullname: "IDC User Visiting Academy",
+            email: "idc_learner@akvo.org",
+            role: "user",
+            active: true,
+            tools: ["idc", "academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=/academy"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "idc_learner@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+    });
+
+    it("FE-LOG-06C: redirects IDC user from Academy subpath (?from=/academy/courses) to /academy/overview (Row 2)", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-idc-subpath",
+          user: {
+            id: 22,
+            fullname: "IDC User Courses",
+            email: "courses_user@akvo.org",
+            role: "user",
+            active: true,
+            tools: ["idc", "academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=/academy/courses"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "courses_user@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+    });
+
+    it("FE-LOG-06D: defaults Academy-only user without origin to /academy/overview", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-academy-default",
+          user: {
+            id: 23,
+            fullname: "Pure Academy User",
+            email: "pure_academy@akvo.org",
+            role: "user",
+            active: true,
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "pure_academy@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+    });
+
     it("FE-LOG-07: redirects any user from Toolkit Landing (?from=toolkit_landing) to /", async () => {
       api.post.mockResolvedValueOnce({
         data: {
@@ -296,6 +395,37 @@ describe("Login Component (Better Income Toolkit)", () => {
 
       fireEvent.change(screen.getByPlaceholderText("Email"), {
         target: { value: "user@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "user123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/", {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+    });
+
+    it("FE-LOG-07B: redirects IDC user from Toolkit Landing encoded origin (?from=%2F) to / (Row 3)", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-toolkit-slash",
+          user: {
+            id: 26,
+            email: "user-slash@akvo.org",
+            role: "user",
+            tools: ["idc", "academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=%2F"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "user-slash@akvo.org" },
       });
       fireEvent.change(screen.getByPlaceholderText("Password"), {
         target: { value: "user123" },
@@ -377,7 +507,7 @@ describe("Login Component (Better Income Toolkit)", () => {
       });
     });
 
-    it("intercepts Academy-only user attempting to access IDC deep link and routes to /academy with unauthorizedIDC: true", async () => {
+    it("intercepts Academy-only user attempting to access IDC deep link and routes to /academy/overview with unauthorizedIDC: true (Row 5)", async () => {
       api.post.mockResolvedValueOnce({
         data: {
           access_token: "mock-token-intercept",
@@ -401,7 +531,7 @@ describe("Login Component (Better Income Toolkit)", () => {
       fireEvent.click(screen.getByTestId("button-login"));
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.landing, {
+        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
           replace: true,
           state: { fromLogin: true, unauthorizedIDC: true },
         });
@@ -470,6 +600,48 @@ describe("Login Component (Better Income Toolkit)", () => {
       renderComponent();
 
       expect(mockNavigate).toHaveBeenCalledWith(routePath.idc.dashboard, {
+        replace: true,
+      });
+    });
+
+    it("redirects authenticated Academy-only user to academy overview immediately with replace: true", () => {
+      UserState.update((s) => {
+        s.isAuthenticated = true;
+        s.authInitializing = false;
+        s.tools = ["academy"];
+      });
+
+      renderComponent();
+
+      expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+        replace: true,
+      });
+    });
+
+    it("redirects authenticated user with Academy origin (?from=/academy) to academy overview immediately with replace: true", () => {
+      UserState.update((s) => {
+        s.isAuthenticated = true;
+        s.authInitializing = false;
+        s.tools = ["idc", "academy"];
+      });
+
+      renderComponent(["/login?from=/academy"]);
+
+      expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+        replace: true,
+      });
+    });
+
+    it("redirects authenticated user with Toolkit origin (?from=/) to / immediately with replace: true (Row 3)", () => {
+      UserState.update((s) => {
+        s.isAuthenticated = true;
+        s.authInitializing = false;
+        s.tools = ["idc", "academy"];
+      });
+
+      renderComponent(["/login?from=/"]);
+
+      expect(mockNavigate).toHaveBeenCalledWith("/", {
         replace: true,
       });
     });
