@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 import db.crud_case as crud_case
 import db.crud_question as crud_question
 import db.crud_reference_data as crud_ref_data
+import db.crud_refresh_token as crud_refresh_token
 import db.crud_tag as crud_tag
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
@@ -26,6 +27,9 @@ def change_user_password(
             detail="Incorrect current password",
         )
     user.password = get_password_hash(payload.new_password)
+    crud_refresh_token.revoke_all_for_user(
+        session=session, user_id=user.id, commit=False
+    )
     if commit:
         session.commit()
         session.refresh(user)

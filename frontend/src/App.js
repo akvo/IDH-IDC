@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./App.scss";
-import { Spin } from "antd";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { PrivateRoutes, routePath } from "./components/route";
@@ -23,6 +22,7 @@ import {
 } from "./pages/admin";
 import { UserState, UIState, PLState, syncUserState } from "./store";
 import { api } from "./lib";
+import { AuthInitContext, refreshAccessToken } from "./lib/authRefresh";
 import { adminRole, PROD_HOST } from "./store/static";
 import { ExploreStudiesPage } from "./pages/explore-studies";
 import orderBy from "lodash/orderBy";
@@ -73,10 +73,11 @@ const ScrollToTop = () => {
 const App = () => {
   const host = window.location.hostname;
   const navigate = useNavigate();
-  const [cookies, ,] = useCookies(["AUTH_TOKEN"]);
+  const [, , removeCookie] = useCookies(["AUTH_TOKEN"]);
   const userRole = UserState.useState((s) => s.role);
   const isInternalUser = UserState.useState((s) => s.internal_user);
   const signOut = useSignOut();
+  const [authHydrated, setAuthHydrated] = useState(() => Boolean(api.token));
 
   // Matomo Page View Tracking
   useMatomoPageView();
@@ -124,40 +125,62 @@ const App = () => {
   }, []);
   // EOL PL Related State
 
-  const authTokenAvailable = useMemo(() => {
-    const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
-    if (res) {
-      api.setToken(cookies?.AUTH_TOKEN);
-    }
-    return res;
-  }, [cookies?.AUTH_TOKEN]);
-
   useEffect(() => {
-    if (authTokenAvailable && userRole === null) {
-      api
-        .get("user/me")
-        .then((res) => {
-          syncUserState(res?.data);
-        })
-        .catch(() => {
-          signOut();
-          setTimeout(() => {
-            navigate("/");
-          }, 300);
-        });
+    let cancelled = false;
+
+    if (api.token) {
+      if (userRole === null) {
+        api
+          .get("user/me")
+          .then((res) => {
+            if (!cancelled) {
+              syncUserState(res?.data);
+            }
+          })
+          .catch(() => {
+            if (!cancelled) {
+              signOut();
+              setTimeout(() => {
+                navigate("/");
+              }, 300);
+            }
+          })
+          .finally(() => {
+            if (!cancelled) {
+              setAuthHydrated(true);
+            }
+          });
+      } else {
+        setAuthHydrated(true);
+      }
+      return () => {
+        cancelled = true;
+      };
     }
+
+    refreshAccessToken()
+      .catch(() => {
+        if (!cancelled) {
+          removeCookie("AUTH_TOKEN", { path: "/" });
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setAuthHydrated(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authTokenAvailable, userRole]);
+  }, []);
 
   return (
-    <PageLayout testid="page-layout">
-      <ScrollToHash />
-      <ScrollToTop />
-      {authTokenAvailable && userRole === null ? (
-        <div className="loading-container">
-          <Spin />
-        </div>
-      ) : (
+    <AuthInitContext.Provider value={!authHydrated}>
+      <PageLayout testid="page-layout">
+        <ScrollToHash />
+        <ScrollToTop />
         <Routes>
           {/* Route path="*" element={<NotFound />} */}
           {/* {userRole !== null ? ( */}
@@ -360,8 +383,8 @@ const App = () => {
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      )}
-    </PageLayout>
+      </PageLayout>
+    </AuthInitContext.Provider>
   );
 };
 

@@ -27,6 +27,8 @@ export const defaultUserState = {
   user_type: null,
   isExternalRegular: false,
   isCaseCreator: false,
+  isAuthenticated: false,
+  authInitializing: false,
   tools: [],
   user_profile: null,
 };
@@ -57,6 +59,8 @@ export const syncUserState = (data) => {
     s.user_type = data.user_type ?? s.user_type;
     s.user_profile = data.user_profile || null;
     s.tools = Array.isArray(data.tools) ? data.tools : [];
+    s.isAuthenticated = true;
+    s.authInitializing = false;
     s.isExternalRegular = data.user_type === "external_regular";
     s.isCaseCreator =
       adminRole.includes(data.role) ||

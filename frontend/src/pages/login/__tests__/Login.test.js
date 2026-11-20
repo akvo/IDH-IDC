@@ -146,6 +146,8 @@ describe("Login Component (Better Income Toolkit)", () => {
       });
 
       expect(UserState.getRawState().tools).toEqual(["idc"]);
+      expect(UserState.getRawState().isAuthenticated).toBe(true);
+      expect(document.cookie).not.toContain("AUTH_TOKEN");
     });
 
     it("redirects IDC user to safe deep link from ?redirect parameter", async () => {

@@ -18,5 +18,6 @@ from models.commodity_category_question import (  # noqa
 )
 from models.case import Case  # noqa
 from models.case_import import CaseImport  # noqa
+from models.refresh_token import RefreshToken  # noqa
 
 # add all other models

@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { Cookies } from "react-cookie";
 import { Modal } from "antd";
 import { UserState } from "../../../store";
 import PageLayout, { PageHeader, getInitials } from "../PageLayout";
@@ -371,8 +370,6 @@ describe("PageLayout Component & Header Navigation", () => {
 });
 
 describe("PageLayout header on Academy pages", () => {
-  const cookies = new Cookies();
-
   const renderAt = (path) =>
     render(
       <MemoryRouter initialEntries={[path]}>
@@ -390,10 +387,10 @@ describe("PageLayout header on Academy pages", () => {
   beforeEach(() => {
     window.innerWidth = 1024;
     act(() => {
-      cookies.set("AUTH_TOKEN", "token", { path: "/" });
       UserState.update((s) => {
         s.id = 1;
         s.active = true;
+        s.isAuthenticated = true;
         s.fullname = "Kole Johnson";
         s.user_profile = null;
       });
@@ -402,10 +399,10 @@ describe("PageLayout header on Academy pages", () => {
 
   afterEach(() => {
     act(() => {
-      cookies.remove("AUTH_TOKEN", { path: "/" });
       UserState.update((s) => {
         s.id = 0;
         s.active = false;
+        s.isAuthenticated = false;
         s.fullname = null;
         s.user_profile = null;
       });
@@ -429,10 +426,10 @@ describe("PageLayout header on Academy pages", () => {
 
   it("does not show the avatar or a stray '0' when signed out", () => {
     act(() => {
-      cookies.remove("AUTH_TOKEN", { path: "/" });
       UserState.update((s) => {
         s.id = 0;
         s.active = false;
+        s.isAuthenticated = false;
       });
     });
     renderAt(routePath.academy.overview);

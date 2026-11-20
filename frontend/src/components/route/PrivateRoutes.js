@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
+import { Spin } from "antd";
 import { Outlet, Navigate, useLocation } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
+import { useAuthInitializing } from "../../lib/authRefresh";
 import { paths, routePrefix, routePath } from "./paths";
 
 const IDC_RESTRICTED_PREFIXES = [
@@ -19,23 +20,38 @@ export const isIdcRestrictedPath = (pathname = "") =>
   );
 
 const PrivateRoutes = () => {
-  const [cookies] = useCookies(["AUTH_TOKEN"]);
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
+  const storeAuthInitializing = UserState.useState((s) => s.authInitializing);
+  const contextAuthInitializing = useAuthInitializing();
   const userId = UserState.useState((s) => s.id);
   const userActive = UserState.useState((s) => s.active);
   const rawTools = UserState.useState((s) => s.tools);
   const location = useLocation();
 
-  const authTokenAvailable = useMemo(() => {
-    const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
-    return res;
-  }, [cookies?.AUTH_TOKEN]);
+  const authInitializing = contextAuthInitializing || storeAuthInitializing;
 
   const userTools = useMemo(
     () => (Array.isArray(rawTools) ? rawTools : []),
     [rawTools]
   );
 
-  const isAuthenticated = Boolean(authTokenAvailable || (userId && userActive));
+  const isAuthenticated = Boolean(storeIsAuth || (userId && userActive));
+
+  if (authInitializing) {
+    return (
+      <div
+        data-testid="auth-loading"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "60vh",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to={paths.login} state={{ from: location }} replace />;

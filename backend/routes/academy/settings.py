@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from db.academy import crud_settings
 from db.connection import get_session
-from middleware import verify_user
+from middleware import clear_refresh_cookie, verify_user
 from models.academy.academy_schemas import (
     ChangePasswordPayload,
     ChangePasswordResponse,
@@ -58,4 +58,6 @@ def delete_account(
     """Self-service deletion of the authenticated learner account."""
     user = verify_user(session=session, authenticated=req.state.authenticated)
     crud_settings.delete_learner_account(session=session, user=user)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    resp = Response(status_code=status.HTTP_204_NO_CONTENT)
+    clear_refresh_cookie(resp, req)
+    return resp

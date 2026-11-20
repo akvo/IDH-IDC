@@ -3,6 +3,7 @@ import secrets
 import db.crud_user as crud_user
 import db.crud_user_business_unit as crud_bu
 import db.crud_company as crud_company
+import db.crud_refresh_token as crud_refresh_token
 import db.crud_reset_password as crud_reset_pwd
 import db.crud_case as crud_case
 import db.crud_user_case_access as crud_uca
@@ -14,12 +15,15 @@ from db.academy import crud_profile, crud_settings
 
 from math import ceil
 from middleware import (
+    REFRESH_COOKIE_NAME,
     Token,
     authenticate_user,
+    clear_refresh_cookie,
     generate_user_token,
     verify_user,
     verify_password,
     get_password_hash,
+    set_refresh_cookie,
     verify_admin,
 )
 from fastapi import (
@@ -65,7 +69,7 @@ from models.academy.academy_schemas import (
 )
 from models.user_profile import UserProfileUpdatePayload
 from models.user_business_unit import UserBusinessUnitRole
-from typing import Optional, List
+from typing import Annotated, List, Optional, Union
 from pydantic import SecretStr
 from http import HTTPStatus
 from utils.mailer import Email, MailTypeEnum
@@ -75,6 +79,37 @@ user_route = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 oauth2_scopes = ["openid", "email"]
+
+
+class OAuth2PasswordRequestFormMasked(OAuth2PasswordRequestForm):
+    """OAuth2 password form with format='password' to mask sensitive fields in Swagger UI."""
+
+    def __init__(
+        self,
+        *,
+        grant_type: Annotated[
+            Union[str, None], Form(pattern="password")
+        ] = None,
+        username: Annotated[str, Form()],
+        password: Annotated[
+            str, Form(json_schema_extra={"format": "password"})
+        ],
+        scope: Annotated[str, Form()] = "",
+        client_id: Annotated[Union[str, None], Form()] = None,
+        client_secret: Annotated[
+            Union[str, None], Form(json_schema_extra={"format": "password"})
+        ] = None,
+    ):
+        super().__init__(
+            grant_type=grant_type,
+            username=username,
+            password=password,
+            scope=scope,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+
+
 webdomain = os.environ["WEBDOMAIN"]
 if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
@@ -102,14 +137,19 @@ def get_safe_base_url(req: Request) -> str:
 )
 def login(
     req: Request,
-    payload: OAuth2PasswordRequestForm = Depends(),
+    response: Response,
+    payload: OAuth2PasswordRequestFormMasked = Depends(),
+    remember_me: bool = Form(False),
     session: Session = Depends(get_session),
 ):
-    if not payload.grant_type == "password":
+    if payload.grant_type and payload.grant_type != "password":
         raise HTTPException(status_code=404, detail="Invalid Grant Type")
-    if payload.client_id != os.environ["CLIENT_ID"]:
+    if payload.client_id and payload.client_id != os.environ["CLIENT_ID"]:
         raise HTTPException(status_code=404, detail="Invalid Client ID")
-    if payload.client_secret != os.environ["CLIENT_SECRET"]:
+    if (
+        payload.client_secret
+        and payload.client_secret != os.environ["CLIENT_SECRET"]
+    ):
         raise HTTPException(status_code=404, detail="Invalid Client Secret")
     for scope in payload.scopes:
         if scope not in oauth2_scopes:
@@ -128,11 +168,74 @@ def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = generate_user_token(user)
+    raw_refresh, _ = crud_refresh_token.issue_refresh_token(
+        session=session, user_id=user.id, remember_me=remember_me
+    )
+    set_refresh_cookie(response, req, raw_refresh, remember_me=remember_me)
     return {
         "access_token": access_token,
         "token_type": "bearer",
         "user": user.to_user_info,
     }
+
+
+@user_route.post(
+    "/user/refresh",
+    response_model=Token,
+    summary="Rotate refresh token and issue new access token",
+    name="user:refresh",
+    tags=["User"],
+)
+def refresh_token(
+    req: Request,
+    response: Response,
+    session: Session = Depends(get_session),
+):
+    raw_token = req.cookies.get(REFRESH_COOKIE_NAME)
+    rotated = (
+        crud_refresh_token.rotate_refresh_token(
+            session=session, raw_token=raw_token
+        )
+        if raw_token
+        else None
+    )
+    if not rotated:
+        err = JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Invalid or expired refresh token"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        clear_refresh_cookie(err, req)
+        return err
+
+    new_raw, new_record, user = rotated
+    access_token = generate_user_token(user)
+    set_refresh_cookie(
+        response, req, new_raw, remember_me=new_record.remember_me
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user.to_user_info,
+    }
+
+
+@user_route.post(
+    "/user/logout",
+    summary="Revoke refresh token and clear session cookie",
+    name="user:logout",
+    tags=["User"],
+)
+def logout(
+    req: Request,
+    response: Response,
+    session: Session = Depends(get_session),
+):
+    raw_token = req.cookies.get(REFRESH_COOKIE_NAME)
+    if raw_token:
+        crud_refresh_token.revoke_token(session=session, raw_token=raw_token)
+    clear_refresh_cookie(response, req)
+    return {"message": "Logged out successfully"}
 
 
 @user_route.get(
@@ -1029,6 +1132,9 @@ def post_forgot_password(
         session=session, id=reset_password["user"], password=password
     )
     crud_reset_pwd.delete_reset_password(session=session, url=url)
+    crud_refresh_token.revoke_all_for_user(
+        session=session, user_id=user.id, commit=True
+    )
     access_token = generate_user_token(user)
     return {
         "access_token": access_token,
