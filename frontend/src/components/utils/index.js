@@ -6,10 +6,15 @@ export const passwordCheckBoxOptions = [
   { name: "Min 8 Character", re: /[^ ]{8}/ },
 ];
 
-export const checkPasswordCriteria = (value) => {
+export const checkPasswordCriteria = (value = "") => {
   const criteria = passwordCheckBoxOptions
     .map((x) => {
-      const available = x.re.test(value);
+      let available = false;
+      if (x.name === "Min 8 Character") {
+        available = typeof value === "string" && value.length >= 8;
+      } else {
+        available = x.re.test(value);
+      }
       return available ? x.name : false;
     })
     .filter((x) => x);

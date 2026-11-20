@@ -45,6 +45,7 @@ const pagesWithNoSider = [
   "/welcome",
   "/register",
   "/verify-academy",
+  "/forgot-password",
 ];
 const { Header, Content } = Layout;
 
@@ -528,7 +529,7 @@ export const PageHeader = ({ isLoggedIn }) => {
               ) : (
                 <Link
                   to={
-                    location.pathname && location.pathname !== "/"
+                    location.pathname
                       ? `${paths.login}?from=${encodeURIComponent(
                           location.pathname
                         )}`
@@ -558,9 +559,9 @@ const PageLayout = ({ children }) => {
 
   const pagesWithNoHeader = useMemo(() => {
     if (isMobile) {
-      return ["/register", "/verify-academy"];
+      return ["/register", "/verify-academy", "/forgot-password"];
     }
-    return ["/login", "/register", "/verify-academy"];
+    return ["/login", "/register", "/verify-academy", "/forgot-password"];
   }, [isMobile]);
 
   const isLoggedIn = useMemo(

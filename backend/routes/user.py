@@ -40,6 +40,7 @@ from fastapi.security import HTTPBearer
 from fastapi.security import HTTPBasicCredentials as credentials
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, RedirectResponse
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from db.connection import get_session
 from models.user import (
@@ -64,6 +65,7 @@ from models.user import (
     UserProfileUpdateRequest,
     ChangePasswordRequest,
     GrantIdcAccessRequest,
+    validate_password_strength,
 )
 from models.academy.academy_schemas import (
     ChangePasswordPayload,
@@ -697,6 +699,8 @@ def get_forgot_password(
             content={"message": "url is expired"},
         )
     user = crud_user.get_user_by_id(session=session, id=reset_password["user"])
+    if not user or user.is_active != 1:
+        raise HTTPException(status_code=404, detail="URL is not valid")
     return user.to_user_invitation
 
 
@@ -1105,7 +1109,7 @@ def delete(
 
 @user_route.post(
     "/user/forgot-password",
-    status_code=201,
+    status_code=200,
     summary="Generate Forgot Password Link",
     name="user:forgot-password",
     tags=["User"],
@@ -1115,31 +1119,31 @@ def new_forgot_password(
     email: str = Form(...),
     session: Session = Depends(get_session),
 ):
-    user = crud_user.get_user_by_email(session=session, email=email)
-    if not user:
-        raise HTTPException(status_code=404, detail="User Not found")
-    if user.is_active != 1:
-        raise HTTPException(
-            status_code=400,
-            detail="User account is inactive or unverified",
+    clean_email = email.strip().lower() if email else ""
+    user = (
+        session.query(User)
+        .filter(func.lower(User.email) == clean_email)
+        .first()
+    )
+    if user and user.is_active == 1:
+        reset_password = crud_reset_pwd.new_reset_password(
+            session=session, email=clean_email
         )
-    reset_password = crud_reset_pwd.new_reset_password(
-        session=session, email=email
-    )
-    if not reset_password:
-        raise HTTPException(status_code=404, detail="User Not found")
-    # Send reset password email
-    base_url = get_safe_base_url(req)
-    url = f"{base_url}/reset-password/{reset_password['url']}"
-    email = Email(
-        recipients=[user.recipient],
-        email=MailTypeEnum.FORGOT_PASSWORD,
-        url=url,
-    )
-    email.send
+        if reset_password:
+            base_url = get_safe_base_url(req)
+            url = f"{base_url}/reset-password/{reset_password['url']}"
+            email_msg = Email(
+                recipients=[user.recipient],
+                email=MailTypeEnum.FORGOT_PASSWORD,
+                url=url,
+            )
+            email_msg.send
+
     return JSONResponse(
-        status_code=status.HTTP_201_CREATED,
-        content={"message": "url is generated"},
+        status_code=status.HTTP_200_OK,
+        content={
+            "message": "If this email is registered, a password reset link has been sent."
+        },
     )
 
 
@@ -1156,38 +1160,49 @@ def post_forgot_password(
     password: SecretStr = Form(...),
     session: Session = Depends(get_session),
 ):
+    raw_password = password.get_secret_value()
+    try:
+        validate_password_strength(raw_password)
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"code": "PASSWORD_RULES_NOT_MET", "message": str(ve)},
+        )
+
     reset_password = crud_reset_pwd.get_reset_password(
         session=session, url=url
     )
     if not reset_password:
         raise HTTPException(status_code=404, detail="URL is not valid")
-    reset_password = reset_password.serialize
-    if reset_password["expired"]:
+    reset_dict = reset_password.serialize
+    if reset_dict["expired"]:
         return JSONResponse(
             status_code=status.HTTP_410_GONE,
             content={"message": "url is expired"},
         )
     target_user = crud_user.get_user_by_id(
-        session=session, id=reset_password["user"]
+        session=session, id=reset_dict["user"]
     )
     if not target_user:
-        raise HTTPException(status_code=404, detail="User Not found")
+        raise HTTPException(status_code=404, detail="URL is not valid")
     if target_user.is_active != 1:
         raise HTTPException(
             status_code=400,
             detail="User account is inactive or unverified",
         )
-    password = get_password_hash(password.get_secret_value())
-    user = crud_user.update_password(
-        session=session, id=reset_password["user"], password=password
-    )
-    crud_reset_pwd.delete_reset_password(session=session, url=url)
+
+    # Atomic commit: update password + delete token + revoke refresh tokens
+    target_user.password = get_password_hash(raw_password)
+    crud_reset_pwd.delete_reset_password(session=session, url=url, commit=False)
     crud_refresh_token.revoke_all_for_user(
-        session=session, user_id=user.id, commit=True
+        session=session, user_id=target_user.id, commit=False
     )
-    access_token = generate_user_token(user)
+    session.commit()
+    session.refresh(target_user)
+
+    access_token = generate_user_token(target_user)
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": user.to_user_info,
+        "user": target_user.to_user_info,
     }

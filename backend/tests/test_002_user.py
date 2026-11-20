@@ -887,7 +887,7 @@ class TestUserEndpoint:
                 "client_secret": os.environ["CLIENT_SECRET"],
             },
         )
-        assert res.status_code == 201
+        assert res.status_code == 200
         reset_password = (
             session.query(ResetPassword)
             .filter(ResetPassword.user == user.id)
@@ -928,7 +928,7 @@ class TestUserEndpoint:
                 "client_secret": os.environ["CLIENT_SECRET"],
             },
         )
-        assert res.status_code == 201
+        assert res.status_code == 200
         reset_password = (
             session.query(ResetPassword)
             .filter(ResetPassword.user == user.id)
@@ -936,7 +936,7 @@ class TestUserEndpoint:
         )
         res = await client.post(
             app.url_path_for("user:reset-password", url=reset_password.url),
-            data={"password": "test"},
+            data={"password": "TestP@ssword123!"},
         )
         assert res.status_code == 200
         res = await client.get(
@@ -949,7 +949,7 @@ class TestUserEndpoint:
             headers={"content-type": "application/x-www-form-urlencoded"},
             data={
                 "username": user.email,
-                "password": "test",
+                "password": "TestP@ssword123!",
                 "grant_type": "password",
                 "scopes": ["openid", "email"],
                 "client_id": CLIENT_ID,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./login.scss";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { ContentLayout } from "../../components/layout";
@@ -6,11 +6,12 @@ import { Form, Input, Button, Checkbox, message } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import { useCookies } from "react-cookie";
 import { api } from "../../lib";
+import { useAuthInitializing } from "../../lib/authRefresh";
 import UserState from "../../store/user";
 import ImageRight from "../../assets/images/login-right-img.jpg";
 import Logo from "../../assets/images/logo.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
-import { routePath } from "../../components/route";
+import { routePath, getAuthenticatedHomeRoute } from "../../components/route";
 import { isIdcRestrictedPath } from "../../components/route/PrivateRoutes";
 import LoginAlertToast from "./components/LoginAlertToast";
 import VerifiedSuccessCard from "./components/VerifiedSuccessCard";
@@ -25,15 +26,98 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [, , removeCookie] = useCookies(["AUTH_TOKEN"]);
   const [messageApi, contextHolder] = message.useMessage();
-  const [isResetPassword, setIsResetPassword] = useState(false);
-  const [alertState, setAlertState] = useState(null); // { type: 'error' | 'warning', email?: string }
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSent, setResendSent] = useState(false);
   const [inputError, setInputError] = useState(false);
 
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
+  const storeAuthInitializing = UserState.useState((s) => s.authInitializing);
+  const contextAuthInitializing = useAuthInitializing();
+  const userId = UserState.useState((s) => s.id);
+  const userActive = UserState.useState((s) => s.active);
+  const rawTools = UserState.useState((s) => s.tools);
+
+  const authInitializing = contextAuthInitializing || storeAuthInitializing;
+  const isAuthenticated = Boolean(storeIsAuth || (userId && userActive));
+
+  useEffect(() => {
+    if (!authInitializing && isAuthenticated) {
+      const currentSearchParams = new URLSearchParams(location.search);
+      const redirectParam = currentSearchParams.get("redirect");
+      const originParam = currentSearchParams.get("from");
+      const fromState = location.state?.from?.pathname;
+      const tools = Array.isArray(rawTools) ? rawTools : [];
+      const hasIdc = tools.includes("idc");
+
+      let target;
+
+      const isFromAcademy =
+        originParam === "academy_landing" ||
+        originParam === "/academy" ||
+        (typeof originParam === "string" &&
+          originParam.startsWith("/academy/")) ||
+        redirectParam === "/academy" ||
+        (typeof redirectParam === "string" &&
+          redirectParam.startsWith("/academy/")) ||
+        (typeof fromState === "string" &&
+          (fromState === "/academy" || fromState.startsWith("/academy/")));
+
+      const isFromToolkitLanding =
+        originParam === "toolkit_landing" ||
+        originParam === "/" ||
+        redirectParam === "/" ||
+        fromState === "/";
+
+      if (isFromAcademy) {
+        target = routePath.academy.overview;
+      } else if (isFromToolkitLanding) {
+        target = "/";
+      } else if (
+        typeof redirectParam === "string" &&
+        redirectParam.startsWith("/") &&
+        !redirectParam.startsWith("//") &&
+        !redirectParam.includes("\\")
+      ) {
+        if (!isIdcRestrictedPath(redirectParam) || hasIdc) {
+          target = redirectParam;
+        } else {
+          target = getAuthenticatedHomeRoute(tools);
+        }
+      } else if (
+        typeof fromState === "string" &&
+        fromState.startsWith("/") &&
+        !fromState.startsWith("//") &&
+        !fromState.includes("\\")
+      ) {
+        if (!isIdcRestrictedPath(fromState) || hasIdc) {
+          target = fromState;
+        } else {
+          target = getAuthenticatedHomeRoute(tools);
+        }
+      } else {
+        target = getAuthenticatedHomeRoute(tools);
+      }
+      navigate(target, { replace: true });
+    }
+  }, [authInitializing, isAuthenticated, rawTools, navigate, location]);
+
   const searchParams = new URLSearchParams(location.search);
   const isVerifiedParam = searchParams.get("verified") === "true";
   const [showVerifiedCard, setShowVerifiedCard] = useState(isVerifiedParam);
+
+  const [alertState, setAlertState] = useState(() => {
+    if (
+      searchParams.get("passwordChanged") === "true" ||
+      location.state?.passwordChanged
+    ) {
+      return {
+        type: "success",
+        message:
+          "Your password has been changed. Log in with your new password.",
+      };
+    }
+    return null;
+  });
 
   const trackEventOnClickLivingIncomeEmail = () => {
     CustomEvent.trackEvent(
@@ -196,14 +280,14 @@ const Login = () => {
           redirectParam !== routePath.idc.landing &&
           redirectParam !== "/income-driver-calculator" &&
           redirectParam !== "/" &&
-          redirectParam !== "/academy"
+          !redirectParam.startsWith("/academy")
             ? redirectParam
             : null) ||
           (isSafeRedirect(fromState) &&
           fromState !== routePath.idc.landing &&
           fromState !== "/income-driver-calculator" &&
           fromState !== "/" &&
-          fromState !== "/academy"
+          !fromState.startsWith("/academy")
             ? fromState
             : null);
 
@@ -213,7 +297,7 @@ const Login = () => {
             targetRoute = candidateDeepLink;
           } else if (isIdcRestrictedPath(candidateDeepLink)) {
             // Academy-only user attempting to access restricted IDC path
-            targetRoute = routePath.academy.landing;
+            targetRoute = routePath.academy.overview;
             navigationState.unauthorizedIDC = true;
           } else {
             targetRoute = candidateDeepLink;
@@ -235,7 +319,7 @@ const Login = () => {
           if (hasIdc) {
             targetRoute = routePath.idc.dashboard;
           } else if (hasAcademy) {
-            targetRoute = routePath.academy.landing;
+            targetRoute = routePath.academy.overview;
           } else {
             targetRoute = "/";
           }
@@ -277,31 +361,6 @@ const Login = () => {
       });
   };
 
-  const handleForgotPassword = (values) => {
-    setLoading(true);
-    const { email } = values;
-    const payload = new FormData();
-    payload.append("email", email);
-    api
-      .post("user/forgot-password", payload)
-      .then(() => {
-        messageApi.open({
-          type: "success",
-          content:
-            "Reset Password link has been sent to your email. Please use the link to reset your password.",
-        });
-      })
-      .catch(() => {
-        messageApi.open({
-          type: "error",
-          content: "Email not found",
-        });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
   return (
     <ContentLayout wrapperId="login">
       {contextHolder}
@@ -329,14 +388,14 @@ const Login = () => {
 
           {/* Body Content */}
           <div className="login-pane-body">
-            {showVerifiedCard && !isResetPassword ? (
+            {showVerifiedCard ? (
               <VerifiedSuccessCard
                 onProceedToLogin={() => setShowVerifiedCard(false)}
               />
             ) : (
               <>
                 <h1 className="login-title" data-testid="login-title">
-                  {!isResetPassword ? "Log in" : "Reset Password"}
+                  Log in
                 </h1>
 
                 <Form
@@ -346,13 +405,13 @@ const Login = () => {
                   }`}
                   layout="vertical"
                   requiredMark={false}
-                  onFinish={!isResetPassword ? onFinish : handleForgotPassword}
+                  onFinish={onFinish}
                   autoComplete="off"
                   onValuesChange={() => {
                     if (inputError) {
                       setInputError(false);
                     }
-                    if (alertState) {
+                    if (alertState && alertState.type !== "success") {
                       setAlertState(null);
                     }
                   }}
@@ -379,48 +438,44 @@ const Login = () => {
                     />
                   </Form.Item>
 
-                  {!isResetPassword && (
+                  <Form.Item
+                    label="Password"
+                    name="password"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please input your password!",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      size="large"
+                      data-testid="input-password"
+                      placeholder="Password"
+                      className={inputError ? "input-error" : ""}
+                    />
+                  </Form.Item>
+
+                  <div className="login-options-row">
                     <Form.Item
-                      label="Password"
-                      name="password"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input your password!",
-                        },
-                      ]}
+                      name="remember_me"
+                      valuePropName="checked"
+                      initialValue={true}
+                      noStyle
                     >
-                      <Input.Password
-                        size="large"
-                        data-testid="input-password"
-                        placeholder="Password"
-                        className={inputError ? "input-error" : ""}
-                      />
+                      <Checkbox data-testid="checkbox-remember-me">
+                        Remember for 30 days
+                      </Checkbox>
                     </Form.Item>
-                  )}
 
-                  {!isResetPassword && (
-                    <div className="login-options-row">
-                      <Form.Item
-                        name="remember_me"
-                        valuePropName="checked"
-                        initialValue={true}
-                        noStyle
-                      >
-                        <Checkbox data-testid="checkbox-remember-me">
-                          Remember for 30 days
-                        </Checkbox>
-                      </Form.Item>
-
-                      <Link
-                        onClick={() => setIsResetPassword(!isResetPassword)}
-                        data-testid="link-forgot-password"
-                        className="link-forgot-password"
-                      >
-                        Forgot password?
-                      </Link>
-                    </div>
-                  )}
+                    <Link
+                      to="/forgot-password"
+                      data-testid="link-forgot-password"
+                      className="link-forgot-password"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
 
                   <Form.Item noStyle>
                     <Button
@@ -432,32 +487,20 @@ const Login = () => {
                       block
                       loading={loading}
                     >
-                      {!isResetPassword ? "Log in" : "Reset Password"}
+                      Log in
                     </Button>
                   </Form.Item>
 
-                  {!isResetPassword ? (
-                    <div className="register-callout">
-                      <span>New to the Toolkit?</span>
-                      <Link
-                        to="/register"
-                        className="link-register"
-                        data-testid="link-register-academy"
-                      >
-                        Register for free
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="register-callout">
-                      <Link
-                        onClick={() => setIsResetPassword(false)}
-                        className="link-register"
-                        data-testid="link-back-to-login"
-                      >
-                        Back to Login
-                      </Link>
-                    </div>
-                  )}
+                  <div className="register-callout">
+                    <span>New to the Toolkit?</span>
+                    <Link
+                      to="/register"
+                      className="link-register"
+                      data-testid="link-register-academy"
+                    >
+                      Register for free
+                    </Link>
+                  </div>
                 </Form>
 
                 {/* Inline Alert / Toast */}
@@ -466,10 +509,10 @@ const Login = () => {
                     <LoginAlertToast
                       type={alertState.type}
                       email={alertState.email}
+                      message={alertState.message}
                       onResendLink={handleResendVerification}
                       resendLoading={resendLoading}
                       resendSent={resendSent}
-                      onForgotPasswordClick={() => setIsResetPassword(true)}
                     />
                   </div>
                 )}

@@ -1,4 +1,9 @@
-import { routePath, routePrefix, paths } from "./paths";
+import {
+  routePath,
+  routePrefix,
+  paths,
+  getAuthenticatedHomeRoute,
+} from "./paths";
 
 const showIDCSubMenu = () => {
   const pathname = window.location.pathname;
@@ -12,4 +17,10 @@ const showIDCSubMenu = () => {
 };
 
 export { default as PrivateRoutes } from "./PrivateRoutes";
-export { routePath, routePrefix, paths, showIDCSubMenu };
+export {
+  routePath,
+  routePrefix,
+  paths,
+  getAuthenticatedHomeRoute,
+  showIDCSubMenu,
+};

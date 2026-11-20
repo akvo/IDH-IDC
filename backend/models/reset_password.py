@@ -1,13 +1,15 @@
 # Please don't use **kwargs
 # Keep the code clean and CLEAR
 
-from uuid import uuid4
+import secrets
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy import DateTime
 from db.connection import Base
 from models.user import User, UserInvitation
 from datetime import datetime, timedelta
+
+RESET_PASSWORD_EXPIRE_MINUTES = 30
 
 
 class ResetPasswordBase(BaseModel):
@@ -30,8 +32,10 @@ class ResetPassword(Base):
 
     def __init__(self, user: int):
         self.user = user
-        self.url = str(uuid4())
-        self.valid = datetime.utcnow() + timedelta(minutes=30)
+        self.url = secrets.token_urlsafe(32)
+        self.valid = datetime.utcnow() + timedelta(
+            minutes=RESET_PASSWORD_EXPIRE_MINUTES
+        )
 
     def __repr__(self) -> str:
         return f"<ResetPassword {self.id}>"
