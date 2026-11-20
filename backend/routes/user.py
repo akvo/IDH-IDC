@@ -59,6 +59,8 @@ from models.user import (
     UserRegisterAcademy,
     AcademyRegisterResponse,
     AcademyVerifyResponse,
+    ResendAcademyVerifyRequest,
+    ResendAcademyVerifyResponse,
     UserProfileUpdateRequest,
     ChangePasswordRequest,
     GrantIdcAccessRequest,
@@ -158,6 +160,16 @@ def login(
         session=session, email=payload.username, password=payload.password
     )
     if not user or not user.is_active:
+        if user and not user.is_active and user.invitation_id:
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "detail": "Please confirm your email address first.",
+                    "error_code": "ACCOUNT_NOT_VERIFIED",
+                    "email": user.email,
+                },
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         raise HTTPException(
             detail=(
                 "Incorrect email or password."
@@ -551,6 +563,44 @@ def verify_academy(
     return {
         "message": "Account verified successfully. You may now log in.",
         "verified": True,
+    }
+
+
+@user_route.post(
+    "/user/resend-academy-verification",
+    response_model=ResendAcademyVerifyResponse,
+    summary="Resend verification email for Living Income Academy",
+    name="user:resend_academy_verification",
+    tags=["User"],
+)
+def resend_academy_verification(
+    req: Request,
+    payload: ResendAcademyVerifyRequest,
+    session: Session = Depends(get_session),
+):
+    normalized_email = payload.email.strip().lower()
+    user = crud_user.get_user_by_email(session=session, email=normalized_email)
+    if (
+        user
+        and not user.is_active
+        and ToolType.academy.value in (user.tools or [])
+    ):
+        if not user.invitation_id:
+            user.invitation_id = secrets.token_hex(32)
+            session.commit()
+            session.refresh(user)
+
+        base_url = get_safe_base_url(req)
+        verify_url = f"{base_url}/verify-academy?token={user.invitation_id}"
+        email = Email(
+            recipients=[user.recipient],
+            email=MailTypeEnum.ACADEMY_VERIFY,
+            url=verify_url,
+        )
+        email.send
+
+    return {
+        "message": "Verification link has been resent to your email address."
     }
 
 
