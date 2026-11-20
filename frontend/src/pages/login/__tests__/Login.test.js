@@ -55,6 +55,7 @@ describe("Login Component (Better Income Toolkit)", () => {
       renderComponent();
 
       expect(screen.getByTestId("login-split-container")).toBeInTheDocument();
+      expect(screen.getByTestId("logo-link")).toHaveAttribute("href", "/");
       expect(screen.getByTestId("logo-image")).toBeInTheDocument();
       expect(
         screen.getByText("Toolkit Towards Better Incomes")

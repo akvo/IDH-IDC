@@ -50,16 +50,18 @@ const VerifyAcademy = () => {
         <div className="login-left-pane">
           {/* Header */}
           <div className="login-pane-header">
-            <img
-              src={Logo}
-              alt="IDH Logo"
-              className="header-logo"
-              data-testid="logo-image"
-            />
-            <div className="header-divider" />
-            <span className="header-subtitle">
-              Toolkit Towards Better Incomes
-            </span>
+            <Link to="/" data-testid="logo-link" className="header-brand-link">
+              <img
+                src={Logo}
+                alt="IDH Logo"
+                className="header-logo"
+                data-testid="logo-image"
+              />
+              <div className="header-divider" />
+              <span className="header-subtitle">
+                Toolkit Towards Better Incomes
+              </span>
+            </Link>
           </div>
 
           {/* Body Content */}

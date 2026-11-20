@@ -336,6 +336,19 @@
           padding: 16px 36px 12px 36px;
         }
 
+        .header-brand-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 14px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: opacity 0.2s ease;
+
+          &:hover {
+            opacity: 0.85;
+          }
+        }
+
         .header-logo {
           height: 38px;
           width: auto;
