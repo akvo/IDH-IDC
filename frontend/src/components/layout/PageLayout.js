@@ -59,6 +59,7 @@ export const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [navKey, setNavKey] = useState(0);
   const location = useLocation();
   const signOut = useSignOut();
 
@@ -129,10 +130,32 @@ export const PageHeader = ({ isLoggedIn }) => {
 
   const toggleDrawer = () => setDrawerVisible(!drawerVisible);
 
-  const handleMenuClick = ({ key }) => {
+  const handleMenuClick = ({ key, domEvent }) => {
     if (key === routePath.idc.dashboard || key === routePath.idc.landing) {
       if (isLoggedIn && !hasIdcAccess) {
-        showIdcAccessRequestModal({ force: true, navigate });
+        if (domEvent?.preventDefault) {
+          domEvent.preventDefault();
+        }
+        if (typeof document !== "undefined" && document.activeElement?.blur) {
+          document.activeElement.blur();
+        }
+        setNavKey((prev) => prev + 1);
+        showIdcAccessRequestModal({
+          force: true,
+          navigate,
+          onDiscard: () => {
+            if (
+              typeof document !== "undefined" &&
+              document.activeElement?.blur
+            ) {
+              document.activeElement.blur();
+            }
+            setNavKey((prev) => prev + 1);
+          },
+          onExplore: () => {
+            setNavKey((prev) => prev + 1);
+          },
+        });
         setDrawerVisible(false);
         return;
       }
@@ -181,7 +204,22 @@ export const PageHeader = ({ isLoggedIn }) => {
             ),
             onClick: () => {
               if (!hasIdcAccess) {
-                showIdcAccessRequestModal({ force: true, navigate });
+                showIdcAccessRequestModal({
+                  force: true,
+                  navigate,
+                  onDiscard: () => {
+                    if (
+                      typeof document !== "undefined" &&
+                      document.activeElement?.blur
+                    ) {
+                      document.activeElement.blur();
+                    }
+                    setNavKey((prev) => prev + 1);
+                  },
+                  onExplore: () => {
+                    setNavKey((prev) => prev + 1);
+                  },
+                });
                 return;
               }
               navigate(routePath.idc.dashboard);
@@ -370,6 +408,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                 ) : null}
 
                 <Menu
+                  key={`mobile-nav-${navKey}`}
                   mode="inline"
                   items={menuItems}
                   onClick={handleMenuClick}
@@ -441,9 +480,11 @@ export const PageHeader = ({ isLoggedIn }) => {
           ) : (
             <>
               <Menu
+                key={`desktop-nav-${navKey}`}
                 mode="horizontal"
                 onClick={handleMenuClick}
                 items={menuItems}
+                disabledOverflow={true}
                 style={{
                   borderBottom: "none",
                   flex: 1,

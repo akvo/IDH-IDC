@@ -199,11 +199,35 @@ describe("PageLayout Component & Header Navigation", () => {
 
       expect(modalSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: "Income Driver Calculator Access",
           className: "access-request-modal",
           okText: "Got it",
         })
       );
+
+      modalSpy.mockRestore();
+    });
+
+    it("does not select or highlight Income Driver Calculator in header menu when clicked by unauthorized user on /", () => {
+      const modalSpy = jest.spyOn(Modal, "info").mockImplementation(() => {
+        return { destroy: jest.fn() };
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/"]}>
+          <PageHeader isLoggedIn={true} />
+        </MemoryRouter>
+      );
+
+      const idcNav = screen.getByText("Income Driver Calculator");
+      const idcNavItem = idcNav.closest("li");
+
+      expect(idcNavItem).not.toHaveClass("ant-menu-item-selected");
+
+      fireEvent.click(idcNav);
+
+      expect(modalSpy).toHaveBeenCalled();
+      expect(idcNavItem).not.toHaveClass("ant-menu-item-selected");
+      expect(idcNavItem).not.toHaveClass("ant-menu-item-active");
 
       modalSpy.mockRestore();
     });
@@ -310,7 +334,7 @@ describe("PageLayout Component & Header Navigation", () => {
 
       expect(modalSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          title: "Income Driver Calculator Access",
+          className: "access-request-modal",
         })
       );
 
