@@ -315,8 +315,11 @@ describe("academy service", () => {
     expect(errorToast).not.toHaveBeenCalled();
   });
 
-  it("drops the stale session token on 401", async () => {
+  it("drops the stale session token on 401 when refresh fails", async () => {
     api.setToken("expired-token");
+    jest
+      .spyOn(axios, "post")
+      .mockRejectedValueOnce(new Error("No refresh session"));
     mock.onGet("user/me").reply(401, { detail: "Not authenticated" });
     await expect(academyService.getMe()).rejects.toEqual({
       status: 401,
@@ -324,6 +327,27 @@ describe("academy service", () => {
       detail: "Not authenticated",
     });
     expect(api.token).toBeNull();
+    expect(errorToast).not.toHaveBeenCalled();
+  });
+
+  it("refreshes expired token once on 401 and replays failed request", async () => {
+    api.setToken("expired-token");
+    jest.spyOn(axios, "post").mockResolvedValueOnce({
+      data: {
+        access_token: "fresh-academy-token",
+        user: { id: 1, role: "user", active: true, tools: ["academy"] },
+      },
+    });
+    mock
+      .onGet("user/me")
+      .replyOnce(401, { detail: "Token expired" })
+      .onGet("user/me")
+      .replyOnce((req) => [200, { headers: req.headers, id: 1 }]);
+
+    const data = await academyService.getMe();
+    expect(data.id).toBe(1);
+    expect(data.headers.Authorization).toBe("Bearer fresh-academy-token");
+    expect(api.token).toBe("fresh-academy-token");
     expect(errorToast).not.toHaveBeenCalled();
   });
 

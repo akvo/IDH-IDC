@@ -636,6 +636,14 @@ class AcademyVerifyResponse(BaseModel):
     verified: bool
 
 
+class ResendAcademyVerifyRequest(BaseModel):
+    email: EmailStr
+
+
+class ResendAcademyVerifyResponse(BaseModel):
+    message: str
+
+
 class GrantIdcAccessRequest(BaseModel):
     company_id: int
     user_type: Optional[UserType] = None

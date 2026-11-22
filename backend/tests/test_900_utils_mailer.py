@@ -111,7 +111,7 @@ class TestMailer:
             url="https://example.com/reset-password/sample-uuid-token",
         )
         data = email.data
-        assert data["Subject"] == "Better Income Toolkit: Reset Your Password"
+        assert data["Subject"] == "Reset your Better Income Toolkit password"
         html_part = next(
             part.get_content()
             for part in data.iter_parts()
@@ -281,9 +281,9 @@ class TestPasswordResetGuards:
             data={"email": email},
             headers={"Origin": trusted_origin},
         )
-        assert res.status_code == 201
+        assert res.status_code == 200
         data = res.json()
-        assert data.get("message") == "url is generated"
+        assert "sent" in data.get("message", "").lower() or "registered" in data.get("message", "").lower()
         assert len(captured_urls) == 1
         assert captured_urls[0] is not None
         assert captured_urls[0].startswith(
@@ -298,13 +298,13 @@ class TestPasswordResetGuards:
             data={"email": email},
             headers={"Origin": untrusted_origin},
         )
-        assert res_untrusted.status_code == 201
+        assert res_untrusted.status_code == 200
         assert len(captured_urls) == 1
         assert not captured_urls[0].startswith(untrusted_origin)
         assert "/reset-password/" in captured_urls[0]
 
     @pytest.mark.asyncio
-    async def test_forgot_password_inactive_user_returns_400(
+    async def test_forgot_password_inactive_user_returns_200_anti_enumeration(
         self,
         app: FastAPI,
         session: Session,
@@ -328,9 +328,9 @@ class TestPasswordResetGuards:
             app.url_path_for("user:forgot-password"),
             data={"email": email},
         )
-        assert res.status_code == 400
-        detail = res.json().get("detail", "")
-        assert "inactive or unverified" in detail.lower()
+        assert res.status_code == 200
+        detail = res.json().get("message", "")
+        assert "sent" in detail.lower() or "registered" in detail.lower()
 
     @pytest.mark.asyncio
     async def test_reset_password_active_user_returns_200(

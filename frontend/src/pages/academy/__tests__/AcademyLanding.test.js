@@ -122,8 +122,8 @@ describe("AcademyLanding Component", () => {
     expect(infoSpy).toHaveBeenCalledTimes(1);
     expect(infoSpy).toHaveBeenCalledWith(
       expect.objectContaining({
-        title: "Income Driver Calculator Access",
         className: "access-request-modal",
+        okText: "Got it",
       })
     );
   });

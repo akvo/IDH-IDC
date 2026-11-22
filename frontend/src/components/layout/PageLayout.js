@@ -10,7 +10,6 @@ import {
   Dropdown,
   Tag,
 } from "antd";
-import { useCookies } from "react-cookie";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
@@ -40,7 +39,14 @@ export const getInitials = (name, mail) => {
   return "U";
 };
 
-const pagesWithNoSider = ["/", "/login", "/welcome", "/register"];
+const pagesWithNoSider = [
+  "/",
+  "/login",
+  "/welcome",
+  "/register",
+  "/verify-academy",
+  "/forgot-password",
+];
 const { Header, Content } = Layout;
 
 // Keep the top-level menu item active on nested pages, e.g. /academy/courses
@@ -54,6 +60,7 @@ export const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
   const { isMobile } = useWindowDimensions();
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [navKey, setNavKey] = useState(0);
   const location = useLocation();
   const signOut = useSignOut();
 
@@ -124,10 +131,32 @@ export const PageHeader = ({ isLoggedIn }) => {
 
   const toggleDrawer = () => setDrawerVisible(!drawerVisible);
 
-  const handleMenuClick = ({ key }) => {
+  const handleMenuClick = ({ key, domEvent }) => {
     if (key === routePath.idc.dashboard || key === routePath.idc.landing) {
       if (isLoggedIn && !hasIdcAccess) {
-        showIdcAccessRequestModal();
+        if (domEvent?.preventDefault) {
+          domEvent.preventDefault();
+        }
+        if (typeof document !== "undefined" && document.activeElement?.blur) {
+          document.activeElement.blur();
+        }
+        setNavKey((prev) => prev + 1);
+        showIdcAccessRequestModal({
+          force: true,
+          navigate,
+          onDiscard: () => {
+            if (
+              typeof document !== "undefined" &&
+              document.activeElement?.blur
+            ) {
+              document.activeElement.blur();
+            }
+            setNavKey((prev) => prev + 1);
+          },
+          onExplore: () => {
+            setNavKey((prev) => prev + 1);
+          },
+        });
         setDrawerVisible(false);
         return;
       }
@@ -176,7 +205,22 @@ export const PageHeader = ({ isLoggedIn }) => {
             ),
             onClick: () => {
               if (!hasIdcAccess) {
-                showIdcAccessRequestModal();
+                showIdcAccessRequestModal({
+                  force: true,
+                  navigate,
+                  onDiscard: () => {
+                    if (
+                      typeof document !== "undefined" &&
+                      document.activeElement?.blur
+                    ) {
+                      document.activeElement.blur();
+                    }
+                    setNavKey((prev) => prev + 1);
+                  },
+                  onExplore: () => {
+                    setNavKey((prev) => prev + 1);
+                  },
+                });
                 return;
               }
               navigate(routePath.idc.dashboard);
@@ -365,6 +409,7 @@ export const PageHeader = ({ isLoggedIn }) => {
                 ) : null}
 
                 <Menu
+                  key={`mobile-nav-${navKey}`}
                   mode="inline"
                   items={menuItems}
                   onClick={handleMenuClick}
@@ -418,7 +463,11 @@ export const PageHeader = ({ isLoggedIn }) => {
                       block
                       className="button-green"
                       onClick={() => {
-                        navigate(paths.login);
+                        navigate(
+                          `${paths.login}?from=${encodeURIComponent(
+                            location.pathname
+                          )}`
+                        );
                         setDrawerVisible(false);
                       }}
                       data-testid="button-drawer-login"
@@ -432,9 +481,11 @@ export const PageHeader = ({ isLoggedIn }) => {
           ) : (
             <>
               <Menu
+                key={`desktop-nav-${navKey}`}
                 mode="horizontal"
                 onClick={handleMenuClick}
                 items={menuItems}
+                disabledOverflow={true}
                 style={{
                   borderBottom: "none",
                   flex: 1,
@@ -477,7 +528,13 @@ export const PageHeader = ({ isLoggedIn }) => {
                 </Dropdown>
               ) : (
                 <Link
-                  to={paths.login}
+                  to={
+                    location.pathname
+                      ? `${paths.login}?from=${encodeURIComponent(
+                          location.pathname
+                        )}`
+                      : paths.login
+                  }
                   className="nav-sign-in"
                   data-testid="button-signin"
                 >
@@ -495,26 +552,21 @@ export const PageHeader = ({ isLoggedIn }) => {
 const PageLayout = ({ children }) => {
   const location = useLocation();
   const pathname = location?.pathname;
-  const [cookies] = useCookies(["AUTH_TOKEN"]);
+  const storeIsAuth = UserState.useState((s) => s.isAuthenticated);
   const userId = UserState.useState((s) => s.id);
   const userActive = UserState.useState((s) => s.active);
   const { isMobile } = useWindowDimensions();
 
   const pagesWithNoHeader = useMemo(() => {
     if (isMobile) {
-      return ["/register"];
+      return ["/register", "/verify-academy", "/forgot-password"];
     }
-    return ["/login", "/register"];
+    return ["/login", "/register", "/verify-academy", "/forgot-password"];
   }, [isMobile]);
 
-  const authTokenAvailable = useMemo(() => {
-    const res = cookies?.AUTH_TOKEN && cookies?.AUTH_TOKEN !== "undefined";
-    return res;
-  }, [cookies?.AUTH_TOKEN]);
-
   const isLoggedIn = useMemo(
-    () => Boolean(authTokenAvailable || (userId && userActive)),
-    [authTokenAvailable, userId, userActive]
+    () => Boolean(storeIsAuth || (userId && userActive)),
+    [storeIsAuth, userId, userActive]
   );
 
   const isResetPasswordPage =

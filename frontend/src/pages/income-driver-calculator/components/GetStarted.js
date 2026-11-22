@@ -68,7 +68,7 @@ const GetStarted = () => {
             )}
             <Col align="end">
               <Link
-                to={routePath.idc.login}
+                to={`${routePath.idc.login}?from=idc_landing`}
                 className="button button-green-fill"
               >
                 Log in to the calculator{" "}

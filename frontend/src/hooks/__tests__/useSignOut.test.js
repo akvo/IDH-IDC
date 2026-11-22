@@ -8,12 +8,20 @@ import api from "../../lib/api";
 describe("useSignOut", () => {
   const cookies = new Cookies();
 
-  it("clears the session cookie, in-memory token and the whole user state", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("calls logout endpoint, clears legacy cookie, in-memory token and user state", () => {
+    const postSpy = jest
+      .spyOn(api, "post")
+      .mockResolvedValueOnce({ data: { message: "Logged out" } });
     cookies.set("AUTH_TOKEN", "token", { path: "/" });
     api.setToken("token");
     UserState.update((s) => {
       s.id = 1;
       s.fullname = "Kole Johnson";
+      s.isAuthenticated = true;
       s.user_type = "learner";
       s.isExternalRegular = true;
       s.isCaseCreator = true;
@@ -25,8 +33,12 @@ describe("useSignOut", () => {
     });
     act(() => result.current());
 
+    expect(postSpy).toHaveBeenCalledWith("user/logout");
     expect(api.token).toBeNull();
     expect(cookies.get("AUTH_TOKEN")).toBeUndefined();
-    expect(UserState.getRawState()).toEqual(defaultUserState);
+    expect(UserState.getRawState()).toEqual({
+      ...defaultUserState,
+      authInitializing: false,
+    });
   });
 });
