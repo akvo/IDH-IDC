@@ -35,6 +35,7 @@ from routes.academy import (
     academy_resource_router,
     academy_settings_router,
 )
+from routes.admin_academy_stats import admin_academy_stats_router
 
 import os
 from jsmin import jsmin
@@ -160,6 +161,7 @@ app.include_router(academy_course_router)
 app.include_router(academy_profile_router)
 app.include_router(academy_resource_router)
 app.include_router(academy_settings_router)
+app.include_router(admin_academy_stats_router)
 
 
 @app.get("/", tags=["Dev"])
