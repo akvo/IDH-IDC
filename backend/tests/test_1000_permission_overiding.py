@@ -18,6 +18,7 @@ from models.case_tag import CaseTag
 from models.visualization import Visualization
 from models.segment import Segment
 from models.organisation import Organisation
+from db.crud_organisation import default_organisation
 
 
 from seeder.fake_seeder.fake_user import seed_fake_user
@@ -537,9 +538,10 @@ class TestPermissionOveriding:
         )
         assert res.status_code == 200
         res = res.json()
+        def_org = default_organisation(session=session, name="IDH")
         assert res == {
             "id": res["id"],
-            "organisation": 2,
+            "organisation": def_org.id if def_org else 2,
             "email": "default_organisation_user@test.org",
             "fullname": "Test User",
             "role": "user",
@@ -570,11 +572,12 @@ class TestPermissionOveriding:
         )
         assert res.status_code == 200
         res = res.json()
+        def_org = default_organisation(session=session, name="IDH")
         assert res == {
             "id": res["id"],
             "fullname": "Company User",
             "email": "company_user@test.org",
-            "organisation": 2,
+            "organisation": def_org.id if def_org else 2,
             "active": False,
             "role": "user",
             "company": 1,

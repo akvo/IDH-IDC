@@ -65,6 +65,8 @@ from models.user import (
     UserProfileUpdateRequest,
     ChangePasswordRequest,
     GrantIdcAccessRequest,
+    CompleteInvitationRequest,
+    CheckAcademyEmailResponse,
     validate_password_strength,
 )
 from models.academy.academy_schemas import (
@@ -476,13 +478,23 @@ def register_academy(
             detail=f"User {normalized_email} already exists.",
         )
 
+    # Derive fullname from first_name and last_name if present, or fallback to fullname
+    first_name = (payload.first_name or "").strip()
+    last_name = (payload.last_name or "").strip()
+    if first_name or last_name:
+        derived_fullname = f"{first_name} {last_name}".strip()
+    else:
+        derived_fullname = (payload.fullname or "").strip()
+    if not derived_fullname:
+        derived_fullname = normalized_email.split("@")[0]
+
     verification_token = secrets.token_hex(32)
     hashed_password = get_password_hash(payload.password)
     def_org = default_organisation(session=session, name="IDH")
     organisation_id = def_org.id if def_org else None
 
     user = User(
-        fullname=payload.fullname.strip(),
+        fullname=derived_fullname,
         email=normalized_email,
         password=hashed_password,
         role=UserRole.user,
@@ -501,7 +513,21 @@ def register_academy(
     profile = crud_profile.get_or_create_user_profile(
         session=session, user=user
     )
+    if first_name:
+        profile.first_name = first_name
+    if last_name:
+        profile.last_name = last_name
     profile.company_name = payload.company_name.strip()
+    if payload.company_type:
+        profile.company_type = payload.company_type.strip()
+    if payload.sector:
+        profile.sector = payload.sector.strip()
+    if payload.region_id is not None:
+        profile.region_id = payload.region_id
+    if payload.region_name:
+        profile.region_name = payload.region_name.strip()
+    if payload.commodities is not None:
+        profile.commodities = payload.commodities
     session.commit()
 
     base_url = get_safe_base_url(req)
@@ -569,6 +595,13 @@ def verify_academy(
 
 
 @user_route.post(
+    "/user/resend-verification",
+    response_model=ResendAcademyVerifyResponse,
+    summary="Resend verification email for Living Income Academy",
+    name="user:resend_verification",
+    tags=["User"],
+)
+@user_route.post(
     "/user/resend-academy-verification",
     response_model=ResendAcademyVerifyResponse,
     summary="Resend verification email for Living Income Academy",
@@ -604,6 +637,133 @@ def resend_academy_verification(
     return {
         "message": "Verification link has been resent to your email address."
     }
+
+
+@user_route.get(
+    "/user/check-academy-email",
+    response_model=CheckAcademyEmailResponse,
+    summary="Check if email belongs to an existing Academy user",
+    name="user:check_academy_email",
+    tags=["User"],
+)
+def check_academy_email(
+    req: Request,
+    email: str = Query(..., description="Email address to check"),
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+    normalized_email = email.strip().lower()
+    user = crud_user.get_user_by_email(session=session, email=normalized_email)
+    if not user:
+        return {
+            "exists": False,
+            "is_academy_user": False,
+            "has_idc_access": False,
+            "user_id": None,
+            "fullname": None,
+            "academy_company": None,
+        }
+
+    user_tools = user.tools or []
+    is_academy_user = ToolType.academy.value in user_tools
+    has_idc_access = ToolType.idc.value in user_tools
+    academy_company = (
+        user.profile.company_name
+        if hasattr(user, "profile") and user.profile
+        else None
+    )
+
+    return {
+        "exists": True,
+        "is_academy_user": is_academy_user,
+        "has_idc_access": has_idc_access,
+        "user_id": user.id,
+        "fullname": user.fullname,
+        "academy_company": academy_company,
+    }
+
+
+@user_route.post(
+    "/user/grant-idc-access",
+    response_model=UserInfo,
+    summary="Grant IDC access to an existing Academy user",
+    name="user:grant_idc_access",
+    tags=["User"],
+)
+def grant_idc_access(
+    req: Request,
+    payload: GrantIdcAccessRequest,
+    user_id: int = Query(..., description="ID of user to grant access to"),
+    session: Session = Depends(get_session),
+    credentials: credentials = Depends(security),
+):
+    verify_admin(session=session, authenticated=req.state.authenticated)
+
+    target_user = crud_user.get_user_by_id(session=session, id=user_id)
+    if not target_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User {user_id} not found",
+        )
+
+    # Validate company
+    company_obj = crud_company.get_company_by_id(
+        session=session, id=payload.company_id
+    )
+    if not company_obj:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Company {payload.company_id} not found",
+        )
+
+    # Update tools: ensure both 'academy' and 'idc' are present
+    current_tools = list(target_user.tools or [])
+    if ToolType.academy.value not in current_tools:
+        current_tools.append(ToolType.academy.value)
+    if ToolType.idc.value not in current_tools:
+        current_tools.append(ToolType.idc.value)
+    target_user.tools = current_tools
+
+    # Set company, role, user_type
+    target_user.company = payload.company_id
+    if payload.role:
+        target_user.role = payload.role
+    if payload.user_type:
+        target_user.user_type = payload.user_type
+    elif not target_user.user_type:
+        target_user.user_type = UserType.external_regular
+
+    # If business units provided
+    if payload.business_units:
+        bu_role = (
+            UserBusinessUnitRole.admin
+            if target_user.role in [UserRole.super_admin, UserRole.admin]
+            else UserBusinessUnitRole.member
+        )
+        for bu in payload.business_units:
+            business_unit = crud_bu.UserBusinessUnit(
+                user=target_user.id,
+                role=bu_role,
+                business_unit=bu["business_unit"],
+            )
+            target_user.user_business_units.append(business_unit)
+
+    # If user was previously inactive from unverified invitation, activate
+    target_user.is_active = 1
+    session.commit()
+    session.refresh(target_user)
+
+    # Send notification email
+    email = Email(
+        recipients=[target_user.recipient],
+        email=MailTypeEnum.IDC_ACCESS_GRANTED,
+        name=target_user.fullname,
+        company_name=company_obj.name,
+    )
+    email.send
+
+    return target_user.to_user_info
 
 
 @user_route.get(
@@ -646,6 +806,77 @@ def change_password(
     )
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
+    access_token = generate_user_token(user)
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user.to_user_info,
+    }
+
+
+@user_route.post(
+    "/user/complete-invitation/{invitation_id:path}",
+    response_model=Token,
+    summary="Complete invitation with full profile and password",
+    name="user:complete_invitation",
+    tags=["User"],
+)
+def complete_invitation(
+    req: Request,
+    invitation_id: str,
+    payload: CompleteInvitationRequest,
+    session: Session = Depends(get_session),
+):
+    user = crud_user.get_invitation(
+        session=session, invitation_id=invitation_id
+    )
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invalid or expired invitation token.",
+        )
+
+    # Validate and set password
+    hashed_password = get_password_hash(payload.password)
+    user.password = hashed_password
+    user.invitation_id = None
+    user.is_active = 1
+
+    # Update fullname
+    first_name = payload.first_name.strip()
+    last_name = payload.last_name.strip()
+    user.fullname = f"{first_name} {last_name}".strip()
+
+    # Ensure tools has both idc and academy for invited users
+    current_tools = list(user.tools or [])
+    if ToolType.idc.value not in current_tools:
+        current_tools.append(ToolType.idc.value)
+    if ToolType.academy.value not in current_tools:
+        current_tools.append(ToolType.academy.value)
+    user.tools = current_tools
+
+    # Update / create user profile
+    profile = crud_profile.get_or_create_user_profile(
+        session=session, user=user
+    )
+    profile.first_name = first_name
+    profile.last_name = last_name
+    if payload.company_name:
+        profile.company_name = payload.company_name.strip()
+    if payload.company_type:
+        profile.company_type = payload.company_type.strip()
+    if payload.sector:
+        profile.sector = payload.sector.strip()
+    if payload.region_id is not None:
+        profile.region_id = payload.region_id
+    if payload.region_name:
+        profile.region_name = payload.region_name.strip()
+    if payload.commodities is not None:
+        profile.commodities = payload.commodities
+
+    session.commit()
+    session.refresh(user)
+
     access_token = generate_user_token(user)
     return {
         "access_token": access_token,

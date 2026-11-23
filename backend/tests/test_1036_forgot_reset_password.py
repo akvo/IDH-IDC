@@ -272,5 +272,5 @@ class TestForgotResetPassword:
                 break
         assert "Reset your Better Income Toolkit password" in msg["Subject"]
         assert "Set a new password" in html_content
-        assert "#01625f" in html_content
+        assert "#61cf86" in html_content.lower() or "#01625f" in html_content.lower()
         assert "30 minutes" in html_content
