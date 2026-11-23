@@ -6,7 +6,7 @@ import "./AcademyChatbot.scss";
 
 const LAUNCHER_STORAGE_KEY = "academy_chat_launcher_pos";
 
-const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7167 35.7756 46.5703 23.9215 47.7383" fill="#005EA3"/><g transform="translate(12, 12)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></g></svg>`;
+const CHAT_ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M23.9178 47.7421C14.4554 49.1221 4.56517 44.982 1.3887 34.5145C-2.2713 22.6708 1.25852 7.2523 12.5101 1.86978C26.3095 -4.46128 45.1116 6.02849 47.8231 22.15C49.735 36.7167 35.7756 46.5703 23.9215 47.7383" fill="#005EA3"/><g transform="translate(12, 12)" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></g></svg>`;
 
 /**
  * Resolves a citation or popover click into an Academy module & chapter URL.
@@ -225,8 +225,8 @@ const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
         wsURL: activeWsUrl,
         wsUrl: activeWsUrl,
         kb_id: activeKbId,
-        botName: "Living Income AI",
-        title: "Living Income AI",
+        botName: "Livia",
+        title: "Livia",
         primaryColor: "#005EA3",
         showLauncher: true,
         startMinimized: true,
@@ -234,11 +234,19 @@ const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
         draggable: true,
         persistPosition: true,
         storageKey: LAUNCHER_STORAGE_KEY,
+        width: "440px",
+        height: "580px",
+        borderRadius: "24px",
       });
 
       const launcherEl = document.getElementById("akvo-rag-launcher");
       if (launcherEl) {
-        launcherEl.setAttribute("title", "Ask the Academy facilitator");
+        launcherEl.setAttribute("title", "Ask Livia");
+      }
+
+      const inputEl = document.getElementById("akvo-rag-input");
+      if (inputEl) {
+        inputEl.setAttribute("placeholder", "Message");
       }
     } catch (err) {
       chatRef.current = null;
@@ -354,6 +362,11 @@ const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
     let observer = null;
     if (chatContainer) {
       observer = new MutationObserver(() => {
+        const inputEl = chatContainer.querySelector("#akvo-rag-input");
+        if (inputEl && inputEl.getAttribute("placeholder") !== "Message") {
+          inputEl.setAttribute("placeholder", "Message");
+        }
+
         const assistantMsgs = chatContainer.querySelectorAll(
           ".akvo-msg-assistant"
         );

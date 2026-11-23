@@ -111,7 +111,7 @@ describe("AcademyChatbot", () => {
     }
   });
 
-  it("initializes akvo-rag-js v1.4.0 with native draggable launcher and IDH branding", () => {
+  it("initializes akvo-rag-js v1.4.0 with native draggable launcher and Livia branding", () => {
     const { unmount } = render(
       <AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />
     );
@@ -121,8 +121,8 @@ describe("AcademyChatbot", () => {
         wsURL: "wss://test-rag.org/ws/chat",
         wsUrl: "wss://test-rag.org/ws/chat",
         kb_id: 753,
-        botName: "Living Income AI",
-        title: "Living Income AI",
+        botName: "Livia",
+        title: "Livia",
         primaryColor: "#005EA3",
         showLauncher: true,
         startMinimized: true,
@@ -130,12 +130,15 @@ describe("AcademyChatbot", () => {
         draggable: true,
         persistPosition: true,
         storageKey: LAUNCHER_STORAGE_KEY,
+        width: "440px",
+        height: "580px",
+        borderRadius: "24px",
       })
     );
 
     const launcher = document.getElementById("akvo-rag-launcher");
     expect(launcher).toBeInTheDocument();
-    expect(launcher.getAttribute("title")).toBe("Ask the Academy facilitator");
+    expect(launcher.getAttribute("title")).toBe("Ask Livia");
 
     unmount();
     expect(mockChatInstance.destroy).toHaveBeenCalled();

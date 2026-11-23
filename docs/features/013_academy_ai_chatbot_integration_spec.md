@@ -12,9 +12,9 @@
 * **Who (Target Personas)**: 
   * IDC Academy Learners & Practitioners browsing Living Income Academy modules who need immediate answers on definitions, formulas, living income benchmarks, and course guidance.
 * **What (Core Deliverable)**: 
-  * An embedded, branded AI chatbot widget mounted across IDC Academy pages.
+  * An embedded, branded AI chatbot widget ("Livia") mounted across IDC Academy pages.
   * Powered by `akvo-rag` (WebSocket streaming) and bundled via `akvo-rag-js`.
-  * Customized with IDC brand palette (`#007A78`), custom bot launcher icon/avatar, and start-minimized state.
+  * Customized with IDC brand palette (`#005ea3`), organic blob launcher icon, start-minimized state, and styled to match Figma node `12320-15685` with responsive font scaling across compact/mobile viewports.
 * **Where (System Locations)**:
   1. `akvo-rag-js` (`~/Sites/akvo-rag-js`): UI enhancement for customizable floating launcher button, custom icon/avatar rendering, and dynamic brand coloring.
   2. `akvo-rag` (`~/Sites/akvo-rag`): Dedicated Knowledge Base creation (`idc-academy-kb`), Module 1 PDF ingestion (Single vs. Per-Chapter A/B benchmarking), and embeddings verification in ChromaDB.
@@ -353,7 +353,7 @@ Instead of micro-tasks, the implementation is organized into **3 high-level, coh
 * **User Acceptance Criteria (UAC)**:
   - [x] **UAC-3.1 (Global Academy Presence)**: The floating bot icon appears across all `/academy/*` routes (`/academy`, `/academy/modules/:id`, `/academy/resources`, `/academy/account`, `/academy/settings`).
   - [x] **UAC-3.2 (Clickable Lesson Links)**: When the chatbot references a module or chapter (e.g. *"You can find this in Module 1, Chapter 2"* or citation link), clicking the link navigates directly to `/academy/modules/1?chapter=2` inside the Academy UI.
-  - [x] **UAC-3.3 (IDC Branding Alignment)**: The launcher icon displays the official IDC robot/chat icon in IDH brand teal (`#007A78`), perfectly matching the Academy layout tokens.
+  - [x] **UAC-3.3 (IDC Branding & Figma Alignment)**: The AI facilitator is named "Livia". The floating launcher icon displays the official IDC organic blob shape with white comment-bubble outline in IDH brand blue (`#005ea3`), and the chat window layout matches Figma node `12320-15685` with responsive font scaling across laptop, tablet, and mobile viewports.
   - [x] **UAC-3.4 (Non-Intrusive Layout)**: Chat window and floating button do not overlap key Academy controls (like "Continue learning" buttons or mobile sidebar toggles) and maintain comfortable margin on mobile viewports ($\le 768px$).
   - [x] **UAC-3.5 (Session & Error Handling)**: If WebSocket connection disconnects or network fails, an inline reconnecting status is shown gracefully without crashing the React tree.
 * **Technical Acceptance Criteria (TAC)**:
