@@ -135,19 +135,21 @@ class EmailBody(enum.Enum):
     }
     INVITATION = {
         "title": "Invitation",
-        "subject": "Invitation",
+        "subject": "Invitation: You’re invited to the Income Driver Calculator",
         "subtitle": "You have been invited to the Income Driver Calculator",
         "body": (
-            "You have been invited to the Better Income Toolkit "
-            "(with access to the Income Driver Calculator and "
-            "Living Income Academy). Please click here or the link below to set your password."
+            "Hi, IDH invited you to the Income Driver Calculator, "
+            "part of the Better Income Toolkit. Your account also gives you "
+            "access to the Living Income Academy, with free online courses on living income."
         ),
         "message": None,
         "image": "email-invitation-screen.png",
-        "button_text": "Income Drive Calculator",
+        "button_text": "Create your account",
         "button_color": "#3f98f7",
         "show_plain_url": True,
-        "disclaimer": None,
+        "disclaimer": (
+            "This invitation is valid for {period}. Questions? Contact idc-support@idhtrade.org."
+        ),
     }
     ACADEMY_REGISTRATION_VERIFY = {
         "title": "Confirm your email",
@@ -162,14 +164,16 @@ class EmailBody(enum.Enum):
         "button_text": "Confirm email",
         "button_color": "#3f98f7",
         "show_plain_url": True,
-        "disclaimer": "Didn’t sign up? You can ignore this email.",
+        "disclaimer": (
+            "This link is valid for {period}. Didn’t sign up? You can ignore this email."
+        ),
     }
     IDC_ACCESS_GRANTED = {
         "title": "Invitation",
-        "subject": "Income Driver Calculator Access Granted",
+        "subject": "Access Granted: You now have access to the Income Driver Calculator",
         "subtitle": (
             "Hi {name}, IDH gave you access to the Income Driver Calculator "
-            "for {company_name}"
+            "for {company_name}."
         ),
         "body": (
             "You don’t need a new account: log in with your current email "
@@ -269,6 +273,10 @@ class Email:
         if not period_val:
             if self.email == EmailBody.FORGOT_PASSWORD:
                 period_val = "30 minutes"
+            elif self.email == EmailBody.ACADEMY_REGISTRATION_VERIFY:
+                period_val = "24 hours"
+            elif self.email == EmailBody.INVITATION:
+                period_val = "7 days"
             else:
                 period_val = "a limited time"
 

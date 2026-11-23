@@ -59,6 +59,12 @@ def clean_academy_registration(session: Session) -> Generator:
             "(SELECT COALESCE(MAX(id), 1) FROM user_profile))"
         )
     )
+    session.execute(
+        text(
+            "SELECT setval('organisation_id_seq', "
+            "(SELECT COALESCE(MAX(id), 1) FROM organisation))"
+        )
+    )
     session.commit()
 
 

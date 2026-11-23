@@ -96,7 +96,10 @@ class TestMailer:
         data = email.data
         assert data["To"] == "John Doe <super_admin@akvo.org>"
         assert data["From"] == "noreply@akvo.org"
-        assert data["Subject"] == "Invitation"
+        assert (
+            data["Subject"]
+            == "Invitation: You’re invited to the Income Driver Calculator"
+        )
 
     @pytest.mark.asyncio
     async def test_email_forgot_password_toolkit_branding(
@@ -133,7 +136,10 @@ class TestMailer:
             url="https://example.com/invitation/sample-uuid-token",
         )
         data = email.data
-        assert data["Subject"] == "Invitation"
+        assert (
+            data["Subject"]
+            == "Invitation: You’re invited to the Income Driver Calculator"
+        )
         html_part = next(
             part.get_content()
             for part in data.iter_parts()
@@ -165,7 +171,10 @@ class TestMailer:
             ),
         )
         data = email.data
-        assert data["Subject"] == "Income Driver Calculator Access Granted"
+        assert (
+            data["Subject"]
+            == "Access Granted: You now have access to the Income Driver Calculator"
+        )
         html_part = next(
             part.get_content()
             for part in data.iter_parts()

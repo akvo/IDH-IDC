@@ -22,6 +22,7 @@ from pydantic import (
     Field,
     SecretStr,
     field_validator,
+    model_validator,
     ValidationInfo,
 )
 from models.organisation import OrganisationDict
@@ -598,17 +599,47 @@ class ChangePasswordRequest(BaseModel):
 
 
 class UserRegisterAcademy(BaseModel):
-    fullname: str
+    fullname: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: EmailStr
     password: str
     company_name: str
+    company_type: Optional[str] = None
+    sector: Optional[str] = None
+    region_id: Optional[int] = None
+    region_name: Optional[str] = None
+    commodities: List[str] = Field(default_factory=list)
 
     @field_validator("fullname")
     @classmethod
-    def validate_fullname(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError("Fullname cannot be empty")
+    def validate_fullname(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if not v:
+                raise ValueError("Fullname cannot be empty")
+        return v
+
+    @model_validator(mode="after")
+    def validate_name_presence(self):
+        # Either fullname must be provided, or both first_name and last_name
+        has_fullname = bool(self.fullname and self.fullname.strip())
+        has_split_name = bool(
+            (self.first_name and self.first_name.strip())
+            or (self.last_name and self.last_name.strip())
+        )
+        if not has_fullname and not has_split_name:
+            raise ValueError(
+                "Either fullname or first_name/last_name must be provided"
+            )
+        return self
+
+    @field_validator("first_name", "last_name")
+    @classmethod
+    def sanitize_names(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            return v if v else None
         return v
 
     @field_validator("company_name")
@@ -625,6 +656,62 @@ class UserRegisterAcademy(BaseModel):
     @classmethod
     def validate_password_complexity(cls, v: str) -> str:
         return validate_password_strength(v)
+
+    @field_validator("company_type")
+    @classmethod
+    def validate_company_type(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if len(v) > 100:
+                raise ValueError("Company type cannot exceed 100 characters")
+            return v if v else None
+        return v
+
+
+class CompleteInvitationRequest(BaseModel):
+    password: str
+    first_name: str
+    last_name: str
+    company_name: Optional[str] = None
+    company_type: Optional[str] = None
+    sector: Optional[str] = None
+    region_id: Optional[int] = None
+    region_name: Optional[str] = None
+    commodities: List[str] = Field(default_factory=list)
+
+    @field_validator("first_name", "last_name")
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Name cannot be empty")
+        if len(v) > 125:
+            raise ValueError("Name cannot exceed 125 characters")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def validate_password_complexity(cls, v: str) -> str:
+        return validate_password_strength(v)
+
+    @field_validator("company_type")
+    @classmethod
+    def validate_company_type(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None:
+            v = v.strip()
+            if len(v) > 100:
+                raise ValueError("Company type cannot exceed 100 characters")
+            return v if v else None
+        return v
+
+
+class CheckAcademyEmailResponse(BaseModel):
+    exists: bool
+    is_academy_user: bool
+    has_idc_access: bool
+    user_id: Optional[int] = None
+    fullname: Optional[str] = None
+    academy_company: Optional[str] = None
 
 
 class AcademyRegisterResponse(BaseModel):
@@ -647,3 +734,5 @@ class ResendAcademyVerifyResponse(BaseModel):
 class GrantIdcAccessRequest(BaseModel):
     company_id: int
     user_type: Optional[UserType] = None
+    role: Optional[UserRole] = None
+    business_units: Optional[List[dict]] = None
