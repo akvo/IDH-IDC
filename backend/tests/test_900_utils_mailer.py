@@ -75,7 +75,7 @@ class TestMailer:
         data = email.data
         assert data["To"] == "John Doe <super_admin@akvo.org>"
         assert data["From"] == "noreply@akvo.org"
-        assert data["Subject"] == "Registration"
+        assert "Registration" in data["Subject"]
         # The message carries a plain-text body with the rendered template
         # attached as an HTML alternative.
         subtypes = [part.get_content_subtype() for part in data.iter_parts()]

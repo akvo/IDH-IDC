@@ -1,610 +1,249 @@
 <!DOCTYPE html>
-<html
-  lang="en"
-  style="
-    -ms-text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    background: #f1f1f1;
-    margin: 0 auto !important;
-    padding: 0 !important;
-    height: 100% !important;
-    width: 100% !important;
-  "
->
-  <head style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%">
-    <meta
-      charset="utf-8"
-      style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%"
-    />
-    <meta
-      name="viewport"
-      content="width=device-width"
-      style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%"
-    />
-    <meta
-      http-equiv="X-UA-Compatible"
-      content="IE=edge"
-      style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%"
-    />
-    <meta
-      name="x-apple-disable-message-reformatting"
-      style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%"
-    />
-    <title style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%">
-      {{ title }}
-    </title>
-    <link
-      href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700"
-      rel="stylesheet"
-      style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%"
-    />
-    <style style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%">
-      html,
-      body {
-        margin: 0 auto !important;
-        padding: 0 !important;
-        height: 100% !important;
-        width: 100% !important;
-        background: #f1f1f1;
-      }
-
-      /*Stops email clients resizing small text. */
-      * {
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-      }
-
-      /*Centers email on Android 4.4 */
-      div[style*="margin: 16px 0"] {
-        margin: 0 !important;
-      }
-
-      /*Stops Outlook from adding extra spacing to tables. */
-      table,
-      td {
-        mso-table-lspace: 0pt !important;
-        mso-table-rspace: 0pt !important;
-      }
-
-      /*Fixes webkit padding issue. */
-      table {
-        border-spacing: 0 !important;
-        border-collapse: collapse !important;
-        table-layout: fixed !important;
-        margin: 0 auto !important;
-      }
-
-      /*Uses a better rendering method when resizing images in IE. */
-      img {
-        -ms-interpolation-mode: bicubic;
-      }
-
-      /*Prevents Windows 10 Mail from underlining links despite inline CSS. Styles for underlined links should be inline. */
-      a {
-        text-decoration: none;
-      }
-
-      /*A work-around for email clients meddling in triggered links. */
-      *[x-apple-data-detectors],
-      /* iOS */
-      .unstyle-auto-detected-links *,
-      .aBn {
-        border-bottom: 0 !important;
-        cursor: default !important;
-        color: inherit !important;
-        text-decoration: none !important;
-        font-size: inherit !important;
-        font-family: inherit !important;
-        font-weight: inherit !important;
-        line-height: inherit !important;
-      }
-
-      /*Prevents Gmail from displaying a download button on large*/
-      .a6S {
-        display: none !important;
-        opacity: 0.01 !important;
-      }
-
-      /*Prevents Gmail from changing the text color in conversation threads. */
-      .im {
-        color: inherit !important;
-      }
-
-      /* If the above doesn't work, add a .g-img class to any image in question. */
-      img.g-img + div {
-        display: none !important;
-      }
-
-      /*Removes gutter in Gmail iOS app: https://github.com/TedGoas/Cerberus/issues/89  */
-      /* Create one of these media queries for each additional viewport size*/
-      /* iPhone 4, 4S, 5, 5S, 5C, and 5SE */
-      @media only screen and (min-device-width: 320px) and (max-device-width: 374px) {
-        u ~ div .email-container {
-          min-width: 320px !important;
-        }
-      }
-
-      /* iPhone 6, 6S, 7, 8, and X */
-      @media only screen and (min-device-width: 375px) and (max-device-width: 413px) {
-        u ~ div .email-container {
-          min-width: 375px !important;
-        }
-      }
-
-      /* iPhone 6+, 7+, and 8+ */
-      @media only screen and (min-device-width: 414px) {
-        u ~ div .email-container {
-          min-width: 414px !important;
-        }
-      }
-    </style>
-    <style style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%">
-      .primary {
-        background: #0d0cb5;
-      }
-
-      .bg_white {
-        background: #ffffff;
-      }
-
-      .bg_light {
-        background: #fafafa;
-      }
-
-      .bg_black {
-        background: #000000;
-      }
-
-      .bg_dark {
-        background: rgba(0, 0, 0, .8);
-      }
-
-      .email-section {
-        padding: 2.5em;
-      }
-
-      /*BUTTON*/
-      .btn {
-        padding: 5px 15px;
-        display: inline-block;
-      }
-
-      .btn.btn-primary {
-        border-radius: 5px;
-        background: #0d0cb5;
-        color: #ffffff;
-      }
-
-      .btn.btn-white {
-        border-radius: 5px;
-        background: #ffffff;
-        color: #000000;
-      }
-
-      .btn.btn-white-outline {
-        border-radius: 5px;
-        background: transparent;
-        border: 1px solid #fff;
-        color: #fff;
-      }
-
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        font-family: 'Poppins', sans-serif;
-        color: #000000;
-        margin-top: 0;
-      }
-
-      body {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 400;
-        font-size: 15px;
-        line-height: 1.8;
-        color: rgba(0, 0, 0, .4);
-      }
-
-      a {
-        color: #0d0cb5;
-      }
-
-      table {}
-
-      /*LOGO*/
-      .logo h1 {
-        margin: 0;
-      }
-
-      .logo h1 a {
-        color: #000000;
-        font-size: 20px;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-family: 'Poppins', sans-serif;
-      }
-
-      /*HEADING SECTION*/
-      .heading-section {}
-
-      .heading-section h2 {
-        color: #000000;
-        font-size: 20px;
-        margin-top: 0;
-        line-height: 1.4;
-        font-weight: 700;
-        text-transform: uppercase;
-      }
-
-      .heading-section .subheading {
-        margin-bottom: 20px !important;
-        display: inline-block;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: rgba(0, 0, 0, .4);
-        position: relative;
-      }
-
-      .heading-section .subheading::after {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -10px;
-        content: '';
-        width: 100%;
-        height: 2px;
-        background: #0d0cb5;
-        margin: 0 auto;
-      }
-
-      .heading-section-white {
-        color: rgba(255, 255, 255, .8);
-      }
-
-      .heading-section-white h2 {
-        font-family: line-height: 1;
-        padding-bottom: 0;
-      }
-
-      .heading-section-white h2 {
-        color: #ffffff;
-      }
-
-      .heading-section-white .subheading {
-        margin-bottom: 0;
-        display: inline-block;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        color: rgba(255, 255, 255, .4);
-      }
-
-      .icon {
-        text-align: center;
-      }
-
-      .icon img {}
-    </style>
-  </head>
-  <body
-    style="
-      width: 100%;
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>{{ title }}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style type="text/css">
+    html, body {
       margin: 0 auto !important;
       padding: 0 !important;
-      mso-line-height-rule: exactly;
-      background-color: #222222;
-      -ms-text-size-adjust: 100%;
-      -webkit-text-size-adjust: 100%;
-      background: #f1f1f1;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400;
-      font-size: 15px;
-      line-height: 1.8;
-      color: rgba(0, 0, 0, 0.4);
       height: 100% !important;
       width: 100% !important;
-    "
-  >
-    <div
-      style="
-        display: none;
-        font-size: 1px;
-        max-height: 0px;
-        max-width: 0px;
-        opacity: 0;
-        overflow: hidden;
-        mso-hide: all;
-        font-family: sans-serif;
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-      "
-    >
-      &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
+      background-color: #F2F2F2;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    * {
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+    div[style*="margin: 16px 0"] {
+      margin: 0 !important;
+    }
+    table, td {
+      mso-table-lspace: 0pt !important;
+      mso-table-rspace: 0pt !important;
+    }
+    table {
+      border-spacing: 0 !important;
+      border-collapse: collapse !important;
+      table-layout: fixed !important;
+    }
+    table.email-container {
+      margin: 0 auto !important;
+    }
+    img {
+      -ms-interpolation-mode: bicubic;
+      border: 0;
+      outline: none;
+      text-decoration: none;
+    }
+    a {
+      text-decoration: none;
+      color: #3F98F7;
+    }
+    *[x-apple-data-detectors],
+    .unstyle-auto-detected-links *,
+    .aBn {
+      border-bottom: 0 !important;
+      cursor: default !important;
+      color: inherit !important;
+      text-decoration: none !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+    }
+    @media only screen and (max-width: 620px) {
+      .email-container {
+        width: 100% !important;
+        margin: auto !important;
+        border-radius: 0 !important;
+      }
+      .card-body {
+        padding: 24px 20px !important;
+      }
+      .email-header {
+        padding: 20px 20px 14px 20px !important;
+        text-align: left !important;
+      }
+      .email-header a, .email-header img {
+        text-align: left !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+      }
+      .heading-title {
+        font-size: 28px !important;
+        line-height: 36px !important;
+      }
+    }
+  </style>
+</head>
+<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #F2F2F2;">
+  <center style="width: 100%; background-color: #F2F2F2; padding: 20px 0;">
+    <!-- Visually Hidden Preheader Text -->
+    <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
+      {{ title }}{% if subtitle %} - {{ subtitle }}{% endif %}
+      &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
     </div>
-    <div
-      style="
-        max-width: 720px;
-        margin: 0 auto;
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-        padding-top: 50px;
-        padding-bottom: 50px;
-      "
-      class="email-container"
-    >
-      <table
-        role="presentation"
-        cellspacing="0"
-        cellpadding="0"
-        border="0"
-        width="100%"
-        style="
-          text-align: center;
-          margin: auto;
-          -ms-text-size-adjust: 100%;
-          -webkit-text-size-adjust: 100%;
-          mso-table-lspace: 0pt !important;
-          mso-table-rspace: 0pt !important;
-          border-spacing: 0 !important;
-          border-collapse: collapse !important;
-          table-layout: fixed !important;
-        "
-      >
-        <tbody>
-          <tr
-            style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%"
-          >
-            <td
-              class="bg_white"
-              style="
-                -ms-text-size-adjust: 100%;
-                -webkit-text-size-adjust: 100%;
-                background: #ffffff;
-                mso-table-lspace: 0pt !important;
-                mso-table-rspace: 0pt !important;
-              "
-            >
-              <table
-                role="presentation"
-                cellspacing="0"
-                cellpadding="0"
-                border="0"
-                width="100%"
-                style="
-                  -ms-text-size-adjust: 100%;
-                  -webkit-text-size-adjust: 100%;
-                  mso-table-lspace: 0pt !important;
-                  mso-table-rspace: 0pt !important;
-                  border-spacing: 0 !important;
-                  border-collapse: collapse !important;
-                  table-layout: fixed !important;
-                  margin: 0 auto !important;
-                "
-              >
-                <tbody>
-                  <tr
-                    style="
-                      -ms-text-size-adjust: 100%;
-                      -webkit-text-size-adjust: 100%;
-                    "
-                  >
-                    <td
-                      class="primary email-section"
-                      style="
-                        text-align: center;
-                        -ms-text-size-adjust: 100%;
-                        -webkit-text-size-adjust: 100%;
-                        background: rgb(247, 247, 247);
-                        padding: 2.5em;
-                        mso-table-lspace: 0pt !important;
-                        mso-table-rspace: 0pt !important;
-                      "
-                    >
-                      <div
-                        class="heading-section heading-section-white"
-                        style="
-                          -ms-text-size-adjust: 100%;
-                          -webkit-text-size-adjust: 100%;
-                          color: rgba(136, 133, 133, 0.8);
-                          text-align: center;
-                        "
-                      >
-                        <table>
-                          <tbody>
-                            <tr>
-                              <td>
-                                <img
-                                  style="
-                                    vertical-align: middle;
-                                    margin-left: auto;
-                                    margin-right: auto;
-                                    width: auto;
-                                    height: 48px;
-                                  "
-                                  alt="{{ logo }}"
-                                  src="{{ logo }}"
-                                />
-                              </td>
-                              <td>
-                                <h1
-                                  style="
-                                    vertical-align: middle;
-                                    margin: 0px;
-                                    padding: 10px;
-                                    font-size: 20px;
-                                    font-weight: 600;
-                                  "
-                                >
-                                  {{ instance_name }}
-                                </h1>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+
+    <!-- Main Container Table (600px Max Width) -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px; margin: 20px auto;" class="email-container">
+      <tr>
+        <td style="background-color: #FFFFFF; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          
+          <!-- Header: Brand Logo & Toolkit Lockup (Left-Aligned) -->
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" align="left">
+            <tr>
+              <td class="email-header" align="left" style="padding: 28px 32px 18px 32px; text-align: left; background-color: #FFFFFF;">
+                <a href="{{ webdomain }}" target="_blank" rel="noreferrer" style="display: inline-block; text-align: left; margin: 0; padding: 0;">
+                  <img src="{{ logo }}" data-asset="email-logo.png" alt="IDH - Toolkit Towards Better Incomes" height="38" style="display: block; height: 38px; width: auto; max-height: 38px; border: 0; margin: 0; text-align: left;" />
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0 32px;">
+                <div style="height: 1px; background-color: #E5E7EB; line-height: 1px; font-size: 1px;">&nbsp;</div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- Card Content -->
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td class="card-body" style="padding: 32px 32px 28px 32px; text-align: center; background-color: #FFFFFF;">
+
+                <!-- Hero Illustration (244px x 150px) -->
+                {% if image %}
+                <div style="text-align: center; margin-bottom: 24px;">
+                  <img src="{{ image }}" data-asset="{{ image_filename }}" alt="Illustration" width="244" style="display: inline-block; width: 244px; max-width: 100%; height: auto; border: 0;" />
+                </div>
+                {% endif %}
+
+                <!-- Main Heading (Bold 36px) -->
+                <h1 class="heading-title" style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 34px; line-height: 42px; font-weight: 700; color: #000000; text-align: center; letter-spacing: -0.5px;">
+                  {{ title }}
+                </h1>
+
+                <!-- Subtitle (16px #676767) -->
+                {% if subtitle %}
+                <p style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 25px; color: #676767; text-align: center;">
+                  {{ subtitle }}
+                </p>
+                {% endif %}
+
+                <!-- Body Text (14px #676767) -->
+                {% if body %}
+                <p style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; color: #676767; text-align: center;">
+                  {{ body }}
+                </p>
+                {% endif %}
+
+                <!-- Plain URL Link Fallback (e.g. for Invitation & Academy Verify) -->
+                {% if show_plain_url and url %}
+                <p style="margin: 8px 0 20px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; color: #3F98F7; text-align: center; word-break: break-all;">
+                  <a href="{{ url }}" target="_blank" rel="noreferrer" style="color: #3F98F7; text-decoration: none;">{{ url }}</a>
+                </p>
+                {% endif %}
+
+                <!-- CTA Button -->
+                {% if url and button_text %}
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 24px auto 16px auto;">
+                  <tr>
+                    <td align="center" style="border-radius: 10px; background-color: {{ button_color | default('#3F98F7') }};">
+                      <a href="{{ url }}" target="_blank" rel="noreferrer" style="display: inline-block; padding: 13px 32px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 600; color: #FFFFFF; text-decoration: none; border-radius: 10px; background-color: {{ button_color | default('#3F98F7') }};">
+                        {{ button_text }}
+                      </a>
                     </td>
                   </tr>
-                  <tr
-                    style="
-                      -ms-text-size-adjust: 100%;
-                      -webkit-text-size-adjust: 100%;
-                    "
-                  >
-                    <td
-                      class="bg_white email-section"
-                      style="
-                        -ms-text-size-adjust: 100%;
-                        -webkit-text-size-adjust: 100%;
-                        background: #ffffff;
-                        padding: 2.5em;
-                        mso-table-lspace: 0pt !important;
-                        mso-table-rspace: 0pt !important;
-                      "
-                    >
-                      <div
-                        class="heading-section"
-                        style="
-                          text-align: center;
-                          padding: 0 30px;
-                          -ms-text-size-adjust: 100%;
-                          -webkit-text-size-adjust: 100%;
-                        "
-                      >
-                        <h2
-                          style="
-                            -ms-text-size-adjust: 100%;
-                            -webkit-text-size-adjust: 100%;
-                            font-family: 'Poppins', sans-serif;
-                            color: #000000;
-                            margin-top: 0;
-                            font-size: 20px;
-                            line-height: 1.4;
-                            font-weight: 700;
-                            text-transform: uppercase;
-                          "
-                        >
-                          {{ title }}
-                        </h2>
-                        <p
-                          style="
-                            -ms-text-size-adjust: 100%;
-                            -webkit-text-size-adjust: 100%;
-                          "
-                        >
-                          {{ body }}
-                        </p>
-                      </div>
-                      {% if image or message %}
-                      <table style="width: 90%; margin: auto; padding: 20px">
-                        <tbody>
-                          {% if image %}
-                          <tr>
-                            <td style="text-align: center">
-                              <img
-                                src="{{ image }}"
-                                width="64px"
-                                alt="email-icon"
-                              />
-                            </td>
-                          </tr>
-                          {% endif %} {% if message %}
-                          <tr>
-                            <td style="text-align: center">{{ message }}</td>
-                          </tr>
-                          {% endif %} {% if context %}
-                          <tr>
-                            <td style="text-align: center">{{ context }}</td>
-                          </tr>
-                          {% endif %}
-                        </tbody>
-                      </table>
-                      {% endif %}
+                </table>
+                {% endif %}
+
+                <!-- Custom Message HTML (Backward Compatibility) -->
+                {% if message %}
+                <div style="margin: 20px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; color: #676767; text-align: center;">
+                  {{ message | safe }}
+                </div>
+                {% endif %}
+
+                <!-- Context Information -->
+                {% if context %}
+                <div style="margin: 16px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 20px; color: #676767; text-align: center;">
+                  {{ context }}
+                </div>
+                {% endif %}
+
+                <!-- Validity Period / Security Disclaimer (14px #676767) -->
+                {% if disclaimer %}
+                <p style="margin: 20px 0 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; line-height: 22px; color: #676767; text-align: center;">
+                  {{ disclaimer }}
+                </p>
+                {% endif %}
+
+              </td>
+            </tr>
+
+            <!-- Divider -->
+            <tr>
+              <td style="padding: 0 32px;">
+                <div style="height: 1px; background-color: #E5E7EB; line-height: 1px; font-size: 1px;">&nbsp;</div>
+              </td>
+            </tr>
+
+            <!-- Footer: Social Links & Copyright -->
+            <tr>
+              <td style="padding: 24px 32px 32px 32px; text-align: center; background-color: #FFFFFF;">
+                <!-- Social Media Icons Row -->
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 16px auto;">
+                  <tr>
+                    <td style="padding: 0 6px;">
+                      <a href="https://www.facebook.com/idhtrade" target="_blank" rel="noreferrer" title="Facebook">
+                        <img src="{{ social_facebook | default(image_url ~ '/social-facebook.svg') }}" data-asset="social-facebook.svg" alt="Facebook" width="28" height="28" style="display: block; border: 0;" />
+                      </a>
+                    </td>
+                    <td style="padding: 0 6px;">
+                      <a href="https://www.linkedin.com/company/idh-the-sustainable-trade-initiative" target="_blank" rel="noreferrer" title="LinkedIn">
+                        <img src="{{ social_linkedin | default(image_url ~ '/social-linkedin.svg') }}" data-asset="social-linkedin.svg" alt="LinkedIn" width="28" height="28" style="display: block; border: 0;" />
+                      </a>
+                    </td>
+                    <td style="padding: 0 6px;">
+                      <a href="https://www.instagram.com/idhtrade" target="_blank" rel="noreferrer" title="Instagram">
+                        <img src="{{ social_instagram | default(image_url ~ '/social-instagram.svg') }}" data-asset="social-instagram.svg" alt="Instagram" width="28" height="28" style="display: block; border: 0;" />
+                      </a>
+                    </td>
+                    <td style="padding: 0 6px;">
+                      <a href="https://x.com/idhtrade" target="_blank" rel="noreferrer" title="X (Twitter)">
+                        <img src="{{ social_x | default(image_url ~ '/social-x.svg') }}" data-asset="social-x.svg" alt="X" width="28" height="28" style="display: block; border: 0;" />
+                      </a>
                     </td>
                   </tr>
-                  <tr
-                    style="
-                      -ms-text-size-adjust: 100%;
-                      -webkit-text-size-adjust: 100%;
-                    "
-                  >
-                    <td
-                      class="primary footer-section"
-                      style="
-                        text-align: center;
-                        -ms-text-size-adjust: 100%;
-                        -webkit-text-size-adjust: 100%;
-                        background: rgb(2, 136, 209);
-                        padding: 2.5em;
-                        mso-table-lspace: 0pt !important;
-                        mso-table-rspace: 0pt !important;
-                      "
-                    >
-                      <table style="text-align: center">
-                        <tbody>
-                          <tr>
-                            <td style="padding: 1em; color: rgb(255, 255, 255)">
-                              <a
-                                href="{{webdomain}}"
-                                target="_blank"
-                                style="
-                                  text-decoration: none;
-                                  color: rgb(255, 255, 255);
-                                "
-                              >
-                                {{ instance_name }}
-                              </a>
-                            </td>
-                            <!-- NOTE:: Removed for now -->
-                            <!-- <td style="padding: 1em; color: rgb(255, 255, 255)">
-                              <a
-                                href="{{webdomain}}/data"
-                                target="_blank"
-                                style="
-                                  text-decoration: none;
-                                  color: rgb(255, 255, 255);
-                                "
-                              >
-                                About the Data
-                              </a>
-                            </td>
-                            <td style="padding: 1em; color: rgb(255, 255, 255)">
-                              <a
-                                href="{{webdomain}}/terms-of-services"
-                                target="_blank"
-                                style="
-                                  text-decoration: none;
-                                  color: rgb(255, 255, 255);
-                                "
-                              >
-                                Terms of Services
-                              </a>
-                            </td>
-                            <td style="padding: 1em; color: rgb(255, 255, 255)">
-                              <a
-                                href="{{webdomain}}/privacy-policies"
-                                target="_blank"
-                                style="
-                                  text-decoration: none;
-                                  color: rgb(255, 255, 255);
-                                "
-                              >
-                                Privacy Policies
-                              </a> -->
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </body>
+                </table>
+
+                <!-- Copyright Notice -->
+                <p style="margin: 0 0 6px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; color: #9A9EA6; text-align: center;">
+                  Copyright 2026 &copy; IDH company. All rights reserved.
+                </p>
+                <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; line-height: 16px; color: #9A9EA6; text-align: center;">
+                  This email was sent from the Better Income Toolkit by IDH.
+                </p>
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+  </center>
+</body>
 </html>
