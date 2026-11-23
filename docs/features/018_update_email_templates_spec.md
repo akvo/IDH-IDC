@@ -1,7 +1,7 @@
 # Feature Specification: [TLSA-012] Better Income Toolkit Email Templates
 
 > **Document ID**: `docs/features/018_update_email_templates_spec.md`  
-> **Status**: Ready for Review / Phase 0 Planning & Estimation  
+> **Status**: Completed / Ready for Review  
 > **Target Release**: Better Income Toolkit & Living Income Academy  
 > **Figma Source**: [Living Income Academy 2026 - Node 12958:22481](https://www.figma.com/design/ga4EMPcp00Bh0d883khSs6/Living-income-academy?node-id=12958-22481&t=u2lPXhpCtpFNt2uj-1)  
 > - **Login e-mail / IDC Invitation**: Frame `12958:22668`  
@@ -31,53 +31,78 @@
 ## 2. Template Catalog & Design Alignment
 
 ### Template 1: IDC Invitation (New User Account)
-- **Figma Frame**: `12958:22668`
+- **Figma Frame**: `12958:22668` (Node `12958:22760`)
 - **Trigger**: Administrator invites a new user to the platform with IDC access.
-- **Subject**: `Invitation to the Income Driver Calculator`
+- **Subject**: `Invitation`
 - **Header**: IDH Logo + vertical divider + "Toolkit Towards Better Incomes"
-- **Illustration**: Computer screen with plant growth graphic (`email-invitation-screen.png`)
+- **Illustration**: Open blue envelope with avatar circle and blue checkmark badge (`email-invitation-screen.png`)
 - **Title / Heading**: `Invitation`
 - **Subheading**: `You have been invited to the Income Driver Calculator`
 - **Body Copy**: `Please click here or the link below to set your password`
-- **Plain Link**: Displays `#url#` directly for accessibility and copy-paste fallback.
-- **CTA Button**: `Log in to the Income Driver Calculator` (or `Income Driver Calculator`)
-- **Button Styling**: Background `#01625f` (or `#3f98f7`), border-radius `10px`, white text, 16px font, centered.
+- **Plain Link**: Displays `#url#` directly in `#3F98F7`.
+- **CTA Button**: `Income Drive Calculator` (or `Log in to the Income Driver Calculator`)
+- **Button Styling**: Background `#3F98F7`, border-radius `10px`, white text, 16px font, centered.
 
 ### Template 2: Password Reset
-- **Figma Frame**: `12958:22484` (Nodes `12958:22575`–`12958:22611`)
+- **Figma Frame**: `12958:22484` (Node `12958:22576`)
 - **Trigger**: User requests password recovery at `/forgot-password`.
 - **Subject**: `Reset your Better Income Toolkit password`
 - **Header**: IDH Logo + vertical divider + "Toolkit Towards Better Incomes"
-- **Illustration**: Lock, key, and shield security graphic (`email-password-reset.png`)
+- **Illustration**: Green key over gear cog with `***` password bubble graphic (`email-password-reset.png`)
 - **Title / Heading**: `Password reset`
 - **Subheading**: `We received a request to reset the password of your Better Income Toolkit account. Click the button to set a new password.`
-- **Disclaimer**: `The link is valid for 30 minutes. Didn’t ask for this? You can ignore this email; your password stays the same.`
+- **Disclaimer**: `The link is valid for {period}. Didn’t ask for this? You can ignore this email; your password stays the same.`
 - **CTA Button**: `Set a new password`
-- **Button Styling**: Background `#01625f` (or `#74d58d`), border-radius `10px`, white text, 16px font, centered.
+- **Button Styling**: Background `#61CF86`, border-radius `10px`, white text, 16px font, centered.
 
 ### Template 3: IDC Access Granted (Existing Academy User)
-- **Figma Frame**: `13044:24441` (Nodes `13044:24535`–`13044:24578`)
+- **Figma Frame**: `13044:24441` (Node `13044:24534`)
 - **Trigger**: An existing user (e.g. Academy learner) is granted access to an IDC company workspace.
-- **Subject**: `You now have access to the Income Driver Calculator`
+- **Subject**: `Income Driver Calculator Access Granted`
 - **Header**: IDH Logo + vertical divider + "Toolkit Towards Better Incomes"
-- **Illustration**: Computer screen with plant growth graphic (`email-invitation-screen.png`)
+- **Illustration**: Open blue envelope with avatar circle and blue checkmark badge (`email-invitation-screen.png`)
 - **Title / Heading**: `Invitation`
 - **Subheading**: `Hi {name}, IDH gave you access to the Income Driver Calculator for {company_name}`
 - **Body Copy**: `You don’t need a new account: log in with your current email address and password.`
-- **CTA Button**: `Explore the Income Driver Calculator` (links directly to IDC login/dashboard)
-- **Button Styling**: Background `#01625f` (or `#3f98f7`), border-radius `10px`, white text, 16px font, centered.
+- **CTA Button**: `Explore the Income Driver Calculator`
+- **Button Styling**: Background `#3F98F7`, border-radius `10px`, white text, 16px font, centered.
 
 ### Template 4: Email Confirmation (Academy Public Registration)
-- **Figma Frame**: `13044:25309` (Nodes `13044:25403`–`13044:25479`)
+- **Figma Frame**: `13044:25309` (Node `13044:25402`)
 - **Trigger**: Public user registers for Living Income Academy via `/register`.
 - **Subject**: `Confirm your email for the Living Income Academy`
 - **Header**: IDH Logo + vertical divider + "Toolkit Towards Better Incomes"
-- **Illustration**: Profile card with verified badge and shield graphic (`email-verified-shield.png`)
+- **Illustration**: Blue profile ID card with green shield checkmark badge (`email-verified-shield.png`)
 - **Title / Heading**: `Confirm your email`
 - **Subheading**: `Hi {name}, welcome to the Living Income Academy. Please confirm your email address to activate your account.`
-- **Disclaimer**: `This link is valid for 24 hours. Didn’t sign up? You can ignore this email.`
-- **CTA Button**: `Confirm email` (links to `/verify-academy?token=...`)
-- **Button Styling**: Background `#01625f` (or `#3f98f7`), border-radius `10px`, white text, 16px font, centered.
+- **Disclaimer**: `Didn’t sign up? You can ignore this email.` (Aligned with #861 single-use replay protection without an un-enforced expiration claim)
+- **CTA Button**: `Confirm email`
+- **Button Styling**: Background `#3F98F7`, border-radius `10px`, white text, 16px font, centered.
+
+### Template 5: Admin Notification - New Account Registration
+- **Trigger**: New user submits registration without prior invitation.
+- **Recipient**: Super Admin or Business Unit Admin.
+- **Subject**: `Action Required: New User Registration Pending Approval`
+- **Header**: IDH Logo + vertical divider + "Toolkit Towards Better Incomes"
+- **Illustration**: Open envelope with avatar circular badge (`email-invitation-screen.png`)
+- **Title / Heading**: `New Account Registration`
+- **Subheading**: `A new user account is awaiting your approval.`
+- **Body Copy**: `A new user has submitted a registration request for the Better Income Toolkit. Please sign in to the administration portal to review their details and grant access.`
+- **CTA Button**: `Review in Admin Portal` (links to `/admin/users`)
+- **Button Styling**: Background `#3F98F7`, border-radius `10px`, white text, 16px font, centered.
+- **Disclaimer**: `You are receiving this notification because you have administrative privileges for the Better Income Toolkit.`
+
+### Template 6: User Notification - Registration Approved
+- **Trigger**: Administrator approves a pending user account.
+- **Recipient**: Newly approved user.
+- **Subject**: `Your Better Income Toolkit Account Has Been Approved`
+- **Header**: IDH Logo + vertical divider + "Toolkit Towards Better Incomes"
+- **Illustration**: Blue ID profile card with green shield checkmark badge (`email-verified-shield.png`)
+- **Title / Heading**: `Account Approved`
+- **Subheading**: `Welcome! Your account has been reviewed and activated.`
+- **Body Copy**: `You now have full access to the Better Income Toolkit. Click below to sign in and start exploring.`
+- **CTA Button**: `Log in to Better Income Toolkit` (links to `/login`)
+- **Button Styling**: Background `#3F98F7`, border-radius `10px`, white text, 16px font, centered.
 
 ---
 
