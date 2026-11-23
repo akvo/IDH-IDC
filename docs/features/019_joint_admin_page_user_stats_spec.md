@@ -1,5 +1,7 @@
 # [TLSA-013] Joint Admin Page & Living Income Academy User Statistics — Feature Specification
 
+> **GitHub Issue**: [#905](https://github.com/akvo/IDH-IDC/issues/905) — `[TLSA-013] Backend: Living Income Academy User Statistics Aggregation API`  
+> **Branch**: `feature/905-backend-academy-user-statistics`  
 > **Status**: Ready for Implementation  
 > **Backend Implementation Status**:
 > - **User Management & Edit User**: **Complete (Zero Backend Tasks Required)** — `GET /user`, `GET /user/{id}`, `PUT /user/{id}`, `POST /user`, `POST /user/{id}/activate`, `POST /user/{id}/deactivate`, and `POST /user/{id}/revoke-idc` are already implemented and tested.
