@@ -79,6 +79,7 @@ class AcademyResourceType(str, enum.Enum):
 class AcademyResourceDict(TypedDict, total=False):
     id: int
     name: str
+    author: Optional[str]
     resource_type: str
     file_url: str
     created_at: Optional[datetime]
@@ -90,6 +91,7 @@ class AcademyResource(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), nullable=False)
+    author = Column(String(255), nullable=True)
     resource_type = Column(
         Enum(AcademyResourceType, name="academy_resource_type"),
         nullable=False,
@@ -114,9 +116,11 @@ class AcademyResource(Base):
         resource_type: AcademyResourceType,
         file_url: str,
         id: Optional[int] = None,
+        author: Optional[str] = None,
     ):
         self.id = id
         self.name = name
+        self.author = author
         self.resource_type = resource_type
         self.file_url = file_url
 
@@ -124,6 +128,7 @@ class AcademyResource(Base):
         return {
             "id": self.id,
             "name": self.name,
+            "author": self.author,
             "resource_type": (
                 self.resource_type.value
                 if isinstance(self.resource_type, AcademyResourceType)

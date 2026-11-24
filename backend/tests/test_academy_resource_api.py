@@ -136,6 +136,7 @@ class TestAcademyResourcesApi:
         first_item = payload["data"][0]
         assert "id" in first_item
         assert "name" in first_item
+        assert "author" in first_item
         assert "type" in first_item
         assert "url" in first_item
         assert "description" in first_item
@@ -162,6 +163,51 @@ class TestAcademyResourcesApi:
         assert any(
             "roadmap" in item["name"].lower() for item in payload["data"]
         )
+
+    @pytest.mark.asyncio
+    async def test_get_resources_search_by_author(
+        self, app: FastAPI, client: AsyncClient, session: Session
+    ):
+        user = get_or_create_test_user(session)
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_resources")
+
+        # Case-insensitive author search
+        res = await client.get(
+            url, headers=headers, params={"search": "Anker"}
+        )
+        assert res.status_code == 200
+        payload = res.json()
+        assert payload["total"] >= 1
+        assert any(
+            "anker" in (item.get("author") or "").lower() for item in payload["data"]
+        )
+
+    @pytest.mark.asyncio
+    async def test_get_resources_sort_by_author(
+        self, app: FastAPI, client: AsyncClient, session: Session
+    ):
+        user = get_or_create_test_user(session)
+        headers = get_auth_header(user.email)
+        url = app.url_path_for("academy:get_resources")
+
+        res_asc = await client.get(
+            url, headers=headers, params={"sort_by": "author", "sort_order": "asc"}
+        )
+        assert res_asc.status_code == 200
+        payload_asc = res_asc.json()
+        assert payload_asc["total"] >= 2
+        authors_asc = [(item["author"] or "").lower() for item in payload_asc["data"]]
+        assert authors_asc == sorted(authors_asc)
+
+        res_desc = await client.get(
+            url, headers=headers, params={"sort_by": "author", "sort_order": "desc"}
+        )
+        assert res_desc.status_code == 200
+        payload_desc = res_desc.json()
+        assert payload_desc["total"] >= 2
+        authors_desc = [(item["author"] or "").lower() for item in payload_desc["data"]]
+        assert authors_desc == sorted(authors_desc, reverse=True)
 
     @pytest.mark.asyncio
     async def test_get_resources_search_by_url(
@@ -807,7 +853,7 @@ class TestCrudResourceDirect:
     def test_direct_crud_resources(self, session: Session):
         res = crud_resource.get_academy_resources(
             session=session,
-            search="overview",
+            search="Guidance",
             resource_type=AcademyResourceType.Guidance,
             sort_by="name",
             sort_order="asc",

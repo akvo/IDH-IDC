@@ -53,7 +53,7 @@ const ResourcesTable = ({ rows, loading, highlight, emptyText }) => {
   const columns = useMemo(
     () => [
       {
-        title: "Name",
+        title: "Title",
         dataIndex: "name",
         key: "name",
         render: (name, resource) => (
@@ -70,16 +70,32 @@ const ResourcesTable = ({ rows, loading, highlight, emptyText }) => {
         ),
       },
       {
+        title: "Author(s)",
+        dataIndex: "author",
+        key: "author",
+        width: 220,
+        render: (author) => (
+          <span className="academy-resource-author">
+            {author ? (
+              <HighlightedText text={author} highlight={highlight} />
+            ) : (
+              "—"
+            )}
+          </span>
+        ),
+      },
+      {
         title: "Type",
         dataIndex: "type",
         key: "type",
-        width: 180,
+        width: 150,
         render: (type) => <span className="academy-type-tag">{type}</span>,
       },
       {
-        title: "Actions",
+        title: "Link",
         key: "actions",
-        width: 120,
+        width: 100,
+        align: "center",
         render: (_, resource) => <ResourceAction resource={resource} />,
       },
     ],

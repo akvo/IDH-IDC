@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from models.academy import (
@@ -30,6 +30,7 @@ def get_academy_resources(
         query = query.filter(
             or_(
                 AcademyResource.name.ilike(f"%{s}%"),
+                AcademyResource.author.ilike(f"%{s}%"),
                 AcademyResource.file_url.ilike(f"%{s}%"),
             )
         )
@@ -40,10 +41,12 @@ def get_academy_resources(
     sb = sort_by.strip().lower() if isinstance(sort_by, str) else "name"
     if sb in ("type", "resource_type"):
         sort_col = AcademyResource.resource_type
+    elif sb in ("author", "authors"):
+        sort_col = func.lower(AcademyResource.author)
     elif sb in ("created_at", "date"):
         sort_col = AcademyResource.created_at
     else:
-        sort_col = AcademyResource.name
+        sort_col = func.lower(AcademyResource.name)
 
     so = sort_order.strip().lower() if isinstance(sort_order, str) else "asc"
     order_expr = sort_col.desc() if so == "desc" else sort_col.asc()
@@ -56,6 +59,7 @@ def get_academy_resources(
         AcademyResourceItemResponse(
             id=r.id,
             name=r.name,
+            author=r.author,
             type=r.resource_type,
             url=r.file_url,
             description=getattr(r, "description", None),
@@ -95,7 +99,7 @@ def get_academy_glossary(
     elif sb in ("created_at", "date"):
         sort_col = AcademyGlossaryTerm.created_at
     else:
-        sort_col = AcademyGlossaryTerm.name
+        sort_col = func.lower(AcademyGlossaryTerm.name)
 
     so = sort_order.strip().lower() if isinstance(sort_order, str) else "asc"
     order_expr = sort_col.desc() if so == "desc" else sort_col.asc()

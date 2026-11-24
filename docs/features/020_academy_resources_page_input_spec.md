@@ -1,6 +1,6 @@
 # [LIACD-014] Academy Resources Page Input & Chatbot Knowledge Base - Implementation Plan
 
-**GitHub Issue**: `#880` — `[LIACD-014] Academy resources page input`  
+**GitHub Issue**: `#907` — `[LIACD-014] Academy resources page input`  
 **Parent Specs**: `docs/features/001_living_income_academy_spec.md`, `docs/features/013_academy_ai_chatbot_integration_spec.md`  
 **Figma Reference**: [Academy Resources - Resources](https://www.figma.com/design/ga4EMPcp00Bh0d883khSs6/Living-income-academy?node-id=12327-22288) (Node: `12327:22288`)  
 **Source Data**: [Google Sheet / Excel Master](https://docs.google.com/spreadsheets/d/1upWeWGAWTDU31pG_OvXqowxY42y470wd/edit?usp=sharing&ouid=113855328292107281106&rtpof=true&sd=true)
@@ -19,7 +19,7 @@ The Living Income Academy provides learners with curated technical guidance, ben
    - **Author(s)**
    - **Type** (Guidance, Organisation, Template, Tool)
    - **Download / Link** (Action icon button opening external links in a new tab or triggering file downloads)
-4. **Chatbot Knowledge Base Ingestion**: Format and export the resources catalog into a structured knowledge base document (`docs/academy/academy_resources_knowledge_base.md`) so the AI Chatbot (`akvo-rag`) strictly and exclusively queries **(1) Course Content** and **(2) Technical Resources**, "and not more."
+4. **Chatbot Knowledge Base Ingestion**: Format and export the resources catalog into a structured knowledge base document (`agent_docs/tmp/academy/academy_resources_knowledge_base.md`) so the AI Chatbot (`akvo-rag`) strictly and exclusively queries **(1) Course Content** and **(2) Technical Resources**, "and not more."
 
 ---
 
@@ -47,7 +47,7 @@ The Living Income Academy provides learners with curated technical guidance, ben
     - `frontend/src/pages/academy/AcademyResourcesPage.js`
     - `frontend/src/pages/academy/AcademyResourcesPage.scss`
   - **Chatbot Knowledge Base**:
-    - `docs/academy/academy_resources_knowledge_base.md`
+    - `agent_docs/tmp/academy/academy_resources_knowledge_base.md`
 - **When**: Accessed whenever learners visit `/academy/resources` or prompt the Academy Chatbot.
 - **Why**: Replaces preliminary placeholder items with official IDH/LICOP resources, ensures column parity with the curated excel spreadsheet, and enriches chatbot answer grounding.
 - **How**: Alembic migration, SQLAlchemy ORM updates, React Ant Design v5 Table adjustments, and structured Markdown export for ChromaDB/LangGraph ingestion.
@@ -322,7 +322,7 @@ const columns = useMemo(
 > *"this file should also be a source base for the chatbot in addition to the course content. So thats all the chatbot picks from for now, and not more."*
 
 ### 4.1 Knowledge Base Document Generation
-**File**: `docs/academy/academy_resources_knowledge_base.md`
+**File**: `agent_docs/tmp/academy/academy_resources_knowledge_base.md`
 
 A structured markdown document compiled directly from the master resources template. Each entry includes:
 - **Title**: Resource title
@@ -393,6 +393,6 @@ In `akvo-rag`:
 | **TASK-01** | **Master Template & Existing Seeder Update**<br>• Create `backend/source/master/academy_resources.csv` with all 48 vetted items<br>• Update `backend/seeder/academy.py` (`seed_resources`) to load `author`<br>• Add `--resources-only` CLI flag to `backend/seeder/academy.py` to allow isolated reseeding<br>• Truncate `academy_resource` table and reset sequence to 1 | 25m | 15m | 10m | **50m (~0.8h)** | P0 |
 | **TASK-02** | **Database Migration & Backend API Update**<br>• Alembic migration adding `author` to `academy_resource`<br>• Update `AcademyResource` model and `AcademyResourceItemResponse` schema<br>• Update `crud_resource.py` for author search and sorting | 25m | 20m | 10m | **55m (~0.9h)** | P0 |
 | **TASK-03** | **Frontend Resources Table Realignment**<br>• Update `ResourcesTable.js` to 4 columns (`Title`, `Author(s)`, `Type`, `Link`)<br>• Action icon buttons (download for files, external link for websites)<br>• Search highlight support for author names | 20m | 15m | 10m | **45m (0.75h)** | P0 |
-| **TASK-04** | **Chatbot Knowledge Base Document & Documentation**<br>• Generate `docs/academy/academy_resources_knowledge_base.md`<br>• Document chatbot RAG boundary (Course Content + Technical Resources only) | 15m | — | 10m | **25m (~0.4h)** | P1 |
+| **TASK-04** | **Chatbot Knowledge Base Document & Documentation**<br>• Generate `agent_docs/tmp/academy/academy_resources_knowledge_base.md`<br>• Document chatbot RAG boundary (Course Content + Technical Resources only) | 15m | — | 10m | **25m (~0.4h)** | P1 |
 | **TASK-05** | **Regression Testing & Verification**<br>• Unit tests in `test_academy_resource_api.py` and `AcademyResourcesPage.test.js`<br>• Full regression pass (`pytest`, `yarn test:ci`, `flake8`, `yarn lint`) | — | 20m | 10m | **30m (0.5h)** | P0 |
 | **TOTAL** | **Full Feature (LIACD-014)** | **1h 25m** | **1h 10m** | **0h 50m** | **3h 25m (~3.5h)** | — |

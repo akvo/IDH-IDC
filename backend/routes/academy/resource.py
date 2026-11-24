@@ -38,14 +38,14 @@ def get_resources(
     session: Session = Depends(get_session),
     credentials: credentials = Depends(security),
     search: Optional[str] = Query(
-        None, description="Search term across resource name and file URL"
+        None, description="Search term across resource name, author, and file URL"
     ),
     resource_type: Optional[AcademyResourceType] = Query(
         None, description="Filter by resource type enum"
     ),
     sort_by: Optional[str] = Query(
         "name",
-        description="Field to sort by: name, type/resource_type, created_at",
+        description="Field to sort by: name, author, type/resource_type, created_at",
     ),
     sort_order: Optional[str] = Query(
         "asc", description="Sort direction: asc or desc"

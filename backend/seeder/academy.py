@@ -5,8 +5,13 @@ import pandas as pd
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from db.connection import Base, engine, SessionLocal
-from models.academy import (
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MASTER_DIR = os.path.join(BASE_DIR, "source", "master")
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+from db.connection import Base, engine, SessionLocal  # noqa: E402
+from models.academy import (  # noqa: E402
     AcademyTag,
     AcademyResource,
     AcademyResourceType,
@@ -16,10 +21,6 @@ from models.academy import (
     AcademyChapter,
     AcademyTagRelation,
 )
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MASTER_DIR = os.path.join(BASE_DIR, "source", "master")
-sys.path.append(BASE_DIR)
 
 TABLES_IN_REVERSE_ORDER = [
     "academy_tag_relation",
@@ -1256,6 +1257,20 @@ def seed_tags(session: Session) -> None:
     print(f"[OK] Seeded {len(tags_to_insert)} academy tags.")
 
 
+def truncate_academy_resources(session: Session) -> None:
+    """Truncate only the academy_resource table and reset autoincrement sequence."""
+    session.commit()
+    session.execute(text('TRUNCATE TABLE "academy_resource" CASCADE;'))
+    try:
+        session.execute(
+            text("ALTER SEQUENCE academy_resource_id_seq RESTART WITH 1;")
+        )
+    except Exception:
+        pass
+    session.commit()
+    print("[OK] Truncated academy_resource table and reset sequence.")
+
+
 def seed_resources(session: Session) -> None:
     df = load_csv("academy_resources.csv")
     resources_to_insert = (
@@ -1269,11 +1284,19 @@ def seed_resources(session: Session) -> None:
             if isinstance(res_type_raw, AcademyResourceType)
             else AcademyResourceType(str(res_type_raw))
         )
+        name_val = item.get("name") if pd.notna(item.get("name")) else item.get("title")
+        file_url_val = item.get("file_url") if pd.notna(item.get("file_url")) else item.get("url")
+        author_val = (
+            str(item["author"]).strip()
+            if "author" in item and pd.notna(item["author"]) and str(item["author"]).strip()
+            else None
+        )
         resource = AcademyResource(
             id=int(item["id"]) if "id" in item and pd.notna(item["id"]) else None,
-            name=str(item["name"]),
+            name=str(name_val),
+            author=author_val,
             resource_type=res_type,
-            file_url=str(item["file_url"]),
+            file_url=str(file_url_val),
         )
         session.add(resource)
     session.commit()
@@ -1406,10 +1429,25 @@ def seed_academy(session: Session) -> None:
 
 
 def run() -> None:
+    import argparse
+    parser = argparse.ArgumentParser(description="Academy Data Seeder")
+    parser.add_argument(
+        "--resources-only",
+        action="store_true",
+        help="Truncate and reseed only the academy_resource table",
+    )
+    args, _ = parser.parse_known_args()
+
     Base.metadata.create_all(bind=engine)
     session = SessionLocal()
     try:
-        seed_academy(session=session)
+        if args.resources_only:
+            print("[INFO] Starting Academy Resources Seeder (resources only)...")
+            truncate_academy_resources(session)
+            seed_resources(session)
+            print("[DONE] Academy Resources Seeder completed successfully.")
+        else:
+            seed_academy(session=session)
     finally:
         session.close()
 
