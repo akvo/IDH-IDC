@@ -45,6 +45,7 @@ class AcademyTagResponse(AcademyTagBase):
 # ============================================================
 class AcademyResourceBase(BaseSchema):
     name: str
+    author: Optional[str] = None
     resource_type: AcademyResourceType
     file_url: str
 
@@ -55,6 +56,7 @@ class AcademyResourceCreate(AcademyResourceBase):
 
 class AcademyResourceUpdate(BaseSchema):
     name: Optional[str] = None
+    author: Optional[str] = None
     resource_type: Optional[AcademyResourceType] = None
     file_url: Optional[str] = None
 
@@ -68,6 +70,7 @@ class AcademyResourceResponse(AcademyResourceBase):
 class AcademyResourceItemResponse(BaseSchema):
     id: int
     name: str
+    author: Optional[str] = None
     type: AcademyResourceType
     url: str
     description: Optional[str] = None
@@ -80,6 +83,7 @@ class AcademyResourceItemResponse(BaseSchema):
             return {
                 "id": getattr(data, "id", None),
                 "name": getattr(data, "name", None),
+                "author": getattr(data, "author", None),
                 "type": getattr(
                     data, "resource_type", getattr(data, "type", None)
                 ),

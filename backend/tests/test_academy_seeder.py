@@ -100,14 +100,16 @@ class TestAcademySeederExecution:
         assert len(module_relations) == 14
         assert len(chapter_relations) == 21
 
-        # 5. 9 Technical Resources
+        # 5. 48 Technical Resources
         resources = session.query(AcademyResource).all()
-        assert len(resources) == 9
+        assert len(resources) == 48
         resource_types = {r.resource_type for r in resources}
         assert AcademyResourceType.Guidance in resource_types
         assert AcademyResourceType.Tool in resource_types
         assert AcademyResourceType.Organisation in resource_types
         assert AcademyResourceType.Template in resource_types
+        # Verify author is populated on all master resources
+        assert all(r.author is not None and len(r.author.strip()) > 0 for r in resources)
 
         # 6. 13 Glossary Terms
         terms = session.query(AcademyGlossaryTerm).all()
@@ -125,7 +127,7 @@ class TestAcademySeederExecution:
         assert session.query(AcademyChapter).count() == 27
         assert session.query(AcademyTag).count() == 10
         assert session.query(AcademyTagRelation).count() == 35
-        assert session.query(AcademyResource).count() == 9
+        assert session.query(AcademyResource).count() == 48
         assert session.query(AcademyGlossaryTerm).count() == 13
 
         # Second run (idempotency check)
@@ -134,7 +136,7 @@ class TestAcademySeederExecution:
         assert session.query(AcademyChapter).count() == 27
         assert session.query(AcademyTag).count() == 10
         assert session.query(AcademyTagRelation).count() == 35
-        assert session.query(AcademyResource).count() == 9
+        assert session.query(AcademyResource).count() == 48
         assert session.query(AcademyGlossaryTerm).count() == 13
 
 
@@ -285,5 +287,21 @@ class TestAcademySeederFallbackAndStandalone:
         """Verify standalone run() entry point works cleanly."""
         session.close()
         run()
+
+    def test_resources_only_reseeding(self, session: Session):
+        """Verify isolated reseeding truncates and reseeds only resources."""
+        from seeder.academy import truncate_academy_resources, seed_resources
+        seed_academy(session=session)
+        assert session.query(AcademyResource).count() == 48
+
+        # Reseed only resources
+        truncate_academy_resources(session)
+        assert session.query(AcademyResource).count() == 0
+        # Other tables remain intact
+        assert session.query(AcademyModule).count() == 6
+        assert session.query(AcademyChapter).count() == 27
+
+        seed_resources(session)
+        assert session.query(AcademyResource).count() == 48
         assert session.query(AcademyModule).count() == 6
         assert session.query(AcademyChapter).count() == 27
