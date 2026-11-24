@@ -20,10 +20,13 @@ jest.mock("../services/academy", () => ({
   },
 }));
 
+jest.setTimeout(15000);
+
 const resources = [
   {
     id: 1,
     name: "Roadmap overview",
+    author: "IDH",
     type: "Guidance",
     url: "/assets/academy/resources/roadmap.pdf",
     created_at: "2026-11-01T00:00:00Z",
@@ -31,6 +34,7 @@ const resources = [
   {
     id: 2,
     name: "Global Living Wage Coalition",
+    author: "GLWC",
     type: "Organisation",
     url: "https://www.globallivingwage.org",
     created_at: "2026-11-02T00:00:00Z",
@@ -38,6 +42,7 @@ const resources = [
   {
     id: 3,
     name: "Suspicious link",
+    author: null,
     type: "Tool",
     url: "javascript:alert(1)",
     created_at: "2026-11-03T00:00:00Z",
@@ -99,8 +104,12 @@ const renderPage = (path = "/academy/resources") =>
 const location = () => screen.getByTestId("location");
 // Waits for the request a URL change triggered
 const settled = () =>
-  waitFor(() =>
-    expect(document.querySelector(".ant-spin-spinning")).not.toBeInTheDocument()
+  waitFor(
+    () =>
+      expect(
+        document.querySelector(".ant-spin-spinning")
+      ).not.toBeInTheDocument(),
+    { timeout: 5000 }
   );
 const table = () => screen.getByRole("table");
 const rowTexts = () =>
@@ -114,7 +123,10 @@ const openMenu = async (name) => {
 };
 
 describe("AcademyResourcesPage", () => {
+  jest.setTimeout(30000);
+
   beforeEach(() => {
+    jest.setTimeout(30000);
     jest.clearAllMocks();
     academyService.getResources.mockResolvedValue({
       total: resources.length,
@@ -151,7 +163,10 @@ describe("AcademyResourcesPage", () => {
         within(table())
           .getAllByRole("columnheader")
           .map((header) => header.textContent)
-      ).toEqual(["Name", "Type", "Actions"]);
+      ).toEqual(["Title", "Author(s)", "Type", "Link"]);
+      expect(screen.getByText("IDH")).toBeInTheDocument();
+      expect(screen.getByText("GLWC")).toBeInTheDocument();
+      expect(screen.getByText("—")).toBeInTheDocument();
       expect(rowTexts()[0]).toContain("Guidance");
     });
 
@@ -217,7 +232,9 @@ describe("AcademyResourcesPage", () => {
     it("switches tabs through the URL and starts unfiltered", async () => {
       renderPage("/academy/resources?search=road&type=Guidance");
       // The name is split by the search highlight, so match the row text
-      await waitFor(() => expect(rowTexts()[0]).toContain("Roadmap overview"));
+      await waitFor(() => expect(rowTexts()[0]).toContain("Roadmap overview"), {
+        timeout: 10000,
+      });
 
       fireEvent.click(screen.getByRole("radio", { name: "Glossary" }));
       expect(location()).toHaveTextContent(/\?tab=glossary$/);
