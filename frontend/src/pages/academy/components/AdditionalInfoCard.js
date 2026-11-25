@@ -1,59 +1,12 @@
 import React, { useMemo } from "react";
 import { Form, Input, Select } from "antd";
 import CommodityTagSelector from "./CommodityTagSelector";
-
-const PRESET_COMPANY_TYPES = [
-  "Private Sector",
-  "NGO",
-  "Government / Public Sector",
-  "Cooperative / Farmer Organization",
-  "Research / Academia",
-  "Financial Institution",
-  "Multilateral / Donor",
-  "Consultancy",
-  "Other",
-];
-
-const PRESET_SECTORS = [
-  "Agriculture",
-  "Food & Beverage",
-  "Apparel & Textiles",
-  "Retail & Consumer Goods",
-  "Financial Services",
-  "Development & Philanthropy",
-  "Technology & Data",
-  "Other",
-];
-
-const PRESET_REGIONS = [
-  "Global",
-  "West Africa",
-  "East Africa",
-  "Southern Africa",
-  "Latin America & Caribbean",
-  "Southeast Asia",
-  "South Asia",
-  "East Asia",
-  "Europe",
-  "North America",
-  "Middle East & North Africa",
-];
-
-const getOptionsWithFallback = (presets, currentValue) => {
-  const options = presets.map((item) => ({ label: item, value: item }));
-  if (
-    currentValue &&
-    typeof currentValue === "string" &&
-    currentValue.trim() &&
-    !presets.some((p) => p.toLowerCase() === currentValue.trim().toLowerCase())
-  ) {
-    return [
-      { label: currentValue.trim(), value: currentValue.trim() },
-      ...options,
-    ];
-  }
-  return options;
-};
+import {
+  PRESET_COMPANY_TYPES,
+  PRESET_SECTORS,
+  PRESET_REGIONS,
+  getOptionsWithFallback,
+} from "../../../store/static";
 
 const AdditionalInfoCard = ({
   isEditing = false,
