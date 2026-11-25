@@ -189,7 +189,7 @@ Export or optimize the 4 key illustrations and social icons as raster PNGs:
 > **Email Deliverability & Image Hosting Architecture**:
 > - Email clients (especially Gmail's security image proxy and Outlook.com) deliberately block and drop `data:image/...;base64` URIs and `.svg` files in email bodies.
 > - Images must be served as hosted absolute HTTPS URLs (`https://<domain>/email-icons/<filename>.png`).
-> - Nginx routes `/email-icons/` directly from `/usr/share/nginx/html/email-icons/`, with an automated fallback to the backend's mounted `/api/email-icons/` static endpoint (`StaticFiles`) to guarantee high-availability rendering across deployments.
+> - Nginx routes `/email-icons/` directly from `/usr/share/nginx/html/email-icons/`, with an automated fallback to the backend's mounted `/email-icons/` static endpoint (`StaticFiles`) to guarantee high-availability rendering across deployments.
 
 ---
 
