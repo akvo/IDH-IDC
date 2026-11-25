@@ -1,370 +1,161 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./login.scss";
 import { Link } from "react-router-dom";
-import { ContentLayout } from "../../components/layout";
-import {
-  Row,
-  Col,
-  Button,
-  Form,
-  Input,
-  Typography,
-  Image,
-  Checkbox,
-  message,
-} from "antd";
-import { CheckCircleFilled } from "@ant-design/icons";
+import { Button, Form, message } from "antd";
 import { api } from "../../lib";
-import ImageRight from "../../assets/images/login-right-img.png";
-import LogoWhite from "../../assets/images/logo-white.png";
-import {
-  PasswordCriteria,
-  checkPasswordCriteria,
-  passwordCheckBoxOptions,
-} from "../../components/utils";
 import { DataSecurityProvisionModal } from "../../components/utils";
-import { routePath } from "../../components/route";
+import AuthSplitLayout from "./components/AuthSplitLayout";
+import AdditionalTextBlock from "./components/AdditionalTextBlock";
+import ProfileFormFields, { TermsField } from "./components/ProfileFormFields";
+import LoginAlertToast from "./components/LoginAlertToast";
+import { getErrorDetail, toProfilePayload, useCompanyNames } from "./utils";
 
+// After a resend, the link to send another comes back after this long
+export const RESEND_COOLDOWN_MS = 30000;
+
+// Academy self sign-up (TLSA-015). After registering, the cleared form
+// shows the "confirm your email" notice with a rate-limited resend.
 const Register = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState(null);
-  const [messageApi, contextHolder] = message.useMessage();
-  const [passwordCheckList, setPasswordCheckList] = useState([]);
-  const [dataSecurityProvisionVisible, setDataSecurityProvisionVisible] =
-    useState(false);
-  const [agreeDataSecurityProvision, setAgreeDataSecurityProvision] =
-    useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const companyNames = useCompanyNames();
+
+  useEffect(() => {
+    if (resendSent) {
+      const timer = setTimeout(() => setResendSent(false), RESEND_COOLDOWN_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [resendSent]);
 
   const onFinish = (values) => {
+    const email = values.email.trim();
     setLoading(true);
-    const { fullname, email, password, company_name } = values;
-
     api
-      .post("user/register-academy", {
-        fullname,
-        email,
-        password,
-        company_name,
-      })
+      .post("user/register-academy", { ...toProfilePayload(values), email })
       .then(() => {
         form.resetFields();
-        setPasswordCheckList([]);
+        setResendSent(false);
         setRegisteredEmail(email);
-        messageApi.open({
-          type: "success",
-          content:
-            "Registration successful! Please check your email to verify your account.",
-        });
       })
-      .catch((e) => {
-        let content = "Registration failed. Please try again.";
-        const detail = e?.response?.data?.detail;
-        if (detail) {
-          content = detail;
-        }
-        messageApi.open({
-          type: "error",
-          content: content,
-        });
+      .catch((err) => {
+        message.error(
+          getErrorDetail(err, "Registration failed. Please try again.")
+        );
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   };
 
-  const onValuesChange = (changedValues) => {
-    if ("password" in changedValues) {
-      const res = checkPasswordCriteria(changedValues.password || "");
-      setPasswordCheckList(res);
-    }
+  const handleResend = () => {
+    setResendLoading(true);
+    api
+      .post("user/resend-verification", { email: registeredEmail })
+      .then(() => setResendSent(true))
+      .catch((err) => {
+        message.error(
+          getErrorDetail(err, "We couldn’t send a new link. Please try again.")
+        );
+      })
+      .finally(() => setResendLoading(false));
   };
 
-  const onChange = ({ target }) => {
-    if (
-      target.id === "form-registration_password" ||
-      target.getAttribute?.("data-testid") === "input-password"
-    ) {
-      const res = checkPasswordCriteria(target.value || "");
-      setPasswordCheckList(res);
-    }
+  // A typo in the email: back to the form with the email to correct
+  const handleChangeEmail = () => {
+    form.setFieldsValue({ email: registeredEmail });
+    setRegisteredEmail(null);
+    setResendSent(false);
+    form.getFieldInstance("email")?.focus();
   };
 
   return (
-    <ContentLayout wrapperId="login">
-      {contextHolder}
-      <Row align="middle" className="login-container">
-        <Col span={12} align="start" className="login-form-wrapper">
-          <Image
-            src={LogoWhite}
-            height={55}
-            preview={false}
-            data-testid="logo-image"
-          />
-          <Col span={24} align="center" className="login-form">
-            <div className="page-title-container">
-              <Typography.Title>
-                Living Income <br />
-                <span style={{ color: "#47d985", fontSize: "2.5rem" }}>
-                  Academy
-                </span>
-              </Typography.Title>
-              <Typography.Title level={3}>
-                Welcome to the Living Income Academy
-              </Typography.Title>
-            </div>
+    <AuthSplitLayout
+      testId="register-container"
+      aside={<AdditionalTextBlock />}
+    >
+      <h1 className="login-title" data-testid="register-title">
+        No account yet?
+      </h1>
+      <p className="login-intro-copy">
+        Learn how to understand, measure and close living income gaps. Creating
+        an account is free and takes a few minutes: fill in your details,
+        confirm your email address, and you can start right away.
+      </p>
 
-            {registeredEmail ? (
-              <div
-                className="registration-feedback-view"
-                data-testid="registration-success-container"
-              >
-                <CheckCircleFilled
-                  style={{
-                    fontSize: 54,
-                    color: "#47d985",
-                    marginBottom: 20,
-                  }}
-                />
-                <h2>Registration Successful!</h2>
-                <p className="feedback-description">
-                  We have sent a verification link to{" "}
-                  <strong style={{ color: "#47d985", fontWeight: 700 }}>
-                    {registeredEmail}
-                  </strong>
-                  .
-                  <br />
-                  Please check your inbox and click the link to activate your
-                  Living Income Academy access.
-                </p>
-                <p className="feedback-hint">
-                  Didn&apos;t receive the email? Check your spam folder or wait
-                  a few minutes.
-                </p>
-                <Link to={`${routePath.idc.login}?verified=pending`}>
-                  <Button
-                    size="large"
-                    type="primary"
-                    className="button-login"
-                    data-testid="button-success-login"
-                    block
-                  >
-                    Return to Sign In
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <>
-                <h2>Create Account</h2>
-                <p
-                  style={{
-                    color: "#e0e0e0",
-                    fontSize: "0.95rem",
-                    marginBottom: 24,
-                  }}
-                >
-                  Register to access interactive learning modules, case studies,
-                  and tools.
-                </p>
-                <Form
-                  form={form}
-                  name="form-registration"
-                  className="form-login"
-                  layout="vertical"
-                  onFinish={onFinish}
-                  autoComplete="off"
-                  onChange={onChange}
-                  onValuesChange={onValuesChange}
-                >
-                  <Form.Item
-                    name="fullname"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your fullname!",
-                      },
-                    ]}
-                  >
-                    <Input
-                      size="large"
-                      data-testid="input-fullname"
-                      placeholder="Fullname"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="email"
-                    rules={[
-                      {
-                        type: "email",
-                        message: "The input is not valid Email",
-                      },
-                      {
-                        required: true,
-                        message: "Please input your email!",
-                      },
-                    ]}
-                  >
-                    <Input
-                      size="large"
-                      data-testid="input-email"
-                      placeholder="Email"
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    name="company_name"
-                    rules={[
-                      {
-                        required: true,
-                        message:
-                          "Please input your Organization / Company name!",
-                      },
-                    ]}
-                  >
-                    <Input
-                      size="large"
-                      data-testid="input-company-name"
-                      placeholder="Organization / Company Name"
-                    />
-                  </Form.Item>
+      <Form
+        form={form}
+        name="split-form-register"
+        className="split-form-login split-form-register"
+        layout="vertical"
+        requiredMark={false}
+        onFinish={onFinish}
+        autoComplete="off"
+      >
+        <ProfileFormFields companyNames={companyNames} />
 
-                  <Form.Item
-                    name="password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your password!",
-                      },
-                      () => ({
-                        validator(_, value) {
-                          const meetsCriteria =
-                            checkPasswordCriteria(value || "").length ===
-                            passwordCheckBoxOptions.length;
-                          if (
-                            meetsCriteria ||
-                            passwordCheckList.length ===
-                              passwordCheckBoxOptions.length ||
-                            !value
-                          ) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(
-                            new Error("Please follow password criteria rule")
-                          );
-                        },
-                      }),
-                    ]}
-                  >
-                    <Input.Password
-                      size="large"
-                      data-testid="input-password"
-                      placeholder="Password (8+ chars, upper, lower, number, symbol)"
-                    />
-                  </Form.Item>
+        <TermsField onOpenTerms={() => setTermsOpen(true)} />
 
-                  <PasswordCriteria
-                    values={passwordCheckList}
-                    className="white compact"
-                  />
-
-                  <Form.Item
-                    name="confirm"
-                    dependencies={["password"]}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please confirm your password!",
-                      },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (!value || getFieldValue("password") === value) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(
-                            new Error(
-                              "Confirm Password that you entered do not match!"
-                            )
-                          );
-                        },
-                      }),
-                    ]}
-                  >
-                    <Input.Password
-                      size="large"
-                      data-testid="input-confirm-password"
-                      placeholder="Confirm Password"
-                    />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Checkbox
-                      style={{ width: "100%", color: "#fff" }}
-                      checked={agreeDataSecurityProvision}
-                      onChange={() =>
-                        setAgreeDataSecurityProvision(
-                          !agreeDataSecurityProvision
-                        )
-                      }
-                      data-testid="checkbox-data-security"
-                    >
-                      By checking this box, I agree to the{" "}
-                      <Link
-                        className="copyright-text"
-                        style={{ color: "#fff" }}
-                        onClick={() => setDataSecurityProvisionVisible(true)}
-                      >
-                        <u>Data Security Provision</u>
-                      </Link>
-                      .
-                    </Checkbox>
-                  </Form.Item>
-                  <Form.Item>
-                    <Button
-                      size="large"
-                      data-testid="button-register"
-                      className={`button-login ${
-                        !agreeDataSecurityProvision ? "disabled" : ""
-                      }`}
-                      type="primary"
-                      htmlType="submit"
-                      block
-                      loading={loading}
-                      disabled={!agreeDataSecurityProvision}
-                    >
-                      Register
-                    </Button>
-                  </Form.Item>
-                  <Form.Item noStyle>
-                    <p>
-                      Already have an account?{" "}
-                      <Link to={routePath.idc.login}>Login here.</Link>
-                    </p>
-                  </Form.Item>
-                </Form>
-              </>
-            )}
-          </Col>
-        </Col>
-        <Col
-          span={12}
-          align="end"
-          data-testid="login-image-wrapper"
-          className="login-image-wrapper"
+        <Button
+          data-testid="button-register"
+          className="button-login"
+          shape="round"
+          size="large"
+          type="primary"
+          htmlType="submit"
+          block
+          loading={loading}
         >
-          <Image
-            src={ImageRight}
-            preview={false}
-            className="login-image"
-            data-testid="login-image"
-          />
-        </Col>
+          Get started
+        </Button>
 
-        <DataSecurityProvisionModal
-          visible={dataSecurityProvisionVisible}
-          setVisible={setDataSecurityProvisionVisible}
-          onAgree={setAgreeDataSecurityProvision}
-        />
-      </Row>
-    </ContentLayout>
+        <div className="register-callout">
+          <span>Already have an account?</span>
+          <Link to="/login" className="link-register" data-testid="link-login">
+            Log in
+          </Link>
+        </div>
+      </Form>
+
+      {registeredEmail && (
+        <div className="login-toast-wrapper">
+          <LoginAlertToast
+            type="warning"
+            email={registeredEmail}
+            onResendLink={handleResend}
+            resendLoading={resendLoading}
+            resendSent={resendSent}
+          >
+            <div className="toast-links">
+              <button
+                type="button"
+                className="toast-action-warning"
+                onClick={handleChangeEmail}
+                data-testid="button-change-email"
+              >
+                Use a different email address
+              </button>
+              <Link
+                to="/login"
+                className="toast-action-warning"
+                data-testid="link-toast-login"
+              >
+                Back to log in
+              </Link>
+            </div>
+          </LoginAlertToast>
+        </div>
+      )}
+
+      <DataSecurityProvisionModal
+        visible={termsOpen}
+        setVisible={setTermsOpen}
+        onAgree={(agreed) =>
+          form.setFields([{ name: "terms", value: agreed, errors: [] }])
+        }
+      />
+    </AuthSplitLayout>
   );
 };
 
