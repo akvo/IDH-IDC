@@ -1,0 +1,41 @@
+// antd renders notifications in a portal outside #root
+.ant-notification-notice.profile-saved-toast {
+  width: auto;
+  max-width: calc(100vw - 32px);
+  padding: 16px;
+  border: 1px solid #6de19e;
+  border-left: 4px solid #48d985;
+  border-radius: 16px;
+  background: #f0fcf5;
+  box-shadow: none;
+
+  .ant-notification-notice-message {
+    margin: 0;
+    padding: 0;
+  }
+
+  .profile-saved-toast__content {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .profile-saved-toast__icon {
+    font-size: 24px;
+    color: #48d985;
+  }
+
+  .profile-saved-toast__title {
+    margin-left: 8px;
+    font-family: "TabletGothic", "Inter", sans-serif;
+    font-weight: 700;
+    color: #000000;
+  }
+
+  .profile-saved-toast__message {
+    color: #111111;
+  }
+}
