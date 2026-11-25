@@ -1,0 +1,200 @@
+// Sign-up variant of the Toolkit split screen (login.scss): a form with
+// two-column rows, and Toolkit info cards on a grey panel instead of the
+// hero image (Figma 11861:52124)
+#login .auth-split-container {
+  .login-left-pane .login-pane-body {
+    max-width: 576px;
+    justify-content: flex-start;
+    padding-top: 48px;
+    padding-bottom: 32px;
+
+    .login-title {
+      white-space: normal;
+    }
+  }
+
+  .profile-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+
+    @media (max-width: 640px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .split-form-register {
+    // App.scss sizes every select in .content-wrapper to 30vw
+    .ant-select {
+      width: 100% !important;
+    }
+
+    // Selects match the 44px text inputs from login.scss
+    .ant-select:not(.ant-select-auto-complete) .ant-select-selector {
+      min-height: 44px;
+      padding: 4px 14px;
+      border: 1px solid #cbcbcb;
+      border-radius: 8px;
+      font-family: "TabletGothic", sans-serif;
+      font-size: 14px;
+      align-items: center;
+
+      .ant-select-selection-search {
+        inset-inline-start: 14px;
+        inset-inline-end: 14px;
+      }
+
+      @media (max-width: 1366px), (max-height: 800px) {
+        min-height: 40px;
+        font-size: 13px;
+      }
+    }
+
+    .ant-select:not(.ant-select-disabled):hover .ant-select-selector,
+    .ant-select-focused .ant-select-selector {
+      border-color: #01625f !important;
+    }
+
+    .ant-select-focused .ant-select-selector {
+      box-shadow: 0 0 0 2px rgba(1, 98, 95, 0.15) !important;
+    }
+
+    .ant-select-multiple .ant-select-selection-search {
+      inset-inline-start: 0;
+      margin-inline-start: 0;
+    }
+
+    .ant-select-selection-placeholder {
+      color: #979797;
+    }
+
+    .ant-form-item-extra {
+      margin-top: 6px;
+      font-family: "TabletGothic", sans-serif;
+      font-size: 13px;
+      line-height: 18px;
+      color: #777777;
+    }
+
+    .terms-form-item {
+      margin: 4px 0 24px;
+    }
+
+    .link-security-provision {
+      padding: 0;
+      border: none;
+      background: none;
+      color: #01625f;
+      font: inherit;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+
+      &:hover {
+        color: lighten(#01625f, 10%);
+      }
+    }
+  }
+
+  .toast-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 12px;
+
+    .toast-action-warning {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+  }
+
+  .invitation-loading {
+    display: flex;
+    justify-content: center;
+    padding: 48px 0;
+  }
+
+  .login-right-pane.auth-aside-pane {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 24px;
+    padding: 48px clamp(24px, 5vw, 96px);
+    border-radius: 24px;
+    min-height: calc(100vh - 48px);
+    background-color: #f2f2f2;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 767px) {
+    .login-right-pane.auth-aside-pane {
+      max-width: none;
+      min-height: 0;
+      margin: 0 16px 24px;
+      padding: 24px 16px;
+    }
+  }
+}
+
+// Under #login to outrank the global `#root h2` heading styles
+#login {
+  .additional-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .additional-text-group {
+    border-radius: 16px;
+    background: #eaf2f2;
+  }
+
+  .additional-text-card {
+    padding: 24px;
+    border-radius: 16px;
+    background: #fdfdfb;
+
+    .additional-text-title {
+      margin: 0 0 12px;
+      font-family: "RocGroteskBold", "RocGrotesk", sans-serif !important;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 32px;
+      letter-spacing: -0.24px;
+      color: #01625f;
+    }
+
+    .additional-text-subtitle {
+      display: block;
+      margin-top: 4px;
+      font-family: "TabletGothic", sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 24px;
+    }
+
+    .additional-text-copy {
+      margin: 0;
+      font-family: "TabletGothic", sans-serif;
+      font-size: 14px;
+      line-height: 21px;
+      color: #1f2937;
+
+      a {
+        color: inherit;
+      }
+    }
+  }
+
+  .additional-text-note {
+    margin: 0;
+    padding: 20px 24px;
+    font-family: "TabletGothic", sans-serif;
+    font-size: 14px;
+    line-height: 21px;
+    color: #1f2937;
+  }
+}
