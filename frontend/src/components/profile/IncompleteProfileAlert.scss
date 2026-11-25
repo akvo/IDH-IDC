@@ -1,105 +1,88 @@
 @import "../../variables.scss";
 
-.incomplete-profile-alert {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  background-color: #f4f8f8;
-  border: 1px solid #d5e5e4;
-
-  .ant-alert-icon {
-    position: static;
-    margin-right: 0;
-    font-size: 16px;
-    color: $primary-color;
+// antd renders the modal in a portal outside #root
+.incomplete-profile-modal {
+  .ant-modal-content {
+    padding: 32px;
+    border-radius: 16px;
   }
 
-  .ant-alert-content {
-    flex: 1 1 auto;
-    min-width: 0;
+  &__body {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
   }
 
-  .ant-alert-message {
-    margin-bottom: 0;
-    color: #1b2a29;
+  &__icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fff6e6;
+    color: #ff5d00;
+    font-size: 22px;
   }
 
   &__content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 2px 8px;
+    flex: 1;
+    min-width: 0;
   }
 
   &__title {
-    font-weight: 600;
-    font-size: 14px;
-    color: #1b2a29;
+    margin: 0 0 8px;
+    font-family: "RocGrotesk", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 26px;
+    color: #000000;
   }
 
-  &__subtitle {
-    font-size: 13.5px;
-    color: #546564;
+  &__text {
+    margin: 0 0 32px;
+    font-family: "TabletGothic", sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    color: #111111;
   }
 
-  .ant-alert-action {
-    margin-left: auto;
-    margin-right: 4px;
-  }
-
-  &__action {
-    display: inline-flex;
+  &__footer {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: $primary-color;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    justify-content: space-between;
+    gap: 16px;
 
-    &:hover,
-    &:focus-visible {
-      background-color: #eaf2f2;
-      color: darken($primary-color, 8%);
-      text-decoration: none;
+    .ant-checkbox-wrapper {
+      font-family: "TabletGothic", sans-serif;
+      font-size: 14px;
+      color: #666666;
     }
   }
 
   &__actions {
     display: flex;
-    align-items: center;
-    gap: 4px;
-  }
+    gap: 8px;
 
-  &__skip.ant-btn {
-    font-size: 13px;
-    color: #546564;
+    .ant-btn {
+      font-weight: 700;
+    }
 
-    &:hover {
-      color: #1b2a29;
+    .ant-btn-default {
+      border-color: $primary-color;
+      color: $primary-color;
     }
   }
 
   @media (max-width: 576px) {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    padding: 12px 14px;
-    gap: 8px 10px;
-
-    .ant-alert-action {
-      margin-left: 26px;
-      margin-right: 0;
-      order: 3;
-      flex-basis: calc(100% - 26px);
+    .ant-modal-content {
+      padding: 24px;
     }
 
-    &__action {
-      padding-left: 0;
+    &__body {
+      gap: 16px;
     }
   }
 }
