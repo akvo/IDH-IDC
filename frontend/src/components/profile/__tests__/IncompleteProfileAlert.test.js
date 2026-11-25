@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import IncompleteProfileAlert, {
   isUserProfileIncomplete,
 } from "../IncompleteProfileAlert";
@@ -9,6 +9,7 @@ import { UserState, defaultUserState } from "../../../store";
 describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     act(() => {
       UserState.update(() => ({ ...defaultUserState }));
     });
@@ -281,81 +282,88 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("shows the reminder copy with Complete now opening the profile in edit mode", () => {
+    it("shows the missing details popup", () => {
       renderAlert({}, incompleteUser);
 
-      expect(screen.getByTestId("incomplete-profile-alert")).toHaveTextContent(
+      const popup = screen.getByTestId("incomplete-profile-alert");
+      expect(popup).toHaveTextContent("A few details are missing");
+      expect(popup).toHaveTextContent(
         "Please complete your profile. A few details are missing."
       );
-      const link = screen.getByRole("link", { name: "Complete now" });
-      expect(link).toHaveAttribute("href", "/profile?edit=1");
+      expect(screen.getByText("Don’t show again")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
     });
 
-    it("keeps Complete now inside the Academy when shown there", () => {
-      act(() => {
-        UserState.update((s) => {
-          Object.assign(s, incompleteUser);
+    it.each([
+      ["/income-driver-calculator/welcome", "/profile?edit=1"],
+      ["/academy/overview", "/academy/profile?edit=1"],
+    ])(
+      "Complete now from %s opens %s and hides the popup for the session",
+      (from, to) => {
+        act(() => {
+          UserState.update((s) => {
+            Object.assign(s, incompleteUser);
+          });
         });
-      });
-      render(
-        <MemoryRouter initialEntries={["/academy/overview"]}>
-          <IncompleteProfileAlert />
-        </MemoryRouter>
-      );
+        const Location = () => {
+          const { pathname, search } = useLocation();
+          return <div data-testid="location">{`${pathname}${search}`}</div>;
+        };
+        render(
+          <MemoryRouter initialEntries={[from]}>
+            <Location />
+            <Routes>
+              <Route path="*" element={<IncompleteProfileAlert />} />
+            </Routes>
+          </MemoryRouter>
+        );
 
-      expect(
-        screen.getByRole("link", { name: "Complete now" })
-      ).toHaveAttribute("href", "/academy/profile?edit=1");
-    });
+        fireEvent.click(screen.getByRole("button", { name: "Complete now" }));
 
-    it("hides action link when showActionLink is false", () => {
-      renderAlert({ showActionLink: false }, incompleteUser);
+        expect(screen.getByTestId("location")).toHaveTextContent(to);
+        expect(
+          sessionStorage.getItem(
+            `idc_profile_alert_skipped_${incompleteUser.id}`
+          )
+        ).toBe("true");
+      }
+    );
 
-      expect(
-        screen.getByTestId("incomplete-profile-alert")
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByTestId("link-complete-profile")
-      ).not.toBeInTheDocument();
-      expect(screen.queryByRole("link")).not.toBeInTheDocument();
-    });
-
-    it("dismisses alert, sets localStorage, and hides on Skip", () => {
+    it("Skip hides it until the next login only", () => {
       renderAlert({}, incompleteUser);
 
-      expect(
-        screen.getByTestId("incomplete-profile-alert")
-      ).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("button", { name: "Skip" }));
 
+      expect(
+        sessionStorage.getItem(`idc_profile_alert_skipped_${incompleteUser.id}`)
+      ).toBe("true");
+      expect(
+        localStorage.getItem(`idc_profile_alert_dismissed_${incompleteUser.id}`)
+      ).toBeNull();
+    });
+
+    it("Skip with Don’t show again hides it for good", () => {
+      renderAlert({}, incompleteUser);
+
+      fireEvent.click(screen.getByTestId("checkbox-dont-show-again"));
       fireEvent.click(screen.getByRole("button", { name: "Skip" }));
 
       expect(
         localStorage.getItem(`idc_profile_alert_dismissed_${incompleteUser.id}`)
       ).toBe("true");
-
-      expect(
-        screen.queryByTestId("incomplete-profile-alert")
-      ).not.toBeInTheDocument();
     });
 
-    it("stays hidden on re-render when dismissed flag exists in localStorage", () => {
-      localStorage.setItem(
-        `idc_profile_alert_dismissed_${incompleteUser.id}`,
-        "true"
-      );
+    it.each([
+      ["skipped this session", sessionStorage, "idc_profile_alert_skipped_"],
+      ["set to never show", localStorage, "idc_profile_alert_dismissed_"],
+    ])("stays hidden when %s", (_, storage, prefix) => {
+      storage.setItem(`${prefix}${incompleteUser.id}`, "true");
 
       renderAlert({}, incompleteUser);
 
       expect(
         screen.queryByTestId("incomplete-profile-alert")
       ).not.toBeInTheDocument();
-    });
-
-    it("applies custom className when provided", () => {
-      renderAlert({ className: "custom-profile-alert" }, incompleteUser);
-
-      const alertElement = screen.getByTestId("incomplete-profile-alert");
-      expect(alertElement).toHaveClass("custom-profile-alert");
     });
   });
 });

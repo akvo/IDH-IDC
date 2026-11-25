@@ -344,7 +344,7 @@ const Welcome = () => {
       {/* EOL IDC Submenu */}
 
       <div className="welcome-with-padding">
-        <IncompleteProfileAlert style={{ marginBottom: 24 }} />
+        <IncompleteProfileAlert />
         {/* Header */}
         <Col span={24} className="username-wrapper">
           Hello, {username}!
