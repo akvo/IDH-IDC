@@ -87,10 +87,10 @@ export const PageHeader = ({ isLoggedIn }) => {
     location.pathname.startsWith("/case");
   const isCurrentAcademy = location.pathname.startsWith("/academy");
   const isAdmin = adminRole.includes(userRole);
-  const profileTargetRoute =
-    isCurrentAcademy || !hasIdcAccess
-      ? routePath.academy.account
-      : routePath.profile;
+  // Inside the Academy the profile keeps the Academy sidebar
+  const profileTargetRoute = isCurrentAcademy
+    ? routePath.academy.profile
+    : routePath.profile;
 
   const handleLogout = useCallback(() => {
     signOut();

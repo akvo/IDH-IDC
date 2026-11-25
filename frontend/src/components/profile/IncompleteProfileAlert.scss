@@ -70,9 +70,14 @@
     }
   }
 
-  .ant-alert-close-icon {
-    position: static;
-    margin-left: 4px;
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__skip.ant-btn {
+    font-size: 13px;
     color: #546564;
 
     &:hover {

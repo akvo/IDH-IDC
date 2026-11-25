@@ -31,8 +31,8 @@ const mainMenuItems = [
 
 const accountMenuItems = [
   {
-    key: routePath.academy.account,
-    label: "Account",
+    key: routePath.academy.profile,
+    label: "My profile",
     icon: <UserOutlined />,
   },
   {

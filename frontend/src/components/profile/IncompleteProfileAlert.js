@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "antd";
-import { Link } from "react-router-dom";
+import { Alert, Button } from "antd";
+import { Link, useLocation } from "react-router-dom";
 import { UserState } from "../../store";
 import { routePath } from "../route";
 import "./IncompleteProfileAlert.scss";
@@ -42,6 +42,11 @@ const IncompleteProfileAlert = ({
   style = {},
 }) => {
   const storeUser = UserState.useState((s) => s);
+  const { pathname } = useLocation();
+  // Stay in the Academy shell when reminded from inside the Academy
+  const profilePath = pathname.startsWith(routePath.academy.landing)
+    ? routePath.academy.profile
+    : routePath.profile;
   const userState = user || storeUser;
   const userId = userState?.id;
   const [dismissed, setDismissed] = useState(() => {
@@ -95,29 +100,38 @@ const IncompleteProfileAlert = ({
       data-testid="incomplete-profile-alert"
       type="info"
       showIcon
-      closable
       message={
         <div className="incomplete-profile-alert__content">
           <span className="incomplete-profile-alert__title">
-            Complete your profile
-          </span>
+            Please complete your profile.
+          </span>{" "}
           <span className="incomplete-profile-alert__subtitle">
-            Add your name and organization details.
+            A few details are missing.
           </span>
         </div>
       }
       action={
-        showActionLink ? (
-          <Link
-            to={routePath.profile}
-            data-testid="link-complete-profile"
-            className="incomplete-profile-alert__action"
+        <div className="incomplete-profile-alert__actions">
+          {showActionLink && (
+            <Link
+              to={`${profilePath}?edit=1`}
+              data-testid="link-complete-profile"
+              className="incomplete-profile-alert__action"
+            >
+              Complete now
+            </Link>
+          )}
+          <Button
+            type="text"
+            size="small"
+            onClick={handleClose}
+            data-testid="btn-skip-profile-alert"
+            className="incomplete-profile-alert__skip"
           >
-            Complete Profile &rarr;
-          </Link>
-        ) : null
+            Skip
+          </Button>
+        </div>
       }
-      onClose={handleClose}
       className={`incomplete-profile-alert ${className}`.trim()}
       style={style}
     />
