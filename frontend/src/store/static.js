@@ -109,6 +109,68 @@ export const commodityOptions = commodities.map((commodity) => ({
   value: commodity.id,
 }));
 
+// Commodity names for profile fields, which store names rather than ids
+export const commodityNameOptions = [
+  ...new Set(commodities.map((commodity) => commodity.name)),
+].map((name) => ({ label: name, value: name }));
+
+// Profile presets shared by the Academy profile, Academy sign-up and IDC
+// invitation forms
+export const PRESET_COMPANY_TYPES = [
+  "Private Sector",
+  "NGO",
+  "Government / Public Sector",
+  "Cooperative / Farmer Organization",
+  "Research / Academia",
+  "Financial Institution",
+  "Multilateral / Donor",
+  "Consultancy",
+  "Other",
+];
+
+export const PRESET_SECTORS = [
+  "Agriculture",
+  "Food & Beverage",
+  "Apparel & Textiles",
+  "Retail & Consumer Goods",
+  "Financial Services",
+  "Development & Philanthropy",
+  "Technology & Data",
+  "Other",
+];
+
+export const PRESET_REGIONS = [
+  "Global",
+  "West Africa",
+  "East Africa",
+  "Southern Africa",
+  "Latin America & Caribbean",
+  "Southeast Asia",
+  "South Asia",
+  "East Asia",
+  "Europe",
+  "North America",
+  "Middle East & North Africa",
+];
+
+// Select options for a preset list. A saved value outside the presets is
+// prepended so it still shows as selected.
+export const getOptionsWithFallback = (presets, currentValue) => {
+  const options = presets.map((item) => ({ label: item, value: item }));
+  if (
+    currentValue &&
+    typeof currentValue === "string" &&
+    currentValue.trim() &&
+    !presets.some((p) => p.toLowerCase() === currentValue.trim().toLowerCase())
+  ) {
+    return [
+      { label: currentValue.trim(), value: currentValue.trim() },
+      ...options,
+    ];
+  }
+  return options;
+};
+
 export const currencyOptions = window.master?.currencies || [];
 export const countryOptions = window.master?.countries || [];
 

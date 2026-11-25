@@ -19,6 +19,7 @@ import {
   Popconfirm,
   Modal,
   List,
+  Alert,
 } from "antd";
 import {
   allUserRole,
@@ -47,6 +48,20 @@ const defFormListValue = {
 };
 
 const useRoleWithBusinessUnitFieldByDefault = ["admin"];
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ACADEMY_CHECK_DEBOUNCE_MS = 300;
+
+const getErrorDetail = (e, fallback) => {
+  const detail = e?.response?.data?.detail;
+  if (typeof detail === "string") {
+    return detail;
+  }
+  if (Array.isArray(detail) && detail[0]?.msg) {
+    return detail[0].msg;
+  }
+  return fallback;
+};
 
 const userRoleTypeOptions = [
   { label: "IDH Internal User", value: "internal" },
@@ -77,6 +92,9 @@ const UserForm = () => {
   const [conflictUser, setConflictUser] = useState(null);
   const [conflictCompanyId, setConflictCompanyId] = useState(null);
   const [grantingConflict, setGrantingConflict] = useState(false);
+  // Add user: the typed email belongs to an Academy user without IDC access
+  const [academyMatch, setAcademyMatch] = useState(null);
+  const watchedEmail = Form.useWatch("email", form);
 
   const currentUserId = UserState.useState((s) => s.id);
 
@@ -151,6 +169,36 @@ const UserForm = () => {
       setLoading(false);
     }
   }, [userId, form]);
+
+  useEffect(() => {
+    // Clear at once so a stale match never applies to a new email
+    setAcademyMatch(null);
+    const email = (watchedEmail || "").trim();
+    let active = true;
+    const timer =
+      !userId && EMAIL_PATTERN.test(email)
+        ? setTimeout(() => {
+            api
+              .get(
+                `user/check-academy-email?email=${encodeURIComponent(email)}`
+              )
+              .then(({ data }) => {
+                if (active && data?.is_academy_user && !data?.has_idc_access) {
+                  setAcademyMatch(data);
+                  if (!form.getFieldValue("fullname") && data.fullname) {
+                    form.setFieldValue("fullname", data.fullname);
+                  }
+                }
+              })
+              // Without a match the form keeps the invitation flow
+              .catch(() => {});
+          }, ACADEMY_CHECK_DEBOUNCE_MS)
+        : null;
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [watchedEmail, userId, form]);
 
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
@@ -325,8 +373,43 @@ const UserForm = () => {
     }
   };
 
+  const grantAcademyUserIdc = async (values) => {
+    const { role, company, user_type, business_units } = values;
+    const businessUnits = [].concat(business_units || []).map((bu) => ({
+      business_unit: bu,
+      role: adminRole.includes(role) ? "admin" : "member",
+    }));
+    try {
+      await api.post(`user/grant-idc-access?user_id=${academyMatch.user_id}`, {
+        company_id: company,
+        role,
+        user_type: user_type || "external_regular",
+        business_units: businessUnits,
+      });
+      messageApi.open({
+        type: "success",
+        content: "IDC access granted successfully",
+      });
+      setTimeout(() => {
+        form.resetFields();
+        navigate("/admin/users");
+      }, 500);
+    } catch (e) {
+      messageApi.open({
+        type: "error",
+        content: getErrorDetail(e, "Failed to grant IDC access."),
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const onFinish = async (values) => {
     setSubmitting(true);
+    if (!userId && academyMatch) {
+      await grantAcademyUserIdc(values);
+      return;
+    }
     const {
       fullname,
       email,
@@ -531,6 +614,13 @@ const UserForm = () => {
     }
   };
 
+  let submitLabel = "Save User";
+  if (!userId) {
+    submitLabel = academyMatch ? "Give IDC access" : "Send invitation";
+  } else if (isUserActive !== null && !isUserActive) {
+    submitLabel = "Approve User";
+  }
+
   return (
     <ContentLayout
       breadcrumbItems={[
@@ -558,6 +648,15 @@ const UserForm = () => {
           onFinish={onFinish}
           className="user-form-container"
         >
+          {academyMatch && (
+            <Alert
+              type="info"
+              showIcon
+              className="academy-user-alert"
+              data-testid="academy-user-alert"
+              message="This person already has an Academy account. Giving IDC access adds the calculator to their account; they keep their current login."
+            />
+          )}
           <Row gutter={[16, 16]}>
             {/* User Information */}
             <Col xs={24} lg={12}>
@@ -857,7 +956,7 @@ const UserForm = () => {
                 ""
               )}
               {/* Company Selector */}
-              {showCompany || grantIdc ? (
+              {showCompany || grantIdc || academyMatch ? (
                 <Card title="Company">
                   <Form.Item
                     label="Company"
@@ -876,6 +975,15 @@ const UserForm = () => {
                       options={companyOptions}
                     />
                   </Form.Item>
+                  {academyMatch?.academy_company && (
+                    <p
+                      className="self-reported-org"
+                      data-testid="self-reported-org"
+                    >
+                      Self-reported organisation:{" "}
+                      <strong>{academyMatch.academy_company}</strong>
+                    </p>
+                  )}
                 </Card>
               ) : (
                 ""
@@ -891,9 +999,7 @@ const UserForm = () => {
               style={{ width: "200px", float: "left" }}
               loading={submitting}
             >
-              {isUserActive !== null && !isUserActive
-                ? "Approve User"
-                : "Save User"}
+              {submitLabel}
             </Button>
           </Form.Item>
         </Form>

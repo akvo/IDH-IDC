@@ -10,10 +10,12 @@ const LoginAlertToast = ({
   type = "error",
   email,
   message,
+  hint,
   onResendLink,
   resendLoading = false,
   resendSent = false,
   onForgotPasswordClick,
+  children,
 }) => {
   if (type === "success") {
     return (
@@ -33,6 +35,11 @@ const LoginAlertToast = ({
             {message ||
               "Your password has been changed. Log in with your new password."}
           </p>
+          {hint && (
+            <p className="toast-hint" data-testid="toast-success-hint">
+              {hint}
+            </p>
+          )}
         </div>
       </div>
     );
@@ -73,6 +80,7 @@ const LoginAlertToast = ({
               </button>
             </>
           )}
+          {children}
         </div>
       </div>
     );

@@ -106,6 +106,14 @@ const Login = () => {
   const [showVerifiedCard, setShowVerifiedCard] = useState(isVerifiedParam);
 
   const [alertState, setAlertState] = useState(() => {
+    // Set by InvitationRegister after the invitee completes their account
+    if (location.state?.accountReady) {
+      return {
+        type: "success",
+        message: "Your account is ready.",
+        hint: "Please log in.",
+      };
+    }
     if (
       searchParams.get("passwordChanged") === "true" ||
       location.state?.passwordChanged
@@ -510,6 +518,7 @@ const Login = () => {
                       type={alertState.type}
                       email={alertState.email}
                       message={alertState.message}
+                      hint={alertState.hint}
                       onResendLink={handleResendVerification}
                       resendLoading={resendLoading}
                       resendSent={resendSent}
