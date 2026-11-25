@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, Request, Response
+from fastapi.staticfiles import StaticFiles
 from middleware import decode_token
 from fastapi.responses import FileResponse
 
@@ -162,6 +163,14 @@ app.include_router(academy_profile_router)
 app.include_router(academy_resource_router)
 app.include_router(academy_settings_router)
 app.include_router(admin_academy_stats_router)
+
+EMAIL_ICONS_DIR = os.path.join(BASE_DIR, "assets", "email-icons")
+if os.path.isdir(EMAIL_ICONS_DIR):
+    app.mount(
+        "/email-icons",
+        StaticFiles(directory=EMAIL_ICONS_DIR),
+        name="email-icons",
+    )
 
 
 @app.get("/", tags=["Dev"])

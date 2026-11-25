@@ -177,13 +177,19 @@ The new template will replace legacy blue styles (`#0288d1`, `#0d0cb5`) with sta
   - `button_url: Optional[str] = None`
 - Maintain full backward compatibility for legacy call sites (fallback to existing behavior if `name` or `button_text` is omitted).
 
-### 4.3 Static Assets (`frontend/public/email-icons/`)
-Export or optimize the 4 key illustrations and social icons:
+### 4.3 Static Assets (`frontend/public/email-icons/` & `backend/assets/email-icons/`)
+Export or optimize the 4 key illustrations and social icons as raster PNGs:
 1. `email-invitation-screen.png` (IDC invite / login laptop)
 2. `email-password-reset.png` (Key & lock security)
 3. `email-verified-shield.png` (Profile card with verified shield)
 4. `email-logo.png` (IDH + Toolkit header lockup)
-5. `social-facebook.png`, `social-linkedin.png`, `social-instagram.png`, `social-x.png`
+5. `social-facebook.png`, `social-linkedin.png`, `social-instagram.png`, `social-x.png` (56x56 @2x rasterized PNGs)
+
+> [!IMPORTANT]
+> **Email Deliverability & Image Hosting Architecture**:
+> - Email clients (especially Gmail's security image proxy and Outlook.com) deliberately block and drop `data:image/...;base64` URIs and `.svg` files in email bodies.
+> - Images must be served as hosted absolute HTTPS URLs (`https://<domain>/email-icons/<filename>.png`).
+> - Nginx routes `/email-icons/` directly from `/usr/share/nginx/html/email-icons/`, with an automated fallback to the backend's mounted `/api/email-icons/` static endpoint (`StaticFiles`) to guarantee high-availability rendering across deployments.
 
 ---
 

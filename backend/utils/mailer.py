@@ -1,6 +1,5 @@
 import os
 import enum
-import base64
 import smtplib
 from email.message import EmailMessage
 from email.utils import formataddr
@@ -13,7 +12,10 @@ webdomain = os.environ.get("WEBDOMAIN", "localhost:3000")
 if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
 if "https://" not in webdomain and "http://" not in webdomain:
-    webdomain = f"https://{webdomain}"
+    if "localhost" in webdomain or "127.0.0.1" in webdomain:
+        webdomain = f"http://{webdomain}"
+    else:
+        webdomain = f"https://{webdomain}"
 
 loader = FileSystemLoader(".")
 env = Environment(loader=loader)
@@ -46,25 +48,11 @@ EMAIL_TIMEOUT = 10
 
 def get_asset_src(filename: str) -> str:
     """
-    Returns an embedded base64 data URI if the local icon exists,
-    otherwise falls back to the hosted URL under image_url.
+    Returns the public hosted URL under image_url for the email template asset.
+    Rasterizes .svg references to .png for universal email client compatibility.
     """
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    candidates = [
-        os.path.join(base_dir, "assets", "email-icons", filename),
-        os.path.join("assets", "email-icons", filename),
-        os.path.join("..", "frontend", "public", "email-icons", filename),
-    ]
-    for path in candidates:
-        if os.path.isfile(path):
-            try:
-                with open(path, "rb") as f:
-                    encoded = base64.b64encode(f.read()).decode("ascii")
-                ext = filename.split(".")[-1].lower()
-                mime = "image/svg+xml" if ext == "svg" else f"image/{ext}"
-                return f"data:{mime};base64,{encoded}"
-            except Exception:
-                pass
+    if filename.endswith(".svg"):
+        filename = f"{filename[:-4]}.png"
     return f"{image_url}/{filename}"
 
 
@@ -327,10 +315,10 @@ class Email:
             disclaimer=disclaimer,
             message=message,
             context=self.context,
-            social_facebook=get_asset_src("social-facebook.svg"),
-            social_linkedin=get_asset_src("social-linkedin.svg"),
-            social_instagram=get_asset_src("social-instagram.svg"),
-            social_x=get_asset_src("social-x.svg"),
+            social_facebook=get_asset_src("social-facebook.png"),
+            social_linkedin=get_asset_src("social-linkedin.png"),
+            social_instagram=get_asset_src("social-instagram.png"),
+            social_x=get_asset_src("social-x.png"),
         )
 
         msg = EmailMessage()
