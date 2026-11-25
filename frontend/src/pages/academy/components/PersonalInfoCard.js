@@ -5,9 +5,9 @@ const PersonalInfoCard = ({ isEditing = false }) => {
   return (
     <div className="academy-account-card" data-testid="personal-info-card">
       <div className="academy-account-card__header">
-        <h2 className="academy-account-card__title">Personal info</h2>
+        <h2 className="academy-account-card__title">Personal information</h2>
         <p className="academy-account-card__subtitle">
-          Update your photo and personal details.
+          Update personal details.
         </p>
       </div>
       <div className="academy-account-card__grid">
@@ -16,14 +16,14 @@ const PersonalInfoCard = ({ isEditing = false }) => {
           label="First name"
           rules={[
             { required: true, message: "First name is required" },
-            { whitespace: true, message: "First name cannot be empty" },
+            { whitespace: true, message: "First name is required" },
             { max: 125, message: "Max 125 characters" },
           ]}
         >
           <Input
             maxLength={125}
             disabled={!isEditing}
-            placeholder="First name"
+            placeholder="Fill in your First name"
             data-testid="input-first-name"
           />
         </Form.Item>
@@ -35,18 +35,20 @@ const PersonalInfoCard = ({ isEditing = false }) => {
           <Input
             maxLength={125}
             disabled={!isEditing}
-            placeholder="Last name"
+            placeholder="Fill in your Last name"
             data-testid="input-last-name"
           />
         </Form.Item>
       </div>
-      <Form.Item
-        name="email"
-        label="Email"
-        extra="Email address cannot be changed."
-      >
-        <Input disabled data-testid="input-email" />
-      </Form.Item>
+      <div className="academy-account-card__full-width">
+        <Form.Item
+          name="email"
+          label="Email"
+          extra="Email address cannot be changed."
+        >
+          <Input disabled data-testid="input-email" />
+        </Form.Item>
+      </div>
     </div>
   );
 };
