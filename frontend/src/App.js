@@ -10,6 +10,7 @@ import {
   Login,
   ResetPassword,
   Register,
+  InvitationRegister,
   VerifyAcademy,
   ForgotPassword,
 } from "./pages/login";
@@ -381,7 +382,7 @@ const App = () => {
           <Route
             exact
             path="/invitation/:tokenId"
-            element={<ResetPassword />}
+            element={<InvitationRegister />}
           />
           <Route
             exact

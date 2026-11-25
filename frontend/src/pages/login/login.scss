@@ -1082,6 +1082,14 @@
       flex-direction: column;
       gap: 4px;
 
+      .toast-hint {
+        margin: 0;
+        font-family: "TabletGothic", sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+        color: #01625f;
+      }
+
       .toast-message {
         font-family: "TabletGothic", sans-serif;
         font-size: 14px;
@@ -1093,6 +1101,10 @@
         @media (max-width: 1366px), (max-height: 800px) {
           font-size: 13px;
           line-height: 1.45;
+        }
+
+        & + .toast-hint {
+          margin-top: 8px;
         }
 
         .toast-link {
