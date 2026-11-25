@@ -495,10 +495,10 @@ describe("PageLayout header on Academy pages", () => {
               element={<div data-testid="target-profile">Profile Page</div>}
             />
             <Route
-              path={routePath.academy.account}
+              path={routePath.academy.profile}
               element={
-                <div data-testid="target-academy-account">
-                  Academy Account Page
+                <div data-testid="target-academy-profile">
+                  Academy Profile Page
                 </div>
               }
             />
@@ -511,11 +511,11 @@ describe("PageLayout header on Academy pages", () => {
       fireEvent.click(screen.getByText("My Profile"));
       expect(screen.getByTestId("target-profile")).toBeInTheDocument();
       expect(
-        screen.queryByTestId("target-academy-account")
+        screen.queryByTestId("target-academy-profile")
       ).not.toBeInTheDocument();
     });
 
-    it("routes desktop My Profile to /academy/account when inside /academy*", () => {
+    it("routes desktop My Profile to /academy/profile when inside /academy*", () => {
       act(() => {
         UserState.update((s) => {
           s.id = 1;
@@ -534,10 +534,10 @@ describe("PageLayout header on Academy pages", () => {
               element={<div data-testid="target-profile">Profile Page</div>}
             />
             <Route
-              path={routePath.academy.account}
+              path={routePath.academy.profile}
               element={
-                <div data-testid="target-academy-account">
-                  Academy Account Page
+                <div data-testid="target-academy-profile">
+                  Academy Profile Page
                 </div>
               }
             />
@@ -548,11 +548,11 @@ describe("PageLayout header on Academy pages", () => {
 
       fireEvent.click(screen.getByTestId("header-avatar-btn"));
       fireEvent.click(screen.getByText("My Profile"));
-      expect(screen.getByTestId("target-academy-account")).toBeInTheDocument();
+      expect(screen.getByTestId("target-academy-profile")).toBeInTheDocument();
       expect(screen.queryByTestId("target-profile")).not.toBeInTheDocument();
     });
 
-    it("routes desktop My Profile to /academy/account for Academy-only user outside /academy*", () => {
+    it("routes desktop My Profile to /profile for Academy-only user outside /academy*", () => {
       act(() => {
         UserState.update((s) => {
           s.id = 2;
@@ -571,10 +571,10 @@ describe("PageLayout header on Academy pages", () => {
               element={<div data-testid="target-profile">Profile Page</div>}
             />
             <Route
-              path={routePath.academy.account}
+              path={routePath.academy.profile}
               element={
-                <div data-testid="target-academy-account">
-                  Academy Account Page
+                <div data-testid="target-academy-profile">
+                  Academy Profile Page
                 </div>
               }
             />
@@ -585,11 +585,13 @@ describe("PageLayout header on Academy pages", () => {
 
       fireEvent.click(screen.getByTestId("header-avatar-btn"));
       fireEvent.click(screen.getByText("My Profile"));
-      expect(screen.getByTestId("target-academy-account")).toBeInTheDocument();
-      expect(screen.queryByTestId("target-profile")).not.toBeInTheDocument();
+      expect(screen.getByTestId("target-profile")).toBeInTheDocument();
+      expect(
+        screen.queryByTestId("target-academy-profile")
+      ).not.toBeInTheDocument();
     });
 
-    it("routes mobile drawer My Profile to /academy/account for Academy-only or inside /academy*", () => {
+    it("routes mobile drawer My Profile to /academy/profile inside /academy*", () => {
       window.innerWidth = 500;
       act(() => {
         UserState.update((s) => {
@@ -602,13 +604,13 @@ describe("PageLayout header on Academy pages", () => {
       });
 
       render(
-        <MemoryRouter initialEntries={["/"]}>
+        <MemoryRouter initialEntries={[routePath.academy.overview]}>
           <Routes>
             <Route
-              path={routePath.academy.account}
+              path={routePath.academy.profile}
               element={
-                <div data-testid="target-academy-account">
-                  Academy Account Page
+                <div data-testid="target-academy-profile">
+                  Academy Profile Page
                 </div>
               }
             />
@@ -619,7 +621,7 @@ describe("PageLayout header on Academy pages", () => {
 
       fireEvent.click(screen.getByTestId("button-mobile-menu"));
       fireEvent.click(screen.getByTestId("button-drawer-profile"));
-      expect(screen.getByTestId("target-academy-account")).toBeInTheDocument();
+      expect(screen.getByTestId("target-academy-profile")).toBeInTheDocument();
     });
 
     it("routes mobile drawer My Profile to /profile for IDC user outside /academy*", () => {

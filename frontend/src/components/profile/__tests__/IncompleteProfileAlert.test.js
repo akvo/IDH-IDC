@@ -281,17 +281,31 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("renders action link to /profile when showActionLink is true (default)", () => {
+    it("shows the reminder copy with Complete now opening the profile in edit mode", () => {
       renderAlert({}, incompleteUser);
 
-      const link =
-        screen.queryByTestId("link-complete-profile") ||
-        screen.getByRole("link", { name: /profile/i });
+      expect(screen.getByTestId("incomplete-profile-alert")).toHaveTextContent(
+        "Please complete your profile. A few details are missing."
+      );
+      const link = screen.getByRole("link", { name: "Complete now" });
+      expect(link).toHaveAttribute("href", "/profile?edit=1");
+    });
 
-      expect(link).toBeInTheDocument();
+    it("keeps Complete now inside the Academy when shown there", () => {
+      act(() => {
+        UserState.update((s) => {
+          Object.assign(s, incompleteUser);
+        });
+      });
+      render(
+        <MemoryRouter initialEntries={["/academy/overview"]}>
+          <IncompleteProfileAlert />
+        </MemoryRouter>
+      );
+
       expect(
-        link.getAttribute("href") || link.closest("a")?.getAttribute("href")
-      ).toMatch(/\/profile$/);
+        screen.getByRole("link", { name: "Complete now" })
+      ).toHaveAttribute("href", "/academy/profile?edit=1");
     });
 
     it("hides action link when showActionLink is false", () => {
@@ -306,21 +320,14 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       expect(screen.queryByRole("link")).not.toBeInTheDocument();
     });
 
-    it("dismisses alert, sets localStorage, and hides on close button click", () => {
+    it("dismisses alert, sets localStorage, and hides on Skip", () => {
       renderAlert({}, incompleteUser);
 
       expect(
         screen.getByTestId("incomplete-profile-alert")
       ).toBeInTheDocument();
 
-      const closeBtn =
-        screen.queryByRole("button", { name: /close/i }) ||
-        screen.queryByLabelText("Close") ||
-        document.querySelector(".ant-alert-close-icon") ||
-        document.querySelector("[aria-label='close']");
-
-      expect(closeBtn).toBeInTheDocument();
-      fireEvent.click(closeBtn);
+      fireEvent.click(screen.getByRole("button", { name: "Skip" }));
 
       expect(
         localStorage.getItem(`idc_profile_alert_dismissed_${incompleteUser.id}`)
