@@ -116,11 +116,14 @@ class OAuth2PasswordRequestFormMasked(OAuth2PasswordRequestForm):
         )
 
 
-webdomain = os.environ["WEBDOMAIN"]
+webdomain = os.environ.get("WEBDOMAIN", "localhost:3000")
 if webdomain == "idc.akvo.org":
     webdomain = "incomedrivercalculator.idhtrade.org"
-if "https://" not in webdomain:
-    webdomain = f"https://{webdomain}"
+if "https://" not in webdomain and "http://" not in webdomain:
+    if "localhost" in webdomain or "127.0.0.1" in webdomain:
+        webdomain = f"http://{webdomain}"
+    else:
+        webdomain = f"https://{webdomain}"
 
 ALLOWED_ORIGINS = {
     webdomain,

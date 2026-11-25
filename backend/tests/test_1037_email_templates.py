@@ -1,6 +1,7 @@
 import sys
 import pytest
-from utils.mailer import Email, MailTypeEnum, html_to_text
+from httpx import AsyncClient
+from utils.mailer import Email, MailTypeEnum, html_to_text, get_asset_src, image_url
 from models.user import EmailRecipient
 
 pytestmark = pytest.mark.asyncio
@@ -174,3 +175,57 @@ class TestEmailTemplates:
         text = html_to_text(sample_html)
         assert "Hello Amelia" in text
         assert "Welcome to Better Income Toolkit" in text
+
+    def test_asset_src_returns_public_url(self) -> None:
+        src = get_asset_src("email-logo.png")
+        assert src == f"{image_url}/email-logo.png"
+        assert not src.startswith("data:")
+        assert src.startswith("http://") or src.startswith("https://")
+
+    def test_asset_src_maps_svg_to_png(self) -> None:
+        src = get_asset_src("social-facebook.svg")
+        assert src == f"{image_url}/social-facebook.png"
+        assert ".svg" not in src
+        assert not src.startswith("data:")
+
+    def test_templates_use_only_png_and_no_data_uris(
+        self, sample_recipient: EmailRecipient
+    ) -> None:
+        templates = [
+            (MailTypeEnum.INVITATION, {"url": "https://example.com/invite"}),
+            (MailTypeEnum.FORGOT_PASSWORD, {"url": "https://example.com/reset"}),
+            (MailTypeEnum.ACADEMY_VERIFY, {"url": "https://example.com/verify"}),
+            (MailTypeEnum.IDC_ACCESS_GRANTED, {"url": "https://example.com/idc"}),
+        ]
+        for mail_type, kwargs in templates:
+            email = Email(recipients=[sample_recipient], email=mail_type, **kwargs)
+            msg = email.data
+            html_part = next(
+                part.get_content()
+                for part in msg.iter_parts()
+                if part.get_content_subtype() == "html"
+            )
+            # Universal deliverability assertions:
+            # 1. Zero data: URIs (Gmail proxy blocks base64 embedded images)
+            assert "data:image" not in html_part, f"Found data:image in {mail_type.value}"
+            # 2. Zero .svg images (Webmail clients block SVG for security)
+            assert ".svg" not in html_part, f"Found .svg in {mail_type.value}"
+            # 3. Social icons rendered as .png
+            assert "social-facebook.png" in html_part
+            assert "social-linkedin.png" in html_part
+            assert "social-instagram.png" in html_part
+            assert "social-x.png" in html_part
+            # 4. Logo rendered as hosted URL
+            assert f"{image_url}/email-logo.png" in html_part
+
+    @pytest.mark.asyncio
+    async def test_email_icons_static_endpoint(self, client: AsyncClient) -> None:
+        response = await client.get("/email-icons/email-logo.png")
+        assert response.status_code == 200
+        assert "image/png" in response.headers["content-type"]
+        assert len(response.content) > 0
+
+        # Also test social icon png
+        social_res = await client.get("/email-icons/social-facebook.png")
+        assert social_res.status_code == 200
+        assert "image/png" in social_res.headers["content-type"]
