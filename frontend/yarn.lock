@@ -2828,10 +2828,10 @@ ajv@^8.0.0, ajv@^8.6.0, ajv@^8.9.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-akvo-rag-js@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/akvo-rag-js/-/akvo-rag-js-1.4.0.tgz#998bf807465bec32db3fca0ce4c8111babc6bc45"
-  integrity sha512-MQRatgaqomP5kIVAmwoNnnvZiVEWYlwa/H/TN4I3dkdvPTL2uD//V1mv6GUrg7esCg9Mx4AvEAULY2UkkKbSnA==
+akvo-rag-js@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/akvo-rag-js/-/akvo-rag-js-1.5.0.tgz#daeb7ae0c9938d8ba4b6155718d2e7b7ebe3cbc0"
+  integrity sha512-B9fBlkdMdn6mj2B/yrvfrg4iHtZv8Lkh6hvsXuagJcg6RhQCcW1c6R1JIqFm1vDTSzsiWCmx9nTLRoEJo89mVw==
   dependencies:
     dompurify "^3.2.5"
     font-awesome "^4.7.0"

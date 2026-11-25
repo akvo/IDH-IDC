@@ -268,6 +268,14 @@ This approach requires **zero prompt modifications in `akvo-rag`**, ensuring 100
 
 > 📖 **Operational Document**: For the complete ingestion checklist, global prompt snippet, and naming standards, see [Akvo RAG KB Ingestion Guide](file:///Users/galihpratama/Sites/IDH-IDC/docs/AKVO_RAG_KB_INGESTION_GUIDE.md).
 
+### 3.8 Cross-Page Chat History Persistence, Multi-User Isolation & Citation Control (akvo-rag-js v1.5.0)
+
+To ensure learners browsing between Academy pages (`/academy/curriculum`, `/academy/modules/:id`, `/academy/account`) never lose their ongoing chat conversation turns, `akvo-rag-js` v1.5.0 introduces:
+1. **Session History Persistence**: Preserves conversation history in `sessionStorage` (`persistHistory: true`, `historyStorageType: "session"`) with automatic DOM rehydration on component mount and safe tab-close eviction.
+2. **Multi-User Isolation**: Scoped storage keys (`${historyStorageKey}_${userId}_${kb_id}`) prevent history bleeding between different logged-in users on shared workstations.
+3. **Sliding Window Capacity**: Parameterized via `maxHistoryMessages` (defaults to `50` in IDC, configurable via component prop or `REACT_APP_AKVO_RAG_MAX_HISTORY` environment variable).
+4. **Citation Display Toggle**: Parameterized via `showCitations` (defaults to `true`; cleanly strips `[citation:X]` tags when set to `false`).
+
 ---
 
 ## 4. Work Package Breakdown (Asana Tasks)

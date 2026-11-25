@@ -23,6 +23,9 @@ frontend_build() {
     if [ -n "${REACT_APP_AKVO_RAG_KB_ID:-}" ]; then
         echo "REACT_APP_AKVO_RAG_KB_ID=${REACT_APP_AKVO_RAG_KB_ID}" >>frontend/.env
     fi
+    if [ -n "${REACT_APP_AKVO_RAG_MAX_HISTORY:-}" ]; then
+        echo "REACT_APP_AKVO_RAG_MAX_HISTORY=${REACT_APP_AKVO_RAG_MAX_HISTORY}" >>frontend/.env
+    fi
 
     # Code Quality and Build Folder
     sed 's/"warn"/"error"/g' <frontend/.eslintrc.json >frontend/.eslintrc.prod.json

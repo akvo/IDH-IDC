@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { initChat } from "akvo-rag-js";
+import UserState from "../../../store/user";
 import "akvo-rag-js/dist/akvo-rag.css";
 import "./AcademyChatbot.scss";
 
@@ -183,10 +184,34 @@ const renderCitationReferralBox = (
   msgElement.appendChild(referralContainer);
 };
 
-const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
+const AcademyChatbot = ({
+  wsUrl = "",
+  kbId = "",
+  modules = null,
+  showCitations = true,
+  persistHistory = true,
+  historyStorageType = "session",
+  userId: propUserId = null,
+  maxHistoryMessages = null,
+}) => {
   const navigate = useNavigate();
   const chatRef = useRef(null);
   const curriculumMapRef = useRef(null);
+
+  const currentUser = UserState.useState((s) => ({
+    id: s.id,
+    email: s.email,
+  }));
+  const resolvedUserId =
+    propUserId !== null
+      ? propUserId
+      : currentUser?.id && currentUser.id !== 0
+      ? String(currentUser.id)
+      : currentUser?.email || null;
+  const activeMaxHistory =
+    maxHistoryMessages !== null && !Number.isNaN(Number(maxHistoryMessages))
+      ? Number(maxHistoryMessages)
+      : Number(process.env.REACT_APP_AKVO_RAG_MAX_HISTORY) || 50;
 
   // Sync course curriculum to validate modules/chapters and enrich link titles
   useEffect(() => {
@@ -225,6 +250,11 @@ const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
         wsURL: activeWsUrl,
         wsUrl: activeWsUrl,
         kb_id: activeKbId,
+        userId: resolvedUserId,
+        persistHistory,
+        historyStorageType,
+        maxHistoryMessages: activeMaxHistory,
+        showCitations,
         botName: "Livia",
         title: "Livia",
         primaryColor: "#005EA3",
@@ -262,7 +292,15 @@ const AcademyChatbot = ({ wsUrl = "", kbId = "", modules = null }) => {
         chatRef.current = null;
       }
     };
-  }, [wsUrl, kbId]);
+  }, [
+    wsUrl,
+    kbId,
+    resolvedUserId,
+    showCitations,
+    persistHistory,
+    historyStorageType,
+    activeMaxHistory,
+  ]);
 
   // Click delegation & Citation linkification for SPA deep-linking
   useEffect(() => {

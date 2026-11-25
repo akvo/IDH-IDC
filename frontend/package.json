@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@piwikpro/react-piwik-pro": "^2.1.1",
-    "akvo-rag-js": "^1.4.0",
+    "akvo-rag-js": "^1.5.0",
     "antd": "^5.9.3",
     "axios": "^0.25.0",
     "axios-mock-adapter": "^1.21.1",

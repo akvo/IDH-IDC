@@ -1,11 +1,12 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, act } from "@testing-library/react";
 import { initChat } from "akvo-rag-js";
 import AcademyChatbot, {
   resolveChapterTarget,
   renderCitationReferralBox,
   LAUNCHER_STORAGE_KEY,
 } from "../AcademyChatbot";
+import UserState, { defaultUserState } from "../../../../store/user";
 
 const mockNavigate = jest.fn();
 
@@ -101,6 +102,10 @@ describe("AcademyChatbot", () => {
   afterEach(() => {
     jest.restoreAllMocks();
     localStorage.clear();
+    sessionStorage.clear();
+    act(() => {
+      UserState.update(() => ({ ...defaultUserState }));
+    });
     const existing = document.getElementById("akvo-rag");
     if (existing) {
       existing.remove();
@@ -147,8 +152,10 @@ describe("AcademyChatbot", () => {
   it("falls back to environment variables when props are omitted", () => {
     const origWs = process.env.REACT_APP_AKVO_RAG_WS_URL;
     const origKb = process.env.REACT_APP_AKVO_RAG_KB_ID;
+    const origMax = process.env.REACT_APP_AKVO_RAG_MAX_HISTORY;
     process.env.REACT_APP_AKVO_RAG_WS_URL = "wss://env-rag.org/ws/chat";
     process.env.REACT_APP_AKVO_RAG_KB_ID = "753";
+    process.env.REACT_APP_AKVO_RAG_MAX_HISTORY = "75";
 
     try {
       render(<AcademyChatbot />);
@@ -158,6 +165,7 @@ describe("AcademyChatbot", () => {
           wsURL: "wss://env-rag.org/ws/chat",
           wsUrl: "wss://env-rag.org/ws/chat",
           kb_id: 753,
+          maxHistoryMessages: 75,
           primaryColor: "#005EA3",
           showLauncher: true,
           draggable: true,
@@ -168,6 +176,7 @@ describe("AcademyChatbot", () => {
     } finally {
       process.env.REACT_APP_AKVO_RAG_WS_URL = origWs;
       process.env.REACT_APP_AKVO_RAG_KB_ID = origKb;
+      process.env.REACT_APP_AKVO_RAG_MAX_HISTORY = origMax;
     }
   });
 
@@ -364,5 +373,67 @@ describe("AcademyChatbot", () => {
     expect(() => {
       render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
     }).not.toThrow();
+  });
+
+  it("configures session history persistence and citation display toggle by default", () => {
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    expect(initChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        persistHistory: true,
+        historyStorageType: "session",
+        maxHistoryMessages: 50,
+        showCitations: true,
+      })
+    );
+  });
+
+  it("allows overriding maxHistoryMessages prop to store more conversation history", () => {
+    render(
+      <AcademyChatbot
+        wsUrl="wss://test-rag.org/ws/chat"
+        kbId="753"
+        maxHistoryMessages={100}
+      />
+    );
+
+    expect(initChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        maxHistoryMessages: 100,
+      })
+    );
+  });
+
+  it("passes resolved userId when user is logged in to ensure multi-user isolation", () => {
+    act(() => {
+      UserState.update((s) => {
+        s.id = 42;
+        s.email = "test@idh.org";
+      });
+    });
+
+    render(<AcademyChatbot wsUrl="wss://test-rag.org/ws/chat" kbId="753" />);
+
+    expect(initChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "42",
+      })
+    );
+  });
+
+  it("allows overriding showCitations prop to false", () => {
+    render(
+      <AcademyChatbot
+        wsUrl="wss://test-rag.org/ws/chat"
+        kbId="753"
+        showCitations={false}
+      />
+    );
+
+    expect(initChat).toHaveBeenCalledWith(
+      expect.objectContaining({
+        showCitations: false,
+      })
+    );
   });
 });
