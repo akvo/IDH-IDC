@@ -5,14 +5,14 @@ import React, {
   useRef,
   useCallback,
 } from "react";
-import { useNavigate } from "react-router-dom";
-import { Form, Button, Skeleton, Result, Alert, message } from "antd";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { Form, Button, Skeleton, Result, Alert } from "antd";
 import UserState, { syncUserState } from "../../store/user";
 import academyService, {
   academyClient,
   isRequestCancelled,
 } from "./services/academy";
-import { getUserInitials, getChapterPath } from "./utils";
+import { getUserInitials } from "./utils";
 import { routePath } from "../../components/route";
 import {
   getProfileAlertStorageKey,
@@ -21,12 +21,42 @@ import {
 import AccountHeroBanner from "./components/AccountHeroBanner";
 import PersonalInfoCard from "./components/PersonalInfoCard";
 import AdditionalInfoCard from "./components/AdditionalInfoCard";
-import "./AcademyAccountPage.scss";
+import SettingsLinkCard from "./components/SettingsLinkCard";
+import { showProfileSavedToast } from "../../components/common/ProfileSavedToast";
+import "./MyProfilePage.scss";
 
-const AcademyAccountPage = () => {
+// Fields a complete profile needs, in page order
+export const MANDATORY_PROFILE_FIELDS = [
+  "first_name",
+  "company_name",
+  "sector",
+  "region_name",
+  "commodities",
+];
+
+// Query flag set by the "Complete now" reminder to open in edit mode
+export const EDIT_PROFILE_PARAM = "edit";
+
+const isBlank = (value) =>
+  Array.isArray(value) ? value.length === 0 : !String(value ?? "").trim();
+
+// Shared "My profile" page (TLSA-014). Rendered inside the Academy shell at
+// /academy/profile and inside the plain account shell at /profile.
+const MyProfilePage = () => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const userState = UserState.useState((s) => s);
+  const isAcademyContext = pathname.startsWith(routePath.academy.landing);
+  const tools = useMemo(
+    () => (Array.isArray(userState?.tools) ? userState.tools : []),
+    [userState?.tools]
+  );
+  // The IDH company only exists for IDC users; it is managed by IDH
+  const idhCompanyName =
+    tools.includes("idc") && userState?.company
+      ? userState?.company_name || ""
+      : "";
 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +64,6 @@ const AcademyAccountPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(null);
-  const [continueChapterId, setContinueChapterId] = useState(null);
 
   const initialRegionNameRef = useRef(null);
 
@@ -94,18 +123,6 @@ const AcademyAccountPage = () => {
         .catch(() => {});
     }
 
-    // Non-blocking overview fetch to determine "Continue learning" target
-    if (typeof academyService?.getOverview === "function") {
-      academyService
-        .getOverview({ signal })
-        .then((overview) => {
-          if (overview?.continue_chapter_id) {
-            setContinueChapterId(overview.continue_chapter_id);
-          }
-        })
-        .catch(() => {});
-    }
-
     fetchProfileData(signal);
 
     return () => {
@@ -157,7 +174,7 @@ const AcademyAccountPage = () => {
       profile?.company_name ||
       userState?.company_name ||
       userState?.user_profile?.company_name ||
-      "Company name"
+      "Fill in your company or organisation"
     );
   }, [
     profile?.company_name,
@@ -251,7 +268,7 @@ const AcademyAccountPage = () => {
       }
 
       setIsEditing(false);
-      message.success("Profile updated successfully");
+      showProfileSavedToast();
     } catch (err) {
       if (err?.errorFields) {
         // Form field validation failure
@@ -285,13 +302,44 @@ const AcademyAccountPage = () => {
     setIsEditing(false);
   };
 
-  const handleContinue = () => {
-    if (continueChapterId) {
-      navigate(getChapterPath(continueChapterId));
-    } else {
-      navigate(routePath.academy.courses);
+  const missingFields = useMemo(
+    () =>
+      profile
+        ? MANDATORY_PROFILE_FIELDS.filter((field) => isBlank(profile[field]))
+        : [],
+    [profile]
+  );
+  // An IDC company stands in for the self-reported one
+  const requiredMissing = idhCompanyName
+    ? missingFields.filter((field) => field !== "company_name")
+    : missingFields;
+
+  const startEditing = useCallback(() => {
+    setIsEditing(true);
+    if (!requiredMissing.length) {
+      return;
     }
-  };
+    // Highlight what is missing once the inputs are enabled
+    setTimeout(() => {
+      form.validateFields(requiredMissing).catch(() => {});
+      form.getFieldInstance(requiredMissing[0])?.focus?.();
+    });
+  }, [form, requiredMissing]);
+
+  // "Complete now" from the profile reminder opens the form ready to edit
+  const openInEditMode = searchParams.has(EDIT_PROFILE_PARAM);
+  useEffect(() => {
+    if (openInEditMode && profile) {
+      startEditing();
+      setSearchParams(
+        (params) => {
+          params.delete(EDIT_PROFILE_PARAM);
+          return params;
+        },
+        { replace: true }
+      );
+    }
+  }, [openInEditMode, profile, startEditing, setSearchParams]);
 
   if (loading) {
     return (
@@ -389,6 +437,15 @@ const AcademyAccountPage = () => {
 
   return (
     <div className="academy-account" data-testid="academy-account-page">
+      {requiredMissing.length > 0 && (
+        <Alert
+          type="warning"
+          showIcon
+          message="Please complete the highlighted details"
+          className="academy-account-incomplete"
+          data-testid="profile-incomplete-alert"
+        />
+      )}
       {saveError && (
         <Alert
           type="error"
@@ -403,6 +460,7 @@ const AcademyAccountPage = () => {
       <Form
         form={form}
         layout="vertical"
+        requiredMark={isEditing}
         onFinish={handleSave}
         className="academy-account-form"
         data-testid="academy-account-form"
@@ -411,11 +469,11 @@ const AcademyAccountPage = () => {
           initials={initials}
           fullName={displayFullName}
           email={userState?.email || ""}
+          tools={tools}
           isEditing={isEditing}
           saving={saving}
-          onEdit={() => setIsEditing(true)}
+          onEdit={startEditing}
           onCancel={handleCancel}
-          onContinue={handleContinue}
         />
         <div className="academy-account-cards">
           <PersonalInfoCard
@@ -426,6 +484,14 @@ const AcademyAccountPage = () => {
             isEditing={isEditing}
             companyPlaceholder={companyPlaceholder}
             currentValues={formValues}
+            role={userState?.role}
+            idhCompanyName={idhCompanyName}
+            companyRequired={!idhCompanyName}
+          />
+          <SettingsLinkCard
+            settingsPath={
+              isAcademyContext ? routePath.academy.settings : routePath.settings
+            }
           />
         </div>
       </Form>
@@ -433,4 +499,4 @@ const AcademyAccountPage = () => {
   );
 };
 
-export default AcademyAccountPage;
+export default MyProfilePage;

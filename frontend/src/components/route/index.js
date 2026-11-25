@@ -17,6 +17,7 @@ const showIDCSubMenu = () => {
 };
 
 export { default as PrivateRoutes } from "./PrivateRoutes";
+export { default as RedirectWithSearch } from "./RedirectWithSearch";
 export {
   routePath,
   routePrefix,

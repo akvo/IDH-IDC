@@ -2,8 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./App.scss";
 import { useCookies } from "react-cookie";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { PrivateRoutes, routePath } from "./components/route";
-import { PageLayout } from "./components/layout";
+import {
+  PrivateRoutes,
+  RedirectWithSearch,
+  routePath,
+} from "./components/route";
+import { AccountShell, PageLayout } from "./components/layout";
 import { Home } from "./pages/home";
 import { Landing } from "./pages/income-driver-calculator";
 import {
@@ -50,10 +54,9 @@ import {
   AcademySettingsPage,
   CourseOverviewPage,
   ModuleLearningPage,
-  AcademyAccountPage,
+  MyProfilePage,
 } from "./pages/academy";
 import { LivingIncomeBenchmarkExplorer } from "./pages/lib-explorer";
-import { Profile } from "./pages/profile";
 import { useSignOut, useMatomoPageView } from "./hooks";
 import { ScrollToHash } from "./components/utils";
 
@@ -194,8 +197,25 @@ const App = () => {
             {/* IDC Dashboard after login */}
             <Route exact path={routePath.idc.dashboard} element={<Welcome />} />
 
-            {/* Profile */}
-            <Route exact path={routePath.profile} element={<Profile />} />
+            {/* My profile and Settings outside the Academy */}
+            <Route
+              exact
+              path={routePath.profile}
+              element={
+                <AccountShell>
+                  <MyProfilePage />
+                </AccountShell>
+              }
+            />
+            <Route
+              exact
+              path={routePath.settings}
+              element={
+                <AccountShell>
+                  <AcademySettingsPage />
+                </AccountShell>
+              }
+            />
 
             {/* Case */}
             {/* Manage new cases step routes */}
@@ -257,8 +277,13 @@ const App = () => {
               />
               <Route
                 exact
+                path={routePath.academy.profile}
+                element={<MyProfilePage />}
+              />
+              <Route
+                exact
                 path={routePath.academy.account}
-                element={<AcademyAccountPage />}
+                element={<RedirectWithSearch to={routePath.academy.profile} />}
               />
               <Route
                 exact

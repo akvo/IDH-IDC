@@ -11,6 +11,7 @@ const withPrefix = (prefix, path) =>
 // Route definitions
 const routePath = {
   profile: "/profile",
+  settings: "/settings",
   idc: {
     landing: withPrefix("idc"),
     login: withPrefix("idc", "/login"),
@@ -30,6 +31,8 @@ const routePath = {
     courses: "/academy/courses",
     modules: "/academy/modules",
     resources: "/academy/resources",
+    profile: "/academy/profile",
+    // Legacy URL, redirects to the profile
     account: "/academy/account",
     settings: "/academy/settings",
     register: "/register",
