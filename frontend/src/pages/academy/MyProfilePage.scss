@@ -149,30 +149,7 @@
     }
 
     .account-hero-banner__tools {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
       margin-top: 4px;
-
-      .tool-tag {
-        margin: 0;
-        padding: 1px 8px;
-        border-radius: 2px;
-        font-size: 12px;
-        line-height: 20px;
-      }
-
-      .tool-tag--academy {
-        border: 1px solid #b7eb8f;
-        background: #f6ffed;
-        color: #52c41a;
-      }
-
-      .tool-tag--idc {
-        border: 1px solid #adc6ff;
-        background: #f0f5ff;
-        color: #2f54eb;
-      }
     }
 
     .account-hero-banner__actions {
