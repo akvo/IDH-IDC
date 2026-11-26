@@ -1,0 +1,132 @@
+@import "../../../variables.scss";
+
+// LI Academy User Statistics (Figma 13036:20503)
+.academy-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 0;
+
+  .academy-stats-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    &__filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+  }
+
+  .academy-stats-card {
+    height: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .academy-stats-kpi {
+    padding: 24px;
+
+    &__label {
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 22px;
+      color: #6b7280;
+    }
+
+    &__value {
+      font-family: "RocGrotesk", sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 32px;
+      color: #000000;
+    }
+  }
+
+  .academy-stats-chart {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #f0f0f0;
+
+    &__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 24px;
+      background: #f5f5f5;
+    }
+
+    &__title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: #000000;
+
+      .anticon {
+        margin-left: 4px;
+        font-size: 14px;
+        color: #000000;
+      }
+    }
+
+    &__controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 16px 0;
+    }
+
+    &__control {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    &__control-label {
+      color: #6b7280;
+    }
+
+    .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      border-color: $primary-color;
+      color: $primary-color;
+    }
+
+    .ant-switch-checked {
+      background: $primary-color;
+    }
+  }
+
+  .academy-stats-companies {
+    &__title {
+      margin: 0;
+      padding: 16px 20px;
+      background: $primary-color;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: #ffffff;
+    }
+
+    .ant-table-thead > tr > th {
+      font-weight: 600;
+    }
+
+    .ant-table-pagination {
+      padding: 0 16px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .academy-stats-toolbar__filters {
+      width: 100%;
+    }
+  }
+}
