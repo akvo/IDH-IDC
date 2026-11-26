@@ -70,8 +70,11 @@ class AcademyTag(Base):
 # 2. ACADEMY RESOURCE
 # ============================================================
 class AcademyResourceType(str, enum.Enum):
+    Benchmark = "Benchmark"
     Guidance = "Guidance"
     Organisation = "Organisation"
+    Platform = "Platform"
+    Research = "Research"
     Template = "Template"
     Tool = "Tool"
 

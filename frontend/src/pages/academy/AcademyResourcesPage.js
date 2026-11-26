@@ -18,7 +18,15 @@ const TABS = {
     Table: ResourcesTable,
     noun: "resources",
     searchLabel: "Search resources",
-    typeOptions: toOptions(["Guidance", "Organisation", "Template", "Tool"]),
+    typeOptions: toOptions([
+      "Benchmark",
+      "Guidance",
+      "Organisation",
+      "Platform",
+      "Research",
+      "Template",
+      "Tool",
+    ]),
   },
   glossary: {
     label: "Glossary",
