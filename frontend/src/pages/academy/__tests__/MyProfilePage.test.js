@@ -757,6 +757,9 @@ describe("MyProfilePage Integration", () => {
         first_name: "Janet",
         last_name: "Smith",
         company_name: "New Enterprise",
+        sector: "Agriculture",
+        region_name: "West Africa",
+        commodities: ["Cocoa"],
       },
     });
 

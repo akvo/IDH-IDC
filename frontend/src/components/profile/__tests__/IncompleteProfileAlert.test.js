@@ -85,7 +85,14 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       ).toBe(true);
     });
 
-    it("returns false when IDC user has company id or company_name", () => {
+    const completeProfile = {
+      company_name: "Coffee Innovators",
+      sector: "Agriculture",
+      region_name: "West Africa",
+      commodities: ["Cocoa"],
+    };
+
+    it("returns false when IDC user has company id or company_name and complete profile", () => {
       expect(
         isUserProfileIncomplete({
           id: 2,
@@ -93,6 +100,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc"],
           company: 15,
           company_name: null,
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -103,6 +111,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc"],
           company: null,
           company_name: "IDH Partner Org",
+          user_profile: completeProfile,
         })
       ).toBe(false);
     });
@@ -126,12 +135,12 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["academy"],
           company: null,
           company_name: "",
-          user_profile: { company_name: "   " },
+          user_profile: { ...completeProfile, company_name: "   " },
         })
       ).toBe(true);
     });
 
-    it("returns false when Academy-only user has company_name in user_profile or root", () => {
+    it("returns false when Academy-only user has company_name and all mandatory profile fields", () => {
       expect(
         isUserProfileIncomplete({
           id: 3,
@@ -139,7 +148,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["academy"],
           company: null,
           company_name: null,
-          user_profile: { company_name: "Coffee Innovators" },
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -150,12 +159,83 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["academy"],
           company: null,
           company_name: "Tea Cooperatives Ltd",
-          user_profile: null,
+          user_profile: {
+            ...completeProfile,
+            company_name: "Tea Cooperatives Ltd",
+          },
         })
       ).toBe(false);
     });
 
-    it("evaluates dual-tool users requiring both fullname and company details", () => {
+    it("returns true when profile is missing sector, region, or commodities", () => {
+      // Missing sector
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, sector: null },
+        })
+      ).toBe(true);
+
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, sector: "   " },
+        })
+      ).toBe(true);
+
+      // Missing region
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: {
+            ...completeProfile,
+            region_name: null,
+            region_id: null,
+          },
+        })
+      ).toBe(true);
+
+      // Region present via region_id
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: {
+            ...completeProfile,
+            region_name: null,
+            region_id: 15,
+          },
+        })
+      ).toBe(false);
+
+      // Missing commodities
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, commodities: [] },
+        })
+      ).toBe(true);
+
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, commodities: null },
+        })
+      ).toBe(true);
+    });
+
+    it("evaluates dual-tool users requiring both fullname, company, and complete profile details", () => {
       expect(
         isUserProfileIncomplete({
           id: 4,
@@ -173,6 +253,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc", "academy"],
           company: 20,
           company_name: "Global Agro",
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -183,7 +264,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc", "academy"],
           company: null,
           company_name: null,
-          user_profile: { company_name: "Akvo" },
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -195,7 +276,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           internal_user: true,
           company: null,
           company_name: null,
-          user_profile: null,
+          user_profile: completeProfile,
           organisation_detail: { id: 1, name: "Akvo" },
         })
       ).toBe(false);
@@ -223,7 +304,12 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       tools: ["academy"],
       company: null,
       company_name: "Full Organization",
-      user_profile: { company_name: "Full Organization" },
+      user_profile: {
+        company_name: "Full Organization",
+        sector: "Agriculture",
+        region_name: "West Africa",
+        commodities: ["Cocoa"],
+      },
       active: true,
     };
 

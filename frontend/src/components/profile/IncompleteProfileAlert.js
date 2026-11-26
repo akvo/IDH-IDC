@@ -25,12 +25,43 @@ export const isUserProfileIncomplete = (userState) => {
       ? String(userState.organisation_detail.name).trim()
       : "";
 
-  return Boolean(
-    !userState.company &&
-      !companyName &&
-      !profileCompanyName &&
-      !internalOrgName
+  const hasCompany = Boolean(
+    userState.company || companyName || profileCompanyName || internalOrgName
   );
+  if (!hasCompany) {
+    return true;
+  }
+
+  const profile = userState.user_profile;
+  if (!profile) {
+    return true;
+  }
+
+  if (typeof profile.first_name === "string" && !profile.first_name.trim()) {
+    return true;
+  }
+
+  const sector = profile.sector ? String(profile.sector).trim() : "";
+  if (!sector) {
+    return true;
+  }
+
+  const region =
+    profile.region_name || profile.region_id
+      ? String(profile.region_name || profile.region_id).trim()
+      : "";
+  if (!region) {
+    return true;
+  }
+
+  const commodities = Array.isArray(profile.commodities)
+    ? profile.commodities
+    : [];
+  if (!commodities.length) {
+    return true;
+  }
+
+  return false;
 };
 
 // "Don't show again": hides the reminder for good
@@ -105,6 +136,7 @@ const IncompleteProfileAlert = ({ user = null, className = "" }) => {
       closable={false}
       footer={null}
       width={624}
+      style={{ maxWidth: "calc(100vw - 32px)" }}
       onCancel={dismiss}
       // Blur the page behind the reminder (design)
       maskStyle={{
