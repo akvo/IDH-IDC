@@ -30,6 +30,7 @@ import {
   TagForm,
   Company,
   CompanyForm,
+  AcademyUserStats,
 } from "./pages/admin";
 import { UserState, UIState, PLState, syncUserState } from "./store";
 import { api } from "./lib";
@@ -342,6 +343,11 @@ const App = () => {
                 exact
                 path="/admin/company/:companyId"
                 element={<CompanyForm />}
+              />
+              <Route
+                exact
+                path={routePath.admin.academyUserStatistics}
+                element={<AcademyUserStats />}
               />
             </Route>
           ) : (

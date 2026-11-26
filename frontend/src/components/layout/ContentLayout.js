@@ -9,7 +9,7 @@ import {
 import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
 import { useNavigate, Link } from "react-router-dom";
-import { showIDCSubMenu } from "../route";
+import { routePath, showIDCSubMenu } from "../route";
 import { IDCSubMenu } from "../../pages/cases/components";
 
 const tabItems = [
@@ -27,6 +27,11 @@ const tabItems = [
     key: "/admin/tags",
     label: "Manage Tags",
     value: "tag",
+  },
+  {
+    key: routePath.admin.academyUserStatistics,
+    label: "LI Academy User Statistics",
+    value: "academy-user-statistics",
   },
 ];
 
@@ -57,8 +62,9 @@ const ContentLayout = ({
     navigate(key);
   };
 
+  // Exact match: "user" is also part of "/admin/academy-user-statistics"
   const activeTabMenu = useMemo(() => {
-    return tabItems.find((x) => currentPath.includes(x.value));
+    return tabItems.find((x) => x.key === currentPath);
   }, [currentPath]);
 
   if (!renderCard) {
@@ -160,7 +166,7 @@ const ContentLayout = ({
           showTabItemsForPath.includes(window.location.pathname) ? (
             <Tabs
               data-testid="admin-tabs-menu"
-              activeKey={activeTabMenu.key}
+              activeKey={activeTabMenu?.key}
               items={tabItems}
               tabBarGutter={48}
               onChange={handleOnClickTab}
