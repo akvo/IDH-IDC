@@ -107,7 +107,9 @@ class TestAcademySeederExecution:
         assert AcademyResourceType.Guidance in resource_types
         assert AcademyResourceType.Tool in resource_types
         assert AcademyResourceType.Organisation in resource_types
-        assert AcademyResourceType.Template in resource_types
+        assert AcademyResourceType.Benchmark in resource_types
+        assert AcademyResourceType.Research in resource_types
+        assert AcademyResourceType.Platform in resource_types
         # Verify author is populated on all master resources
         assert all(r.author is not None and len(r.author.strip()) > 0 for r in resources)
 

@@ -252,6 +252,30 @@ class TestAcademyResourcesApi:
         assert payload_tool["total"] >= 1
         assert all(item["type"] == "Tool" for item in payload_tool["data"])
 
+        res_benchmark = await client.get(
+            url, headers=headers, params={"resource_type": "Benchmark"}
+        )
+        assert res_benchmark.status_code == 200
+        payload_benchmark = res_benchmark.json()
+        assert payload_benchmark["total"] == 3
+        assert all(item["type"] == "Benchmark" for item in payload_benchmark["data"])
+
+        res_research = await client.get(
+            url, headers=headers, params={"resource_type": "Research"}
+        )
+        assert res_research.status_code == 200
+        payload_research = res_research.json()
+        assert payload_research["total"] == 2
+        assert all(item["type"] == "Research" for item in payload_research["data"])
+
+        res_platform = await client.get(
+            url, headers=headers, params={"resource_type": "Platform"}
+        )
+        assert res_platform.status_code == 200
+        payload_platform = res_platform.json()
+        assert payload_platform["total"] == 1
+        assert all(item["type"] == "Platform" for item in payload_platform["data"])
+
     @pytest.mark.asyncio
     async def test_get_resources_combined_search_and_type(
         self, app: FastAPI, client: AsyncClient, session: Session
