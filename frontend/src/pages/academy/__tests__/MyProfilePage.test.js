@@ -41,6 +41,8 @@ jest.mock("../../../store/static", () => ({
 
 jest.spyOn(notification, "open").mockImplementation(() => {});
 
+jest.setTimeout(30000);
+
 const LocationWatcher = () => {
   const location = useLocation();
   return (

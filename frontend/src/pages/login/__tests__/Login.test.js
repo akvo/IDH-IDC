@@ -590,6 +590,17 @@ describe("Login Component (Better Income Toolkit)", () => {
       ).toBeInTheDocument();
     });
 
+    it("renders the account ready banner after an invitation is completed", () => {
+      renderComponent([{ pathname: "/login", state: { accountReady: true } }]);
+
+      expect(
+        screen.getByTestId("toast-password-changed-message")
+      ).toHaveTextContent("Your account is ready.");
+      expect(screen.getByTestId("toast-success-hint")).toHaveTextContent(
+        "Please log in."
+      );
+    });
+
     it("redirects authenticated user to dashboard immediately with replace: true", () => {
       UserState.update((s) => {
         s.isAuthenticated = true;

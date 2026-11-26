@@ -42,6 +42,15 @@ const mockCompanyOptions = [
   { value: 99, label: "Sustainable Coffee Ltd" },
 ];
 
+const noAccountCheck = {
+  exists: false,
+  is_academy_user: false,
+  has_idc_access: false,
+  user_id: null,
+  fullname: null,
+  academy_company: null,
+};
+
 const academyOnlyUser = {
   id: 101,
   fullname: "Alice Academy",
@@ -79,6 +88,8 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Default for the Add user email check: no existing account
+    api.get.mockResolvedValue({ data: noAccountCheck });
     act(() => {
       message.destroy();
       UserState.update((s) => {
@@ -1026,6 +1037,197 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
         expect.stringContaining("grant-idc"),
         expect.anything()
       );
+    });
+  });
+
+  describe("TLSA-015 Existing Academy user detection on Add user", () => {
+    const academyCheck = {
+      exists: true,
+      is_academy_user: true,
+      has_idc_access: false,
+      user_id: 142,
+      fullname: "Jane Doe",
+      academy_company: "Coop Western Union",
+    };
+
+    const mockEmailCheck = (byEmail) =>
+      api.get.mockImplementation((url) => {
+        const email = decodeURIComponent(url.split("email=")[1] || "");
+        return Promise.resolve({ data: byEmail[email] || noAccountCheck });
+      });
+
+    const typeEmail = (value) =>
+      act(() => {
+        fireEvent.change(screen.getByLabelText("Email"), {
+          target: { value },
+        });
+      });
+
+    const selectOption = async (fieldId, optionText) => {
+      const select = await waitFor(() => {
+        const el = document
+          .querySelector(`#${fieldId}`)
+          ?.closest(".ant-select");
+        expect(el).toBeInTheDocument();
+        return el;
+      });
+      fireEvent.mouseDown(select.querySelector(".ant-select-selector"));
+      const option = await waitFor(() =>
+        screen.getByText(optionText, {
+          selector: ".ant-select-item-option-content",
+        })
+      );
+      act(() => {
+        fireEvent.click(option);
+      });
+    };
+
+    it("keeps the invitation flow for an email without an account", async () => {
+      mockEmailCheck({});
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+      expect(
+        screen.getByRole("button", { name: "Send invitation" })
+      ).toBeInTheDocument();
+
+      typeEmail("new.person@example.com");
+      await waitFor(() =>
+        expect(api.get).toHaveBeenCalledWith(
+          "user/check-academy-email?email=new.person%40example.com"
+        )
+      );
+      expect(screen.queryByTestId("academy-user-alert")).toBeNull();
+      expect(
+        screen.getByRole("button", { name: "Send invitation" })
+      ).toBeInTheDocument();
+    });
+
+    it("does not check incomplete email addresses", async () => {
+      mockEmailCheck({});
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      typeEmail("jane@coop");
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      expect(api.get).not.toHaveBeenCalledWith(
+        expect.stringContaining("check-academy-email")
+      );
+    });
+
+    it("flags an Academy user, shows their organisation and switches the button", async () => {
+      mockEmailCheck({ "jane@coop.org": academyCheck });
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      typeEmail("jane@coop.org");
+      expect(await screen.findByTestId("academy-user-alert")).toHaveTextContent(
+        "This person already has an Academy account. Giving IDC access adds the calculator to their account; they keep their current login."
+      );
+      expect(screen.getByTestId("self-reported-org")).toHaveTextContent(
+        "Self-reported organisation: Coop Western Union"
+      );
+      expect(
+        screen.getByRole("button", { name: "Give IDC access" })
+      ).toBeInTheDocument();
+      // Their Academy name fills the empty Fullname field
+      expect(screen.getByLabelText("Fullname")).toHaveValue("Jane Doe");
+    });
+
+    it("drops the match as soon as the email changes", async () => {
+      mockEmailCheck({ "jane@coop.org": academyCheck });
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      typeEmail("jane@coop.org");
+      await screen.findByTestId("academy-user-alert");
+
+      typeEmail("someone.else@coop.org");
+      expect(screen.queryByTestId("academy-user-alert")).toBeNull();
+      expect(
+        screen.getByRole("button", { name: "Send invitation" })
+      ).toBeInTheDocument();
+    });
+
+    it("ignores users who already have IDC access", async () => {
+      mockEmailCheck({
+        "bob@idc.org": { ...academyCheck, has_idc_access: true },
+      });
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      typeEmail("bob@idc.org");
+      await waitFor(() =>
+        expect(api.get).toHaveBeenCalledWith(
+          "user/check-academy-email?email=bob%40idc.org"
+        )
+      );
+      expect(screen.queryByTestId("academy-user-alert")).toBeNull();
+    });
+
+    it("grants IDC access to the Academy user instead of inviting them", async () => {
+      mockEmailCheck({ "jane@coop.org": academyCheck });
+      api.post.mockResolvedValueOnce({ data: { id: 142 } });
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      typeEmail("jane@coop.org");
+      await screen.findByTestId("academy-user-alert");
+      await selectOption("user-form_role", "User");
+      await selectOption("user-form_user_type", "External Regular");
+      await selectOption("user-form_company", "Global Agro");
+
+      act(() => {
+        fireEvent.click(
+          screen.getByRole("button", { name: "Give IDC access" })
+        );
+      });
+
+      await waitFor(() =>
+        expect(api.post).toHaveBeenCalledWith(
+          "user/grant-idc-access?user_id=142",
+          {
+            company_id: 42,
+            role: "user",
+            user_type: "external_regular",
+            business_units: [],
+          }
+        )
+      );
+      expect(api.post).not.toHaveBeenCalledWith(
+        "/user/register?invitation_id=true",
+        expect.anything()
+      );
+      expect(
+        await screen.findByText("IDC access granted successfully")
+      ).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith("/admin/users")
+      );
+    });
+
+    it("shows the API error when granting fails", async () => {
+      mockEmailCheck({ "jane@coop.org": academyCheck });
+      api.post.mockRejectedValueOnce({
+        response: { status: 404, data: { detail: "Company 42 not found" } },
+      });
+      renderComponent("/admin/user/new");
+      await waitForFormReady();
+
+      typeEmail("jane@coop.org");
+      await screen.findByTestId("academy-user-alert");
+      await selectOption("user-form_role", "User");
+      await selectOption("user-form_user_type", "External Regular");
+      await selectOption("user-form_company", "Global Agro");
+      act(() => {
+        fireEvent.click(
+          screen.getByRole("button", { name: "Give IDC access" })
+        );
+      });
+
+      expect(
+        await screen.findByText("Company 42 not found")
+      ).toBeInTheDocument();
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 });
