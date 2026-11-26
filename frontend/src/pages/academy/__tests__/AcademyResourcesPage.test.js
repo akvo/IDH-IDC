@@ -363,7 +363,16 @@ describe("AcademyResourcesPage", () => {
         within(menu)
           .getAllByRole("menuitem")
           .map((item) => item.textContent)
-      ).toEqual(["All types", "Guidance", "Organisation", "Template", "Tool"]);
+      ).toEqual([
+        "All types",
+        "Benchmark",
+        "Guidance",
+        "Organisation",
+        "Platform",
+        "Research",
+        "Template",
+        "Tool",
+      ]);
       fireEvent.click(within(menu).getByText("Template"));
 
       expect(location()).toHaveTextContent(/\?type=Template$/);
