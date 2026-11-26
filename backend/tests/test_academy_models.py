@@ -172,8 +172,11 @@ class TestAcademyResourceModel:
         assert isinstance(type_col.type, Enum)
         assert type_col.type.name == "academy_resource_type"
         assert set(type_col.type.enums) == {
+            "Benchmark",
             "Guidance",
             "Organisation",
+            "Platform",
+            "Research",
             "Template",
             "Tool",
         }
