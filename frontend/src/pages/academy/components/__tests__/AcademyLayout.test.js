@@ -58,7 +58,7 @@ describe("AcademyLayout", () => {
       "My overview",
       "Course Overview",
       "Resources & Glossary",
-      "Account",
+      "My profile",
       "Settings",
     ].forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
@@ -78,7 +78,7 @@ describe("AcademyLayout", () => {
     [routePath.academy.courses, "Course Overview"],
     [`${routePath.academy.courses}/chapter/5`, "Course Overview"],
     [routePath.academy.resources, "Resources & Glossary"],
-    [routePath.academy.account, "Account"],
+    [routePath.academy.profile, "My profile"],
     [routePath.academy.settings, "Settings"],
   ])("highlights only the active item for %s", (path, label) => {
     renderLayout(path);

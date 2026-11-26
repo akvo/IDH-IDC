@@ -1,0 +1,28 @@
+@import "../../variables.scss";
+@import "../../pages/academy/styles/tokens";
+
+.account-shell {
+  min-height: calc(100vh - #{$academy-header-height});
+  padding: $academy-section-gap 32px 48px;
+  background: $academy-sidebar-bg;
+  font-family: $academy-font-family;
+
+  .account-shell-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: $default-space-size 32px;
+    border: 1px solid $academy-stroke;
+    border-radius: $academy-panel-radius;
+    background: $bg-color-white;
+    overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    padding: 0;
+
+    .account-shell-content {
+      padding: 20px 24px;
+      border-radius: 0;
+    }
+  }
+}

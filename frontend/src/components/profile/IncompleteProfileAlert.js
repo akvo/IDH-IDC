@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Alert } from "antd";
-import { Link } from "react-router-dom";
+import { Button, Checkbox, Modal } from "antd";
+import { WarningOutlined } from "@ant-design/icons";
+import { useLocation, useNavigate } from "react-router-dom";
 import { UserState } from "../../store";
 import { routePath } from "../route";
 import "./IncompleteProfileAlert.scss";
@@ -24,103 +25,171 @@ export const isUserProfileIncomplete = (userState) => {
       ? String(userState.organisation_detail.name).trim()
       : "";
 
-  return Boolean(
-    !userState.company &&
-      !companyName &&
-      !profileCompanyName &&
-      !internalOrgName
+  const hasCompany = Boolean(
+    userState.company || companyName || profileCompanyName || internalOrgName
   );
+  if (!hasCompany) {
+    return true;
+  }
+
+  const profile = userState.user_profile;
+  if (!profile) {
+    return true;
+  }
+
+  if (typeof profile.first_name === "string" && !profile.first_name.trim()) {
+    return true;
+  }
+
+  const sector = profile.sector ? String(profile.sector).trim() : "";
+  if (!sector) {
+    return true;
+  }
+
+  const region =
+    profile.region_name || profile.region_id
+      ? String(profile.region_name || profile.region_id).trim()
+      : "";
+  if (!region) {
+    return true;
+  }
+
+  const commodities = Array.isArray(profile.commodities)
+    ? profile.commodities
+    : [];
+  if (!commodities.length) {
+    return true;
+  }
+
+  return false;
 };
 
+// "Don't show again": hides the reminder for good
 export const getProfileAlertStorageKey = (userId) =>
   `idc_profile_alert_dismissed_${userId}`;
 
-const IncompleteProfileAlert = ({
-  user = null,
-  showActionLink = true,
-  className = "",
-  style = {},
-}) => {
+// Skip: hides the reminder until the next login
+export const getProfileAlertSessionKey = (userId) =>
+  `idc_profile_alert_skipped_${userId}`;
+
+const readFlag = (storage, key) => {
+  try {
+    return window[storage]?.getItem(key) === "true";
+  } catch (e) {
+    return false;
+  }
+};
+
+const writeFlag = (storage, key) => {
+  try {
+    window[storage]?.setItem(key, "true");
+  } catch (e) {
+    // ignore storage errors
+  }
+};
+
+const isDismissedFor = (userId) =>
+  Boolean(userId) &&
+  (readFlag("localStorage", getProfileAlertStorageKey(userId)) ||
+    readFlag("sessionStorage", getProfileAlertSessionKey(userId)));
+
+// Post-login reminder for users with missing profile details, shown as a
+// popup in both tools ("missing details" design)
+const IncompleteProfileAlert = ({ user = null, className = "" }) => {
   const storeUser = UserState.useState((s) => s);
   const userState = user || storeUser;
   const userId = userState?.id;
-  const [dismissed, setDismissed] = useState(() => {
-    if (!userId) {
-      return false;
-    }
-    try {
-      return (
-        window.localStorage?.getItem(getProfileAlertStorageKey(userId)) ===
-        "true"
-      );
-    } catch (e) {
-      return false;
-    }
-  });
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // Stay in the Academy shell when reminded from inside the Academy
+  const profilePath = pathname.startsWith(routePath.academy.landing)
+    ? routePath.academy.profile
+    : routePath.profile;
+  const [dismissed, setDismissed] = useState(() => isDismissedFor(userId));
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
-    if (!userId) {
-      setDismissed(false);
-      return;
-    }
-    try {
-      const isDismissed =
-        window.localStorage?.getItem(getProfileAlertStorageKey(userId)) ===
-        "true";
-      setDismissed(isDismissed);
-    } catch (e) {
-      setDismissed(false);
-    }
+    setDismissed(isDismissedFor(userId));
   }, [userId]);
 
-  const handleClose = () => {
+  const dismiss = () => {
     if (userId) {
-      try {
-        window.localStorage?.setItem(getProfileAlertStorageKey(userId), "true");
-      } catch (e) {
-        // ignore localStorage errors
+      writeFlag("sessionStorage", getProfileAlertSessionKey(userId));
+      if (dontShowAgain) {
+        writeFlag("localStorage", getProfileAlertStorageKey(userId));
       }
     }
     setDismissed(true);
   };
 
-  const isIncomplete = isUserProfileIncomplete(userState);
+  const handleCompleteNow = () => {
+    dismiss();
+    navigate(`${profilePath}?edit=1`);
+  };
 
-  if (!isIncomplete || dismissed) {
-    return null;
-  }
+  const open = isUserProfileIncomplete(userState) && !dismissed;
 
   return (
-    <Alert
-      data-testid="incomplete-profile-alert"
-      type="info"
-      showIcon
-      closable
-      message={
-        <div className="incomplete-profile-alert__content">
-          <span className="incomplete-profile-alert__title">
-            Complete your profile
-          </span>
-          <span className="incomplete-profile-alert__subtitle">
-            Add your name and organization details.
-          </span>
+    <Modal
+      open={open}
+      centered
+      closable={false}
+      footer={null}
+      width={624}
+      style={{ maxWidth: "calc(100vw - 32px)" }}
+      onCancel={dismiss}
+      // Blur the page behind the reminder (design)
+      maskStyle={{
+        background: "rgba(0, 0, 0, 0.45)",
+        backdropFilter: "blur(6px)",
+      }}
+      wrapClassName={`incomplete-profile-modal ${className}`.trim()}
+    >
+      <div
+        className="incomplete-profile-modal__body"
+        data-testid="incomplete-profile-alert"
+      >
+        <div className="incomplete-profile-modal__icon" aria-hidden="true">
+          <WarningOutlined />
         </div>
-      }
-      action={
-        showActionLink ? (
-          <Link
-            to={routePath.profile}
-            data-testid="link-complete-profile"
-            className="incomplete-profile-alert__action"
-          >
-            Complete Profile &rarr;
-          </Link>
-        ) : null
-      }
-      onClose={handleClose}
-      className={`incomplete-profile-alert ${className}`.trim()}
-      style={style}
-    />
+        <div className="incomplete-profile-modal__content">
+          <h2 className="incomplete-profile-modal__title">
+            A few details are missing
+          </h2>
+          <p className="incomplete-profile-modal__text">
+            Please complete your profile. A few details are missing.
+          </p>
+          <div className="incomplete-profile-modal__footer">
+            <Checkbox
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              data-testid="checkbox-dont-show-again"
+            >
+              Don’t show again
+            </Checkbox>
+            <div className="incomplete-profile-modal__actions">
+              <Button
+                shape="round"
+                size="large"
+                onClick={dismiss}
+                data-testid="btn-skip-profile-alert"
+              >
+                Skip
+              </Button>
+              <Button
+                type="primary"
+                shape="round"
+                size="large"
+                onClick={handleCompleteNow}
+                data-testid="link-complete-profile"
+              >
+                Complete now
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
   );
 };
 

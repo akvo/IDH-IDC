@@ -10,6 +10,11 @@ const useSignOut = () => {
   const signOut = useCallback(() => {
     api.post("user/logout").catch(() => {});
     removeCookie("AUTH_TOKEN", { path: "/" });
+    try {
+      window.sessionStorage?.clear();
+    } catch (e) {
+      // ignore
+    }
 
     // Drop the in-memory bearer token too, or clients that read api.token
     // keep sending the previous user's token until a full reload

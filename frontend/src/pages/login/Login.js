@@ -207,6 +207,14 @@ const Login = () => {
         api.setToken(token);
 
         if (user) {
+          try {
+            window.sessionStorage?.removeItem(
+              `idc_profile_alert_skipped_${user.id}`
+            );
+          } catch (e) {
+            // ignore
+          }
+
           UserState.update((s) => {
             s.id = user.id;
             s.fullname = user.fullname;

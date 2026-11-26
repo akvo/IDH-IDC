@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import React, { useState } from "react";
+import React from "react";
 import {
   render,
   screen,
@@ -8,16 +8,18 @@ import {
   act,
 } from "@testing-library/react";
 import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
-import { Form, message } from "antd";
+import { Form, notification } from "antd";
 import UserState, { defaultUserState } from "../../../store/user";
 import academyService from "../services/academy";
-import AcademyAccountPage from "../AcademyAccountPage";
-import AccountHeroBanner from "../components/AccountHeroBanner";
+import MyProfilePage from "../MyProfilePage";
+import AccountHeroBanner, { ToolTags } from "../components/AccountHeroBanner";
 import PersonalInfoCard from "../components/PersonalInfoCard";
 import AdditionalInfoCard from "../components/AdditionalInfoCard";
 import CommodityTagSelector from "../components/CommodityTagSelector";
+import SettingsLinkCard from "../components/SettingsLinkCard";
 import { getProfileAlertStorageKey } from "../../../components/profile";
 import { routePath } from "../../../components/route";
+import ProfileSavedToast from "../../../components/common/ProfileSavedToast";
 
 jest.mock("../services/academy", () => ({
   __esModule: true,
@@ -26,12 +28,20 @@ jest.mock("../services/academy", () => ({
     getMe: jest.fn(),
     getProfile: jest.fn(),
     updateProfile: jest.fn(),
-    getOverview: jest.fn(),
   },
 }));
 
-jest.spyOn(message, "success").mockImplementation(() => {});
-jest.spyOn(message, "error").mockImplementation(() => {});
+jest.mock("../../../store/static", () => ({
+  ...jest.requireActual("../../../store/static"),
+  commodityNameOptions: ["Cocoa", "Coffee", "Rice", "Vanilla"].map((name) => ({
+    label: name,
+    value: name,
+  })),
+}));
+
+jest.spyOn(notification, "open").mockImplementation(() => {});
+
+jest.setTimeout(30000);
 
 const LocationWatcher = () => {
   const location = useLocation();
@@ -43,19 +53,29 @@ const LocationWatcher = () => {
   );
 };
 
-const renderAccountPage = (initialEntries = ["/academy/account"]) => {
+const renderAccountPage = (initialEntries = [routePath.academy.profile]) => {
   return render(
     <MemoryRouter initialEntries={initialEntries}>
       <LocationWatcher />
       <Routes>
-        <Route path="/academy/account" element={<AcademyAccountPage />} />
+        <Route path={routePath.academy.profile} element={<MyProfilePage />} />
+        <Route path={routePath.profile} element={<MyProfilePage />} />
         <Route
-          path={routePath.academy.courses}
-          element={<div data-testid="academy-courses-page">Courses</div>}
+          path={routePath.academy.settings}
+          element={<div data-testid="academy-settings-page">Settings</div>}
+        />
+        <Route
+          path={routePath.settings}
+          element={<div data-testid="idc-settings-page">Settings</div>}
         />
       </Routes>
     </MemoryRouter>
   );
+};
+
+const openSelect = (testId) => {
+  const select = screen.getByTestId(testId);
+  fireEvent.mouseDown(select.querySelector(".ant-select-selector") || select);
 };
 
 describe("AccountHeroBanner", () => {
@@ -98,9 +118,8 @@ describe("AccountHeroBanner", () => {
     expect(onEdit).toHaveBeenCalledTimes(1);
   });
 
-  it("renders Cancel and Save changes buttons when editing and fires onCancel and onSave", () => {
+  it("renders Cancel and Save buttons when editing and fires onCancel", () => {
     const onCancel = jest.fn();
-    const onSave = jest.fn();
     render(
       <AccountHeroBanner
         initials="JD"
@@ -108,21 +127,17 @@ describe("AccountHeroBanner", () => {
         email="jane.doe@example.com"
         isEditing={true}
         onCancel={onCancel}
-        onSave={onSave}
       />
     );
 
     const cancelBtn = screen.getByTestId("btn-cancel-profile");
     const saveBtn = screen.getByTestId("btn-save-profile");
-    expect(cancelBtn).toBeInTheDocument();
-    expect(saveBtn).toBeInTheDocument();
+    expect(saveBtn).toHaveTextContent("Save");
+    expect(saveBtn).toHaveAttribute("type", "submit");
     expect(screen.queryByTestId("btn-edit-profile")).not.toBeInTheDocument();
 
     fireEvent.click(cancelBtn);
     expect(onCancel).toHaveBeenCalledTimes(1);
-
-    fireEvent.click(saveBtn);
-    expect(onSave).toHaveBeenCalledTimes(1);
   });
 
   it("disables Cancel and displays loading state on Save when saving is true", () => {
@@ -142,20 +157,30 @@ describe("AccountHeroBanner", () => {
     );
   });
 
-  it("fires onContinue when Continue learning button is clicked", () => {
-    const onContinue = jest.fn();
-    render(
-      <AccountHeroBanner
-        initials="JD"
-        fullName="Jane Doe"
-        email="jane.doe@example.com"
-        onContinue={onContinue}
-      />
-    );
+  it("has no Continue learning button", () => {
+    render(<AccountHeroBanner initials="JD" fullName="Jane Doe" email="" />);
+    expect(screen.queryByText("Continue learning")).not.toBeInTheDocument();
+  });
+});
 
-    const continueBtn = screen.getByTestId("btn-continue-learning");
-    fireEvent.click(continueBtn);
-    expect(onContinue).toHaveBeenCalledTimes(1);
+describe("ToolTags", () => {
+  it.each([
+    [["academy"], ["LI Academy"]],
+    [["idc"], ["IDC"]],
+    [
+      ["idc", "academy"],
+      ["LI Academy", "IDC"],
+    ],
+  ])("shows the badges for tools %j", (tools, labels) => {
+    render(<ToolTags tools={tools} />);
+    expect(
+      screen.getAllByTestId(/^tool-tag-/).map((tag) => tag.textContent)
+    ).toEqual(labels);
+  });
+
+  it("renders nothing without tools", () => {
+    const { container } = render(<ToolTags tools={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
 
@@ -171,10 +196,17 @@ describe("PersonalInfoCard", () => {
 
   it("renders card title and subtitle", () => {
     render(<FormWrapper isEditing={false} />);
-    expect(screen.getByText("Personal info")).toBeInTheDocument();
-    expect(
-      screen.getByText("Update your photo and personal details.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Personal information")).toBeInTheDocument();
+    expect(screen.getByText("Update personal details.")).toBeInTheDocument();
+    expect(screen.getByTestId("input-first-name")).toHaveAttribute(
+      "placeholder",
+      "Fill in your First name"
+    );
+    expect(screen.getByTestId("input-last-name")).toHaveAttribute(
+      "placeholder",
+      "Fill in your Last name"
+    );
+    expect(document.querySelector('input[type="file"]')).toBeNull();
   });
 
   it("disables first_name, last_name, and email when isEditing is false", () => {
@@ -225,6 +257,7 @@ describe("AdditionalInfoCard", () => {
     isEditing = false,
     companyPlaceholder = "Acme Corp",
     currentValues = {},
+    ...props
   }) => {
     const [form] = Form.useForm();
     return (
@@ -233,6 +266,7 @@ describe("AdditionalInfoCard", () => {
           isEditing={isEditing}
           companyPlaceholder={companyPlaceholder}
           currentValues={currentValues}
+          {...props}
         />
       </Form>
     );
@@ -253,7 +287,10 @@ describe("AdditionalInfoCard", () => {
       />
     );
 
-    expect(screen.getByText("Additional info")).toBeInTheDocument();
+    expect(screen.getByText("Additional information")).toBeInTheDocument();
+    expect(
+      screen.getByText("Update your personal details.")
+    ).toBeInTheDocument();
     const companyInput = screen.getByTestId("input-company-name");
     expect(companyInput).toBeDisabled();
     expect(companyInput).toHaveAttribute("placeholder", "Custom Placeholder");
@@ -311,13 +348,26 @@ describe("AdditionalInfoCard", () => {
     expect(screen.getByTestId("input-company-name")).toBeDisabled();
     expect(screen.getByTestId("input-company-name")).toHaveAttribute(
       "placeholder",
-      "Company name"
+      "Fill in your company or organisation"
     );
+    expect(screen.queryByTestId("input-idh-company")).not.toBeInTheDocument();
+  });
+
+  it("shows the role read-only, even while editing", () => {
+    render(<FormWrapper isEditing role="super_admin" />);
+    expect(screen.getByTestId("input-role")).toHaveValue("Super Admin");
+    expect(screen.getByTestId("input-role")).toBeDisabled();
+  });
+
+  it("shows the IDH company read-only when one is given", () => {
+    render(<FormWrapper isEditing idhCompanyName="Olam" />);
+    expect(screen.getByTestId("input-idh-company")).toHaveValue("Olam");
+    expect(screen.getByTestId("input-idh-company")).toBeDisabled();
   });
 });
 
 describe("CommodityTagSelector", () => {
-  it("renders tags in view mode and hides close icons", () => {
+  it("renders tags in view mode without close icons", () => {
     const { container } = render(
       <CommodityTagSelector value={["Coffee", "Cocoa"]} disabled={true} />
     );
@@ -329,203 +379,62 @@ describe("CommodityTagSelector", () => {
       "Cocoa"
     );
     expect(container.querySelectorAll(".ant-tag-close-icon")).toHaveLength(0);
-    expect(screen.queryByTestId("btn-add-commodity")).not.toBeInTheDocument();
   });
 
-  it("renders 'No commodities selected' when disabled and list is empty", () => {
-    render(<CommodityTagSelector value={[]} disabled={true} />);
-    expect(screen.getByText("No commodities selected")).toBeInTheDocument();
-    expect(screen.queryByTestId("btn-add-commodity")).not.toBeInTheDocument();
-  });
-
-  it("calls onChange when removing a tag in editable mode", () => {
+  it("removes a commodity with the tag's close icon", () => {
     const onChange = jest.fn();
     render(
-      <CommodityTagSelector
-        value={["Coffee", "Tea"]}
-        onChange={onChange}
-        disabled={false}
-      />
+      <CommodityTagSelector value={["Coffee", "Rice"]} onChange={onChange} />
     );
 
-    const coffeeTag = screen.getByTestId("commodity-tag-Coffee");
-    const closeBtn = coffeeTag.querySelector(".ant-tag-close-icon");
-    expect(closeBtn).toBeInTheDocument();
-
-    fireEvent.click(closeBtn);
-    expect(onChange).toHaveBeenCalledWith(["Tea"]);
+    fireEvent.click(
+      screen
+        .getByTestId("commodity-tag-Coffee")
+        .querySelector(".ant-tag-close-icon")
+    );
+    expect(onChange).toHaveBeenCalledWith(["Rice"], expect.anything());
   });
 
-  it("opens add input when clicking 'Add more' button", () => {
-    render(<CommodityTagSelector value={["Coffee"]} disabled={false} />);
+  it("lists the commodities with a checkbox each, checked when selected", () => {
+    render(<CommodityTagSelector value={["Cocoa"]} onChange={jest.fn()} />);
+    openSelect("commodity-tag-selector");
 
-    const addBtn = screen.getByTestId("btn-add-commodity");
-    expect(addBtn).toBeInTheDocument();
-
-    fireEvent.click(addBtn);
-    expect(screen.getByTestId("input-add-commodity")).toBeInTheDocument();
+    const checkboxes = document.querySelectorAll(
+      ".commodity-tag-selector-dropdown .ant-checkbox-input"
+    );
+    expect(checkboxes).toHaveLength(4);
+    const cocoa = screen.getByText("Cocoa", {
+      selector: ".commodity-tag-selector-dropdown .ant-checkbox + span",
+    });
+    expect(cocoa.parentElement.querySelector("input")).toBeChecked();
   });
 
-  it("adds a commodity when pressing Enter", () => {
+  it("adds a commodity when its option is clicked", () => {
     const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
+    render(<CommodityTagSelector value={["Cocoa"]} onChange={onChange} />);
+    openSelect("commodity-tag-selector");
+
+    fireEvent.click(
+      screen.getByText("Rice", {
+        selector: ".commodity-tag-selector-dropdown .ant-checkbox + span",
+      })
     );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-
-    fireEvent.change(input, { target: { value: "Sugar" } });
-    fireEvent.keyDown(input, { key: "Enter" });
-
-    expect(onChange).toHaveBeenCalledWith(["Coffee", "Sugar"]);
+    expect(onChange).toHaveBeenCalledWith(["Cocoa", "Rice"], expect.anything());
   });
 
-  it("splits multiple comma-separated commodities on Enter or comma", () => {
-    const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-
-    fireEvent.change(input, { target: { value: "Sugar, Vanilla, Tea" } });
-    fireEvent.keyDown(input, { key: "," });
-
-    expect(onChange).toHaveBeenCalledWith([
-      "Coffee",
-      "Sugar",
-      "Vanilla",
-      "Tea",
-    ]);
-  });
-
-  it("deduplicates case-insensitively against existing and input values", () => {
-    const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-
-    fireEvent.change(input, { target: { value: "coffee, COFFEE, Tea" } });
-    fireEvent.keyDown(input, { key: "Enter" });
-
-    expect(onChange).toHaveBeenCalledWith(["Coffee", "Tea"]);
-  });
-
-  it("does not call onChange and closes input when pressing Enter with empty value", () => {
-    const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-    fireEvent.change(input, { target: { value: "   " } });
-    fireEvent.keyDown(input, { key: "Enter" });
-
-    expect(onChange).not.toHaveBeenCalled();
-    expect(screen.queryByTestId("input-add-commodity")).not.toBeInTheDocument();
-  });
-
-  it("cancels input on Escape key without invoking onChange", () => {
-    const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-
-    fireEvent.change(input, { target: { value: "Cocoa" } });
-    fireEvent.keyDown(input, { key: "Escape" });
-
-    expect(onChange).not.toHaveBeenCalled();
-    expect(screen.queryByTestId("input-add-commodity")).not.toBeInTheDocument();
-    expect(screen.getByTestId("btn-add-commodity")).toBeInTheDocument();
-  });
-
-  it("commits on blur if input has non-empty text", () => {
-    const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-    fireEvent.change(input, { target: { value: "Rice" } });
-    fireEvent.blur(input);
-
-    expect(onChange).toHaveBeenCalledWith(["Coffee", "Rice"]);
-  });
-
-  it("resets and closes add input on blur if input is empty or whitespace", () => {
-    const onChange = jest.fn();
-    render(
-      <CommodityTagSelector
-        value={["Coffee"]}
-        onChange={onChange}
-        disabled={false}
-      />
-    );
-
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const emptyInput = screen.getByTestId("input-add-commodity");
-    fireEvent.change(emptyInput, { target: { value: "   " } });
-    fireEvent.blur(emptyInput);
-
-    expect(onChange).not.toHaveBeenCalled();
-    expect(screen.queryByTestId("input-add-commodity")).not.toBeInTheDocument();
-  });
-
-  it("merges custom suggestions with fallback commodities without duplicate keys", () => {
-    const ControlledSelector = () => {
-      const [val, setVal] = useState([]);
-      return (
-        <CommodityTagSelector
-          value={val}
-          onChange={setVal}
-          disabled={false}
-          suggestions={["CustomCrop", "Wheat"]}
-        />
-      );
-    };
-
-    render(<ControlledSelector />);
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const input = screen.getByTestId("input-add-commodity");
-    expect(input).toBeInTheDocument();
+  it("keeps a saved commodity that is not in the list", () => {
+    render(<CommodityTagSelector value={["Saffron"]} onChange={jest.fn()} />);
+    expect(screen.getByTestId("commodity-tag-Saffron")).toBeInTheDocument();
+    openSelect("commodity-tag-selector");
+    expect(
+      screen.getByText("Saffron", {
+        selector: ".commodity-tag-selector-dropdown .ant-checkbox + span",
+      })
+    ).toBeInTheDocument();
   });
 });
 
-describe("AcademyAccountPage Integration", () => {
+describe("MyProfilePage Integration", () => {
   const mockProfile = {
     first_name: "Jane",
     last_name: "Doe",
@@ -550,7 +459,6 @@ describe("AcademyAccountPage Integration", () => {
     });
 
     academyService.getProfile.mockResolvedValue({ ...mockProfile });
-    academyService.getOverview.mockResolvedValue({ continue_chapter_id: 205 });
     academyService.getMe.mockResolvedValue({
       id: 77,
       fullname: "Jane Doe",
@@ -646,46 +554,6 @@ describe("AcademyAccountPage Integration", () => {
       expect(academyService.getMe).toHaveBeenCalled();
       expect(screen.getByTestId("account-hero-email")).toHaveTextContent(
         "hydrated@example.com"
-      );
-    });
-  });
-
-  it("navigates to chapter reader when Continue learning is clicked with continue_chapter_id", async () => {
-    academyService.getOverview.mockResolvedValueOnce({
-      continue_chapter_id: 301,
-    });
-
-    renderAccountPage();
-
-    await waitFor(() => {
-      expect(screen.getByTestId("btn-continue-learning")).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByTestId("btn-continue-learning"));
-
-    await waitFor(() => {
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "/academy/courses?chapter=301"
-      );
-    });
-  });
-
-  it("navigates to /academy/courses when Continue learning is clicked without continue_chapter_id", async () => {
-    academyService.getOverview.mockResolvedValueOnce({
-      continue_chapter_id: null,
-    });
-
-    renderAccountPage();
-
-    await waitFor(() => {
-      expect(screen.getByTestId("btn-continue-learning")).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByTestId("btn-continue-learning"));
-
-    await waitFor(() => {
-      expect(screen.getByTestId("location-display")).toHaveTextContent(
-        "/academy/courses"
       );
     });
   });
@@ -834,9 +702,7 @@ describe("AcademyAccountPage Integration", () => {
     fireEvent.click(screen.getByTestId("btn-save-profile"));
 
     await waitFor(() => {
-      expect(
-        screen.getByText("First name cannot be empty")
-      ).toBeInTheDocument();
+      expect(screen.getByText("First name is required")).toBeInTheDocument();
     });
     expect(academyService.updateProfile).not.toHaveBeenCalled();
   });
@@ -891,6 +757,9 @@ describe("AcademyAccountPage Integration", () => {
         first_name: "Janet",
         last_name: "Smith",
         company_name: "New Enterprise",
+        sector: "Agriculture",
+        region_name: "West Africa",
+        commodities: ["Cocoa"],
       },
     });
 
@@ -919,11 +788,13 @@ describe("AcademyAccountPage Integration", () => {
     const cocoaTag = screen.getByTestId("commodity-tag-Cocoa");
     fireEvent.click(cocoaTag.querySelector(".ant-tag-close-icon"));
 
-    // Add Vanilla commodity tag
-    fireEvent.click(screen.getByTestId("btn-add-commodity"));
-    const commInput = screen.getByTestId("input-add-commodity");
-    fireEvent.change(commInput, { target: { value: "Vanilla" } });
-    fireEvent.keyDown(commInput, { key: "Enter" });
+    // Add Vanilla from the commodity list
+    openSelect("commodity-tag-selector");
+    fireEvent.click(
+      screen.getByText("Vanilla", {
+        selector: ".commodity-tag-selector-dropdown .ant-checkbox + span",
+      })
+    );
 
     // Change region
     const regionSelect = screen.getByTestId("select-region");
@@ -953,8 +824,8 @@ describe("AcademyAccountPage Integration", () => {
         region_id: null,
         commodities: ["Coffee", "Vanilla"],
       });
-      expect(message.success).toHaveBeenCalledWith(
-        "Profile updated successfully"
+      expect(notification.open).toHaveBeenCalledWith(
+        expect.objectContaining({ duration: 4, placement: "top" })
       );
       expect(screen.getByTestId("btn-edit-profile")).toBeInTheDocument();
     });
@@ -1054,5 +925,126 @@ describe("AcademyAccountPage Integration", () => {
     await waitFor(() => {
       expect(screen.getByTestId("account-save-error")).toBeInTheDocument();
     });
+  });
+
+  it("shows the tool badges, role and IDH company for an IDC user", async () => {
+    act(() => {
+      UserState.update((s) => {
+        s.role = "admin";
+        s.tools = ["academy", "idc"];
+        s.company = 5;
+        s.company_name = "Olam";
+      });
+    });
+    renderAccountPage([routePath.profile]);
+
+    await screen.findByTestId("academy-account-form");
+    expect(screen.getByTestId("tool-tag-academy")).toHaveTextContent(
+      "LI Academy"
+    );
+    expect(screen.getByTestId("tool-tag-idc")).toHaveTextContent("IDC");
+    expect(screen.getByTestId("input-role")).toHaveValue("Admin");
+    expect(screen.getByTestId("input-idh-company")).toHaveValue("Olam");
+  });
+
+  it("hides the IDH company for an Academy-only user", async () => {
+    act(() => {
+      UserState.update((s) => {
+        s.tools = ["academy"];
+      });
+    });
+    renderAccountPage();
+
+    await screen.findByTestId("academy-account-form");
+    expect(screen.getByTestId("tool-tag-academy")).toBeInTheDocument();
+    expect(screen.queryByTestId("tool-tag-idc")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("input-idh-company")).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [routePath.academy.profile, "academy-settings-page"],
+    [routePath.profile, "idc-settings-page"],
+  ])(
+    "links To settings from %s to that tool's settings",
+    async (path, page) => {
+      renderAccountPage([path]);
+
+      fireEvent.click(await screen.findByTestId("btn-to-settings"));
+      expect(screen.getByTestId(page)).toBeInTheDocument();
+    }
+  );
+
+  it("asks to complete missing details and highlights them on load", async () => {
+    academyService.getProfile.mockResolvedValueOnce({
+      ...mockProfile,
+      sector: null,
+      commodities: [],
+    });
+    renderAccountPage();
+
+    expect(
+      await screen.findByTestId("profile-incomplete-alert")
+    ).toHaveTextContent("Please complete the highlighted details");
+
+    // Highlighted before "Edit profile" is clicked
+    expect(screen.getByTestId("btn-edit-profile")).toBeInTheDocument();
+    expect(await screen.findByText("Sector is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select at least one commodity")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("First name is required")
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("btn-edit-profile"));
+
+    expect(await screen.findByText("Sector is required")).toBeInTheDocument();
+  });
+
+  it("does not ask for details that are complete", async () => {
+    renderAccountPage();
+
+    await screen.findByTestId("academy-account-form");
+    expect(
+      screen.queryByTestId("profile-incomplete-alert")
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens in edit mode from the Complete now reminder and clears the flag", async () => {
+    renderAccountPage([`${routePath.academy.profile}?edit=1`]);
+
+    expect(await screen.findByTestId("btn-save-profile")).toBeInTheDocument();
+    expect(screen.getByTestId("input-first-name")).not.toBeDisabled();
+    await waitFor(() =>
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        /^\/academy\/profile$/
+      )
+    );
+  });
+});
+
+describe("SettingsLinkCard", () => {
+  it("shows the settings copy", () => {
+    render(
+      <MemoryRouter>
+        <SettingsLinkCard settingsPath="/settings" />
+      </MemoryRouter>
+    );
+    expect(screen.getByText("Settings")).toBeInTheDocument();
+    expect(
+      screen.getByText("Change password or delete account")
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("btn-to-settings")).toHaveTextContent(
+      "To settings"
+    );
+  });
+});
+
+describe("ProfileSavedToast", () => {
+  it("shows the saved confirmation", () => {
+    render(<ProfileSavedToast />);
+    expect(screen.getByTestId("profile-saved-toast")).toHaveTextContent(
+      "Changes saved Your profile is updated!"
+    );
   });
 });

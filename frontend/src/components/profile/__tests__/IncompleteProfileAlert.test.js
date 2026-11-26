@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import IncompleteProfileAlert, {
   isUserProfileIncomplete,
 } from "../IncompleteProfileAlert";
@@ -9,6 +9,7 @@ import { UserState, defaultUserState } from "../../../store";
 describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     act(() => {
       UserState.update(() => ({ ...defaultUserState }));
     });
@@ -84,7 +85,14 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       ).toBe(true);
     });
 
-    it("returns false when IDC user has company id or company_name", () => {
+    const completeProfile = {
+      company_name: "Coffee Innovators",
+      sector: "Agriculture",
+      region_name: "West Africa",
+      commodities: ["Cocoa"],
+    };
+
+    it("returns false when IDC user has company id or company_name and complete profile", () => {
       expect(
         isUserProfileIncomplete({
           id: 2,
@@ -92,6 +100,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc"],
           company: 15,
           company_name: null,
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -102,6 +111,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc"],
           company: null,
           company_name: "IDH Partner Org",
+          user_profile: completeProfile,
         })
       ).toBe(false);
     });
@@ -125,12 +135,12 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["academy"],
           company: null,
           company_name: "",
-          user_profile: { company_name: "   " },
+          user_profile: { ...completeProfile, company_name: "   " },
         })
       ).toBe(true);
     });
 
-    it("returns false when Academy-only user has company_name in user_profile or root", () => {
+    it("returns false when Academy-only user has company_name and all mandatory profile fields", () => {
       expect(
         isUserProfileIncomplete({
           id: 3,
@@ -138,7 +148,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["academy"],
           company: null,
           company_name: null,
-          user_profile: { company_name: "Coffee Innovators" },
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -149,12 +159,83 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["academy"],
           company: null,
           company_name: "Tea Cooperatives Ltd",
-          user_profile: null,
+          user_profile: {
+            ...completeProfile,
+            company_name: "Tea Cooperatives Ltd",
+          },
         })
       ).toBe(false);
     });
 
-    it("evaluates dual-tool users requiring both fullname and company details", () => {
+    it("returns true when profile is missing sector, region, or commodities", () => {
+      // Missing sector
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, sector: null },
+        })
+      ).toBe(true);
+
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, sector: "   " },
+        })
+      ).toBe(true);
+
+      // Missing region
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: {
+            ...completeProfile,
+            region_name: null,
+            region_id: null,
+          },
+        })
+      ).toBe(true);
+
+      // Region present via region_id
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: {
+            ...completeProfile,
+            region_name: null,
+            region_id: 15,
+          },
+        })
+      ).toBe(false);
+
+      // Missing commodities
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, commodities: [] },
+        })
+      ).toBe(true);
+
+      expect(
+        isUserProfileIncomplete({
+          id: 3,
+          fullname: "Learner",
+          company_name: "Company",
+          user_profile: { ...completeProfile, commodities: null },
+        })
+      ).toBe(true);
+    });
+
+    it("evaluates dual-tool users requiring both fullname, company, and complete profile details", () => {
       expect(
         isUserProfileIncomplete({
           id: 4,
@@ -172,6 +253,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc", "academy"],
           company: 20,
           company_name: "Global Agro",
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -182,7 +264,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           tools: ["idc", "academy"],
           company: null,
           company_name: null,
-          user_profile: { company_name: "Akvo" },
+          user_profile: completeProfile,
         })
       ).toBe(false);
 
@@ -194,7 +276,7 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
           internal_user: true,
           company: null,
           company_name: null,
-          user_profile: null,
+          user_profile: completeProfile,
           organisation_detail: { id: 1, name: "Akvo" },
         })
       ).toBe(false);
@@ -222,7 +304,12 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       tools: ["academy"],
       company: null,
       company_name: "Full Organization",
-      user_profile: { company_name: "Full Organization" },
+      user_profile: {
+        company_name: "Full Organization",
+        sector: "Agriculture",
+        region_name: "West Africa",
+        commodities: ["Cocoa"],
+      },
       active: true,
     };
 
@@ -281,74 +368,88 @@ describe("IncompleteProfileAlert & isUserProfileIncomplete", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("renders action link to /profile when showActionLink is true (default)", () => {
+    it("shows the missing details popup", () => {
       renderAlert({}, incompleteUser);
 
-      const link =
-        screen.queryByTestId("link-complete-profile") ||
-        screen.getByRole("link", { name: /profile/i });
-
-      expect(link).toBeInTheDocument();
-      expect(
-        link.getAttribute("href") || link.closest("a")?.getAttribute("href")
-      ).toMatch(/\/profile$/);
+      const popup = screen.getByTestId("incomplete-profile-alert");
+      expect(popup).toHaveTextContent("A few details are missing");
+      expect(popup).toHaveTextContent(
+        "Please complete your profile. A few details are missing."
+      );
+      expect(screen.getByText("Don’t show again")).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Skip" })).toBeInTheDocument();
     });
 
-    it("hides action link when showActionLink is false", () => {
-      renderAlert({ showActionLink: false }, incompleteUser);
+    it.each([
+      ["/income-driver-calculator/welcome", "/profile?edit=1"],
+      ["/academy/overview", "/academy/profile?edit=1"],
+    ])(
+      "Complete now from %s opens %s and hides the popup for the session",
+      (from, to) => {
+        act(() => {
+          UserState.update((s) => {
+            Object.assign(s, incompleteUser);
+          });
+        });
+        const Location = () => {
+          const { pathname, search } = useLocation();
+          return <div data-testid="location">{`${pathname}${search}`}</div>;
+        };
+        render(
+          <MemoryRouter initialEntries={[from]}>
+            <Location />
+            <Routes>
+              <Route path="*" element={<IncompleteProfileAlert />} />
+            </Routes>
+          </MemoryRouter>
+        );
 
-      expect(
-        screen.getByTestId("incomplete-profile-alert")
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByTestId("link-complete-profile")
-      ).not.toBeInTheDocument();
-      expect(screen.queryByRole("link")).not.toBeInTheDocument();
-    });
+        fireEvent.click(screen.getByRole("button", { name: "Complete now" }));
 
-    it("dismisses alert, sets localStorage, and hides on close button click", () => {
+        expect(screen.getByTestId("location")).toHaveTextContent(to);
+        expect(
+          sessionStorage.getItem(
+            `idc_profile_alert_skipped_${incompleteUser.id}`
+          )
+        ).toBe("true");
+      }
+    );
+
+    it("Skip hides it until the next login only", () => {
       renderAlert({}, incompleteUser);
 
+      fireEvent.click(screen.getByRole("button", { name: "Skip" }));
+
       expect(
-        screen.getByTestId("incomplete-profile-alert")
-      ).toBeInTheDocument();
+        sessionStorage.getItem(`idc_profile_alert_skipped_${incompleteUser.id}`)
+      ).toBe("true");
+      expect(
+        localStorage.getItem(`idc_profile_alert_dismissed_${incompleteUser.id}`)
+      ).toBeNull();
+    });
 
-      const closeBtn =
-        screen.queryByRole("button", { name: /close/i }) ||
-        screen.queryByLabelText("Close") ||
-        document.querySelector(".ant-alert-close-icon") ||
-        document.querySelector("[aria-label='close']");
+    it("Skip with Don’t show again hides it for good", () => {
+      renderAlert({}, incompleteUser);
 
-      expect(closeBtn).toBeInTheDocument();
-      fireEvent.click(closeBtn);
+      fireEvent.click(screen.getByTestId("checkbox-dont-show-again"));
+      fireEvent.click(screen.getByRole("button", { name: "Skip" }));
 
       expect(
         localStorage.getItem(`idc_profile_alert_dismissed_${incompleteUser.id}`)
       ).toBe("true");
-
-      expect(
-        screen.queryByTestId("incomplete-profile-alert")
-      ).not.toBeInTheDocument();
     });
 
-    it("stays hidden on re-render when dismissed flag exists in localStorage", () => {
-      localStorage.setItem(
-        `idc_profile_alert_dismissed_${incompleteUser.id}`,
-        "true"
-      );
+    it.each([
+      ["skipped this session", sessionStorage, "idc_profile_alert_skipped_"],
+      ["set to never show", localStorage, "idc_profile_alert_dismissed_"],
+    ])("stays hidden when %s", (_, storage, prefix) => {
+      storage.setItem(`${prefix}${incompleteUser.id}`, "true");
 
       renderAlert({}, incompleteUser);
 
       expect(
         screen.queryByTestId("incomplete-profile-alert")
       ).not.toBeInTheDocument();
-    });
-
-    it("applies custom className when provided", () => {
-      renderAlert({ className: "custom-profile-alert" }, incompleteUser);
-
-      const alertElement = screen.getByTestId("incomplete-profile-alert");
-      expect(alertElement).toHaveClass("custom-profile-alert");
     });
   });
 });
