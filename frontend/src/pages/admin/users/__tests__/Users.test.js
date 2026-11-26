@@ -144,7 +144,7 @@ describe("Users page", () => {
     });
   });
 
-  it("should render Tool Access column with IDC and Academy tag badges and '-' fallback", async () => {
+  it("should render Tools column with LI Academy and IDC tag badges and '-' fallback", async () => {
     api.get.mockResolvedValue({ data: mockUserData });
 
     render(
@@ -155,7 +155,7 @@ describe("Users page", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("columnheader", { name: "Tool Access" })
+        screen.getByRole("columnheader", { name: "Tools" })
       ).toBeInTheDocument();
     });
 
@@ -164,14 +164,30 @@ describe("Users page", () => {
       const idcBadges = screen.getAllByText("IDC");
       expect(idcBadges.length).toBeGreaterThanOrEqual(2);
 
-      // Academy badges for users 2 and 3
-      const academyBadges = screen.getAllByText("Academy");
+      // LI Academy badges for users 2 and 3
+      const academyBadges = screen.getAllByText("LI Academy");
       expect(academyBadges.length).toBeGreaterThanOrEqual(2);
 
       // Fallback for user 4 with empty tools
       const fallbackDashes = screen.getAllByText("-");
       expect(fallbackDashes.length).toBeGreaterThanOrEqual(1);
     });
+  });
+
+  it("should place Tools after Company and show the All tools filter", async () => {
+    api.get.mockResolvedValue({ data: mockUserData });
+
+    render(
+      <Router>
+        <Users />
+      </Router>
+    );
+
+    const headers = await screen.findAllByRole("columnheader");
+    const titles = headers.map((header) => header.textContent);
+    expect(titles.indexOf("Tools")).toBe(titles.indexOf("Company") + 1);
+    expect(titles).not.toContain("Tool Access");
+    expect(screen.getByText("All tools")).toBeInTheDocument();
   });
 
   it("should filter users by Tool Access=academy and request tool=academy with page=1", async () => {
@@ -192,7 +208,7 @@ describe("Users page", () => {
     const toolSelect =
       screen.queryByTestId("filter-tool-access") ||
       document.querySelector("[data-testid='filter-tool-access']") ||
-      screen.getByText("Tool Access").closest(".ant-select") ||
+      screen.getByText("All tools").closest(".ant-select") ||
       document.querySelectorAll(".ant-select")[0];
 
     expect(toolSelect).toBeInTheDocument();
@@ -242,7 +258,7 @@ describe("Users page", () => {
     const toolSelect =
       screen.queryByTestId("filter-tool-access") ||
       document.querySelector("[data-testid='filter-tool-access']") ||
-      screen.getByText("Tool Access").closest(".ant-select") ||
+      screen.getByText("All tools").closest(".ant-select") ||
       document.querySelectorAll(".ant-select")[0];
 
     const selector =

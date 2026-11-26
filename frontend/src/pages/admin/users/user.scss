@@ -34,9 +34,11 @@
       .current-tools-section {
         margin-bottom: 16px;
 
+        // "Current Access:" sits above the tool badges (Figma 13033:15051)
         .current-tools-label {
-          font-weight: 500;
-          margin-right: 8px;
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 600;
         }
 
         .tool-access-desc {
