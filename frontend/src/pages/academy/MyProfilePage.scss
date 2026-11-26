@@ -42,12 +42,21 @@
   }
 
   .academy-account-incomplete {
+    margin-bottom: 16px;
     border-radius: 8px;
   }
 
   .academy-account-save-error {
-    margin-bottom: 8px;
+    margin-bottom: 16px;
     border-radius: 8px;
+  }
+
+  // Keep missing-detail highlights visible on read-only (disabled) fields
+  .ant-form-item-has-error {
+    .ant-input[disabled],
+    .ant-select-disabled .ant-select-selector {
+      border-color: #ff4d4f;
+    }
   }
 
   .academy-account-form {

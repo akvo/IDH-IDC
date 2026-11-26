@@ -969,7 +969,7 @@ describe("MyProfilePage Integration", () => {
     }
   );
 
-  it("asks to complete missing details and highlights them when editing", async () => {
+  it("asks to complete missing details and highlights them on load", async () => {
     academyService.getProfile.mockResolvedValueOnce({
       ...mockProfile,
       sector: null,
@@ -981,12 +981,19 @@ describe("MyProfilePage Integration", () => {
       await screen.findByTestId("profile-incomplete-alert")
     ).toHaveTextContent("Please complete the highlighted details");
 
-    fireEvent.click(screen.getByTestId("btn-edit-profile"));
-
+    // Highlighted before "Edit profile" is clicked
+    expect(screen.getByTestId("btn-edit-profile")).toBeInTheDocument();
     expect(await screen.findByText("Sector is required")).toBeInTheDocument();
     expect(
       screen.getByText("Select at least one commodity")
     ).toBeInTheDocument();
+    expect(
+      screen.queryByText("First name is required")
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("btn-edit-profile"));
+
+    expect(await screen.findByText("Sector is required")).toBeInTheDocument();
   });
 
   it("does not ask for details that are complete", async () => {

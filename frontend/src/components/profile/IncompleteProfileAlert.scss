@@ -1,4 +1,4 @@
-@import "../../variables.scss";
+@import "../../pages/academy/styles/tokens";
 
 // antd renders the modal in a portal outside #root
 .incomplete-profile-modal {
@@ -60,19 +60,45 @@
       font-size: 14px;
       color: #666666;
     }
+
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-wrapper:hover .ant-checkbox-checked .ant-checkbox-inner {
+      background: $academy-primary;
+      border-color: $academy-primary;
+    }
+
+    .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+      border-color: $academy-primary;
+    }
   }
 
   &__actions {
     display: flex;
     gap: 8px;
 
+    // Pinned so page-level antd themes (e.g. the teal IDC theme)
+    // don't recolour the popup
     .ant-btn {
       font-weight: 700;
+      box-shadow: none;
     }
 
-    .ant-btn-default {
-      border-color: $primary-color;
-      color: $primary-color;
+    .ant-btn-default,
+    .ant-btn-default:not(:disabled):hover {
+      background: #ffffff;
+      border-color: $academy-primary;
+      color: $academy-primary;
+    }
+
+    .ant-btn-primary {
+      background: $academy-primary;
+      border-color: $academy-primary;
+      color: #ffffff;
+
+      &:not(:disabled):hover {
+        background: darken($academy-primary, 5%);
+        border-color: darken($academy-primary, 5%);
+      }
     }
   }
 

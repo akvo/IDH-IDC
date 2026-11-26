@@ -107,7 +107,10 @@ const IncompleteProfileAlert = ({ user = null, className = "" }) => {
       width={624}
       onCancel={dismiss}
       // Blur the page behind the reminder (design)
-      maskStyle={{ backdropFilter: "blur(6px)" }}
+      maskStyle={{
+        background: "rgba(0, 0, 0, 0.45)",
+        backdropFilter: "blur(6px)",
+      }}
       wrapClassName={`incomplete-profile-modal ${className}`.trim()}
     >
       <div

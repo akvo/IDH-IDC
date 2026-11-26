@@ -310,9 +310,21 @@ const MyProfilePage = () => {
     [profile]
   );
   // An IDC company stands in for the self-reported one
-  const requiredMissing = idhCompanyName
-    ? missingFields.filter((field) => field !== "company_name")
-    : missingFields;
+  const requiredMissing = useMemo(
+    () =>
+      idhCompanyName
+        ? missingFields.filter((field) => field !== "company_name")
+        : missingFields,
+    [idhCompanyName, missingFields]
+  );
+
+  // Highlight missing details as soon as the profile loads, not only after
+  // "Edit profile", so the "highlighted details" alert points at something
+  useEffect(() => {
+    if (!loading && requiredMissing.length) {
+      form.validateFields(requiredMissing).catch(() => {});
+    }
+  }, [form, loading, requiredMissing]);
 
   const startEditing = useCallback(() => {
     setIsEditing(true);
