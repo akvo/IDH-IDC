@@ -1,7 +1,7 @@
 # Feature Specification: New Toolkit Login & Smart Redirection Flow
 
 > **Document ID**: `docs/features/015_new_toolkit_login_page_spec.md`  
-> **Status**: Ready for Review / Phase 0 Planning & Estimation  
+> **Status**: Implemented (#896) — Origin return & mobile modal refined in `docs/features/023_after_logged_in_avatar_menu_spec.md` (`[TLSA-016]` / #917)  
 > **Target Release**: Living Income Academy & IDC Shared Toolkit  
 > **Figma Source**: [Living Income Academy 2026 - Node 10612-21056](https://www.figma.com/design/ga4EMPcp00Bh0d883khSs6/Living-income-academy?node-id=10612-21056&t=u2lPXhpCtpFNt2uj-1)  
 > **Related Specs**:  
@@ -49,6 +49,8 @@ When a user logs in, the platform evaluates **User Permissions (`user.tools`)** 
 | **Any User** (IDC or Academy) | **Academy Landing / Page** (`/academy` or subpath) | **Academy My Overview** (`/academy/overview`) | Direct entry to learning overview. |
 | **Any User** (IDC or Academy) | **Toolkit Landing Page** (`/`) | **Toolkit Landing Page** (`/`) | Stays on Toolkit home, now authenticated (avatar visible). |
 | **Academy-Only User** (`['academy']`) | **IDC Landing Page** (`/income-driver-calculator`) | **Toolkit Landing Page** (`/`) | **Note Modal Appears**: *"You don’t have access to the Income Driver Calculator yet."* Explains email invitation request process. |
+| **Any User** | **Public Toolkit Pages** (`/procurement-library`, `/cocoa-income-inventory`, `/tools-and-resources`, `/income-driver-calculator/faq` via `?from=<pathname+search>`) | Exact Originating Page (`pathname + search`) | Preserves full query parameters (`#917`). |
+| **Admin (`admin` / `super_admin`)** | **Admin Routes** (`/admin/*` via `?from=` or `?redirect=`) | Target `/admin/*` Route | Allowed regardless of `"idc"` in `user.tools` (`#917`). |
 | **Any User** | **Specific Deep Link** (e.g., `/income-driver-calculator/cases/10`) | Target Deep Link (if authorized) OR `/academy/overview` (if unauthorized) | Preserves deep linking for authorized workflows. |
 
 ---
@@ -241,6 +243,7 @@ The login flow comprises 5 distinct states defined in Figma:
      - Buttons:
        - *"Discard"*: Secondary pill button, closes modal.
        - *"Explore academy"*: Primary brand pill button (`#01625f`), navigates to `/academy/overview`.
+     - **Mobile Layout (`<= 600px`, Figma `12983:36367`, added in `#917`)**: Centered icon badge, title, and body copy; hides `"Don't show again"` checkbox on mobile; stacks full-width pill buttons vertically with `"Explore the Academy"` above `"Discard"`.
 
 ---
 
@@ -263,10 +266,10 @@ To ensure the login page accurately detects where the user originated:
 1. **Top Navigation (`PageLayout.js`)**:
    ```javascript
    <Link 
-     to={`${paths.login}?from=${encodeURIComponent(location.pathname)}`}
+     to={`${paths.login}?from=${encodeURIComponent(`${location.pathname}${location.search}`)}`}
      className="nav-sign-in"
    >
-     Sign In
+     Log in
    </Link>
    ```
 2. **IDC Landing Page (`GetStarted.js` / `Jumbotron.js`)**:

@@ -2,7 +2,7 @@
 
 > **GitHub Issue**: [#905](https://github.com/akvo/IDH-IDC/issues/905) — `[TLSA-013] Backend: Living Income Academy User Statistics Aggregation API`  
 > **Branch**: `feature/905-backend-academy-user-statistics`  
-> **Status**: Backend Complete (100% Green) — Ready for Frontend Development  
+> **Status**: Implemented (#905 Backend / #916 Frontend) — Academy-only Admin shell access refined in `docs/features/023_after_logged_in_avatar_menu_spec.md` (`[TLSA-016]` / #917)  
 > **Backend Implementation Status**:
 > - **User Management & Edit User**: **Complete (Zero Backend Tasks Required)** — `GET /user`, `GET /user/{id}`, `PUT /user/{id}`, `POST /user`, `POST /user/{id}/activate`, `POST /user/{id}/deactivate`, and `POST /user/{id}/revoke-idc` are already implemented and tested.
 > - **LI Academy User Statistics API**: **COMPLETED (#905)** — Aggregation endpoint `GET /admin/academy-user-statistics` implemented in `backend/routes/admin_academy_stats.py`, SQL engine in `backend/db/crud_admin_academy_stats.py`, Pydantic DTOs in `backend/models/admin_academy_stats.py`, hermetic test suite in `backend/tests/test_1037_admin_academy_user_stats.py` (8/8 passed).
@@ -107,6 +107,9 @@ sequenceDiagram
 | **Database Migrations** | PostgreSQL Schema | **Zero Migrations (100%)**:<br>Tables `user`, `user_profile`, `academy_chapter_progress`, `company` already exist. | **DO NOT** create new database tables or alembic migrations. |
 | **Academy Stats Backend** | `backend/routes/admin_academy_stats.py`<br>`backend/db/crud_admin_academy_stats.py`<br>`backend/models/admin_academy_stats.py` | **Net-New Backend Task**:<br>Implement aggregated analytics endpoint `GET /admin/academy-user-statistics`. | **DO NOT** compute stats on frontend by downloading all raw progress records. Aggregate server-side in SQL. |
 | **Academy Stats Dashboard** | `frontend/src/pages/admin/academy-stats/AcademyUserStats.js` | **Net-New Frontend Page**:<br>Build dashboard with filter bar, 4 KPI cards, ECharts distribution chart, and company table. | **DO NOT** install new charting libraries; reuse existing project ECharts / Ant Design components. |
+
+> [!NOTE]
+> **Academy-Only Admin Shell Compatibility (`[TLSA-016]` / `#917`)**: `frontend/src/components/route/PrivateRoutes.js` and `frontend/src/pages/login/Login.js` allow `admin` and `super_admin` users onto `/admin/*` even without `"idc"` in `tools`. When `!userTools.includes("idc")`, `IDCSubMenu` is suppressed and `frontend/src/components/layout/ContentLayout.js` adjusts `<Affix offsetTop={80}>`.
 
 ---
 
@@ -379,11 +382,11 @@ class AcademyUserStatsResponse(BaseModel):
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **TASK-01** | **Backend Analytics Aggregation Engine & Schemas**<br>• `backend/models/admin_academy_stats.py` (DTOs)<br>• `backend/db/crud_admin_academy_stats.py` (KPIs, 0-6 bins, company metrics) | 35m | 20m | 15m | **70m (1.17h)** | 40m | [x] |
 | **TASK-02** | **Backend Route, Auth Gate, Seeder & Tests**<br>• `backend/routes/admin_academy_stats.py` (`GET /admin/academy-user-statistics`)<br>• `backend/seeder/fake_seeder/fake_academy_stats.py` (Faker seeder)<br>• `backend/tests/test_1037_admin_academy_user_stats.py` (8/8 passed) | 25m | 20m | 10m | **55m (~0.9h)** | 35m | [x] |
-| **TASK-03** | **Admin Navigation Tab & User Management Polish**<br>• Add 4th tab in `ContentLayout.js`<br>• Rename column "Tools" and update tags in `Users.js`<br>• Polish Save button in `UserForm.js` | 20m | 15m | 10m | **45m (0.75h)** | - | [ ] |
-| **TASK-04** | **Academy Stats: Filters & 4 KPI Figure Cards**<br>• Header filter dropdowns (`Year`, `Region`, `Sector` + `Export CSV`)<br>• 4 KPI cards matching Figma typography & layout | 25m | 15m | 10m | **50m (~0.8h)** | - | [ ] |
-| **TASK-05** | **Academy Stats: Distribution Chart & Company Table**<br>• ECharts bar chart (`0`–`6` modules, `%` vs `Number`, `Show label`)<br>• "Download chart" PNG export<br>• "Companies taking part" table with green toolbar (`#01625f`) | 35m | 20m | 10m | **65m (~1.1h)** | - | [ ] |
-| **TASK-06** | **Full Regression & Quality Gate**<br>• Frontend test suite `AcademyUserStats.test.js`<br>• Full regression pass: `pytest`, `flake8`, `yarn test:ci`, `yarn lint` | 15m | 15m | 10m | **40m (~0.67h)** | - | [ ] |
-| **TOTAL** | **Full TLSA-013 Implementation** | **2h 35m** | **1h 45m** | **1h 05m** | **5h 25m (~5.4h)** | — | [ ] |
+| **TASK-03** | **Admin Navigation Tab & User Management Polish**<br>• Add 4th tab in `ContentLayout.js`<br>• Rename column "Tools" and update tags in `Users.js`<br>• Polish Save button in `UserForm.js` | 20m | 15m | 10m | **45m (0.75h)** | #916 | [x] |
+| **TASK-04** | **Academy Stats: Filters & 4 KPI Figure Cards**<br>• Header filter dropdowns (`Year`, `Region`, `Sector` + `Export CSV`)<br>• 4 KPI cards matching Figma typography & layout | 25m | 15m | 10m | **50m (~0.8h)** | #916 | [x] |
+| **TASK-05** | **Academy Stats: Distribution Chart & Company Table**<br>• ECharts bar chart (`0`–`6` modules, `%` vs `Number`, `Show label`)<br>• "Download chart" PNG export<br>• "Companies taking part" table with green toolbar (`#01625f`) | 35m | 20m | 10m | **65m (~1.1h)** | #916 | [x] |
+| **TASK-06** | **Full Regression & Quality Gate**<br>• Frontend test suite `AcademyUserStats.test.js`<br>• Full regression pass: `pytest`, `flake8`, `yarn test:ci`, `yarn lint` | 15m | 15m | 10m | **40m (~0.67h)** | #916 | [x] |
+| **TOTAL** | **Full TLSA-013 Implementation** | **2h 35m** | **1h 45m** | **1h 05m** | **5h 25m (~5.4h)** | **Merged (#916)** | [x] |
 
 ---
 
