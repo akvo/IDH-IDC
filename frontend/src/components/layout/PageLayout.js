@@ -1,24 +1,16 @@
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  Layout,
-  Row,
-  Col,
-  Menu,
-  Button,
-  Drawer,
-  Avatar,
-  Dropdown,
-  Tag,
-} from "antd";
+import { Layout, Row, Col, Menu, Button, Drawer, Avatar, Dropdown } from "antd";
 import { UserState } from "../../store";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/logo.png";
 import { adminRole } from "../../store/static";
-import { routePath, routePrefix, paths } from "../route";
+import { routePath, routePrefix } from "../route";
 import {
   MenuOutlined,
+  CloseOutlined,
   UserOutlined,
   SettingOutlined,
+  LockOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useWindowDimensions, useSignOut } from "../../hooks";
@@ -92,9 +84,15 @@ export const PageHeader = ({ isLoggedIn }) => {
     ? routePath.academy.profile
     : routePath.profile;
 
+  const loginHref = location.pathname
+    ? `/login?from=${encodeURIComponent(
+        `${location.pathname}${location.search || ""}`
+      )}`
+    : "/login";
+
   const handleLogout = useCallback(() => {
     signOut();
-    navigate(paths.login);
+    navigate("/");
     setDrawerVisible(false);
   }, [signOut, navigate]);
 
@@ -104,6 +102,7 @@ export const PageHeader = ({ isLoggedIn }) => {
         testid: "nav-menu-idc",
         label: "Income Driver Calculator",
         key: isLoggedIn ? routePath.idc.dashboard : routePath.idc.landing,
+        className: isLoggedIn && !hasIdcAccess ? "nav-item-idc-muted" : "",
       },
       {
         testid: "nav-menu-procurement-library",
@@ -122,12 +121,12 @@ export const PageHeader = ({ isLoggedIn }) => {
       },
       {
         testid: "nav-menu-tools-and-resources",
-        label: "Tools & Resources",
+        label: "Other Tools & Resources",
         key: "/tools-and-resources",
       },
     ];
     return menuList.filter((item) => !item?.hide);
-  }, [isLoggedIn]);
+  }, [isLoggedIn, hasIdcAccess]);
 
   const toggleDrawer = () => setDrawerVisible(!drawerVisible);
 
@@ -186,6 +185,16 @@ export const PageHeader = ({ isLoggedIn }) => {
         icon: <UserOutlined />,
         onClick: () => navigate(profileTargetRoute),
       },
+      ...(isAdmin
+        ? [
+            {
+              key: "admin-panel",
+              label: "Admin",
+              icon: <SettingOutlined />,
+              onClick: () => navigate(routePath.admin.users),
+            },
+          ]
+        : []),
       { type: "divider" },
       {
         key: "tool-switcher-group",
@@ -194,12 +203,20 @@ export const PageHeader = ({ isLoggedIn }) => {
         children: [
           {
             key: "switch-idc",
-            className: isCurrentIdc ? "tool-item-active" : "",
+            className: [
+              isCurrentIdc ? "tool-item-active" : "",
+              !hasIdcAccess ? "tool-item-locked" : "",
+            ]
+              .filter(Boolean)
+              .join(" "),
             label: (
               <div className="tool-switcher-item" data-testid="switcher-idc">
                 <span className="tool-name">Income Driver Calculator</span>
                 {!hasIdcAccess && (
-                  <Tag className="tool-tag-no-access">No access</Tag>
+                  <LockOutlined
+                    className="tool-lock-icon"
+                    data-testid="switcher-idc-lock"
+                  />
                 )}
               </div>
             ),
@@ -241,17 +258,6 @@ export const PageHeader = ({ isLoggedIn }) => {
           },
         ],
       },
-      ...(isAdmin
-        ? [
-            { type: "divider" },
-            {
-              key: "admin-panel",
-              label: "Admin Panel",
-              icon: <SettingOutlined />,
-              onClick: () => navigate("/admin/users"),
-            },
-          ]
-        : []),
       { type: "divider" },
       {
         key: "logout",
@@ -273,6 +279,35 @@ export const PageHeader = ({ isLoggedIn }) => {
     handleLogout,
   ]);
 
+  const avatarDropdown = isLoggedIn ? (
+    <Dropdown
+      menu={{
+        items: avatarDropdownItems,
+        selectedKeys: [
+          isCurrentIdc
+            ? "switch-idc"
+            : isCurrentAcademy
+            ? "switch-academy"
+            : "",
+        ],
+      }}
+      trigger={["click"]}
+      placement="bottomRight"
+      overlayClassName="header-avatar-dropdown"
+    >
+      <button
+        type="button"
+        className="header-avatar-btn"
+        data-testid="header-avatar-btn"
+        aria-label="User Profile and Tool Switcher Menu"
+      >
+        <Avatar className="header-avatar" data-testid="header-avatar">
+          {avatarInitials}
+        </Avatar>
+      </button>
+    </Dropdown>
+  ) : null;
+
   return (
     <Header
       data-testid="layout-header"
@@ -292,7 +327,8 @@ export const PageHeader = ({ isLoggedIn }) => {
         style={{ width: "100%" }}
       >
         <Col
-          {...(isMobile ? { span: 18 } : { flex: "0 0 auto" })}
+          flex={isMobile ? "1 1 auto" : "0 0 auto"}
+          style={isMobile ? { minWidth: 0 } : {}}
           align="start"
         >
           <Link to="/">
@@ -315,7 +351,7 @@ export const PageHeader = ({ isLoggedIn }) => {
 
         {/* Menu toggle (Mobile) or horizontal menu (Desktop) */}
         <Col
-          {...(isMobile ? { span: 6 } : { flex: "1 1 0" })}
+          flex={isMobile ? "0 0 auto" : "1 1 0"}
           align="end"
           testid="nav-container"
           style={
@@ -333,13 +369,16 @@ export const PageHeader = ({ isLoggedIn }) => {
         >
           {isMobile ? (
             <>
-              <Button
-                icon={<MenuOutlined />}
-                onClick={toggleDrawer}
-                type="text"
-                style={{ float: "right" }}
-                data-testid="button-mobile-menu"
-              />
+              <div className="mobile-header-actions">
+                {avatarDropdown}
+                <Button
+                  icon={drawerVisible ? <CloseOutlined /> : <MenuOutlined />}
+                  onClick={toggleDrawer}
+                  type="text"
+                  data-testid="button-mobile-menu"
+                  aria-label="Toggle navigation menu"
+                />
+              </div>
               <Drawer
                 placement="right"
                 closable
@@ -347,67 +386,6 @@ export const PageHeader = ({ isLoggedIn }) => {
                 open={drawerVisible}
                 className="drawer-menu-wrapper"
               >
-                {isLoggedIn ? (
-                  <div
-                    className="drawer-user-card"
-                    data-testid="drawer-user-card"
-                  >
-                    <Avatar className="drawer-avatar" size={40}>
-                      {avatarInitials}
-                    </Avatar>
-                    <div className="drawer-user-details">
-                      <div
-                        className="drawer-user-name"
-                        data-testid="drawer-user-name"
-                      >
-                        {fullname || "Toolkit User"}
-                      </div>
-                      <div className="drawer-user-email">{email || ""}</div>
-                    </div>
-                  </div>
-                ) : null}
-
-                {isLoggedIn ? (
-                  <div
-                    className="drawer-tool-switcher"
-                    data-testid="drawer-tool-switcher"
-                  >
-                    <span className="drawer-section-title">SWITCH TOOL</span>
-                    <div
-                      className={`drawer-tool-item ${
-                        isCurrentIdc ? "tool-item-active" : ""
-                      }`}
-                      data-testid="drawer-switch-idc"
-                      onClick={() => {
-                        if (!hasIdcAccess) {
-                          showIdcAccessRequestModal();
-                          setDrawerVisible(false);
-                          return;
-                        }
-                        navigate(routePath.idc.dashboard);
-                        setDrawerVisible(false);
-                      }}
-                    >
-                      <span>Income Driver Calculator</span>
-                      {!hasIdcAccess && (
-                        <Tag className="tool-tag-no-access">No access</Tag>
-                      )}
-                    </div>
-                    <div
-                      className={`drawer-tool-item ${
-                        isCurrentAcademy ? "tool-item-active" : ""
-                      }`}
-                      data-testid="drawer-switch-academy"
-                      onClick={() => {
-                        navigate(routePath.academy.landing);
-                        setDrawerVisible(false);
-                      }}
-                    >
-                      <span>Living Income Academy</span>
-                    </div>
-                  </div>
-                ) : null}
-
                 <Menu
                   key={`mobile-nav-${navKey}`}
                   mode="inline"
@@ -416,66 +394,18 @@ export const PageHeader = ({ isLoggedIn }) => {
                   selectedKeys={selectedKeys}
                 />
 
-                {isLoggedIn ? (
+                {!isLoggedIn ? (
                   <div className="drawer-footer-actions">
-                    <Button
-                      type="text"
-                      block
-                      icon={<UserOutlined />}
-                      onClick={() => {
-                        navigate(profileTargetRoute);
-                        setDrawerVisible(false);
-                      }}
-                      style={{ textAlign: "left", marginBottom: 8 }}
-                      data-testid="button-drawer-profile"
-                    >
-                      My Profile
-                    </Button>
-                    {isAdmin && (
-                      <Button
-                        type="text"
-                        block
-                        icon={<SettingOutlined />}
-                        onClick={() => {
-                          navigate("/admin/users");
-                          setDrawerVisible(false);
-                        }}
-                        style={{ textAlign: "left", marginBottom: 8 }}
-                        data-testid="button-drawer-admin"
-                      >
-                        Admin Panel
-                      </Button>
-                    )}
-                    <Button
-                      block
-                      danger
-                      icon={<LogoutOutlined />}
-                      onClick={handleLogout}
-                      data-testid="button-drawer-logout"
-                    >
-                      Log out
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="drawer-footer-actions">
-                    <Button
-                      type="primary"
-                      block
-                      className="button-green"
-                      onClick={() => {
-                        navigate(
-                          `${paths.login}?from=${encodeURIComponent(
-                            location.pathname
-                          )}`
-                        );
-                        setDrawerVisible(false);
-                      }}
+                    <Link
+                      to={loginHref}
+                      className="nav-sign-in drawer-login-link"
+                      onClick={() => setDrawerVisible(false)}
                       data-testid="button-drawer-login"
                     >
-                      Sign In
-                    </Button>
+                      Log in
+                    </Link>
                   </div>
-                )}
+                ) : null}
               </Drawer>
             </>
           ) : (
@@ -496,49 +426,14 @@ export const PageHeader = ({ isLoggedIn }) => {
                 selectedKeys={selectedKeys}
               />
               {isLoggedIn ? (
-                <Dropdown
-                  menu={{
-                    items: avatarDropdownItems,
-                    selectedKeys: [
-                      isCurrentIdc
-                        ? "switch-idc"
-                        : isCurrentAcademy
-                        ? "switch-academy"
-                        : "",
-                    ],
-                  }}
-                  trigger={["click"]}
-                  placement="bottomRight"
-                  overlayClassName="header-avatar-dropdown"
-                >
-                  <button
-                    type="button"
-                    className="header-avatar-btn"
-                    data-testid="header-avatar-btn"
-                    aria-label="User Profile and Tool Switcher Menu"
-                  >
-                    <Avatar
-                      className="header-avatar"
-                      data-testid="header-avatar"
-                      size={36}
-                    >
-                      {avatarInitials}
-                    </Avatar>
-                  </button>
-                </Dropdown>
+                avatarDropdown
               ) : (
                 <Link
-                  to={
-                    location.pathname
-                      ? `${paths.login}?from=${encodeURIComponent(
-                          location.pathname
-                        )}`
-                      : paths.login
-                  }
+                  to={loginHref}
                   className="nav-sign-in"
                   data-testid="button-signin"
                 >
-                  Sign In
+                  Log in
                 </Link>
               )}
             </>

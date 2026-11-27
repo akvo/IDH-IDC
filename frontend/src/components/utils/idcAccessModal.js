@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Checkbox } from "antd";
 import { WarningOutlined } from "@ant-design/icons";
+import { useWindowDimensions } from "../../hooks";
 import "./idcAccessModal.scss";
 
 export const IdcAccessModalContent = ({
@@ -9,6 +10,7 @@ export const IdcAccessModalContent = ({
   onToggleDontShowAgain,
 }) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const { isMobile } = useWindowDimensions(601);
 
   const handleCheckboxChange = (e) => {
     const checked = e.target.checked;
@@ -80,7 +82,7 @@ export const IdcAccessModalContent = ({
               data-testid="button-modal-explore"
               onClick={() => onExplore && onExplore(dontShowAgain)}
             >
-              Explore academy
+              {isMobile ? "Explore the Academy" : "Explore academy"}
             </Button>
           </div>
         </div>

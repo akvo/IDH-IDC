@@ -52,18 +52,22 @@ describe("PageLayout Component & Header Navigation", () => {
   });
 
   describe("Desktop Header: Logged Out State", () => {
-    it("renders public navigation links and Sign In button, omitting avatar", () => {
+    it("renders public navigation links and Log in button with origin query, omitting avatar", () => {
       render(
-        <MemoryRouter initialEntries={["/"]}>
+        <MemoryRouter initialEntries={["/procurement-library?view=grid"]}>
           <PageHeader isLoggedIn={false} />
         </MemoryRouter>
       );
 
       const signInLink = screen.getByTestId("button-signin");
       expect(signInLink).toBeInTheDocument();
-      expect(signInLink).toHaveAttribute("href", `${paths.login}?from=%2F`);
+      expect(signInLink).toHaveTextContent("Log in");
+      expect(signInLink).toHaveAttribute(
+        "href",
+        `${paths.login}?from=%2Fprocurement-library%3Fview%3Dgrid`
+      );
       expect(screen.queryByTestId("header-avatar-btn")).not.toBeInTheDocument();
-      expect(screen.getByText("Tools & Resources")).toBeInTheDocument();
+      expect(screen.getByText("Other Tools & Resources")).toBeInTheDocument();
     });
   });
 
@@ -109,8 +113,8 @@ describe("PageLayout Component & Header Navigation", () => {
       ).not.toHaveClass("tool-item-active");
       expect(screen.getByText("Log out")).toBeInTheDocument();
 
-      // Since user is role "user", Admin Panel should not be rendered
-      expect(screen.queryByText("Admin Panel")).not.toBeInTheDocument();
+      // Since user is role "user", Admin should not be rendered
+      expect(screen.queryByText("Admin")).not.toBeInTheDocument();
     });
 
     it("allows navigation to Living Income Academy and IDC without gating modal", () => {
@@ -135,13 +139,15 @@ describe("PageLayout Component & Header Navigation", () => {
       modalSpy.mockRestore();
     });
 
-    it("handles My Profile and Log out clicks in desktop dropdown", () => {
+    it("handles My Profile and Log out clicks in desktop dropdown redirecting to Toolkit landing /", () => {
       render(
         <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
           <Routes>
             <Route
-              path={paths.login}
-              element={<div data-testid="login-route-target">Login Page</div>}
+              path="/"
+              element={
+                <div data-testid="toolkit-landing-target">Toolkit Landing</div>
+              }
             />
             <Route path="*" element={<PageHeader isLoggedIn={true} />} />
           </Routes>
@@ -158,7 +164,7 @@ describe("PageLayout Component & Header Navigation", () => {
       fireEvent.click(logoutBtn);
 
       expect(mockSignOut).toHaveBeenCalledTimes(1);
-      expect(screen.getByTestId("login-route-target")).toBeInTheDocument();
+      expect(screen.getByTestId("toolkit-landing-target")).toBeInTheDocument();
     });
   });
 
@@ -175,7 +181,7 @@ describe("PageLayout Component & Header Navigation", () => {
       });
     });
 
-    it("renders 'No access' tag on IDC and triggers Access Request Modal upon click", () => {
+    it("renders muted IDC with lock icon in switcher and muted navbar item, triggering modal on click", () => {
       const modalSpy = jest.spyOn(Modal, "info").mockImplementation(() => {});
 
       render(
@@ -184,15 +190,20 @@ describe("PageLayout Component & Header Navigation", () => {
         </MemoryRouter>
       );
 
+      expect(
+        screen.getByText("Income Driver Calculator").closest("li")
+      ).toHaveClass("nav-item-idc-muted");
+
       fireEvent.click(screen.getByTestId("header-avatar-btn"));
 
-      expect(screen.getByTestId("switcher-idc").closest("li")).not.toHaveClass(
-        "tool-item-active"
-      );
+      const idcItem = screen.getByTestId("switcher-idc").closest("li");
+      expect(idcItem).not.toHaveClass("tool-item-active");
+      expect(idcItem).toHaveClass("tool-item-locked");
+      expect(screen.getByTestId("switcher-idc-lock")).toBeInTheDocument();
+      expect(screen.queryByText("No access")).not.toBeInTheDocument();
       expect(screen.getByTestId("switcher-academy").closest("li")).toHaveClass(
         "tool-item-active"
       );
-      expect(screen.getByText("No access")).toBeInTheDocument();
 
       const idcOption = screen.getByTestId("switcher-idc");
       fireEvent.click(idcOption);
@@ -234,7 +245,7 @@ describe("PageLayout Component & Header Navigation", () => {
   });
 
   describe("Admin Role Menu Item", () => {
-    it("renders 'Admin Panel' menu item when user role is admin", () => {
+    it("renders 'Admin' menu item below My Profile and navigates to /admin/users with neutral tool highlight", () => {
       act(() => {
         UserState.update((s) => {
           s.id = 3;
@@ -246,24 +257,42 @@ describe("PageLayout Component & Header Navigation", () => {
       });
 
       render(
-        <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
-          <PageHeader isLoggedIn={true} />
+        <MemoryRouter initialEntries={["/admin/users"]}>
+          <Routes>
+            <Route
+              path="/admin/users"
+              element={
+                <>
+                  <PageHeader isLoggedIn={true} />
+                  <div data-testid="admin-users-target">Admin Users</div>
+                </>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
         </MemoryRouter>
       );
 
       fireEvent.click(screen.getByTestId("header-avatar-btn"));
-      const adminBtn = screen.getByText("Admin Panel");
+      const adminBtn = screen.getByText("Admin");
       expect(adminBtn).toBeInTheDocument();
+      expect(screen.getByTestId("switcher-idc").closest("li")).not.toHaveClass(
+        "tool-item-active"
+      );
+      expect(
+        screen.getByTestId("switcher-academy").closest("li")
+      ).not.toHaveClass("tool-item-active");
       fireEvent.click(adminBtn);
+      expect(screen.getByTestId("admin-users-target")).toBeInTheDocument();
     });
   });
 
-  describe("Mobile Drawer Integration", () => {
+  describe("Mobile Header & Drawer Integration", () => {
     beforeEach(() => {
       window.innerWidth = 500;
     });
 
-    it("renders mobile drawer with user identity, tool switcher, and logout for logged in user", () => {
+    it("keeps persistent Avatar dropdown in mobile top bar and omits duplicate drawer cards", () => {
       act(() => {
         UserState.update((s) => {
           s.id = 4;
@@ -276,39 +305,59 @@ describe("PageLayout Component & Header Navigation", () => {
 
       render(
         <MemoryRouter initialEntries={[routePath.idc.dashboard]}>
-          <PageHeader isLoggedIn={true} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <div data-testid="toolkit-landing-target">Toolkit Landing</div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
         </MemoryRouter>
       );
 
+      const avatarBtn = screen.getByTestId("header-avatar-btn");
       const menuBtn = screen.getByTestId("button-mobile-menu");
+      expect(avatarBtn).toBeInTheDocument();
+      expect(avatarBtn).toHaveTextContent("MU");
       expect(menuBtn).toBeInTheDocument();
 
-      // Open drawer
-      fireEvent.click(menuBtn);
-
-      expect(screen.getByTestId("drawer-user-card")).toBeInTheDocument();
+      // Open unified AccountDropdown directly from mobile top-bar avatar
+      fireEvent.click(avatarBtn);
+      expect(screen.getByTestId("user-info-card")).toBeInTheDocument();
       expect(screen.getByText("Mobile User")).toBeInTheDocument();
       expect(screen.getByText("mobile@idhtrade.org")).toBeInTheDocument();
-      expect(screen.getByTestId("drawer-tool-switcher")).toBeInTheDocument();
-      expect(screen.getByTestId("drawer-switch-idc")).toHaveClass(
+      expect(screen.getByText("My Profile")).toBeInTheDocument();
+      expect(screen.getByText("Admin")).toBeInTheDocument();
+      expect(screen.getByTestId("switcher-idc").closest("li")).toHaveClass(
         "tool-item-active"
       );
-      expect(screen.getByTestId("drawer-switch-academy")).not.toHaveClass(
-        "tool-item-active"
-      );
-      expect(screen.getByTestId("button-drawer-profile")).toBeInTheDocument();
-      expect(screen.getByTestId("button-drawer-admin")).toBeInTheDocument();
-      expect(screen.getByTestId("button-drawer-logout")).toBeInTheDocument();
 
-      // Mobile interactions
-      fireEvent.click(screen.getByTestId("drawer-switch-idc"));
-      fireEvent.click(screen.getByTestId("drawer-switch-academy"));
-      fireEvent.click(screen.getByTestId("button-drawer-profile"));
-      fireEvent.click(screen.getByTestId("button-drawer-admin"));
-      fireEvent.click(screen.getByTestId("button-drawer-logout"));
+      // Open mobile nav drawer and confirm clean navigation stack without duplicate account blocks
+      fireEvent.click(menuBtn);
+      expect(screen.getByText("Other Tools & Resources")).toBeInTheDocument();
+      expect(screen.queryByTestId("drawer-user-card")).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("drawer-tool-switcher")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("button-drawer-profile")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("button-drawer-admin")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("button-drawer-logout")
+      ).not.toBeInTheDocument();
+
+      // Log out from mobile top-bar AccountDropdown redirects to /
+      fireEvent.click(screen.getByText("Log out"));
+      expect(mockSignOut).toHaveBeenCalledTimes(1);
+      expect(screen.getByTestId("toolkit-landing-target")).toBeInTheDocument();
     });
 
-    it("triggers Access Request Modal from mobile drawer for Academy-only account", () => {
+    it("triggers Access Request Modal from mobile avatar menu and muted mobile nav for Academy-only account", () => {
       const modalSpy = jest.spyOn(Modal, "info").mockImplementation(() => {});
 
       act(() => {
@@ -327,10 +376,8 @@ describe("PageLayout Component & Header Navigation", () => {
         </MemoryRouter>
       );
 
-      fireEvent.click(screen.getByTestId("button-mobile-menu"));
-
-      const drawerIdc = screen.getByTestId("drawer-switch-idc");
-      fireEvent.click(drawerIdc);
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByTestId("switcher-idc"));
 
       expect(modalSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -341,7 +388,7 @@ describe("PageLayout Component & Header Navigation", () => {
       modalSpy.mockRestore();
     });
 
-    it("renders Sign In button inside mobile drawer when logged out", () => {
+    it("renders Log in button inside mobile drawer when logged out", () => {
       render(
         <MemoryRouter initialEntries={["/"]}>
           <Routes>
@@ -354,9 +401,11 @@ describe("PageLayout Component & Header Navigation", () => {
         </MemoryRouter>
       );
 
+      expect(screen.queryByTestId("header-avatar-btn")).not.toBeInTheDocument();
       fireEvent.click(screen.getByTestId("button-mobile-menu"));
       const drawerLoginBtn = screen.getByTestId("button-drawer-login");
       expect(drawerLoginBtn).toBeInTheDocument();
+      expect(drawerLoginBtn).toHaveTextContent("Log in");
       expect(screen.queryByTestId("drawer-user-card")).not.toBeInTheDocument();
       fireEvent.click(drawerLoginBtn);
       expect(screen.getByTestId("login-route-target")).toBeInTheDocument();
@@ -591,7 +640,7 @@ describe("PageLayout header on Academy pages", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("routes mobile drawer My Profile to /academy/profile inside /academy*", () => {
+    it("routes mobile top-bar avatar My Profile to /academy/profile inside /academy*", () => {
       window.innerWidth = 500;
       act(() => {
         UserState.update((s) => {
@@ -619,12 +668,12 @@ describe("PageLayout header on Academy pages", () => {
         </MemoryRouter>
       );
 
-      fireEvent.click(screen.getByTestId("button-mobile-menu"));
-      fireEvent.click(screen.getByTestId("button-drawer-profile"));
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByText("My Profile"));
       expect(screen.getByTestId("target-academy-profile")).toBeInTheDocument();
     });
 
-    it("routes mobile drawer My Profile to /profile for IDC user outside /academy*", () => {
+    it("routes mobile top-bar avatar My Profile to /profile for IDC user outside /academy*", () => {
       window.innerWidth = 500;
       act(() => {
         UserState.update((s) => {
@@ -648,8 +697,8 @@ describe("PageLayout header on Academy pages", () => {
         </MemoryRouter>
       );
 
-      fireEvent.click(screen.getByTestId("button-mobile-menu"));
-      fireEvent.click(screen.getByTestId("button-drawer-profile"));
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByText("My Profile"));
       expect(screen.getByTestId("target-profile")).toBeInTheDocument();
     });
   });
