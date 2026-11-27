@@ -346,8 +346,23 @@
       justify-content: flex-end;
       gap: 8px;
 
+      .ant-btn {
+        color: $primary-color;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        .anticon {
+          font-size: 20px;
+        }
+      }
+
       @media (max-width: 576px) {
         gap: 6px;
+
+        .ant-btn .anticon {
+          font-size: 18px;
+        }
       }
     }
 
@@ -962,18 +977,37 @@
   }
 }
 
+.ant-drawer.drawer-menu-root {
+  .ant-drawer-content-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: 0 8px 16px rgba(16, 24, 40, 0.08);
+  }
+}
+
 .drawer-menu-wrapper {
   .ant-drawer-body {
-    padding: 16px 20px;
+    padding: 0 20px 16px;
     display: flex;
     flex-direction: column;
 
-    li {
+    li,
+    .ant-menu-item {
       font-family: "RocGrotesk";
       font-size: 14px;
-      line-height: 20px;
+      line-height: 48px;
+      height: 48px;
+      margin: 0;
+      width: 100%;
+      padding-inline: 4px !important;
+      border-bottom: 1px solid #f0f0f0;
+      border-radius: 0;
       color: $primary-color;
       font-weight: 700;
+
+      &:last-child {
+        border-bottom: none;
+      }
 
       &.ant-menu-item-active,
       &.ant-menu-item-selected {
@@ -987,11 +1021,13 @@
     }
 
     @media (max-width: 576px) {
-      padding: 12px 16px;
+      padding: 0 16px 12px;
 
-      li {
+      li,
+      .ant-menu-item {
         font-size: 13px;
-        line-height: 19px;
+        line-height: 44px;
+        height: 44px;
       }
     }
   }

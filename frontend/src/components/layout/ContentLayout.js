@@ -58,9 +58,12 @@ const ContentLayout = ({
   const userId = UserState.useState((s) => s.id);
   const rawTools = UserState.useState((s) => s.tools);
   const hasIdcAccess = Array.isArray(rawTools) && rawTools.includes("idc");
-  const isSubMenuVisible =
-    !hideIDCSubMenu && Boolean(userId) && hasIdcAccess && showIDCSubMenu();
   const { pathname } = useLocation();
+  const isSubMenuVisible =
+    !hideIDCSubMenu &&
+    Boolean(userId) &&
+    hasIdcAccess &&
+    showIDCSubMenu(pathname);
   const currentPath = pathname.replace(/\/+$/, "") || "/";
 
   const handleOnClickTab = (key) => {

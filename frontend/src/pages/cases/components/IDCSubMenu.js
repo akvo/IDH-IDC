@@ -107,7 +107,7 @@ const IDCSubMenu = () => {
     return items;
   }, [userRole, isInternalUser, isLoggedIn, host]);
 
-  if (!isLoggedIn || !hasIdcAccess || !showIDCSubMenu()) {
+  if (!isLoggedIn || !hasIdcAccess || !showIDCSubMenu(location.pathname)) {
     return "";
   }
 

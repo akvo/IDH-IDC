@@ -7,7 +7,7 @@ import { adminRole } from "../../store/static";
 import { routePath, routePrefix } from "../route";
 import {
   MenuOutlined,
-  CloseOutlined,
+  CloseSquareOutlined,
   UserOutlined,
   SettingOutlined,
   LockOutlined,
@@ -50,7 +50,7 @@ const getSelectedMenuKey = (pathname) =>
 
 export const PageHeader = ({ isLoggedIn }) => {
   const navigate = useNavigate();
-  const { isMobile } = useWindowDimensions();
+  const { isMobile } = useWindowDimensions(992);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [navKey, setNavKey] = useState(0);
   const location = useLocation();
@@ -72,11 +72,12 @@ export const PageHeader = ({ isLoggedIn }) => {
 
   const hasIdcAccess = userTools.includes("idc");
   const isCurrentIdc =
-    location.pathname.startsWith(
+    hasIdcAccess &&
+    (location.pathname.startsWith(
       routePrefix?.idc || "/income-driver-calculator"
     ) ||
-    location.pathname.startsWith("/cases") ||
-    location.pathname.startsWith("/case");
+      location.pathname.startsWith("/cases") ||
+      location.pathname.startsWith("/case"));
   const isCurrentAcademy = location.pathname.startsWith("/academy");
   const isAdmin = adminRole.includes(userRole);
   // Inside the Academy the profile keeps the Academy sidebar
@@ -95,6 +96,23 @@ export const PageHeader = ({ isLoggedIn }) => {
     navigate("/");
     setDrawerVisible(false);
   }, [signOut, navigate]);
+
+  const openIdcAccessModal = useCallback(() => {
+    showIdcAccessRequestModal({
+      force: true,
+      navigate,
+      onDiscard: () => {
+        if (typeof document !== "undefined" && document.activeElement?.blur) {
+          document.activeElement.blur();
+        }
+        setNavKey((prev) => prev + 1);
+      },
+      onExplore: () => {
+        setNavKey((prev) => prev + 1);
+        navigate(routePath.academy.overview);
+      },
+    });
+  }, [navigate]);
 
   const menuItems = useMemo(() => {
     const menuList = [
@@ -140,22 +158,7 @@ export const PageHeader = ({ isLoggedIn }) => {
           document.activeElement.blur();
         }
         setNavKey((prev) => prev + 1);
-        showIdcAccessRequestModal({
-          force: true,
-          navigate,
-          onDiscard: () => {
-            if (
-              typeof document !== "undefined" &&
-              document.activeElement?.blur
-            ) {
-              document.activeElement.blur();
-            }
-            setNavKey((prev) => prev + 1);
-          },
-          onExplore: () => {
-            setNavKey((prev) => prev + 1);
-          },
-        });
+        openIdcAccessModal();
         setDrawerVisible(false);
         return;
       }
@@ -222,22 +225,7 @@ export const PageHeader = ({ isLoggedIn }) => {
             ),
             onClick: () => {
               if (!hasIdcAccess) {
-                showIdcAccessRequestModal({
-                  force: true,
-                  navigate,
-                  onDiscard: () => {
-                    if (
-                      typeof document !== "undefined" &&
-                      document.activeElement?.blur
-                    ) {
-                      document.activeElement.blur();
-                    }
-                    setNavKey((prev) => prev + 1);
-                  },
-                  onExplore: () => {
-                    setNavKey((prev) => prev + 1);
-                  },
-                });
+                openIdcAccessModal();
                 return;
               }
               navigate(routePath.idc.dashboard);
@@ -277,6 +265,7 @@ export const PageHeader = ({ isLoggedIn }) => {
     profileTargetRoute,
     navigate,
     handleLogout,
+    openIdcAccessModal,
   ]);
 
   const avatarDropdown = isLoggedIn ? (
@@ -294,6 +283,11 @@ export const PageHeader = ({ isLoggedIn }) => {
       trigger={["click"]}
       placement="bottomRight"
       overlayClassName="header-avatar-dropdown"
+      onOpenChange={(open) => {
+        if (open) {
+          setDrawerVisible(false);
+        }
+      }}
     >
       <button
         type="button"
@@ -372,7 +366,9 @@ export const PageHeader = ({ isLoggedIn }) => {
               <div className="mobile-header-actions">
                 {avatarDropdown}
                 <Button
-                  icon={drawerVisible ? <CloseOutlined /> : <MenuOutlined />}
+                  icon={
+                    drawerVisible ? <CloseSquareOutlined /> : <MenuOutlined />
+                  }
                   onClick={toggleDrawer}
                   type="text"
                   data-testid="button-mobile-menu"
@@ -380,11 +376,18 @@ export const PageHeader = ({ isLoggedIn }) => {
                 />
               </div>
               <Drawer
-                placement="right"
-                closable
+                placement="top"
+                height="auto"
+                closable={false}
                 onClose={toggleDrawer}
                 open={drawerVisible}
+                rootClassName="drawer-menu-root"
                 className="drawer-menu-wrapper"
+                rootStyle={{
+                  top: 80,
+                  height: "calc(100vh - 80px)",
+                  zIndex: 990,
+                }}
               >
                 <Menu
                   key={`mobile-nav-${navKey}`}

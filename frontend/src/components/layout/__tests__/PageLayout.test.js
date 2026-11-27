@@ -12,6 +12,7 @@ jest.mock("../../../hooks/useSignOut", () => () => mockSignOut);
 describe("PageLayout Component & Header Navigation", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    Modal.destroyAll();
     window.innerWidth = 1024;
     act(() => {
       UserState.update((s) => {
@@ -242,6 +243,82 @@ describe("PageLayout Component & Header Navigation", () => {
 
       modalSpy.mockRestore();
     });
+
+    it("navigates to /academy/overview when clicking Explore academy from navbar or switcher modal", () => {
+      const modalSpy = jest.spyOn(Modal, "info").mockImplementation(() => ({
+        destroy: jest.fn(),
+      }));
+
+      render(
+        <MemoryRouter initialEntries={["/"]}>
+          <Routes>
+            <Route
+              path={routePath.academy.overview}
+              element={
+                <div data-testid="academy-overview-target">
+                  Academy Overview
+                </div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByText("Income Driver Calculator"));
+      const modalConfig = modalSpy.mock.calls[0][0];
+      const { unmount } = render(modalConfig.content);
+      fireEvent.click(screen.getByTestId("button-modal-explore"));
+      expect(screen.getByTestId("academy-overview-target")).toBeInTheDocument();
+
+      unmount();
+      modalSpy.mockRestore();
+    });
+
+    it("navigates to /academy/overview when clicking Explore academy from avatar switcher modal", () => {
+      const modalSpy = jest.spyOn(Modal, "info").mockImplementation(() => ({
+        destroy: jest.fn(),
+      }));
+
+      render(
+        <MemoryRouter initialEntries={["/academy"]}>
+          <Routes>
+            <Route
+              path={routePath.academy.overview}
+              element={
+                <div data-testid="academy-overview-target">
+                  Academy Overview
+                </div>
+              }
+            />
+            <Route path="*" element={<PageHeader isLoggedIn={true} />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      fireEvent.click(screen.getByTestId("switcher-idc"));
+      const modalConfig = modalSpy.mock.calls[0][0];
+      const { unmount } = render(modalConfig.content);
+      fireEvent.click(screen.getByTestId("button-modal-explore"));
+      expect(screen.getByTestId("academy-overview-target")).toBeInTheDocument();
+
+      unmount();
+      modalSpy.mockRestore();
+    });
+
+    it("does not highlight IDC as active on /income-driver-calculator/faq for Academy-only user", () => {
+      render(
+        <MemoryRouter initialEntries={[routePath.idc.faq]}>
+          <PageHeader isLoggedIn={true} />
+        </MemoryRouter>
+      );
+
+      fireEvent.click(screen.getByTestId("header-avatar-btn"));
+      const idcItem = screen.getByTestId("switcher-idc").closest("li");
+      expect(idcItem).not.toHaveClass("tool-item-active");
+      expect(idcItem).toHaveClass("tool-item-locked");
+    });
   });
 
   describe("Admin Role Menu Item", () => {
@@ -409,6 +486,39 @@ describe("PageLayout Component & Header Navigation", () => {
       expect(screen.queryByTestId("drawer-user-card")).not.toBeInTheDocument();
       fireEvent.click(drawerLoginBtn);
       expect(screen.getByTestId("login-route-target")).toBeInTheDocument();
+    });
+
+    it("uses mobile top-bar layout on tablet viewports (820px) and closes drawer when avatar dropdown opens", () => {
+      window.innerWidth = 820;
+      act(() => {
+        UserState.update((s) => {
+          s.id = 6;
+          s.fullname = "Tablet User";
+          s.email = "tablet@idhtrade.org";
+          s.role = "user";
+          s.tools = ["idc", "academy"];
+        });
+      });
+
+      render(
+        <MemoryRouter initialEntries={["/academy"]}>
+          <PageHeader isLoggedIn={true} />
+        </MemoryRouter>
+      );
+
+      const avatarBtn = screen.getByTestId("header-avatar-btn");
+      const menuBtn = screen.getByTestId("button-mobile-menu");
+      expect(avatarBtn).toBeInTheDocument();
+      expect(menuBtn).toBeInTheDocument();
+
+      fireEvent.click(menuBtn);
+      expect(document.querySelector(".ant-drawer-open")).toBeInTheDocument();
+
+      fireEvent.click(avatarBtn);
+      expect(screen.getByTestId("user-info-card")).toBeInTheDocument();
+      expect(
+        document.querySelector(".ant-drawer-open")
+      ).not.toBeInTheDocument();
     });
   });
 

@@ -96,7 +96,6 @@ describe("ContentLayout admin tabs", () => {
   });
 
   it("renders IDCSubMenu without legacy Logout button for IDC admin on /admin/users", () => {
-    window.history.pushState({}, "", "/admin/users");
     UserState.update((s) => {
       s.id = 10;
       s.role = "admin";
@@ -126,11 +125,9 @@ describe("ContentLayout admin tabs", () => {
 
     expect(screen.getByText("Cases Overview")).toBeInTheDocument();
     expect(screen.queryByText("Logout")).not.toBeInTheDocument();
-    window.history.pushState({}, "", "/");
   });
 
   it("suppresses IDCSubMenu on /admin/users for Academy-only admin without idc tool", () => {
-    window.history.pushState({}, "", "/admin/users");
     UserState.update((s) => {
       s.id = 11;
       s.role = "admin";
@@ -159,6 +156,5 @@ describe("ContentLayout admin tabs", () => {
     );
 
     expect(screen.queryByText("Cases Overview")).not.toBeInTheDocument();
-    window.history.pushState({}, "", "/");
   });
 });

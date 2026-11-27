@@ -5,8 +5,7 @@ import {
   getAuthenticatedHomeRoute,
 } from "./paths";
 
-const showIDCSubMenu = () => {
-  const pathname = window.location.pathname;
+const showIDCSubMenu = (pathname = window.location.pathname) => {
   if (
     pathname.includes("/income-driver-calculator") ||
     pathname.includes("/admin")

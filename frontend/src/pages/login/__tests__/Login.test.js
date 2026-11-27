@@ -603,6 +603,73 @@ describe("Login Component (Better Income Toolkit)", () => {
       });
     });
 
+    it("preserves query params on Toolkit landing ?from=/?utm_source=newsletter and IDC landing for Academy-only users", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-toolkit-utm",
+          user: {
+            id: 461,
+            email: "learner@akvo.org",
+            role: "user",
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=%2F%3Futm_source%3Dnewsletter"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "learner@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/?utm_source=newsletter", {
+          replace: true,
+          state: { fromLogin: true },
+        });
+      });
+
+      jest.clearAllMocks();
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-idc-utm",
+          user: {
+            id: 462,
+            email: "learner2@akvo.org",
+            role: "user",
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent([
+        "/login?from=%2Fincome-driver-calculator%3Futm_source%3Dpromo",
+      ]);
+
+      const emailInputs = screen.getAllByPlaceholderText("Email");
+      const passwordInputs = screen.getAllByPlaceholderText("Password");
+      const loginBtns = screen.getAllByTestId("button-login");
+
+      fireEvent.change(emailInputs[emailInputs.length - 1], {
+        target: { value: "learner2@akvo.org" },
+      });
+      fireEvent.change(passwordInputs[passwordInputs.length - 1], {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(loginBtns[loginBtns.length - 1]);
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith("/", {
+          replace: true,
+          state: { fromLogin: true, unauthorizedIDC: true },
+        });
+      });
+    });
+
     it("returns Academy-only user from ?from=/tools-and-resources and ?from=/income-driver-calculator/faq", async () => {
       api.post.mockResolvedValueOnce({
         data: {
