@@ -30,6 +30,12 @@ export const selectProps = {
   },
 };
 
+// Toolbar filter dropdowns on the admin pages
+export const filterSelectProps = (windowInnerHeight = window.innerHeight) => ({
+  ...selectProps,
+  style: { width: Math.max(150, Math.round(windowInnerHeight * 0.175)) },
+});
+
 export const regexQuestionId = /#(\d+)/;
 
 export const determineDecimalRound = (value) => (value % 1 === 0 ? 0 : 2);

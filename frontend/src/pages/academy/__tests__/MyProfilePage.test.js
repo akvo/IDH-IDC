@@ -12,7 +12,7 @@ import { Form, notification } from "antd";
 import UserState, { defaultUserState } from "../../../store/user";
 import academyService from "../services/academy";
 import MyProfilePage from "../MyProfilePage";
-import AccountHeroBanner, { ToolTags } from "../components/AccountHeroBanner";
+import AccountHeroBanner from "../components/AccountHeroBanner";
 import PersonalInfoCard from "../components/PersonalInfoCard";
 import AdditionalInfoCard from "../components/AdditionalInfoCard";
 import CommodityTagSelector from "../components/CommodityTagSelector";
@@ -160,27 +160,6 @@ describe("AccountHeroBanner", () => {
   it("has no Continue learning button", () => {
     render(<AccountHeroBanner initials="JD" fullName="Jane Doe" email="" />);
     expect(screen.queryByText("Continue learning")).not.toBeInTheDocument();
-  });
-});
-
-describe("ToolTags", () => {
-  it.each([
-    [["academy"], ["LI Academy"]],
-    [["idc"], ["IDC"]],
-    [
-      ["idc", "academy"],
-      ["LI Academy", "IDC"],
-    ],
-  ])("shows the badges for tools %j", (tools, labels) => {
-    render(<ToolTags tools={tools} />);
-    expect(
-      screen.getAllByTestId(/^tool-tag-/).map((tag) => tag.textContent)
-    ).toEqual(labels);
-  });
-
-  it("renders nothing without tools", () => {
-    const { container } = render(<ToolTags tools={[]} />);
-    expect(container).toBeEmptyDOMElement();
   });
 });
 

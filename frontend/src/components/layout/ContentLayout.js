@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Breadcrumb, Card, Tabs, Affix, Row, Col, Button } from "antd";
 import {
   HomeOutlined,
@@ -8,8 +8,8 @@ import {
 } from "@ant-design/icons";
 import { adminRole } from "../../store/static";
 import { UserState } from "../../store";
-import { useNavigate, Link } from "react-router-dom";
-import { showIDCSubMenu } from "../route";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { routePath, showIDCSubMenu } from "../route";
 import { IDCSubMenu } from "../../pages/cases/components";
 
 const tabItems = [
@@ -27,6 +27,11 @@ const tabItems = [
     key: "/admin/tags",
     label: "Manage Tags",
     value: "tag",
+  },
+  {
+    key: routePath.admin.academyUserStatistics,
+    label: "LI Academy User Statistics",
+    value: "academy-user-statistics",
   },
 ];
 
@@ -50,15 +55,16 @@ const ContentLayout = ({
   const hasBreadcrumb = breadcrumbItems.length;
   const renderCard = hasBreadcrumb || title;
   const userRole = UserState.useState((s) => s.role);
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  const { pathname } = useLocation();
+  const currentPath = pathname.replace(/\/+$/, "") || "/";
 
   const handleOnClickTab = (key) => {
-    setCurrentPath(key);
     navigate(key);
   };
 
+  // Exact match: "user" is also part of "/admin/academy-user-statistics"
   const activeTabMenu = useMemo(() => {
-    return tabItems.find((x) => currentPath.includes(x.value));
+    return tabItems.find((x) => x.key === currentPath);
   }, [currentPath]);
 
   if (!renderCard) {
@@ -157,10 +163,10 @@ const ContentLayout = ({
 
           {adminRole.includes(userRole) &&
           currentPath.includes("/admin/") &&
-          showTabItemsForPath.includes(window.location.pathname) ? (
+          showTabItemsForPath.includes(currentPath) ? (
             <Tabs
               data-testid="admin-tabs-menu"
-              activeKey={activeTabMenu.key}
+              activeKey={activeTabMenu?.key}
               items={tabItems}
               tabBarGutter={48}
               onChange={handleOnClickTab}

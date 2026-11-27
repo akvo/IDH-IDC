@@ -150,7 +150,7 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
       expect(grantSwitch).toHaveAttribute("aria-checked", "false");
     });
 
-    expect(screen.getByText("Academy")).toBeInTheDocument();
+    expect(screen.getByText("LI Academy")).toBeInTheDocument();
   });
 
   it("does NOT render Grant IDC Access switch when creating a new user", async () => {
@@ -532,7 +532,7 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
   });
 
   describe("Revoke IDC Tool Access Flow", () => {
-    it("renders 'Revoke IDC Access' button when editing user with idc in tools", async () => {
+    it("renders 'Remove IDC Access' button when editing user with idc in tools", async () => {
       api.get.mockResolvedValueOnce({ data: idcUser });
 
       renderComponent("/admin/user/102");
@@ -543,7 +543,7 @@ describe("UserForm Component - Grant IDC Access & Company Linkage Workflow", () 
 
       expect(screen.getByTestId("revoke-idc-btn")).toBeInTheDocument();
       expect(
-        screen.getByText("Revoke IDC Access", { selector: ".revoke-idc-label" })
+        screen.getByText("Remove IDC Access", { selector: ".revoke-idc-label" })
       ).toBeInTheDocument();
       expect(screen.queryByTestId("grant-idc-switch")).not.toBeInTheDocument();
     });

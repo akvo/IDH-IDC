@@ -14,7 +14,6 @@ import {
   message,
   Switch,
   Tag,
-  Space,
   Divider,
   Popconfirm,
   Modal,
@@ -32,6 +31,7 @@ import { UserState, UIState } from "../../../store";
 import { api } from "../../../lib";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath } from "../../../components/route";
+import ToolTags from "../../../components/common/ToolTags";
 
 const transformToSelectOptions = (values) => {
   return values.map((x) => ({
@@ -771,20 +771,8 @@ const UserForm = () => {
                   data-testid="tool-access-card"
                 >
                   <div className="current-tools-section">
-                    <span className="current-tools-label">Current Access:</span>{" "}
-                    {userTools.includes("academy") ||
-                    userTools.includes("idc") ? (
-                      <Space size={4} wrap>
-                        {userTools.includes("academy") && (
-                          <Tag color="blue">Academy</Tag>
-                        )}
-                        {userTools.includes("idc") && (
-                          <Tag color="green">IDC</Tag>
-                        )}
-                      </Space>
-                    ) : (
-                      "-"
-                    )}
+                    <span className="current-tools-label">Current Access:</span>
+                    <ToolTags tools={userTools} emptyText="-" />
                     {userTools.includes("idc") ? (
                       <p className="tool-access-desc">
                         This user already has access to the Income Driver
@@ -800,11 +788,11 @@ const UserForm = () => {
                   {userTools.includes("idc") && (
                     <div className="revoke-idc-row">
                       <span className="revoke-idc-label">
-                        Revoke IDC Access
+                        Remove IDC Access
                       </span>
                       <Popconfirm
-                        title="Revoke IDC Access"
-                        description="Are you sure you want to revoke IDC access for this user? Their company linkage will be removed."
+                        title="Remove IDC Access"
+                        description="Are you sure you want to remove IDC access for this user? Their company linkage will be removed."
                         okText="Yes"
                         cancelText="No"
                         placement="leftBottom"
@@ -814,11 +802,10 @@ const UserForm = () => {
                         <Button
                           danger
                           type="primary"
-                          size="small"
                           loading={revokingIdc}
                           data-testid="revoke-idc-btn"
                         >
-                          Revoke IDC Access
+                          Remove IDC Access
                         </Button>
                       </Popconfirm>
                     </div>
@@ -889,7 +876,6 @@ const UserForm = () => {
                           <Button
                             danger
                             type="primary"
-                            size="small"
                             loading={actionLoading}
                             disabled={
                               actionLoading ||
@@ -915,7 +901,6 @@ const UserForm = () => {
                         >
                           <Button
                             type="primary"
-                            size="small"
                             className="button-reactivate"
                             loading={actionLoading}
                             disabled={actionLoading}
@@ -996,7 +981,6 @@ const UserForm = () => {
             <Button
               className="button button-submit button-secondary"
               htmlType="submit"
-              style={{ width: "200px", float: "left" }}
               loading={submitting}
             >
               {submitLabel}

@@ -1,31 +1,6 @@
 import React from "react";
-import { Button, Tag } from "antd";
-
-// Non-editable badges for the tools the user can use (Figma 13048:10177)
-const TOOL_TAGS = [
-  { tool: "academy", label: "LI Academy", className: "tool-tag--academy" },
-  { tool: "idc", label: "IDC", className: "tool-tag--idc" },
-];
-
-export const ToolTags = ({ tools = [] }) => {
-  const visible = TOOL_TAGS.filter(({ tool }) => tools.includes(tool));
-  if (!visible.length) {
-    return null;
-  }
-  return (
-    <div className="account-hero-banner__tools" data-testid="tool-tags">
-      {visible.map(({ tool, label, className }) => (
-        <Tag
-          key={tool}
-          className={`tool-tag ${className}`}
-          data-testid={`tool-tag-${tool}`}
-        >
-          {label}
-        </Tag>
-      ))}
-    </div>
-  );
-};
+import { Button } from "antd";
+import ToolTags from "../../../components/common/ToolTags";
 
 const AccountHeroBanner = ({
   initials,
@@ -60,7 +35,7 @@ const AccountHeroBanner = ({
           >
             {email}
           </p>
-          <ToolTags tools={tools} />
+          <ToolTags tools={tools} className="account-hero-banner__tools" />
         </div>
         <div className="account-hero-banner__actions">
           {!isEditing ? (

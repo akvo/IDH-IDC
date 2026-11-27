@@ -20,10 +20,11 @@ import {
   message,
   Tag,
 } from "antd";
-import { selectProps } from "../../../lib";
+import { filterSelectProps } from "../../../lib";
 import "./user.scss";
 import { LINK_TO_CASE_PROD } from "../../../store/static";
 import { routePath } from "../../../components/route";
+import ToolTags from "../../../components/common/ToolTags";
 import { useWindowDimensions } from "../../../hooks";
 import { UIState, UserState } from "../../../store";
 
@@ -34,11 +35,6 @@ const defData = {
   total: 0,
   total_page: 1,
 };
-
-const filterProps = (windowInnerHeight = window.innerHeight) => ({
-  ...selectProps,
-  style: { width: windowInnerHeight * 0.175 },
-});
 
 const userRoleOptions = [
   {
@@ -342,29 +338,16 @@ const Users = () => {
       },
     },
     {
-      title: "Tool Access",
-      dataIndex: "tools",
-      key: "tools",
-      render: (tools) => {
-        const userTools = Array.isArray(tools) ? tools : [];
-        const hasIdc = userTools.includes("idc");
-        const hasAcademy = userTools.includes("academy");
-        if (!hasIdc && !hasAcademy) {
-          return "-";
-        }
-        return (
-          <Space size={4} wrap>
-            {hasIdc && <Tag color="green">IDC</Tag>}
-            {hasAcademy && <Tag color="blue">Academy</Tag>}
-          </Space>
-        );
-      },
-    },
-    {
       title: "Company",
       dataIndex: "companyName",
       key: "companyName",
       sorter: (a, b) => a.companyName.localeCompare(b.companyName),
+    },
+    {
+      title: "Tools",
+      dataIndex: "tools",
+      key: "tools",
+      render: (tools) => <ToolTags tools={tools} emptyText="-" />,
     },
     {
       title: "Status",
@@ -521,7 +504,7 @@ const Users = () => {
         otherFilters={
           <>
             <Select
-              {...filterProps(windowInnerHeight)}
+              {...filterSelectProps(windowInnerHeight)}
               allowClear
               options={userRoleOptions}
               placeholder="User Role"
@@ -534,7 +517,7 @@ const Users = () => {
               data-testid="filter-user-role"
             />
             <Select
-              {...filterProps(windowInnerHeight)}
+              {...filterSelectProps(windowInnerHeight)}
               allowClear
               options={companyWithUserOptions}
               placeholder="Company"
@@ -547,16 +530,16 @@ const Users = () => {
               data-testid="filter-company"
             />
             <Select
-              {...filterProps(windowInnerHeight)}
+              {...filterSelectProps(windowInnerHeight)}
               allowClear
               options={toolAccessOptions}
-              placeholder="Tool Access"
+              placeholder="All tools"
               value={toolAccess}
               onChange={(value) => {
                 setCurrentPage(1);
                 setToolAccess(value);
               }}
-              aria-label="Filter by Tool Access"
+              aria-label="Filter by tool"
               data-testid="filter-tool-access"
             />
           </>

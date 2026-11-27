@@ -451,6 +451,18 @@
           font-size: 0.95rem;
           font-weight: 600;
           color: #8c8c8c;
+
+          @media (max-width: 1366px) {
+            font-size: 14px;
+          }
+
+          @media (max-width: 768px) {
+            font-size: 13px;
+          }
+
+          @media (max-width: 576px) {
+            font-size: 12px;
+          }
         }
 
         .title-wrapper {
@@ -464,6 +476,21 @@
           font-weight: 600;
           padding-top: 4px;
           color: $primary-color;
+
+          @media (max-width: 1366px) {
+            font-size: 22px;
+            line-height: 30px;
+          }
+
+          @media (max-width: 768px) {
+            font-size: 20px;
+            line-height: 28px;
+          }
+
+          @media (max-width: 576px) {
+            font-size: 18px;
+            line-height: 24px;
+          }
         }
 
         .subTitle {
@@ -498,6 +525,36 @@
           font-size: 1rem;
           font-weight: 700;
           background: $bg-color-grey;
+        }
+      }
+
+      @media (max-width: 1366px) {
+        .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab {
+          margin-left: 32px !important;
+        }
+
+        .ant-tabs-nav-wrap .ant-tabs-tab-btn {
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab {
+          margin-left: 20px !important;
+        }
+
+        .ant-tabs-nav-wrap .ant-tabs-tab-btn {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab {
+          margin-left: 16px !important;
+        }
+
+        .ant-tabs-nav-wrap .ant-tabs-tab-btn {
+          font-size: 12px;
         }
       }
     }

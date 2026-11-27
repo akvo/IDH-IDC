@@ -1,6 +1,7 @@
 @import "../../../variables.scss";
 
-#user {
+#user,
+#root #user {
   .user-form-container {
     .ant-card {
       margin: 16px 0;
@@ -34,9 +35,11 @@
       .current-tools-section {
         margin-bottom: 16px;
 
+        // "Current Access:" sits above the tool badges (Figma 13033:15051)
         .current-tools-label {
-          font-weight: 500;
-          margin-right: 8px;
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 600;
         }
 
         .tool-access-desc {
@@ -119,6 +122,152 @@
         .ant-divider {
           margin: 16px 0;
         }
+      }
+    }
+  }
+
+  @media (max-width: 1366px) {
+    .table-content-container {
+      .ant-table-title h4 {
+        font-size: 15px;
+      }
+
+      .ant-table-title .ant-checkbox-wrapper {
+        font-size: 13px;
+      }
+
+      .ant-input,
+      .ant-select-selection-item,
+      .ant-select-selection-placeholder {
+        font-size: 13px;
+      }
+
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        font-size: 13px;
+      }
+    }
+
+    .user-form-container {
+      .ant-card-head-title {
+        font-size: 15px;
+      }
+
+      .ant-form-item-label > label,
+      .ant-input,
+      .ant-select-selection-item,
+      .ant-select-selection-placeholder {
+        font-size: 13px;
+      }
+
+      .tool-access-card {
+        .current-tools-section .current-tools-label,
+        .grant-idc-row .grant-idc-label,
+        .revoke-idc-row .revoke-idc-label,
+        .account-status-action-row .account-status-label {
+          font-size: 13px;
+        }
+
+        .current-tools-section .tool-access-desc {
+          font-size: 12px;
+        }
+      }
+
+      .self-reported-org {
+        font-size: 12px;
+      }
+
+      .ant-btn {
+        font-size: 13px;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .table-content-container {
+      .ant-table-title h4 {
+        font-size: 14px;
+      }
+
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+    }
+
+    .user-form-container {
+      .ant-card-head-title {
+        font-size: 15px;
+      }
+
+      .tool-access-card {
+        .grant-idc-row,
+        .revoke-idc-row,
+        .account-status-action-row {
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 576px) {
+    .table-content-container {
+      .ant-table-title h4 {
+        font-size: 14px;
+      }
+
+      .ant-table-title .ant-checkbox-wrapper {
+        font-size: 12px;
+      }
+
+      .ant-table-thead > tr > th,
+      .ant-table-tbody > tr > td {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .ant-pagination {
+        font-size: 12px;
+      }
+    }
+
+    .user-form-container {
+      .ant-card-head-title {
+        font-size: 14px;
+      }
+
+      .ant-form-item-label > label,
+      .ant-input,
+      .ant-select-selection-item,
+      .ant-select-selection-placeholder {
+        font-size: 13px;
+      }
+
+      .tool-access-card {
+        .current-tools-section .current-tools-label,
+        .grant-idc-row .grant-idc-label,
+        .revoke-idc-row .revoke-idc-label,
+        .account-status-action-row .account-status-label {
+          font-size: 13px;
+        }
+
+        .current-tools-section .tool-access-desc {
+          font-size: 12px;
+        }
+      }
+
+      .self-reported-org {
+        font-size: 12px;
+      }
+
+      .ant-btn {
+        font-size: 12px;
+      }
+
+      .button-submit {
+        width: 100%;
       }
     }
   }
