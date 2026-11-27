@@ -94,4 +94,71 @@ describe("ContentLayout admin tabs", () => {
 
     expect(screen.queryByTestId("admin-tabs-menu")).not.toBeInTheDocument();
   });
+
+  it("renders IDCSubMenu without legacy Logout button for IDC admin on /admin/users", () => {
+    window.history.pushState({}, "", "/admin/users");
+    UserState.update((s) => {
+      s.id = 10;
+      s.role = "admin";
+      s.tools = ["idc", "academy"];
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/admin/users"]}>
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <ContentLayout
+                breadcrumbItems={[
+                  { title: "Home", href: "/" },
+                  { title: "Users", href: "/admin/users" },
+                ]}
+                title="User Management"
+              >
+                <div data-testid="page" />
+              </ContentLayout>
+            }
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Cases Overview")).toBeInTheDocument();
+    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
+    window.history.pushState({}, "", "/");
+  });
+
+  it("suppresses IDCSubMenu on /admin/users for Academy-only admin without idc tool", () => {
+    window.history.pushState({}, "", "/admin/users");
+    UserState.update((s) => {
+      s.id = 11;
+      s.role = "admin";
+      s.tools = ["academy"];
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/admin/users"]}>
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <ContentLayout
+                breadcrumbItems={[
+                  { title: "Home", href: "/" },
+                  { title: "Users", href: "/admin/users" },
+                ]}
+                title="User Management"
+              >
+                <div data-testid="page" />
+              </ContentLayout>
+            }
+          />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.queryByText("Cases Overview")).not.toBeInTheDocument();
+    window.history.pushState({}, "", "/");
+  });
 });

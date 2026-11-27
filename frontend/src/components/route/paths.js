@@ -39,6 +39,7 @@ const routePath = {
     verify: "/verify-academy",
   },
   admin: {
+    users: "/admin/users",
     academyUserStatistics: "/admin/academy-user-statistics",
   },
 };

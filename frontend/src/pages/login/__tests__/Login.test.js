@@ -568,6 +568,142 @@ describe("Login Component (Better Income Toolkit)", () => {
         });
       });
     });
+
+    it("returns user to exact public Toolkit ?from= origin with query params after login", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-origin-query",
+          user: {
+            id: 46,
+            email: "learner@akvo.org",
+            role: "user",
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=%2Fprocurement-library%3Ftab%3D2"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "learner@akvo.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/procurement-library?tab=2",
+          {
+            replace: true,
+            state: { fromLogin: true },
+          }
+        );
+      });
+    });
+
+    it("returns Academy-only user from ?from=/tools-and-resources and ?from=/income-driver-calculator/faq", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-faq",
+          user: {
+            id: 47,
+            email: "faq@academy.org",
+            role: "user",
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=%2Fincome-driver-calculator%2Ffaq"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "faq@academy.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/income-driver-calculator/faq",
+          {
+            replace: true,
+            state: { fromLogin: true },
+          }
+        );
+      });
+    });
+
+    it("allows Academy-only admin to return to /admin/academy-user-statistics while blocking non-admin", async () => {
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-admin-academy",
+          user: {
+            id: 48,
+            email: "admin@academy.org",
+            role: "admin",
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=%2Fadmin%2Facademy-user-statistics"]);
+
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "admin@academy.org" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(screen.getByTestId("button-login"));
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/admin/academy-user-statistics",
+          {
+            replace: true,
+            state: { fromLogin: true },
+          }
+        );
+      });
+
+      jest.clearAllMocks();
+      api.post.mockResolvedValueOnce({
+        data: {
+          access_token: "mock-token-user-admin-block",
+          user: {
+            id: 49,
+            email: "user@academy.org",
+            role: "user",
+            tools: ["academy"],
+          },
+        },
+      });
+
+      renderComponent(["/login?from=%2Fadmin%2Fusers"]);
+
+      const emailInputs = screen.getAllByPlaceholderText("Email");
+      const passwordInputs = screen.getAllByPlaceholderText("Password");
+      const loginBtns = screen.getAllByTestId("button-login");
+
+      fireEvent.change(emailInputs[emailInputs.length - 1], {
+        target: { value: "user@academy.org" },
+      });
+      fireEvent.change(passwordInputs[passwordInputs.length - 1], {
+        target: { value: "pass123" },
+      });
+      fireEvent.click(loginBtns[loginBtns.length - 1]);
+
+      await waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith(routePath.academy.overview, {
+          replace: true,
+          state: { fromLogin: true, unauthorizedIDC: true },
+        });
+      });
+    });
   });
 
   describe("Forgot Password & Password Changed Flow", () => {
@@ -653,6 +789,20 @@ describe("Login Component (Better Income Toolkit)", () => {
       renderComponent(["/login?from=/"]);
 
       expect(mockNavigate).toHaveBeenCalledWith("/", {
+        replace: true,
+      });
+    });
+
+    it("redirects authenticated user with public Toolkit origin (?from=/cocoa-income-inventory) immediately", () => {
+      UserState.update((s) => {
+        s.isAuthenticated = true;
+        s.authInitializing = false;
+        s.tools = ["academy"];
+      });
+
+      renderComponent(["/login?from=%2Fcocoa-income-inventory"]);
+
+      expect(mockNavigate).toHaveBeenCalledWith("/cocoa-income-inventory", {
         replace: true,
       });
     });

@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import "./idc-sub-menu.scss";
-import { Space, Menu, Affix } from "antd";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { LoadingOutlined, LogoutOutlined } from "@ant-design/icons";
+import { Menu, Affix } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 import { UserState } from "../../../store";
 import {
   adminRole,
@@ -10,9 +9,7 @@ import {
   LINK_TO_CASE_PROD,
   PROD_HOST,
 } from "../../../store/static";
-import { routePath } from "../../../components/route";
-import { showIDCSubMenu } from "../../../components/route";
-import { useSignOut } from "../../../hooks";
+import { routePath, showIDCSubMenu } from "../../../components/route";
 
 const IDCSubMenu = () => {
   const host = window.location.hostname;
@@ -21,10 +18,10 @@ const IDCSubMenu = () => {
     role: userRole,
     internal_user: isInternalUser,
     id: isLoggedIn,
+    tools: rawTools,
   } = UserState.useState();
-  const [loading, setLoading] = useState(false);
   const location = useLocation();
-  const signOut = useSignOut();
+  const hasIdcAccess = Array.isArray(rawTools) && rawTools.includes("idc");
 
   const activePathname = useMemo(() => {
     const paths = location.pathname.split("/");
@@ -110,7 +107,7 @@ const IDCSubMenu = () => {
     return items;
   }, [userRole, isInternalUser, isLoggedIn, host]);
 
-  if (!isLoggedIn || !showIDCSubMenu()) {
+  if (!isLoggedIn || !hasIdcAccess || !showIDCSubMenu()) {
     return "";
   }
 
@@ -129,29 +126,6 @@ const IDCSubMenu = () => {
             onClick={({ key }) => navigate(key)}
             selectedKeys={[activePathname]}
           />
-          <Link
-            className="nav-sign-in"
-            onClick={() => {
-              setLoading(true);
-              signOut();
-              setTimeout(() => {
-                setLoading(false);
-                navigate(routePath.idc.landing);
-              }, 500);
-            }}
-          >
-            {loading ? (
-              <Space>
-                <LoadingOutlined />
-                Sign out
-              </Space>
-            ) : (
-              <Space>
-                Logout
-                <LogoutOutlined />
-              </Space>
-            )}
-          </Link>
         </div>
       </Affix>
     </div>
