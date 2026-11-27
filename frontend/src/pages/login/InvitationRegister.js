@@ -157,7 +157,7 @@ const InvitationRegister = () => {
           <Input
             size="large"
             maxLength={250}
-            placeholder="Olivia Rhye"
+            placeholder="Enter your full name"
             autoComplete="name"
             data-testid="input-fullname"
           />

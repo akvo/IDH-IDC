@@ -160,7 +160,7 @@ const ForgotPassword = () => {
                     <Input
                       size="large"
                       data-testid="input-email"
-                      placeholder="olivia@idh.com"
+                      placeholder="Enter your email"
                     />
                   </Form.Item>
 

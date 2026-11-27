@@ -55,7 +55,7 @@ describe("ForgotPassword Component (Better Income Toolkit)", () => {
     expect(
       screen.getByText(/We’ll send you a link to set a new password\./i)
     ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("olivia@idh.com")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Enter your email")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Send reset link" })
     ).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("ForgotPassword Component (Better Income Toolkit)", () => {
 
     renderComponent();
 
-    const emailInput = screen.getByPlaceholderText("olivia@idh.com");
+    const emailInput = screen.getByPlaceholderText("Enter your email");
     fireEvent.change(emailInput, {
       target: { value: "practitioner@example.com" },
     });
@@ -142,7 +142,7 @@ describe("ForgotPassword Component (Better Income Toolkit)", () => {
 
     renderComponent();
 
-    const emailInput = screen.getByPlaceholderText("olivia@idh.com");
+    const emailInput = screen.getByPlaceholderText("Enter your email");
     fireEvent.change(emailInput, {
       target: { value: "unknown@example.com" },
     });
