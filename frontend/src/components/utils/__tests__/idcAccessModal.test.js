@@ -23,6 +23,9 @@ describe("FE-LOG-09: idcAccessModal Component & Gating Logic", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
+    Modal.info.mockImplementation(() => ({
+      destroy: jest.fn(),
+    }));
   });
 
   it("renders modal content with warning badge, title, explanatory body, and buttons", () => {
@@ -106,5 +109,63 @@ describe("FE-LOG-09: idcAccessModal Component & Gating Logic", () => {
 
     showIdcAccessRequestModal({ force: true });
     expect(Modal.info).toHaveBeenCalled();
+  });
+
+  it("renders 'Explore the Academy' label on mobile viewports (<= 600px)", () => {
+    window.innerWidth = 375;
+    render(<IdcAccessModalContent />);
+    expect(screen.getByTestId("button-modal-explore")).toHaveTextContent(
+      "Explore the Academy"
+    );
+    window.innerWidth = 1024;
+  });
+
+  it("handles showIdcAccessRequestModal discard + don't show again checkbox persistence", () => {
+    const onDiscard = jest.fn();
+    const navigate = jest.fn();
+    const instance = showIdcAccessRequestModal({ onDiscard, navigate });
+    const config = Modal.info.mock.calls[0][0];
+
+    render(config.content);
+
+    fireEvent.click(screen.getByTestId("checkbox-dont-show-again"));
+    fireEvent.click(screen.getByTestId("button-modal-discard"));
+
+    expect(localStorage.getItem("idh_dismiss_idc_access_warning")).toBe("true");
+    expect(instance.destroy).toHaveBeenCalled();
+    expect(onDiscard).toHaveBeenCalled();
+  });
+
+  it("handles showIdcAccessRequestModal explore navigation, custom onExplore, and onCancel", () => {
+    const navigate = jest.fn();
+    const instance = showIdcAccessRequestModal({ navigate });
+    const config = Modal.info.mock.calls[0][0];
+
+    const { unmount } = render(config.content);
+    fireEvent.click(screen.getByTestId("button-modal-explore"));
+
+    expect(instance.destroy).toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith("/academy/overview");
+    unmount();
+
+    jest.clearAllMocks();
+    localStorage.clear();
+    Modal.info.mockImplementation(() => ({
+      destroy: jest.fn(),
+    }));
+    const onExplore = jest.fn();
+    const onDiscard = jest.fn();
+    const instance2 = showIdcAccessRequestModal({ onExplore, onDiscard });
+    const config2 = Modal.info.mock.calls[0][0];
+
+    render(config2.content);
+    fireEvent.click(screen.getByTestId("checkbox-dont-show-again"));
+    fireEvent.click(screen.getByTestId("button-modal-explore"));
+    expect(instance2.destroy).toHaveBeenCalled();
+    expect(onExplore).toHaveBeenCalled();
+
+    config2.onCancel();
+    expect(localStorage.getItem("idh_dismiss_idc_access_warning")).toBe("true");
+    expect(onDiscard).toHaveBeenCalled();
   });
 });

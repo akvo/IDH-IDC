@@ -270,4 +270,42 @@ describe("PrivateRoutes Component", () => {
       expect(probe.state).toEqual({ unauthorizedIDC: true });
     }
   );
+
+  it.each([
+    ["admin", "/admin/users"],
+    ["super_admin", "/admin/academy-user-statistics"],
+  ])(
+    "allows Academy-only %s onto joint admin route %s without IDC tool access",
+    (role, adminUrl) => {
+      act(() => {
+        UserState.update((s) => {
+          s.id = 7;
+          s.active = true;
+          s.isAuthenticated = true;
+          s.role = role;
+          s.tools = ["academy"];
+        });
+      });
+
+      const { getByTestId, queryByTestId } = render(
+        <MemoryRouter initialEntries={[adminUrl]}>
+          <Routes>
+            <Route element={<PrivateRoutes />}>
+              <Route
+                path={adminUrl}
+                element={<div data-testid="joint-admin-page">Admin Page</div>}
+              />
+            </Route>
+            <Route
+              path={routePath.academy.landing}
+              element={<LocationCapture />}
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(getByTestId("joint-admin-page")).toBeInTheDocument();
+      expect(queryByTestId("academy-redirect-probe")).not.toBeInTheDocument();
+    }
+  );
 });

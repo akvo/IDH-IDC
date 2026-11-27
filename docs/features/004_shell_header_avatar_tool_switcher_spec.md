@@ -1,10 +1,18 @@
 # Feature Spec 004: Shell Header Avatar Dropdown Menu & In-App Tool Switcher
 
 > **Task Reference**: [TLSA-004] / GitHub Issue [#865](https://github.com/akvo/IDH-IDC/issues/865)  
+> **Status**: Implemented (#865) — Visual tokens, mobile header, and menu structure superseded by `docs/features/023_after_logged_in_avatar_menu_spec.md` (`[TLSA-016]` / #917)  
 > **Touchpoints**: `frontend/src/components/layout/PageLayout.js`, `frontend/src/App.scss`, `frontend/src/store/user.js`, `frontend/src/components/route/paths.js`, `frontend/src/components/layout/__tests__/PageLayout.test.js`  
 > **Component Stack**: Ant Design v5 (`Avatar`, `Dropdown`, `Menu`, `Modal`, `Tag`, `Drawer`, `Button`, `Space`, `Divider`)
 
 ---
+
+> [!NOTE]
+> **Superseded UI & Routing Details (`[TLSA-016]` / `#917`)**: See `docs/features/023_after_logged_in_avatar_menu_spec.md` for the latest 2026 Figma spec:
+> - Logged-out CTA renamed `"Sign In"` → outlined pill **`"Log in"`** encoding `pathname + search` in `?from=...`.
+> - Avatar updated from `36px` solid teal to `40px` `#F2F4F7` (`#475467` SemiBold initials, `0.75px` border, responsive `36px` at `<=1366px` and `32px` at `<=576px`).
+> - Dropdown updated to a `256px` card (`16px` radius): **`"Admin"`** placed directly below `"My Profile"`, active tool styled with `#EAF2F2` pill + `#01625F` text (no `<Tag>Current</Tag>`), gated IDC styled in `#A4A4A4` + `<LockOutlined />` (no `<Tag>No access</Tag>`), and `"Log out"` redirecting to `/` instead of `/login` (with the duplicate legacy `"Logout"` button removed from `frontend/src/pages/cases/components/IDCSubMenu.js`).
+> - Mobile header keeps the Avatar + `AccountDropdown` in the top bar beside `[≡ / ✕]`, removing duplicate user/switcher/footer blocks from the slide-out drawer; 5th navbar item renamed `"Other Tools & Resources"`.
 
 ## 1. Overview & 5W1H Discovery
 

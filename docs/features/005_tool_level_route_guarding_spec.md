@@ -1,6 +1,7 @@
 # [TLSA-005] Tool-Level Route Guarding & IDC Gatekeeping - Implementation Plan
 
 **GitHub Issue**: `#868` — `[TLSA-005] Security: Tool-Level Route Guarding & Confidential Data Gatekeeping`  
+**Status**: Implemented (`#868`) — Joint Admin route guard refined in `docs/features/023_after_logged_in_avatar_menu_spec.md` (`[TLSA-016]` / `#917`)  
 **Parent Spec**: `docs/features/002_toolkit_login_shared_access_spec.md` (`TASK-05`)  
 **Branch**: `feature/868-tool-level-route-guarding-idc-gatekeeping` (from `feature/857-db-schema-migration-tool-access-array`)
 
@@ -108,6 +109,9 @@ sequenceDiagram
   1. `!isAuthenticated` → `<Navigate to={paths.login} state={{ from: location }} replace />` (`UAC-05.3`).
   2. `isIdcRestrictedPath(location.pathname) && !userTools.includes("idc")` → `<Navigate to={routePath.academy.landing} replace state={{ unauthorizedIDC: true }} />` (`UAC-05.1`).
   3. Otherwise → `<Outlet />` (`UAC-05.2`).
+
+> [!NOTE]
+> **Joint Admin Shell Alignment (`#916` & `#917`)**: Following `#916` (`[TLSA-013]` Joint Admin Page) and `#917` (`[TLSA-016]`), `/admin/*` permits `admin` and `super_admin` roles (`canAccessAdmin`) in `frontend/src/components/route/PrivateRoutes.js` even when `!userTools.includes("idc")` (with `IDCSubMenu` suppressed and `ContentLayout` `<Affix offsetTop={80}>`), while non-admin Academy-only users remain blocked from `/admin/*`.
 
 - Also guard `/income-driver-calculator` (`frontend/src/pages/income-driver-calculator/Landing.js`): public visitors remain allowed to view the landing page, while authenticated users lacking `"idc"` (`!userTools.includes("idc")`) — including navigation from Home or Tools & Resources — are redirected to `/academy` with `state: { unauthorizedIDC: true }`.
 

@@ -12,13 +12,123 @@ import ImageRight from "../../assets/images/login-right-img.jpg";
 import Logo from "../../assets/images/logo.png";
 import { CustomEvent } from "@piwikpro/react-piwik-pro";
 import { routePath, getAuthenticatedHomeRoute } from "../../components/route";
-import { isIdcRestrictedPath } from "../../components/route/PrivateRoutes";
+import {
+  isAdminPath,
+  isIdcRestrictedPath,
+} from "../../components/route/PrivateRoutes";
+import { adminRole } from "../../store/static";
 import LoginAlertToast from "./components/LoginAlertToast";
 import VerifiedSuccessCard from "./components/VerifiedSuccessCard";
 
 const env = window?.__ENV__;
 const client_id = env?.client_id || "test";
 const client_secret = env?.client_secret || "test";
+
+const isSafeRedirect = (url) =>
+  typeof url === "string" &&
+  url.startsWith("/") &&
+  !url.startsWith("//") &&
+  !url.includes("\\") &&
+  !/[\r\n\t]/.test(url);
+
+const stripQuery = (url) =>
+  typeof url === "string" ? url.split(/[?#]/)[0] : null;
+
+const isGeneralDeepLink = (url) => {
+  if (!isSafeRedirect(url)) {
+    return false;
+  }
+  const pathname = stripQuery(url);
+  return (
+    pathname !== routePath.idc.landing &&
+    pathname !== "/" &&
+    pathname !== "/academy" &&
+    !pathname.startsWith("/academy/")
+  );
+};
+
+// Shared redirect resolver used both on mount (already authenticated) and on login submit
+const resolvePostLoginTarget = ({ search, state, tools = [], role = null }) => {
+  const searchParams = new URLSearchParams(search);
+  const originParam = searchParams.get("from");
+  const redirectParam = searchParams.get("redirect");
+  const fromState = state?.from?.pathname
+    ? `${state.from.pathname}${state.from.search || ""}`
+    : null;
+
+  const hasIdc = tools.includes("idc");
+  const isAdmin = adminRole.includes(role);
+
+  const originPath = stripQuery(originParam);
+  const redirectPath = stripQuery(redirectParam);
+  const fromStatePath = stripQuery(fromState);
+
+  const isFromIdcLanding =
+    originParam === "idc_landing" ||
+    originPath === routePath.idc.landing ||
+    redirectPath === routePath.idc.landing;
+
+  const isFromAcademy =
+    originParam === "academy_landing" ||
+    originPath === "/academy" ||
+    (typeof originPath === "string" && originPath.startsWith("/academy/")) ||
+    redirectPath === "/academy" ||
+    (typeof redirectPath === "string" &&
+      redirectPath.startsWith("/academy/")) ||
+    (typeof fromStatePath === "string" &&
+      (fromStatePath === "/academy" || fromStatePath.startsWith("/academy/")));
+
+  const isFromToolkitLanding =
+    originParam === "toolkit_landing" ||
+    originPath === "/" ||
+    redirectPath === "/" ||
+    fromStatePath === "/";
+
+  const candidateDeepLink =
+    (isGeneralDeepLink(redirectParam) ? redirectParam : null) ||
+    (isGeneralDeepLink(originParam) ? originParam : null) ||
+    (isGeneralDeepLink(fromState) ? fromState : null);
+
+  if (candidateDeepLink) {
+    const candidatePath = stripQuery(candidateDeepLink);
+    const canAccessCandidate =
+      !isIdcRestrictedPath(candidatePath) ||
+      candidatePath === routePath.idc.faq ||
+      hasIdc ||
+      (isAdminPath(candidatePath) && isAdmin);
+
+    if (canAccessCandidate) {
+      return { target: candidateDeepLink, unauthorizedIDC: false };
+    }
+    return { target: routePath.academy.overview, unauthorizedIDC: true };
+  }
+
+  if (isFromIdcLanding) {
+    if (hasIdc) {
+      return { target: routePath.idc.dashboard, unauthorizedIDC: false };
+    }
+    return { target: "/", unauthorizedIDC: true };
+  }
+
+  if (isFromAcademy) {
+    return { target: routePath.academy.overview, unauthorizedIDC: false };
+  }
+
+  if (isFromToolkitLanding) {
+    const toolkitTarget =
+      (originPath === "/" && isSafeRedirect(originParam)
+        ? originParam
+        : null) ||
+      (redirectPath === "/" && isSafeRedirect(redirectParam)
+        ? redirectParam
+        : null) ||
+      (fromStatePath === "/" && isSafeRedirect(fromState) ? fromState : null) ||
+      "/";
+    return { target: toolkitTarget, unauthorizedIDC: false };
+  }
+
+  return { target: getAuthenticatedHomeRoute(tools), unauthorizedIDC: false };
+};
 
 const Login = () => {
   const navigate = useNavigate();
@@ -35,6 +145,7 @@ const Login = () => {
   const contextAuthInitializing = useAuthInitializing();
   const userId = UserState.useState((s) => s.id);
   const userActive = UserState.useState((s) => s.active);
+  const userRole = UserState.useState((s) => s.role);
   const rawTools = UserState.useState((s) => s.tools);
 
   const authInitializing = contextAuthInitializing || storeAuthInitializing;
@@ -42,64 +153,25 @@ const Login = () => {
 
   useEffect(() => {
     if (!authInitializing && isAuthenticated) {
-      const currentSearchParams = new URLSearchParams(location.search);
-      const redirectParam = currentSearchParams.get("redirect");
-      const originParam = currentSearchParams.get("from");
-      const fromState = location.state?.from?.pathname;
       const tools = Array.isArray(rawTools) ? rawTools : [];
-      const hasIdc = tools.includes("idc");
-
-      let target;
-
-      const isFromAcademy =
-        originParam === "academy_landing" ||
-        originParam === "/academy" ||
-        (typeof originParam === "string" &&
-          originParam.startsWith("/academy/")) ||
-        redirectParam === "/academy" ||
-        (typeof redirectParam === "string" &&
-          redirectParam.startsWith("/academy/")) ||
-        (typeof fromState === "string" &&
-          (fromState === "/academy" || fromState.startsWith("/academy/")));
-
-      const isFromToolkitLanding =
-        originParam === "toolkit_landing" ||
-        originParam === "/" ||
-        redirectParam === "/" ||
-        fromState === "/";
-
-      if (isFromAcademy) {
-        target = routePath.academy.overview;
-      } else if (isFromToolkitLanding) {
-        target = "/";
-      } else if (
-        typeof redirectParam === "string" &&
-        redirectParam.startsWith("/") &&
-        !redirectParam.startsWith("//") &&
-        !redirectParam.includes("\\")
-      ) {
-        if (!isIdcRestrictedPath(redirectParam) || hasIdc) {
-          target = redirectParam;
-        } else {
-          target = getAuthenticatedHomeRoute(tools);
-        }
-      } else if (
-        typeof fromState === "string" &&
-        fromState.startsWith("/") &&
-        !fromState.startsWith("//") &&
-        !fromState.includes("\\")
-      ) {
-        if (!isIdcRestrictedPath(fromState) || hasIdc) {
-          target = fromState;
-        } else {
-          target = getAuthenticatedHomeRoute(tools);
-        }
-      } else {
-        target = getAuthenticatedHomeRoute(tools);
-      }
-      navigate(target, { replace: true });
+      const { target, unauthorizedIDC } = resolvePostLoginTarget({
+        search: location.search,
+        state: location.state,
+        tools,
+        role: userRole,
+      });
+      navigate(unauthorizedIDC ? getAuthenticatedHomeRoute(tools) : target, {
+        replace: true,
+      });
     }
-  }, [authInitializing, isAuthenticated, rawTools, navigate, location]);
+  }, [
+    authInitializing,
+    isAuthenticated,
+    rawTools,
+    userRole,
+    navigate,
+    location,
+  ]);
 
   const searchParams = new URLSearchParams(location.search);
   const isVerifiedParam = searchParams.get("verified") === "true";
@@ -245,101 +317,18 @@ const Login = () => {
           });
         }
 
-        const isSafeRedirect = (url) => {
-          return (
-            typeof url === "string" &&
-            url.startsWith("/") &&
-            !url.startsWith("//") &&
-            !url.includes("\\")
-          );
-        };
-
-        const currentSearchParams = new URLSearchParams(location.search);
-        const originParam = currentSearchParams.get("from");
-        const redirectParam = currentSearchParams.get("redirect");
-        const fromState = location.state?.from?.pathname;
-
-        const tools = user?.tools || [];
-        const hasIdc = tools.includes("idc");
-        const hasAcademy = tools.includes("academy");
-
-        const navigationState = { fromLogin: true };
-        let targetRoute;
-
-        // Origin classification
-        const isFromIdcLanding =
-          originParam === "idc_landing" ||
-          originParam === routePath.idc.landing ||
-          originParam === "/income-driver-calculator" ||
-          redirectParam === routePath.idc.landing ||
-          redirectParam === "/income-driver-calculator";
-
-        const isFromAcademy =
-          originParam === "academy_landing" ||
-          originParam === "/academy" ||
-          (typeof originParam === "string" &&
-            originParam.startsWith("/academy/")) ||
-          redirectParam === "/academy" ||
-          (typeof redirectParam === "string" &&
-            redirectParam.startsWith("/academy/")) ||
-          (typeof fromState === "string" &&
-            (fromState === "/academy" || fromState.startsWith("/academy/")));
-
-        const isFromToolkitLanding =
-          originParam === "toolkit_landing" ||
-          originParam === "/" ||
-          redirectParam === "/" ||
-          fromState === "/";
-
-        const candidateDeepLink =
-          (isSafeRedirect(redirectParam) &&
-          redirectParam !== routePath.idc.landing &&
-          redirectParam !== "/income-driver-calculator" &&
-          redirectParam !== "/" &&
-          !redirectParam.startsWith("/academy")
-            ? redirectParam
-            : null) ||
-          (isSafeRedirect(fromState) &&
-          fromState !== routePath.idc.landing &&
-          fromState !== "/income-driver-calculator" &&
-          fromState !== "/" &&
-          !fromState.startsWith("/academy")
-            ? fromState
-            : null);
-
-        if (candidateDeepLink) {
-          // Specific deep link workflow
-          if (hasIdc) {
-            targetRoute = candidateDeepLink;
-          } else if (isIdcRestrictedPath(candidateDeepLink)) {
-            // Academy-only user attempting to access restricted IDC path
-            targetRoute = routePath.academy.overview;
-            navigationState.unauthorizedIDC = true;
-          } else {
-            targetRoute = candidateDeepLink;
+        const { target: targetRoute, unauthorizedIDC } = resolvePostLoginTarget(
+          {
+            search: location.search,
+            state: location.state,
+            tools: user?.tools || [],
+            role: user?.role || null,
           }
-        } else if (isFromIdcLanding) {
-          if (hasIdc) {
-            targetRoute = routePath.idc.dashboard;
-          } else {
-            // Academy-only user logging in from IDC landing -> navigate to Toolkit Home with modal prompt
-            targetRoute = "/";
-            navigationState.unauthorizedIDC = true;
-          }
-        } else if (isFromAcademy) {
-          targetRoute = routePath.academy.overview;
-        } else if (isFromToolkitLanding) {
-          targetRoute = "/";
-        } else {
-          // Default fallbacks when no origin specified
-          if (hasIdc) {
-            targetRoute = routePath.idc.dashboard;
-          } else if (hasAcademy) {
-            targetRoute = routePath.academy.overview;
-          } else {
-            targetRoute = "/";
-          }
-        }
+        );
+
+        const navigationState = unauthorizedIDC
+          ? { fromLogin: true, unauthorizedIDC: true }
+          : { fromLogin: true };
 
         setTimeout(() => {
           navigate(targetRoute, { replace: true, state: navigationState });

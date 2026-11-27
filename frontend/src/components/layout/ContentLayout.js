@@ -55,7 +55,15 @@ const ContentLayout = ({
   const hasBreadcrumb = breadcrumbItems.length;
   const renderCard = hasBreadcrumb || title;
   const userRole = UserState.useState((s) => s.role);
+  const userId = UserState.useState((s) => s.id);
+  const rawTools = UserState.useState((s) => s.tools);
+  const hasIdcAccess = Array.isArray(rawTools) && rawTools.includes("idc");
   const { pathname } = useLocation();
+  const isSubMenuVisible =
+    !hideIDCSubMenu &&
+    Boolean(userId) &&
+    hasIdcAccess &&
+    showIDCSubMenu(pathname);
   const currentPath = pathname.replace(/\/+$/, "") || "/";
 
   const handleOnClickTab = (key) => {
@@ -81,7 +89,7 @@ const ContentLayout = ({
       {!hideIDCSubMenu ? <IDCSubMenu /> : ""}
       {/* EOL IDC Sub menu */}
 
-      <Affix offsetTop={showIDCSubMenu() ? 140 : 80} id="content-layout">
+      <Affix offsetTop={isSubMenuVisible ? 140 : 80} id="content-layout">
         <Card className="content-card-container" bordered={false}>
           <div className="content-card-wrapper">
             {siderCollapsedButton && setSiderCollapsed && (

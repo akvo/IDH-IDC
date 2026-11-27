@@ -179,13 +179,25 @@
         font-size: 16px;
         font-style: normal;
         font-weight: bold;
-        line-height: normal;
+        line-height: 1.2;
         border-left: 1px solid rgba(118, 118, 118, 0.2);
         padding-left: 10px;
 
         @media (max-width: 1366px) {
           font-size: 14px;
           padding-left: 8px;
+        }
+
+        @media (max-width: 768px) {
+          font-size: 13px;
+          line-height: 16px;
+          padding-left: 8px;
+        }
+
+        @media (max-width: 576px) {
+          font-size: 12px;
+          line-height: 15px;
+          padding-left: 6px;
         }
       }
     }
@@ -236,6 +248,15 @@
               padding: 6px 6px;
               font-size: 13px;
             }
+
+            @media (max-width: 1179px) {
+              padding: 4px 5px;
+              font-size: 12px;
+            }
+          }
+
+          @media (max-width: 1179px) {
+            font-size: 12px;
           }
 
           &.ant-menu-item-active,
@@ -243,6 +264,14 @@
             .ant-menu-title-content {
               border-radius: 8px;
               background: #f0fcf5;
+            }
+          }
+
+          &.nav-item-idc-muted {
+            color: #a4a4a4 !important;
+
+            .ant-menu-title-content {
+              color: #a4a4a4;
             }
           }
         }
@@ -263,45 +292,17 @@
         font-weight: 600;
         font-size: 14px;
       }
-      .nav-sign-in {
-        background-color: $primary-color;
-        color: #ffffff;
-        height: 36px;
-        line-height: 36px;
-        padding: 0 18px;
-        border-radius: 20px;
-        font-family: "RocGrotesk", sans-serif;
-        font-size: 14px !important;
-        font-weight: 700;
-        text-decoration: none;
-        white-space: nowrap;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        transition: background-color 0.2s ease, box-shadow 0.2s ease;
-
-        &:hover {
-          background-color: darken($primary-color, 6%);
-          color: #ffffff;
-          box-shadow: 0 2px 6px rgba(1, 98, 95, 0.25);
-        }
-
-        &:focus-visible {
-          outline: none;
-          box-shadow: 0 0 0 2px rgba($primary-color, 0.4);
-        }
-      }
     }
 
     .nav-sign-in {
-      background-color: $primary-color;
-      color: #ffffff;
-      height: 36px;
-      line-height: 36px;
-      padding: 0 18px;
-      border-radius: 20px;
-      font-family: "RocGrotesk", sans-serif;
+      background-color: #ffffff;
+      border: 1px solid $primary-color;
+      color: $primary-color;
+      height: 40px;
+      line-height: 20px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-family: "TabletGothic", sans-serif;
       font-size: 14px !important;
       font-weight: 700;
       text-decoration: none;
@@ -310,17 +311,58 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      box-shadow: 0 1px 1px rgba(16, 24, 40, 0.05);
       transition: background-color 0.2s ease, box-shadow 0.2s ease;
 
       &:hover {
-        background-color: darken($primary-color, 6%);
-        color: #ffffff;
-        box-shadow: 0 2px 6px rgba(1, 98, 95, 0.25);
+        background-color: #eaf2f2;
+        color: $primary-color;
+        box-shadow: 0 2px 6px rgba(1, 98, 95, 0.14);
       }
 
       &:focus-visible {
         outline: none;
         box-shadow: 0 0 0 2px rgba($primary-color, 0.4);
+      }
+
+      @media (max-width: 1366px) {
+        height: 36px;
+        line-height: 18px;
+        padding: 8px 14px;
+        font-size: 13px !important;
+      }
+
+      @media (max-width: 1179px) {
+        height: 34px;
+        line-height: 16px;
+        padding: 6px 12px;
+        font-size: 12px !important;
+      }
+    }
+
+    .mobile-header-actions {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+
+      .ant-btn {
+        color: $primary-color;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        .anticon {
+          font-size: 20px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        gap: 6px;
+
+        .ant-btn .anticon {
+          font-size: 18px;
+        }
       }
     }
 
@@ -342,23 +384,52 @@
       }
 
       .header-avatar {
-        background-color: $primary-color;
-        color: #ffffff;
-        font-family: "RocGrotesk", sans-serif;
-        font-weight: 700;
-        font-size: 14px;
+        width: 40px !important;
+        height: 40px !important;
+        line-height: 38px !important;
+        background-color: #f2f4f7;
+        color: #475467;
+        border: 0.75px solid rgba(17, 17, 17, 0.08);
+        font-family: "TabletGothic", sans-serif;
+        font-weight: 600;
+        font-size: 15px !important;
         cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
 
         &:hover {
           transform: scale(1.04);
-          box-shadow: 0 2px 8px rgba(1, 98, 95, 0.25);
+          box-shadow: 0 2px 8px rgba(16, 24, 40, 0.12);
+        }
+
+        @media (max-width: 1366px) {
+          width: 36px !important;
+          height: 36px !important;
+          line-height: 34px !important;
+          font-size: 13px !important;
+        }
+
+        @media (max-width: 768px) {
+          width: 36px !important;
+          height: 36px !important;
+          line-height: 34px !important;
+          font-size: 13px !important;
+        }
+
+        @media (max-width: 576px) {
+          width: 32px !important;
+          height: 32px !important;
+          line-height: 30px !important;
+          font-size: 12px !important;
         }
       }
     }
 
     &.mobile-screen {
       padding: 0.5rem $default-mobile-padding-size;
+
+      @media (max-width: 576px) {
+        padding: 0.5rem 1rem;
+      }
     }
   }
 
@@ -906,133 +977,57 @@
   }
 }
 
+.ant-drawer.drawer-menu-root {
+  .ant-drawer-content-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: 0 8px 16px rgba(16, 24, 40, 0.08);
+  }
+}
+
 .drawer-menu-wrapper {
   .ant-drawer-body {
-    padding: 16px 20px;
+    padding: 0 20px 16px;
     display: flex;
     flex-direction: column;
 
-    li {
+    li,
+    .ant-menu-item {
       font-family: "RocGrotesk";
       font-size: 14px;
+      line-height: 48px;
+      height: 48px;
+      margin: 0;
+      width: 100%;
+      padding-inline: 4px !important;
+      border-bottom: 1px solid #f0f0f0;
+      border-radius: 0;
       color: $primary-color;
       font-weight: 700;
+
+      &:last-child {
+        border-bottom: none;
+      }
 
       &.ant-menu-item-active,
       &.ant-menu-item-selected {
         border-radius: 8px;
         background: #f0fcf5;
       }
-    }
-  }
 
-  .drawer-user-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    background: #f7f9f8;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    margin-bottom: 16px;
-
-    .drawer-avatar {
-      background-color: $primary-color;
-      color: #ffffff;
-      font-family: "RocGrotesk", sans-serif;
-      font-weight: 700;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    .drawer-user-details {
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-
-      .drawer-user-name {
-        font-family: "RocGrotesk", sans-serif;
-        font-size: 14px;
-        font-weight: 700;
-        color: $primary-color;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        line-height: 1.3;
-      }
-
-      .drawer-user-email {
-        font-family: "TabletGothic", sans-serif;
-        font-size: 12px;
-        color: rgba(0, 0, 0, 0.55);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        line-height: 1.3;
+      &.nav-item-idc-muted {
+        color: #a4a4a4 !important;
       }
     }
-  }
 
-  .drawer-tool-switcher {
-    padding: 10px 0 14px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    margin-bottom: 12px;
+    @media (max-width: 576px) {
+      padding: 0 16px 12px;
 
-    .drawer-section-title {
-      display: block;
-      font-family: "RocGrotesk", sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: rgba(0, 0, 0, 0.45);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-
-    .drawer-tool-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 44px;
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-family: "TabletGothic", sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      color: rgba(0, 0, 0, 0.85);
-      cursor: pointer;
-      transition: background 0.15s ease;
-
-      &:hover,
-      &:active,
-      &.tool-item-active {
-        background: #f0fcf5;
-        color: $primary-color;
-      }
-
-      .tool-tag-active {
-        margin: 0;
-        font-size: 11px;
-        line-height: 16px;
-        padding: 0 6px;
-        border-radius: 4px;
-        font-weight: 600;
-        background: #e6f9ee;
-        border-color: #47d985;
-        color: #01625f;
-      }
-
-      .tool-tag-no-access {
-        margin: 0;
-        font-size: 11px;
-        line-height: 16px;
-        padding: 0 6px;
-        border-radius: 4px;
-        font-weight: 500;
-        background: #f5f5f5;
-        border-color: #d9d9d9;
-        color: rgba(0, 0, 0, 0.45);
+      li,
+      .ant-menu-item {
+        font-size: 13px;
+        line-height: 44px;
+        height: 44px;
       }
     }
   }
@@ -1042,13 +1037,31 @@
     padding-top: 14px;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
 
-    .ant-btn {
+    .drawer-login-link {
+      width: 100%;
+      background-color: #ffffff;
+      border: 1px solid $primary-color;
+      color: $primary-color;
+      height: 40px;
+      border-radius: 999px;
       font-family: "TabletGothic", sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      height: 38px;
-      display: flex;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 1px rgba(16, 24, 40, 0.05);
+
+      &:hover {
+        background-color: #eaf2f2;
+        color: $primary-color;
+      }
+
+      @media (max-width: 576px) {
+        height: 36px;
+        font-size: 13px;
+      }
     }
   }
 }
@@ -1056,33 +1069,34 @@
 // Header Avatar Dropdown & Tool Switcher
 .header-avatar-dropdown {
   .ant-dropdown-menu {
-    border-radius: 8px;
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08),
-      0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    padding: 6px;
-    min-width: 250px;
+    border-radius: 16px;
+    box-shadow: 2px 4px 8.9px 1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e5e5;
+    padding: 0;
+    width: 256px;
     background: #ffffff;
+    overflow: hidden;
 
     .ant-dropdown-menu-item-group-list {
       margin: 0;
-      padding: 0;
+      padding: 0 8px 8px;
     }
 
     .ant-dropdown-menu-item-group-title {
-      padding: 4px 8px;
+      padding: 8px 20px 4px;
     }
 
     .header-avatar-user-card {
-      padding: 8px 10px 10px;
+      padding: 12px 12px 10px;
+      cursor: default;
 
       .user-card-name {
-        font-family: "RocGrotesk", sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        color: $primary-color;
-        line-height: 1.25;
-        margin-bottom: 3px;
+        font-family: "TabletGothic", sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        color: #000000;
+        line-height: 24px;
+        margin-bottom: 2px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -1090,9 +1104,9 @@
 
       .user-card-email {
         font-family: "TabletGothic", sans-serif;
-        font-size: 12px;
-        color: rgba(0, 0, 0, 0.55);
-        line-height: 1.2;
+        font-size: 14px;
+        color: #777777;
+        line-height: 21px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -1100,22 +1114,31 @@
     }
 
     .menu-group-heading {
-      font-family: "RocGrotesk", sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: rgba(0, 0, 0, 0.45);
+      font-family: "TabletGothic", sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.78px;
+      color: #777777;
       text-transform: uppercase;
       display: block;
-      margin-top: 2px;
+    }
+
+    > .ant-dropdown-menu-item {
+      margin: 4px 8px;
     }
 
     .ant-dropdown-menu-item {
-      border-radius: 6px;
+      border-radius: 8px;
       font-family: "TabletGothic", sans-serif;
-      font-size: 13px;
-      padding: 8px 10px;
+      font-size: 14px;
+      line-height: 21px;
+      color: #000000;
+      padding: 6px 12px;
       transition: background-color 0.15s ease, color 0.15s ease;
+
+      .anticon {
+        font-size: 18px;
+      }
 
       &:hover,
       &.ant-dropdown-menu-item-active {
@@ -1124,20 +1147,32 @@
 
       &.tool-item-active,
       &.ant-dropdown-menu-item-selected {
-        background-color: #f0fcf5 !important;
+        background-color: #eaf2f2 !important;
 
         .tool-name {
           color: $primary-color !important;
-          font-weight: 700 !important;
+          font-weight: 400 !important;
+        }
+      }
+
+      &.tool-item-locked {
+        .tool-name {
+          color: #a4a4a4 !important;
+        }
+
+        .tool-lock-icon {
+          color: #a4a4a4;
+          font-size: 18px;
+          flex-shrink: 0;
         }
       }
 
       &.ant-dropdown-menu-item-danger {
-        color: #ff4d4f;
+        color: #ff010e;
 
         .anticon,
         .ant-dropdown-menu-title-content {
-          color: #ff4d4f;
+          color: #ff010e;
           transition: color 0.15s ease;
         }
 
@@ -1163,38 +1198,119 @@
       width: 100%;
 
       .tool-name {
-        font-weight: 600;
-        color: rgba(0, 0, 0, 0.85);
-      }
-
-      .tool-tag-active {
-        margin: 0;
-        font-size: 11px;
-        line-height: 16px;
-        padding: 0 6px;
-        border-radius: 4px;
-        font-weight: 600;
-        background: #e6f9ee;
-        border-color: #47d985;
-        color: #01625f;
-      }
-
-      .tool-tag-no-access {
-        margin: 0;
-        font-size: 11px;
-        line-height: 16px;
-        padding: 0 6px;
-        border-radius: 4px;
-        font-weight: 500;
-        background: #f5f5f5;
-        border-color: #d9d9d9;
-        color: rgba(0, 0, 0, 0.45);
+        font-weight: 400;
+        color: #000000;
       }
     }
 
     .ant-dropdown-menu-item-divider {
-      margin: 4px 0;
-      background-color: rgba(0, 0, 0, 0.06);
+      margin: 0;
+      background-color: #e5e5e5;
+    }
+
+    @media (max-width: 1366px) {
+      width: 240px;
+
+      .header-avatar-user-card {
+        padding: 10px 12px 8px;
+
+        .user-card-name {
+          font-size: 15px;
+          line-height: 22px;
+        }
+
+        .user-card-email {
+          font-size: 13px;
+          line-height: 19px;
+        }
+      }
+
+      .menu-group-heading {
+        font-size: 12px;
+        letter-spacing: 0.72px;
+      }
+
+      .ant-dropdown-menu-item {
+        font-size: 13px;
+        line-height: 19px;
+        padding: 5px 10px;
+
+        .anticon,
+        &.tool-item-locked .tool-lock-icon {
+          font-size: 16px;
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      width: 232px;
+      max-width: calc(100vw - 24px);
+
+      .header-avatar-user-card {
+        .user-card-name {
+          font-size: 14px;
+          line-height: 20px;
+        }
+
+        .user-card-email {
+          font-size: 12px;
+          line-height: 18px;
+        }
+      }
+
+      .menu-group-heading {
+        font-size: 11px;
+        letter-spacing: 0.66px;
+      }
+
+      .ant-dropdown-menu-item {
+        font-size: 13px;
+        line-height: 19px;
+
+        .anticon,
+        &.tool-item-locked .tool-lock-icon {
+          font-size: 16px;
+        }
+      }
+    }
+
+    @media (max-width: 576px) {
+      width: 224px;
+      max-width: calc(100vw - 24px);
+      border-radius: 14px;
+
+      .ant-dropdown-menu-item-group-title {
+        padding: 6px 16px 2px;
+      }
+
+      .header-avatar-user-card {
+        padding: 8px 10px 6px;
+
+        .user-card-name {
+          font-size: 13.5px;
+          line-height: 19px;
+        }
+
+        .user-card-email {
+          font-size: 12px;
+          line-height: 17px;
+        }
+      }
+
+      .menu-group-heading {
+        font-size: 11px;
+      }
+
+      .ant-dropdown-menu-item {
+        font-size: 12.5px;
+        line-height: 18px;
+        padding: 6px 10px;
+
+        .anticon,
+        &.tool-item-locked .tool-lock-icon {
+          font-size: 15px;
+        }
+      }
     }
   }
 }
