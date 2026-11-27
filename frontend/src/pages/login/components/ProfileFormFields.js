@@ -100,7 +100,7 @@ export const EmailField = ({ disabled = false }) => (
     <Input
       size="large"
       type="email"
-      placeholder="olivia@idh.com"
+      placeholder="Enter your email"
       autoComplete="email"
       disabled={disabled}
       data-testid="input-email"
@@ -147,7 +147,7 @@ export const CompanyNameField = ({ label = "Company name*", companyNames }) => {
       <AutoComplete options={companyOptions} filterOption={matchesSearch}>
         <Input
           size="large"
-          placeholder="Unicef"
+          placeholder="Enter your organisation"
           autoComplete="organization"
           data-testid="input-company-name"
         />
@@ -165,7 +165,7 @@ export const SectorField = () => (
     <Select
       size="large"
       showSearch
-      placeholder="Agriculture"
+      placeholder="Select a sector"
       options={sectorOptions}
       data-testid="select-sector"
     />
@@ -181,7 +181,7 @@ export const RegionField = () => (
     <Select
       size="large"
       showSearch
-      placeholder="West Africa"
+      placeholder="Select a region"
       options={regionOptions}
       data-testid="select-region"
     />
@@ -205,7 +205,7 @@ export const CommoditiesField = () => (
       size="large"
       mode="multiple"
       allowClear
-      placeholder="Cotton"
+      placeholder="Select commodities"
       options={commodityNameOptions}
       data-testid="select-commodities"
     />
@@ -226,7 +226,7 @@ const ProfileFormFields = ({ companyNames = [] }) => (
         <Input
           size="large"
           maxLength={125}
-          placeholder="Olivia"
+          placeholder="Enter your first name"
           autoComplete="given-name"
           data-testid="input-first-name"
         />
@@ -239,7 +239,7 @@ const ProfileFormFields = ({ companyNames = [] }) => (
         <Input
           size="large"
           maxLength={125}
-          placeholder="Rhye"
+          placeholder="Enter your last name"
           autoComplete="family-name"
           data-testid="input-last-name"
         />
@@ -259,7 +259,7 @@ const ProfileFormFields = ({ companyNames = [] }) => (
         <Select
           size="large"
           showSearch
-          placeholder="NGO"
+          placeholder="Select a company type"
           options={companyTypeOptions}
           data-testid="select-company-type"
         />
