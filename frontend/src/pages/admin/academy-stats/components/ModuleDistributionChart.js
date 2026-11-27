@@ -16,15 +16,61 @@ const unitOptions = [
 
 const moduleLabel = (modules) => `${modules} module${modules === 1 ? "" : "s"}`;
 
-export const getChartOption = ({ distribution = [], unit, showLabel }) => {
+export const getChartTypography = (windowWidth = 1440) => {
+  if (windowWidth <= 576) {
+    return {
+      axisFontSize: 11,
+      labelFontSize: 11,
+      tooltipFontSize: 12,
+      height: 250,
+    };
+  }
+  if (windowWidth <= 768) {
+    return {
+      axisFontSize: 12,
+      labelFontSize: 11,
+      tooltipFontSize: 12,
+      height: 280,
+    };
+  }
+  if (windowWidth <= 1366) {
+    return {
+      axisFontSize: 13,
+      labelFontSize: 12,
+      tooltipFontSize: 13,
+      height: 296,
+    };
+  }
+  return {
+    axisFontSize: 14,
+    labelFontSize: 13,
+    tooltipFontSize: 13,
+    height: 320,
+  };
+};
+
+export const getChartOption = ({
+  distribution = [],
+  unit,
+  showLabel,
+  windowWidth = 1440,
+}) => {
   const isPercentage = unit === UNIT_PERCENTAGE;
+  const { axisFontSize, labelFontSize, tooltipFontSize } =
+    getChartTypography(windowWidth);
+
   return {
     grid: { left: 8, right: 8, top: 32, bottom: 8, containLabel: true },
     tooltip: {
       trigger: "axis",
       axisPointer: { type: "shadow" },
-      formatter: ([param]) => {
-        const bin = distribution[param.dataIndex];
+      textStyle: { fontSize: tooltipFontSize },
+      formatter: (params) => {
+        const param = Array.isArray(params) ? params[0] : params;
+        const bin = distribution[param?.dataIndex];
+        if (!bin) {
+          return "";
+        }
         return `${moduleLabel(bin.modules_completed)}: ${formatNumber(
           bin.count
         )} users (${bin.percentage}%)`;
@@ -35,7 +81,7 @@ export const getChartOption = ({ distribution = [], unit, showLabel }) => {
       data: distribution.map((bin) => `${bin.modules_completed}`),
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: "#6b7280", fontSize: 14 },
+      axisLabel: { color: "#6b7280", fontSize: axisFontSize },
     },
     // Bars scale to the data; the values are on the labels (Figma 13036:20503)
     yAxis: { type: "value", show: false },
@@ -51,6 +97,7 @@ export const getChartOption = ({ distribution = [], unit, showLabel }) => {
           show: showLabel,
           position: "top",
           color: "#6b7280",
+          fontSize: labelFontSize,
           formatter: ({ value }) =>
             isPercentage ? `${value}%` : formatNumber(value),
         },
@@ -59,14 +106,19 @@ export const getChartOption = ({ distribution = [], unit, showLabel }) => {
   };
 };
 
-const ModuleDistributionChart = ({ distribution = [], loading = false }) => {
+const ModuleDistributionChart = ({
+  distribution = [],
+  loading = false,
+  windowWidth = 1440,
+}) => {
   const chartRef = useRef(null);
   const [unit, setUnit] = useState(UNIT_PERCENTAGE);
   const [showLabel, setShowLabel] = useState(true);
+  const { height } = getChartTypography(windowWidth);
 
   const option = useMemo(
-    () => getChartOption({ distribution, unit, showLabel }),
-    [distribution, unit, showLabel]
+    () => getChartOption({ distribution, unit, showLabel, windowWidth }),
+    [distribution, unit, showLabel, windowWidth]
   );
 
   const handleDownload = () => {
@@ -132,7 +184,7 @@ const ModuleDistributionChart = ({ distribution = [], loading = false }) => {
         option={option}
         notMerge
         showLoading={loading}
-        style={{ height: 320, width: "100%" }}
+        style={{ height, width: "100%" }}
       />
     </div>
   );

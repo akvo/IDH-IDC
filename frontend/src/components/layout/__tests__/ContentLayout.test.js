@@ -5,8 +5,6 @@ import ContentLayout from "../ContentLayout";
 import { UserState } from "../../../store";
 
 const renderAt = (path, role = "super_admin") => {
-  // The tabs read the browser path
-  window.history.pushState({}, "", path);
   UserState.update((s) => {
     s.role = role;
   });
@@ -16,7 +14,14 @@ const renderAt = (path, role = "super_admin") => {
         <Route
           path="*"
           element={
-            <ContentLayout title="User Management" hideIDCSubMenu>
+            <ContentLayout
+              breadcrumbItems={[
+                { title: "Home", href: "/" },
+                { title: "Users", href: "/admin/users" },
+              ]}
+              title="User Management"
+              hideIDCSubMenu
+            >
               <div data-testid="page" />
             </ContentLayout>
           }
@@ -29,8 +34,6 @@ const renderAt = (path, role = "super_admin") => {
 const tabs = () => within(screen.getByTestId("admin-tabs-menu"));
 
 describe("ContentLayout admin tabs", () => {
-  afterEach(() => window.history.pushState({}, "", "/"));
-
   it("shows the 4 admin tabs", () => {
     renderAt("/admin/users");
 
@@ -66,6 +69,20 @@ describe("ContentLayout admin tabs", () => {
 
     expect(tabs().getByRole("tab", { selected: true })).toHaveTextContent(
       "LI Academy User Statistics"
+    );
+  });
+
+  it("updates the active tab when navigating via breadcrumb Link", () => {
+    renderAt("/admin/academy-user-statistics");
+
+    expect(tabs().getByRole("tab", { selected: true })).toHaveTextContent(
+      "LI Academy User Statistics"
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "Users" }));
+
+    expect(tabs().getByRole("tab", { selected: true })).toHaveTextContent(
+      "Manage Users"
     );
   });
 

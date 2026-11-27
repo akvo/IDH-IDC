@@ -14,6 +14,7 @@ import {
   UNIT_NUMBER,
   UNIT_PERCENTAGE,
   getChartOption,
+  getChartTypography,
 } from "../components/ModuleDistributionChart";
 import {
   buildStatsCsv,
@@ -201,6 +202,52 @@ describe("AcademyUserStats", () => {
     console.error.mockRestore();
   });
 
+  it("hides stale metrics and disables CSV export when a filter reload fails", async () => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+    renderPage();
+    await screen.findByTestId("kpi-registered-users");
+
+    api.get.mockRejectedValueOnce(new Error("network error"));
+    await selectOption("filter-year", "2025");
+
+    expect(await screen.findByTestId("academy-stats-error")).toHaveTextContent(
+      "Could not load the Academy user statistics."
+    );
+    expect(
+      screen.queryByTestId("kpi-registered-users")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("companies-participation-table")
+    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("btn-export-csv")).toBeDisabled();
+    expect(screen.getByTestId("filter-region")).toBeInTheDocument();
+    console.error.mockRestore();
+  });
+
+  it("disables CSV export while a filter reload is in flight", async () => {
+    renderPage();
+    await screen.findByTestId("kpi-registered-users");
+
+    let resolveReload;
+    api.get.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveReload = resolve;
+        })
+    );
+    await selectOption("filter-year", "2025");
+
+    expect(screen.getByTestId("btn-export-csv")).toBeDisabled();
+
+    await act(async () => {
+      resolveReload({ data: mockStats });
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId("btn-export-csv")).toBeEnabled()
+    );
+  });
+
   describe("module completion chart", () => {
     it("shows percentages with labels by default", async () => {
       renderPage();
@@ -290,7 +337,50 @@ describe("AcademyUserStats", () => {
         showLabel: true,
       });
       expect(option.series[0].label.formatter({ value: 12 })).toBe("12%");
+      expect(option.tooltip.formatter([])).toBe("");
       expect(formatNumber(1248)).toBe("1,248");
+    });
+
+    it.each([
+      [1440, 14, 13, 320],
+      [1366, 13, 12, 296],
+      [768, 12, 11, 280],
+      [375, 11, 11, 250],
+    ])(
+      "scales chart typography for %ipx screen width",
+      (width, axisFontSize, labelFontSize, height) => {
+        const option = getChartOption({
+          distribution: mockStats.module_distribution,
+          unit: UNIT_PERCENTAGE,
+          showLabel: true,
+          windowWidth: width,
+        });
+        expect(option.xAxis.axisLabel.fontSize).toBe(axisFontSize);
+        expect(option.series[0].label.fontSize).toBe(labelFontSize);
+        expect(getChartTypography(width).height).toBe(height);
+      }
+    );
+
+    it("updates chart font sizes when window resizes to mobile", async () => {
+      const originalWidth = window.innerWidth;
+      try {
+        renderPage();
+        await screen.findByTestId("echarts");
+
+        act(() => {
+          window.innerWidth = 375;
+          window.dispatchEvent(new Event("resize"));
+        });
+
+        await waitFor(() =>
+          expect(mockChartOption.xAxis.axisLabel.fontSize).toBe(11)
+        );
+      } finally {
+        act(() => {
+          window.innerWidth = originalWidth;
+          window.dispatchEvent(new Event("resize"));
+        });
+      }
     });
   });
 
@@ -354,9 +444,10 @@ describe("AcademyUserStats", () => {
       renderPage();
       await screen.findByTestId("kpi-registered-users");
       await selectOption("filter-region", "East Africa");
-      await waitFor(() =>
-        expect(lastParams()).toEqual({ region: "East Africa" })
-      );
+      await waitFor(() => {
+        expect(lastParams()).toEqual({ region: "East Africa" });
+        expect(screen.getByTestId("btn-export-csv")).toBeEnabled();
+      });
 
       await act(async () => {
         fireEvent.click(screen.getByTestId("btn-export-csv"));
@@ -396,6 +487,28 @@ describe("AcademyUserStats", () => {
 
     it("handles missing data", () => {
       expect(buildStatsCsv(null)).toContain("Average modules completed,0 / 6");
+    });
+
+    it("neutralizes spreadsheet formula injection in untrusted string cells", () => {
+      const csv = buildStatsCsv(
+        {
+          companies: [
+            { company: '=HYPERLINK("http://x", "y")', users_count: 1 },
+            { company: "+SUM(1,2)", users_count: 2 },
+            { company: "-2+3", users_count: 3 },
+            { company: "@cmd", users_count: 4 },
+            { company: "\t=1+1", users_count: 5 },
+          ],
+        },
+        { region: "=1+1" }
+      );
+
+      expect(csv).toContain("Region,'=1+1");
+      expect(csv).toContain('"\'=HYPERLINK(""http://x"", ""y"")",1,,');
+      expect(csv).toContain('"\'+SUM(1,2)",2,,');
+      expect(csv).toContain("'-2+3,3,,");
+      expect(csv).toContain("'@cmd,4,,");
+      expect(csv).toContain("'\t=1+1,5,,");
     });
 
     it("names the file by date", () => {

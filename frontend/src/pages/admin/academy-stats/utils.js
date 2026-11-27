@@ -3,10 +3,19 @@ export const TOTAL_MODULES = 6;
 export const formatNumber = (value) =>
   Number(value || 0).toLocaleString("en-US");
 
-// Quote a CSV cell when it holds a comma, quote or line break
+const FORMULA_TRIGGER_RE = /^[\t\r]*[=+@-]/;
+
+// Quote a CSV cell when needed and neutralize spreadsheet formula prefixes
 const toCsvCell = (value) => {
-  const text = value === null || typeof value === "undefined" ? "" : `${value}`;
-  return /[",\r\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  if (value === null || typeof value === "undefined") {
+    return "";
+  }
+  if (typeof value === "number") {
+    return `${value}`;
+  }
+  const text = `${value}`;
+  const safe = FORMULA_TRIGGER_RE.test(text) ? `'${text}` : text;
+  return /[",\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 };
 
 const toCsvRows = (rows) =>

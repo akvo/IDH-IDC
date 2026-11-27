@@ -36,7 +36,7 @@ const AcademyUserStats = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { windowInnerHeight } = useWindowDimensions();
+  const { windowInnerWidth, windowInnerHeight } = useWindowDimensions();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -119,7 +119,7 @@ const AcademyUserStats = () => {
           <Button
             className="button-ghost"
             onClick={handleExport}
-            disabled={!data}
+            disabled={!data || loading || Boolean(error)}
             data-testid="btn-export-csv"
           >
             Export CSV
@@ -136,57 +136,65 @@ const AcademyUserStats = () => {
           />
         )}
 
-        {!data && loading ? (
-          <Skeleton active />
-        ) : (
-          <>
-            <Row gutter={[24, 24]} className="academy-stats-kpis">
-              {[
-                {
-                  testId: "kpi-registered-users",
-                  label: "Registered Academy users",
-                  value: formatNumber(kpis?.registered_users),
-                },
-                {
-                  testId: "kpi-active-users",
-                  label: "Active users (last 30 days)",
-                  value: formatNumber(kpis?.active_users_30d),
-                },
-                {
-                  testId: "kpi-companies",
-                  label: "Companies taking part",
-                  value: formatNumber(kpis?.companies_count),
-                },
-                {
-                  testId: "kpi-avg-modules",
-                  label: "Average modules completed",
-                  value: `${
-                    kpis?.avg_modules_completed ?? 0
-                  } / ${totalModules}`,
-                },
-              ].map((kpi) => (
-                <Col key={kpi.testId} xs={24} sm={12} xl={6}>
-                  <KpiCard {...kpi} />
+        {!error &&
+          (!data && loading ? (
+            <Skeleton active />
+          ) : (
+            <>
+              <Row
+                gutter={[24, 24]}
+                className={`academy-stats-kpis${
+                  loading ? " academy-stats-kpis--loading" : ""
+                }`}
+                aria-busy={loading}
+              >
+                {[
+                  {
+                    testId: "kpi-registered-users",
+                    label: "Registered Academy users",
+                    value: formatNumber(kpis?.registered_users),
+                  },
+                  {
+                    testId: "kpi-active-users",
+                    label: "Active users (last 30 days)",
+                    value: formatNumber(kpis?.active_users_30d),
+                  },
+                  {
+                    testId: "kpi-companies",
+                    label: "Companies taking part",
+                    value: formatNumber(kpis?.companies_count),
+                  },
+                  {
+                    testId: "kpi-avg-modules",
+                    label: "Average modules completed",
+                    value: `${
+                      kpis?.avg_modules_completed ?? 0
+                    } / ${totalModules}`,
+                  },
+                ].map((kpi) => (
+                  <Col key={kpi.testId} xs={24} sm={12} xl={6}>
+                    <KpiCard {...kpi} />
+                  </Col>
+                ))}
+              </Row>
+              <Row gutter={[24, 24]}>
+                <Col xs={24} xl={12}>
+                  <ModuleDistributionChart
+                    distribution={data?.module_distribution || []}
+                    loading={loading}
+                    windowWidth={windowInnerWidth}
+                  />
                 </Col>
-              ))}
-            </Row>
-            <Row gutter={[24, 24]}>
-              <Col xs={24} xl={12}>
-                <ModuleDistributionChart
-                  distribution={data?.module_distribution || []}
-                  loading={loading}
-                />
-              </Col>
-              <Col xs={24} xl={12}>
-                <CompaniesParticipationTable
-                  companies={data?.companies || []}
-                  totalModules={totalModules}
-                  loading={loading}
-                />
-              </Col>
-            </Row>
-          </>
-        )}
+                <Col xs={24} xl={12}>
+                  <CompaniesParticipationTable
+                    companies={data?.companies || []}
+                    totalModules={totalModules}
+                    loading={loading}
+                  />
+                </Col>
+              </Row>
+            </>
+          ))}
       </div>
     </ContentLayout>
   );

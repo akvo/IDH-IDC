@@ -33,7 +33,7 @@ export const selectProps = {
 // Toolbar filter dropdowns on the admin pages
 export const filterSelectProps = (windowInnerHeight = window.innerHeight) => ({
   ...selectProps,
-  style: { width: windowInnerHeight * 0.175 },
+  style: { width: Math.max(150, Math.round(windowInnerHeight * 0.175)) },
 });
 
 export const regexQuestionId = /#(\d+)/;
